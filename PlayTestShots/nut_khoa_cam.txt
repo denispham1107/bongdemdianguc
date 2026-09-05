@@ -1,0 +1,6 @@
+cam ung dang dung = False, khoa = False, che do nhin = 0
+bam vao tam nut -> nut nhan cham = True, khoa = True
+DANG KHOA: lech goc = 0.00 do, lech khoang cach = 0.00 m, lech fov = 0.00, doi che do = False
+bam lan hai -> nut nhan cham = True, khoa = False
+DA MO KHOA: lech goc = 28.87 do, lech khoang cach = 18.03 m, lech fov = 25.75, doi che do = True
+so loi ghi nhan = 0

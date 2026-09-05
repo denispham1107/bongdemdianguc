@@ -1,0 +1,16 @@
+cay = CayXanh_16  chan = (4.89, 1.23, -33.67)  bao = 3.2 x 6.1 x 4.2  renderer = 91
+quai thu nghiem: mau dau = 70.0
+t=1.71s  tha thien thach xuong (4.89, 1.23, -33.67), dich (4.89, 1.10, -33.67)
+t=2.40s  CAY BAT LUA (sau 0.80s ke tu luc tha)
+MOI BEN: 353 diem moi lua, lan het mat 2.5s, ban kinh lua goc 1.60m
+         he hat=4 den=1, tien do lan = 28 %, dang chay 5/353 diem
+giua doan lan (tien do 63 %): manh dang roi = 2   dang chay 212/353 diem   mau quai = 0.0
+           mau than: goc RGBA(1.05, 0.96, 0.85, 1.00) -> hien RGBA(0.37, 0.34, 0.30, 1.00)  (con 35 % do sang)
+LAN HET sau 2.5s (du tinh 2.5s): dang chay 353/353 diem
+        cay VAN CON: renderer bat = 91/91   hat lua bam canh = 537
+DA RUI sau 6.3s: renderer bat = 0/91  collider bat = 0/1
+        mau quai = -1.0 / 70.0  (mat 71.0)
+giua doan cho (19.7s ke tu luc bat lua): renderer bat = 0/91 (phai la 0)
+MOC LAI sau 36.3s ke tu luc bat lua: renderer bat = 91/91  collider bat = 1/1
+         component CayChay con = False (phai False), con de mau chay den = False (phai False)
+so loi ghi nhan = 0

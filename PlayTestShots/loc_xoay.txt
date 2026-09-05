@@ -1,0 +1,6 @@
+t=1.01s  tha loc tai (4.0, 0.2, -6.5), song 6.0s
+t=4.08s  loc dang cuon 7 vat the
+t=7.10s  ca 7 vat da TAN BIEN cung con loc
+sau 15.0s: dang hien = 0/7 (phai la 0)
+sau 31.5s (nguong 30s): dang hien = 7/7, con component = 0
+so loi ghi nhan = 0

@@ -1,0 +1,16 @@
+cay = TREE_oakC_bare_724  chan = (8.58, -0.81, -32.34)  bao = 8.9 x 9.1 x 13.4  renderer = 1
+quai thu nghiem: mau dau = 70.0
+t=1.71s  tha thien thach xuong (8.58, -0.81, -32.34), dich (8.58, -0.59, -32.34)
+t=2.30s  CAY BAT LUA (sau 0.70s ke tu luc tha)
+MOI BEN: 340 diem moi lua, lan het mat 3.7s, ban kinh lua goc 3.01m
+         he hat=4 den=1, tien do lan = 18 %, dang chay 5/340 diem
+giua doan lan (tien do 61 %): manh dang roi = 4   dang chay 151/340 diem   mau quai = 0.0
+           mau than: goc RGBA(0.88, 0.86, 0.82, 1.00) -> hien RGBA(0.52, 0.51, 0.49, 1.00)  (con 60 % do sang)
+LAN HET sau 3.7s (du tinh 3.7s): dang chay 340/340 diem
+        cay VAN CON: renderer bat = 1/1   hat lua bam canh = 582
+DA RUI sau 7.5s: renderer bat = 0/1  collider bat = 0/1
+        mau quai = -1.0 / 70.0  (mat 71.0)
+giua doan cho (20.9s ke tu luc bat lua): renderer bat = 0/1 (phai la 0)
+MOC LAI sau 37.4s ke tu luc bat lua: renderer bat = 1/1  collider bat = 1/1
+         component CayChay con = False (phai False), con de mau chay den = False (phai False)
+so loi ghi nhan = 0

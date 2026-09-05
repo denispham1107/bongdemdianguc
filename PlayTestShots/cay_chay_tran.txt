@@ -1,0 +1,4 @@
+khung hinh NEN (chua chay gi) = 7.1 fps  (23 khung / 3.2s)
+cham lua vao 12 cay -> 4 cai bat lua (tran = 4)
+dang chay 4 cay: 5.9 fps (nen 7.1), tong hat trong canh = 2558
+so loi ghi nhan = 0
