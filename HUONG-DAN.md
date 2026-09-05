@@ -4397,6 +4397,69 @@ var info = pass.CompileVariant(ShaderType.Fragment, new string[0],
 Cả bốn shader đều `Success = true`, không một cảnh báo — nên vấn đề đúng là ở chỗ vào
 build, không phải ở chỗ biên dịch.
 
+## Thanh kỹ năng trên PC: bỏ tên kỹ năng, và hai lần đo sai đường
+
+**Hiện tượng.** Dưới bảy ô kỹ năng ở đáy màn hình có bảy dòng chữ
+`[1/Z] QUA CAU LUA`, `[2/X] MUA BANG`… Ô kỹ năng rộng 44 px (màn 571 px cao),
+mà dòng chữ đầy đủ cần 80 px — nên `GUI.Label` tự ngắt dòng, dòng thứ hai rơi
+khỏi mép dưới màn hình và bị cắt cụt. Người chơi nhìn thấy `[1/Z] QUA`,
+`[2/X] MUA` — chữ vừa thừa vừa không đọc được.
+
+**Cách sửa.** Trong [`UI/GameHUD.cs`](Assets/Scripts/UI/GameHUD.cs) hàm
+`DrawSkillSlot` chỉ vẽ phím tắt, bỏ hẳn tham số `label`:
+
+```csharp
+GUI.Label(new Rect(r.x, r.y + r.height + 2f * s, r.width, 22f * s),
+          "[" + key + "]", keyStyle);
+```
+
+Chỉ ảnh hưởng bản PC: `GameHUD.OnGUI` rẽ nhánh `if (CamUng.DangDung)
+{ VeNutKyNangTron(s); … } else DrawSkillBar(s);` — bản cảm ứng đi lối khác, và
+lối đó vốn chỉ vẽ biểu tượng, chưa bao giờ vẽ chữ.
+
+**Số đo chứng minh.** Kịch bản mới **menu 22** chụp cả HUD bằng `ScreenCapture`
+(không dùng `cam.Render()` — OnGUI không đi vào RenderTexture), rồi đếm pixel màu
+chữ trong dải ngay dưới hàng ô. Bản trước khi sửa được giữ lại làm đối chứng, đo
+đúng cùng một cách, trên cùng màn Act2:
+
+| Ô | Bản cũ — cụm chữ rộng | Bản mới — cụm chữ rộng |
+|---|---|---|
+| 1 | 38 px | **14 px** |
+| 2 | 37 px | **15 px** |
+| 3 | 36 px | **15 px** |
+| 4 | 38 px | **15 px** |
+| 5 | 18 px | **16 px** |
+| 6 | 16 px | **19 px** |
+| 7 | 36 px | **19 px** |
+| **Tổng pixel chữ** | **302** | **175** |
+
+Bề rộng lý thuyết do chính `keyStyle` của HUD trả về: `"[1/Z]"` = **19 px**,
+`"[1/Z] QUA CAU LUA"` = **80 px**. Bản mới có **cả bảy** cụm ≤ 19 px — đúng bằng
+phím tắt, không hơn một chữ nào. Bản cũ có bốn ô 36–38 px, gần gấp đôi.
+Ảnh: `PlayTestShots/thanh_ky_nang_pc.png` (mới) và `thanh_ky_nang_pc_CU.png` (cũ).
+
+**Hai lần đi sai đường — đều ở phép đo, không ở code.**
+
+*Lần một: chép hằng số thay vì hỏi.* Kịch bản đo tự đặt `const float Ref = 720f`
+để tính vị trí ô, trong khi `GameHUD` dùng `Ref = 1080f`. Mỗi ô bị tính rộng
+66 px thay vì 44 px, cả bảy vùng quét trượt sang trái, dải quét lấn lên viền ô —
+và viền vàng của ô đang chọn lọt vào bộ lọc "màu chữ". Kết quả: ô 1 và ô 7 báo
+**0 pixel chữ** trong khi ảnh rành rành có `[1/Z]` và `[7/G]`, còn ô 3 báo cụm
+rộng 63 px — rộng hơn cả chuỗi cũ. Suýt nữa thì báo là code hỏng. Nay kịch bản
+đọc `Ref` thẳng từ `GameHUD` bằng reflection: nó sai thì mình sai theo, không
+lệch được.
+
+*Lần hai: đo nhiễu rồi tưởng là đo chữ.* Phép kiểm "bản cảm ứng không có chữ"
+đếm pixel màu chữ trên toàn bề ngang, ra **87** ở lần chạy này và **4176** ở lần
+chạy sau — trên đúng một thứ. Nhìn ảnh mới thấy: lần sau có một quả thiên thạch
+nổ sáng rực giữa màn hình, và bộ lọc "vàng nhạt" đếm luôn đám lửa. Phép đo ấy đã
+bị bỏ: điều cần biết đã nằm sẵn ở nhánh `if (CamUng.DangDung)`, còn ảnh chụp thì
+để người đọc tự nhìn.
+
+Bài học chung của cả hai: **một con số không có đối chứng thì không nói được gì.**
+Chỉ khi đặt bản cũ và bản mới cạnh nhau, đo cùng một dải bằng cùng một bộ lọc,
+phần nhiễu mới triệt tiêu và phần chênh lệch mới là thật.
+
 ## Đưa dự án vào git — và vì sao 920 MB model bị bỏ lại ngoài
 
 **Hiện tượng.** Suốt từ đầu dự án không có chỗ nào để lùi lại. Sửa hỏng một file
@@ -4482,6 +4545,7 @@ git log --oneline       # danh sach cac lan chup
 | **19. Chay thu HOI SINH sau Loc xoay** | Thả một con lốc, đo xem cảnh vật bị cuốn có mọc lại đúng 30 giây không. |
 | **20. Nuong diem moi lua cho cay** | Rải 340 điểm mồi lửa trên mỗi loại lưới cây và lưu vào `Resources/DiemLua`. Chạy lại nếu đổi mẫu cây Act2. |
 | **21. Chay thu NUT KHOA GOC NHIN** | Bấm nút con mắt rồi thử đẩy camera bằng mọi đường, đo xem góc nhìn có nhúc nhích không. |
+| **22. Chay thu THANH KY NANG (PC)** | Chụp thanh kỹ năng ở chế độ PC rồi đếm pixel chữ dưới từng ô — dùng để kiểm rằng dưới ô chỉ còn phím tắt. Trả lại scene đang mở khi xong. |
 
 > ⚠️ Mục **1** sẽ **xóa và tạo lại** các thư mục Textures / Materials / Models / Prefabs.
 > Nếu bạn tự sửa tay trong đó thì hãy sao lưu trước.

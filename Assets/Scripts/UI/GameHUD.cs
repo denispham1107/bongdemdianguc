@@ -1232,31 +1232,31 @@ public class GameHUD : MonoBehaviour
 
         DrawSkillSlot(new Rect(x, y, slot, slot), iconFire, "1/Z", 0,
                       player != null ? player.FireballCooldown01 : 0f,
-                      player != null && player.SelectedSkill == 0, s, "QUA CAU LUA");
+                      player != null && player.SelectedSkill == 0, s);
 
         DrawSkillSlot(new Rect(x + slot + gap, y, slot, slot), iconIce, "2/X", 1,
                       player != null ? player.IceCooldown01 : 0f,
-                      player != null && player.SelectedSkill == 1, s, "MUA BANG");
+                      player != null && player.SelectedSkill == 1, s);
 
         DrawSkillSlot(new Rect(x + (slot + gap) * 2f, y, slot, slot), iconBolt, "3/V", 2,
                       player != null ? player.BoltCooldown01 : 0f,
-                      player != null && player.SelectedSkill == 2, s, "SAM SET");
+                      player != null && player.SelectedSkill == 2, s);
 
         DrawSkillSlot(new Rect(x + (slot + gap) * 3f, y, slot, slot), iconWind, "4/B", 3,
                       player != null ? player.TornadoCooldown01 : 0f,
-                      player != null && player.SelectedSkill == 3, s, "LOC XOAY");
+                      player != null && player.SelectedSkill == 3, s);
 
         DrawSkillSlot(new Rect(x + (slot + gap) * 4f, y, slot, slot), iconMeteor, "5/N", 4,
                       player != null ? player.MeteorCooldown01 : 0f,
-                      player != null && player.SelectedSkill == 4, s, "THIEN THACH");
+                      player != null && player.SelectedSkill == 4, s);
 
         DrawSkillSlot(new Rect(x + (slot + gap) * 5f, y, slot, slot), iconKhieng, "6/M", 5,
                       player != null ? player.KhiengCooldown01 : 0f,
-                      player != null && player.SelectedSkill == 5, s, "KHIENG");
+                      player != null && player.SelectedSkill == 5, s);
 
         DrawSkillSlot(new Rect(x + (slot + gap) * 6f, y, slot, slot), iconGiatSet, "7/G", 6,
                       player != null ? player.GiatSetCooldown01 : 0f,
-                      player != null && player.SelectedSkill == 6, s, "GIUT SET");
+                      player != null && player.SelectedSkill == 6, s);
 
         // Mau khieng KHONG ve o day nua - no da co dai rieng tren bang trang
         // thai goc trai. Ve ca hai cho thi cung mot con so hien hai lan, ma cho
@@ -1264,7 +1264,7 @@ public class GameHUD : MonoBehaviour
     }
 
     void DrawSkillSlot(Rect r, Texture2D icon, string key, int skill,
-                       float cooldown01, bool selected, float s, string label)
+                       float cooldown01, bool selected, float s)
     {
         GUI.DrawTexture(r, panelTex, ScaleMode.StretchToFill, true);
         GUI.DrawTexture(new Rect(r.x + 4f * s, r.y + 4f * s, r.width - 8f * s, r.height - 8f * s),
@@ -1290,7 +1290,13 @@ public class GameHUD : MonoBehaviour
         if (selected) DrawBorder(r, new Color(1f, 0.85f, 0.35f), Mathf.Max(2f, 3f * s));
         else DrawBorder(r, new Color(0.35f, 0.32f, 0.28f), Mathf.Max(1f, 2f * s));
 
-        GUI.Label(new Rect(r.x, r.y + r.height + 2f * s, r.width, 22f * s), "[" + key + "] " + label, keyStyle);
+        // Chi ve PHIM TAT, khong ve ten ky nang. Bay bieu tuong keo theo bay
+        // dong chu "[1/Z] QUA CAU LUA" lam day man hinh, ma nguoi choi PC
+        // nho ky nang theo bieu tuong va theo phim so chu khong doc chu.
+        // Ban cam ung (VeNutKyNangTron) von chi ve bieu tuong, khong ve chu -
+        // gio hai ban giong nhau o cho nay.
+        GUI.Label(new Rect(r.x, r.y + r.height + 2f * s, r.width, 22f * s),
+                  "[" + key + "]", keyStyle);
 
         // Bam thang vao o cung tung duoc ky nang. Luc nay con tro dang o tren
         // thanh ky nang nen khong ngam theo chuot duoc -> danh thang ve phia truoc.

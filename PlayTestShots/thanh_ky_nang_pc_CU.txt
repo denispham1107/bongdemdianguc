@@ -1,0 +1,14 @@
+man = 1552x571, Ref cua GameHUD = 1080, cam ung dang dung = False
+ti le anh/man = 1.00, dai chu = 10 pixel cao
+be rong LY THUYET: "[1/Z]" = 19 px, "[1/Z] QUA CAU LUA" = 80 px
+tong pixel mau chu duoi bay o = 302
+  o 1: 55 pixel chu, cum rong 38 px
+  o 2: 51 pixel chu, cum rong 37 px
+  o 3: 51 pixel chu, cum rong 36 px
+  o 4: 48 pixel chu, cum rong 38 px
+  o 5: 32 pixel chu, cum rong 18 px
+  o 6: 26 pixel chu, cum rong 16 px
+  o 7: 39 pixel chu, cum rong 36 px
+cam ung dang dung = True
+ban cam ung - pixel mau chu trong DUNG vung bay o cua thanh PC = 87
+so loi ghi nhan = 0
