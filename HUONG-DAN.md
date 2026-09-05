@@ -4397,6 +4397,63 @@ var info = pass.CompileVariant(ShaderType.Fragment, new string[0],
 Cả bốn shader đều `Success = true`, không một cảnh báo — nên vấn đề đúng là ở chỗ vào
 build, không phải ở chỗ biên dịch.
 
+## Đưa dự án vào git — và vì sao 920 MB model bị bỏ lại ngoài
+
+**Hiện tượng.** Suốt từ đầu dự án không có chỗ nào để lùi lại. Sửa hỏng một file
+`.cs` hay lỡ bấm nhầm "1. Nuong Asset" (mục này *xóa và tạo lại* cả bốn thư mục
+Textures / Materials / Models / Prefabs) thì không có cách nào lấy lại bản cũ —
+`HUONG-DAN.md` kể được **vì sao** đã làm, nhưng không giữ được **chính cái file** đó.
+
+**Cách làm.** `git init -b main`, nhánh `main`, ảnh chụp đầu tiên `0ef3e18`
+(05/09/2026). Người ghi commit đặt ở mức repo (`git config user.email`), không đụng
+tới cấu hình chung của máy. `core.autocrlf = false` — Unity ghi file gì thì git giữ
+đúng byte đó, không tự đổi xuống dòng, tránh cảnh cả nghìn file `.meta` "thay đổi"
+giả sau một lần checkout.
+
+**Cái gì không vào git.** File Unity tự sinh lại được thì không giữ:
+`Library/` (bộ nhớ đệm nhập asset), `Temp/`, `Logs/`, `build/`, `UserSettings/`,
+`.utmp/`, cùng file dự án của Visual Studio / Rider (`*.csproj`, `*.sln` — Unity tự
+sinh lại mỗi lần mở).
+
+Riêng **`Assets/MeshyImports/` (920 MB) là quyết định có cân nhắc**, không phải bỏ sót:
+
+| | Vào git | Để ngoài (đã chọn) |
+|---|---|---|
+| `.git` phình thêm | ~0,9 GB (FBX/PNG gần như không nén được) | 0 |
+| Lỡ xoá thư mục | git lấy lại được | phải tải lại từ Meshy |
+| Unity dùng model | bình thường | **bình thường** — file vẫn nằm nguyên trên đĩa |
+
+Đó là 5 model nhân vật tải về từ Meshy, mỗi bộ 164–212 MB, **không bao giờ sửa** —
+chúng chỉ là nguyên liệu cho menu 11 / 12 nướng ra prefab `Enemy_QuyDu` /
+`Enemy_QuyCay`. Trả giá 0,9 GB dung lượng để giữ lịch sử cho những file không có
+lịch sử là không đáng. Điều phải nhớ: **git không cứu được thư mục này** — lỡ xoá thì
+tải lại từ Meshy.
+
+**Số đo chứng minh.**
+
+| Đo | Số |
+|---|---|
+| File được theo dõi | **1175** |
+| Dung lượng `.git` | **78 MB** (so với 1,1 GB của `Assets/`) |
+| File lớn hơn 20 MB lọt vào commit | **0** |
+| `git status` sau khi commit | **sạch** — 0 file thay đổi |
+| `git fsck` | **0 lỗi**, không một cảnh báo |
+| Lọt `Library` / `Temp` / `MeshyImports` vào commit | **0 file** (lọc lại bằng grep sau khi stage) |
+
+Phân bố 1175 file đó: Materials 273, Scripts 145, Prefabs 124, Models 120,
+Textures 78, Resources 75, Terrain 66, Meshes 62, Editor 44, Shaders 34,
+PlayTestShots 34, BlenderMaps 32, ProjectSettings 25 — tức là **toàn bộ phần dựng
+nên game**, chỉ thiếu nguyên liệu thô của Meshy.
+
+**Muốn lùi lại thì làm gì.**
+
+```bash
+git status              # dang sua nhung gi
+git diff                # xem tung dong da doi
+git checkout -- <file>  # tra rieng mot file ve ban da commit
+git log --oneline       # danh sach cac lan chup
+```
+
 ## Phần 4 — Menu công cụ "Diablo 2.5D"
 
 | Mục | Tác dụng |

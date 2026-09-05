@@ -101,4 +101,7 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
   Thiên thạch **đốt cháy cả cái cây** (lửa lan theo bề mặt thật, cây rụi rồi mọc lại sau 30 s) ·
   Lốc xoáy trả cảnh vật về sau **30 s** thay vì 60 s ·
   **nút con mắt** khoá góc nhìn trên bản cảm ứng.
-- Dự án **chưa phải git repo** — không có lịch sử để tra, nên `HUONG-DAN.md` chính là lịch sử.
+- Dự án **đã là git repo** (nhánh `main`, ảnh chụp đầu tiên `0ef3e18`, 05/09/2026, 1175 file).
+  `Assets/MeshyImports/` (920 MB model gốc Meshy) **nằm ngoài git** — file vẫn trên đĩa, Unity
+  vẫn dùng bình thường, nhưng git không cứu được nếu lỡ xoá. `HUONG-DAN.md` vẫn là nơi kể
+  **vì sao**, git chỉ giữ chỗ lùi lại.
