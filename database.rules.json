@@ -34,6 +34,11 @@
         },
         "taoLuc":    { ".validate": "newData.isNumber()" },
         "batDauLuc": { ".validate": "newData.isNumber()" },
+
+        // Nhip song cua phong. REST khong co onDisconnect, nen chu phong phai
+        // tu bao "toi con day" moi giay; phong nao lang qua lau thi sanh loc
+        // di. Chi chu phong ghi - da duoc .write o cap tren lo.
+        "capNhatLuc": { ".validate": "newData.isNumber()" },
         "thangUid":  { ".validate": "newData.isString()" },
 
         "nguoiChoi": {

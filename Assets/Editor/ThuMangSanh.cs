@@ -80,7 +80,7 @@ public static class ThuMangSanh
     static IEnumerator ChayKichBan()
     {
         float t0 = Time.realtimeSinceStartup;
-        Ghi("[ban 2] them buoc 8b: khach co nhay vao tran duoc khong");
+        Ghi("[ban 3] them buoc 8a: phong ma bi loc khoi sanh");
 
         // ---- 1. DANG NHAP ----
         FirebaseMang.Quen();
@@ -161,6 +161,40 @@ public static class ThuMangSanh
         double daChay = truocKhiDoi - sauKhiDoi;
         Ghi(string.Format("sau 3 giay thuc: dem nguoc tut {0:F2} giay (dung ra phai ~3,00)", daChay));
         if (daChay < 2.5 || daChay > 3.5) { Ghi("[LOI] dong ho dem nguoc chay sai nhip"); loi++; }
+
+        // ---- 8a. PHONG MA CO BI LOC KHOI SANH KHONG ----
+        // REST khong co onDisconnect, nen phong cua nguoi dong tab nam lai
+        // vinh vien. Do o hai phia: phong vua dap nhip phai SONG, phong lang
+        // qua nguong phai CHET - chi do mot phia thi khong phan biet duoc
+        // "loc dung" voi "loc sach tron".
+        yield return PhongMang.DapNhip();
+        yield return PhongMang.TaiLaiPhong(maPhongDaTao, (o, err) => { });
+        var phongMoi = PhongMang.PhongHienTai;
+
+        double gio = PhongMang.GioMayChu();
+        Ghi("phong vua dap nhip -> con song = " + PhongMang.PhongConSong(phongMoi, gio)
+            + " (phai la True)");
+        if (!PhongMang.PhongConSong(phongMoi, gio))
+        { Ghi("[LOI] phong dang mo ma bi coi la chet"); loi++; }
+
+        // Dich dong ho toi truoc nguong mot chut: phong y het the phai chet
+        double gioSau = gio + (PhongMang.GiayCoiLaChet + 5.0) * 1000.0;
+        Ghi("cung phong do, " + (PhongMang.GiayCoiLaChet + 5) + " giay sau -> con song = "
+            + PhongMang.PhongConSong(phongMoi, gioSau) + " (phai la False)");
+        if (PhongMang.PhongConSong(phongMoi, gioSau))
+        { Ghi("[LOI] phong lang qua nguong ma van bi coi la song"); loi++; }
+
+        // Va danh sach that: phong vua tao phai co mat, phong ma khong duoc co
+        System.Collections.Generic.List<PhongMang.Phong> dsSong = null;
+        yield return PhongMang.LayDanhSach(k => dsSong = k);
+        int soMa = 0;
+        double g2 = PhongMang.GioMayChu();
+        if (dsSong != null)
+            foreach (var q in dsSong)
+                if (!PhongMang.PhongConSong(q, g2)) soMa++;
+        Ghi("danh sach sanh: " + (dsSong == null ? 0 : dsSong.Count)
+            + " phong, trong do phong ma = " + soMa + " (phai la 0)");
+        if (soMa > 0) { Ghi("[LOI] phong ma van lot vao sanh"); loi++; }
 
         // ---- 8b. KHACH CO NHAY VAO TRAN DUOC KHONG ----
         // Loi that da gap: host vao tran, con nguoi choi kia ket lai o MainMenu.

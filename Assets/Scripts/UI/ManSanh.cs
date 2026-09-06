@@ -70,6 +70,10 @@ public class ManSanh : MonoBehaviour
         if (PhongMang.PhongHienTai == null) yield break;
         string ma = PhongMang.PhongHienTai.ma;
 
+        // Chu phong dap nhip de sanh biet phong nay con song - xem
+        // PhongMang.DapNhip. Nguoi khac khong dap: phong la cua chu phong.
+        if (PhongMang.LaHost) yield return PhongMang.DapNhip();
+
         bool con = true;
         yield return PhongMang.TaiLaiPhong(ma, (ok, loi) => con = ok);
 

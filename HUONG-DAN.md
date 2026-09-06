@@ -4894,6 +4894,43 @@ về True" — lúc đó người chơi sẽ bị ném vào màn chơi ngay khi 
 Xuất bản lại: **7,2 phút**, 0 lỗi, 161 MB (lần này nhanh hơn lần đầu 11,3 phút vì Unity còn giữ
 kết quả biên dịch cũ).
 
+### Phòng ma: REST không có `onDisconnect`
+
+Xem cơ sở dữ liệu sau buổi thử của người dùng thì thấy **4 phòng còn nằm lại**, chủ phòng đã đóng
+tab từ lâu. Chúng không tự mất, và sẽ không bao giờ mất.
+
+Lý do nằm ngay ở lựa chọn nền tảng: tầng mạng đi qua **REST**, mà **REST không có
+`onDisconnect()`** — thứ duy nhất của Realtime Database có thể tự dọn khi người ta biến mất.
+(Chính vì `onDisconnect` mà phòng được đặt ở RTDB thay vì Firestore — nhưng nó chỉ có trong SDK
+thời gian thực, không có trong REST. Một cái bẫy dễ vấp: chọn đúng cơ sở dữ liệu vì một tính
+năng, rồi lại truy cập nó bằng con đường không có tính năng đó.)
+
+Bốn phòng kia đều ở trạng thái `dangChoi` nên không hiện trong sảnh. Nhưng nếu ai thoát lúc phòng
+còn **đang chờ**, phòng chết sẽ nằm chình ình trong danh sách và người khác bấm vào rồi ngồi đợi
+một chủ phòng không bao giờ quay lại.
+
+**Cách làm:** chủ phòng ghi một mốc thời gian mỗi nhịp (`capNhatLuc`), phòng nào quá **60 giây**
+không nhúc nhích thì bị lọc khỏi sảnh. Chỉ chủ phòng dập nhịp, không phải mọi người — phòng là
+của chủ phòng, chủ phòng bỏ đi thì phòng không còn ý nghĩa.
+
+Hai chi tiết nhỏ mà thiếu là hỏng:
+- Phòng vừa tạo chưa kịp dập nhịp lần nào, nên khi không có `capNhatLuc` thì lấy `taoLuc` thay —
+  không thì phòng nào cũng chết ngay giây đầu tiên.
+- **Lọc chứ không xoá.** Luật chỉ cho chủ phòng xoá phòng của mình, mà người đang xem sảnh thì
+  không phải chủ phòng đó. Rác vẫn còn trong cơ sở dữ liệu, admin dọn được trong trang quản trị.
+
+Đo ở **hai phía** — chỉ đo một phía thì không phân biệt được "lọc đúng" với "lọc sạch trơn":
+
+```
+phong vua dap nhip -> con song = True (phai la True)
+cung phong do, 65 giay sau -> con song = False (phai la False)
+danh sach sanh: 1 phong, trong do phong ma = 0 (phai la 0)
+so loi ghi nhan = 0
+```
+
+Con số nói lên tất cả: lần chạy trước danh sách trả về **5 phòng**, lần này còn **1** — đúng cái
+phòng vừa tạo. Bốn phòng ma đã bị lọc sạch.
+
 ### Việc còn phải làm
 
 **169 MB là quá nặng**, nhất là trên điện thoại — nền tảng chính của game. Gần như toàn bộ nằm ở

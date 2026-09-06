@@ -41,6 +41,7 @@ public static class PhongMang
         public string ma, ten, hostUid, hostTen, manChoi, trangThai;
         public int soNguoi, toiDa;
         public double batDauLuc;
+        public double taoLuc, capNhatLuc;
         public readonly List<NguoiTrongPhong> nguoiChoi = new List<NguoiTrongPhong>();
 
         public bool DangCho { get { return trangThai == "cho"; } }
@@ -135,6 +136,48 @@ public static class PhongMang
         if (p == null) return false;
         if (p.trangThai == "dangChoi") return true;
         return p.trangThai == "demNguoc" && conLaiGiay <= 0;
+    }
+
+    // ================================================================
+    //  NHIP SONG CUA PHONG
+    // ================================================================
+
+    /// <summary>Khong dap nhip qua ngan nay giay thi coi nhu phong da chet.</summary>
+    public const double GiayCoiLaChet = 60.0;
+
+    /// <summary>
+    /// CHU PHONG DAP NHIP DE BAO "PHONG NAY CON SONG".
+    ///
+    /// Tang mang di qua REST, ma REST KHONG co onDisconnect() - thu duy nhat
+    /// tu don phong khi nguoi ta dong tab. Khong co gi thay the thi phong nam
+    /// lai vinh vien: sanh day nhung phong ma, nguoi choi bam vao roi ngoi doi
+    /// mot chu phong khong bao gio quay lai.
+    ///
+    /// Nen chu phong ghi mot moc thoi gian moi nhip. Phong nao qua
+    /// <see cref="GiayCoiLaChet"/> giay khong nhuc nhich thi bi loc khoi sanh.
+    ///
+    /// Chi CHU PHONG dap nhip, khong phai moi nguoi: phong la cua chu phong,
+    /// chu phong bo di thi phong khong con y nghia.
+    /// </summary>
+    public static IEnumerator DapNhip()
+    {
+        if (PhongHienTai == null || !LaHost) yield break;
+        yield return FirebaseMang.Ghi("phong/" + PhongHienTai.ma + "/capNhatLuc",
+                                      ((long)GioMayChu()).ToString(), (ok, e) => { });
+    }
+
+    /// <summary>
+    /// Phong con song khong. Ham thuan de con kiem duoc bang so.
+    ///
+    /// Phong vua tao chua kip dap nhip lan nao thi lay <c>taoLuc</c> thay the -
+    /// khong thi phong nao cung chet ngay giay dau tien.
+    /// </summary>
+    public static bool PhongConSong(Phong p, double gioBayGio)
+    {
+        if (p == null) return false;
+        double moc = p.capNhatLuc > 0 ? p.capNhatLuc : p.taoLuc;
+        if (moc <= 0) return false;      // khong biet gi ve no thi dung tin
+        return (gioBayGio - moc) / 1000.0 <= GiayCoiLaChet;
     }
 
     // ================================================================
@@ -325,8 +368,19 @@ public static class PhongMang
         var ra = new List<Phong>();
         if (!string.IsNullOrEmpty(json) && json != "null")
         {
+            double bayGio = GioMayChu();
             foreach (var cap in TachCapCapCao(json))
-                ra.Add(DocPhong(cap.Key, cap.Value));
+            {
+                var p = DocPhong(cap.Key, cap.Value);
+
+                // Phong ma: chu phong dong tab, phong nam lai vinh vien. Loc o
+                // day chu khong xoa - luat chi cho chu phong xoa phong cua minh,
+                // va nguoi dang xem sanh thi khong phai chu phong. Admin don
+                // duoc trong trang quan tri.
+                if (!PhongConSong(p, bayGio)) continue;
+
+                ra.Add(p);
+            }
         }
         xong(ra);
     }
@@ -367,6 +421,8 @@ public static class PhongMang
         p.soNguoi   = LaySo(json, "soNguoi");
         p.toiDa     = LaySo(json, "toiDa");
         p.batDauLuc = LaySoThuc(json, "batDauLuc");
+        p.taoLuc     = LaySoThuc(json, "taoLuc");
+        p.capNhatLuc = LaySoThuc(json, "capNhatLuc");
 
         string khoiNguoi = LayKhoi(json, "nguoiChoi");
         if (khoiNguoi != null)
