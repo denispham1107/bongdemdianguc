@@ -44,11 +44,10 @@ public class ManSanh : MonoBehaviour
     {
         if (!FirebaseMang.DaDangNhap) return;
 
-        // Dem nguoc xong thi vao tran
+        // Dem nguoc xong thi vao tran - hoac host da vao truoc mot nhip
+        // (xem PhongMang.DenGioVaoTran de biet vi sao phai xet ca hai)
         if (dangO == Cho.TrongPhong && !daVaoTran
-            && PhongMang.PhongHienTai != null
-            && PhongMang.PhongHienTai.trangThai == "demNguoc"
-            && PhongMang.ConLaiGiay() <= 0)
+            && PhongMang.DenGioVaoTran(PhongMang.PhongHienTai, PhongMang.ConLaiGiay()))
         {
             daVaoTran = true;
             StartCoroutine(VaoTran());

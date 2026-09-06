@@ -113,6 +113,30 @@ public static class PhongMang
         return (PhongHienTai.batDauLuc - GioMayChu()) / 1000.0;
     }
 
+    /// <summary>
+    /// DA DEN LUC NHAY VAO MAN CHOI CHUA.
+    ///
+    /// Phai xet CA HAI dieu kien, va day la cho tung hong that:
+    ///
+    /// Chi xet "dem nguoc va het gio" thoi thi khach bi ket lai o sanh. Vi khi
+    /// host vao tran, no ghi trangThai = "dangChoi". May khach hoi lai phong
+    /// moi giay mot lan, nen ngay sau do lan hoi ke tiep de len trangThai
+    /// "dangChoi" - the la dieu kien "== demNguoc" sai VINH VIEN va khach dung
+    /// mai o MainMenu. Voi do tre ghi ~300 ms, cua so de khach kip chi vai tram
+    /// mili giay: hong gan nhu moi lan.
+    ///
+    /// Nen "dangChoi" cung phai la mot ly do de vao: no co nghia la tran da bat
+    /// dau roi, ai con trong phong thi vao ngay.
+    ///
+    /// Ham thuan, khong dung bien toan cuc - de con kiem duoc bang so.
+    /// </summary>
+    public static bool DenGioVaoTran(Phong p, double conLaiGiay)
+    {
+        if (p == null) return false;
+        if (p.trangThai == "dangChoi") return true;
+        return p.trangThai == "demNguoc" && conLaiGiay <= 0;
+    }
+
     // ================================================================
     //  TAO / VAO / RA
     // ================================================================

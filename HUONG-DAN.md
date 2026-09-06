@@ -4847,6 +4847,53 @@ Mở thẳng trang trong trình duyệt, không tin vào việc "deploy xong là
   của game hiện ra**;
 - console: **0 lỗi**.
 
+### Chỉ mình chủ phòng vào được trận, người kia kẹt lại ở MainMenu
+
+Lần thử thật đầu tiên với hai máy khác nhau: tạo phòng được, thấy nhau được, bấm sẵn sàng được,
+đếm ngược chạy khớp trên cả hai màn hình — rồi hết 10 giây thì **chỉ chủ phòng vào màn chơi**,
+người kia đứng nguyên ở MainMenu.
+
+**Nguyên nhân là một cuộc đua.** Điều kiện để nhảy vào trận trước đây là:
+
+```
+trangThai == "demNguoc"  VÀ  còn lại <= 0 giây
+```
+
+Nhưng ngay khi vào trận, chủ phòng ghi `trangThai = "dangChoi"` lên máy chủ. Máy khách hỏi lại
+phòng **mỗi 1 giây**, nên lần hỏi kế tiếp đè `trangThai` thành `"dangChoi"` — và điều kiện
+`== "demNguoc"` sai **vĩnh viễn**. Người đó đứng ở sảnh mãi mãi.
+
+Cửa sổ để máy khách kịp nhận ra "hết giờ" trước khi bị đè chỉ rộng vài trăm mili giây (đo được:
+ghi mất ~300 ms, đọc ~135 ms). Nên hầu như lần nào cũng hỏng — đúng như người dùng thấy.
+
+**Cách sửa:** `"dangChoi"` cũng phải là một lý do để vào. Nó có nghĩa là trận đã bắt đầu rồi, ai
+còn trong phòng thì vào ngay:
+
+```csharp
+public static bool DenGioVaoTran(Phong p, double conLaiGiay)
+{
+    if (p == null) return false;
+    if (p.trangThai == "dangChoi") return true;     // host da vao truoc
+    return p.trangThai == "demNguoc" && conLaiGiay <= 0;
+}
+```
+
+Tách thành **hàm thuần** (không đụng biến toàn cục) chính là để kiểm được bằng số. Menu 26 giờ
+dựng đúng tình huống đó trên Firebase thật rồi hỏi lại y hệt cách máy khách hỏi:
+
+```
+con 6.7 giay, dang dem nguoc -> khach vao tran = False (phai la False)
+het gio dem nguoc -> khach vao tran = True
+host da vao tran -> trang thai doc duoc = dangChoi, khach vao tran = True
+so loi ghi nhan = 0
+```
+
+Ba dòng, không phải một. Chỉ đo dòng giữa thì không phân biệt được "sửa đúng" với "hàm luôn trả
+về True" — lúc đó người chơi sẽ bị ném vào màn chơi ngay khi vừa vào phòng.
+
+Xuất bản lại: **7,2 phút**, 0 lỗi, 161 MB (lần này nhanh hơn lần đầu 11,3 phút vì Unity còn giữ
+kết quả biên dịch cũ).
+
 ### Việc còn phải làm
 
 **169 MB là quá nặng**, nhất là trên điện thoại — nền tảng chính của game. Gần như toàn bộ nằm ở

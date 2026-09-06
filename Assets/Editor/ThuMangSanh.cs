@@ -80,6 +80,7 @@ public static class ThuMangSanh
     static IEnumerator ChayKichBan()
     {
         float t0 = Time.realtimeSinceStartup;
+        Ghi("[ban 2] them buoc 8b: khach co nhay vao tran duoc khong");
 
         // ---- 1. DANG NHAP ----
         FirebaseMang.Quen();
@@ -160,6 +161,37 @@ public static class ThuMangSanh
         double daChay = truocKhiDoi - sauKhiDoi;
         Ghi(string.Format("sau 3 giay thuc: dem nguoc tut {0:F2} giay (dung ra phai ~3,00)", daChay));
         if (daChay < 2.5 || daChay > 3.5) { Ghi("[LOI] dong ho dem nguoc chay sai nhip"); loi++; }
+
+        // ---- 8b. KHACH CO NHAY VAO TRAN DUOC KHONG ----
+        // Loi that da gap: host vao tran, con nguoi choi kia ket lai o MainMenu.
+        // Do khach chi vao khi trangThai == "demNguoc", ma host vua vao la ghi
+        // de thanh "dangChoi". Doan nay dung DUNG tinh huong do tren Firebase
+        // that roi hoi lai y het cach may khach hoi.
+        var truoc = PhongMang.PhongHienTai;
+        double conLaiBayGio = PhongMang.ConLaiGiay();
+        Ghi(string.Format("con {0:F1} giay, dang dem nguoc -> khach vao tran = {1} (phai la False)",
+                          conLaiBayGio, PhongMang.DenGioVaoTran(truoc, conLaiBayGio)));
+        if (PhongMang.DenGioVaoTran(truoc, conLaiBayGio))
+        { Ghi("[LOI] chua het gio ma da doi vao tran"); loi++; }
+
+        // Het gio ma trang thai van la "demNguoc" thi phai vao
+        if (!PhongMang.DenGioVaoTran(truoc, -0.01))
+        { Ghi("[LOI] het gio dem nguoc ma khong vao tran"); loi++; }
+        else Ghi("het gio dem nguoc -> khach vao tran = True");
+
+        // Host vao truoc mot nhip: ghi that len Firebase roi doc lai
+        yield return PhongMang.DanhDauDangChoi(null);
+        yield return PhongMang.TaiLaiPhong(maPhongDaTao, (o, err) => { });
+        var sau = PhongMang.PhongHienTai;
+
+        Ghi("host da vao tran -> trang thai doc duoc = " + sau.trangThai
+            + ", khach vao tran = " + PhongMang.DenGioVaoTran(sau, 999));
+
+        if (sau.trangThai != "dangChoi")
+        { Ghi("[LOI] host vao tran ma trang thai khong doi"); loi++; }
+
+        if (!PhongMang.DenGioVaoTran(sau, 999))
+        { Ghi("[LOI] host da vao ma khach van bi ket lai o sanh"); loi++; }
 
         // ---- 9. NGUOI THU HAI VAO PHONG ----
         // Dang nhap tai khoan A de bat chuoc nguoi choi khac. Phai luu lai
