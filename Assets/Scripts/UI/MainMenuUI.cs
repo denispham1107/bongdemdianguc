@@ -15,6 +15,14 @@ public class MainMenuUI : MonoBehaviour
     public Transform showcase;          // phu thuy dung xoay tron o man hinh chinh
     public float spinSpeed = 18f;
 
+    [Header("Choi nhieu nguoi")]
+    [Tooltip("Bat len thi phai dang nhap moi vao duoc menu; tat thi choi don nhu cu")]
+    public bool batChoiMang = true;
+
+    ManDangNhap manDangNhap;
+    ManSanh manSanh;
+    bool dangOSanh;
+
     GUIStyle title, button, small;
     Texture2D panel, line;
 
@@ -23,12 +31,27 @@ public class MainMenuUI : MonoBehaviour
         panel = Solid(new Color(0f, 0f, 0f, 0.55f));
         line = Solid(Color.white);
         Cursor.visible = true;
+
+        // Ve toi day nghia la da ra khoi tran - xoa dau vet van truoc, khong
+        // thi choi don lan sau van tuong minh dang trong mot phong nao do.
+        TranHienTai.Xoa();
+
+        if (!batChoiMang) return;
+
+        manDangNhap = gameObject.AddComponent<ManDangNhap>();
+        manSanh = gameObject.AddComponent<ManSanh>();
+        manSanh.enabled = false;
+        manDangNhap.daVao = () => { manSanh.enabled = true; dangOSanh = true; };
     }
 
     void Update()
     {
         if (showcase != null)
             showcase.Rotate(Vector3.up, spinSpeed * Time.deltaTime, Space.World);
+
+        // Dang go email hay dang o sanh thi khong cuop phim: bam Enter de gui
+        // bieu mau ma lai nhay thang vao man choi thi rat kho chiu.
+        if (batChoiMang && (!FirebaseMang.DaDangNhap || dangOSanh)) return;
 
         if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
             Play(act1Scene);
@@ -60,6 +83,10 @@ public class MainMenuUI : MonoBehaviour
 
     void OnGUI()
     {
+        // ManDangNhap va ManSanh tu ve lay phan cua chung. Menu cu chi hien khi
+        // choi don, hoac khi nguoi choi bam "choi mot minh" tu sanh.
+        if (batChoiMang && (!FirebaseMang.DaDangNhap || dangOSanh)) return;
+
         float s = Screen.height / 1080f;
         EnsureStyles(s);
 

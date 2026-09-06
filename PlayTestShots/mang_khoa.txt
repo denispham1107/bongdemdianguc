@@ -1,0 +1,6 @@
+[ban 1]
+A (dang bi khoa) - dang nhap Auth: OK
+A - tai ho so: bi chan - Tai khoan cua ban da bi khoa. Hay lien he quan tri vien.
+A - phien con giu lai khong: da bo
+B (khong khoa) - vao game: OK, ten = ChienBinhB
+so loi ghi nhan = 0

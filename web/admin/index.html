@@ -14,7 +14,7 @@
     <span class="ten-toi">Trang quản trị</span>
     <span class="chi-tiet" id="oAiDangXem"></span>
     <span class="day" style="flex:1"></span>
-    <a class="nut nut-nho" href="../sanh.html">Về sảnh</a>
+    <button id="nutDangXuat" class="nut nut-nho">Đăng xuất</button>
   </div>
 
   <div id="manTuChoi" hidden>
@@ -76,6 +76,18 @@ const MOI_TRANG = 50;
 const { nguoiDung } = await batBuocDangNhap("../index.html");
 $("oAiDangXem").textContent = nguoiDung.email;
 
+$("nutDangXuat").onclick = async () => {
+  const { dangXuat } = await import("../js/taikhoan.js");
+  await dangXuat();
+  location.href = "../index.html";
+};
+
+// Khai bao TRUOC khi goi taiTrangDau. Dat sau thi "let" roi vao vung chet
+// tam thoi va trinh duyet nem "Cannot access 'mocCuoi' before initialization"
+// - bang hien ra nhung rong khong, khong bao gi cho nguoi dung.
+let mocCuoi = null;
+let tongDaTai = 0;
+
 if (!(await laAdmin(nguoiDung.uid))) {
   $("manTuChoi").hidden = false;
 } else {
@@ -83,9 +95,6 @@ if (!(await laAdmin(nguoiDung.uid))) {
   await taiTrangDau();
   theoDoiPhongDangMo();
 }
-
-let mocCuoi = null;
-let tongDaTai = 0;
 
 function ngayGon(ts) {
   if (!ts || !ts.toDate) return "—";

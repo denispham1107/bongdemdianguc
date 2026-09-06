@@ -25,7 +25,13 @@
         "manChoi":   { ".validate": "newData.val() === 'Act1' || newData.val() === 'Act2'" },
         "trangThai": { ".validate": "newData.val().matches(/^(cho|demNguoc|dangChoi|xong)$/)" },
         "toiDa":     { ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 4" },
-        "soNguoi":   { ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 4" },
+        "soNguoi": {
+          // Nguoi VAO phong cung phai tang so nay, ma ho khong phai host - nen
+          // rieng o nay ai dang nhap cung ghi duoc. Bu lai, chi duoc nhich MOT
+          // don vi mot lan: khong ai dat bua thanh 0 de chen vao phong day.
+          ".write": "auth != null",
+          ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 4 && ( !data.exists() || root.child('phong').child($maPhong).child('hostUid').val() === auth.uid || newData.val() === data.val() + 1 || newData.val() === data.val() - 1 )"
+        },
         "taoLuc":    { ".validate": "newData.isNumber()" },
         "batDauLuc": { ".validate": "newData.isNumber()" },
         "thangUid":  { ".validate": "newData.isString()" },
@@ -56,6 +62,11 @@
       "$maPhong": {
         // Chi nguoi DANG TRONG phong moi doc duoc trang thai tran
         ".read": "auth != null && root.child('phong').child($maPhong).child('nguoiChoi').child(auth.uid).exists()",
+
+        // Host ghi duoc ca nhanh nay. Thieu dong nay thi lenh onDisconnect
+        // "khi host mat ket noi thi xoa tran" bi tu choi, va vi no bi tu choi
+        // nen CA VIEC TAO PHONG that bai - tuy khong lien quan gi den phong.
+        ".write": "auth != null && root.child('phong').child($maPhong).child('hostUid').val() === auth.uid",
 
         "nguoi": {
           "$uid": {

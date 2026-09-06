@@ -38,7 +38,10 @@ Assets/Scripts/
    Vfx/            VfxFactory (3 500 dong, partial) + cac component hieu ung
    Art/            ProcMesh, WorldFactory, TextureFactory, MaterialLibrary (Mats)
    Cam/            CameraRig
-   UI/             GameHUD (OnGUI), CamUng, ChiBaoNgam, MayNgam
+   UI/             GameHUD (OnGUI), CamUng, ChiBaoNgam, MayNgam,
+                   ManDangNhap, ManSanh (dang nhap + sanh phong, deu OnGUI)
+   Mang/           FirebaseMang (cau REST), HoSoMang, PhongMang, TranHienTai
+web/               chi danh cho ADMIN: dang nhap + trang quan ly tai khoan
 Assets/Editor/     cong cu menu "Diablo 2.5D" + cac kich ban chay thu
 Assets/Shaders/    17 shader viet tay (S_*.shader)
 Assets/Resources/  thu nap luc chay (DiemLua/ - diem moi lua cua cay)
@@ -70,10 +73,10 @@ Blender MCP **không render được** (ảnh ra rỗng) — phải chạy `blen
 > `EditorSceneManager.OpenScene("Assets/Scenes/Act2.unity", Single)` trả lại ngay — không thì
 > người dùng quay lại Unity thấy màn của mình biến mất.
 
-**Menu `Diablo 2.5D`** trong Unity (22 mục): 1 nướng asset + dựng màn, 3 tự kiểm tra,
+**Menu `Diablo 2.5D`** trong Unity (24 mục): 1 nướng asset + dựng màn, 3 tự kiểm tra,
 4 chạy thử & chụp hình, 14 chống ô vuông đen, 15–17 ảnh vỏ cây / đá mộ / sứt mẻ bia,
 18–18d chạy thử cây cháy, 19 hồi sinh sau lốc, 20 nướng điểm mồi lửa, 21 nút khoá góc nhìn,
-22 thanh kỹ năng bản PC.
+22 thanh kỹ năng bản PC, **26 chạy thử mạng (sảnh phòng), 27 chạy thử khoá tài khoản**.
 Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
 
 ## Quy tắc làm việc (rút ra từ những lần đã sai)
@@ -102,6 +105,13 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
   Thiên thạch **đốt cháy cả cái cây** (lửa lan theo bề mặt thật, cây rụi rồi mọc lại sau 30 s) ·
   Lốc xoáy trả cảnh vật về sau **30 s** thay vì 60 s ·
   **nút con mắt** khoá góc nhìn trên bản cảm ứng.
+- **Nhiều người chơi — giai đoạn 1 xong** (mục "Nhiều người chơi, giai đoạn 1" trong
+  `HUONG-DAN.md`). Đăng ký, đăng nhập, tạo/vào phòng, sẵn sàng, đếm ngược 10 giây — **tất cả
+  nằm trong game Unity**, vẽ bằng OnGUI, gọi Firebase qua **REST** (Firebase Unity SDK không
+  chạy trên WebGL). Trang web **chỉ để admin quản lý tài khoản**.
+  Dự án Firebase `diablo25d-game` (asia-southeast1), trang admin
+  https://diablo25d-game.web.app. Menu 26 và 27 chạy thật, **0 lỗi**.
+  Giai đoạn 2 (chưa làm): thấy nhau trong trận, đánh nhau, người sống cuối cùng thắng.
 - Dự án **đã là git repo** (nhánh `main`, ảnh chụp đầu tiên `0ef3e18`, 05/09/2026, 1175 file).
   `Assets/MeshyImports/` (920 MB model gốc Meshy) **nằm ngoài git** — file vẫn trên đĩa, Unity
   vẫn dùng bình thường, nhưng git không cứu được nếu lỡ xoá. `HUONG-DAN.md` vẫn là nơi kể

@@ -1,0 +1,14 @@
+dang nhap B: OK (842 ms)
+tai ho so: OK, ten = ChienBinhB, 0 thang / 0 tran (841 ms)
+do dong ho may chu: 1600 ms
+tao phong: OK (291 ms)
+  ma phong = -P0pIVxgGbKIwFFswgBj, man = Act2, host = ChienBinhB, la host = True, so nguoi = 1
+doc danh sach: 1 phong, co phong vua tao = True (135 ms)
+doi man sang Act1 -> doc lai duoc: Act1
+bat dau dem nguoc: trang thai = demNguoc, con lai 9.55 giay (461 ms)
+sau 3 giay thuc: dem nguoc tut 3.05 giay (dung ra phai ~3,00)
+dang nhap A: OK, ten = thunghiem.a.diab (1243 ms)
+vao phong dang dem nguoc: bi tu choi - Phong nay da bat dau choi roi.
+don phong chay thu: sach
+tong thoi gian: 10.1 giay
+so loi ghi nhan = 0

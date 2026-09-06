@@ -4517,6 +4517,181 @@ git checkout -- <file>  # tra rieng mot file ve ban da commit
 git log --oneline       # danh sach cac lan chup
 ```
 
+## Nhiều người chơi, giai đoạn 1: tài khoản, sảnh phòng, trang quản trị
+
+### Việc muốn làm
+
+Nhiều người tạo tài khoản, đăng nhập, một người lập phòng (tối đa 4) và chọn Act1 hoặc Act2,
+người khác vào phòng bấm sẵn sàng, chủ phòng bấm bắt đầu, cả phòng cùng đếm ngược 10 giây rồi
+cùng nhảy vào màn. Kèm một chỗ cho admin quản lý toàn bộ tài khoản người chơi.
+
+Giai đoạn 1 chỉ làm **phần nền**: mỗi người vẫn chơi bản riêng của mình sau khi đếm ngược xong —
+chưa nhìn thấy nhau trong trận. Phần nhìn thấy nhau là giai đoạn 2.
+
+### Lần đi sai đường lớn nhất: làm sảnh phòng trên trang web
+
+Tôi hiểu sai và đã làm xong một trang web đầy đủ: `index.html` đăng nhập, `sanh.html` danh sách
+phòng, `choi.html` nhúng game, `js/phong.js` lo phòng và đếm ngược. Nó **chạy được** — hai phiên
+Firebase độc lập trong cùng một tab đếm ngược khớp nhau **lệch 0 giây** dù đồng hồ hai bên lệch
+545 ms.
+
+Nhưng người dùng muốn khác: đăng ký, đăng nhập, tạo phòng, vào phòng **đều ở trong game Unity**,
+màn hình MainMenu có sẵn rồi. Trang web **chỉ còn một việc**: cho admin quản lý tài khoản.
+
+Kết quả: xoá `sanh.html`, `choi.html`, `js/phong.js`; `index.html` viết lại thành trang đăng nhập
+**cho admin**; toàn bộ luồng người chơi chuyển sang OnGUI trong Unity.
+
+Bài học: 745 dòng JavaScript chạy đúng vẫn là 745 dòng bỏ đi, nếu nó nằm sai chỗ.
+
+### Vì sao gọi Firebase bằng REST chứ không dùng Firebase Unity SDK
+
+**Firebase Unity SDK không hỗ trợ WebGL.** Mà WebGL là nơi game sẽ chạy. Nên toàn bộ đi qua
+**REST API + `UnityWebRequest`** (`Assets/Scripts/Mang/FirebaseMang.cs`): chạy được trong Editor,
+bản PC lẫn bản WebGL, không thêm một thư viện nào vào bản build.
+
+Cái mất: REST **không có luồng đẩy (streaming)**, nên sảnh phòng phải **hỏi lại theo nhịp** —
+2,0 giây một lần khi xem danh sách, 1,0 giây một lần khi đang ở trong phòng.
+
+Cũng vì lý do "không kéo thư viện vào bản build" mà JSON của Firestore được **tự tách bằng tay**
+(`stringValue`, `integerValue`, `booleanValue`) thay vì nạp một thư viện JSON: `JsonUtility` của
+Unity không đọc nổi kiểu lồng nhau đó, mà khoá phòng lại do máy chủ tự sinh (`-P0pIVxg...`) nên
+cũng không khai trước thành trường được.
+
+### Vì sao phòng ở Realtime Database còn hồ sơ ở Firestore
+
+**Realtime Database có `onDisconnect()`, Firestore không có.** Người chơi tắt trình duyệt giữa
+chừng thì phòng phải tự dọn — chỉ RTDB làm được. Ngược lại, trang quản trị cần **sắp xếp, lọc,
+phân trang** hàng trăm tài khoản — đó là việc của Firestore.
+
+Nên: `phong/`, `tran/` ở RTDB; `nguoichoi/`, `quantri/` ở Firestore. Cả hai đặt tại
+`asia-southeast1`.
+
+### Bốn lần vấp ở luật bảo mật
+
+**1. `numChildren()` không tồn tại trong luật RTDB.** Chỉ Firestore mới có `size()`. Muốn chặn
+phòng quá 4 người thì phải tự giữ một trường `soNguoi` và cộng trừ bằng giao dịch.
+
+**2. Người vào phòng không tăng được `soNguoi`.** Luật ban đầu chỉ cho chủ phòng ghi vào node
+phòng — thành ra người thứ hai vào phòng không sửa được số đếm. Phải mở riêng một `.write` cho
+đúng trường `soNguoi`, và chỉ cho phép đổi **±1** (chủ phòng thì được đặt tuỳ ý).
+
+**3. Tạo phòng bị từ chối mà không rõ vì sao.** Luật có `.write` cho *các con* của `tran/$maPhong`
+nhưng **không có cho chính node đó**. Lúc tạo phòng, lệnh `onDisconnect().remove()` đặt lên node
+`tran/$maPhong` bị từ chối, và Firebase đánh trượt **cả thao tác tạo phòng**. Thêm `.write` cho
+chủ phòng ở node đó là xong.
+
+**4. Không thể tự cấp quyền admin từ trình duyệt.** `quantri` để `allow write: if false` — đúng
+như thiết kế. Cấp quyền phải bằng token chủ dự án (`gcloud auth print-access-token`) hoặc bằng tay
+trong Firebase Console.
+
+### Hai lần vấp khác
+
+**Đua nhau tạo hồ sơ.** Lúc còn dùng web: luồng đăng ký và trang sảnh **cùng tạo** hồ sơ
+`nguoichoi/{uid}`. Ai thua thì lệnh `setDoc` biến thành lệnh sửa và bị luật từ chối — trang treo
+ở dấu "…" không báo gì. Sửa: bắt lỗi rồi đọc lại hồ sơ mà bên kia vừa tạo.
+
+**Tên hiển thị biến mất** — đăng ký tên `ChienBinhA` mà vào sảnh lại thành `thunghiem.a.diab`.
+`onAuthStateChanged` bắn ngay khi tài khoản vừa lập, chuyển trang **trước khi** tên kịp ghi. Sửa
+bằng một cờ `dangTuXuLy` để lần chuyển trang tự động ngồi im khi luồng đăng ký đang chạy dở.
+
+### Đếm ngược 10 giây khớp nhau dù đồng hồ hai máy lệch nhau
+
+Không ai đếm bằng đồng hồ của mình. Chủ phòng ghi lên máy chủ **một mốc thời gian trong tương lai**;
+mỗi máy tự đo **độ lệch đồng hồ của mình so với máy chủ** rồi trừ đi. Đo được:
+
+- độ lệch đồng hồ giữa hai phiên: **545 ms** — mà đếm ngược hiện ra **lệch 0 giây**;
+- đo lại trong Unity: sau **3 giây thật**, đồng hồ đếm ngược tụt **3,05 giây**.
+
+### Kết quả đo — menu 26, chạy thật trên Firebase
+
+Không giả lập: đúng tài khoản, đúng cơ sở dữ liệu mà người chơi sẽ dùng.
+
+```
+dang nhap B: OK (842 ms)
+tai ho so: OK, ten = ChienBinhB, 0 thang / 0 tran (841 ms)
+do dong ho may chu: 1600 ms
+tao phong: OK (291 ms)
+  ma phong = -P0pIVxgGbKIwFFswgBj, man = Act2, host = ChienBinhB, la host = True, so nguoi = 1
+doc danh sach: 1 phong, co phong vua tao = True (135 ms)
+doi man sang Act1 -> doc lai duoc: Act1
+bat dau dem nguoc: trang thai = demNguoc, con lai 9.55 giay (461 ms)
+sau 3 giay thuc: dem nguoc tut 3.05 giay (dung ra phai ~3,00)
+dang nhap A: OK, ten = thunghiem.a.diab (1243 ms)
+vao phong dang dem nguoc: bi tu choi - Phong nay da bat dau choi roi.
+don phong chay thu: sach
+tong thoi gian: 10.1 giay
+so loi ghi nhan = 0
+```
+
+### Trang quản trị — và cái bảng rỗng không báo gì
+
+Trang `admin/` liệt kê tài khoản (tên, email, ngày tạo, số trận, số thắng, số quái, số người đã
+hạ), tìm theo email hoặc tên, **khoá / mở khoá**, xem phòng đang mở và giải tán phòng.
+
+Lần đầu mở thì bảng **rỗng hoàn toàn**, ô đếm cũng trống, không một chữ báo lỗi. Nguyên nhân nằm
+ở JavaScript: `await taiTrangDau()` được gọi **trước** dòng khai báo `let mocCuoi = null;`. Biến
+khai bằng `let` rơi vào "vùng chết tạm thời", trình duyệt ném `ReferenceError: Cannot access
+mocCuoi before initialization` — nhưng vì lỗi xảy ra trong một module nạp bất đồng bộ, **trang vẫn
+hiện ra bình thường**, chỉ là không có dữ liệu. Chuyển hai dòng khai báo lên trước là xong.
+
+Đây là kiểu lỗi khó thấy nhất: giao diện trông đúng, chỉ có nội dung là không có. Nếu chỉ nhìn ảnh
+chụp mà không mở console thì sẽ tưởng "chưa có tài khoản nào".
+
+Còn một cái bẫy nữa: sau khi sửa và `firebase deploy`, mở lại trang **vẫn rỗng**. Máy chủ đã có bản
+mới (kiểm bằng `curl` thấy đúng thứ tự dòng) nhưng trình duyệt còn giữ bản cũ trong bộ nhớ đệm.
+Thêm `?v=2` vào địa chỉ mới thấy kết quả thật.
+
+Sau khi sửa, đo được: bảng hiện **2 tài khoản**; gõ `ChienBinhB` rồi bấm Tìm còn **1**.
+
+### Kết quả đo — menu 27: khoá tài khoản trên web thì trong game có chặn không
+
+Cái nút "Khoá" chỉ có nghĩa nếu game thật sự không cho vào. Khoá nằm ở Firestore
+(`nguoichoi/{uid}.biKhoa`) chứ **không** ở Firebase Auth, nên bước đăng nhập vẫn qua — phải đến
+bước tải hồ sơ mới bị chặn. Phép thử kiểm đúng thứ tự đó, và thử **cả hai** tài khoản: nếu tài
+khoản không khoá cũng bị chặn thì phép thử đang báo sai chứ không phải khoá đang chạy đúng.
+
+```
+A (dang bi khoa) - dang nhap Auth: OK
+A - tai ho so: bi chan - Tai khoan cua ban da bi khoa. Hay lien he quan tri vien.
+A - phien con giu lai khong: da bo
+B (khong khoa) - vao game: OK, ten = ChienBinhB
+so loi ghi nhan = 0
+```
+
+Đọc thẳng Firestore bằng token chủ dự án (không qua trang web) để chắc nút Khoá ghi thật:
+`biKhoa` của A đổi `false → true`, rồi `true → false` sau khi bấm Mở khoá.
+
+### Hai cái bẫy về công cụ, không liên quan Firebase
+
+**`ChayThuMang` là MonoBehaviour nên không được nằm trong `Assets/Editor`.** Đặt nhầm vào đó thì
+`AddComponent` chỉ ghi một dòng Log ("it is an editor script") rồi trả về `null`, và lỗi thật hiện
+ra ở chỗ khác: `NullReferenceException` tại dòng gán `batDau`. Chuyển sang `Assets/Scripts/Mang/`
+là hết.
+
+**`AssetDatabase.Refresh()` gọi qua MCP không biên dịch lại.** Cửa sổ Unity không được focus thì
+`IsCompiling` trả về False ngay lập tức, Unity vẫn chạy assembly cũ — sửa code ba lần liên tiếp mà
+số đo không đổi một chữ. Phải dùng `ImportAsset(path, ImportAssetOptions.ForceUpdate)` rồi đợi
+`IsCompiling` lên True rồi xuống False. Từ đó mọi báo cáo chạy thử đều in một dòng `[ban N]` để
+biết ngay mình đang đọc kết quả của bản nào.
+
+### Những file mới
+
+| File | Việc |
+|---|---|
+| `Assets/Scripts/Mang/FirebaseMang.cs` | Cầu REST: đăng ký, đăng nhập, tự đăng nhập lại, giữ hạn token, đọc/ghi/xoá RTDB, dịch mã lỗi sang tiếng Việt |
+| `Assets/Scripts/Mang/HoSoMang.cs` | Hồ sơ người chơi trên Firestore; chặn tài khoản bị khoá; cộng thành tích |
+| `Assets/Scripts/Mang/PhongMang.cs` | Tạo/vào/rời phòng, vào phòng nhanh, sẵn sàng, đổi màn, đếm ngược, đuổi người |
+| `Assets/Scripts/Mang/TranHienTai.cs` | Ba biến static để màn chơi biết mình đang ở phòng nào |
+| `Assets/Scripts/Mang/ChayThuMang.cs` | Một MonoBehaviour bé xíu để chạy coroutine trong Play mode |
+| `Assets/Scripts/UI/ManDangNhap.cs` | Màn đăng nhập / đăng ký vẽ bằng OnGUI ngay trong game |
+| `Assets/Scripts/UI/ManSanh.cs` | Sảnh phòng, danh sách phòng, đếm ngược toàn màn hình |
+| `web/index.html`, `web/admin/index.html` | Trang **chỉ dành cho admin** |
+| `database.rules.json`, `firestore.rules` | Luật bảo mật, đã triển khai |
+
+Cờ `batChoiMang` trong `MainMenuUI` để tắt toàn bộ phần mạng nếu muốn quay lại kiểu chơi một mình.
+
+---
+
 ## Phần 4 — Menu công cụ "Diablo 2.5D"
 
 | Mục | Tác dụng |
@@ -4546,6 +4721,8 @@ git log --oneline       # danh sach cac lan chup
 | **20. Nuong diem moi lua cho cay** | Rải 340 điểm mồi lửa trên mỗi loại lưới cây và lưu vào `Resources/DiemLua`. Chạy lại nếu đổi mẫu cây Act2. |
 | **21. Chay thu NUT KHOA GOC NHIN** | Bấm nút con mắt rồi thử đẩy camera bằng mọi đường, đo xem góc nhìn có nhúc nhích không. |
 | **22. Chay thu THANH KY NANG (PC)** | Chụp thanh kỹ năng ở chế độ PC rồi đếm pixel chữ dưới từng ô — dùng để kiểm rằng dưới ô chỉ còn phím tắt. Trả lại scene đang mở khi xong. |
+| **26. Chay thu MANG - dang nhap va phong cho** | Chạy thật trên Firebase: đăng nhập, tạo phòng, đọc danh sách, đổi màn, đếm ngược, người thứ hai bị từ chối vào phòng đang đếm. Luôn dọn phòng đã tạo. Kết quả ra `PlayTestShots/mang_sanh.txt`. |
+| **27. Chay thu MANG - khoa tai khoan** | Kiểm rằng tài khoản bị admin khoá trên web thì không vào được game, còn tài khoản bình thường vẫn vào được. Kết quả ra `PlayTestShots/mang_khoa.txt`. |
 
 > ⚠️ Mục **1** sẽ **xóa và tạo lại** các thư mục Textures / Materials / Models / Prefabs.
 > Nếu bạn tự sửa tay trong đó thì hãy sao lưu trước.

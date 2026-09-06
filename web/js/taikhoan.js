@@ -66,8 +66,20 @@ export async function taoHoSoNeuThieu(nguoiDung, ten) {
     biKhoa: false,
     ghiChuAdmin: ""
   };
-  await setDoc(o, hoSo);
-  return hoSo;
+  // Co the co HAI luong cung tao ho so mot luc: luong dang ky vua chay xong
+  // thi trang sanh mo len va cung goi ham nay. Ai den sau se thay document da
+  // ton tai, luc do setDoc thanh mot lenh SUA - ma luat chi cho sua vai truong,
+  // nen no bi tu choi va ca trang dung im (ten nguoi choi ke mai o dau "...").
+  //
+  // Nen thua cuoc dua cung khong sao: doc lai cai nguoi kia vua ghi la xong.
+  try {
+    await setDoc(o, hoSo);
+    return hoSo;
+  } catch (loi) {
+    const lanHai = await getDoc(o);
+    if (lanHai.exists()) return lanHai.data();
+    throw loi;
+  }
 }
 
 export async function layHoSo(uid) {
@@ -97,7 +109,16 @@ export function batBuocDangNhap(duongDanVe = "index.html") {
     theoDoiDangNhap(async (nguoiDung) => {
       if (!nguoiDung) { location.href = duongDanVe; return; }
 
-      const hoSo = await taoHoSoNeuThieu(nguoiDung, null);
+      let hoSo = null;
+      try {
+        hoSo = await taoHoSoNeuThieu(nguoiDung, null);
+      } catch (loi) {
+        // Mat ho so thi van cho vao, chi la khong co ten dep - tot hon la
+        // de nguoi choi nhin mot trang dung im khong biet chuyen gi
+        console.warn("Khong doc duoc ho so:", loi);
+        hoSo = { ten: (nguoiDung.email || "NguoiChoi").split("@")[0].slice(0, 16),
+                 soTranChoi: 0, soTranThang: 0, biKhoa: false };
+      }
       if (hoSo && hoSo.biKhoa === true) {
         await dangXuat();
         location.href = duongDanVe + "?khoa=1";
