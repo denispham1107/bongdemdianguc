@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Diablo 2.5D — Sảnh chờ</title>
+<link rel="stylesheet" href="css/chung.css">
+</head>
+<body class="nen-toi">
+
+<div class="khung-rong">
+
+  <div class="thanh-dau">
+    <span class="ten-toi" id="oTenToi">…</span>
+    <span class="chi-tiet" id="oThanhTich"></span>
+    <span class="day"></span>
+    <a id="lienKetQuanTri" class="nut nut-nho" href="admin/" hidden>Quản trị</a>
+    <button id="nutDangXuat" class="nut nut-nho">Đăng xuất</button>
+  </div>
+
+  <!-- ================= NGOAI SANH ================= -->
+  <div id="manSanh">
+    <div class="the" style="margin-bottom:18px">
+      <h2 style="margin:0 0 14px;font-size:17px">Tạo phòng mới</h2>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end">
+        <label class="nhan" style="flex:2;min-width:190px;margin:0">Tên phòng
+          <input id="oTenPhong" type="text" maxlength="24" placeholder="Phòng của tôi">
+        </label>
+        <label class="nhan" style="flex:1;min-width:150px;margin:0">Màn chơi
+          <select id="oManChoi">
+            <option value="Act1">Act 1 — Đấu trường</option>
+            <option value="Act2">Act 2 — Nghĩa địa</option>
+          </select>
+        </label>
+        <button id="nutTaoPhong" class="nut nut-chinh" style="width:auto;flex:0 0 auto">TẠO PHÒNG</button>
+      </div>
+    </div>
+
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;flex-wrap:wrap">
+      <h2 style="margin:0;font-size:17px">Phòng đang chờ</h2>
+      <span class="day" style="flex:1"></span>
+      <button id="nutVaoNhanh" class="nut nut-nho">⚡ Vào phòng nhanh</button>
+    </div>
+
+    <div id="oDanhSach"></div>
+  </div>
+
+  <!-- ================= TRONG PHONG ================= -->
+  <div id="manTrongPhong" hidden>
+    <div class="the">
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px">
+        <h2 id="oTenPhongHienTai" style="margin:0;font-size:18px">…</h2>
+        <span id="oNhanMan" class="the-man"></span>
+        <span class="day" style="flex:1"></span>
+        <button id="nutRoiPhong" class="nut nut-nho">Rời phòng</button>
+      </div>
+
+      <div id="oChonMan" hidden style="margin-bottom:16px">
+        <label class="nhan" style="margin:0">Đổi màn chơi (chỉ chủ phòng)
+          <select id="oManChoiTrongPhong">
+            <option value="Act1">Act 1 — Đấu trường</option>
+            <option value="Act2">Act 2 — Nghĩa địa</option>
+          </select>
+        </label>
+      </div>
+
+      <div id="oDanhSachNguoi"></div>
+
+      <div style="display:flex;gap:10px;margin-top:16px;flex-wrap:wrap">
+        <button id="nutSanSang" class="nut" style="flex:1;min-width:150px">SẴN SÀNG</button>
+        <button id="nutBatDau" class="nut nut-chinh" style="flex:1;min-width:150px" hidden>BẮT ĐẦU</button>
+      </div>
+      <p id="oBaoPhong" class="bao"></p>
+    </div>
+  </div>
+</div>
+
+<!-- ================= DEM NGUOC ================= -->
+<div id="manDemNguoc" class="man-dem-nguoc" hidden>
+  <div class="phu-de" style="margin:0">Trận đấu bắt đầu sau</div>
+  <div id="oSoDem" class="so-dem">10</div>
+  <div class="phu-de" id="oManSapVao" style="margin:0"></div>
+</div>
+
+<script type="module">
+import { batBuocDangNhap, dangXuat, laAdmin } from "./js/taikhoan.js";
+import {
+  batDauDoDongHo, gioMayChu, taoPhong, vaoPhong, vaoPhongNhanh, roiPhong,
+  datSanSang, doiManChoi, batDauDemNguoc, danhDauDangChoi, duoiNguoi,
+  theoDoiDanhSachPhong, theoDoiPhong
+} from "./js/phong.js";
+import { SO_NGUOI_TOI_DA } from "./js/caihinh.js";
+
+const $ = (id) => document.getElementById(id);
+
+let nguoiDung = null, hoSo = null;
+let maPhongHienTai = null;
+let thoiTheoDoiPhong = null, thoiTheoDoiDanhSach = null;
+let nhipDemNguoc = null;
+let daChuyenSangGame = false;
+
+batDauDoDongHo();
+
+const phien = await batBuocDangNhap("index.html");
+nguoiDung = phien.nguoiDung;
+hoSo = phien.hoSo;
+
+$("oTenToi").textContent = hoSo.ten;
+$("oThanhTich").textContent =
+  `${hoSo.soTranThang || 0} thắng / ${hoSo.soTranChoi || 0} trận`;
+
+if (await laAdmin(nguoiDung.uid)) $("lienKetQuanTri").hidden = false;
+
+$("nutDangXuat").onclick = async () => {
+  if (maPhongHienTai) await roiPhong(maPhongHienTai, nguoiDung);
+  await dangXuat();
+  location.href = "index.html";
+};
+
+// ================= NGOAI SANH =================
+
+thoiTheoDoiDanhSach = theoDoiDanhSachPhong((ds) => {
+  const o = $("oDanhSach");
+  const dangCho = ds.filter(p => p.trangThai === "cho");
+
+  if (dangCho.length === 0) {
+    o.innerHTML = `<div class="trong-rong">Chưa có phòng nào đang chờ.<br>
+                   Hãy tạo một phòng, hoặc bấm “Vào phòng nhanh”.</div>`;
+    return;
+  }
+
+  o.innerHTML = "";
+  for (const p of dangCho) {
+    const day = (p.soNguoi || 0) >= (p.toiDa || SO_NGUOI_TOI_DA);
+    const hang = document.createElement("div");
+    hang.className = "hang-phong";
+    hang.innerHTML = `
+      <span class="ten-phong"></span>
+      <span class="the-man">${p.manChoi === "Act1" ? "Act 1 — Đấu trường" : "Act 2 — Nghĩa địa"}</span>
+      <span class="chi-tiet">chủ phòng: <b class="ten-host"></b></span>
+      <span class="day" style="flex:1"></span>
+      <span class="chi-tiet">${p.soNguoi || 0}/${p.toiDa || SO_NGUOI_TOI_DA}</span>
+      <button class="nut nut-nho" ${day ? "disabled" : ""}>${day ? "Đã đầy" : "Vào phòng"}</button>`;
+    // Dat bang textContent chu khong nhet thang vao HTML - ten phong do
+    // nguoi choi tu go, nhet thang la mo duong cho chen ma
+    hang.querySelector(".ten-phong").textContent = p.ten || "(không tên)";
+    hang.querySelector(".ten-host").textContent = p.hostTen || "?";
+    hang.querySelector("button").onclick = () => thuVaoPhong(p.ma);
+    o.appendChild(hang);
+  }
+});
+
+$("nutTaoPhong").onclick = async () => {
+  $("nutTaoPhong").disabled = true;
+  try {
+    const ma = await taoPhong(nguoiDung, hoSo.ten,
+                              $("oTenPhong").value.trim(), $("oManChoi").value);
+    moPhong(ma);
+  } catch (e) {
+    alert("Không tạo được phòng: " + e.message);
+  }
+  $("nutTaoPhong").disabled = false;
+};
+
+$("nutVaoNhanh").onclick = async () => {
+  $("nutVaoNhanh").disabled = true;
+  try {
+    moPhong(await vaoPhongNhanh(nguoiDung, hoSo.ten));
+  } catch (e) {
+    alert("Không vào được phòng nào: " + e.message);
+  }
+  $("nutVaoNhanh").disabled = false;
+};
+
+async function thuVaoPhong(ma) {
+  try {
+    await vaoPhong(ma, nguoiDung, hoSo.ten);
+    moPhong(ma);
+  } catch (e) {
+    alert(e.message);
+  }
+}
+
+// ================= TRONG PHONG =================
+
+function moPhong(ma) {
+  maPhongHienTai = ma;
+  $("manSanh").hidden = true;
+  $("manTrongPhong").hidden = false;
+
+  if (thoiTheoDoiPhong) thoiTheoDoiPhong();
+  thoiTheoDoiPhong = theoDoiPhong(ma, vePhong);
+}
+
+function dongPhong() {
+  if (thoiTheoDoiPhong) { thoiTheoDoiPhong(); thoiTheoDoiPhong = null; }
+  if (nhipDemNguoc) { clearInterval(nhipDemNguoc); nhipDemNguoc = null; }
+  maPhongHienTai = null;
+  $("manDemNguoc").hidden = true;
+  $("manTrongPhong").hidden = true;
+  $("manSanh").hidden = false;
+}
+
+function vePhong(p) {
+  if (!p) {
+    // Host da giai tan phong hoac mat ket noi
+    if (maPhongHienTai) alert("Phòng đã đóng.");
+    dongPhong();
+    return;
+  }
+
+  const laHost = p.hostUid === nguoiDung.uid;
+  $("oTenPhongHienTai").textContent = p.ten || "(không tên)";
+  $("oNhanMan").textContent = p.manChoi === "Act1" ? "Act 1 — Đấu trường" : "Act 2 — Nghĩa địa";
+  $("oChonMan").hidden = !laHost;
+  $("oManChoiTrongPhong").value = p.manChoi;
+  $("nutBatDau").hidden = !laHost;
+
+  const nguoi = Object.entries(p.nguoiChoi || {});
+  const o = $("oDanhSachNguoi");
+  o.innerHTML = "";
+  for (const [uid, n] of nguoi) {
+    const hang = document.createElement("div");
+    hang.className = "hang-nguoi";
+    hang.innerHTML = `
+      <span class="cham ${n.sanSang ? "san-sang" : ""}"></span>
+      <b class="ten-nguoi"></b>
+      ${uid === p.hostUid ? '<span class="nhan-host">CHỦ PHÒNG</span>' : ""}
+      <span class="day" style="flex:1"></span>
+      <span class="chi-tiet">${n.sanSang ? "sẵn sàng" : "đang chờ"}</span>`;
+    hang.querySelector(".ten-nguoi").textContent = n.ten || "?";
+    if (laHost && uid !== nguoiDung.uid) {
+      const nut = document.createElement("button");
+      nut.className = "nut nut-nho";
+      nut.textContent = "Đuổi";
+      nut.onclick = () => duoiNguoi(p.ma, uid);
+      hang.appendChild(nut);
+    }
+    o.appendChild(hang);
+  }
+
+  const toi = (p.nguoiChoi || {})[nguoiDung.uid];
+  if (toi) $("nutSanSang").textContent = toi.sanSang ? "BỎ SẴN SÀNG" : "SẴN SÀNG";
+
+  // Host bat dau duoc KE CA khi mot minh - chi can la host
+  $("oBaoPhong").textContent = laHost
+    ? "Bạn là chủ phòng — bấm BẮT ĐẦU bất cứ lúc nào, kể cả khi chỉ có một mình."
+    : "Chờ chủ phòng bắt đầu trận.";
+
+  if (p.trangThai === "demNguoc" && p.batDauLuc) chayDemNguoc(p);
+  else $("manDemNguoc").hidden = true;
+}
+
+$("nutSanSang").onclick = async () => {
+  const dang = $("nutSanSang").textContent.startsWith("BỎ");
+  await datSanSang(maPhongHienTai, nguoiDung.uid, !dang);
+};
+
+$("oManChoiTrongPhong").onchange = (e) => doiManChoi(maPhongHienTai, e.target.value);
+
+$("nutRoiPhong").onclick = async () => {
+  const ma = maPhongHienTai;
+  dongPhong();
+  await roiPhong(ma, nguoiDung);
+};
+
+$("nutBatDau").onclick = async () => {
+  $("nutBatDau").disabled = true;
+  await batDauDemNguoc(maPhongHienTai);
+  $("nutBatDau").disabled = false;
+};
+
+// ================= DEM NGUOC =================
+
+function chayDemNguoc(p) {
+  $("manDemNguoc").hidden = false;
+  $("oManSapVao").textContent =
+    p.manChoi === "Act1" ? "Act 1 — Đấu trường" : "Act 2 — Nghĩa địa";
+
+  if (nhipDemNguoc) clearInterval(nhipDemNguoc);
+  nhipDemNguoc = setInterval(() => {
+    // Dem theo DONG HO MAY CHU, khong theo dong ho may minh - bon may
+    // co the lech gio nhau vai giay
+    const conLai = Math.ceil((p.batDauLuc - gioMayChu()) / 1000);
+    $("oSoDem").textContent = Math.max(0, conLai);
+
+    if (conLai <= 0 && !daChuyenSangGame) {
+      daChuyenSangGame = true;
+      clearInterval(nhipDemNguoc);
+      if (p.hostUid === nguoiDung.uid) danhDauDangChoi(p.ma);
+      location.href = `choi.html?phong=${encodeURIComponent(p.ma)}`
+                    + `&man=${encodeURIComponent(p.manChoi)}`;
+    }
+  }, 100);
+}
+</script>
+</body>
+</html>

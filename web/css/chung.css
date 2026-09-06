@@ -1,0 +1,286 @@
+/* GIAO DIEN CHUNG CHO CA TRANG WEB.
+   Tong mau lay theo game: nen den xam lanh, chu xam sang, diem nhan do mau. */
+
+:root {
+  --nen:        #0d0f12;
+  --nen-the:    #171a1f;
+  --nen-o:      #0f1216;
+  --vien:       #2a2f38;
+  --chu:        #c9cdd4;
+  --chu-mo:     #7d838e;
+  --mau:        #a01f22;
+  --mau-sang:   #c8302f;
+  --xanh-ok:    #3f9a63;
+  --vang:       #c8a13a;
+}
+
+* { box-sizing: border-box; }
+
+/* Phai dat truoc moi luat display khac. Cac lop nhu .nhan dat display:block,
+   ma display:block thang the manh hon [hidden] mac dinh - khong co dong nay
+   thi o "Ten trong game" van hien o tab Dang nhap du da dat hidden. */
+[hidden] { display: none !important; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--nen);
+  color: var(--chu);
+  font: 15px/1.55 "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+  -webkit-text-size-adjust: 100%;
+}
+
+body.nen-toi {
+  background:
+    radial-gradient(1100px 620px at 50% -12%, #1d2129 0%, transparent 62%),
+    var(--nen);
+}
+
+/* ---------- Bo cuc ---------- */
+
+.khung-giua {
+  max-width: 430px;
+  margin: 0 auto;
+  padding: 46px 18px 60px;
+}
+
+.khung-rong {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 22px 18px 60px;
+}
+
+.tieu-de {
+  margin: 0 0 6px;
+  text-align: center;
+  font-size: 32px;
+  letter-spacing: 3px;
+  color: #e6e9ee;
+  text-shadow: 0 0 22px rgba(200, 48, 47, .32);
+}
+
+.phu-de {
+  margin: 0 0 26px;
+  text-align: center;
+  color: var(--chu-mo);
+  font-size: 13.5px;
+}
+
+.the {
+  background: var(--nen-the);
+  border: 1px solid var(--vien);
+  border-radius: 12px;
+  padding: 20px;
+}
+
+/* ---------- Tab ---------- */
+
+.hang-tab { display: flex; gap: 8px; margin-bottom: 18px; }
+
+.tab {
+  flex: 1;
+  padding: 9px 10px;
+  background: transparent;
+  border: 1px solid var(--vien);
+  border-radius: 8px;
+  color: var(--chu-mo);
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.tab.dang-chon {
+  background: rgba(160, 31, 34, .16);
+  border-color: var(--mau);
+  color: #eceff3;
+}
+
+/* ---------- O nhap ---------- */
+
+.nhan {
+  display: block;
+  margin-bottom: 13px;
+  font-size: 12.5px;
+  color: var(--chu-mo);
+}
+
+.nhan input, .nhan select {
+  display: block;
+  width: 100%;
+  margin-top: 5px;
+  padding: 10px 12px;
+  background: var(--nen-o);
+  border: 1px solid var(--vien);
+  border-radius: 8px;
+  color: var(--chu);
+  font-size: 15px;      /* duoi 16px la iPhone tu phong to trang khi go */
+}
+
+.nhan input:focus, .nhan select:focus {
+  outline: none;
+  border-color: var(--mau);
+}
+
+/* ---------- Nut ---------- */
+
+.nut {
+  display: block;
+  width: 100%;
+  padding: 11px 14px;
+  border: 1px solid var(--vien);
+  border-radius: 8px;
+  background: #21262e;
+  color: var(--chu);
+  font-size: 14.5px;
+  letter-spacing: .6px;
+  cursor: pointer;
+}
+
+.nut:hover:not(:disabled) { border-color: #3a4150; }
+.nut:disabled { opacity: .5; cursor: default; }
+
+.nut-chinh {
+  margin-top: 6px;
+  background: linear-gradient(180deg, var(--mau-sang), var(--mau));
+  border-color: #7d1a1c;
+  color: #fff;
+  font-weight: 600;
+}
+
+.nut-nho {
+  width: auto;
+  padding: 7px 13px;
+  font-size: 13px;
+}
+
+.nut-chu {
+  display: block;
+  width: 100%;
+  margin-top: 12px;
+  background: none;
+  border: none;
+  color: var(--chu-mo);
+  font-size: 12.5px;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* ---------- Bao ---------- */
+
+.bao { margin: 14px 0 0; min-height: 20px; font-size: 13px; text-align: center; }
+.bao-loi { color: #e2696b; }
+.bao-ok  { color: var(--chu-mo); }
+
+/* ---------- Thanh dau trang ---------- */
+
+.thanh-dau {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding-bottom: 16px;
+  margin-bottom: 18px;
+  border-bottom: 1px solid var(--vien);
+}
+
+.thanh-dau .ten-toi { font-weight: 600; color: #e6e9ee; }
+.thanh-dau .day { flex: 1; }
+
+/* ---------- Danh sach phong ---------- */
+
+.hang-phong {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 12px 14px;
+  margin-bottom: 9px;
+  background: var(--nen-the);
+  border: 1px solid var(--vien);
+  border-radius: 10px;
+}
+
+.hang-phong .ten-phong { font-weight: 600; color: #e6e9ee; }
+.hang-phong .chi-tiet  { color: var(--chu-mo); font-size: 13px; }
+
+.the-man {
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--vien);
+  font-size: 11.5px;
+  color: var(--chu-mo);
+}
+
+.trong-rong {
+  padding: 34px 16px;
+  text-align: center;
+  color: var(--chu-mo);
+  border: 1px dashed var(--vien);
+  border-radius: 10px;
+}
+
+/* ---------- Trong phong ---------- */
+
+.hang-nguoi {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 13px;
+  margin-bottom: 8px;
+  background: var(--nen-o);
+  border: 1px solid var(--vien);
+  border-radius: 9px;
+}
+
+.cham { width: 9px; height: 9px; border-radius: 50%; background: #4b515c; flex: none; }
+.cham.san-sang { background: var(--xanh-ok); box-shadow: 0 0 9px rgba(63,154,99,.6); }
+
+.nhan-host {
+  padding: 1px 7px;
+  border-radius: 4px;
+  background: rgba(200,161,58,.16);
+  border: 1px solid rgba(200,161,58,.4);
+  color: var(--vang);
+  font-size: 11px;
+}
+
+/* ---------- Dem nguoc ---------- */
+
+.man-dem-nguoc {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: rgba(8, 9, 11, .93);
+  z-index: 50;
+}
+
+.so-dem {
+  font-size: 116px;
+  font-weight: 700;
+  line-height: 1;
+  color: #fff;
+  text-shadow: 0 0 42px rgba(200, 48, 47, .75);
+}
+
+/* ---------- Bang quan tri ---------- */
+
+table.bang { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+
+table.bang th, table.bang td {
+  padding: 9px 11px;
+  text-align: left;
+  border-bottom: 1px solid var(--vien);
+}
+
+table.bang th { color: var(--chu-mo); font-weight: 600; font-size: 12px; }
+table.bang tr.bi-khoa td { opacity: .5; }
+
+.vien-cuon { overflow-x: auto; }
+
+@media (max-width: 560px) {
+  .tieu-de { font-size: 26px; }
+  .so-dem  { font-size: 86px; }
+}

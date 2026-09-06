@@ -1,0 +1,95 @@
+{
+  // PHONG CHO VA TRANG THAI TRAN DAU.
+  //
+  // Vi sao dung Realtime Database cho phan nay ma khong dung Firestore:
+  // RTDB co onDisconnect() - nguoi choi dong tab giua tran thi tu bien khoi
+  // phong. Firestore KHONG co thu do, va mot phong day "nguoi ma" thi tran
+  // khong bao gio ket thuc duoc.
+  //
+  // Nguoc lai, ho so nguoi choi va trang quan tri nam o Firestore vi can
+  // sap xep, loc va phan trang - RTDB gan nhu khong lam duoc.
+
+  "rules": {
+    ".read": false,
+    ".write": false,
+
+    "phong": {
+      ".read": "auth != null",
+
+      "$maPhong": {
+        ".write": "auth != null && ( !data.exists() || data.child('hostUid').val() === auth.uid || newData.child('hostUid').val() === auth.uid )",
+
+        "hostUid":   { ".validate": "newData.val() === auth.uid || data.val() === auth.uid" },
+        "hostTen":   { ".validate": "newData.isString() && newData.val().length <= 16" },
+        "ten":       { ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 24" },
+        "manChoi":   { ".validate": "newData.val() === 'Act1' || newData.val() === 'Act2'" },
+        "trangThai": { ".validate": "newData.val().matches(/^(cho|demNguoc|dangChoi|xong)$/)" },
+        "toiDa":     { ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 4" },
+        "soNguoi":   { ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 4" },
+        "taoLuc":    { ".validate": "newData.isNumber()" },
+        "batDauLuc": { ".validate": "newData.isNumber()" },
+        "thangUid":  { ".validate": "newData.isString()" },
+
+        "nguoiChoi": {
+          ".read": "auth != null",
+
+          "$uid": {
+            // Moi nguoi tu ghi o cua minh. Host duoc them quyen XOA de duoi ra.
+            ".write": "auth.uid === $uid || root.child('phong').child($maPhong).child('hostUid').val() === auth.uid",
+
+            // Luat RTDB KHONG co numChildren() (chi Firestore moi co size()),
+            // nen suc chua phong duoc giu bang truong 'soNguoi' o cap tren:
+            // "soNguoi" da co .validate <= 4, va phia trinh duyet dung mot
+            // giao dich (transaction) de tang no - hai nguoi bam cung luc thi
+            // chi mot nguoi thang.
+            "ten":     { ".validate": "newData.isString() && newData.val().length <= 16" },
+            "sanSang": { ".validate": "newData.isBoolean()" },
+            "cho":     { ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 3" },
+            "vaoLuc":  { ".validate": "newData.isNumber()" },
+            "$khac":   { ".validate": false }
+          }
+        }
+      }
+    },
+
+    "tran": {
+      "$maPhong": {
+        // Chi nguoi DANG TRONG phong moi doc duoc trang thai tran
+        ".read": "auth != null && root.child('phong').child($maPhong).child('nguoiChoi').child(auth.uid).exists()",
+
+        "nguoi": {
+          "$uid": {
+            // Vi tri: moi nguoi tu ghi cua minh - phai tuc thi, khong the cho
+            // host duyet tung buoc chan.
+            ".write": "auth.uid === $uid",
+
+            // Nhung MAU thi khong ai tu khai: chi host ghi.
+            "mau": { ".write": "root.child('phong').child($maPhong).child('hostUid').val() === auth.uid" }
+          }
+        },
+
+        // Quai, sat thuong va vong bo: chi host quyet.
+        // CombatUtil.AreaShock va AreaFreeze dung Random.value - de moi may tu
+        // gieo thi nguoi nay thay dich bi dong bang, nguoi kia thay khong.
+        "quai":      { ".write": "root.child('phong').child($maPhong).child('hostUid').val() === auth.uid" },
+        "satThuong": { ".write": "root.child('phong').child($maPhong).child('hostUid').val() === auth.uid" },
+        "vongBo":    { ".write": "root.child('phong').child($maPhong).child('hostUid').val() === auth.uid" },
+
+        "kyNang": {
+          "$id": {
+            // Ai tung ky nang thi nguoi do ghi, de bam phim la ra chieu ngay
+            // chu khong doi mot vong tuan hoan qua host.
+            ".write": "auth != null && newData.child('uid').val() === auth.uid"
+          }
+        }
+      }
+    },
+
+    "hienDien": {
+      "$uid": {
+        ".read": "auth != null",
+        ".write": "auth.uid === $uid"
+      }
+    }
+  }
+}

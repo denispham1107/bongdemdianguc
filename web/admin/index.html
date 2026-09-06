@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Diablo 2.5D — Quản trị</title>
+<link rel="stylesheet" href="../css/chung.css">
+</head>
+<body class="nen-toi">
+
+<div class="khung-rong">
+
+  <div class="thanh-dau">
+    <span class="ten-toi">Trang quản trị</span>
+    <span class="chi-tiet" id="oAiDangXem"></span>
+    <span class="day" style="flex:1"></span>
+    <a class="nut nut-nho" href="../sanh.html">Về sảnh</a>
+  </div>
+
+  <div id="manTuChoi" hidden>
+    <div class="trong-rong">
+      Tài khoản này không phải quản trị viên.<br><br>
+      <span style="font-size:12.5px">
+        Để cấp quyền: vào Firebase Console → Firestore → tạo collection
+        <b>quantri</b> → thêm một document có ID đúng bằng <b>uid</b> của tài khoản.
+        Không ai cấp quyền admin từ trình duyệt được — luật bảo mật chặn hoàn toàn.
+      </span>
+    </div>
+  </div>
+
+  <div id="manQuanTri" hidden>
+
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;margin-bottom:16px">
+      <label class="nhan" style="flex:2;min-width:210px;margin:0">Tìm theo email hoặc tên
+        <input id="oTim" type="search" placeholder="gõ rồi bấm Tìm">
+      </label>
+      <button id="nutTim" class="nut nut-nho">Tìm</button>
+      <button id="nutTaiLai" class="nut nut-nho">Tải lại</button>
+      <span class="day" style="flex:1"></span>
+      <span class="chi-tiet" id="oDemTaiKhoan"></span>
+    </div>
+
+    <div class="vien-cuon">
+      <table class="bang">
+        <thead>
+          <tr>
+            <th>Tên</th><th>Email</th><th>Ngày tạo</th>
+            <th>Trận</th><th>Thắng</th><th>Quái</th><th>Hạ người</th>
+            <th>Trạng thái</th><th></th>
+          </tr>
+        </thead>
+        <tbody id="oBang"></tbody>
+      </table>
+    </div>
+
+    <div style="margin-top:14px;display:flex;gap:10px">
+      <button id="nutThemTrang" class="nut nut-nho">Tải thêm 50 tài khoản</button>
+    </div>
+
+    <h2 style="margin:30px 0 12px;font-size:17px">Phòng đang mở</h2>
+    <div id="oPhongDangMo"></div>
+  </div>
+</div>
+
+<script type="module">
+import { batBuocDangNhap, laAdmin } from "../js/taikhoan.js";
+import { kho, rtdb } from "../js/ketnoi.js";
+import {
+  collection, query, orderBy, limit, startAfter, getDocs, doc, updateDoc
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { ref, onValue, remove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+const $ = (id) => document.getElementById(id);
+const MOI_TRANG = 50;
+
+const { nguoiDung } = await batBuocDangNhap("../index.html");
+$("oAiDangXem").textContent = nguoiDung.email;
+
+if (!(await laAdmin(nguoiDung.uid))) {
+  $("manTuChoi").hidden = false;
+} else {
+  $("manQuanTri").hidden = false;
+  await taiTrangDau();
+  theoDoiPhongDangMo();
+}
+
+let mocCuoi = null;
+let tongDaTai = 0;
+
+function ngayGon(ts) {
+  if (!ts || !ts.toDate) return "—";
+  const d = ts.toDate();
+  return d.toLocaleDateString("vi-VN") + " " +
+         d.toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" });
+}
+
+async function taiTrangDau() {
+  $("oBang").innerHTML = "";
+  mocCuoi = null; tongDaTai = 0;
+  await taiThem();
+}
+
+async function taiThem() {
+  let q = query(collection(kho, "nguoichoi"), orderBy("ngayTao", "desc"), limit(MOI_TRANG));
+  if (mocCuoi) {
+    q = query(collection(kho, "nguoichoi"), orderBy("ngayTao", "desc"),
+              startAfter(mocCuoi), limit(MOI_TRANG));
+  }
+
+  const anh = await getDocs(q);
+  anh.forEach((d) => veHang(d.id, d.data()));
+  mocCuoi = anh.docs[anh.docs.length - 1] || mocCuoi;
+  tongDaTai += anh.size;
+
+  $("oDemTaiKhoan").textContent = "đã tải " + tongDaTai + " tài khoản";
+  $("nutThemTrang").disabled = anh.size < MOI_TRANG;
+}
+
+function veHang(uid, n) {
+  const tr = document.createElement("tr");
+  if (n.biKhoa) tr.className = "bi-khoa";
+  tr.innerHTML = `
+    <td class="c-ten"></td>
+    <td class="c-email"></td>
+    <td>${ngayGon(n.ngayTao)}</td>
+    <td>${n.soTranChoi || 0}</td>
+    <td>${n.soTranThang || 0}</td>
+    <td>${n.soQuaiDaDiet || 0}</td>
+    <td>${n.soNguoiDaHa || 0}</td>
+    <td class="c-trang-thai">${n.biKhoa ? "🔒 bị khoá" : "hoạt động"}</td>
+    <td></td>`;
+  tr.querySelector(".c-ten").textContent = n.ten || "?";
+  tr.querySelector(".c-email").textContent = n.email || "?";
+
+  const nut = document.createElement("button");
+  nut.className = "nut nut-nho";
+  nut.textContent = n.biKhoa ? "Mở khoá" : "Khoá";
+  nut.onclick = async () => {
+    nut.disabled = true;
+    try {
+      await updateDoc(doc(kho, "nguoichoi", uid), { biKhoa: !n.biKhoa });
+      n.biKhoa = !n.biKhoa;
+      tr.className = n.biKhoa ? "bi-khoa" : "";
+      tr.querySelector(".c-trang-thai").textContent = n.biKhoa ? "🔒 bị khoá" : "hoạt động";
+      nut.textContent = n.biKhoa ? "Mở khoá" : "Khoá";
+    } catch (e) {
+      alert("Không đổi được: " + e.message);
+    }
+    nut.disabled = false;
+  };
+  tr.lastElementChild.appendChild(nut);
+  $("oBang").appendChild(tr);
+}
+
+$("nutThemTrang").onclick = () => taiThem();
+$("nutTaiLai").onclick = () => taiTrangDau();
+
+// Tim: Firestore khong co tim toan van, nen loc tien to tren email va ten.
+// Voi vai tram tai khoan thi tai het ve roi loc tai cho la du va don gian hon.
+$("nutTim").onclick = async () => {
+  const tu = $("oTim").value.trim().toLowerCase();
+  if (!tu) { await taiTrangDau(); return; }
+
+  const anh = await getDocs(query(collection(kho, "nguoichoi"),
+                                  orderBy("ngayTao", "desc"), limit(500)));
+  $("oBang").innerHTML = "";
+  let dem = 0;
+  anh.forEach((d) => {
+    const n = d.data();
+    const khop = (n.email || "").toLowerCase().includes(tu)
+              || (n.ten || "").toLowerCase().includes(tu);
+    if (khop) { veHang(d.id, n); dem++; }
+  });
+  $("oDemTaiKhoan").textContent = "tìm thấy " + dem;
+  $("nutThemTrang").disabled = true;
+};
+
+// ================= PHONG DANG MO =================
+
+function theoDoiPhongDangMo() {
+  onValue(ref(rtdb, "phong"), (anh) => {
+    const o = $("oPhongDangMo");
+    if (!anh.exists()) {
+      o.innerHTML = `<div class="trong-rong">Không có phòng nào đang mở.</div>`;
+      return;
+    }
+    o.innerHTML = "";
+    anh.forEach((con) => {
+      const p = con.val();
+      const hang = document.createElement("div");
+      hang.className = "hang-phong";
+      hang.innerHTML = `
+        <span class="ten-phong"></span>
+        <span class="the-man">${p.manChoi}</span>
+        <span class="chi-tiet">chủ: <b class="ten-host"></b></span>
+        <span class="chi-tiet">${p.soNguoi || 0}/${p.toiDa || 4}</span>
+        <span class="chi-tiet">${p.trangThai}</span>
+        <span class="day" style="flex:1"></span>`;
+      hang.querySelector(".ten-phong").textContent = p.ten || "(không tên)";
+      hang.querySelector(".ten-host").textContent = p.hostTen || "?";
+
+      const nut = document.createElement("button");
+      nut.className = "nut nut-nho";
+      nut.textContent = "Giải tán";
+      nut.onclick = async () => {
+        if (!confirm("Giải tán phòng này?")) return;
+        await remove(ref(rtdb, "phong/" + con.key));
+        await remove(ref(rtdb, "tran/" + con.key));
+      };
+      hang.appendChild(nut);
+      o.appendChild(hang);
+    });
+  });
+}
+</script>
+</body>
+</html>

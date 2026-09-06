@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Diablo 2.5D — Đăng nhập</title>
+<link rel="stylesheet" href="css/chung.css">
+</head>
+<body class="nen-toi">
+
+<div class="khung-giua">
+  <h1 class="tieu-de">DIABLO 2.5D</h1>
+  <p class="phu-de">Nghĩa địa đang chờ. Kẻ sống sót cuối cùng là kẻ thắng.</p>
+
+  <div class="the">
+    <div class="hang-tab">
+      <button id="tabDangNhap" class="tab dang-chon">Đăng nhập</button>
+      <button id="tabDangKy"   class="tab">Tạo tài khoản</button>
+    </div>
+
+    <form id="bieuMau" autocomplete="on">
+      <label class="nhan" id="nhanTen" hidden>Tên trong game
+        <input id="oTen" type="text" maxlength="16" placeholder="2–16 ký tự" autocomplete="nickname">
+      </label>
+
+      <label class="nhan">Email
+        <input id="oEmail" type="email" required placeholder="ban@email.com" autocomplete="email">
+      </label>
+
+      <label class="nhan">Mật khẩu
+        <input id="oMatKhau" type="password" required minlength="6" placeholder="Ít nhất 6 ký tự" autocomplete="current-password">
+      </label>
+
+      <button id="nutChinh" type="submit" class="nut nut-chinh">ĐĂNG NHẬP</button>
+    </form>
+
+    <button id="nutQuenMatKhau" class="nut-chu">Quên mật khẩu?</button>
+    <p id="oBao" class="bao" role="status" aria-live="polite"></p>
+  </div>
+</div>
+
+<script type="module">
+import { dangKy, dangNhap, theoDoiDangNhap, guiEmailDatLaiMatKhau } from "./js/taikhoan.js";
+import { dichLoi } from "./js/ketnoi.js";
+
+const tabDangNhap = document.getElementById("tabDangNhap");
+const tabDangKy   = document.getElementById("tabDangKy");
+const nhanTen     = document.getElementById("nhanTen");
+const oTen        = document.getElementById("oTen");
+const oEmail      = document.getElementById("oEmail");
+const oMatKhau    = document.getElementById("oMatKhau");
+const nutChinh    = document.getElementById("nutChinh");
+const bieuMau     = document.getElementById("bieuMau");
+const oBao        = document.getElementById("oBao");
+
+let dangKyMoi = false;
+
+// Tai khoan bi admin khoa thi bi day ve day kem ?khoa=1
+if (new URLSearchParams(location.search).has("khoa")) {
+  bao("Tài khoản của bạn đã bị khoá. Hãy liên hệ quản trị viên.", true);
+}
+
+function bao(chu, laLoi) {
+  oBao.textContent = chu;
+  oBao.className = "bao " + (laLoi ? "bao-loi" : "bao-ok");
+}
+
+function doiTab(sangDangKy) {
+  dangKyMoi = sangDangKy;
+  tabDangKy.classList.toggle("dang-chon", sangDangKy);
+  tabDangNhap.classList.toggle("dang-chon", !sangDangKy);
+  nhanTen.hidden = !sangDangKy;
+  oTen.required = sangDangKy;
+  nutChinh.textContent = sangDangKy ? "TẠO TÀI KHOẢN" : "ĐĂNG NHẬP";
+  oMatKhau.autocomplete = sangDangKy ? "new-password" : "current-password";
+  bao("", false);
+}
+
+tabDangNhap.onclick = () => doiTab(false);
+tabDangKy.onclick   = () => doiTab(true);
+
+bieuMau.onsubmit = async (e) => {
+  e.preventDefault();
+  nutChinh.disabled = true;
+  bao(dangKyMoi ? "Đang tạo tài khoản…" : "Đang đăng nhập…", false);
+  try {
+    if (dangKyMoi) {
+      const ten = oTen.value.trim();
+      if (ten.length < 2) { bao("Tên phải từ 2 ký tự trở lên.", true); nutChinh.disabled = false; return; }
+      await dangKy(oEmail.value.trim(), oMatKhau.value, ten);
+    } else {
+      await dangNhap(oEmail.value.trim(), oMatKhau.value);
+    }
+    location.href = "sanh.html";
+  } catch (loi) {
+    bao(dichLoi(loi), true);
+    nutChinh.disabled = false;
+  }
+};
+
+document.getElementById("nutQuenMatKhau").onclick = async () => {
+  const email = oEmail.value.trim();
+  if (!email) { bao("Hãy điền email trước, rồi bấm lại nút này.", true); return; }
+  try {
+    await guiEmailDatLaiMatKhau(email);
+    bao("Đã gửi thư đặt lại mật khẩu tới " + email, false);
+  } catch (loi) { bao(dichLoi(loi), true); }
+};
+
+// Da dang nhap san thi vao thang sanh
+theoDoiDangNhap((nguoiDung) => {
+  if (nguoiDung && !location.search.includes("khoa")) location.href = "sanh.html";
+});
+</script>
+</body>
+</html>

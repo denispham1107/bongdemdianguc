@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<title>Diablo 2.5D — Đang chơi</title>
+<link rel="stylesheet" href="css/chung.css">
+<style>
+  html, body { height: 100%; overflow: hidden; }
+  #khungGame { position: fixed; inset: 0; background: #000; }
+  #canvasUnity { width: 100%; height: 100%; display: block; }
+  #manChoDoi {
+    position: fixed; inset: 0; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 14px; padding: 20px;
+    text-align: center; background: var(--nen);
+  }
+</style>
+</head>
+<body class="nen-toi">
+
+<div id="khungGame" hidden>
+  <canvas id="canvasUnity" tabindex="-1"></canvas>
+</div>
+
+<div id="manChoDoi">
+  <h1 class="tieu-de" style="font-size:24px">ĐANG VÀO TRẬN</h1>
+  <p class="phu-de" id="oThongTin" style="margin:0">…</p>
+
+  <div class="the" style="max-width:520px;text-align:left">
+    <p style="margin:0 0 10px;color:var(--chu-mo);font-size:13px">
+      Bản game WebGL chưa được dựng, nên đây là chỗ dành sẵn cho nó.
+      Mọi thứ trước bước này — tài khoản, phòng chờ, đếm ngược — đã chạy thật.
+    </p>
+    <p style="margin:0 0 10px;color:var(--chu-mo);font-size:13px">
+      Khi có bản build, đặt vào <code>web/game/</code> rồi trang này sẽ tự nạp nó
+      và truyền sang Unity bốn thứ: <b>uid</b>, <b>tên</b>, <b>mã phòng</b> và <b>màn chơi</b>.
+    </p>
+    <div id="oDuLieuPhien" style="font-family:ui-monospace,Consolas,monospace;font-size:12px;
+         color:var(--chu-mo);background:var(--nen-o);border:1px solid var(--vien);
+         border-radius:8px;padding:11px;white-space:pre-wrap"></div>
+  </div>
+
+  <button id="nutVeSanh" class="nut nut-nho" style="width:auto">Về sảnh</button>
+</div>
+
+<script type="module">
+import { batBuocDangNhap } from "./js/taikhoan.js";
+import { theoDoiPhong } from "./js/phong.js";
+
+const $ = (id) => document.getElementById(id);
+const thamSo = new URLSearchParams(location.search);
+const maPhong = thamSo.get("phong");
+const manChoi = thamSo.get("man") || "Act1";
+
+const { nguoiDung, hoSo } = await batBuocDangNhap("index.html");
+
+if (!maPhong) { location.href = "sanh.html"; }
+
+$("oThongTin").textContent =
+  `${hoSo.ten} — ${manChoi === "Act1" ? "Act 1, Đấu trường" : "Act 2, Nghĩa địa"}`;
+
+// Bon thu nay la tat ca nhung gi Unity can de biet no dang o dau, la ai.
+// Cau noi .jslib se doc chinh cai bien nay.
+window.phienChoi = {
+  uid: nguoiDung.uid,
+  ten: hoSo.ten,
+  maPhong: maPhong,
+  manChoi: manChoi
+};
+
+$("oDuLieuPhien").textContent = JSON.stringify(window.phienChoi, null, 2);
+
+$("nutVeSanh").onclick = () => location.href = "sanh.html";
+
+// Phong bi giai tan giua chung thi day nguoi choi ve sanh
+theoDoiPhong(maPhong, (p) => {
+  if (!p) { alert("Phòng đã đóng."); location.href = "sanh.html"; }
+});
+
+// ================================================================
+//  NAP BAN WEBGL NEU DA CO
+// ================================================================
+//
+// Chua co ban build thi trang nay dung o man cho - khong bao loi do,
+// vi nguoi dung se thay mot man hinh trang khong hieu chuyen gi.
+
+async function thuNapGame() {
+  try {
+    const thu = await fetch("game/Build/game.loader.js", { method: "HEAD" });
+    if (!thu.ok) return false;
+  } catch (e) { return false; }
+
+  const nap = document.createElement("script");
+  nap.src = "game/Build/game.loader.js";
+  nap.onload = () => {
+    createUnityInstance($("canvasUnity"), {
+      dataUrl: "game/Build/game.data.br",
+      frameworkUrl: "game/Build/game.framework.js.br",
+      codeUrl: "game/Build/game.wasm.br",
+      streamingAssetsUrl: "StreamingAssets",
+      companyName: "Diablo25D",
+      productName: "Diablo 2.5D",
+      productVersion: "1.0"
+    }).then((banGame) => {
+      window.unityInstance = banGame;
+      $("manChoDoi").hidden = true;
+      $("khungGame").hidden = false;
+    });
+  };
+  document.body.appendChild(nap);
+  return true;
+}
+
+thuNapGame();
+</script>
+</body>
+</html>

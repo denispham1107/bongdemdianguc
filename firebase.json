@@ -1,0 +1,32 @@
+{
+  "database": {
+    "rules": "database.rules.json"
+  },
+  "firestore": {
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  },
+  "hosting": {
+    "public": "web",
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "rewrites": [],
+    "headers": [
+      {
+        "source": "**/*.@(wasm|data|js|symbols.json).br",
+        "headers": [{ "key": "Content-Encoding", "value": "br" }]
+      },
+      {
+        "source": "**/*.wasm.br",
+        "headers": [{ "key": "Content-Type", "value": "application/wasm" }]
+      },
+      {
+        "source": "**/*.js.br",
+        "headers": [{ "key": "Content-Type", "value": "application/javascript" }]
+      },
+      {
+        "source": "**/Build/**",
+        "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }]
+      }
+    ]
+  }
+}

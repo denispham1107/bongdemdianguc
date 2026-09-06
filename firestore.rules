@@ -1,0 +1,105 @@
+rules_version = '2';
+
+// HO SO NGUOI CHOI, LICH SU TRAN VA QUYEN ADMIN.
+//
+// Vi sao dung Firestore cho phan nay ma khong dung Realtime Database: trang
+// quan tri can "sap theo ngay tao", "loc nguoi bi khoa", "tim theo email",
+// va phan trang. Realtime Database gan nhu khong lam duoc may viec do.
+//
+// Nguoc lai, phong cho va trang thai tran nam o Realtime Database vi no co
+// onDisconnect() - nguoi choi dong tab giua tran thi tu bien khoi phong.
+// Firestore KHONG co thu do, va phong day nguoi ma thi tran khong bao gio xong.
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function daDangNhap() {
+      return request.auth != null;
+    }
+
+    function laMinh(uid) {
+      return request.auth != null && request.auth.uid == uid;
+    }
+
+    // Nhan dien admin bang mot document trong 'quantri', KHONG dung custom claim.
+    // Dat custom claim bat buoc phai qua Admin SDK, tuc phai co Cloud Functions.
+    // Doc mot document thi khong can gi ca.
+    function laAdmin() {
+      return request.auth != null
+          && exists(/databases/$(database)/documents/quantri/$(request.auth.uid));
+    }
+
+    function khongBiKhoa() {
+      return !exists(/databases/$(database)/documents/nguoichoi/$(request.auth.uid))
+          || get(/databases/$(database)/documents/nguoichoi/$(request.auth.uid)).data.biKhoa != true;
+    }
+
+    // ================================================================
+    //  HO SO NGUOI CHOI
+    // ================================================================
+    match /nguoichoi/{uid} {
+
+      allow read: if daDangNhap();
+
+      // Luc dang ky, nguoi choi tu tao ho so cua minh - nhung moi con so
+      // thanh tich BAT BUOC bat dau tu 0, va khong tu dat co biKhoa duoc.
+      allow create: if laMinh(uid)
+        && request.resource.data.keys().hasOnly(
+             ['ten','email','ngayTao','lanDangNhapCuoi',
+              'soTranChoi','soTranThang','soQuaiDaDiet','soNguoiDaHa',
+              'biKhoa','ghiChuAdmin'])
+        && request.resource.data.ten is string
+        && request.resource.data.ten.size() >= 2
+        && request.resource.data.ten.size() <= 16
+        && request.resource.data.soTranChoi == 0
+        && request.resource.data.soTranThang == 0
+        && request.resource.data.soQuaiDaDiet == 0
+        && request.resource.data.soNguoiDaHa == 0
+        && request.resource.data.biKhoa == false;
+
+      // Nguoi choi chi doi duoc TEN va thanh tich, va thanh tich CHI TANG,
+      // moi lan mot tran. Khong chan duoc gian lan that su (may nguoi choi
+      // van la noi tinh toan), nhung chan duoc nguoi mo Console trinh duyet
+      // go soTranThang = 9999.
+      allow update: if laAdmin()
+        || ( laMinh(uid) && khongBiKhoa()
+             && request.resource.data.diff(resource.data).affectedKeys().hasOnly(
+                  ['ten','lanDangNhapCuoi','soTranChoi','soTranThang',
+                   'soQuaiDaDiet','soNguoiDaHa'])
+             && request.resource.data.soTranChoi   >= resource.data.soTranChoi
+             && request.resource.data.soTranChoi   <= resource.data.soTranChoi + 1
+             && request.resource.data.soTranThang  >= resource.data.soTranThang
+             && request.resource.data.soTranThang  <= resource.data.soTranThang + 1
+             && request.resource.data.soQuaiDaDiet >= resource.data.soQuaiDaDiet
+             && request.resource.data.soQuaiDaDiet <= resource.data.soQuaiDaDiet + 200
+             && request.resource.data.soNguoiDaHa  >= resource.data.soNguoiDaHa
+             && request.resource.data.soNguoiDaHa  <= resource.data.soNguoiDaHa + 3 );
+
+      allow delete: if laAdmin();
+    }
+
+    // ================================================================
+    //  LICH SU TRAN
+    // ================================================================
+    match /tran/{maTran} {
+      allow read: if daDangNhap();
+
+      // Chi host ghi ket qua, va ghi mot lan roi thoi
+      allow create: if daDangNhap()
+                    && request.resource.data.hostUid == request.auth.uid;
+      allow update, delete: if laAdmin();
+    }
+
+    // ================================================================
+    //  DANH SACH ADMIN
+    // ================================================================
+    match /quantri/{uid} {
+      // Cho doc de trang web biet nguoi dang dang nhap co phai admin khong
+      allow read: if daDangNhap();
+
+      // KHONG ai ghi duoc tu trinh duyet. Them admin bang tay trong
+      // Firebase Console, hoac bang script chay tren may.
+      allow write: if false;
+    }
+  }
+}

@@ -45,3 +45,13 @@ crashlytics-build.properties
 # Muon nuong lai prefab quai thi dung menu 11 / 12 nhu cu.
 /Assets/MeshyImports/
 /Assets/MeshyImports.meta
+
+# ---- Firebase ----
+.firebase/
+firebase-debug.log
+firestore-debug.log
+database-debug.log
+ui-debug.log
+
+# ---- Ban build WebGL dat vao trang web (nang, dung lai duoc bang cach build lai) ----
+/web/game/
