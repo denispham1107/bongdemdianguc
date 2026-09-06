@@ -4661,6 +4661,33 @@ so loi ghi nhan = 0
 Đọc thẳng Firestore bằng token chủ dự án (không qua trang web) để chắc nút Khoá ghi thật:
 `biKhoa` của A đổi `false → true`, rồi `true → false` sau khi bấm Mở khoá.
 
+### Ảnh chụp tìm ra ba lỗi mà số đo không thấy
+
+Menu 26 và 27 báo **0 lỗi**, nhưng cả hai chỉ đo tầng REST. Chúng không trả lời được câu hỏi
+đơn giản nhất: *giao diện có vẽ ra không*. Nên thêm menu **28** chụp ba màn hình thật (đăng nhập,
+sảnh, trong phòng) bằng Game view — không dùng camera phụ, vì camera phụ không vẽ OnGUI.
+
+Ảnh đầu tiên lộ ngay ba chuyện:
+
+**1. Thông báo lỗi hiện nguyên khối JSON.** Giữa màn đăng nhập là một đoạn chữ đỏ
+`"code": 403, "message": "Missing or insufficient permissions."`. Hoá ra `DichLoi` chỉ bắt chữ
+`Permission denied` — đó là cách nói của **Realtime Database**. **Firestore** nói
+`Missing or insufficient permissions.` Hai câu khác hẳn nhau, và câu của Firestore rơi thẳng
+xuống nhánh cuối "trả về 120 ký tự đầu của thân lỗi".
+
+**2. Lỗi 403 bị hiểu nhầm thành "chưa có hồ sơ".** `TaiHoacTao` đọc hồ sơ, và **hễ không thành
+công** là đi tạo hồ sơ mới. Nhưng chỉ **404** mới có nghĩa "chưa có". Với 403 hay mất mạng thì
+lần tạo cũng hỏng, và người chơi đọc được "Khong tao duoc ho so" — sai hẳn nguyên nhân. Sửa: chỉ
+404 mới đi tạo; mã khác thì báo đúng lỗi đó.
+
+**3. Nút chọn màn bị cắt chữ.** Nút rộng `150 * s`, chữ "MAN: NGHIA DIA" dài 14 ký tự. Ở màn hình
+thấp (`s` nhỏ) chữ mất cả đầu lẫn đuôi, đọc thành **"IAN: NGHIA DI"**. Nới nút lên `230 * s`.
+
+Còn bản thân cái 403 kia thì **không phải lỗi của game**: chính kịch bản chụp gọi `FirebaseMang.Quen()`
+giữa lúc màn đăng nhập đang khôi phục phiên cũ, giật mất token đúng lúc nó sắp dùng. Sửa kịch bản:
+bỏ phiên cũ **trước khi vào Play**, chứ không cắt ngang. Bài học quen thuộc — phép đo làm hỏng
+chính cái nó đang đo.
+
 ### Hai cái bẫy về công cụ, không liên quan Firebase
 
 **`ChayThuMang` là MonoBehaviour nên không được nằm trong `Assets/Editor`.** Đặt nhầm vào đó thì
@@ -4723,6 +4750,7 @@ Cờ `batChoiMang` trong `MainMenuUI` để tắt toàn bộ phần mạng nếu
 | **22. Chay thu THANH KY NANG (PC)** | Chụp thanh kỹ năng ở chế độ PC rồi đếm pixel chữ dưới từng ô — dùng để kiểm rằng dưới ô chỉ còn phím tắt. Trả lại scene đang mở khi xong. |
 | **26. Chay thu MANG - dang nhap va phong cho** | Chạy thật trên Firebase: đăng nhập, tạo phòng, đọc danh sách, đổi màn, đếm ngược, người thứ hai bị từ chối vào phòng đang đếm. Luôn dọn phòng đã tạo. Kết quả ra `PlayTestShots/mang_sanh.txt`. |
 | **27. Chay thu MANG - khoa tai khoan** | Kiểm rằng tài khoản bị admin khoá trên web thì không vào được game, còn tài khoản bình thường vẫn vào được. Kết quả ra `PlayTestShots/mang_khoa.txt`. |
+| **28. Chup man DANG NHAP va SANH PHONG** | Chụp ba màn hình thật của phần mạng ra `PlayTestShots/mang_man_*.png`. Xoá phiên đăng nhập cũ trên máy này (lần sau phải gõ lại mật khẩu) và luôn dọn phòng đã tạo. |
 
 > ⚠️ Mục **1** sẽ **xóa và tạo lại** các thư mục Textures / Materials / Models / Prefabs.
 > Nếu bạn tự sửa tay trong đó thì hãy sao lưu trước.

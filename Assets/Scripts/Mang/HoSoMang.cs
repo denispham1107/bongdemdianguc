@@ -44,10 +44,27 @@ public static class HoSoMang
         yield return FirebaseMang.BaoDamConHan();
 
         string uid = FirebaseMang.Uid;
+        if (string.IsNullOrEmpty(uid) || string.IsNullOrEmpty(FirebaseMang.IdToken))
+        {
+            xong(false, "Phien dang nhap khong con hieu luc, hay dang nhap lai.");
+            yield break;
+        }
+
         using (var yc = UnityWebRequest.Get(DuongHoSo(uid)))
         {
             yc.SetRequestHeader("Authorization", "Bearer " + FirebaseMang.IdToken);
             yield return yc.SendWebRequest();
+
+            // CHI 404 moi co nghia la "chua co ho so". Moi ma khac (403 khong du
+            // quyen, 401 het han, mat mang) ma van di tao moi thi lan tao cung
+            // hong, va nguoi choi doc duoc "Khong tao duoc ho so" - sai han
+            // nguyen nhan that.
+            if (yc.responseCode != 200 && yc.responseCode != 404)
+            {
+                xong(false, FirebaseMang.DichLoi(yc.downloadHandler != null
+                                                 ? yc.downloadHandler.text : null));
+                yield break;
+            }
 
             if (yc.result == UnityWebRequest.Result.Success)
             {

@@ -301,8 +301,18 @@ public static class FirebaseMang
             return "Dang nhap bang email chua duoc bat trong Firebase Console.";
         if (thanLoi.Contains("CONFIGURATION_NOT_FOUND"))
             return "Firebase Authentication chua duoc bat cho du an nay.";
-        if (thanLoi.Contains("Permission denied") || thanLoi.Contains("permission_denied"))
+        // Realtime Database noi "Permission denied", con Firestore noi
+        // "Missing or insufficient permissions." - hai chu khac han nhau, phai
+        // bat ca hai. Thieu ve Firestore thi nguoi choi nhin thay nguyen khoi
+        // JSON do loe tren man dang nhap.
+        if (thanLoi.Contains("Permission denied") || thanLoi.Contains("permission_denied")
+            || thanLoi.Contains("Missing or insufficient permissions")
+            || thanLoi.Contains("PERMISSION_DENIED"))
             return "Khong du quyen. Tai khoan cua ban co the da bi khoa.";
+
+        if (thanLoi.Contains("UNAUTHENTICATED") || thanLoi.Contains("invalid authentication")
+            || thanLoi.Contains("INVALID_ID_TOKEN") || thanLoi.Contains("TOKEN_EXPIRED"))
+            return "Phien dang nhap da het han, hay dang nhap lai.";
 
         return "Loi: " + (thanLoi.Length > 120 ? thanLoi.Substring(0, 120) : thanLoi);
     }

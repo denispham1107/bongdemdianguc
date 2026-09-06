@@ -193,10 +193,14 @@ public class ManSanh : MonoBehaviour
         GUI.Label(new Rect(x + 14f * s, yy, rong, 26f * s), "Tao phong moi", kieuNhan);
         yy += 32f * s;
 
-        float rongO = rong - 380f * s;
+        // Nut chon man phai du cho "MAN: NGHIA DIA" - 14 ky tu. Rong 150*s thi
+        // o man hinh thap (s nho) chu bi cat mat dau va duoi, doc thanh
+        // "IAN: NGHIA DI".
+        const float RongNutMan = 230f;
+        float rongO = rong - (230f + RongNutMan) * s;
         tenPhongMoi = GUI.TextField(new Rect(x + 14f * s, yy, rongO, 42f * s), tenPhongMoi, 24, kieuO);
 
-        if (GUI.Button(new Rect(x + 14f * s + rongO + 10f * s, yy, 150f * s, 42f * s),
+        if (GUI.Button(new Rect(x + 14f * s + rongO + 10f * s, yy, RongNutMan * s, 42f * s),
                        manChoiMoi == "Act1" ? "MAN: DAU TRUONG" : "MAN: NGHIA DIA", kieuNutNho))
             manChoiMoi = manChoiMoi == "Act1" ? "Act2" : "Act1";
 
