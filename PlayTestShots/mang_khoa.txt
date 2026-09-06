@@ -1,8 +1,4 @@
-[ban 4] phep thu tu khoa roi tu mo lai
+[ban 5] phep thu tu khoa roi tu mo lai, dung tai khoan admin rieng
 1. truoc khi khoa, A vao game: VAO DUOC
-2. admin B khoa A: OK
-3. sau khi khoa, A vao game: bi chan - Tai khoan cua ban da bi khoa. Hay lien he quan tri vien.
-   phien cua A con giu lai khong: da bo
-4. admin B mo khoa A: OK
-5. sau khi mo khoa, A vao game: VAO DUOC
+2. BO QUA phan con lai: chua khai tai khoan admin trong chay-thu-mang.txt (dong 4 = email admin, dong 5 = mat khau).
 so loi ghi nhan = 0

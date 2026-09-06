@@ -20,6 +20,11 @@ using UnityEngine.Networking;
 /// truoc do co ai khoa san. Ban dau viet kieu "gia su A dang bi khoa" - chay
 /// lai sau khi da mo khoa thi ket qua sai ma nhin van nhu that.
 ///
+/// Viec khoa can quyen admin, nen phep thu dung TAI KHOAN ADMIN RIENG cua chu
+/// game (khai o dong 4-5 cua chay-thu-mang.txt). Truoc day tien tay lay tai
+/// khoan nguoi choi B lam admin - tien nhung sai: tai khoan chay thu ma cam
+/// quyen quan tri thi mat mot cai la mat ca trang quan tri.
+///
 /// Ba lan do, khong phai mot: truoc khi khoa phai VAO DUOC, sau khi khoa phai
 /// BI CHAN, mo khoa xong phai VAO DUOC lai. Chi do lan giua thi khong phan
 /// biet duoc "khoa co tac dung" voi "tai khoan nay von khong vao duoc".
@@ -30,7 +35,6 @@ public static class ThuKhoaTaiKhoan
 {
     // Doc tu file ngoai git - xem ThongTinChayThu
     static string EmailA { get { return ThongTinChayThu.EmailA; } }
-    static string EmailB { get { return ThongTinChayThu.EmailB; } }
     static string MatKhau { get { return ThongTinChayThu.MatKhau; } }
 
     static readonly StringBuilder bao = new StringBuilder();
@@ -106,10 +110,16 @@ public static class ThuKhoaTaiKhoan
     /// <summary>Dang nhap roi tai ho so. Tra ve co vao duoc game khong.</summary>
     static IEnumerator ThuVao(string email, System.Action<bool, string> xong)
     {
+        yield return ThuVaoBangMatKhau(email, MatKhau, xong);
+    }
+
+    static IEnumerator ThuVaoBangMatKhau(string email, string matKhau,
+                                         System.Action<bool, string> xong)
+    {
         FirebaseMang.Quen();
         bool ok = false; string e = null;
 
-        yield return FirebaseMang.DangNhap(email, MatKhau, (o, err) => { ok = o; e = err; });
+        yield return FirebaseMang.DangNhap(email, matKhau, (o, err) => { ok = o; e = err; });
         if (!ok) { xong(false, "khong qua duoc buoc Auth - " + e); yield break; }
 
         yield return HoSoMang.TaiHoacTao(null, (o, err) => { ok = o; e = err; });
@@ -118,7 +128,7 @@ public static class ThuKhoaTaiKhoan
 
     static IEnumerator ChayKichBan()
     {
-        Ghi("[ban 4] phep thu tu khoa roi tu mo lai");
+        Ghi("[ban 5] phep thu tu khoa roi tu mo lai, dung tai khoan admin rieng");
 
         bool ok = false; string e = null;
 
@@ -132,12 +142,25 @@ public static class ThuKhoaTaiKhoan
         { Ghi("[LOI] khong lay duoc uid cua A"); loi++; Ket(); yield break; }
 
         // ---- 2. ADMIN KHOA A ----
-        yield return ThuVao(EmailB, (o, err) => { ok = o; e = err; });
-        if (!ok) { Ghi("[LOI] khong dang nhap duoc tai khoan admin B: " + e); loi++; Ket(); yield break; }
+        // Tai khoan admin la tai khoan RIENG cua chu game, khong phai tai khoan
+        // nguoi choi. Chua khai bao thi dung o day - bo qua chu khong bao loi,
+        // vi phan con lai cua phep thu khong the chay ma khong co quyen admin.
+        if (!ThongTinChayThu.CoTaiKhoanAdmin)
+        {
+            Ghi("2. BO QUA phan con lai: chua khai tai khoan admin trong "
+                + "chay-thu-mang.txt (dong 4 = email admin, dong 5 = mat khau).");
+            Ghi("so loi ghi nhan = " + loi);
+            Ket(); yield break;
+        }
+
+        yield return ThuVaoBangMatKhau(ThongTinChayThu.EmailAdmin,
+                                       ThongTinChayThu.MatKhauAdmin,
+                                       (o, err) => { ok = o; e = err; });
+        if (!ok) { Ghi("[LOI] khong dang nhap duoc tai khoan admin: " + e); loi++; Ket(); yield break; }
 
         yield return DatKhoa(uidA, true, (o, err) => { ok = o; e = err; });
-        Ghi("2. admin B khoa A: " + (ok ? "OK" : "LOI - " + e));
-        if (!ok) { Ghi("[LOI] B khong khoa duoc A - B da co quyen admin chua?"); loi++; Ket(); yield break; }
+        Ghi("2. admin khoa A: " + (ok ? "OK" : "LOI - " + e));
+        if (!ok) { Ghi("[LOI] khoa khong duoc - tai khoan nay da co quyen admin chua?"); loi++; Ket(); yield break; }
 
         // ---- 3. SAU KHI KHOA: A phai bi chan ----
         yield return ThuVao(EmailA, (o, err) => { ok = o; e = err; });
@@ -152,9 +175,11 @@ public static class ThuKhoaTaiKhoan
         if (FirebaseMang.DaDangNhap) { Ghi("[LOI] van giu phien cua tai khoan bi khoa"); loi++; }
 
         // ---- 4. MO KHOA ROI THU LAI ----
-        yield return ThuVao(EmailB, (o, err) => { ok = o; e = err; });
+        yield return ThuVaoBangMatKhau(ThongTinChayThu.EmailAdmin,
+                                       ThongTinChayThu.MatKhauAdmin,
+                                       (o, err) => { ok = o; e = err; });
         if (ok) yield return DatKhoa(uidA, false, (o, err) => { ok = o; e = err; });
-        Ghi("4. admin B mo khoa A: " + (ok ? "OK" : "LOI - " + e));
+        Ghi("4. admin mo khoa A: " + (ok ? "OK" : "LOI - " + e));
         if (!ok) { Ghi("[LOI] khong mo khoa duoc - A se ket o trang thai bi khoa"); loi++; }
 
         yield return ThuVao(EmailA, (o, err) => { ok = o; e = err; });
