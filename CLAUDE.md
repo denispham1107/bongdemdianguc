@@ -41,7 +41,8 @@ Assets/Scripts/
    UI/             GameHUD (OnGUI), CamUng, ChiBaoNgam, MayNgam,
                    ManDangNhap, ManSanh (dang nhap + sanh phong, deu OnGUI)
    Mang/           FirebaseMang (cau REST), HoSoMang, PhongMang, TranHienTai
-web/               chi danh cho ADMIN: dang nhap + trang quan ly tai khoan
+web/               ban WebGL da xuat + /quantri/ (trang admin)
+Assets/WebGLTemplates/Diablo25D/   trang bao quanh game tren web (full man hinh)
 Assets/Editor/     cong cu menu "Diablo 2.5D" + cac kich ban chay thu
 Assets/Shaders/    17 shader viet tay (S_*.shader)
 Assets/Resources/  thu nap luc chay (DiemLua/ - diem moi lua cua cay)
@@ -73,10 +74,10 @@ Blender MCP **không render được** (ảnh ra rỗng) — phải chạy `blen
 > `EditorSceneManager.OpenScene("Assets/Scenes/Act2.unity", Single)` trả lại ngay — không thì
 > người dùng quay lại Unity thấy màn của mình biến mất.
 
-**Menu `Diablo 2.5D`** trong Unity (25 mục): 1 nướng asset + dựng màn, 3 tự kiểm tra,
+**Menu `Diablo 2.5D`** trong Unity (26 mục): 1 nướng asset + dựng màn, 3 tự kiểm tra,
 4 chạy thử & chụp hình, 14 chống ô vuông đen, 15–17 ảnh vỏ cây / đá mộ / sứt mẻ bia,
 18–18d chạy thử cây cháy, 19 hồi sinh sau lốc, 20 nướng điểm mồi lửa, 21 nút khoá góc nhìn,
-22 thanh kỹ năng bản PC, **26 chạy thử mạng (sảnh phòng), 27 chạy thử khoá tài khoản, 28 chụp màn đăng nhập·sảnh**.
+22 thanh kỹ năng bản PC, **26 chạy thử mạng (sảnh phòng), 27 chạy thử khoá tài khoản, 28 chụp màn đăng nhập·sảnh, 29 xuất bản WebGL**.
 Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
 
 ## Quy tắc làm việc (rút ra từ những lần đã sai)
@@ -109,8 +110,13 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
   `HUONG-DAN.md`). Đăng ký, đăng nhập, tạo/vào phòng, sẵn sàng, đếm ngược 10 giây — **tất cả
   nằm trong game Unity**, vẽ bằng OnGUI, gọi Firebase qua **REST** (Firebase Unity SDK không
   chạy trên WebGL). Trang web **chỉ để admin quản lý tài khoản**.
-  Dự án Firebase `diablo25d-game` (asia-southeast1), trang admin
-  https://diablo25d-game.web.app. Menu 26 và 27 chạy thật, **0 lỗi**.
+  Dự án Firebase `diablo25d-game` (asia-southeast1). Menu 26, 27, 28 chạy thật, **0 lỗi**.
+- **Chơi được trên trình duyệt**: https://diablo25d-game.web.app (bản WebGL, menu 29 —
+  build 11,3 phút, **169 MB** người chơi phải tải, 0 lỗi console). Trang quản trị chuyển
+  sang https://diablo25d-game.web.app/quantri/ . Mã nguồn ở
+  https://github.com/denispham1107/bongdemdianguc .
+  **Cần giảm dung lượng**: 155,7 MB nằm ở tài nguyên, và texture đang nén ASTC nên WebGL
+  phải giải nén ra RAM mỗi lần nạp.
   Giai đoạn 2 (chưa làm): thấy nhau trong trận, đánh nhau, người sống cuối cùng thắng.
 - Dự án **đã là git repo** (nhánh `main`, ảnh chụp đầu tiên `0ef3e18`, 05/09/2026, 1175 file).
   `Assets/MeshyImports/` (920 MB model gốc Meshy) **nằm ngoài git** — file vẫn trên đĩa, Unity

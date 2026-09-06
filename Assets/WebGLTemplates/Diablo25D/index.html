@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>{{{ PRODUCT_NAME }}}</title>
+  <style>
+    /* Ban mau cua Unity dat canh 960x600 co dinh o goc man hinh. Dien thoai
+       moi la nen tang chinh cua game nay, nen canvas phai lap day man hinh -
+       ca tren may tinh lan tren dien thoai. */
+    html, body {
+      margin: 0; padding: 0;
+      width: 100%; height: 100%;
+      overflow: hidden;
+      background: #07070a;
+      /* Chan viec cham hai lan de phong to, va chan keo de tai lai trang -
+       hai thao tac nay pha hong dieu khien cam ung trong game */
+      touch-action: none;
+      -webkit-user-select: none; user-select: none;
+      overscroll-behavior: none;
+    }
+    #o-game { position: fixed; inset: 0; }
+    #unity-canvas {
+      width: 100%; height: 100%;
+      display: block;
+      background: #07070a;
+    }
+
+    /* Man cho trong luc tai. Ban WebGL nang nen nguoi choi phai doi that -
+       khong co gi te hon mot man hinh den khong noi gi. */
+    #man-tai {
+      position: fixed; inset: 0;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      background: #07070a;
+      color: #b9b9c0;
+      font: 15px/1.6 system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+      z-index: 10;
+    }
+    #ten-game {
+      font-size: 34px; font-weight: 800; letter-spacing: 3px;
+      color: #d92415; margin-bottom: 26px;
+      text-shadow: 0 0 22px rgba(217, 36, 21, .45);
+    }
+    #vach { width: min(74vw, 420px); height: 6px; background: #23232b; border-radius: 3px; overflow: hidden; }
+    #vach-day { width: 0%; height: 100%; background: linear-gradient(90deg, #8c1a10, #ff5a2b); transition: width .2s; }
+    #so-phan-tram { margin-top: 12px; font-variant-numeric: tabular-nums; }
+    #loi-nang { color: #ff6b60; max-width: 80vw; text-align: center; margin-top: 18px; }
+  </style>
+</head>
+<body>
+
+<div id="o-game">
+  <canvas id="unity-canvas" tabindex="-1"></canvas>
+</div>
+
+<div id="man-tai">
+  <div id="ten-game">DIABLO 2.5D</div>
+  <div id="vach"><div id="vach-day"></div></div>
+  <div id="so-phan-tram">dang tai... 0%</div>
+  <div id="loi-nang"></div>
+</div>
+
+<script>
+  var canvas = document.querySelector("#unity-canvas");
+  var manTai = document.querySelector("#man-tai");
+  var vachDay = document.querySelector("#vach-day");
+  var soPhanTram = document.querySelector("#so-phan-tram");
+  var oLoi = document.querySelector("#loi-nang");
+
+  var buildUrl = "Build";
+  var config = {
+    arguments: [],
+    dataUrl: buildUrl + "/{{{ DATA_FILENAME }}}",
+    frameworkUrl: buildUrl + "/{{{ FRAMEWORK_FILENAME }}}",
+    codeUrl: buildUrl + "/{{{ CODE_FILENAME }}}",
+    streamingAssetsUrl: "StreamingAssets",
+    companyName: {{{ JSON.stringify(COMPANY_NAME) }}},
+    productName: {{{ JSON.stringify(PRODUCT_NAME) }}},
+    productVersion: {{{ JSON.stringify(PRODUCT_VERSION) }}},
+    showBanner: function (msg, type) {
+      if (type === "error") oLoi.textContent = msg;
+    },
+  };
+
+  var script = document.createElement("script");
+  script.src = buildUrl + "/{{{ LOADER_FILENAME }}}";
+  script.onload = function () {
+    createUnityInstance(canvas, config, function (tienDo) {
+      var p = Math.round(tienDo * 100);
+      vachDay.style.width = p + "%";
+      soPhanTram.textContent = "dang tai... " + p + "%";
+    }).then(function () {
+      manTai.style.display = "none";
+    }).catch(function (loi) {
+      oLoi.textContent = "Khong chay duoc: " + loi;
+    });
+  };
+  document.body.appendChild(script);
+</script>
+</body>
+</html>

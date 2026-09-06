@@ -58,3 +58,10 @@ ui-debug.log
 
 # Tai khoan chay thu phan mang - khong day len GitHub
 chay-thu-mang.txt
+
+# Ban build WebGL - sinh lai duoc tu ma nguon, khong day len git
+Build/
+web/Build/
+web/TemplateData/
+web/index.html
+web/StreamingAssets/

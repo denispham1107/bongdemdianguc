@@ -4762,6 +4762,108 @@ Cờ `batChoiMang` trong `MainMenuUI` để tắt toàn bộ phần mạng nếu
 
 ---
 
+## Bản chơi trên trình duyệt (WebGL)
+
+### Đẩy mã nguồn lên GitHub không làm ra bản chơi được
+
+Sau khi đẩy repo lên GitHub, câu hỏi đầu tiên là: sao vào `denispham1107.github.io/...` không chơi
+được? Vì GitHub chỉ giữ **mã nguồn** — 90 file C#, ba scene, 17 shader. Trình duyệt không chạy
+được thứ đó. Phải qua Unity xuất ra bản **WebGL**: toàn bộ C# dịch sang WebAssembly, tài nguyên
+gói thành một file dữ liệu.
+
+Và nơi đặt là **Firebase Hosting**, không phải GitHub Pages: game gọi Firebase Auth/Firestore/RTDB,
+để cùng một tên miền thì đỡ hẳn một lớp cấu hình.
+
+### Số đo lần xuất bản đầu tiên
+
+```
+[ban 1] xuat ban WebGL
+ket qua: Succeeded
+thoi gian: 11.3 phut
+tong dung luong: 161.0 MB
+so loi: 0 | so canh bao: 348
+  WebGL.data.unityweb          155.7 MB
+  WebGL.wasm.unityweb            5.2 MB
+  WebGL.framework.js.unityweb    0.1 MB
+  WebGL.loader.js                0.0 MB
+```
+
+Đo lại từ phía người chơi (`curl -I` lên hosting): **169 MB** phải tải về cho một lần vào.
+Đó là con số **quá lớn** — xem mục "Việc còn phải làm" ở cuối.
+
+### Cấu trúc trang sau khi có game
+
+Trang gốc trước đây là trang đăng nhập của admin. Giờ:
+
+| Đường dẫn | Nội dung |
+|---|---|
+| `/` | **Game** — vào là chơi |
+| `/quantri/` | Đăng nhập quản trị |
+| `/quantri/admin/` | Bảng quản lý tài khoản |
+
+Chuyển thư mục thì phải sửa lại đường dẫn tương đối trong hai trang admin (`./js/` → `../js/`,
+`../js/` → `../../js/`) — quên một chỗ là trang trắng không báo gì.
+
+### Nén: vì sao chọn Gzip kèm "tự giải nén"
+
+Unity WebGL có ba kiểu nén. Cách nhanh nhất là Gzip/Brotli **không** kèm tự giải nén — nhưng khi
+đó máy chủ **bắt buộc** phải gắn `Content-Encoding` đúng, sai một dòng cấu hình là trang trắng
+không một lời báo lỗi.
+
+Chọn **Gzip + `decompressionFallback = true`**: Unity đặt đuôi `.unityweb` và tự giải nén bằng
+JavaScript. Chậm hơn một chút nhưng chạy ở mọi nơi. Cấu hình header trong `firebase.json` vẫn
+giữ (khớp `.gz` và `.br`) để dùng khi nào tắt fallback.
+
+### Hai cái bẫy ở Firebase Hosting
+
+**1. `Cache-Control: max-age=3600` cho trang gốc.** Deploy bản mới xong mở trình duyệt vẫn thấy
+trang cũ — người chơi phải đợi một tiếng mới thấy bản cập nhật. Thêm quy tắc `no-cache` cho HTML.
+
+**2. Quy tắc `**/*.html` không khớp trang gốc.** Firebase so header theo **đường dẫn URL**, không
+theo tên file trên đĩa. Địa chỉ `/` không kết thúc bằng `.html` nên quy tắc trượt — sửa xong deploy
+mà `curl -I` vẫn trả `max-age=3600`. Phải khai thêm đúng nguồn `"/"`.
+
+Đây là chỗ dễ tưởng là "đã sửa rồi": file cấu hình trông rất hợp lý, chỉ có máy chủ là không nghĩ vậy.
+
+### Trang mẫu của Unity đặt game vào một ô 960×600
+
+Bản mẫu Unity sinh ra để canvas cố định 960×600 ở góc trái màn hình. Với dự án lấy **điện thoại
+làm nền tảng chính** thì không dùng được. Viết template riêng ở
+`Assets/WebGLTemplates/Diablo25D/index.html`:
+
+- canvas lấp đầy màn hình trên cả máy tính lẫn điện thoại;
+- `touch-action: none` và chặn kéo-để-tải-lại — hai thao tác này phá hỏng điều khiển cảm ứng;
+- màn chờ có tên game và **phần trăm tải**: bản nặng 169 MB thì người chơi phải đợi thật, và
+  không gì tệ hơn một màn hình đen không nói gì.
+
+Đặt `PlayerSettings.WebGL.template = "PROJECT:Diablo25D"` để mọi lần build sau tự dùng.
+
+### Kiểm chứng
+
+Mở thẳng trang trong trình duyệt, không tin vào việc "deploy xong là xong":
+
+- `curl` bảy đường dẫn (`/`, bốn file trong `Build/`, `/quantri/`, `/quantri/admin/`) — **tất cả 200**;
+- tải hết 169 MB trong trình duyệt: tiến trình chạy tới **100%**, màn chờ tự ẩn, **màn đăng nhập
+  của game hiện ra**;
+- console: **0 lỗi**.
+
+### Việc còn phải làm
+
+**169 MB là quá nặng**, nhất là trên điện thoại — nền tảng chính của game. Gần như toàn bộ nằm ở
+`WebGL.data.unityweb` (155,7 MB), tức tài nguyên chứ không phải mã.
+
+Console còn lặp lại một cảnh báo đáng chú ý:
+
+```
+WARNING: RGBA Compressed ASTC6X6 UNorm format is not supported, decompressing texture
+```
+
+Texture đang nén theo **ASTC** (định dạng của Android). WebGL trên máy tính không đọc được nên
+phải **giải nén ra bộ nhớ** — vừa tốn RAM vừa mất thời gian mỗi lần nạp. Chọn lại định dạng nén
+cho riêng nền tảng WebGL sẽ ăn cả hai đầu: file nhỏ hơn và không phải giải nén.
+
+---
+
 ## Phần 4 — Menu công cụ "Diablo 2.5D"
 
 | Mục | Tác dụng |
@@ -4794,6 +4896,7 @@ Cờ `batChoiMang` trong `MainMenuUI` để tắt toàn bộ phần mạng nếu
 | **26. Chay thu MANG - dang nhap va phong cho** | Chạy thật trên Firebase: đăng nhập, tạo phòng, đọc danh sách, đổi màn, đếm ngược, người thứ hai bị từ chối vào phòng đang đếm. Luôn dọn phòng đã tạo. Kết quả ra `PlayTestShots/mang_sanh.txt`. |
 | **27. Chay thu MANG - khoa tai khoan** | Kiểm rằng tài khoản bị admin khoá trên web thì không vào được game, còn tài khoản bình thường vẫn vào được. Kết quả ra `PlayTestShots/mang_khoa.txt`. |
 | **28. Chup man DANG NHAP va SANH PHONG** | Chụp ba màn hình thật của phần mạng ra `PlayTestShots/mang_man_*.png`. Xoá phiên đăng nhập cũ trên máy này (lần sau phải gõ lại mật khẩu) và luôn dọn phòng đã tạo. |
+| **29. Xuat ban WEBGL** | Xuất bản bản chơi trên trình duyệt ra `Build/WebGL` (khoảng 11 phút). Kết quả và dung lượng từng file ghi ra `PlayTestShots/build_webgl.txt`. Chép sang `web/` rồi `firebase deploy --only hosting` là lên mạng. |
 
 > ⚠️ Mục **1** sẽ **xóa và tạo lại** các thư mục Textures / Materials / Models / Prefabs.
 > Nếu bạn tự sửa tay trong đó thì hãy sao lưu trước.
