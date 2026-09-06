@@ -22,9 +22,10 @@ using UnityEngine;
 public static class ThuMangSanh
 {
     // Hai tai khoan da tao san khi chay thu tren web
-    const string EmailA = "thunghiem.a.diablo25d@gmail.com";
-    const string EmailB = "thunghiem.b.diablo25d@gmail.com";
-    const string MatKhau = "matkhau123456";
+    // Doc tu file ngoai git - xem ThongTinChayThu
+    static string EmailA { get { return ThongTinChayThu.EmailA; } }
+    static string EmailB { get { return ThongTinChayThu.EmailB; } }
+    static string MatKhau { get { return ThongTinChayThu.MatKhau; } }
 
     static readonly StringBuilder bao = new StringBuilder();
     static int loi;
@@ -37,6 +38,10 @@ public static class ThuMangSanh
     public static void Chay()
     {
         Directory.CreateDirectory("PlayTestShots");
+
+        // Thieu thong tin tai khoan thi dung han o day, dung vao Play roi
+        // moi hong - vao Play xong bao loi thi nhin het nhu loi mang.
+        if (!ThongTinChayThu.DocHoacBao()) return;
 
         truocBatPlayMode = EditorSettings.enterPlayModeOptionsEnabled;
         truocPlayMode = EditorSettings.enterPlayModeOptions;

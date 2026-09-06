@@ -55,3 +55,6 @@ ui-debug.log
 
 # ---- Ban build WebGL dat vao trang web (nang, dung lai duoc bang cach build lai) ----
 /web/game/
+
+# Tai khoan chay thu phan mang - khong day len GitHub
+chay-thu-mang.txt

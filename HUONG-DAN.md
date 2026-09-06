@@ -4647,19 +4647,45 @@ Sau khi sửa, đo được: bảng hiện **2 tài khoản**; gõ `ChienBinhB` 
 
 Cái nút "Khoá" chỉ có nghĩa nếu game thật sự không cho vào. Khoá nằm ở Firestore
 (`nguoichoi/{uid}.biKhoa`) chứ **không** ở Firebase Auth, nên bước đăng nhập vẫn qua — phải đến
-bước tải hồ sơ mới bị chặn. Phép thử kiểm đúng thứ tự đó, và thử **cả hai** tài khoản: nếu tài
-khoản không khoá cũng bị chặn thì phép thử đang báo sai chứ không phải khoá đang chạy đúng.
+bước tải hồ sơ mới bị chặn.
+
+**Bản đầu của phép thử này sai, và sai theo kiểu khó thấy nhất.** Nó *giả định* tài khoản A đang
+bị khoá sẵn (vì tôi vừa bấm khoá bằng tay trên trang admin). Chạy lần đầu: 0 lỗi, trông rất đẹp.
+Sau khi mở khoá A rồi chạy lại, kết quả in ra **giống hệt từng chữ** — mà đúng ra phải khác. Hoá
+ra Unity chưa biên dịch lại nên vẫn chạy assembly cũ. Thêm dấu `[ban N]` vào báo cáo mới lòi ra.
+
+Sửa hai lần:
+- Báo cáo luôn in `[ban N]`, đổi số mỗi lần sửa. Hai lần chạy ra số giống hệt nhau mà số bản
+  không đổi thì **chưa chắc code đã chạy**.
+- Phép thử **tự khoá rồi tự mở lại**, không đợi ai đặt sẵn trạng thái. Nó đo **ba lần** chứ không
+  một: trước khi khoá phải vào được, sau khi khoá phải bị chặn, mở khoá xong phải vào lại được.
+  Chỉ đo lần giữa thì không phân biệt được "khoá có tác dụng" với "tài khoản này vốn không vào
+  được".
 
 ```
-A (dang bi khoa) - dang nhap Auth: OK
-A - tai ho so: bi chan - Tai khoan cua ban da bi khoa. Hay lien he quan tri vien.
-A - phien con giu lai khong: da bo
-B (khong khoa) - vao game: OK, ten = ChienBinhB
+[ban 4] phep thu tu khoa roi tu mo lai
+1. truoc khi khoa, A vao game: VAO DUOC
+2. admin B khoa A: OK
+3. sau khi khoa, A vao game: bi chan - Tai khoan cua ban da bi khoa. Hay lien he quan tri vien.
+   phien cua A con giu lai khong: da bo
+4. admin B mo khoa A: OK
+5. sau khi mo khoa, A vao game: VAO DUOC
 so loi ghi nhan = 0
 ```
 
+Bản tự chứa này lại lòi thêm một lỗi thật mà bản cũ giấu mất: **phiên của tài khoản bị khoá vẫn
+được giữ lại**. Việc bỏ phiên khi đó nằm ở `ManDangNhap` — tức ở tầng giao diện — nên chỗ nào gọi
+thẳng `HoSoMang` là lọt, và lần sau mở game lên là tự vào thẳng dù đang bị khoá. Chuyển
+`FirebaseMang.Quen()` xuống chính chỗ phát hiện `biKhoa`.
+
 Đọc thẳng Firestore bằng token chủ dự án (không qua trang web) để chắc nút Khoá ghi thật:
 `biKhoa` của A đổi `false → true`, rồi `true → false` sau khi bấm Mở khoá.
+
+**Mật khẩu tài khoản chạy thử không nằm trong mã nguồn.** Repo để công khai, mà trước đó ba kịch
+bản viết thẳng mật khẩu vào code — ai cũng đăng nhập được vào hai tài khoản đó và làm bẩn cơ sở
+dữ liệu thật. Giờ đọc từ `chay-thu-mang.txt` ở gốc dự án, và file đó nằm trong `.gitignore`.
+Thiếu file thì menu dừng ngay **trước khi** vào Play và báo rõ — vào Play rồi mới hỏng thì nhìn
+hệt lỗi mạng.
 
 ### Ảnh chụp tìm ra ba lỗi mà số đo không thấy
 

@@ -19,8 +19,9 @@ using UnityEngine;
 /// </summary>
 public static class ChupManMang
 {
-    const string Email = "thunghiem.b.diablo25d@gmail.com";
-    const string MatKhau = "matkhau123456";
+    // Doc tu file ngoai git - xem ThongTinChayThu
+    static string Email { get { return ThongTinChayThu.EmailB; } }
+    static string MatKhau { get { return ThongTinChayThu.MatKhau; } }
 
     static bool daBatDau;
     static bool truocBatPlayMode;
@@ -30,6 +31,10 @@ public static class ChupManMang
     public static void Chay()
     {
         Directory.CreateDirectory("PlayTestShots");
+
+        // Thieu thong tin tai khoan thi dung han o day, dung vao Play roi
+        // moi hong - vao Play xong bao loi thi nhin het nhu loi mang.
+        if (!ThongTinChayThu.DocHoacBao()) return;
 
         truocBatPlayMode = EditorSettings.enterPlayModeOptionsEnabled;
         truocPlayMode = EditorSettings.enterPlayModeOptions;

@@ -4,28 +4,34 @@ using System.Text;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.Networking;
 
 /// <summary>
-/// CHAY THU: ADMIN KHOA TAI KHOAN TREN WEB THI TRONG GAME CO VAO DUOC KHONG.
+/// CHAY THU: ADMIN KHOA TAI KHOAN THI TRONG GAME CO VAO DUOC KHONG.
 ///
 /// Day la cho de nut "Khoa" tren trang quan tri co y nghia. Neu game van cho
 /// vao thi cai nut kia chi la mot o tich trong co so du lieu.
 ///
 /// Khoa nam o Firestore (<c>nguoichoi/{uid}.biKhoa</c>) chu KHONG phai o
 /// Firebase Auth, nen buoc dang nhap van thanh cong - phai den buoc tai ho so
-/// moi bi chan. Phep thu nay kiem tra dung thu tu do.
+/// moi bi chan. Phep thu kiem tra dung thu tu do.
 ///
-/// De phep thu doc lap voi gia thiet: thu ca hai tai khoan. Neu tai khoan
-/// KHONG bi khoa cung bi tu choi thi phep thu dang bao sai chu khong phai
-/// khoa dang chay dung.
+/// PHEP THU TU CHUA: no TU KHOA tai khoan A roi TU MO lai, chu khong doi
+/// truoc do co ai khoa san. Ban dau viet kieu "gia su A dang bi khoa" - chay
+/// lai sau khi da mo khoa thi ket qua sai ma nhin van nhu that.
+///
+/// Ba lan do, khong phai mot: truoc khi khoa phai VAO DUOC, sau khi khoa phai
+/// BI CHAN, mo khoa xong phai VAO DUOC lai. Chi do lan giua thi khong phan
+/// biet duoc "khoa co tac dung" voi "tai khoan nay von khong vao duoc".
 ///
 /// Ket qua ghi ra <c>PlayTestShots/mang_khoa.txt</c>.
 /// </summary>
 public static class ThuKhoaTaiKhoan
 {
-    const string EmailBiKhoa = "thunghiem.a.diablo25d@gmail.com";
-    const string EmailBinhThuong = "thunghiem.b.diablo25d@gmail.com";
-    const string MatKhau = "matkhau123456";
+    // Doc tu file ngoai git - xem ThongTinChayThu
+    static string EmailA { get { return ThongTinChayThu.EmailA; } }
+    static string EmailB { get { return ThongTinChayThu.EmailB; } }
+    static string MatKhau { get { return ThongTinChayThu.MatKhau; } }
 
     static readonly StringBuilder bao = new StringBuilder();
     static int loi;
@@ -37,6 +43,10 @@ public static class ThuKhoaTaiKhoan
     public static void Chay()
     {
         Directory.CreateDirectory("PlayTestShots");
+
+        // Thieu thong tin tai khoan thi dung han o day, dung vao Play roi
+        // moi hong - vao Play xong bao loi thi nhin het nhu loi mang.
+        if (!ThongTinChayThu.DocHoacBao()) return;
 
         truocBatPlayMode = EditorSettings.enterPlayModeOptionsEnabled;
         truocPlayMode = EditorSettings.enterPlayModeOptions;
@@ -67,38 +77,89 @@ public static class ThuKhoaTaiKhoan
         Debug.Log("[ThuKhoa] " + s);
     }
 
-    static IEnumerator ChayKichBan()
+    /// <summary>
+    /// Dat co biKhoa cho MOT NGUOI KHAC. Chi admin lam duoc - luat Firestore
+    /// cho phep 'laAdmin()' sua ho so bat ky. Viet o day chu khong them ham
+    /// vao HoSoMang: game khong bao gio can khoa nguoi khac, chi trang quan
+    /// tri moi can.
+    /// </summary>
+    static IEnumerator DatKhoa(string uid, bool khoa, System.Action<bool, string> xong)
     {
-        Ghi("[ban 1]");
+        string duong = FirebaseMang.DuongFirestore + "/nguoichoi/" + uid
+                     + "?updateMask.fieldPaths=biKhoa";
+        string than = "{\"fields\":{\"biKhoa\":{\"booleanValue\":"
+                    + (khoa ? "true" : "false") + "}}}";
 
-        // ---- 1. TAI KHOAN DANG BI KHOA ----
+        using (var yc = new UnityWebRequest(duong, "PATCH"))
+        {
+            yc.uploadHandler = new UploadHandlerRaw(Encoding.UTF8.GetBytes(than));
+            yc.downloadHandler = new DownloadHandlerBuffer();
+            yc.SetRequestHeader("Content-Type", "application/json");
+            yc.SetRequestHeader("Authorization", "Bearer " + FirebaseMang.IdToken);
+            yield return yc.SendWebRequest();
+
+            bool ok = yc.result == UnityWebRequest.Result.Success;
+            xong(ok, ok ? null : yc.downloadHandler.text);
+        }
+    }
+
+    /// <summary>Dang nhap roi tai ho so. Tra ve co vao duoc game khong.</summary>
+    static IEnumerator ThuVao(string email, System.Action<bool, string> xong)
+    {
         FirebaseMang.Quen();
         bool ok = false; string e = null;
 
-        yield return FirebaseMang.DangNhap(EmailBiKhoa, MatKhau, (o, err) => { ok = o; e = err; });
-        Ghi("A (dang bi khoa) - dang nhap Auth: " + (ok ? "OK" : "LOI - " + e));
-        if (!ok) { Ghi("[LOI] khoa o Firestore ma Auth cung tu choi - sai thiet ke"); loi++; }
+        yield return FirebaseMang.DangNhap(email, MatKhau, (o, err) => { ok = o; e = err; });
+        if (!ok) { xong(false, "khong qua duoc buoc Auth - " + e); yield break; }
 
-        if (ok)
-        {
-            yield return HoSoMang.TaiHoacTao(null, (o, err) => { ok = o; e = err; });
-            Ghi("A - tai ho so: " + (ok ? "VAO DUOC" : "bi chan - " + e));
+        yield return HoSoMang.TaiHoacTao(null, (o, err) => { ok = o; e = err; });
+        xong(ok, e);
+    }
 
-            if (ok) { Ghi("[LOI] tai khoan bi khoa ma van vao duoc game"); loi++; }
-            else if (e == null || !e.Contains("bi khoa"))
-            { Ghi("[LOI] bi chan nhung khong phai vi khoa: " + e); loi++; }
-        }
+    static IEnumerator ChayKichBan()
+    {
+        Ghi("[ban 4] phep thu tu khoa roi tu mo lai");
 
-        // Phien phai bi bo di, khong duoc giu lai de lan sau tu vao
-        Ghi("A - phien con giu lai khong: " + (FirebaseMang.DaDangNhap ? "CON" : "da bo"));
+        bool ok = false; string e = null;
 
-        // ---- 2. TAI KHOAN BINH THUONG: phai vao duoc ----
-        // Neu buoc nay cung bi chan thi phep thu tren khong chung minh duoc gi.
-        FirebaseMang.Quen();
-        yield return FirebaseMang.DangNhap(EmailBinhThuong, MatKhau, (o, err) => { ok = o; e = err; });
-        if (ok) yield return HoSoMang.TaiHoacTao(null, (o, err) => { ok = o; e = err; });
-        Ghi("B (khong khoa) - vao game: " + (ok ? "OK, ten = " + HoSoMang.CuaToi.ten : "LOI - " + e));
-        if (!ok) { Ghi("[LOI] tai khoan binh thuong cung khong vao duoc"); loi++; }
+        // ---- 1. TRUOC KHI KHOA: A phai vao duoc ----
+        yield return ThuVao(EmailA, (o, err) => { ok = o; e = err; });
+        string uidA = FirebaseMang.Uid;
+        Ghi("1. truoc khi khoa, A vao game: " + (ok ? "VAO DUOC" : "bi chan - " + e));
+        if (!ok) { Ghi("[LOI] chua khoa ma A da khong vao duoc - phep thu vo nghia"); loi++; }
+
+        if (string.IsNullOrEmpty(uidA))
+        { Ghi("[LOI] khong lay duoc uid cua A"); loi++; Ket(); yield break; }
+
+        // ---- 2. ADMIN KHOA A ----
+        yield return ThuVao(EmailB, (o, err) => { ok = o; e = err; });
+        if (!ok) { Ghi("[LOI] khong dang nhap duoc tai khoan admin B: " + e); loi++; Ket(); yield break; }
+
+        yield return DatKhoa(uidA, true, (o, err) => { ok = o; e = err; });
+        Ghi("2. admin B khoa A: " + (ok ? "OK" : "LOI - " + e));
+        if (!ok) { Ghi("[LOI] B khong khoa duoc A - B da co quyen admin chua?"); loi++; Ket(); yield break; }
+
+        // ---- 3. SAU KHI KHOA: A phai bi chan ----
+        yield return ThuVao(EmailA, (o, err) => { ok = o; e = err; });
+        Ghi("3. sau khi khoa, A vao game: " + (ok ? "VAN VAO DUOC" : "bi chan - " + e));
+
+        if (ok) { Ghi("[LOI] tai khoan bi khoa ma van vao duoc game"); loi++; }
+        else if (e == null || !e.Contains("bi khoa"))
+        { Ghi("[LOI] bi chan nhung khong phai vi khoa: " + e); loi++; }
+
+        // Phien phai bi bo di, khong duoc giu lai de lan sau tu vao thang
+        Ghi("   phien cua A con giu lai khong: " + (FirebaseMang.DaDangNhap ? "CON" : "da bo"));
+        if (FirebaseMang.DaDangNhap) { Ghi("[LOI] van giu phien cua tai khoan bi khoa"); loi++; }
+
+        // ---- 4. MO KHOA ROI THU LAI ----
+        yield return ThuVao(EmailB, (o, err) => { ok = o; e = err; });
+        if (ok) yield return DatKhoa(uidA, false, (o, err) => { ok = o; e = err; });
+        Ghi("4. admin B mo khoa A: " + (ok ? "OK" : "LOI - " + e));
+        if (!ok) { Ghi("[LOI] khong mo khoa duoc - A se ket o trang thai bi khoa"); loi++; }
+
+        yield return ThuVao(EmailA, (o, err) => { ok = o; e = err; });
+        Ghi("5. sau khi mo khoa, A vao game: " + (ok ? "VAO DUOC" : "bi chan - " + e));
+        if (!ok) { Ghi("[LOI] mo khoa roi ma van khong vao duoc"); loi++; }
 
         Ghi("so loi ghi nhan = " + loi);
         Ket();

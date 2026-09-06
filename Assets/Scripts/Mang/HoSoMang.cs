@@ -73,6 +73,10 @@ public static class HoSoMang
 
                 if (CuaToi.biKhoa)
                 {
+                    // Bo phien NGAY O DAY chu khong de man dang nhap lo. Ai goi
+                    // TaiHoacTao ma quen xu ly la tai khoan bi khoa van con
+                    // token trong tay - lan sau mo game len la tu vao thang.
+                    FirebaseMang.Quen();
                     xong(false, "Tai khoan cua ban da bi khoa. Hay lien he quan tri vien.");
                     yield break;
                 }
