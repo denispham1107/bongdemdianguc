@@ -4663,15 +4663,32 @@ Sửa hai lần:
   được".
 
 ```
-[ban 4] phep thu tu khoa roi tu mo lai
+[ban 6] tu khoa roi tu mo lai; kiem ca nguoi thuong khong khoa duoc ai
 1. truoc khi khoa, A vao game: VAO DUOC
-2. admin B khoa A: OK
+1b. nguoi choi thuong (B) thu khoa A: bi tu choi - dung nhu mong doi
+2. admin khoa A: OK
 3. sau khi khoa, A vao game: bi chan - Tai khoan cua ban da bi khoa. Hay lien he quan tri vien.
    phien cua A con giu lai khong: da bo
-4. admin B mo khoa A: OK
+4. admin mo khoa A: OK
 5. sau khi mo khoa, A vao game: VAO DUOC
 so loi ghi nhan = 0
 ```
+
+### Quyền admin không được mượn của tài khoản người chơi
+
+Lúc đầu tôi tiện tay cấp quyền admin cho **tài khoản thử nghiệm B**, vì phép thử cần một tài
+khoản có quyền khoá người khác. Tiện, nhưng sai: một tài khoản chạy thử — mật khẩu yếu, nằm
+trong file cấu hình, dùng chung cho mọi kịch bản — mà cầm quyền quản trị thì mất nó là mất cả
+trang quản trị.
+
+Giờ admin là **tài khoản riêng của chủ game**, khai ở dòng 4–5 của `chay-thu-mang.txt`. Chưa
+khai thì menu 27 chạy phần đầu rồi dừng và nói rõ "BO QUA", chứ không báo lỗi giả.
+
+Và phép thử có thêm **bước 1b**: một tài khoản người chơi bình thường thử khoá người khác —
+phải **bị từ chối**. Bước này đo đúng cái ranh giới: nếu người chơi thường cũng khoá được người
+khác thì luật bảo mật hỏng và cả trang quản trị thành vô nghĩa. Nó cũng chính là bằng chứng
+rằng quyền admin đã thu hồi khỏi tài khoản B thật sự — chứ không phải chỉ xoá một dòng trong
+cơ sở dữ liệu rồi tin là xong.
 
 Bản tự chứa này lại lòi thêm một lỗi thật mà bản cũ giấu mất: **phiên của tài khoản bị khoá vẫn
 được giữ lại**. Việc bỏ phiên khi đó nằm ở `ManDangNhap` — tức ở tầng giao diện — nên chỗ nào gọi

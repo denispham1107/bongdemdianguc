@@ -128,7 +128,7 @@ public static class ThuKhoaTaiKhoan
 
     static IEnumerator ChayKichBan()
     {
-        Ghi("[ban 5] phep thu tu khoa roi tu mo lai, dung tai khoan admin rieng");
+        Ghi("[ban 6] tu khoa roi tu mo lai; kiem ca nguoi thuong khong khoa duoc ai");
 
         bool ok = false; string e = null;
 
@@ -140,6 +140,24 @@ public static class ThuKhoaTaiKhoan
 
         if (string.IsNullOrEmpty(uidA))
         { Ghi("[LOI] khong lay duoc uid cua A"); loi++; Ket(); yield break; }
+
+        // ---- 1b. NGUOI CHOI THUONG KHONG DUOC KHOA NGUOI KHAC ----
+        // Buoc nay khong can quyen admin nen luon chay duoc. No do dung cai
+        // ranh gioi: neu mot tai khoan nguoi choi binh thuong van khoa duoc
+        // nguoi khac thi luat bao mat hong, va ca trang quan tri thanh vo
+        // nghia. Truoc day tai khoan B tung co quyen admin - buoc nay chung
+        // minh quyen do da bi thu hoi that.
+        yield return ThuVao(ThongTinChayThu.EmailB, (o, err) => { ok = o; e = err; });
+        if (!ok) { Ghi("[LOI] khong dang nhap duoc B: " + e); loi++; Ket(); yield break; }
+
+        yield return DatKhoa(uidA, true, (o, err) => { ok = o; e = err; });
+        Ghi("1b. nguoi choi thuong (B) thu khoa A: "
+            + (ok ? "KHOA DUOC" : "bi tu choi - dung nhu mong doi"));
+        if (ok)
+        {
+            Ghi("[LOI] nguoi choi thuong khoa duoc nguoi khac - luat bao mat hong");
+            loi++;
+        }
 
         // ---- 2. ADMIN KHOA A ----
         // Tai khoan admin la tai khoan RIENG cua chu game, khong phai tai khoan
