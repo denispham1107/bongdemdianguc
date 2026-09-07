@@ -4931,6 +4931,54 @@ so loi ghi nhan = 0
 Con số nói lên tất cả: lần chạy trước danh sách trả về **5 phòng**, lần này còn **1** — đúng cái
 phòng vừa tạo. Bốn phòng ma đã bị lọc sạch.
 
+### Nhưng lọc chưa phải là sửa — và cái nút Giải tán chưa bao giờ dùng được
+
+Người dùng mở trang quản trị và thấy **ba phòng vẫn nằm đó**, ghi "đang mở", dù đã đóng game từ
+lâu. Bấm **Giải tán** thì không có gì xảy ra.
+
+Hai chuyện, một gốc: **luật chỉ cho chủ phòng ghi vào phòng của mình.**
+
+- Tôi mới chỉ *lọc* phòng ma khỏi sảnh trong game, chứ không *xoá*, vì người đang xem sảnh không
+  phải chủ phòng nên không có quyền. Rác vẫn nằm nguyên trong cơ sở dữ liệu — và trang quản trị
+  thì hiện tất cả.
+- Tài khoản admin cũng không phải chủ ba phòng đó. Luật từ chối **im lặng**: trang web gọi
+  `await remove(...)` trần, lỗi bay lên console, còn người dùng chỉ thấy một cái nút bấm không ăn.
+
+Sửa ba chỗ:
+
+**1. Luật biết ai là admin.** Danh sách admin thật nằm ở Firestore, nhưng **luật của Realtime
+Database không đọc được Firestore** — hai cơ sở dữ liệu khác hẳn nhau. Phải giữ thêm một bản chỉ
+chứa uid ở `quantri/` bên RTDB. (Một cái bẫy đáng nhớ: chọn RTDB *vì* `onDisconnect`, rồi truy cập
+nó bằng REST — con đường không có `onDisconnect`; rồi lại đặt danh sách admin ở cơ sở dữ liệu kia.)
+
+**2. Ai cũng được dọn xác.** Luật cho phép **xoá** — và chỉ xoá, không cho sửa — một phòng đã quá
+60 giây không dập nhịp:
+
+```
+!newData.exists() && ( !data.hasChild('capNhatLuc') || data.child('capNhatLuc').val() < now - 60000 )
+```
+
+Chỉ cho xoá chứ không cho sửa: không ai muốn người lạ vào sửa phòng của mình chỉ vì mình rớt mạng
+một phút. Game giờ vừa đọc sảnh vừa dọn xác — trả danh sách cho người gọi **trước**, rồi mới xoá,
+để sảnh hiện ra ngay chứ không đợi mấy lệnh xoá.
+
+**3. Nút bấm phải nói khi nó hỏng.** `giaiTan()` bắt lỗi và hiện ra; trang quản trị thêm cột
+"⚠ chủ phòng đã thoát" và một nút **Dọn N phòng đã chết**.
+
+Đo, và phải đo **cả hai phía** — chỉ xem "phòng ma có mất không" thì không phân biệt được với
+"xoá sạch mọi thứ":
+
+```
+dung mot phong ma (im lang 600 giay): -P0u7pOFlynEDX1ULa2w
+sau khi doc sanh, phong ma con khong: da bi xoa
+phong dang mo cua minh con nguyen: True (phai la True)
+so loi ghi nhan = 0
+```
+
+Và bằng chứng cuối cùng, đọc thẳng cơ sở dữ liệu bằng token chủ dự án: trước đó có **4 phòng**,
+sau một lần đọc sảnh còn **0**. Ba phòng trong ảnh chụp của người dùng biến mất mà không phải
+bấm gì.
+
 ### Việc còn phải làm
 
 **169 MB là quá nặng**, nhất là trên điện thoại — nền tảng chính của game. Gần như toàn bộ nằm ở

@@ -366,23 +366,32 @@ public static class PhongMang
         yield return FirebaseMang.Doc("phong", s => json = s);
 
         var ra = new List<Phong>();
+        var chet = new List<string>();
+
         if (!string.IsNullOrEmpty(json) && json != "null")
         {
             double bayGio = GioMayChu();
             foreach (var cap in TachCapCapCao(json))
             {
                 var p = DocPhong(cap.Key, cap.Value);
-
-                // Phong ma: chu phong dong tab, phong nam lai vinh vien. Loc o
-                // day chu khong xoa - luat chi cho chu phong xoa phong cua minh,
-                // va nguoi dang xem sanh thi khong phai chu phong. Admin don
-                // duoc trong trang quan tri.
-                if (!PhongConSong(p, bayGio)) continue;
-
-                ra.Add(p);
+                if (PhongConSong(p, bayGio)) ra.Add(p);
+                else chet.Add(p.ma);
             }
         }
+
+        // Tra danh sach cho nguoi goi TRUOC, roi moi don dep. Sanh hien ra ngay,
+        // khong phai doi vai lenh xoa chay xong.
         xong(ra);
+
+        // Phong ma: chu phong dong tab thi phong nam lai vinh vien - REST khong
+        // co onDisconnect. Ai nhin thay xac thi don ho: luat cho phep XOA (chu
+        // khong cho sua) mot phong da qua nguong im lang. Khong don thi co so
+        // du lieu cu day len mai, va trang quan tri day nhung phong ma.
+        foreach (var ma in chet)
+        {
+            yield return FirebaseMang.Xoa("phong/" + ma, (ok, e) => { });
+            yield return FirebaseMang.Xoa("tran/" + ma, (ok, e) => { });
+        }
     }
 
     public static IEnumerator TaiLaiPhong(string maPhong, Action<bool, string> xong)

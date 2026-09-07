@@ -186,16 +186,44 @@ $("nutTim").onclick = async () => {
 
 // ================= PHONG DANG MO =================
 
+// Chu phong dap nhip moi giay. Qua ngan nay ma im lang thi coi nhu nguoi ta
+// da dong tab - REST khong co onDisconnect nen phong khong tu mat duoc.
+const GIAY_COI_LA_CHET = 60;
+
+function phongConSong(p) {
+  const moc = p.capNhatLuc || p.taoLuc || 0;
+  if (!moc) return false;
+  return (Date.now() - moc) / 1000 <= GIAY_COI_LA_CHET;
+}
+
+async function giaiTan(ma) {
+  // Bat loi va NOI RA. Truoc day chi "await remove(...)" tran: luat tu choi
+  // thi loi bay len console, con nguoi dung chi thay nut bam khong an gi.
+  try {
+    await remove(ref(rtdb, "phong/" + ma));
+    await remove(ref(rtdb, "tran/" + ma));
+    return null;
+  } catch (e) {
+    return e.message || String(e);
+  }
+}
+
 function theoDoiPhongDangMo() {
   onValue(ref(rtdb, "phong"), (anh) => {
     const o = $("oPhongDangMo");
     if (!anh.exists()) {
-      o.innerHTML = `<div class="trong-rong">Không có phòng nào đang mở.</div>`;
+      o.innerHTML = `<div class="trong-rong">Không có phòng nào.</div>`;
       return;
     }
+
+    const dsChet = [];
     o.innerHTML = "";
+
     anh.forEach((con) => {
       const p = con.val();
+      const song = phongConSong(p);
+      if (!song) dsChet.push(con.key);
+
       const hang = document.createElement("div");
       hang.className = "hang-phong";
       hang.innerHTML = `
@@ -204,21 +232,42 @@ function theoDoiPhongDangMo() {
         <span class="chi-tiet">chủ: <b class="ten-host"></b></span>
         <span class="chi-tiet">${p.soNguoi || 0}/${p.toiDa || 4}</span>
         <span class="chi-tiet">${p.trangThai}</span>
+        <span class="chi-tiet trang-thai-song"></span>
         <span class="day" style="flex:1"></span>`;
       hang.querySelector(".ten-phong").textContent = p.ten || "(không tên)";
       hang.querySelector(".ten-host").textContent = p.hostTen || "?";
+
+      const oSong = hang.querySelector(".trang-thai-song");
+      oSong.textContent = song ? "đang chơi" : "⚠ chủ phòng đã thoát";
+      if (!song) oSong.style.color = "#e08a3c";
 
       const nut = document.createElement("button");
       nut.className = "nut nut-nho";
       nut.textContent = "Giải tán";
       nut.onclick = async () => {
         if (!confirm("Giải tán phòng này?")) return;
-        await remove(ref(rtdb, "phong/" + con.key));
-        await remove(ref(rtdb, "tran/" + con.key));
+        nut.disabled = true;
+        const loi = await giaiTan(con.key);
+        if (loi) { alert("Không giải tán được: " + loi); nut.disabled = false; }
       };
       hang.appendChild(nut);
       o.appendChild(hang);
     });
+
+    if (dsChet.length > 0) {
+      const nutDon = document.createElement("button");
+      nutDon.className = "nut nut-nho";
+      nutDon.style.marginTop = "12px";
+      nutDon.textContent = "Dọn " + dsChet.length + " phòng đã chết";
+      nutDon.onclick = async () => {
+        if (!confirm("Xoá " + dsChet.length + " phòng mà chủ phòng đã thoát?")) return;
+        nutDon.disabled = true;
+        let hong = 0;
+        for (const ma of dsChet) if (await giaiTan(ma)) hong++;
+        if (hong > 0) alert("Còn " + hong + " phòng không xoá được.");
+      };
+      o.appendChild(nutDon);
+    }
   });
 }
 </script>

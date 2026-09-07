@@ -80,7 +80,7 @@ public static class ThuMangSanh
     static IEnumerator ChayKichBan()
     {
         float t0 = Time.realtimeSinceStartup;
-        Ghi("[ban 3] them buoc 8a: phong ma bi loc khoi sanh");
+        Ghi("[ban 4] phong chet bi XOA han, phong song khong bi dung toi");
 
         // ---- 1. DANG NHAP ----
         FirebaseMang.Quen();
@@ -195,6 +195,40 @@ public static class ThuMangSanh
         Ghi("danh sach sanh: " + (dsSong == null ? 0 : dsSong.Count)
             + " phong, trong do phong ma = " + soMa + " (phai la 0)");
         if (soMa > 0) { Ghi("[LOI] phong ma van lot vao sanh"); loi++; }
+
+        // ---- 8a-2. PHONG CHET CO BI XOA HAN KHONG ----
+        // Loc khoi sanh moi la giau di; phai xoa han thi co so du lieu moi sach.
+        // Dung mot phong gia da chet han: ghi capNhatLuc lui ve qua khu.
+        string maGia = null;
+        yield return FirebaseMang.Them("phong",
+            "{\"ten\":\"Phong ma chay thu\",\"hostUid\":\"" + FirebaseMang.Uid + "\","
+            + "\"hostTen\":\"" + FirebaseMang.TenHienThi + "\",\"manChoi\":\"Act2\","
+            + "\"trangThai\":\"cho\",\"toiDa\":4,\"soNguoi\":1,"
+            + "\"taoLuc\":" + (long)(PhongMang.GioMayChu() - 600000)
+            + ",\"capNhatLuc\":" + (long)(PhongMang.GioMayChu() - 600000) + "}",
+            (ma, e2) => { maGia = ma; });
+
+        Ghi("dung mot phong ma (im lang 600 giay): " + (maGia ?? "KHONG TAO DUOC"));
+
+        if (!string.IsNullOrEmpty(maGia))
+        {
+            // Doc danh sach - chinh viec doc phai keo theo don dep
+            yield return PhongMang.LayDanhSach(k => { });
+
+            string conLaiJson = null;
+            yield return FirebaseMang.Doc("phong/" + maGia, s => conLaiJson = s);
+            bool daXoa = string.IsNullOrEmpty(conLaiJson) || conLaiJson == "null";
+            Ghi("sau khi doc sanh, phong ma con khong: " + (daXoa ? "da bi xoa" : "VAN CON"));
+            if (!daXoa) { Ghi("[LOI] phong chet khong bi don"); loi++; }
+
+            // Va phong THAT thi khong duoc dung toi - neu no cung bien mat thi
+            // hoa ra dang xoa sach moi thu chu khong phai loc dung.
+            string phongThat = null;
+            yield return FirebaseMang.Doc("phong/" + maPhongDaTao, s => phongThat = s);
+            bool conNguyen = !string.IsNullOrEmpty(phongThat) && phongThat != "null";
+            Ghi("phong dang mo cua minh con nguyen: " + conNguyen + " (phai la True)");
+            if (!conNguyen) { Ghi("[LOI] don nham ca phong dang song"); loi++; }
+        }
 
         // ---- 8b. KHACH CO NHAY VAO TRAN DUOC KHONG ----
         // Loi that da gap: host vao tran, con nguoi choi kia ket lai o MainMenu.

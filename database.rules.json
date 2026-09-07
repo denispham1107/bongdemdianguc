@@ -17,7 +17,17 @@
       ".read": "auth != null",
 
       "$maPhong": {
-        ".write": "auth != null && ( !data.exists() || data.child('hostUid').val() === auth.uid || newData.child('hostUid').val() === auth.uid )",
+        // Bon duong duoc ghi vao mot phong:
+        //  1. phong chua ton tai  -> dang tao moi
+        //  2. minh la chu phong
+        //  3. minh la admin       -> nut "Giai tan" trong trang quan tri.
+        //     Truoc day thieu ve nay nen nut do bam khong an gi: luat tu choi
+        //     im lang, trang web khong bao loi, nhin het nhu nut hong.
+        //  4. XOA mot phong da chet. REST khong co onDisconnect nen chu phong
+        //     dong tab la phong nam lai vinh vien - phai cho nguoi khac don ho.
+        //     Chi cho XOA (newData khong ton tai), khong cho sua: khong ai muon
+        //     ai do vao sua phong cua minh chi vi minh mat mang mot phut.
+        ".write": "auth != null && ( !data.exists() || data.child('hostUid').val() === auth.uid || newData.child('hostUid').val() === auth.uid || root.child('quantri').child(auth.uid).exists() || ( !newData.exists() && ( !data.hasChild('capNhatLuc') || data.child('capNhatLuc').val() < now - 60000 ) ) )",
 
         "hostUid":   { ".validate": "newData.val() === auth.uid || data.val() === auth.uid" },
         "hostTen":   { ".validate": "newData.isString() && newData.val().length <= 16" },
@@ -71,7 +81,7 @@
         // Host ghi duoc ca nhanh nay. Thieu dong nay thi lenh onDisconnect
         // "khi host mat ket noi thi xoa tran" bi tu choi, va vi no bi tu choi
         // nen CA VIEC TAO PHONG that bai - tuy khong lien quan gi den phong.
-        ".write": "auth != null && root.child('phong').child($maPhong).child('hostUid').val() === auth.uid",
+        ".write": "auth != null && ( root.child('phong').child($maPhong).child('hostUid').val() === auth.uid || root.child('quantri').child(auth.uid).exists() || !root.child('phong').child($maPhong).exists() )",
 
         "nguoi": {
           "$uid": {
@@ -106,6 +116,19 @@
         ".read": "auth != null",
         ".write": "auth.uid === $uid"
       }
+    },
+
+    // DANH SACH ADMIN - BAN SAO CHO REALTIME DATABASE.
+    //
+    // Danh sach that nam o Firestore (collection 'quantri'), nhung luat cua
+    // Realtime Database KHONG doc duoc Firestore - hai co so du lieu khac han
+    // nhau. Nen phai giu them mot ban o day, chi chua uid, khong chua gi khac.
+    //
+    // Khong ai ghi duoc tu trinh duyet, giong het ben Firestore: them admin
+    // bang tay trong Console hoac bang script chay tren may.
+    "quantri": {
+      ".read": "auth != null",
+      ".write": false
     }
   }
 }
