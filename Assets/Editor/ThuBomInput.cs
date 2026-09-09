@@ -26,7 +26,7 @@ using UnityEngine;
 /// </summary>
 public static class ThuBomInput
 {
-    const string Canh = "Assets/Scenes/Act2.unity";
+    static string Canh = "Assets/Scenes/Act2.unity";
 
     static readonly StringBuilder bao = new StringBuilder();
     static int loi;
@@ -35,8 +35,18 @@ public static class ThuBomInput
     static bool truocBatPlayMode;
     static EnterPlayModeOptions truocPlayMode;
 
-    [MenuItem("Diablo 2.5D/30. Chay thu BOM INPUT (buoc 1)", false, 116)]
-    public static void Chay()
+    [MenuItem("Diablo 2.5D/30. Chay thu BOM INPUT - Act2 (buoc 1)", false, 116)]
+    public static void ChayAct2() { Canh = "Assets/Scenes/Act2.unity"; Chay(); }
+
+    /// <summary>
+    /// Act1 dung bang code luc chay (GameBootstrap), Act2 la scene da nuong
+    /// san - hai duong khac han nhau. Mot man chay dung khong chung minh duoc
+    /// man kia, nen phai do ca hai.
+    /// </summary>
+    [MenuItem("Diablo 2.5D/30b. Chay thu BOM INPUT - Act1 (buoc 1)", false, 117)]
+    public static void ChayAct1() { Canh = "Assets/Scenes/Act1.unity"; Chay(); }
+
+    static void Chay()
     {
         Directory.CreateDirectory("PlayTestShots");
 
@@ -96,7 +106,7 @@ public static class ThuBomInput
 
     static IEnumerator ChayKichBan()
     {
-        Ghi("[ban 1] buoc 1 - tach y muon ra khoi viec thi hanh");
+        Ghi("[ban 2] buoc 1 - tach y muon, man = " + Canh);
 
         // Doi nhan vat xuat hien: Act2 dung canh mat vai giay
         PlayerController pc = null;
@@ -215,7 +225,8 @@ public static class ThuBomInput
 
     static void Ket()
     {
-        File.WriteAllText("PlayTestShots/bom_input.txt", bao.ToString());
+        string ten = Canh.Contains("Act1") ? "bom_input_act1.txt" : "bom_input_act2.txt";
+        File.WriteAllText("PlayTestShots/" + ten, bao.ToString());
 
         var rac = GameObject.Find("TAM_BomInput");
         if (rac != null) Object.DestroyImmediate(rac);

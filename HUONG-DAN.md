@@ -5160,6 +5160,11 @@ nguyên vẹn sau khi tách, chứ không phải "chạy được là xong".
 Chiều thứ hai (**trôi 0,000 m**) mới là chiều bắt được lỗi nguy hiểm nhất: gói input cũ kẹt lại và
 nhân vật cứ chạy mãi. Chỉ đo chiều "bơm vào có đi không" thì lỗi đó không bao giờ lộ ra.
 
+**Phải đo cả hai màn.** Lần đầu tôi chỉ chạy trên Act2 rồi báo là xong — thiếu, vì Act1 dựng bằng
+code lúc chạy còn Act2 là scene đã nướng sẵn, hai đường khác hẳn nhau. Chạy lại trên Act1 (menu
+30b): đi được **6,34 m**, trôi **0,000 m**, năng lượng 250 → 246, **0 lỗi**. Hai màn cùng đạt thì
+mới kết luận được.
+
 Và bơm kỹ năng thì **năng lượng tụt 250 → 247** — có tụt mới là đã thực sự tung phép, chứ đếm số
 lần bấm thì chỉ chứng minh con số tăng.
 
