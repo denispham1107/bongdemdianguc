@@ -4979,6 +4979,65 @@ Và bằng chứng cuối cùng, đọc thẳng cơ sở dữ liệu bằng toke
 sau một lần đọc sảnh còn **0**. Ba phòng trong ảnh chụp của người dùng biến mất mà không phải
 bấm gì.
 
+### Giai đoạn 2, bước 0: đường truyền nối thẳng máy với máy
+
+Trong trận đấu, vị trí nhân vật **không đi qua Firebase**. Lý do là một con số đo được: một vòng
+khứ hồi tới Firebase Singapore mất **49 ms**, và đó là *sàn cứng* — cộng thêm nhịp gửi, đệm nội
+suy và khung hình thì vượt 80 ms. Nối thẳng máy với máy trong nước thì còn 10–30 ms. Đó là cả
+khoảng cách giữa "đạt" và "không đạt" mục tiêu 50–80 ms.
+
+Firebase vẫn còn việc của nó: hai máy dùng nó để **tìm thấy nhau**. Bắt tay xong thì nó đứng sang
+một bên — trong suốt trận đấu không còn gói tin nào đi qua Google, và nếu Firebase sập giữa trận
+thì trận vẫn chạy.
+
+**Bốn file:**
+
+| File | Việc |
+|---|---|
+| `Assets/Plugins/WebGL/CauNoiWebRTC.jslib` | gọi thẳng `RTCPeerConnection` của trình duyệt |
+| `Assets/Scripts/Mang/KenhTrucTiep.cs` | một cửa duy nhất cho cả hai nền tảng |
+| `Assets/Scripts/Mang/BatTay.cs` | hai máy trao đổi địa chỉ qua Realtime Database |
+| `web/dothu/index.html` | công cụ đo, dùng đúng cơ chế đó nhưng chạy ngoài game |
+
+**Kênh phải là kênh không tin cậy.** `ordered: false, maxRetransmits: 0` khiến nó hành xử như
+UDP: gói nào rớt thì bỏ luôn. Để mặc định (tin cậy, đúng thứ tự) thì một gói rớt sẽ **chặn mọi
+gói sau nó** và độ trễ vọt từ 50 lên 300 ms đúng lúc đang đánh nhau — mà một vị trí cũ 20 ms
+trước thì gửi lại cũng vô ích.
+
+**Chuỗi trả về từ JavaScript phải được giải phóng.** Bên `.jslib` cấp phát bằng `_malloc` trong
+heap của Unity; C# không gọi `FreeHGlobal` thì mỗi tin nhắn để lại một mảnh rác — một trận đấu có
+hàng chục nghìn tin nhắn.
+
+**Editor và PC không có WebRTC** (gói `com.unity.webrtc` không chạy trên WebGL, nên không dùng
+chung được). Ở đó `KenhTrucTiep` chạy một kênh **giả lập trong bộ nhớ**: đủ để kiểm phần logic mà
+không phải build WebGL 7 phút mỗi lần, nhưng **không đo được độ trễ thật**. Cờ `LaGiaLap` có ở đó
+để không ai lỡ báo cáo một con số giả lập như thể nó là số đo thật.
+
+#### Công cụ đo, và hai lỗi của chính nó
+
+Lần đo đầu tiên của người dùng trả về: trung vị **5,7 ms**, mất gói **9%**, kiểu kết nối
+**"không xác định"**.
+
+Cả ba dòng đều có vấn đề, và hai trong số đó là lỗi của công cụ:
+
+**1. "Không xác định" — tôi đọc quá muộn.** Dòng cuối nhật ký là
+`trang thai ICE: disconnected`: kết nối đã rớt trước khi tôi gọi `getStats()`, nên không còn cặp
+ứng viên nào để xem. Mà đó lại chính là dòng quan trọng nhất — không biết nối thẳng hay phải
+tiếp sức thì mọi con số phía trên đều lơ lửng. Sửa: đọc **ngay khi kênh mở**.
+
+**2. Mất gói 9% khớp đáng ngờ với việc rớt kết nối.** 200 gói, mất 18 — bằng đúng phần cuối, tức
+mất dồn một cục lúc rớt chứ không rải đều. Sửa: ghi nhận nếu ICE rớt *trong* lúc đo và nói thẳng
+là tỉ lệ mất gói không còn đáng tin.
+
+**3. Còn 5,7 ms thì không phải lỗi, mà là số đúng của một tình huống sai.** Hai máy ở **cùng mạng
+nội bộ**: gói tin chạy qua cái router trong nhà chứ không hề ra Internet. Ra 2–6 ms là chuyện
+bình thường, và nó không nói lên được gì về lúc hai người ở hai nơi khác nhau. Công cụ giờ nhận
+ra trường hợp `host ↔ host` và nói thẳng: *"Hai máy đang ở CÙNG MẠNG NỘI BỘ — con số này không
+đại diện cho lúc chơi thật."*
+
+Bài học lặp lại lần nữa: một phép đo cho ra số đẹp không có nghĩa là nó đang đo đúng thứ mình
+tưởng.
+
 ### Giai đoạn 2, bước 1: tách ý muốn ra khỏi việc thi hành
 
 `PlayerController` 940 dòng vừa *đọc phím* vừa *thi hành phép*. Chơi một mình thì không sao,

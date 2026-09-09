@@ -104,6 +104,8 @@ const SO_GIAY = 10;
 
 let pc = null, kenh = null, laMay1 = false;
 let dangDo = false;
+let roiGiuaChung = false;
+let cungMangNoiBo = false;
 const rtt = [];
 let daGui = 0, daVe = 0;
 
@@ -147,7 +149,7 @@ async function batDau(may1) {
   $("nutMay1").disabled = true;
   $("nutMay2").disabled = true;
   $("oKetQua").hidden = true;
-  rtt.length = 0; daGui = 0; daVe = 0;
+  rtt.length = 0; daGui = 0; daVe = 0; roiGiuaChung = false;
 
   const ma = $("oMaPhien").value.trim() || "thu1";
   const goc = ref(rtdb, "dothu/" + ma);
@@ -161,7 +163,15 @@ async function batDau(may1) {
   pc.oniceconnectionstatechange = () => {
     ghi("trang thai ICE: " + pc.iceConnectionState);
     if (pc.iceConnectionState === "failed")
-      trangThai("Không nối được. Mạng này chặn nối thẳng - xem ghi chú cuối trang.", "khong-dat");
+      trangThai("Không nối được. Mạng này chặn nối thẳng.", "khong-dat");
+
+    // Roi ket noi GIUA luc do thi moi goi con lai deu mat - va ti le mat goi
+    // bao ra se la con so vo nghia neu khong noi ro chuyen nay.
+    if (dangDo && (pc.iceConnectionState === "disconnected"
+                || pc.iceConnectionState === "failed")) {
+      roiGiuaChung = true;
+      ghi("!! ket noi roi TRONG luc do - ti le mat goi khong con dang tin");
+    }
   };
 
   // Moi may ghi ung vien cua minh vao nhanh rieng, va doc nhanh cua may kia
@@ -218,8 +228,12 @@ async function batDau(may1) {
 }
 
 function gan(k) {
-  k.onopen = () => {
+  k.onopen = async () => {
     ghi("kenh da mo");
+    // Doc kieu ket noi NGAY BAY GIO. Lan truoc doc sau khi do xong thi ICE da
+    // roi mat, khong con cap ung vien nao - va o bao "khong xac dinh", dung
+    // cai dong quan trong nhat.
+    await xemKieuKetNoi();
     trangThai("Đã nối. Đang đo " + (MOI_GIAY * SO_GIAY) + " gói...", "cho");
     if (laMay1) doDoTre();
   };
@@ -277,7 +291,8 @@ async function ketThuc() {
   $("oMax").textContent = max.toFixed(1) + " ms";
   $("oJitter").textContent = (p95 - min).toFixed(1) + " ms";
   $("oGoi").textContent = daGui + " / " + daVe;
-  $("oMatGoi").textContent = (100 * mat / daGui).toFixed(1) + "%";
+  $("oMatGoi").textContent = (100 * mat / daGui).toFixed(1) + "%"
+    + (roiGiuaChung ? "  (kết nối rớt giữa chừng)" : "");
 
   // Ngan sach da tinh o ke hoach: duong truyen + nhip gui 60Hz (8) +
   // dem noi suy 1 nhip (17) + khung hinh (8) = duong truyen + 33 ms
@@ -293,9 +308,19 @@ async function ketThuc() {
   await xemKieuKetNoi();
 
   $("oKetQua").hidden = false;
-  trangThai(tong <= 80
-    ? "Xong. Đạt mục tiêu 50-80 ms."
-    : "Xong. VƯỢT mục tiêu 50-80 ms.", tong <= 80 ? "dat" : "khong-dat");
+
+  if (roiGiuaChung) {
+    trangThai("Kết nối RỚT giữa lúc đo - tỉ lệ mất gói phía trên không đáng tin. "
+            + "Hãy đo lại và đừng chuyển sang tab khác.", "khong-dat");
+  } else if (cungMangNoiBo) {
+    trangThai("Hai máy đang ở CÙNG MẠNG NỘI BỘ - gói tin không ra Internet, "
+            + "nên con số này không đại diện cho lúc chơi thật. Hãy cho một máy "
+            + "dùng 4G rồi đo lại.", "cho");
+  } else {
+    trangThai(tong <= 80
+      ? "Xong. Đạt mục tiêu 50-80 ms."
+      : "Xong. VƯỢT mục tiêu 50-80 ms.", tong <= 80 ? "dat" : "khong-dat");
+  }
 }
 
 /// Noi thang hay phai nho nguoi khac tiep suc - hai truong hop khac han nhau
@@ -315,14 +340,21 @@ async function xemKieuKetNoi() {
       if (b.id === cap.remoteCandidateId) kia = b.candidateType;
     });
 
-    const ten = { host: "cùng mạng LAN", srflx: "nối thẳng qua NAT",
+    const ten = { host: "cùng mạng nội bộ", srflx: "nối thẳng qua NAT",
                   prflx: "nối thẳng qua NAT", relay: "PHẢI TIẾP SỨC (relay)" };
     const mo = (toi === "relay" || kia === "relay")
       ? ten.relay : (ten[toi] || toi) + " ↔ " + (ten[kia] || kia);
 
+    // HAI MAY CUNG MANG NOI BO THI SO DO KHONG DAI DIEN CHO GI CA.
+    // Goi tin khong he ra Internet, chi chay qua cai router trong nha - ra 2-6
+    // ms la chuyen binh thuong, va no khong noi len duoc dieu gi ve luc hai
+    // nguoi o hai noi khac nhau. Phai noi ro cho khong ai mung ham.
+    cungMangNoiBo = (toi === "host" && kia === "host");
+
     const o = $("oKieu");
-    o.textContent = mo;
-    o.className = (toi === "relay" || kia === "relay") ? "khong-dat" : "dat";
+    o.textContent = cungMangNoiBo ? "cùng mạng nội bộ (KHÔNG ra Internet)" : mo;
+    o.className = (toi === "relay" || kia === "relay") ? "khong-dat"
+                : cungMangNoiBo ? "cho" : "dat";
     ghi("ung vien: " + toi + " <-> " + kia);
   } catch (e) {
     $("oKieu").textContent = "không đọc được";

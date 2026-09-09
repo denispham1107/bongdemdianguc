@@ -83,6 +83,21 @@
         // nen CA VIEC TAO PHONG that bai - tuy khong lien quan gi den phong.
         ".write": "auth != null && ( root.child('phong').child($maPhong).child('hostUid').val() === auth.uid || root.child('quantri').child(auth.uid).exists() || !root.child('phong').child($maPhong).exists() )",
 
+        // CHO HAI MAY TRAO DOI DIA CHI DE NOI THANG VOI NHAU.
+        //
+        // Ten cho la "{uidNguoiVao}_{uidChuPhong}" - ca hai ben deu co uid cua
+        // minh trong do, nen dieu kien contains() cho dung hai nguoi ay ghi,
+        // khong ai chen ngang duoc mot cap dang bat tay.
+        //
+        // Phai khai rieng: .write o cap tren chi cho chu phong, ma nguoi VAO
+        // cung phai dat cau tra loi va ung vien cua ho len day.
+        "battay": {
+          "$cho": {
+            ".read": "auth != null",
+            ".write": "auth != null && $cho.contains(auth.uid)"
+          }
+        },
+
         "nguoi": {
           "$uid": {
             // Vi tri: moi nguoi tu ghi cua minh - phai tuc thi, khong the cho
