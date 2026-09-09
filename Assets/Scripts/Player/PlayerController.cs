@@ -208,6 +208,26 @@ public class PlayerController : MonoBehaviour
         // van phai duoc nhac mot cau.
         if (tuDocInput && boDoc != null) input = boDoc.Doc(dt);
 
+        ThiHanhMotKhung(input);
+    }
+
+    /// <summary>
+    /// THI HANH DUNG MOT KHUNG HINH THEO MOT GOI Y MUON.
+    ///
+    /// Tach rieng khoi <c>Update</c> de con GOI LAI DUOC. Khi may trong tai
+    /// bao "toi da xu ly toi so N va ket qua la day", may nguoi choi dat lai
+    /// trang thai roi chay lai tung goi tu N+1 - xem <see cref="DuDoan"/>.
+    ///
+    /// DUNG <c>g.dt</c> CHU KHONG PHAI <c>Time.deltaTime</c>: luc chay lai,
+    /// mot khung hinh cu 16,7 ms phai duoc thi hanh dung 16,7 ms, chu khong
+    /// phai theo nhip khung hinh hien tai. Sai cho nay thi moi lan hieu chinh
+    /// nhan vat lai nhay mot doan.
+    /// </summary>
+    public void ThiHanhMotKhung(GoiInput g)
+    {
+        input = g;
+        float dt = g.dt;
+
         if (health != null && health.IsDead)
         {
             if (anim != null) anim.SetMoveSpeed(0f);
@@ -216,7 +236,7 @@ public class PlayerController : MonoBehaviour
             // Truoc day cho no lang le thoat ngay o day: nguoi choi bam 1/2/3/4
             // khong thay gi xay ra, tuong ky nang hong, trong khi that ra nhan vat
             // da guc tu luc nao. Bam phim ky nang luc nay thi nhac lai cho biet.
-            if (input.kyNang >= 0)
+            if (g.kyNang >= 0)
                 Say("BAN DA GUC NGA - bam R de choi lai");
             return;
         }
@@ -906,5 +926,63 @@ public class PlayerController : MonoBehaviour
     {
         LastMessage = msg;
         LastMessageTime = Time.time;
+    }
+
+    // ================================================================
+    //  CHUP VA DAT LAI TRANG THAI - de con chay lai duoc
+    // ================================================================
+
+    /// <summary>Chup lai trang thai hien gio.</summary>
+    public TrangThaiNhanVat ChupTrangThai()
+    {
+        var t = new TrangThaiNhanVat();
+        t.soThuTu       = input.soThuTu;
+        t.viTri         = transform.position;
+        t.vanToc        = velocity;
+        t.huongMat      = transform.rotation;
+        t.mana          = mana;
+        t.hoiCauLua     = fireballTimer;
+        t.hoiBang       = iceTimer;
+        t.hoiSet        = boltTimer;
+        t.hoiLoc        = tornadoTimer;
+        t.hoiThienThach = meteorTimer;
+        t.hoiKhieng     = khiengTimer;
+        t.hoiGiatSet    = giatSetTimer;
+        t.dangNiem      = castTimer;
+        t.coDiemDen     = hasMoveTarget;
+        t.diemDen       = moveTarget;
+        return t;
+    }
+
+    /// <summary>
+    /// Dat nhan vat ve mot trang thai da chup.
+    ///
+    /// PHAI TAT CharacterController TRUOC KHI DOI VI TRI. No giu mot ban sao
+    /// vi tri o tang duoi; gan thang transform.position trong khi no dang bat
+    /// thi khung hinh sau no keo nguoc nhan vat ve cho cu, va hieu chinh nhin
+    /// nhu khong an gi.
+    /// </summary>
+    public void DatTrangThai(TrangThaiNhanVat t)
+    {
+        bool batLai = cc != null && cc.enabled;
+        if (batLai) cc.enabled = false;
+
+        transform.position = t.viTri;
+        transform.rotation = t.huongMat;
+
+        if (batLai) cc.enabled = true;
+
+        velocity      = t.vanToc;
+        mana          = t.mana;
+        fireballTimer = t.hoiCauLua;
+        iceTimer      = t.hoiBang;
+        boltTimer     = t.hoiSet;
+        tornadoTimer  = t.hoiLoc;
+        meteorTimer   = t.hoiThienThach;
+        khiengTimer   = t.hoiKhieng;
+        giatSetTimer  = t.hoiGiatSet;
+        castTimer     = t.dangNiem;
+        hasMoveTarget = t.coDiemDen;
+        moveTarget    = t.diemDen;
     }
 }

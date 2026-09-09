@@ -1,0 +1,6 @@
+[ban 2] buoc 2 - chuoi input di xa hon de phep kiem co suc nang
+1. tat dinh: chay 120 goi hai lan -> lech 0.0000 m (di duoc 4.84 m)
+2. hieu chinh khi KHOP -> nhan vat xe dich 0.0000 m (phai gan 0), lech phat hien 0.0000 m
+3. hieu chinh khi LECH 2 m -> phat hien lech 2.00 m, chay lai 80 goi
+4. sau hieu chinh con giu 80 goi (phai la 80)
+so loi ghi nhan = 0

@@ -1,0 +1,8 @@
+[ban 2] buoc 1 - tach y muon, man = Assets/Scenes/Act2.unity
+tim thay nhan vat: Player, moveSpeed = 5.2
+co bo doc input gan kem: True (phai la True)
+bom huong (1,0,0) trong 1.2s -> di duoc 6.34 m, lech truc X 6.34 m (toi thieu can 3.12 m)
+bom huong (0,0,1) trong 1.2s -> di duoc 6.20 m, lech truc Z 6.20 m
+tra ve tu doc phim, khong bam gi -> troi 0.000 m (phai gan 0)
+bom ky nang 0 -> so lan bam ky nang tang 1 (phai la 1), nang luong 250 -> 243
+so loi ghi nhan = 0

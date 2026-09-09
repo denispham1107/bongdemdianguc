@@ -5175,6 +5175,80 @@ joystick lẫn nút kỹ năng — tất cả chạy đúng như trước.** Đ�
 Và bơm kỹ năng thì **năng lượng tụt 250 → 247** — có tụt mới là đã thực sự tung phép, chứ đếm số
 lần bấm thì chỉ chứng minh con số tăng.
 
+### Giai đoạn 2, bước 2: nhân vật của mình phản hồi tức thì
+
+Với 28 ms độ trễ đo được ở bước 0, nếu chờ trọng tài xác nhận rồi mới cho nhân vật nhúc nhích thì
+người chơi bấm một cái phải đợi **56 ms** mới thấy chính nhân vật mình phản ứng. Cảm giác "nặng
+tay" xuất hiện ngay lập tức.
+
+Nên máy người chơi **thi hành ngay**, đồng thời nhớ lại những gói input chưa được xác nhận. Khi
+trọng tài báo *"tôi đã xử lý tới gói số N, kết quả là đây"*:
+
+1. đặt nhân vật về đúng trạng thái đó,
+2. **chạy lại** các gói từ N+1 tới hiện tại,
+3. nếu ra đúng chỗ cũ thì người chơi không thấy gì cả.
+
+Chỉ khi trọng tài bắt được điều gì khác — va chạm, bị đẩy lùi, ăn đòn — thì vị trí mới lệch, và
+lúc đó mới kéo nhân vật về.
+
+**Ba file mới, một hàm tách ra:**
+
+| | |
+|---|---|
+| `TrangThaiNhanVat.cs` | ảnh chụp một thời điểm |
+| `DuDoan.cs` | vòng đệm input chưa xác nhận + hiệu chỉnh |
+| `PlayerController.ThiHanhMotKhung(GoiInput)` | tách khỏi `Update` để **gọi lại được** |
+| `ChupTrangThai` / `DatTrangThai` | chụp và đặt lại |
+
+**Dùng `g.dt` chứ không phải `Time.deltaTime`.** Lúc chạy lại, một khung hình cũ 16,7 ms phải được
+thi hành đúng 16,7 ms chứ không theo nhịp khung hình hiện tại. Sai chỗ này thì mỗi lần hiệu chỉnh
+nhân vật lại nhảy một đoạn — mà hiệu chỉnh xảy ra vài chục lần mỗi giây.
+
+**Hộ chiếu hồi chiêu cũng phải nằm trong ảnh chụp.** Thiếu nó thì lúc chạy lại, một kỹ năng đang
+đợi hồi sẽ được coi là sẵn sàng và bắn ra lần nữa — tự nhiên nhân vật tung hai quả cầu lửa từ một
+lần bấm.
+
+**Phải tắt `CharacterController` trước khi đổi vị trí.** Nó giữ một bản sao vị trí ở tầng dưới;
+gán thẳng `transform.position` trong khi nó đang bật thì khung hình sau nó kéo nhân vật về chỗ cũ,
+và hiệu chỉnh nhìn như không ăn gì.
+
+**Hai ngưỡng, và lý do có chúng:**
+
+- **5 cm** — dưới mức này coi như khớp. Không thể đòi khớp tuyệt đối: phép tính dấu phẩy động trên
+  hai máy không bao giờ ra số giống hệt tới chữ số cuối. Đòi bằng nhau tuyệt đối thì khung hình
+  nào cũng "lệch" và nhân vật rung liên tục.
+- **4 m** — quá mức này thì nhảy thẳng về, không kéo từ từ nữa; kéo một quãng xa quá thì nhân vật
+  trượt dài như đi băng.
+
+#### Đo (menu 31)
+
+```
+[ban 2] buoc 2 - chuoi input di xa hon de phep kiem co suc nang
+1. tat dinh: chay 120 goi hai lan -> lech 0.0000 m (di duoc 4.84 m)
+2. hieu chinh khi KHOP -> nhan vat xe dich 0.0000 m (phai gan 0), lech phat hien 0.0000 m
+3. hieu chinh khi LECH 2 m -> phat hien lech 2.00 m, chay lai 80 goi
+4. sau hieu chinh con giu 80 goi (phai la 80)
+so loi ghi nhan = 0
+```
+
+**Phép đo số 1 là điều kiện sống còn của cả bước 2.** Cùng một chuỗi input, chạy lại phải ra cùng
+một kết quả — không tất định thì mỗi lần hiệu chỉnh nhân vật lại nhảy một đoạn.
+
+Bản đầu của phép thử này **yếu**: chuỗi input đổi hướng mỗi 12 khung với bước 1,7 rad khiến nhân
+vật xoay vòng tại chỗ, 60 gói mà chỉ dịch được **0,94 m**. Kiểm tính tất định với một nhân vật gần
+như đứng yên thì chẳng chứng minh được gì. Sửa thành 120 gói, đổi hướng thoải hơn — nhân vật đi
+**4,84 m** và vẫn lệch **0,0000 m**.
+
+**Phép đo số 2 mới là cái xảy ra 99% thời gian:** trọng tài xác nhận đúng y điều mình đã đoán.
+Nhân vật xê dịch **0,0000 m** — không nhúc nhích. Nếu chỗ này mà giật thì game không chơi được,
+vì nó lặp lại vài chục lần mỗi giây.
+
+Chuỗi input dùng bộ sinh số có hạt giống cố định chứ không dùng `Random` của Unity: `Random` đó
+dùng chung trạng thái với cả game, hạt lửa hay quái vật nhúc nhích một cái là chuỗi đổi và hai lần
+chạy không còn so sánh được.
+
+Chạy lại menu 30 sau khi sửa: bước 1 vẫn nguyên vẹn (6,34 m và 6,20 m, lý thuyết 6,24), 0 lỗi.
+
 ### Việc còn phải làm
 
 **169 MB là quá nặng**, nhất là trên điện thoại — nền tảng chính của game. Gần như toàn bộ nằm ở
