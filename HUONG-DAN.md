@@ -4979,6 +4979,59 @@ Và bằng chứng cuối cùng, đọc thẳng cơ sở dữ liệu bằng toke
 sau một lần đọc sảnh còn **0**. Ba phòng trong ảnh chụp của người dùng biến mất mà không phải
 bấm gì.
 
+### Giai đoạn 2, bước 1: tách ý muốn ra khỏi việc thi hành
+
+`PlayerController` 940 dòng vừa *đọc phím* vừa *thi hành phép*. Chơi một mình thì không sao,
+nhưng chơi mạng thì cùng một đoạn logic phải chạy được ở **hai nơi**:
+
+- máy người chơi — chạy ngay khi bấm, không đợi mạng (dự đoán);
+- máy trọng tài — chạy lại chính chuỗi thao tác đó để phán xử.
+
+Bàn phím chỉ có ở nơi thứ nhất. Nên phải tách.
+
+**Ba file:**
+
+| File | Việc |
+|---|---|
+| `GoiInput.cs` | struct: một khung hình ý muốn của người chơi |
+| `DocInput.cs` | nơi **duy nhất** trong đường điều khiển được phép gọi `Input.*` hay đọc `CamUng` |
+| `PlayerController.cs` | chỉ còn thi hành; nhận ý muốn từ `input` |
+
+**Vì sao mọi trường trong gói đều là toạ độ thế giới**, không phải toạ độ màn hình: mỗi người xoay
+camera một kiểu, và máy trọng tài thì không có camera của ai cả. Gửi "nghiêng cần sang trái" thì
+bên kia không dịch được ra hướng nào; gửi thẳng "đi về hướng (0.7, 0, 0.7)" thì ai cũng hiểu giống
+nhau. Nên phép đổi trục theo camera được chuyển hẳn sang `DocInput`.
+
+Ngoại lệ có chủ ý: `GetAimPoint` vẫn nằm ở `PlayerController` và vẫn đọc `Input.mousePosition` —
+nhưng **chỉ máy người chơi gọi nó**. Nó bắn tia từ camera của mình rồi nhét *kết quả* (một điểm
+trong thế giới) vào gói. Trọng tài chỉ nhận điểm đã ngắm rồi kẹp lại trong tầm cho phép.
+
+Cờ `tuDocInput` giữ hành vi cũ nguyên vẹn: bật (mặc định) thì nhân vật tự đọc bàn phím như trước;
+tắt thì chờ ngoài bơm vào — dùng cho nhân vật của người khác, và cho việc chạy lại input khi
+hiệu chỉnh.
+
+**Đo (menu 30), hai chiều chứ không một:**
+
+```
+[ban 1] buoc 1 - tach y muon ra khoi viec thi hanh
+tim thay nhan vat: Player, moveSpeed = 5.2
+co bo doc input gan kem: True (phai la True)
+bom huong (1,0,0) trong 1.2s -> di duoc 6.27 m, lech truc X 6.27 m (toi thieu can 3.12 m)
+bom huong (0,0,1) trong 1.2s -> di duoc 6.25 m, lech truc Z 6.24 m
+tra ve tu doc phim, khong bam gi -> troi 0.000 m (phai gan 0)
+bom ky nang 0 -> so lan bam ky nang tang 1 (phai la 1), nang luong 250 -> 247
+so loi ghi nhan = 0
+```
+
+Con số đắt nhất là **6,27 m**: lý thuyết `5,2 × 1,2 = 6,24 m`. Lệch 0,5% — logic di chuyển còn
+nguyên vẹn sau khi tách, chứ không phải "chạy được là xong".
+
+Chiều thứ hai (**trôi 0,000 m**) mới là chiều bắt được lỗi nguy hiểm nhất: gói input cũ kẹt lại và
+nhân vật cứ chạy mãi. Chỉ đo chiều "bơm vào có đi không" thì lỗi đó không bao giờ lộ ra.
+
+Và bơm kỹ năng thì **năng lượng tụt 250 → 247** — có tụt mới là đã thực sự tung phép, chứ đếm số
+lần bấm thì chỉ chứng minh con số tăng.
+
 ### Việc còn phải làm
 
 **169 MB là quá nặng**, nhất là trên điện thoại — nền tảng chính của game. Gần như toàn bộ nằm ở

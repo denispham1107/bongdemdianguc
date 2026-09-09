@@ -131,6 +131,28 @@ public class PlayerController : MonoBehaviour
     CharacterController cc;
     LayerMask groundMask, enemyMask, obstacleMask;
 
+    // ================================================================
+    //  Y MUON CUA NGUOI CHOI - DEN TU DAU
+    // ================================================================
+
+    /// <summary>
+    /// Y muon cua khung hinh dang xu ly. Choi mot minh thi
+    /// <see cref="DocInput"/> dien vao moi khung; choi mang thi may trong tai
+    /// nhan goi nay QUA DUONG TRUYEN roi thi hanh y het.
+    /// </summary>
+    public GoiInput input = GoiInput.Rong(0f);
+
+    /// <summary>
+    /// Tu doc ban phim hay cho ngoai bom vao.
+    ///
+    /// Bat (mac dinh): nhan vat cua chinh nguoi ngoi truoc man hinh.
+    /// Tat: nhan vat cua nguoi khac, hoac dang chay lai mot chuoi input de
+    /// hieu chinh - luc do ban phim cua may nay khong duoc dinh vao.
+    /// </summary>
+    public bool tuDocInput = true;
+
+    DocInput boDoc;
+
     Vector3 velocity;
     Vector3 moveTarget;
     bool hasMoveTarget;
@@ -170,10 +192,22 @@ public class PlayerController : MonoBehaviour
         groundMask = LayerMask.GetMask("Ground", "Default");
         enemyMask = LayerMask.GetMask("Enemy");
         obstacleMask = LayerMask.GetMask("Enemy", "Ground", "Default");
+
+        // Tu gan bo doc input. Gan o day chu khong bat nguoi dung keo tay vao
+        // prefab: nhan vat duoc dung tu code o ca hai man, quen mot cho la mot
+        // man khong dieu khien duoc ma khong bao gi.
+        boDoc = GetComponent<DocInput>();
+        if (boDoc == null) boDoc = gameObject.AddComponent<DocInput>();
     }
 
     void Update()
     {
+        float dt = Time.deltaTime;
+
+        // Doc y muon TRUOC khi xet song chet: nguoi da guc van bam phim, va
+        // van phai duoc nhac mot cau.
+        if (tuDocInput && boDoc != null) input = boDoc.Doc(dt);
+
         if (health != null && health.IsDead)
         {
             if (anim != null) anim.SetMoveSpeed(0f);
@@ -182,12 +216,10 @@ public class PlayerController : MonoBehaviour
             // Truoc day cho no lang le thoat ngay o day: nguoi choi bam 1/2/3/4
             // khong thay gi xay ra, tuong ky nang hong, trong khi that ra nhan vat
             // da guc tu luc nao. Bam phim ky nang luc nay thi nhac lai cho biet.
-            if (BamPhimKyNang() >= 0)
+            if (input.kyNang >= 0)
                 Say("BAN DA GUC NGA - bam R de choi lai");
             return;
         }
-
-        float dt = Time.deltaTime;
 
         mana = Mathf.Min(maxMana, mana + manaRegen * dt);
         if (fireballTimer > 0f) fireballTimer -= dt;
@@ -217,37 +249,6 @@ public class PlayerController : MonoBehaviour
     public static int SoLanBamKyNang;
     public static string PhimGanNhat = "chua bam phim nao";
 
-    /// <summary>
-    /// Nguoi choi vua bam phim ky nang nao? Tra ve 0..3, khong bam thi tra ve -1.
-    ///
-    /// MOI KY NANG CO BA CACH BAM, de neu mot cach bi ket thi con duong khac:
-    ///   - Hang so tren cung:  1 2 3 4
-    ///   - Ban phim so ben phai
-    ///   - Hang phim chu:      Z X V B
-    /// Hang Z X V B la duong thoat khi hang so bi thu khac an mat - bo go tieng
-    /// Viet kieu VNI lay so 1-9 lam dau thanh, bam so ra dau chu khong toi game.
-    /// (Khong dung C vi C la phim doi goc camera, khong dung Q/E vi do la phim
-    /// xoay camera.)
-    /// </summary>
-    static int BamPhimKyNang()
-    {
-        if (Input.GetKeyDown(KeyCode.Alpha1) || Input.GetKeyDown(KeyCode.Keypad1)
-            || Input.GetKeyDown(KeyCode.Z)) return 0;
-        if (Input.GetKeyDown(KeyCode.Alpha5) || Input.GetKeyDown(KeyCode.Keypad5)
-            || Input.GetKeyDown(KeyCode.N)) return 4;
-        if (Input.GetKeyDown(KeyCode.Alpha6) || Input.GetKeyDown(KeyCode.Keypad6)
-            || Input.GetKeyDown(KeyCode.M)) return 5;
-        if (Input.GetKeyDown(KeyCode.Alpha2) || Input.GetKeyDown(KeyCode.Keypad2)
-            || Input.GetKeyDown(KeyCode.X)) return 1;
-        if (Input.GetKeyDown(KeyCode.Alpha3) || Input.GetKeyDown(KeyCode.Keypad3)
-            || Input.GetKeyDown(KeyCode.V)) return 2;
-        if (Input.GetKeyDown(KeyCode.Alpha4) || Input.GetKeyDown(KeyCode.Keypad4)
-            || Input.GetKeyDown(KeyCode.B)) return 3;
-        if (Input.GetKeyDown(KeyCode.Alpha7) || Input.GetKeyDown(KeyCode.Keypad7)
-            || Input.GetKeyDown(KeyCode.G)) return 6;
-        return -1;
-    }
-
     void HandleSkillSelect()
     {
         SoVongUpdate++;
@@ -255,7 +256,7 @@ public class PlayerController : MonoBehaviour
         // Quet TOAN BO ban phim, khong chi bon phim ky nang: neu nguoi choi bam
         // phim nao do ma o day khong thay gi ca thi chac chan la phim bi cai khac
         // (bo go tieng Viet chang han) chan mat, chu khong phai loi ky nang.
-        if (Input.anyKeyDown)
+        if (input.coBamPhim)
         {
             SoLanBamPhim++;
             PhimGanNhat = "co phim (vong " + SoVongUpdate + ")";
@@ -263,7 +264,7 @@ public class PlayerController : MonoBehaviour
 
         // Bam phim la DANH RA NGAY ve phia con tro chuot.
         // Chuot phai khong con dung de tung ky nang - no danh cho viec xoay camera.
-        int ky = BamPhimKyNang();
+        int ky = input.kyNang;
         if (ky >= 0)
         {
             SoLanBamKyNang++;
@@ -446,14 +447,7 @@ public class PlayerController : MonoBehaviour
     /// <summary>Huong nham tren may cam ung: theo can joystick, khong thi theo mat.</summary>
     Vector3 HuongNgamCamUng()
     {
-        if (CamUng.DangKeo && CamUng.Huong.sqrMagnitude > 0.04f)
-        {
-            Vector3 fwd = cameraRig != null ? cameraRig.FlatForward : Vector3.forward;
-            Vector3 right = new Vector3(fwd.z, 0f, -fwd.x);
-            Vector3 h = fwd * CamUng.Huong.y + right * CamUng.Huong.x;
-            h.y = 0f;
-            if (h.sqrMagnitude > 0.0001f) return h.normalized;
-        }
+        if (input.huongCan.sqrMagnitude > 0.0001f) return input.huongCan;
         Vector3 mat = transform.forward;
         mat.y = 0f;
         return mat.sqrMagnitude > 0.0001f ? mat.normalized : Vector3.forward;
@@ -807,47 +801,21 @@ public class PlayerController : MonoBehaviour
         // chot chan cuoi cung: du sau nay co cho nao khac dat moveTarget - AI
         // dan duong, mot nut trong menu, hay chinh doan duoi day sot lai - thi
         // no cung bi xoa ngay khung hinh sau, nhan vat khong the tu chay di.
-        if (CamUng.DangDung) hasMoveTarget = false;
+        if (input.laCamUng) hasMoveTarget = false;
 
-        // --- Ban phim ---
-        float ix = Input.GetAxisRaw("Horizontal");
-        float iz = Input.GetAxisRaw("Vertical");
-
-        // --- Can joystick (may cam ung) ---
-        // Cong thang vao hai truc cua ban phim, nen khong phai viet lai doan
-        // chuyen truc theo huong may quay o ngay duoi.
-        if (CamUng.DangDung && CamUng.DangKeo)
+        // Huong di da duoc DocInput doi sang toa do the gioi va gop ca ban phim
+        // lan can joystick - xem GoiInput de biet vi sao doi truc o ben do.
+        if (input.huongDi.sqrMagnitude > 0.0001f)
         {
-            ix += CamUng.Huong.x;
-            iz += CamUng.Huong.y;
-        }
-
-        if (Mathf.Abs(ix) > 0.01f || Mathf.Abs(iz) > 0.01f)
-        {
-            Vector3 fwd = cameraRig != null ? cameraRig.FlatForward : Vector3.forward;
-            Vector3 right = new Vector3(fwd.z, 0f, -fwd.x);
-            Vector3 huong = fwd * iz + right * ix;
-
-            // KHONG chuan hoa thang: can day nua chung thi di cham, day het thi
-            // di nhanh. Chuan hoa la moi cai chum tay deu thanh chay het toc.
-            wish = huong.sqrMagnitude > 1f ? huong.normalized : huong;
+            wish = input.huongDi;
             hasMoveTarget = false;
         }
 
-        // --- Chuot trai: di den diem bam ---
-        //
-        // TAT HAN tren may cam ung. Tren WebGL dien thoai, moi cu cham man hinh
-        // deu duoc trinh duyet bao lai thanh mot cu bam CHUOT TRAI - nen khong
-        // chan o day thi cham vao dau nhan vat cung chay den do, ke ca khi dang
-        // bam nut ky nang hay xoay may quay.
-        if (!CamUng.DangDung && Input.GetMouseButton(0) && !IsPointerOverSkillBar())
+        // --- Doi di toi mot diem (chuot trai) ---
+        if (input.muonDiToi)
         {
-            Vector3 point;
-            if (GetAimPoint(out point))
-            {
-                moveTarget = point;
-                hasMoveTarget = true;
-            }
+            moveTarget = input.diemToi;
+            hasMoveTarget = true;
         }
 
         if (hasMoveTarget && wish.sqrMagnitude < 0.01f)
@@ -884,7 +852,15 @@ public class PlayerController : MonoBehaviour
     //  NGAM
     // ================================================================
 
-    /// <summary>Ban tia tu camera qua con tro chuot xuong the gioi.</summary>
+    /// <summary>
+    /// Ban tia tu camera qua con tro chuot xuong the gioi.
+    ///
+    /// CHI MAY CUA NGUOI CHOI GOI HAM NAY - <see cref="DocInput"/> goi no roi
+    /// nhet ket qua vao <see cref="GoiInput.diemNgam"/>. May trong tai khong
+    /// goi: no khong co camera cua nguoi kia, va con tro chuot cua no thi
+    /// chang lien quan gi. Trong tai chi nhan diem da ngam roi kep lai trong
+    /// tam cho phep.
+    /// </summary>
     public bool GetAimPoint(out Vector3 point)
     {
         point = transform.position + transform.forward * 5f;
@@ -924,12 +900,6 @@ public class PlayerController : MonoBehaviour
             return true;
         }
         return false;
-    }
-
-    bool IsPointerOverSkillBar()
-    {
-        // Thanh ky nang nam duoi day man hinh - khong di chuyen khi bam vao do
-        return Input.mousePosition.y < Screen.height * 0.09f;
     }
 
     void Say(string msg)
