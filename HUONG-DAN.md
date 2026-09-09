@@ -5309,6 +5309,97 @@ Phép đo số 3 kiểm chiều ngược lại: giết người kia đi thì `Ga
 
 Chạy lại menu 30 và 31 sau khi sửa: bước 1 và 2 vẫn nguyên vẹn, 0 lỗi.
 
+### Giai đoạn 2, bước 4: thấy nhau di chuyển mượt
+
+Vị trí người khác đến 60 lần mỗi giây, còn màn hình vẽ 60 lần. Đặt thẳng vị trí vừa nhận thì
+nhân vật nhảy từng nấc — nhìn như tua hình. Phải **vẽ ở giữa hai mốc đã nhận**. Mà muốn vẽ ở giữa
+thì phải chấp nhận **tụt lại phía sau một chút**: luôn hiện nhân vật ở thời điểm *"bây giờ trừ đi
+độ dày đệm"*. Độ dày đệm chính là cái giá phải trả để đổi lấy sự mượt mà.
+
+**Ba file:**
+
+| | |
+|---|---|
+| `GoiTin.cs` | đóng gói trạng thái thành byte, và mở ra |
+| `NoiSuy.cs` | đệm co giãn + vẽ ở giữa hai mốc |
+| `DongBoTran.cs` | gửi trạng thái mình, nhận và vẽ người khác |
+
+#### Gói tin: 54 byte thay vì 260
+
+Vị trí nén xuống số nguyên 16 bit, độ phân giải 1 cm — bản đồ rộng chừng 70 m, mà 16 bit phủ được
+±327 m. Góc chỉ cần một trục vì nhân vật luôn đứng thẳng; gửi cả bốn số của quaternion là phí ba
+phần tư.
+
+```
+1. goi tin 4 nguoi: nhi phan 54 byte, JSON 260 byte (nho hon 4.8 lan)
+   doc lai: lech vi tri 0.0000 m, lech goc 0.003 do
+   goi cut bi tu choi dung cach
+```
+
+Gói cụt **phải bị từ chối** chứ không được đọc bừa: gói đến từ máy khác qua kênh không tin cậy, và
+một gói bị cắt đôi mà cứ đọc thì ném lỗi giữa trận đấu.
+
+#### Nhịp gửi 20 lần/giây là một sai lầm, và số đo đã chỉ ra
+
+Ban đầu tôi chọn 20 lần/giây cho tiết kiệm băng thông. Đo ra: **đệm phình lên 132 ms**.
+
+Lý do là một ràng buộc tôi đã bỏ qua: **đệm không thể mỏng hơn khoảng cách giữa hai mốc**. Gửi 20
+lần/giây nghĩa là hai mốc cách nhau 50 ms, nên đệm phải chứa được ít nhất chừng ấy mới luôn có mốc
+sau để vẽ ở giữa. Cộng cả đường truyền thì độ trễ nhìn thấy nhau lên **~154 ms** — gấp đôi mục
+tiêu 50–80 ms.
+
+Chuyển sang 60 lần/giây: mạng tốt thì đệm còn **49 ms**. Cái giá là băng thông 54 × 60 = **3,2 KB/giây**
+mỗi người — trên 4G là con số không đáng kể, rẻ hơn nhiều so với 80 ms độ trễ.
+
+Bài học: tiết kiệm băng thông ở chỗ này **không đổi lấy được gì**, mà còn làm hỏng đúng cái đang cố
+gắng đạt được.
+
+#### Nhưng trên mạng 4G thật thì đệm vẫn dày, và đó là vật lý
+
+```
+2. mang ly tuong          : nhay 0 lan | lech 0.002 m | dem  49 ms
+3. mang 4G that (jitter 54): nhay 0 lan | lech 0.102 m | dem 131 ms
+4. mat 10% goi            : nhay 1 lan | lech 0.029 m | dem 125 ms
+5. dem co gian: mang tot 49 ms -> mang xau 131 ms
+```
+
+Tăng nhịp gửi giúp mạng tốt (101 → 49 ms) nhưng **không cứu được mạng 4G**: khi jitter 54 ms thì
+đệm bị chi phối bởi dao động chứ không phải nhịp gửi. Đây là đánh đổi vật lý:
+
+- đệm mỏng → độ trễ thấp nhưng gói đến muộn sẽ không còn gì để nội suy, nhân vật khựng lại;
+- đệm dày → mượt nhưng trễ.
+
+Nên phải **đo cả cái giá của đệm mỏng** rồi mới chọn, chứ không đoán:
+
+```
+--- Tren mang 4G that (jitter 54 ms), chay 6 giay ---
+   dem tu co gian 131 ms -> nhay 0 lan
+   ep 90 ms              -> nhay 1 lan
+   ep 60 ms              -> nhay 1 lan
+```
+
+Ép đệm xuống 60 ms chỉ giật **1 lần trong 6 giây**. Quy ra độ trễ nhìn thấy nhau:
+
+| Đệm | Tổng độ trễ | Giật (6 giây) |
+|---|---|---|
+| Tự co giãn (131 ms) | ~153 ms | 0 lần |
+| Ép 90 ms | ~112 ms | 1 lần |
+| **Ép 60 ms** | **~82 ms** | 1 lần |
+
+Cột giữa cộng: một chiều đường truyền 14 ms + đệm + khung hình 8 ms.
+
+Mặc định để **tự co giãn** (mượt nhất). Muốn bám sát mục tiêu 50–80 ms thì đặt
+`NoiSuy.demToiDaEp = 0.06f` — đổi lấy khoảng mười cú giật nhẹ mỗi phút.
+
+#### Hai chi tiết nhỏ mà thiếu là hỏng
+
+**Gói đến không đúng thứ tự là chuyện bình thường** trên kênh không tin cậy — phải chèn vào đúng
+chỗ theo mốc thời gian chứ không vứt đi.
+
+**Không đặt vị trí người khác qua `CharacterController`.** Vị trí đó đến từ máy kia, va chạm đã
+được tính ở bên đó rồi; cho `CharacterController` xen vào lần nữa thì nhân vật bị kẹt vào tường hai
+lần.
+
 ### Việc còn phải làm
 
 **169 MB là quá nặng**, nhất là trên điện thoại — nền tảng chính của game. Gần như toàn bộ nằm ở

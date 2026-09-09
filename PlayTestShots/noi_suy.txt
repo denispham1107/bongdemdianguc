@@ -1,0 +1,18 @@
+[ban 3] buoc 4 - do ca cai gia phai tra khi dem mong
+1. goi tin 4 nguoi: nhi phan 54 byte, JSON 260 byte (nho hon 4.8 lan)
+   doc lai: 4 nguoi, moc 123456, lech vi tri 0.0000 m, lech goc 0.003 do
+   goi cut bi tu choi dung cach
+2. mang ly tuong (khong jitter, khong mat goi): nhay 0 lan | lech trung binh 0.002 m | dem 49 ms | jitter uoc 16 ms
+3. mang 4G that (jitter 54 ms): nhay 0 lan | lech trung binh 0.102 m | dem 131 ms | jitter uoc 57 ms
+4. mat 10% goi: nhay 1 lan | lech trung binh 0.029 m | dem 125 ms | jitter uoc 54 ms
+5. dem co gian: mang tot 49 ms -> mang xau 131 ms
+
+--- Cai gia phai tra khi ep dem mong (van tren mang 4G that) ---
+   ep dem 60 ms : nhay 1 lan | lech trung binh 0.104 m | dem 60 ms | jitter uoc 56 ms
+   ep dem 90 ms : nhay 1 lan | lech trung binh 0.101 m | dem 90 ms | jitter uoc 58 ms
+
+So sanh tren mang 4G that (jitter 54 ms):
+   dem tu co gian 131 ms -> nhay 0 lan
+   ep 90 ms              -> nhay 1 lan
+   ep 60 ms              -> nhay 1 lan
+so loi ghi nhan = 0
