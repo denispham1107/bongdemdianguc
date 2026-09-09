@@ -5249,6 +5249,66 @@ chạy không còn so sánh được.
 
 Chạy lại menu 30 sau khi sửa: bước 1 vẫn nguyên vẹn (6,34 m và 6,20 m, lý thuyết 6,24), 0 lỗi.
 
+### Giai đoạn 2, bước 3: một cảnh chứa nhiều nhân vật
+
+Cả game được viết với một giả định ngầm: **có đúng một người chơi**. `GameDirector.player` là một
+`Transform` duy nhất; quái được gắn thẳng người đó làm mục tiêu ngay lúc sinh ra.
+
+Điều đó nghĩa là: đặt thêm một người nữa vào cảnh thì **cả bầy quái vẫn chỉ đuổi một người**.
+Người thứ hai đứng giữa đám quái mà không con nào thèm ngó, còn người thứ nhất bị cả bản đồ dí.
+
+**Ba thay đổi:**
+
+| Chỗ | Trước | Sau |
+|---|---|---|
+| `GameDirector` | `player` — một `Transform` | thêm `moiNguoi` — danh sách; `player` vẫn còn, nay chỉ có nghĩa "người chơi **của máy này**" (camera bám, HUD hiện máu) |
+| `EnemyAI` | gắn mục tiêu một lần lúc sinh | hỏi lại `GanNhat()` mỗi **0,7 giây** |
+| — | — | `NguoiChoiKhac.Sinh()` dựng nhân vật cho người khác |
+
+**Vì sao hỏi lại theo nhịp chứ không mỗi khung hình:** một bản đồ có hàng trăm con quái; mỗi con
+quét danh sách 60 lần mỗi giây là phí không. 0,7 giây đủ nhanh để bám theo người đang chạy.
+
+**Nhân vật của người khác dùng y hệt nhân vật của mình** — cùng prefab, cùng bộ kỹ năng, cùng máu.
+Chỉ khác đúng một điều: `tuDocInput = false`, ý muốn đến qua đường truyền. Không làm một prefab
+riêng kiểu "hình bóng người khác", vì đến bước đánh nhau thì nhân vật đó phải chịu sát thương,
+phải có khiên, phải chết — tức phải là một nhân vật thật sự. Một cái vỏ rỗng nhìn giống người chơi
+thì sẽ phải đi bổ sung từng thứ một, và mỗi lần quên một thứ là một lỗ hổng không ai thấy cho đến
+lúc đang đánh nhau.
+
+**Hai thứ bắt buộc phải gỡ khỏi nhân vật người khác:**
+
+- **Camera.** Hai camera trong một cảnh thì Unity chọn bừa một cái, và người chơi đột nhiên nhìn
+  thế giới bằng mắt người khác.
+- **Tag `"Player"`.** Nhiều chỗ trong game vẫn gọi `FindGameObjectWithTag("Player")` và chỉ lấy
+  **cái đầu tiên tìm thấy** — để nguyên thì camera hoặc quái có thể vớ phải người khác thay vì
+  người chơi của máy này.
+
+#### Đo (menu 32)
+
+```
+[ban 1] buoc 3 - mot canh chua nhieu nhan vat
+truoc khi them: 1 nguoi trong danh sach
+1. sinh nhan vat cho nguoi khac: OK - NguoiChoi_BanThu
+   danh sach gio co 2 nguoi (phai la 2)
+   nguoi khac tu doc ban phim khong: False (phai la False)
+   so camera: 1 -> 1 (khong duoc tang)
+2. 33 con quai -> nham minh 21, nham nguoi kia 12, khac 0
+3. truoc khi chet, gan (22.00, 0.21, -10.50) nhat la: nguoi kia (dung)
+   sau khi nguoi kia guc -> GanNhat tra ve nguoi khac: True (phai la True)
+   so nguoi con song: 1 (phai la 1)
+4. sau khi bo: danh sach con 1 nguoi (phai la 1)
+so loi ghi nhan = 0
+```
+
+**Dòng 2 là phép đo có sức nặng nhất.** Đặt một người cách 22 m rồi đếm xem quái nhắm ai: **21
+nhắm mình, 12 nhắm người kia**. Trước khi sửa, con số đó sẽ là 33 và 0 — và đó chính là thứ phải
+chứng minh, chứ không phải "sinh được nhân vật thứ hai".
+
+Phép đo số 3 kiểm chiều ngược lại: giết người kia đi thì `GanNhat` phải **thôi** trả về họ. Thiếu
+điều này thì quái sẽ xúm quanh một cái xác trong khi người còn sống đi lại thoải mái.
+
+Chạy lại menu 30 và 31 sau khi sửa: bước 1 và 2 vẫn nguyên vẹn, 0 lỗi.
+
 ### Việc còn phải làm
 
 **169 MB là quá nặng**, nhất là trên điện thoại — nền tảng chính của game. Gần như toàn bộ nằm ở

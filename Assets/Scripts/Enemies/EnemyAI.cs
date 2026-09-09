@@ -74,6 +74,7 @@ public class EnemyAI : MonoBehaviour
 
     void Start()
     {
+        ChonMucTieu();
         if (target == null)
         {
             var p = GameObject.FindGameObjectWithTag("Player");
@@ -84,9 +85,45 @@ public class EnemyAI : MonoBehaviour
         wanderDir.Normalize();
     }
 
+    // ================================================================
+    //  CHON MUC TIEU
+    // ================================================================
+
+    /// <summary>Bao lau thi ngo lai xem ai dang gan minh nhat.</summary>
+    const float NhipChonLaiGiay = 0.7f;
+
+    float chonLaiLuc;
+
+    /// <summary>
+    /// Nham NGUOI GAN NHAT con song, thay vi om cung mot muc tieu ca van.
+    ///
+    /// Truoc day quai duoc gan thang <c>GameDirector.player</c> luc sinh ra -
+    /// choi mot minh thi dung, nhung choi nhieu nguoi thi ba nguoi kia dung
+    /// giua bay quai ma khong con nao them, con nguoi thu nhat bi ca ban do
+    /// duoi danh.
+    ///
+    /// Hoi lai theo NHIP chu khong phai moi khung hinh: mot ban do co hang
+    /// tram con quai, moi con quet danh sach 60 lan mot giay la phi khong.
+    /// Ngo lai moi 0,7 giay du nhanh de bam theo nguoi choi dang chay.
+    /// </summary>
+    void ChonMucTieu()
+    {
+        var dir = GameDirector.Instance;
+        if (dir == null) return;
+
+        var gan = dir.GanNhat(transform.position);
+        if (gan != null) target = gan;
+    }
+
     void Update()
     {
         if (health != null && health.IsDead) return;
+
+        if (Time.time >= chonLaiLuc)
+        {
+            chonLaiLuc = Time.time + NhipChonLaiGiay;
+            ChonMucTieu();
+        }
 
         float dt = Time.deltaTime;
         if (cooldown > 0f) cooldown -= dt;

@@ -1,0 +1,12 @@
+[ban 1] buoc 3 - mot canh chua nhieu nhan vat
+truoc khi them: 1 nguoi trong danh sach
+1. sinh nhan vat cho nguoi khac: OK - NguoiChoi_BanThu
+   danh sach gio co 2 nguoi (phai la 2)
+   nguoi khac tu doc ban phim khong: False (phai la False)
+   so camera: 1 -> 1 (khong duoc tang)
+2. 33 con quai -> nham minh 21, nham nguoi kia 12, khac 0
+3. truoc khi chet, gan (22.00, 0.21, -10.50) nhat la: nguoi kia (dung)
+   sau khi nguoi kia guc -> GanNhat tra ve nguoi khac: True (phai la True)
+   so nguoi con song: 1 (phai la 1)
+4. sau khi bo: danh sach con 1 nguoi (phai la 1)
+so loi ghi nhan = 0

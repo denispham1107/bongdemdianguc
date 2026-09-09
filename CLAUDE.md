@@ -42,7 +42,8 @@ Assets/Scripts/
    UI/             GameHUD (OnGUI), CamUng, ChiBaoNgam, MayNgam,
                    ManDangNhap, ManSanh (dang nhap + sanh phong, deu OnGUI)
    Mang/           FirebaseMang (cau REST), HoSoMang, PhongMang, TranHienTai,
-                   KenhTrucTiep (WebRTC), BatTay, DuDoan, TrangThaiNhanVat
+                   KenhTrucTiep (WebRTC), BatTay, DuDoan, TrangThaiNhanVat,
+                   NguoiChoiKhac (sinh nhan vat cho nguoi khac)
 web/               ban WebGL da xuat + /quantri/ (trang admin)
 Assets/WebGLTemplates/Diablo25D/   trang bao quanh game tren web (full man hinh)
 Assets/Editor/     cong cu menu "Diablo 2.5D" + cac kich ban chay thu
@@ -76,10 +77,10 @@ Blender MCP **không render được** (ảnh ra rỗng) — phải chạy `blen
 > `EditorSceneManager.OpenScene("Assets/Scenes/Act2.unity", Single)` trả lại ngay — không thì
 > người dùng quay lại Unity thấy màn của mình biến mất.
 
-**Menu `Diablo 2.5D`** trong Unity (29 mục): 1 nướng asset + dựng màn, 3 tự kiểm tra,
+**Menu `Diablo 2.5D`** trong Unity (30 mục): 1 nướng asset + dựng màn, 3 tự kiểm tra,
 4 chạy thử & chụp hình, 14 chống ô vuông đen, 15–17 ảnh vỏ cây / đá mộ / sứt mẻ bia,
 18–18d chạy thử cây cháy, 19 hồi sinh sau lốc, 20 nướng điểm mồi lửa, 21 nút khoá góc nhìn,
-22 thanh kỹ năng bản PC, **26 chạy thử mạng (sảnh phòng), 27 chạy thử khoá tài khoản, 28 chụp màn đăng nhập·sảnh, 29 xuất bản WebGL, 30/30b bơm input Act2·Act1 (bước 1), 31 dự đoán & hiệu chỉnh (bước 2)**.
+22 thanh kỹ năng bản PC, **26 chạy thử mạng (sảnh phòng), 27 chạy thử khoá tài khoản, 28 chụp màn đăng nhập·sảnh, 29 xuất bản WebGL, 30/30b bơm input Act2·Act1 (bước 1), 31 dự đoán & hiệu chỉnh (bước 2), 32 nhiều người một cảnh (bước 3)**.
 Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
 
 ## Quy tắc làm việc (rút ra từ những lần đã sai)

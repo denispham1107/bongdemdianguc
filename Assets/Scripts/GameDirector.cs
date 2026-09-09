@@ -11,7 +11,27 @@ public class GameDirector : MonoBehaviour
     public static GameDirector Instance;
 
     [Header("Tha quai")]
+
+    /// <summary>
+    /// NGUOI CHOI CUA MAY NAY - camera bam theo, HUD hien mau cua nguoi nay.
+    ///
+    /// Van la mot nguoi duy nhat, va dung nhu vay: moi may chi co mot chu.
+    /// Nhung tu gio no khong con la NGUOI CHOI DUY NHAT trong canh nua - xem
+    /// <see cref="moiNguoi"/>.
+    /// </summary>
     public Transform player;
+
+    /// <summary>
+    /// MOI NGUOI CHOI TRONG CANH, ke ca minh.
+    ///
+    /// Truoc day quai chi biet mot nguoi va nham thang vao <c>player</c>. Choi
+    /// nhieu nguoi ma van the thi ba nguoi kia dung giua bay quai ma khong con
+    /// nao them, con nguoi thu nhat thi bi ca ban do duoi danh.
+    ///
+    /// Danh sach chu khong phai mang co dinh: nguoi vao giua chung, nguoi guc
+    /// nga, nguoi mat ket noi - so nguoi doi lien tuc trong mot van.
+    /// </summary>
+    public readonly List<Transform> moiNguoi = new List<Transform>();
     public Vector3 arenaCenter = Vector3.zero;
     public float arenaRadius = 34f;
     public float minSpawnDistance = 14f;
@@ -97,6 +117,64 @@ public class GameDirector : MonoBehaviour
         Instance = this;
     }
 
+    // ================================================================
+    //  DANH SACH NGUOI CHOI
+    // ================================================================
+
+    public void ThemNguoiChoi(Transform t)
+    {
+        if (t == null || moiNguoi.Contains(t)) return;
+        moiNguoi.Add(t);
+    }
+
+    public void BoNguoiChoi(Transform t)
+    {
+        moiNguoi.Remove(t);
+    }
+
+    /// <summary>
+    /// Nguoi choi CON SONG gan <paramref name="tu"/> nhat. Khong con ai song
+    /// thi tra ve null.
+    ///
+    /// Quai hoi lai ham nay thay vi om cung mot muc tieu: nguoi choi chay tan
+    /// ra, guc nga, hoac vao giua chung - muc tieu dung phai doi theo.
+    ///
+    /// Bo qua nguoi da chet: quai dung dam vao mot cai xac thi vua vo ly vua
+    /// khien nhung nguoi con song di lai thoai mai.
+    /// </summary>
+    public Transform GanNhat(Vector3 tu)
+    {
+        Transform gan = null;
+        float gonNhat = float.MaxValue;
+
+        for (int i = 0; i < moiNguoi.Count; i++)
+        {
+            var t = moiNguoi[i];
+            if (t == null) continue;
+
+            var mau = t.GetComponent<Damageable>();
+            if (mau != null && mau.IsDead) continue;
+
+            float d = (t.position - tu).sqrMagnitude;
+            if (d < gonNhat) { gonNhat = d; gan = t; }
+        }
+        return gan;
+    }
+
+    /// <summary>Con bao nhieu nguoi con song. Bang 1 la van dau sap xong.</summary>
+    public int SoNguoiConSong()
+    {
+        int n = 0;
+        for (int i = 0; i < moiNguoi.Count; i++)
+        {
+            var t = moiNguoi[i];
+            if (t == null) continue;
+            var mau = t.GetComponent<Damageable>();
+            if (mau == null || !mau.IsDead) n++;
+        }
+        return n;
+    }
+
     void Start()
     {
         enemyRoot = new GameObject("Enemies").transform;
@@ -111,6 +189,10 @@ public class GameDirector : MonoBehaviour
             playerHealth = player.GetComponent<Damageable>();
             if (playerHealth != null)
                 playerHealth.onDeath += OnPlayerDeath;
+
+            // Choi mot minh thi danh sach chi co mot nguoi - moi thu chay y
+            // nhu cu. Choi mang thi nhung nguoi kia duoc them vao sau.
+            ThemNguoiChoi(player);
         }
 
         // Rai quai khap ban do TRUOC khi dot dau bat dau. Bon nay dung san o
