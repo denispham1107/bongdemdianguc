@@ -5038,6 +5038,40 @@ ra trường hợp `host ↔ host` và nói thẳng: *"Hai máy đang ở CÙNG 
 Bài học lặp lại lần nữa: một phép đo cho ra số đẹp không có nghĩa là nó đang đo đúng thứ mình
 tưởng.
 
+#### Wi-Fi ↔ 4G treo cứng, và cái `catch` rỗng đã giấu lỗi suốt
+
+Đo lần hai với một máy Wi-Fi nhà, một máy 4G: **treo luôn**. Máy 1 báo ICE `checking` →
+`disconnected`, máy 2 đứng mãi ở "Đang nối…", không bên nào nói gì thêm.
+
+Nhật ký cho thấy phần bắt tay đã xong **cả hai chiều** ("may 2 da tra loi" ở máy 1, "da tra loi
+may 1" ở máy 2). Vậy hai máy đã tìm thấy nhau; chỉ khâu nối thẳng là hỏng. Rất dễ đổ ngay cho
+NAT của nhà mạng — nhưng lỗi nằm trong code của tôi:
+
+```js
+onChildAdded(... ice1 ..., (anh) => {
+  pc.addIceCandidate(...).catch(() => {});   // ← nuốt lỗi im lặng
+});
+```
+
+Firebase **phát lại toàn bộ** ứng viên đã có ngay khi mình bắt đầu nghe. Máy 2 nghe trước, rồi
+mới đọc lời mời và `setRemoteDescription` — nên những ứng viên đầu tiên của máy 1 đến lúc chưa có
+mô tả của bên kia. Gọi `addIceCandidate` lúc đó là ném lỗi, và cái `.catch(() => {})` vứt lỗi đi
+không một tiếng động. Kết quả: máy 2 **mất sạch địa chỉ của máy 1**, ICE không có đường nào để thử.
+
+**Vì sao lần đo trước vẫn chạy:** hai máy cùng mạng nội bộ nên còn ứng viên `host` sinh ra sau,
+đủ để nối. Môi trường thuận lợi đã che kín lỗi — đúng kiểu lỗi chỉ lộ ra khi ra đời thật.
+
+Sửa ba chỗ:
+
+1. **Xếp hàng ứng viên** cho tới khi có mô tả của bên kia, rồi xả một lượt — không vứt đi nữa.
+2. **Không nuốt lỗi**: `catch` giờ ghi thẳng ra nhật ký.
+3. **Không treo im lặng**: sau 25 giây chưa nối được thì báo rõ, kèm chẩn đoán — nhận được bao
+   nhiêu địa chỉ của máy kia. Nhận 0 nghĩa là hai máy chưa gặp nhau; nhận đủ mà vẫn không nối
+   được thì gần như chắc chắn là NAT hai bên chặn nhau (mạng 4G Việt Nam thường dùng CGNAT, loại
+   NAT mà chỉ STUN không xuyên qua được) — và trường hợp đó cần máy chủ tiếp sức.
+
+Cùng một lỗi có ở `CauNoiWebRTC.jslib` vì tôi chép nguyên cách làm sang; đã sửa cả hai.
+
 ### Giai đoạn 2, bước 1: tách ý muốn ra khỏi việc thi hành
 
 `PlayerController` 940 dòng vừa *đọc phím* vừa *thi hành phép*. Chơi một mình thì không sao,

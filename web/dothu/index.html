@@ -102,10 +102,27 @@ const CAU_HINH = {
 const MOI_GIAY = 20;
 const SO_GIAY = 10;
 
+// Khong noi duoc thi phai NOI RA sau ngan nay giay. Lan truoc khong co cai
+// nay: hai may cu dung im, nguoi dung ngoi nhin mai khong biet chuyen gi.
+const GIAY_CHO_NOI = 25;
+
 let pc = null, kenh = null, laMay1 = false;
 let dangDo = false;
 let roiGiuaChung = false;
 let cungMangNoiBo = false;
+
+// XEP HANG UNG VIEN CHO DEN KHI CO MO TA CUA BEN KIA.
+//
+// Firebase phat lai TOAN BO ung vien da co ngay khi minh bat dau nghe. May 2
+// nghe truoc, roi moi doc loi moi va setRemoteDescription - nen nhung ung vien
+// dau tien cua may 1 den luc chua co remote description. Goi addIceCandidate
+// luc do la nem loi, va lan truoc toi .catch(() => {}) nuot mat.
+// Ket qua: may 2 mat sach ung vien cua may 1, ICE khong co duong nao de thu.
+// Cung mang LAN thi van noi duoc nho ung vien noi bo sinh sau, nen loi bi che.
+let daCoMoTaBenKia = false;
+const hangUngVien = [];
+let demUngVienGui = 0, demUngVienNhan = 0;
+let henGioNoi = 0;
 const rtt = [];
 let daGui = 0, daVe = 0;
 
@@ -141,6 +158,20 @@ $("oMatKhau").onkeydown = (e) => { if (e.key === "Enter") $("nutDangNhap").click
 
 // ================= BAT TAY =================
 
+/// Them mot ung vien. Chua co mo ta cua ben kia thi xep hang lai, khong vut di.
+function themUngVien(uv) {
+  if (!daCoMoTaBenKia) { hangUngVien.push(uv); return; }
+  pc.addIceCandidate(new RTCIceCandidate(uv))
+    .catch((e) => ghi("!! them ung vien hong: " + (e.message || e)));
+}
+
+/// Goi NGAY SAU moi lan setRemoteDescription.
+function xaHangUngVien() {
+  daCoMoTaBenKia = true;
+  if (hangUngVien.length > 0) ghi("xa " + hangUngVien.length + " ung vien da xep hang");
+  while (hangUngVien.length > 0) themUngVien(hangUngVien.shift());
+}
+
 $("nutMay1").onclick = () => batDau(true);
 $("nutMay2").onclick = () => batDau(false);
 
@@ -150,6 +181,8 @@ async function batDau(may1) {
   $("nutMay2").disabled = true;
   $("oKetQua").hidden = true;
   rtt.length = 0; daGui = 0; daVe = 0; roiGiuaChung = false;
+  daCoMoTaBenKia = false; hangUngVien.length = 0;
+  demUngVienGui = 0; demUngVienNhan = 0;
 
   const ma = $("oMaPhien").value.trim() || "thu1";
   const goc = ref(rtdb, "dothu/" + ma);
@@ -159,6 +192,13 @@ async function batDau(may1) {
   if (laMay1) { await remove(goc); ghi("da don cho hen gap: dothu/" + ma); }
 
   pc = new RTCPeerConnection(CAU_HINH);
+
+  // Hen gio bo cuoc
+  clearTimeout(henGioNoi);
+  henGioNoi = setTimeout(() => {
+    if (kenh && kenh.readyState === "open") return;
+    baoKhongNoiDuoc();
+  }, GIAY_CHO_NOI * 1000);
 
   pc.oniceconnectionstatechange = () => {
     ghi("trang thai ICE: " + pc.iceConnectionState);
@@ -179,11 +219,14 @@ async function batDau(may1) {
   const nhanhKia = laMay1 ? "ice2" : "ice1";
 
   pc.onicecandidate = (su) => {
-    if (su.candidate) push(ref(rtdb, "dothu/" + ma + "/" + nhanhToi), su.candidate.toJSON());
+    if (!su.candidate) { ghi("da gui xong " + demUngVienGui + " ung vien"); return; }
+    demUngVienGui++;
+    push(ref(rtdb, "dothu/" + ma + "/" + nhanhToi), su.candidate.toJSON());
   };
 
   onChildAdded(ref(rtdb, "dothu/" + ma + "/" + nhanhKia), (anh) => {
-    pc.addIceCandidate(new RTCIceCandidate(anh.val())).catch(() => {});
+    demUngVienNhan++;
+    themUngVien(anh.val());
   });
 
   if (laMay1) {
@@ -206,6 +249,7 @@ async function batDau(may1) {
       if (!anh.exists() || pc.currentRemoteDescription) return;
       await pc.setRemoteDescription(new RTCSessionDescription(anh.val()));
       ghi("may 2 da tra loi");
+      xaHangUngVien();
     });
 
   } else {
@@ -219,6 +263,7 @@ async function batDau(may1) {
     }
 
     await pc.setRemoteDescription(new RTCSessionDescription(anhMoi.val()));
+    xaHangUngVien();
     const tra = await pc.createAnswer();
     await pc.setLocalDescription(tra);
     await set(ref(rtdb, "dothu/" + ma + "/nhan"), { type: tra.type, sdp: tra.sdp });
@@ -229,7 +274,8 @@ async function batDau(may1) {
 
 function gan(k) {
   k.onopen = async () => {
-    ghi("kenh da mo");
+    clearTimeout(henGioNoi);
+    ghi("kenh da mo (da gui " + demUngVienGui + " ung vien, nhan " + demUngVienNhan + ")");
     // Doc kieu ket noi NGAY BAY GIO. Lan truoc doc sau khi do xong thi ICE da
     // roi mat, khong con cap ung vien nao - va o bao "khong xac dinh", dung
     // cai dong quan trong nhat.
@@ -249,6 +295,30 @@ function gan(k) {
       daVe++;
     }
   };
+}
+
+/// Khong noi duoc thi noi ro NGUYEN NHAN kha di, chu khong chi bao "that bai".
+function baoKhongNoiDuoc() {
+  $("nutMay1").disabled = false;
+  $("nutMay2").disabled = false;
+
+  ghi("--- KHONG NOI DUOC ---");
+  ghi("ung vien da gui: " + demUngVienGui + ", da nhan cua may kia: " + demUngVienNhan);
+  ghi("trang thai ICE cuoi: " + (pc ? pc.iceConnectionState : "?"));
+
+  let vi;
+  if (demUngVienNhan === 0) {
+    vi = "Không nhận được địa chỉ nào của máy kia — hai máy chưa gặp nhau qua Firebase.";
+  } else {
+    // Da trao doi dia chi day du ma van khong noi duoc thi gan nhu chac chan
+    // la NAT hai ben chan nhau. Mang 4G o Viet Nam thuong dung CGNAT: may
+    // khong co dia chi rieng, va STUN mot minh khong du de xuyen qua.
+    vi = "Đã trao đổi đủ địa chỉ (" + demUngVienNhan + " cái) nhưng vẫn không nối thẳng được. "
+       + "Gần như chắc chắn là NAT hai bên chặn nhau — mạng 4G Việt Nam thường dùng CGNAT, "
+       + "loại NAT mà chỉ STUN thì không xuyên qua được. Trường hợp này cần một máy chủ "
+       + "tiếp sức (TURN).";
+  }
+  trangThai("Không nối được sau " + GIAY_CHO_NOI + " giây. " + vi, "khong-dat");
 }
 
 // ================= DO =================

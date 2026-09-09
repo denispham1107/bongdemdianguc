@@ -21,9 +21,36 @@ var CauNoiWebRTC = {
     daMo: false,
     hangCho: [],          // tin nhan da nhan, cho C# lay ra
     ungVienCuaToi: [],    // ICE candidate cua may nay, cho C# gui di
+
+    // UNG VIEN CUA BEN KIA DEN SOM THI PHAI XEP HANG, KHONG DUOC VUT DI.
+    //
+    // Firebase phat lai toan bo ung vien da co ngay khi minh bat dau nghe, nen
+    // ung vien dau tien cua ben kia thuong den TRUOC khi minh kip
+    // setRemoteDescription. Goi addIceCandidate luc do la nem loi. Ban dau toi
+    // nuot loi do bang mot catch rong - ket qua la mat sach ung vien cua ben
+    // kia va ICE khong co duong nao de thu. Cung mang LAN thi van noi duoc nho
+    // ung vien noi bo sinh sau, nen loi bi che kin.
+    hangUngVienCho: [],
+    daCoMoTaBenKia: false,
     moTa: "",             // offer/answer vua tao ra
     loi: "",
     kieuKetNoi: "",
+
+    themUngVien: function (uv) {
+      var t = trangThaiRTC;
+      if (!t.daCoMoTaBenKia) { t.hangUngVienCho.push(uv); return; }
+      try {
+        t.pc.addIceCandidate(new RTCIceCandidate(uv))
+          .catch(function (e) { t.loi = "them ung vien hong: " + e; });
+      } catch (e) { t.loi = "them ung vien hong: " + e; }
+    },
+
+    /// Goi NGAY SAU moi lan setRemoteDescription.
+    xaHangUngVien: function () {
+      var t = trangThaiRTC;
+      t.daCoMoTaBenKia = true;
+      while (t.hangUngVienCho.length > 0) t.themUngVien(t.hangUngVienCho.shift());
+    },
 
     // Chuoi tra ve C# phai nam trong heap cua Unity. C# goi Marshal.FreeHGlobal
     // de tra lai - xem KenhTrucTiep.LayChuoi.
@@ -41,6 +68,7 @@ var CauNoiWebRTC = {
     var t = trangThaiRTC;
     t.daMo = false; t.hangCho = []; t.ungVienCuaToi = [];
     t.moTa = ""; t.loi = ""; t.kieuKetNoi = "";
+    t.hangUngVienCho = []; t.daCoMoTaBenKia = false;
 
     try {
       t.pc = new RTCPeerConnection({ iceServers: [{ urls: ds }] });
@@ -99,6 +127,7 @@ var CauNoiWebRTC = {
     var moi = JSON.parse(UTF8ToString(jsonMoi));
 
     t.pc.setRemoteDescription(new RTCSessionDescription(moi)).then(function () {
+      t.xaHangUngVien();
       return t.pc.createAnswer();
     }).then(function (tra) {
       return t.pc.setLocalDescription(tra).then(function () {
@@ -113,16 +142,15 @@ var CauNoiWebRTC = {
     if (!t.pc) return;
     var tra = JSON.parse(UTF8ToString(jsonTra));
     t.pc.setRemoteDescription(new RTCSessionDescription(tra))
+      .then(function () { t.xaHangUngVien(); })
       .catch(function (e) { t.loi = "nhan tra loi that bai: " + e; });
   },
 
   RTC_ThemUngVien: function (jsonUv) {
     var t = trangThaiRTC;
     if (!t.pc) return;
-    try {
-      t.pc.addIceCandidate(new RTCIceCandidate(JSON.parse(UTF8ToString(jsonUv))))
-        .catch(function () {});
-    } catch (e) {}
+    try { t.themUngVien(JSON.parse(UTF8ToString(jsonUv))); }
+    catch (e) { t.loi = "ung vien khong doc duoc: " + e; }
   },
 
   /// Lay offer/answer vua tao. Chua co thi tra ve chuoi rong.
