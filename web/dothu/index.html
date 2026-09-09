@@ -1,0 +1,333 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Diablo 2.5D — Đo độ trễ giữa hai máy</title>
+<link rel="stylesheet" href="../css/chung.css">
+<style>
+  .so-lon { font-size: 40px; font-weight: 800; font-variant-numeric: tabular-nums; }
+  .bang-do { width: 100%; border-collapse: collapse; margin-top: 14px; }
+  .bang-do td { padding: 7px 10px; border-bottom: 1px solid #26262e; }
+  .bang-do td:first-child { color: #8a8a93; }
+  .bang-do td:last-child { text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; }
+  .dat { color: #4ec07a; }
+  .khong-dat { color: #e0603c; }
+  .cho { color: #d8a24a; }
+  #nhatKy {
+    margin-top: 16px; padding: 10px; background: #131318; border-radius: 6px;
+    font: 12px/1.55 Consolas, monospace; color: #9a9aa3;
+    max-height: 200px; overflow-y: auto; white-space: pre-wrap;
+  }
+</style>
+</head>
+<body class="nen-toi">
+
+<div class="khung-rong">
+
+  <div class="thanh-dau">
+    <span class="ten-toi">Đo độ trễ giữa hai máy</span>
+    <span class="chi-tiet" id="oAi"></span>
+  </div>
+
+  <div id="manDangNhap">
+    <p class="chi-tiet">
+      Đăng nhập bằng tài khoản trong game. Mở trang này trên <b>cả hai máy</b>,
+      một máy bấm <b>Máy 1</b>, máy kia bấm <b>Máy 2</b>, cùng một mã phiên.
+    </p>
+    <label class="nhan">Email
+      <input id="oEmail" type="email" autocomplete="username">
+    </label>
+    <label class="nhan">Mật khẩu
+      <input id="oMatKhau" type="password" autocomplete="current-password">
+    </label>
+    <button id="nutDangNhap" class="nut">ĐĂNG NHẬP</button>
+    <div id="loiDangNhap" class="chi-tiet" style="color:#e0603c;margin-top:10px"></div>
+  </div>
+
+  <div id="manDo" hidden>
+    <label class="nhan">Mã phiên (hai máy phải giống nhau)
+      <input id="oMaPhien" value="thu1">
+    </label>
+
+    <div style="display:flex;gap:10px;margin:14px 0">
+      <button id="nutMay1" class="nut" style="flex:1">MÁY 1 &nbsp;(mời)</button>
+      <button id="nutMay2" class="nut" style="flex:1">MÁY 2 &nbsp;(vào)</button>
+    </div>
+
+    <div id="oTrangThai" class="chi-tiet cho">Chưa bắt đầu.</div>
+
+    <div id="oKetQua" hidden>
+      <div style="margin-top:20px">
+        <span class="chi-tiet">Độ trễ khứ hồi giữa hai máy (trung vị)</span><br>
+        <span id="oSoLon" class="so-lon">—</span>
+      </div>
+
+      <table class="bang-do">
+        <tr><td>Nhỏ nhất</td><td id="oMin">—</td></tr>
+        <tr><td>Trung vị</td><td id="oTrungVi">—</td></tr>
+        <tr><td>95% số lần dưới</td><td id="oP95">—</td></tr>
+        <tr><td>Lớn nhất</td><td id="oMax">—</td></tr>
+        <tr><td>Dao động (jitter)</td><td id="oJitter">—</td></tr>
+        <tr><td>Gói gửi / nhận về</td><td id="oGoi">—</td></tr>
+        <tr><td>Tỉ lệ mất gói</td><td id="oMatGoi">—</td></tr>
+        <tr><td>Kiểu kết nối</td><td id="oKieu">—</td></tr>
+        <tr><td><b>Ước tính độ trễ nhìn thấy nhau</b></td><td id="oTong">—</td></tr>
+      </table>
+    </div>
+
+    <div id="nhatKy"></div>
+  </div>
+</div>
+
+<script type="module">
+import { auth, rtdb, dichLoi } from "../js/ketnoi.js";
+import { signInWithEmailAndPassword }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { ref, set, push, onValue, onChildAdded, remove, get }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+const $ = (id) => document.getElementById(id);
+
+// STUN cua Google - mien phi, cong khai. No chi lam mot viec: noi cho may biet
+// dia chi that cua no nhin tu ben ngoai NAT. Du lieu game KHONG di qua day.
+const CAU_HINH = {
+  iceServers: [
+    { urls: ["stun:stun.l.google.com:19302", "stun:stun1.l.google.com:19302"] }
+  ]
+};
+
+// 20 goi moi giay trong 10 giay. Do lau hon mot chut de bat duoc ca luc mang
+// chap chon - do 2 giay thi chi thay luc dep troi.
+const MOI_GIAY = 20;
+const SO_GIAY = 10;
+
+let pc = null, kenh = null, laMay1 = false;
+let dangDo = false;
+const rtt = [];
+let daGui = 0, daVe = 0;
+
+function ghi(s) {
+  const o = $("nhatKy");
+  o.textContent += s + "\n";
+  o.scrollTop = o.scrollHeight;
+}
+
+function trangThai(s, lop) {
+  const o = $("oTrangThai");
+  o.textContent = s;
+  o.className = "chi-tiet " + (lop || "cho");
+}
+
+// ================= DANG NHAP =================
+
+$("nutDangNhap").onclick = async () => {
+  const e = $("oEmail").value.trim(), m = $("oMatKhau").value;
+  $("loiDangNhap").textContent = "";
+  try {
+    const kq = await signInWithEmailAndPassword(auth, e, m);
+    $("oAi").textContent = kq.user.email;
+    $("manDangNhap").hidden = true;
+    $("manDo").hidden = false;
+  } catch (loi) {
+    $("loiDangNhap").textContent = dichLoi(loi);
+  }
+};
+
+// Enter de dang nhap
+$("oMatKhau").onkeydown = (e) => { if (e.key === "Enter") $("nutDangNhap").click(); };
+
+// ================= BAT TAY =================
+
+$("nutMay1").onclick = () => batDau(true);
+$("nutMay2").onclick = () => batDau(false);
+
+async function batDau(may1) {
+  laMay1 = may1;
+  $("nutMay1").disabled = true;
+  $("nutMay2").disabled = true;
+  $("oKetQua").hidden = true;
+  rtt.length = 0; daGui = 0; daVe = 0;
+
+  const ma = $("oMaPhien").value.trim() || "thu1";
+  const goc = ref(rtdb, "dothu/" + ma);
+
+  // May 1 don cho truoc khi moi - khong thi lan do thu hai vap phai rac cua
+  // lan truoc va bat tay voi mot phien da chet.
+  if (laMay1) { await remove(goc); ghi("da don cho hen gap: dothu/" + ma); }
+
+  pc = new RTCPeerConnection(CAU_HINH);
+
+  pc.oniceconnectionstatechange = () => {
+    ghi("trang thai ICE: " + pc.iceConnectionState);
+    if (pc.iceConnectionState === "failed")
+      trangThai("Không nối được. Mạng này chặn nối thẳng - xem ghi chú cuối trang.", "khong-dat");
+  };
+
+  // Moi may ghi ung vien cua minh vao nhanh rieng, va doc nhanh cua may kia
+  const nhanhToi = laMay1 ? "ice1" : "ice2";
+  const nhanhKia = laMay1 ? "ice2" : "ice1";
+
+  pc.onicecandidate = (su) => {
+    if (su.candidate) push(ref(rtdb, "dothu/" + ma + "/" + nhanhToi), su.candidate.toJSON());
+  };
+
+  onChildAdded(ref(rtdb, "dothu/" + ma + "/" + nhanhKia), (anh) => {
+    pc.addIceCandidate(new RTCIceCandidate(anh.val())).catch(() => {});
+  });
+
+  if (laMay1) {
+    // KENH KHONG TIN CAY - day la diem song con.
+    //
+    // ordered:false + maxRetransmits:0 khien no hanh xu nhu UDP: goi nao rot
+    // thi bo luon. Neu de mac dinh (tin cay, dung thu tu) thi mot goi rot se
+    // CHAN moi goi sau no, va do tre vot tu 50 ms len 300 ms dung luc dang
+    // danh nhau - mot vi tri cu 20 ms sau da vo nghia, gui lai lam gi.
+    kenh = pc.createDataChannel("do", { ordered: false, maxRetransmits: 0 });
+    gan(kenh);
+
+    const moi = await pc.createOffer();
+    await pc.setLocalDescription(moi);
+    await set(ref(rtdb, "dothu/" + ma + "/moi"), { type: moi.type, sdp: moi.sdp });
+    ghi("da gui loi moi, dang doi may 2...");
+    trangThai("Đang chờ Máy 2 vào...");
+
+    onValue(ref(rtdb, "dothu/" + ma + "/nhan"), async (anh) => {
+      if (!anh.exists() || pc.currentRemoteDescription) return;
+      await pc.setRemoteDescription(new RTCSessionDescription(anh.val()));
+      ghi("may 2 da tra loi");
+    });
+
+  } else {
+    pc.ondatachannel = (su) => { kenh = su.channel; gan(kenh); };
+
+    const anhMoi = await get(ref(rtdb, "dothu/" + ma + "/moi"));
+    if (!anhMoi.exists()) {
+      trangThai("Chưa thấy lời mời. Bấm Máy 1 ở máy kia trước.", "khong-dat");
+      $("nutMay1").disabled = false; $("nutMay2").disabled = false;
+      return;
+    }
+
+    await pc.setRemoteDescription(new RTCSessionDescription(anhMoi.val()));
+    const tra = await pc.createAnswer();
+    await pc.setLocalDescription(tra);
+    await set(ref(rtdb, "dothu/" + ma + "/nhan"), { type: tra.type, sdp: tra.sdp });
+    ghi("da tra loi may 1, dang noi...");
+    trangThai("Đang nối...");
+  }
+}
+
+function gan(k) {
+  k.onopen = () => {
+    ghi("kenh da mo");
+    trangThai("Đã nối. Đang đo " + (MOI_GIAY * SO_GIAY) + " gói...", "cho");
+    if (laMay1) doDoTre();
+  };
+  k.onclose = () => ghi("kenh dong");
+  k.onmessage = (su) => {
+    const p = su.data.split("|");
+
+    // May 2 chi vong lai y nguyen - khong tinh toan gi de khong lam ban so do
+    if (p[0] === "p") { k.send("r|" + p[1] + "|" + p[2]); return; }
+
+    if (p[0] === "r") {
+      rtt.push(performance.now() - parseFloat(p[2]));
+      daVe++;
+    }
+  };
+}
+
+// ================= DO =================
+
+async function doDoTre() {
+  dangDo = true;
+  let seq = 0;
+  const tong = MOI_GIAY * SO_GIAY;
+
+  const nhip = setInterval(() => {
+    if (seq >= tong) {
+      clearInterval(nhip);
+      // Cho them 500 ms cho nhung goi con tren duong ve
+      setTimeout(ketThuc, 500);
+      return;
+    }
+    kenh.send("p|" + seq + "|" + performance.now());
+    seq++; daGui++;
+
+    if (seq % MOI_GIAY === 0)
+      trangThai("Đang đo... " + seq + "/" + tong + " gói", "cho");
+  }, 1000 / MOI_GIAY);
+}
+
+async function ketThuc() {
+  dangDo = false;
+  if (rtt.length === 0) {
+    trangThai("Không nhận được gói nào.", "khong-dat");
+    return;
+  }
+
+  const v = rtt.slice().sort((a, b) => a - b);
+  const min = v[0], trungVi = v[Math.floor(v.length / 2)];
+  const p95 = v[Math.floor(v.length * 0.95)], max = v[v.length - 1];
+  const mat = daGui - daVe;
+
+  $("oMin").textContent = min.toFixed(1) + " ms";
+  $("oTrungVi").textContent = trungVi.toFixed(1) + " ms";
+  $("oP95").textContent = p95.toFixed(1) + " ms";
+  $("oMax").textContent = max.toFixed(1) + " ms";
+  $("oJitter").textContent = (p95 - min).toFixed(1) + " ms";
+  $("oGoi").textContent = daGui + " / " + daVe;
+  $("oMatGoi").textContent = (100 * mat / daGui).toFixed(1) + "%";
+
+  // Ngan sach da tinh o ke hoach: duong truyen + nhip gui 60Hz (8) +
+  // dem noi suy 1 nhip (17) + khung hinh (8) = duong truyen + 33 ms
+  const tong = trungVi + 33;
+  const oTong = $("oTong");
+  oTong.textContent = "~" + tong.toFixed(0) + " ms";
+  oTong.className = tong <= 80 ? "dat" : "khong-dat";
+
+  const oSo = $("oSoLon");
+  oSo.textContent = trungVi.toFixed(0) + " ms";
+  oSo.className = "so-lon " + (trungVi <= 47 ? "dat" : "khong-dat");
+
+  await xemKieuKetNoi();
+
+  $("oKetQua").hidden = false;
+  trangThai(tong <= 80
+    ? "Xong. Đạt mục tiêu 50-80 ms."
+    : "Xong. VƯỢT mục tiêu 50-80 ms.", tong <= 80 ? "dat" : "khong-dat");
+}
+
+/// Noi thang hay phai nho nguoi khac tiep suc - hai truong hop khac han nhau
+/// ve do tre, va con so tren kia vo nghia neu khong biet minh dang o dau.
+async function xemKieuKetNoi() {
+  try {
+    const so = await pc.getStats();
+    let cap = null;
+    so.forEach((b) => {
+      if (b.type === "candidate-pair" && b.state === "succeeded" && b.nominated) cap = b;
+    });
+    if (!cap) { $("oKieu").textContent = "không xác định"; return; }
+
+    let toi = "?", kia = "?";
+    so.forEach((b) => {
+      if (b.id === cap.localCandidateId) toi = b.candidateType;
+      if (b.id === cap.remoteCandidateId) kia = b.candidateType;
+    });
+
+    const ten = { host: "cùng mạng LAN", srflx: "nối thẳng qua NAT",
+                  prflx: "nối thẳng qua NAT", relay: "PHẢI TIẾP SỨC (relay)" };
+    const mo = (toi === "relay" || kia === "relay")
+      ? ten.relay : (ten[toi] || toi) + " ↔ " + (ten[kia] || kia);
+
+    const o = $("oKieu");
+    o.textContent = mo;
+    o.className = (toi === "relay" || kia === "relay") ? "khong-dat" : "dat";
+    ghi("ung vien: " + toi + " <-> " + kia);
+  } catch (e) {
+    $("oKieu").textContent = "không đọc được";
+  }
+}
+</script>
+</body>
+</html>

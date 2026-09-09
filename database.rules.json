@@ -118,6 +118,18 @@
       }
     },
 
+    // CHO BAT TAY CUA CONG CU DO DO TRE (buoc 0 giai doan 2).
+    //
+    // Hai may trao doi offer/answer/ICE qua day de tim duong noi thang voi
+    // nhau. Chi la cho hen gap: noi duoc roi thi khong ai dung den nua.
+    // Du lieu o day song vai giay, khong co gi dang giu.
+    "dothu": {
+      "$maPhien": {
+        ".read": "auth != null",
+        ".write": "auth != null"
+      }
+    },
+
     // DANH SACH ADMIN - BAN SAO CHO REALTIME DATABASE.
     //
     // Danh sach that nam o Firestore (collection 'quantri'), nhung luat cua
