@@ -5165,6 +5165,13 @@ code lúc chạy còn Act2 là scene đã nướng sẵn, hai đường khác h�
 30b): đi được **6,34 m**, trôi **0,000 m**, năng lượng 250 → 246, **0 lỗi**. Hai màn cùng đạt thì
 mới kết luận được.
 
+**Và một mảnh mà máy không tự đo được.** Phép thử bơm ý muốn thẳng vào bằng code, nên nó chứng
+minh đường *"ý muốn → thi hành"* còn nguyên. Nhưng đường *"bàn phím → `DocInput` → thi hành"* thì
+chỉ kiểm được một nửa: không bấm gì thì đứng yên. Bàn phím không giả lập được bằng code, nên phần
+này phải do người thật bấm: **WASD, chuột trái để đi, phím 1–7 tung phép, và bản cảm ứng với cần
+joystick lẫn nút kỹ năng — tất cả chạy đúng như trước.** Đó mới là dòng khép lại bước 1: sáu chỗ
+đọc phím đã dời sang file khác mà người chơi không nhận ra gì thay đổi.
+
 Và bơm kỹ năng thì **năng lượng tụt 250 → 247** — có tụt mới là đã thực sự tung phép, chứ đếm số
 lần bấm thì chỉ chứng minh con số tăng.
 
