@@ -31,6 +31,10 @@ public class VungLua : MonoBehaviour
 
     public LayerMask damageMask;
 
+    /// <summary>Nguoi tung phep - khong an don cua chinh minh. Chi co nghia
+    /// khi choi doi khang, luc do lop Player nam trong damageMask.</summary>
+    public Damageable boQua;
+
     float age, dotTimer;
     GameObject visual;
 
@@ -81,7 +85,7 @@ public class VungLua : MonoBehaviour
         if (moiNhip <= 0.01f) return;
 
         CombatUtil.AreaDamage(transform.position, radius, moiNhip,
-                              damageMask, DamageType.Fire, thoiGianChay);
+                              damageMask, DamageType.Fire, thoiGianChay, boQua);
     }
 
     void OnDrawGizmosSelected()

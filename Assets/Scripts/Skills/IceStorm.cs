@@ -56,6 +56,11 @@ public class IceStorm : MonoBehaviour
 
     public LayerMask damageMask;
 
+    /// <summary>Nguoi tung phep - truyen xuong tung manh sinh ra sau. Manh
+    /// roi tre vai giay nen khong the doc mot bien tam luc do; phai giu o day
+    /// roi giao lai.</summary>
+    public Damageable boQua;
+
     float timer, shardTimer, chillTimer;
     static readonly Collider[] buffer = new Collider[64];
 
@@ -109,6 +114,7 @@ public class IceStorm : MonoBehaviour
                 fall.damage = shardDamage;
                 fall.impactRadius = shardRadius;
                 fall.damageMask = damageMask;
+                fall.boQua = boQua;
                 fall.freezeSeconds = freezeSeconds;
                 fall.freezeChance = freezeChance;
             }

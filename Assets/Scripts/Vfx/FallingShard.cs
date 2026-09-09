@@ -8,6 +8,10 @@ public class FallingShard : MonoBehaviour
     public float impactRadius = 1.6f;
     public float damage = 0f;
     public LayerMask damageMask;
+
+    /// <summary>Nguoi tung phep - khong an don cua chinh minh. Chi co nghia
+    /// khi choi doi khang, luc do lop Player nam trong damageMask.</summary>
+    public Damageable boQua;
     public float freezeSeconds = 2.5f;
 
     [Tooltip("Xac suat lam ke dich DONG BANG khi trung, 0..1")]
@@ -40,7 +44,7 @@ public class FallingShard : MonoBehaviour
                 // con la mot xac suat nua.
                 int soDong;
                 CombatUtil.AreaFreeze(target, impactRadius, damage, damageMask,
-                                      freezeChance, freezeSeconds, out soDong);
+                                      freezeChance, freezeSeconds, boQua, out soDong);
             }
             Destroy(gameObject);
         }

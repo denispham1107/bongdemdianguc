@@ -19,6 +19,10 @@ public class Fireball : MonoBehaviour
     public LayerMask hitMask;
     public LayerMask damageMask;
 
+    /// <summary>Nguoi tung phep - khong an don cua chinh minh. Chi co nghia
+    /// khi choi doi khang, luc do lop Player nam trong damageMask.</summary>
+    public Damageable boQua;
+
     Vector3 dir;
     float age;
     bool exploded;
@@ -65,7 +69,8 @@ public class Fireball : MonoBehaviour
     /// chui xuong dat mot cai bay len troi.
     /// </summary>
     public static void SpawnChum(Vector3 pos, Vector3 direction, LayerMask hitMask,
-                                 LayerMask damageMask, int soQua = 3, float gocToe = 11f)
+                                 LayerMask damageMask, Damageable boQua = null,
+                                 int soQua = 3, float gocToe = 11f)
     {
         Vector3 huong = direction.normalized;
 
@@ -75,7 +80,8 @@ public class Fireball : MonoBehaviour
         {
             float goc = (i - giua) * gocToe;
             Vector3 h = Quaternion.AngleAxis(goc, Vector3.up) * huong;
-            Spawn(pos, h, hitMask, damageMask);
+            var qua = Spawn(pos, h, hitMask, damageMask);
+            if (qua != null) qua.boQua = boQua;
         }
     }
 
@@ -110,7 +116,7 @@ public class Fireball : MonoBehaviour
 
         VfxFactory.FireExplosion(transform.position, blastRadius);
         CombatUtil.AreaDamage(transform.position, blastRadius, impactDamage, damageMask,
-                              DamageType.Fire, burnSeconds);
+                              DamageType.Fire, burnSeconds, boQua);
 
         // Don no NGAY TREN MAT KHIENG thi tru mau khieng. AreaDamage o tren
         // khong lo duoc viec nay: no chi tim Damageable trong ban kinh, ma chu

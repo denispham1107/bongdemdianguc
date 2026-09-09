@@ -19,6 +19,10 @@ public class LightningStrike : MonoBehaviour
     public float impactRadius = 2.1f;
     public LayerMask damageMask;
 
+    /// <summary>Nguoi tung phep - khong an don cua chinh minh. Chi co nghia
+    /// khi choi doi khang, luc do lop Player nam trong damageMask.</summary>
+    public Damageable boQua;
+
     [Header("Gay choang")]
     [Range(0f, 1f)] public float stunChance = 0.4f;
     public float stunSeconds = 2.2f;
@@ -83,7 +87,8 @@ public class LightningStrike : MonoBehaviour
         VfxFactory.NamChuongNgai(target, impactRadius, VfxFactory.LopChuongNgai);
 
         if (damage > 0f)
-            CombatUtil.AreaShock(target, impactRadius, damage, damageMask, stunChance, stunSeconds);
+            CombatUtil.AreaShock(target, impactRadius, damage, damageMask,
+                                 stunChance, stunSeconds, boQua);
 
         CameraShake.Shake(0.18f, 0.075f);
     }

@@ -30,6 +30,11 @@ public class LightningStorm : MonoBehaviour
 
     public LayerMask damageMask;
 
+    /// <summary>Nguoi tung phep - truyen xuong tung manh sinh ra sau. Manh
+    /// roi tre vai giay nen khong the doc mot bien tam luc do; phai giu o day
+    /// roi giao lai.</summary>
+    public Damageable boQua;
+
     float timer, strikeTimer;
 
     static readonly Collider[] buffer = new Collider[64];
@@ -125,6 +130,7 @@ public class LightningStorm : MonoBehaviour
         s.damage = strikeDamage;
         s.impactRadius = strikeRadius;
         s.damageMask = damageMask;
+        s.boQua = boQua;
         s.stunChance = stunChance;
         s.stunSeconds = stunSeconds;
     }

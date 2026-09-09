@@ -49,6 +49,10 @@ public class GiatSet : MonoBehaviour
 
     public LayerMask damageMask;
 
+    /// <summary>Nguoi tung phep - khong an don cua chinh minh. Chi co nghia
+    /// khi choi doi khang, luc do lop Player nam trong damageMask.</summary>
+    public Damageable boQua;
+
     [Header("Mau tia")]
     [Tooltip("Loi tia - sang gan nhu trang")]
     public Color mauLoi = Color.white;
@@ -241,6 +245,7 @@ public class GiatSet : MonoBehaviour
         {
             var d = buffer[i].GetComponentInParent<Damageable>();
             if (d == null || d.IsDead) continue;
+            if (boQua != null && d == boQua) continue;
 
             // OverlapSphere tra ve TUNG COLLIDER: mot con quai co may collider
             // la no vao danh sach may lan, va ba tia se doi het vao mot con.
@@ -283,6 +288,7 @@ public class GiatSet : MonoBehaviour
         {
             var d = buffer[i].GetComponentInParent<Damageable>();
             if (d == null || d.IsDead || daTrung.Contains(d)) continue;
+            if (boQua != null && d == boQua) continue;
 
             float xa = Vector3.Distance(DiemTrung(d), tu);
             if (xa < ganNhat) { ganNhat = xa; gan = d; }

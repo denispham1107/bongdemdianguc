@@ -145,9 +145,16 @@ public static class CombatUtil
 {
     static readonly Collider[] buffer = new Collider[64];
 
-    /// <summary>Gay sat thuong cho moi muc tieu trong ban kinh.</summary>
+    /// <summary>
+    /// Gay sat thuong cho moi muc tieu trong ban kinh.
+    ///
+    /// <paramref name="boQua"/> la nguoi TUNG phep - bo qua de khong tu thieu
+    /// minh. Khi choi mot minh thi mask chi co lop Enemy nen khong can, nhung
+    /// choi doi khang thi lop Player nam trong mask, va qua cau lua no ngay
+    /// duoi chan se giet chinh nguoi vua bam phim.
+    /// </summary>
     public static int AreaDamage(Vector3 center, float radius, float damage, LayerMask mask,
-                                 DamageType type, float statusSeconds)
+                                 DamageType type, float statusSeconds, Damageable boQua = null)
     {
         int n = Physics.OverlapSphereNonAlloc(center, radius, buffer, mask, QueryTriggerInteraction.Collide);
         int hits = 0;
@@ -156,6 +163,7 @@ public static class CombatUtil
         {
             var d = buffer[i].GetComponentInParent<Damageable>();
             if (d == null || d.IsDead) continue;
+            if (boQua != null && d == boQua) continue;
 
             // Sat thuong giam dan tu tam ra ria
             float dist = Vector3.Distance(center, d.transform.position);
@@ -185,7 +193,8 @@ public static class CombatUtil
     /// </summary>
     /// <returns>So muc tieu trung don. <paramref name="soDongBang"/> tra ve so con bi dong.</returns>
     public static int AreaFreeze(Vector3 center, float radius, float damage, LayerMask mask,
-                                 float freezeChance, float freezeSeconds, out int soDongBang)
+                                 float freezeChance, float freezeSeconds, Damageable boQua,
+                                 out int soDongBang)
     {
         int n = Physics.OverlapSphereNonAlloc(center, radius, buffer, mask, QueryTriggerInteraction.Collide);
         int hits = 0;
@@ -195,6 +204,7 @@ public static class CombatUtil
         {
             var d = buffer[i].GetComponentInParent<Damageable>();
             if (d == null || d.IsDead) continue;
+            if (boQua != null && d == boQua) continue;
 
             float dist = Vector3.Distance(center, d.transform.position);
             float falloff = Mathf.Lerp(1f, 0.55f, Mathf.Clamp01(dist / Mathf.Max(0.01f, radius)));
@@ -218,7 +228,7 @@ public static class CombatUtil
     /// nen trong cung mot cu set co con dung im co con van xong toi.
     /// </summary>
     public static int AreaShock(Vector3 center, float radius, float damage, LayerMask mask,
-                                float stunChance, float stunSeconds)
+                                float stunChance, float stunSeconds, Damageable boQua = null)
     {
         int n = Physics.OverlapSphereNonAlloc(center, radius, buffer, mask, QueryTriggerInteraction.Collide);
         int hits = 0;
@@ -227,6 +237,7 @@ public static class CombatUtil
         {
             var d = buffer[i].GetComponentInParent<Damageable>();
             if (d == null || d.IsDead) continue;
+            if (boQua != null && d == boQua) continue;
 
             float dist = Vector3.Distance(center, d.transform.position);
             float falloff = Mathf.Lerp(1f, 0.55f, Mathf.Clamp01(dist / Mathf.Max(0.01f, radius)));

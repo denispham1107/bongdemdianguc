@@ -5400,6 +5400,90 @@ chỗ theo mốc thời gian chứ không vứt đi.
 được tính ở bên đó rồi; cho `CharacterController` xen vào lần nữa thì nhân vật bị kẹt vào tường hai
 lần.
 
+### Giai đoạn 2, bước 5: đánh giết lẫn nhau
+
+#### Bật PvP chỉ bằng một dòng — và đó là nhờ thiết kế cũ
+
+Mọi kỹ năng đều nhận `damageMask` từ bên ngoài, và `PlayerController.enemyMask` là **nơi duy nhất**
+cấp mask đó. Nên thêm lớp `Player` vào đấy là cả bảy phép đều đánh được người chơi khác, không
+phải sửa từng phép một:
+
+```csharp
+enemyMask = TranHienTai.DangChoiMang
+    ? LayerMask.GetMask("Enemy", "Player")
+    : LayerMask.GetMask("Enemy");
+```
+
+Nhưng đổi lại, phép cũng đánh được **chính mình**: quả cầu lửa nổ ngay dưới chân sẽ giết người vừa
+bấm phím. Nên phải thêm "bỏ qua ai" xuống tận nơi tính sát thương.
+
+#### Truyền "bỏ qua" qua mười một chỗ
+
+| Nơi | Việc |
+|---|---|
+| `CombatUtil.AreaDamage / AreaFreeze / AreaShock` | thêm tham số `boQua` |
+| `Fireball`, `ThienThach`, `VungLua`, `FallingShard`, `LightningStrike` | thêm trường `boQua`, truyền xuống |
+| `IceStorm`, `LightningStorm` | **giữ** `boQua` rồi giao lại cho từng mảnh sinh sau |
+| `Tornado`, `GiatSet` | tự lọc trong vòng lặp tìm mục tiêu |
+| `PlayerController.Release()` | giao `boQua = health` cho mọi phép vừa tung |
+
+Hai kỹ năng cần cách khác: **mưa băng và sấm sét sinh từng mảnh trễ vài giây**, nên không thể đọc
+một biến tạm lúc tung — phải giữ trong bản thân cơn mưa rồi giao lại cho mỗi mảnh khi nó rơi.
+
+`AreaFreeze` có tham số `out` ở cuối nên `boQua` phải đặt trước nó, không dùng được giá trị mặc
+định — đây là chỗ duy nhất phải sửa lời gọi cũ.
+
+#### Đo (menu 34), bốn chiều
+
+```
+[ban 1] buoc 5 - danh giet lan nhau
+lop Player co so hieu: 9
+1. choi mot minh -> mask co lop Player: False (phai la False)
+2. choi doi khang -> mask co lop Player: True (phai la True)
+3. no ngay tren dau nguoi kia -> ho mat 37 mau (400 -> 363)
+4. no ngay duoi chan MINH -> minh mat 0 mau (phai la 0)
+4b. cung cu no do nhung KHONG bo qua -> minh mat 40 mau (phai lon hon 0)
+so loi ghi nhan = 0
+```
+
+**Phép 4b mới là phép quan trọng nhất.** Chỉ đo "nổ dưới chân mình mà không mất máu" thì không
+phân biệt được *"bỏ qua đúng"* với *"phép này chẳng trúng ai cả"*. Phải chứng minh rằng cùng cú nổ
+ấy, khi **không** bỏ qua, thì máu **có** tụt — 40 điểm.
+
+Và phép 1 giữ cho chế độ chơi một mình không bị vạ lây: mask không được chứa lớp `Player`, nếu
+không người chơi đơn sẽ tự thiêu mình mà không hiểu vì sao.
+
+#### Một sai lầm về công cụ, tốn khá nhiều thời gian
+
+Sau khi viết xong phép thử, menu 34 **không xuất hiện** — mà console qua MCP trả về **rỗng hoàn
+toàn**, kể cả `Debug.Log` tôi vừa in, và `IsCompiling` báo `False`. Mọi dấu hiệu đều nói "đã xong".
+
+Thật ra biên dịch đã thất bại, assembly cũ vẫn chạy nên các menu cũ vẫn còn. Lỗi chỉ hiện ra khi
+đọc thẳng nhật ký của Unity:
+
+```bash
+grep -n "error CS" Logs/Editor.log | tail -8
+```
+
+Lỗi: `LayerMask.GetMask()` trả về `int` chứ không phải `LayerMask`, nên `.value` không tồn tại.
+
+Chú ý chỗ tìm: `%LOCALAPPDATA%\Unity\Editor\Editor.log` chỉ có phần khởi động rồi ghi *"Logs moved
+to project-relative Editor.log file"* — nhật ký thật nằm ở **`Logs/Editor.log` trong thư mục dự
+án**. Từ nay, sau khi thêm một script Editor mới thì hỏi thẳng xem menu đã tồn tại chưa, đừng chỉ
+tin `IsCompiling == False`.
+
+#### Còn thiếu trong bước 5
+
+Hai phần chưa làm, và phải nói rõ chứ không lặng lẽ bỏ qua:
+
+- **Trọng tài phán xử máu.** Hiện mỗi máy tự tính sát thương, nên hai máy có thể thấy máu lệch
+  nhau — nhất là `AreaFreeze` và `AreaShock` dùng `Random.value`, mỗi máy gieo riêng thì người này
+  thấy địch đóng băng, người kia thấy không.
+- **Bù trễ khi tính trúng.** Ở 28 ms độ trễ, người chạy ngang sẽ né được đòn dù trên màn hình
+  người bắn thấy trúng rõ ràng.
+
+Cả hai chỉ có nghĩa khi đã có hai máy thật nối vào nhau, nên để làm cùng lúc với việc ghép trận.
+
 ### Việc còn phải làm
 
 **169 MB là quá nặng**, nhất là trên điện thoại — nền tảng chính của game. Gần như toàn bộ nằm ở

@@ -43,6 +43,10 @@ public class Tornado : MonoBehaviour
 
     public LayerMask damageMask;
 
+    /// <summary>Nguoi tung phep - khong an don cua chinh minh. Chi co nghia
+    /// khi choi doi khang, luc do lop Player nam trong damageMask.</summary>
+    public Damageable boQua;
+
     /// <summary>Huong con loc dang truot toi (chi tinh theo phuong ngang).</summary>
     public Vector3 travelDir = Vector3.forward;
 
@@ -257,6 +261,7 @@ public class Tornado : MonoBehaviour
         {
             var d = buffer[i].GetComponentInParent<Damageable>();
             if (d == null || d.IsDead) continue;
+            if (boQua != null && d == boQua) continue;
 
             var w = WhirledEffect.Catch(d, this);
             if (w != null) caught.Add(w);

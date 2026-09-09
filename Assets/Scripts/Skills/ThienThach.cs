@@ -48,6 +48,10 @@ public class ThienThach : MonoBehaviour
     public LayerMask hitMask;
     public LayerMask damageMask;
 
+    /// <summary>Nguoi tung phep - khong an don cua chinh minh. Chi co nghia
+    /// khi choi doi khang, luc do lop Player nam trong damageMask.</summary>
+    public Damageable boQua;
+
     /// <summary>
     /// Cho bao nhieu giay roi moi bat dau roi. Dung cho LOAT ba qua: qua dau
     /// roi ngay, hai qua sau xep hang phia sau.
@@ -101,6 +105,7 @@ public class ThienThach : MonoBehaviour
     /// mot qua to chu khong ra mot loat.
     /// </summary>
     public static void SpawnLoat(Vector3 diemNgam, LayerMask hitMask, LayerMask damageMask,
+                                 Damageable boQua = null,
                                  int soQua = 3, float cachNhau = 0.7f, float tanRong = 2.8f)
     {
         for (int i = 0; i < soQua; i++)
@@ -115,6 +120,7 @@ public class ThienThach : MonoBehaviour
 
             var tt = Spawn(diem, hitMask, damageMask);
             tt.treTruocKhiRoi = i * cachNhau;
+            tt.boQua = boQua;
         }
     }
 
@@ -173,7 +179,7 @@ public class ThienThach : MonoBehaviour
 
         // 1. Sat thuong tuc thi ca vung
         CombatUtil.AreaDamage(tam, blastRadius, impactDamage, damageMask,
-                              DamageType.Fire, 2.2f);
+                              DamageType.Fire, 2.2f, boQua);
 
         // 2. Vu no nhin thay duoc
         VfxFactory.BuildFireExplosion(tam, blastRadius * 0.95f);

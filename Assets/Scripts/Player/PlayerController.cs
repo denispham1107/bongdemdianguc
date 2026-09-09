@@ -190,8 +190,20 @@ public class PlayerController : MonoBehaviour
         if (health == null) health = GetComponent<Damageable>();
 
         groundMask = LayerMask.GetMask("Ground", "Default");
-        enemyMask = LayerMask.GetMask("Enemy");
         obstacleMask = LayerMask.GetMask("Enemy", "Ground", "Default");
+
+        // BAT PvP CHI BANG MOT DONG.
+        //
+        // Moi ky nang deu nhan damageMask tu ben ngoai, va enemyMask la NOI
+        // DUY NHAT cap mask do - nen them lop Player vao day la ca bay phep
+        // deu danh duoc nguoi choi khac, khong phai sua tung phep mot.
+        //
+        // Doi lai, phep cung danh duoc CHINH MINH: qua cau lua no ngay duoi
+        // chan se giet nguoi vua bam phim. Nen moi ky nang deu duoc giao
+        // "boQua = health" - xem Release().
+        enemyMask = TranHienTai.DangChoiMang
+            ? LayerMask.GetMask("Enemy", "Player")
+            : LayerMask.GetMask("Enemy");
 
         // Tu gan bo doc input. Gan o day chu khong bat nguoi dung keo tay vao
         // prefab: nhan vat duoc dung tu code o ca hai man, quen mot cho la mot
@@ -745,16 +757,18 @@ public class PlayerController : MonoBehaviour
             // BA qua bay cung luc, toe hinh quat ve phia truoc.
             // Xem Fireball.SpawnChum - chum toe quanh truc DUNG nen nham chech
             // len hay xuong deu khong lam hai qua bien lech khoi mat phang ngang.
-            Fireball.SpawnChum(origin, dir.normalized, obstacleMask, enemyMask);
+            Fireball.SpawnChum(origin, dir.normalized, obstacleMask, enemyMask, health);
             CameraShake.Shake(0.12f, 0.05f);
         }
         else if (castingSkill == 1)
         {
-            IceStorm.Spawn(castAim, enemyMask);
+            var mua = IceStorm.Spawn(castAim, enemyMask);
+            if (mua != null) mua.boQua = health;
         }
         else if (castingSkill == 2)
         {
-            LightningStorm.Spawn(castAim, enemyMask);
+            var bao = LightningStorm.Spawn(castAim, enemyMask);
+            if (bao != null) bao.boQua = health;
         }
         else if (castingSkill == 3)
         {
@@ -767,7 +781,8 @@ public class PlayerController : MonoBehaviour
             Vector3 spawnAt = transform.position + dir * 3f;
             spawnAt.y = VfxFactory.GroundY(spawnAt);
 
-            Tornado.Spawn(spawnAt, dir, enemyMask);
+            var loc = Tornado.Spawn(spawnAt, dir, enemyMask);
+            if (loc != null) loc.boQua = health;
         }
         else if (castingSkill == 4)
         {
@@ -777,7 +792,7 @@ public class PlayerController : MonoBehaviour
             // Goi CA LOAT ba qua noi duoi nhau, cach nhau 0,5 giay. Xem
             // ThienThach.SpawnLoat - hai qua sau lech ra chung quanh chu khong
             // roi trung mot cho.
-            ThienThach.SpawnLoat(castAim, obstacleMask, enemyMask);
+            ThienThach.SpawnLoat(castAim, obstacleMask, enemyMask, health);
         }
         else if (castingSkill == 5)
         {
@@ -795,7 +810,8 @@ public class PlayerController : MonoBehaviour
             dir.y = 0f;
             if (dir.sqrMagnitude < 0.01f) dir = transform.forward;
 
-            GiatSet.Phong(origin, dir.normalized, enemyMask);
+            var set = GiatSet.Phong(origin, dir.normalized, enemyMask);
+            if (set != null) set.boQua = health;
         }
         else
         {
