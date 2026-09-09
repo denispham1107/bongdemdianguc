@@ -5072,6 +5072,44 @@ Sửa ba chỗ:
 
 Cùng một lỗi có ở `CauNoiWebRTC.jslib` vì tôi chép nguyên cách làm sang; đã sửa cả hai.
 
+#### Số đo thật: Wi-Fi ↔ 4G, và cái đuôi của phân bố
+
+Sau khi sửa, đo lại với một máy Wi-Fi nhà và một máy 4G:
+
+```
+Nhỏ nhất            18.9 ms
+Trung vị            28.1 ms
+95% số lần dưới     72.6 ms
+Lớn nhất           138.6 ms
+Dao động (jitter)   53.7 ms
+Gói gửi / nhận về   200 / 200
+Tỉ lệ mất gói       0.0%
+Kiểu kết nối        host ↔ prflx      ← KHÔNG có relay
+Ước tính nhìn thấy nhau   ~61 ms
+```
+
+**Dòng quan trọng nhất là `host ↔ prflx`**: hai máy nối **thẳng** với nhau, không qua máy chủ tiếp
+sức nào. Lo ngại rằng CGNAT của mạng 4G Việt Nam sẽ chặn — đã không xảy ra. Nghĩa là không cần
+TURN, và hạ tầng vẫn thuần Google Cloud.
+
+Mất gói **0%** so với 9% lần trước, xác nhận thêm rằng 9% kia là do rớt kết nối chứ không phải
+đường truyền kém.
+
+**Nhưng cái đuôi phân bố mới là thứ quyết định cảm giác chơi:**
+
+| | Độ trễ đường truyền | Cộng 33 ms xử lý | Mục tiêu 50–80 ms |
+|---|---|---|---|
+| Trung vị | 28,1 ms | ~61 ms | đạt |
+| 95% số lần dưới | 72,6 ms | ~106 ms | **vượt** |
+
+Cứ 20 gói thì có 1 gói mất hơn 72 ms — bản chất của mạng di động. Phần lớn thời gian mượt, thỉnh
+thoảng giật một nhịp.
+
+Điều này **đổi một quyết định ở bước 4**: đệm nội suy 1 nhịp cố định (17 ms) mà kế hoạch ban đầu
+dự tính sẽ không đủ che dao động 53,7 ms. Phải làm **đệm co giãn theo mạng** — dày lên khi đường
+truyền chập chờn, mỏng lại khi ổn định. Biết điều này từ bước 0 thì bước 4 làm đúng ngay, thay vì
+làm xong rồi mới phát hiện game giật trên 4G.
+
 ### Giai đoạn 2, bước 1: tách ý muốn ra khỏi việc thi hành
 
 `PlayerController` 940 dòng vừa *đọc phím* vừa *thi hành phép*. Chơi một mình thì không sao,

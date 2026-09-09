@@ -410,7 +410,7 @@ async function xemKieuKetNoi() {
       if (b.id === cap.remoteCandidateId) kia = b.candidateType;
     });
 
-    const ten = { host: "cùng mạng nội bộ", srflx: "nối thẳng qua NAT",
+    const ten = { host: "địa chỉ nội bộ", srflx: "nối thẳng qua NAT",
                   prflx: "nối thẳng qua NAT", relay: "PHẢI TIẾP SỨC (relay)" };
     const mo = (toi === "relay" || kia === "relay")
       ? ten.relay : (ten[toi] || toi) + " ↔ " + (ten[kia] || kia);
