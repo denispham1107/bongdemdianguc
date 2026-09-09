@@ -223,6 +223,13 @@ public static class ThuBomInput
         Ket();
     }
 
+    static void TraLaiCanh()
+    {
+        if (EditorApplication.isPlaying) return;      // cho ra khoi Play da
+        EditorApplication.update -= TraLaiCanh;
+        if (!string.IsNullOrEmpty(canhCu)) EditorSceneManager.OpenScene(canhCu);
+    }
+
     static void Ket()
     {
         string ten = Canh.Contains("Act1") ? "bom_input_act1.txt" : "bom_input_act2.txt";
@@ -236,8 +243,13 @@ public static class ThuBomInput
         EditorSettings.enterPlayModeOptions = truocPlayMode;
         EditorApplication.isPlaying = false;
 
-        // Tra lai canh nguoi dung dang mo truoc do
+        // Tra lai canh nguoi dung dang mo truoc do.
+        //
+        // Khong dung delayCall: no dang ky trong luc con o Play mode va bi mat
+        // khi Unity thoat Play - da vap, canh Act1 nam lai tren man hinh nguoi
+        // dung. Phai bam vao EditorApplication.update va cho den khi that su
+        // ra khoi Play roi moi mo.
         if (!string.IsNullOrEmpty(canhCu) && canhCu != Canh)
-            EditorApplication.delayCall += () => EditorSceneManager.OpenScene(canhCu);
+            EditorApplication.update += TraLaiCanh;
     }
 }
