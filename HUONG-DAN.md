@@ -5484,6 +5484,41 @@ Hai phần chưa làm, và phải nói rõ chứ không lặng lẽ bỏ qua:
 
 Cả hai chỉ có nghĩa khi đã có hai máy thật nối vào nhau, nên để làm cùng lúc với việc ghép trận.
 
+### Ghép hai máy: lần đầu mọi thứ gặp nhau trên một màn hình
+
+Từng mảnh của giai đoạn 2 đều đã được đo riêng, nhưng đo riêng **không chứng minh được rằng ghép
+lại thì chạy**. `KhoiDongTranMang` là chỗ chúng gặp nhau:
+
+1. Đọc lại phòng từ Firebase — biết ai là chủ phòng, ai là khách.
+2. Chủ phòng **mời**, khách **nhận**. Bắt tay qua Realtime Database, một lần, 1–2 giây.
+3. Sinh nhân vật cho người kia (bước 3).
+4. Gắn `DongBoTran` — gửi và nhận vị trí 60 lần mỗi giây (bước 4).
+
+Xong bước 2 thì **Firebase đứng sang một bên**: từ đó tới hết trận không còn gói tin nào đi qua
+Google.
+
+**Tự gắn vào màn chơi bằng `[RuntimeInitializeOnLoadMethod]`**, không kéo tay vào scene. Lý do rất
+cụ thể: Act1 dựng bằng code lúc chạy còn Act2 là scene đã nướng sẵn — gắn tay thì phải nhớ cả hai,
+và quên một cái là một màn không nối mạng được mà chẳng báo gì.
+
+**Màn hình phải nói nó đang làm gì.** Bắt tay mất 1–2 giây, và nếu hỏng thì phải hỏng ra tiếng:
+*"Đang tìm người chơi khác…"* → *"Đang mời người kia nối vào…"* → *"Đã nối! (bắt tay mất 1,4 giây)"*,
+hoặc một dòng đỏ nói rõ hỏng ở đâu. Ba giây sau khi nối được thì dòng chữ tự tắt, trả màn hình lại
+cho game.
+
+#### Hai giới hạn phải nói trước
+
+**Chỉ hai người.** `KenhTrucTiep` giữ đúng một kết nối. Bốn người thì phải nối hình sao qua chủ
+phòng và chủ phòng chuyển tiếp — chưa làm. Nói rõ ở đây chứ không để người ta vào phòng bốn người
+rồi ngơ ngác vì chỉ thấy một.
+
+**Bản Editor không nối mạng thật được.** WebRTC chỉ có trên WebGL; trong Unity thì `KenhTrucTiep`
+chạy kênh giả lập. Nên bản Editor hiện thẳng một dòng nói điều đó thay vì quay vòng bất tận — một
+vòng xoay không bao giờ dừng thì nhìn như treo máy.
+
+**Máu chưa được đồng bộ.** Hai máy thấy nhau chạy, nhưng đánh nhau thì mỗi máy tự tính sát thương
+nên máu có thể lệch. Đó là phần còn thiếu của bước 5, để làm sau khi việc nhìn thấy nhau đã chắc.
+
 ### Việc còn phải làm
 
 **169 MB là quá nặng**, nhất là trên điện thoại — nền tảng chính của game. Gần như toàn bộ nằm ở
