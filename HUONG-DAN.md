@@ -5665,6 +5665,107 @@ thử được viết lại: nó **tự giải mã mốc thời gian ra khỏi m
 500 cặp tự chế với mốc biết trước, cách nhau từ 1 ms đến một phút. Không còn chỗ nào để tôi nhét
 giả thiết của mình vào.
 
+### Cùng phòng, cùng màn, mà vẫn không thấy nhau
+
+Sửa xong phần trên, anh thử lại: hai người **đã vào đúng một phòng**, và ảnh chụp cho thấy cả hai
+đều đang ở nghĩa địa — **đúng một màn**. Nhưng vẫn hai trận riêng biệt, không thấy nhau.
+
+Ảnh chụp nói ra chỗ hỏng, không phải bằng cái nó cho thấy mà bằng cái nó **không** cho thấy: góc
+dưới trái **trống trơn**. Dòng nhận dạng vừa thêm ở mục trước không hề xuất hiện — nghĩa là
+`KhoiDongTranMang` chưa bao giờ được dựng dậy.
+
+#### `[RuntimeInitializeOnLoadMethod]` chạy đúng một lần
+
+Bộ nối mạng tự đặt mình vào màn chơi thay vì bắt kéo tay vào scene — vì Act1 dựng bằng code còn
+Act2 là scene nướng sẵn, gắn tay thì phải nhớ cả hai. Cách gắn là:
+
+```csharp
+[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
+static void TuGan()
+{
+    if (!TranHienTai.DangChoiMang) return;
+    …
+}
+```
+
+Cái tên `AfterSceneLoad` đọc lên nghe như "sau **mỗi** lần nạp màn". Không phải: nó chạy **đúng một
+lần**, lúc game vừa khởi động, sau khi scene **đầu tiên** nạp xong. Lúc ấy người chơi còn đang ở
+MainMenu, `DangChoiMang` vẫn là `false`, nên hàm thoát ra ngay dòng đầu — **và không bao giờ quay
+lại**. Nạp Act2 sau đó thì không ai dựng bộ nối mạng cả.
+
+Sửa: phần việc của nó chỉ là **đăng ký một lần**, rồi để `sceneLoaded` gọi lại sau mỗi lần nạp màn.
+
+```csharp
+[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
+static void DangKyNgheNapMan()
+{
+    SceneManager.sceneLoaded -= KhiNapXongMan;
+    SceneManager.sceneLoaded += KhiNapXongMan;
+    KhiNapXongMan(SceneManager.GetActiveScene(), LoadSceneMode.Single);   // màn đang mở
+}
+```
+
+Dòng cuối là cho trường hợp ai đó vào thẳng Act2 mà không qua MainMenu (chạy thử trong Editor
+chẳng hạn) — khi ấy không có lần nạp nào để mà nghe.
+
+#### Vì sao lỗi này sống sót qua cả năm bước đo
+
+Năm bước của giai đoạn 2 đều được đo riêng, và đều đạt. Nhưng **không phép đo nào đi qua đường
+người chơi thật đi**: từ MainMenu, bấm bắt đầu, nạp màn chơi. Các phép thử trước đều mở thẳng Act2
+rồi đo — mà mở thẳng Act2 thì `RuntimeInitializeOnLoadMethod` chạy đúng lúc Act2 vừa nạp, nên nó
+hoạt động. Chỉ khi **đi từ MainMenu sang** lỗi mới hiện ra.
+
+Nên **menu 36** đi đúng con đường đó: vào Play ở MainMenu, bật `DangChoiMang`, `LoadScene`, rồi
+**đếm** xem trong cảnh có bộ nối mạng không.
+
+```
+--- màn Act2 ---
+1. KhoiDongTranMang trong cảnh: KHÔNG CÓ
+[LỖI] không ai dựng dậy bộ nối mạng - hai máy không thể tìm thấy nhau
+2. dòng nhận dạng trên màn hình: "(rỗng)"
+[LỖI] màn hình không nói gì cả - đúng như ảnh chụp của người chơi
+số lỗi ghi nhận = 2
+```
+
+Sau khi sửa, chạy lại **cả hai màn**:
+
+```
+--- màn Act2 ---
+1. KhoiDongTranMang trong cảnh: có
+2. dòng nhận dạng: "phòng …tu-gan · Act2 · chủ phòng"
+3. bước tiếp theo: "Bản này chạy trong Unity Editor nên chưa nối mạng thật được…"
+--- màn Act1 ---
+1. KhoiDongTranMang trong cảnh: có
+2. dòng nhận dạng: "phòng …tu-gan · Act1 · chủ phòng"
+3. bước tiếp theo: "Bản này chạy trong Unity Editor nên chưa nối mạng thật được…"
+số lỗi ghi nhận = 0
+```
+
+Chiều thứ 3 không thừa: chỉ đếm "có bộ nối mạng" thì chưa biết nó có **chạy được** không. Dòng nói
+"bản Editor chưa nối mạng thật được" chứng minh nó đã đi qua đoạn tìm nhân vật của mình — chỗ dễ
+hỏng ngay sau đó.
+
+Và vì vật thể chạy phép thử phải sống qua lần nạp màn, nó cần `DontDestroyOnLoad`; không thì
+coroutine đứt ngang giữa chừng và phép thử im lặng không ghi gì, nhìn hệt như "chạy xong mà không
+có kết quả".
+
+#### Một chỗ nghi oan
+
+Trước khi build lại, tôi ngờ cầu nối WebRTC (`CauNoiWebRTC.jslib`) không được nhúng vào bản web —
+file `.meta` của nó chỉ có hai dòng, không có phần `PluginImporter` như plugin thường thấy. Kiểm
+bằng cách giải nén thẳng bản build ra mà tìm:
+
+```
+RTC_Tao              CÓ
+RTC_TaoLoiMoi        CÓ
+RTC_Gui              CÓ
+themUngVien          CÓ
+xaHangUngVien        CÓ
+RTCPeerConnection    CÓ
+```
+
+Đủ cả. Meta hai dòng là chuyện bình thường của Unity 6 với `.jslib`.
+
 ### Việc còn phải làm
 
 **169 MB là quá nặng**, nhất là trên điện thoại — nền tảng chính của game. Gần như toàn bộ nằm ở
@@ -5721,6 +5822,7 @@ cho riêng nền tảng WebGL sẽ ăn cả hai đầu: file nhỏ hơn và khô
 | **33. Chay thu NOI SUY** | Bước 4: đo độ dày của đệm co giãn ở mạng tốt và mạng 4G, và số lần giật khi ép đệm mỏng. |
 | **34. Chay thu PVP** | Bước 5: bốn chiều — chơi đơn không tự thiêu, chơi đối kháng đánh được nhau, đánh người khác họ mất máu, đánh chính mình thì không. |
 | **35. Chay thu GHEP PHONG (cung man)** | Kiểm rằng hai người bấm "Vào phòng nhanh" cùng lúc thì vẫn về chung một phòng và chung một màn. Không nối mạng — đo tính chất của `PhongMang.PhongDuocGiu` (đối xứng, luôn là một trong hai, phòng tạo trước thắng) trên 2 515 cặp. Kết quả ra `PlayTestShots/ghepphong.txt`. |
+| **36. Chay thu TU GAN bo noi mang** | Đi đúng đường người chơi đi: vào Play ở MainMenu, bật `DangChoiMang`, nạp màn chơi, rồi **đếm** xem bộ nối mạng có được dựng dậy không — trên **cả hai màn**. Kết quả ra `PlayTestShots/tugan.txt`. |
 
 > ⚠️ Mục **1** sẽ **xóa và tạo lại** các thư mục Textures / Materials / Models / Prefabs.
 > Nếu bạn tự sửa tay trong đó thì hãy sao lưu trước.

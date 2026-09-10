@@ -1,0 +1,19 @@
+[ban 1] vao man choi mang thi co ai dung day bo noi mang khong
+canh dau: MainMenu
+
+--- man Act2 ---
+da bat DangChoiMang = true, sap nap Act2
+canh dang mo sau khi nap: Act2
+1. KhoiDongTranMang trong canh: co
+2. dong nhan dang tren man hinh: "phòng …tu-gan · Act2 · chủ phòng"
+3. buoc tiep theo cua bo noi mang: "Bản này chạy trong Unity Editor nên chưa nối mạng thật được (WebRTC chỉ có trên bản web). Hãy mở diablo25d-game.web.app trên hai máy."
+   (da qua duoc doan tim nhan vat - trong Editor thi dung o day vi WebRTC chi co tren ban web)
+
+--- man Act1 ---
+da bat DangChoiMang = true, sap nap Act1
+canh dang mo sau khi nap: Act1
+1. KhoiDongTranMang trong canh: co
+2. dong nhan dang tren man hinh: "phòng …tu-gan · Act1 · chủ phòng"
+3. buoc tiep theo cua bo noi mang: "Bản này chạy trong Unity Editor nên chưa nối mạng thật được (WebRTC chỉ có trên bản web). Hãy mở diablo25d-game.web.app trên hai máy."
+   (da qua duoc doan tim nhan vat - trong Editor thi dung o day vi WebRTC chi co tren ban web)
+so loi ghi nhan = 0

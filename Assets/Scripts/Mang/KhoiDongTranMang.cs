@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 /// <summary>
 /// VAO TRAN MANG: BAT TAY, SINH NHAN VAT CHO NGUOI KIA, ROI DONG BO.
@@ -41,17 +42,34 @@ public class KhoiDongTranMang : MonoBehaviour
     ///
     /// Act1 dung bang code luc chay con Act2 la scene da nuong san - gan tay
     /// thi phai nho ca hai, va quen mot cai la mot man khong noi mang duoc ma
-    /// khong bao gi. Chay sau khi scene da nap xong nen GameBootstrap da kip
-    /// dung nhan vat.
+    /// khong bao gi.
+    ///
+    /// CAI BAY DA VAP: [RuntimeInitializeOnLoadMethod] chay DUNG MOT LAN, luc
+    /// game vua khoi dong - KHONG chay lai moi lan nap scene. Ma luc ay nguoi
+    /// choi con dang o MainMenu, DangChoiMang van con false, nen ham thoat ra
+    /// ngay dong dau va khong bao gio quay lai. Nap Act2 sau do thi khong ai
+    /// dung day bo noi mang ca: hai nguoi vao dung mot phong, dung mot man, ma
+    /// khong he thay nhau - va man hinh khong noi mot chu nao.
+    ///
+    /// Nen phan viec cua no la DANG KY MOT LAN, roi de sceneLoaded goi lai sau
+    /// moi lan nap man.
     /// </summary>
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-    static void TuGan()
+    static void DangKyNgheNapMan()
+    {
+        SceneManager.sceneLoaded -= KhiNapXongMan;
+        SceneManager.sceneLoaded += KhiNapXongMan;
+
+        // Man dang mo luc dang ky cung phai duoc xet: neu ai do vao thang Act2
+        // ma khong qua MainMenu (chay thu trong Editor chang han) thi khong co
+        // lan nap nao de nghe ca.
+        KhiNapXongMan(SceneManager.GetActiveScene(), LoadSceneMode.Single);
+    }
+
+    static void KhiNapXongMan(Scene canh, LoadSceneMode kieu)
     {
         if (!TranHienTai.DangChoiMang) return;
-
-        string ten = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
-        if (ten != "Act1" && ten != "Act2") return;
-
+        if (canh.name != "Act1" && canh.name != "Act2") return;
         if (Object.FindAnyObjectByType<KhoiDongTranMang>() != null) return;
 
         var go = new GameObject("TranMang");
