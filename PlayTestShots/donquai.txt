@@ -1,0 +1,10 @@
+[ban 1] don cua quai phai di qua duoc mang
+da don 25 con quai co san de mau chi doi vi phep thu
+1. quai danh ban sao: 400 -> 360 mau, roi mot goi tin tu may kia den -> 400 mau
+   => sat thuong bi xoa sach: True (dung nhu vay thi nguoi khach bat tu truoc quai)
+2. goi don quai 15 byte, doc lai: idQuai=777 kieuDon=2 nanNhan=1 lech diem ngam=0.0000 m
+3. chu phong: quai ra don -> so goi don quai gui di: 6 (phai it nhat 1)
+4. may khach nghe 'quai ra don' -> minh mat 12 mau (phai lon hon 0)
+5. cung goi ay den them hai lan -> mat them 0 mau (phai la 0)
+6. don nham NGUOI KIA -> minh mat 0 mau (phai la 0)
+so loi ghi nhan = 0

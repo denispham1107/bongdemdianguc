@@ -74,6 +74,33 @@ public static class GoiTin
     /// </summary>
     public const byte LoaiNhip = 5;
 
+    /// <summary>
+    /// GOI DON QUAI: "con so 12 vua vung kiem vao nguoi so 1".
+    ///
+    /// Khong chi de dep mat. Sau khi chu phong lam trong tai cua quai, don cua
+    /// chung KHONG con toi duoc nguoi khach nua: tren may chu phong quai danh
+    /// vao ban sao cua khach, ma mau ban sao bi goi tin tu khach de len 60 lan
+    /// moi giay nen sat thuong bien mat; con tren may khach thi AI quai da tat.
+    /// Nguoi khach bat tu truoc quai - va khong ai bao gi ca.
+    ///
+    /// Nen goi nay cho ca hai thu cung mot luc: hinh anh cu ra don, va con
+    /// duong de may nan nhan tu tru mau minh - dung quy uoc "moi may la trong
+    /// tai cua chinh nhan vat minh".
+    ///
+    /// Gui lap lai nhu goi ky nang: ra don xay ra dung mot lan, mat la mat han.
+    /// </summary>
+    public const byte LoaiDonQuai = 6;
+
+    /// <summary>Mot lan quai ra don.</summary>
+    public struct MotDonQuai
+    {
+        public ushort idQuai;
+        public byte kieuDon;        // 0 = danh gan, 1 = nem phep, 2 = thien thach, 3 = tia set
+        public byte chiSoNanNhan;   // ai bi nham; 255 = khong nham ai ro rang
+        public int soThuTu;
+        public Vector3 diemNgam;
+    }
+
     /// <summary>Bao nhieu con nhieu nhat trong mot goi.</summary>
     public const int SoQuaiMoiGoi = 16;
 
@@ -276,6 +303,57 @@ public static class GoiTin
         ra.diemNgam = new Vector3(MoToaDo(x), MoToaDo(y), MoToaDo(z));
 
         ra.doTreMs = (ushort)(b[i] | (b[i + 1] << 8));
+
+        return true;
+    }
+
+    // ================================================================
+    //  GOI DON QUAI
+    // ================================================================
+
+    /// <summary>Dong goi mot lan quai ra don. 15 byte.</summary>
+    public static byte[] VietDonQuai(MotDonQuai d)
+    {
+        var b = new byte[15];
+        int i = 0;
+
+        b[i++] = LoaiDonQuai;
+
+        b[i++] = (byte)(d.idQuai & 0xFF);
+        b[i++] = (byte)((d.idQuai >> 8) & 0xFF);
+        b[i++] = d.kieuDon;
+        b[i++] = d.chiSoNanNhan;
+
+        b[i++] = (byte)(d.soThuTu & 0xFF);
+        b[i++] = (byte)((d.soThuTu >> 8) & 0xFF);
+        b[i++] = (byte)((d.soThuTu >> 16) & 0xFF);
+        b[i++] = (byte)((d.soThuTu >> 24) & 0xFF);
+
+        short x = NenToaDo(d.diemNgam.x), y = NenToaDo(d.diemNgam.y), z = NenToaDo(d.diemNgam.z);
+        b[i++] = (byte)(x & 0xFF); b[i++] = (byte)((x >> 8) & 0xFF);
+        b[i++] = (byte)(y & 0xFF); b[i++] = (byte)((y >> 8) & 0xFF);
+        b[i++] = (byte)(z & 0xFF); b[i++] = (byte)((z >> 8) & 0xFF);
+
+        return b;
+    }
+
+    public static bool DocDonQuai(byte[] b, out MotDonQuai ra)
+    {
+        ra = new MotDonQuai();
+        if (b == null || b.Length < 15 || b[0] != LoaiDonQuai) return false;
+
+        int i = 1;
+        ra.idQuai = (ushort)(b[i] | (b[i + 1] << 8)); i += 2;
+        ra.kieuDon = b[i++];
+        ra.chiSoNanNhan = b[i++];
+
+        ra.soThuTu = b[i] | (b[i + 1] << 8) | (b[i + 2] << 16) | (b[i + 3] << 24);
+        i += 4;
+
+        short x = (short)(b[i] | (b[i + 1] << 8)); i += 2;
+        short y = (short)(b[i] | (b[i + 1] << 8)); i += 2;
+        short z = (short)(b[i] | (b[i + 1] << 8)); i += 2;
+        ra.diemNgam = new Vector3(MoToaDo(x), MoToaDo(y), MoToaDo(z));
 
         return true;
     }

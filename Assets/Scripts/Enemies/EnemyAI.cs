@@ -296,11 +296,94 @@ public class EnemyAI : MonoBehaviour
         if (hoatHinhRieng != null) hoatHinhRieng.RaDon(attackAnimTime);
     }
 
+    /// <summary>
+    /// BAO RA MOI LAN CON QUAI NAY THUC SU RA DON.
+    ///
+    /// (con quai nao, kieu don, muc tieu, diem ngam). <see cref="DongBoQuai"/>
+    /// nghe de ke sang may kia - khong nghe thi quai van danh binh thuong, chi
+    /// la mot minh may nay thay.
+    ///
+    /// PHAI mang theo chinh con quai phat ra su kien. Ban dau toi bo no di roi
+    /// de ben nghe quet ca canh doan xem "con nao vua danh" - mot cach lam vua
+    /// cham vua sai: hai con danh trong cung mot khung hinh la doan nham ngay.
+    ///
+    /// Dat trong TryHit chu khong trong StartAttack: StartAttack chi la luc
+    /// vung tay len, con don co cham toi hay khong thi den TryHit moi biet.
+    /// Bao som thi may kia ve mot cu danh trung trong khi ben nay no truot.
+    /// </summary>
+    public event System.Action<EnemyAI, int, Transform, Vector3> DaRaDon;
+
+    /// <summary>Kieu don, dung chung cho ca hai may. Xem GoiTin.MotDonQuai.</summary>
+    public int KieuDonHienGio
+    {
+        get
+        {
+            if (!danhTuXa) return 0;
+            if (danhBangThienThach) return 2;
+            if (danhBangTiaSet) return 3;
+            return 1;
+        }
+    }
+
+    /// <summary>Ep ra don ngay, bo qua hoi chieu - chi dung cho kich ban chay thu.</summary>
+    public void RaDonNgay()
+    {
+        cooldown = 0f;
+        StartAttack();
+        TryHit();
+    }
+
+    /// <summary>
+    /// DIEN LAI MOT DON THEO LOI KE TU MAY KIA.
+    ///
+    /// Chay tren may khach, noi con quai nay chi la ban sao va AI da tat. No
+    /// lam dung hai viec: dien hinh anh ra don, va - neu don nham vao nhan vat
+    /// CUA MAY NAY - gay sat thuong that. Cai thu hai moi la phan quan trong:
+    /// thieu no thi nguoi khach bat tu truoc quai.
+    ///
+    /// <paramref name="nanNhan"/> la null neu don nham vao nguoi khac; khi ay
+    /// chi co hinh anh, vi mau cua nguoi kia do MAY CUA HO quyet dinh.
+    /// </summary>
+    public void DienLaiDon(int kieu, Vector3 diemNgam, Damageable nanNhan)
+    {
+        // Hinh anh vung tay - lam truoc, de ke ca khi don truot van thay dong tac
+        if (anim != null) anim.PlayAttack(attackAnimTime);
+        if (hoatHinhRieng != null) hoatHinhRieng.RaDon(attackAnimTime);
+
+        // Quay mat ve huong danh, khong thi con quai vung kiem ra sau lung
+        Vector3 nhin = new Vector3(diemNgam.x - transform.position.x, 0f,
+                                   diemNgam.z - transform.position.z);
+        if (nhin.sqrMagnitude > 0.01f)
+            transform.rotation = Quaternion.LookRotation(nhin);
+
+        if (kieu == 0)
+        {
+            if (nanNhan != null && !nanNhan.IsDead)
+                nanNhan.TakeDamage(attackDamage, DamageType.Physical,
+                                   nanNhan.transform.position + Vector3.up * 1.1f);
+            return;
+        }
+
+        // Ba kieu danh xa deu nham vao mot DIEM, va deu chi gay sat thuong cho
+        // lop Player - nen dien lai la du: no se trung dung ai dang dung do.
+        // Ban sao cua nguoi khac cung o lop Player va cung an don, nhung mau ho
+        // bi goi tin cua chinh ho de len ngay sau do nen khong sao.
+        if (kieu == 2) { GoiThienThachTaiDiem(diemNgam); return; }
+        if (kieu == 3) { PhongTiaSetToiDiem(diemNgam); return; }
+        NemPhepToiDiem(diemNgam);
+    }
+
     void TryHit()
     {
         if (target == null) return;
 
-        if (danhTuXa) { NemPhep(); return; }
+        if (danhTuXa)
+        {
+            NemPhep();
+            if (DaRaDon != null)
+                DaRaDon(this, KieuDonHienGio, target, target.position);
+            return;
+        }
 
         // Tru ban kinh khieng RA TRUOC roi moi so voi tam tay: dieu kien dung la
         // "mat vom co nam trong tam tay khong", khong phai "tam nguoi choi co
@@ -317,6 +400,8 @@ public class EnemyAI : MonoBehaviour
         // Damageable tu chuyen don nay vao khieng neu muc tieu dang co khieng
         d.TakeDamage(attackDamage, DamageType.Physical,
                      target.position + Vector3.up * 1.1f);
+
+        if (DaRaDon != null) DaRaDon(this, 0, target, target.position);
     }
 
     /// <summary>
@@ -361,11 +446,24 @@ public class EnemyAI : MonoBehaviour
         if (danhBangThienThach) { GoiThienThach(); return; }
         if (danhBangTiaSet) { PhongTiaSet(); return; }
 
+        NemPhepToiDiem(target.position);
+    }
+
+    /// <summary>
+    /// Nhu tren nhung nham vao MOT DIEM, khong hoi target la ai.
+    ///
+    /// May khach dien lai don theo loi ke thi khong co target - con quai ben
+    /// do chi la ban sao, AI da tat va no khong theo doi ai ca. Tach ra the
+    /// nay de ca hai duong dung CHUNG mot khoi code: sua sat thuong hay toc do
+    /// mot cho la hai may cung doi, khong the lech nhau.
+    /// </summary>
+    void NemPhepToiDiem(Vector3 diemNgam)
+    {
         Vector3 tu = diemPhongPhep != null
             ? diemPhongPhep.position
             : transform.position + Vector3.up * 1.35f + transform.forward * 0.45f;
 
-        Vector3 den = target.position + Vector3.up * 1.05f;
+        Vector3 den = diemNgam + Vector3.up * 1.05f;
         Vector3 huong = den - tu;
         if (huong.sqrMagnitude < 0.01f) return;
 
@@ -406,8 +504,12 @@ public class EnemyAI : MonoBehaviour
     /// </summary>
     void GoiThienThach()
     {
-        Vector3 diemNgam = target.position;
+        GoiThienThachTaiDiem(target.position);
+    }
 
+    /// <summary>Nhu tren nhung nham vao mot diem - xem <see cref="NemPhepToiDiem"/>.</summary>
+    void GoiThienThachTaiDiem(Vector3 diemNgam)
+    {
         var tt = ThienThach.Spawn(diemNgam,
                                   LayerMask.GetMask("Player", "Ground", "Default", "Khieng"),
                                   LayerMask.GetMask("Player"));
@@ -436,11 +538,17 @@ public class EnemyAI : MonoBehaviour
     /// </summary>
     void PhongTiaSet()
     {
+        PhongTiaSetToiDiem(target.position);
+    }
+
+    /// <summary>Nhu tren nhung nham vao mot diem - xem <see cref="NemPhepToiDiem"/>.</summary>
+    void PhongTiaSetToiDiem(Vector3 diemNgam)
+    {
         Vector3 tu = diemPhongPhep != null
             ? diemPhongPhep.position
             : transform.position + Vector3.up * 1.6f + transform.forward * 0.5f;
 
-        Vector3 den = target.position + Vector3.up * 1.05f;
+        Vector3 den = diemNgam + Vector3.up * 1.05f;
         Vector3 h = den - tu;
         if (h.sqrMagnitude < 0.01f) return;
 

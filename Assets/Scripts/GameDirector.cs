@@ -548,6 +548,10 @@ public class GameDirector : MonoBehaviour
         if (n == null) n = go.AddComponent<NhanDangQuai>();
         n.id = soHieuKeTiep++;
         n.loai = loai;
+
+        // Ghi ten nghe NGAY, khong doi nhip quet: con quai sinh giua tran ma
+        // ra don trong nua giay dau thi don ay khong sang duoc may kia.
+        if (DongBoQuai.Hien != null) DongBoQuai.Hien.NgheConNay(go);
     }
 
     void OnEnemyDeath(Damageable d)

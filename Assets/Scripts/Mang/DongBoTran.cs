@@ -199,6 +199,24 @@ public class DongBoTran : MonoBehaviour
         return Mathf.Clamp(nuaVong + dem, 0f, BuTre.LuiToiDaGiay);
     }
 
+    /// <summary>
+    /// Nhan vat nay la nguoi choi so may. 255 neu khong phai nguoi choi nao ca.
+    ///
+    /// Dung khi ke lai mot don cua quai: phai noi ro don nham vao AI, de ben
+    /// kia biet co phai tu tru mau minh khong.
+    /// </summary>
+    public byte ChiSoCua(Transform t)
+    {
+        if (t == null) return 255;
+        if (toi != null && t == toi.transform) return chiSoCuaToi;
+
+        foreach (var cap in nguoiKhac)
+            if (cap.Value.nhanVat != null && cap.Value.nhanVat.transform == t)
+                return cap.Key;
+
+        return 255;
+    }
+
     void GuiMotGoi(byte[] b)
     {
         if (KenhTrucTiep.Gui(GoiTin.SangChuoi(b)))
@@ -297,6 +315,14 @@ public class DongBoTran : MonoBehaviour
 
             if (loai == GoiTin.LoaiKyNang) { NhanMotPhep(b); continue; }
             if (loai == GoiTin.LoaiNhip) { NhanMotNhip(b); continue; }
+            if (loai == GoiTin.LoaiDonQuai)
+            {
+                // Chi may khach dien lai don - chu phong da danh that roi,
+                // dien lai nua la mot cu vung kiem an mau hai lan.
+                if (quai != null && !GameDirector.LaTrongTaiCuaQuai)
+                    quai.NhanDonQuai(b, chiSoCuaToi);
+                continue;
+            }
             if (loai == GoiTin.LoaiQuai)
             {
                 // May khach nhan dan quai tu chu phong. Chu phong khong nghe

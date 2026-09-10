@@ -5999,6 +5999,85 @@ Quái được đồng bộ **vị trí và máu**, nhưng hiệu ứng hình �
 quái đứng đúng chỗ và đúng máu, còn cú vung kiếm hay quả thiên thạch mà quỷ dữ gọi xuống thì vẫn do
 máy khách tự đoán. Chưa ai báo là khó chịu nên để nguyên.
 
+### Đòn của quái — và một lỗ hổng chính tôi vừa tạo ra
+
+Anh bảo làm nốt hiệu ứng hình ảnh của quái. Nhưng khi mở code ra thì hoá ra việc đó không phải
+chuyện trang trí: **chính bản sửa "chung một đàn quái" của tôi đã làm người khách bất tử**.
+
+Lý do nằm gọn trong hai câu:
+
+- Trên máy **chủ phòng**, con quái đánh vào *bản sao* của người khách. Bản sao ấy có mất máu, nhưng
+  máu của nó bị gói tin từ máy khách đè lên **60 lần mỗi giây** — sát thương biến mất không dấu vết.
+- Trên máy **khách**, quái chỉ là bản sao và AI đã tắt, nên nó không đánh ai cả.
+
+Đo lại cho chắc trước khi sửa, dựng đúng tình huống ấy:
+
+```
+1. quái đánh bản sao: 400 -> 360 máu, rồi một gói tin từ máy kia đến -> 400 máu
+   => sát thương bị xoá sạch: True
+```
+
+Không ai báo gì. Không lỗi, không cảnh báo — chỉ là người khách không bao giờ chết vì quái nữa.
+
+#### Một gói lo cả hai việc
+
+Gói "quái ra đòn", 15 byte: con nào, kiểu đòn (đánh gần / ném phép / thiên thạch / tia sét), nhắm
+vào ai, số thứ tự, điểm ngắm. Chủ phòng kể; máy khách **diễn lại** — và diễn lại thì có luôn cả
+hình ảnh lẫn sát thương, đúng quy ước *mỗi máy là trọng tài của chính nhân vật mình*:
+
+- Đòn nhắm vào nhân vật của máy này → trừ máu **thật**.
+- Đòn nhắm người khác → chỉ hình ảnh, vì máu của họ do máy họ quyết.
+
+Ba kiểu đánh xa vốn đọc thẳng `target.position`, mà bản sao bên khách thì không theo dõi ai cả —
+nên mỗi hàm được tách làm hai: bản cũ dùng `target`, bản mới nhắm vào **một điểm**. Cả hai đường
+dùng chung một khối code, nên sửa sát thương hay tốc độ ở một chỗ là hai máy cùng đổi, không thể
+lệch nhau.
+
+Gói được gửi lặp ba lần như gói kỹ năng — ra đòn xảy ra đúng một lần, mất là mất hẳn — và bên nhận
+bỏ bản sao theo số thứ tự.
+
+#### Hai chỗ tôi làm cẩu thả, và cái giá của chúng
+
+**Sự kiện không mang theo người phát.** Ban đầu tôi để `DaRaDon(kiểu, mục tiêu, điểm ngắm)` rồi bên
+nghe đi **quét cả cảnh** đoán xem "con nào vừa đánh". Vừa chậm vừa sai: hai con đánh trong cùng một
+khung hình là đoán nhầm ngay. Sự kiện phải mang theo chính con quái phát ra nó.
+
+**Ghi tên nghe theo nhịp thay vì ngay lúc sinh.** Tôi cho quét mỗi nửa giây để đăng ký nghe những
+con mới. Phép thử bắt ngay:
+
+```
+3. chủ phòng: quái ra đòn -> số gói đòn quái gửi đi: 0 (phải ít nhất 1)
+```
+
+Con quái sinh giữa trận sẽ **im lặng suốt nửa giây đầu** — nó vung kiếm mà máy kia không nghe thấy
+gì. Sửa: `GameDirector.DanhSo` là đường mà mọi con quái đều đi qua, ghi tên nghe ngay tại đó; nhịp
+quét giữ lại làm lưới an toàn.
+
+#### Đo (menu 39), sáu chiều
+
+```
+1. quái đánh bản sao: 400 -> 360 -> 400  => sát thương bị xoá sạch: True
+2. gói đòn quái 15 byte, đọc lại khớp, lệch điểm ngắm 0,0000 m
+3. chủ phòng: quái ra đòn -> số gói gửi đi: 6
+4. máy khách nghe "quái ra đòn" -> mình mất 12 máu
+5. cùng gói ấy đến thêm hai lần -> mất thêm 0 máu
+6. đòn nhắm NGƯỜI KIA -> mình mất 0 máu
+số lỗi ghi nhận = 0
+```
+
+Chiều 1 giữ nguyên trong phép thử dù lỗi đã sửa — nó không kiểm cái gì hỏng, nó **ghi lại vì sao
+cần gói này**. Bỏ nó đi thì người đọc sau sẽ tưởng đây chỉ là chuyện hiệu ứng cho đẹp.
+
+#### Lại một lần phép đo nhiễu
+
+Sau khi sửa, menu 37 (kỹ năng qua mạng) đang 0 lỗi bỗng báo hỏng: cầu lửa gây 0 máu. Nhưng con số
+chẩn đoán chỉ thẳng chỗ — quả cầu dừng ở **4,33 m**, tức chỉ bay được 0,7 m khỏi tay người tung.
+
+Nó nổ vào một con quái đứng chắn giữa. Phép thử dọn quái **ngay khi vừa tìm thấy nhân vật**, mà lúc
+ấy `GameDirector` chưa rải xong hai dòng quái riêng — chúng ra đời sau đó. Sửa: đợi 2 giây cho rải
+xong rồi mới dọn, dọn thêm một lượt nữa, và dọn lần cuối ngay trước phép đo. Sau đó: **48 máu**,
+0 lỗi.
+
 ### Việc còn phải làm
 
 **169 MB là quá nặng**, nhất là trên điện thoại — nền tảng chính của game. Gần như toàn bộ nằm ở
@@ -6058,6 +6137,7 @@ cho riêng nền tảng WebGL sẽ ăn cả hai đầu: file nhỏ hơn và khô
 | **36. Chay thu TU GAN bo noi mang** | Đi đúng đường người chơi đi: vào Play ở MainMenu, bật `DangChoiMang`, nạp màn chơi, rồi **đếm** xem bộ nối mạng có được dựng dậy không — trên **cả hai màn**. Kết quả ra `PlayTestShots/tugan.txt`. |
 | **37. Chay thu KY NANG qua mang** | Tám chiều: gói kỹ năng khứ hồi, người kia tung phép thì mình mất máu, người tung không tự thiêu, gửi lại gói cũ không nổ lần hai, máu nhận từ mạng được áp đúng, mình tung thì có gói đi ra, và khiên của người kia hiện ra bên này. Dọn sạch quái trước khi đo. Kết quả ra `PlayTestShots/kynang_mang.txt`. |
 | **38. Chay thu QUAI CHUNG va BU TRE** | Mười hai chiều: ai được rải quái, mọi con đều có số hiệu, gói quái khứ hồi, băng thông cả đàn, lịch sử vị trí nhớ đúng, cửa sổ bù trễ lùi rồi trả về đúng chỗ, bỏ qua người tung, trần 300 ms, và phép đo chính — cùng cú nổ ấy: không bù thì trượt, có bù thì trúng. Kết quả ra `PlayTestShots/quai_butre.txt`. |
+| **39. Chay thu DON CUA QUAI qua mang** | Sáu chiều: dựng lại lỗ hổng "người khách bất tử trước quái", gói đòn quái khứ hồi, chủ phòng ra đòn thì có gói đi ra, máy khách nghe thì mất máu thật, gói lặp không ăn máu hai lần, và đòn nhắm người khác thì mình không mất máu. Kết quả ra `PlayTestShots/donquai.txt`. |
 
 > ⚠️ Mục **1** sẽ **xóa và tạo lại** các thư mục Textures / Materials / Models / Prefabs.
 > Nếu bạn tự sửa tay trong đó thì hãy sao lưu trước.

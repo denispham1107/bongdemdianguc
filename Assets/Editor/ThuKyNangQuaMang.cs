@@ -85,19 +85,22 @@ public static class ThuKyNangQuaMang
         // quai, chung van danh nguoi choi trong luc phep thu dang cho. Mau tut
         // vi bi quai can thi khong noi len duoc dieu gi ve mang ca. Phai tat
         // han nguon nhieu ay roi moi do.
+        // PHAI DOI GameDirector RAI XONG DA. Don ngay khi vua tim thay nhan
+        // vat thi con hai dong quai rieng chua kip sinh - chung ra doi sau do
+        // va dung chan giua duong. Do duoc: qua cau lua dung lai o 4,33 m, tuc
+        // chi bay duoc 0,7 m khoi tay nguoi tung, va phep thu bao "phep khong
+        // gay sat thuong" trong khi no chi no vao mot con quai.
+        yield return new WaitForSeconds(2f);
+
         var dir = GameDirector.Instance;
         if (dir != null) dir.enabled = false;
 
-        int soQuaiDon = 0;
-        foreach (var q in Object.FindObjectsByType<EnemyAI>(FindObjectsInactive.Include,
-                                                           FindObjectsSortMode.None))
-        {
-            Object.DestroyImmediate(q.gameObject);
-            soQuaiDon++;
-        }
+        int soQuaiDon = DonSachQuai();
         Ghi("da don " + soQuaiDon + " con quai de mau chi doi vi ky nang");
 
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(1f);
+        int sotLai = DonSachQuai();
+        if (sotLai > 0) Ghi("don them " + sotLai + " con sinh sau");
 
         // ---- 1. Nhan vat phai nam o lop Player ----
         // Khong nam dung lop thi phep cua nguoi kia bay xuyen qua nguoi minh
@@ -149,6 +152,7 @@ public static class ThuKyNangQuaMang
         db.ThemNguoi(1, kia);
 
         yield return new WaitForSeconds(0.5f);
+        DonSachQuai();      // lan cuoi, ngay truoc khi do
 
         // ---- 3. Nguoi kia tung phep vao cho minh -> MINH MAT MAU ----
         float toiTruoc = mauToi.health;
@@ -324,6 +328,16 @@ public static class ThuKyNangQuaMang
 
         Ghi("so loi ghi nhan = " + loi);
         Ket();
+    }
+
+    /// <summary>Xoa moi con quai trong canh. Tra ve so con da xoa.</summary>
+    static int DonSachQuai()
+    {
+        int n = 0;
+        foreach (var q in Object.FindObjectsByType<EnemyAI>(FindObjectsInactive.Include,
+                                                           FindObjectsSortMode.None))
+        { Object.DestroyImmediate(q.gameObject); n++; }
+        return n;
     }
 
     /// <summary>Nhet mot goi ky nang vao hang nhan, y nhu vua den tu may kia.</summary>
