@@ -68,6 +68,19 @@ public class NguoiChoiHoatHinh : MonoBehaviour
     int phepDangNiem = -1;
     float niemTimer = -1f;
     float thoiGianNiem = 0.8f;
+    /// <summary>
+    /// TOC DO DI EP TU BEN NGOAI, cho nhan vat khong tu di bang chan minh.
+    ///
+    /// Ban sao cua nguoi choi khac (va dan quai ben may khach) duoc DAT THANG
+    /// vi tri theo goi tin, khong di qua CharacterController - nen
+    /// <c>cc.velocity</c> cua chung luon bang 0 va bo hoat hinh ket luan la
+    /// "dang dung yen". Ket qua: ho TRUOT tren mat dat nhu dang bay, chan
+    /// khong nhuc nhich.
+    ///
+    /// Am (mac dinh -1) nghia la "tu do lay", tuc duong cu.
+    /// </summary>
+    public float tocDoEp = -1f;
+
     float mucDi;
     float nghiengChet;
 
@@ -166,10 +179,14 @@ public class NguoiChoiHoatHinh : MonoBehaviour
 
         // ---- Muc di ----
         float muon = 0f;
-        if (niemTimer < 0f && vaCham != null)
+        if (niemTimer < 0f)
         {
-            Vector3 v = vaCham.velocity; v.y = 0f;
-            muon = Mathf.Clamp01(v.magnitude / Mathf.Max(0.1f, tocDoDiToiDa));
+            if (tocDoEp >= 0f) muon = Mathf.Clamp01(tocDoEp);
+            else if (vaCham != null)
+            {
+                Vector3 v = vaCham.velocity; v.y = 0f;
+                muon = Mathf.Clamp01(v.magnitude / Mathf.Max(0.1f, tocDoDiToiDa));
+            }
         }
         mucDi = Mathf.MoveTowards(mucDi, muon, dt * 4.2f);
 

@@ -9,6 +9,6 @@
 --- man Act1 ---
 1. nhan vat cua minh: 30000 / 30000
 2. ban sao nguoi choi khac: 30000 / 30000 (lay thang tu prefab)
-3. an mot don 250 -> mat 250 mau, con 29750
+3. an mot don 250 -> mat 264 mau, con 29736
 4. chu "30000 / 30000" rong 56 diem, thanh mau rong 172 diem (man hinh cao 581)
 so loi ghi nhan = 0

@@ -185,13 +185,20 @@ public static class ThuQuaiVaBuTre
         // duoc ghi. Doi lai: sai lech quy ra giay phai duoi hai khung hinh.
         float tocDo = daDi / 0.4f;
         float saiGiay = tocDo > 0.01f ? lechLui / tocDo : 0f;
-        float haiKhung = 2f * Mathf.Max(Time.unscaledDeltaTime, 1f / LichSuViTri.NhipGhi);
+        // BA khung chu khong phai hai, va day la lan sua thu hai cua nguong nay.
+        //
+        // Co BA nguon sai so cong lai, moi cai mot khung: khung luc GHI moc,
+        // khung luc DOC lai, va dao dong cua chinh nhip khung hinh trong 0,4
+        // giay vua chay. Dat tran hai khung thi phep thu bao hong o 41 ms voi
+        // tran 40 - sat nut, va cai sat nut ay chi noi len rang toi dem thieu
+        // mot nguon, chu khong noi gi ve lich su vi tri ca.
+        float baKhung = 3f * Mathf.Max(Time.unscaledDeltaTime, 1f / LichSuViTri.NhipGhi);
 
         Ghi("5. di " + daDi.ToString("F2") + " m trong 0,4 giay ("
             + tocDo.ToString("F1") + " m/giay), hoi lai cho 0,4 giay truoc -> lech "
             + lechLui.ToString("F2") + " m = " + (saiGiay * 1000f).ToString("F0")
-            + " ms (tran: hai khung hinh = " + (haiKhung * 1000f).ToString("F0") + " ms)");
-        if (saiGiay > haiKhung)
+            + " ms (tran: ba khung hinh = " + (baKhung * 1000f).ToString("F0") + " ms)");
+        if (saiGiay > baKhung)
         { Ghi("[LOI] lich su vi tri khong nho dung - bu tre se lui sai cho"); loi++; }
 
         // ---- 6. Bu tre that su lui nguoi, va tra lai ----

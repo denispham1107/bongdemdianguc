@@ -1,0 +1,8 @@
+[ban 1] nguoi khac va dan quai phai buoc chan, khong phai truot
+1. nguoi kia chay (30 goi) -> nhip buoc bo hoat hinh nhan duoc: 0.54 (phai lon hon 0)
+2. nguoi kia dung lai -> nhip buoc: 0.00 (phai gan 0)
+3. quai di ben may khach -> nhip buoc: 0.30 (phai lon hon 0)
+4. quai dung lai -> nhip buoc: 0.00 (phai gan 0)
+5. trong luc ban sao dang chay: nhip buoc giu duoc = 0.14 (phai lon hon 0 - khong bi vong di chuyen dat lai ve 0)
+   (cc.velocity cua ban sao: 0.00 m/giay - chi de tham khao, no khong con la nguon nua)
+so loi ghi nhan = 0

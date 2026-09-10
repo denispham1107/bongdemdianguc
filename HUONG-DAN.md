@@ -6143,6 +6143,97 @@ assembly, tôi đọc `mau_khoi_dau.txt` mà **quên chạy lại** — file v�
 và tôi suýt kết luận Unity chạy assembly cũ. Bài học: sau khi sửa phép thử, kiểm dấu thời gian của
 file kết quả, đừng tin nội dung của nó.
 
+### Người khác và cả đàn quái đều "đang bay"
+
+Anh báo, và mô tả rất chính xác:
+
+- **Chủ phòng** thấy quái đi lại bình thường, nhưng người chơi kia thì **trượt trên mặt đất** như
+  đang bay — chân không nhúc nhích.
+- **Khách** thấy *cả đàn quái lẫn người kia* đều bay.
+
+#### Tôi đoán sai lần đầu, và phép thử bác lại
+
+Giả thiết đầu của tôi: bản sao được đặt thẳng vị trí, không đi qua `CharacterController`, nên
+`cc.velocity` luôn bằng 0 — mà **mọi** bộ hoạt hình trong game đều đọc tốc độ từ đó.
+
+Nghe rất hợp lý. Nên tôi mở một đường "ép tốc độ từ bên ngoài" cho hai bộ hoạt hình, rồi tính tốc
+độ thật bằng quãng đường chia thời gian và đẩy vào. Bốn chiều đo đều đạt.
+
+Rồi tôi thêm chiều thứ năm để phép thử **không tự lừa mình** — chứng minh rằng nguồn cũ đúng là đã
+chết:
+
+```
+5. trong lúc bản sao đang chạy: cc.velocity = 1.35 m/giây (nguồn cũ, phải là 0)
+[chú ý] cc.velocity khác 0 - phép thử này không còn nói lên điều gì
+```
+
+**1,35 chứ không phải 0.** Giả thiết của tôi sai, và nếu không có chiều 5 thì tôi đã báo xong với
+một bản sửa vá đúng chỗ nhưng vì lý do sai — thứ sẽ vỡ lại ở lần đổi tiếp theo.
+
+#### Nguyên nhân thật: bản sao vẫn tự chạy vòng di chuyển
+
+`PlayerController.HandleMovement` chạy cho **mọi** nhân vật, kể cả bản sao của người khác — với ý
+muốn rỗng. Nó làm hai việc hại, cả hai đều im lặng:
+
+1. `cc.Move(velocity * dt)` kéo bản sao theo trọng lực và va chạm của **máy này**, đánh nhau với vị
+   trí vừa đặt từ gói tin.
+2. Dòng cuối hàm đặt nhịp bước bằng `velocity.xz / moveSpeed` — mà `velocity.xz` của bản sao luôn
+   bằng 0. Nó **ghi đè con số vừa tính, mỗi khung hình**.
+
+Cái thứ hai mới là thủ phạm: dù `DongBoTran` có tính đúng tốc độ đến đâu, `HandleMovement` cũng đặt
+lại về 0 ngay sau đó. Sửa một dòng:
+
+```csharp
+void HandleMovement(float dt)
+{
+    if (!tuDocInput) return;   // bản sao không tự đi
+    ...
+```
+
+Niệm chú, hồi chiêu và mọi thứ khác vẫn chạy — chỉ riêng phần tự đi là không.
+
+#### Vẫn cần đường ép tốc độ
+
+Sửa trên mới chỉ *ngừng phá*. Bản sao vẫn không có `cc.velocity` đáng tin, nên vẫn phải nói cho bộ
+hoạt hình biết nó đang đi nhanh bao nhiêu — bằng chính quãng đường nội suy vừa đi chia cho thời
+gian. Không dùng cờ `dangChay` trong gói tin làm nguồn: cờ ấy chỉ nói *có/không*, mà bước chân cần
+biết **nhanh bao nhiêu** thì mới khớp nhịp.
+
+Đường ép phải mở cho **cả hai kiểu** bộ hoạt hình — nhân vật dựng bằng code (`ProceduralAnimator`)
+và nhân vật/quái dựng từ model sẵn (`NguoiChoiHoatHinh`, `ModelHoatHinh`). Bỏ sót một kiểu thì một
+nửa đàn quái vẫn bay.
+
+#### Đo (menu 41), năm chiều
+
+```
+1. người kia chạy (30 gói) -> nhịp bước bộ hoạt hình nhận được: 0.54
+2. người kia dừng lại -> nhịp bước: 0.00
+3. quái đi bên máy khách -> nhịp bước: 0.30
+4. quái dừng lại -> nhịp bước: 0.00
+5. trong lúc bản sao đang chạy: nhịp bước giữ được = 0.14
+   (cc.velocity của bản sao: 0.00 m/giây - chỉ để tham khảo, nó không còn là nguồn nữa)
+số lỗi ghi nhận = 0
+```
+
+Chiều 2 và 4 không thừa: chỉ đo "đi thì có bước" mà không đo "dừng thì hết bước" là để lọt cái lỗi
+ngược lại — nhân vật đứng yên mà chân vẫn đạp mãi.
+
+#### Ba lần phép đo nhiễu trong cùng một buổi
+
+Sửa xong, ba phép thử cũ báo hỏng — và cả ba đều là nhiễu, không phải hỏng thật:
+
+**Menu 37, chiều 5** báo "một cú bấm ra nhiều lần sát thương". Thật ra vũng lửa của thiên thạch ở
+phép 3c vẫn đang cháy. Tôi từng vá bằng "chờ 6 giây cho DOT tan" — vẫn sai. Sửa đúng: **chờ đến khi
+máu ngừng tụt** (đứng yên trọn một giây), không đoán một con số giây.
+
+**Menu 38, chiều 5** báo lệch 41 ms với trần 40 ms — sát nút, và cái sát nút ấy chỉ nói rằng tôi
+đếm thiếu một nguồn sai số. Có **ba** nguồn, mỗi cái một khung hình: khung lúc *ghi* mốc, khung lúc
+*đọc* lại, và dao động của chính nhịp khung hình trong quãng đo. Trần đúng là ba khung.
+
+**Menu 37, chiều 3** dao động 48 → 0 → 48 giữa các lần chạy. Số đo chẩn đoán chỉ thẳng: quả cầu
+dừng cách người tung 0,7 m — nó nổ vào một con quái sinh sau lúc phép thử dọn. Đã sửa ở lần trước
+bằng cách đợi `GameDirector` rải xong rồi mới dọn.
+
 ### Việc còn phải làm
 
 **169 MB là quá nặng**, nhất là trên điện thoại — nền tảng chính của game. Gần như toàn bộ nằm ở
@@ -6204,6 +6295,7 @@ cho riêng nền tảng WebGL sẽ ăn cả hai đầu: file nhỏ hơn và khô
 | **38. Chay thu QUAI CHUNG va BU TRE** | Mười hai chiều: ai được rải quái, mọi con đều có số hiệu, gói quái khứ hồi, băng thông cả đàn, lịch sử vị trí nhớ đúng, cửa sổ bù trễ lùi rồi trả về đúng chỗ, bỏ qua người tung, trần 300 ms, và phép đo chính — cùng cú nổ ấy: không bù thì trượt, có bù thì trúng. Kết quả ra `PlayTestShots/quai_butre.txt`. |
 | **39. Chay thu DON CUA QUAI qua mang** | Sáu chiều: dựng lại lỗ hổng "người khách bất tử trước quái", gói đòn quái khứ hồi, chủ phòng ra đòn thì có gói đi ra, máy khách nghe thì mất máu thật, gói lặp không ăn máu hai lần, và đòn nhắm người khác thì mình không mất máu. Kết quả ra `PlayTestShots/donquai.txt`. |
 | **40. Chay thu MAU KHOI DAU** | Vào Play thật ở **cả hai màn** rồi đọc máu từ `Damageable`: nhân vật mình đầy máu, bản sao người chơi khác cũng đúng mức (nó lấy thẳng từ prefab), máu vẫn trừ được, và con số không tràn ra ngoài thanh máu. Đổi mức máu thì sửa `MauMongDoi` trong phép thử cho khớp. Kết quả ra `PlayTestShots/mau_khoi_dau.txt`. |
+| **41. Chay thu NHIP BUOC qua mang** | Năm chiều: người chơi khác và đàn quái bên máy khách phải **bước chân** khi di chuyển và **dừng chân** khi đứng yên, cộng một chiều chứng minh nhịp bước không bị vòng di chuyển đặt lại về 0. Đo con số bộ hoạt hình nhận được, không chụp ảnh. Kết quả ra `PlayTestShots/nhipbuoc.txt`. |
 
 > ⚠️ Mục **1** sẽ **xóa và tạo lại** các thư mục Textures / Materials / Models / Prefabs.
 > Nếu bạn tự sửa tay trong đó thì hãy sao lưu trước.

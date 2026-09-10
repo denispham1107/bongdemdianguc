@@ -74,6 +74,10 @@ public class DongBoTran : MonoBehaviour
         public PlayerController nhanVat;
         public NoiSuy noiSuy = new NoiSuy();
 
+        /// <summary>Cho ve o khung truoc - de tinh ra ho dang di nhanh bao nhieu.</summary>
+        public Vector3 choKhungTruoc;
+        public bool daCoChoTruoc;
+
         /// <summary>So thu tu phep gan nhat da thi hanh - de bo ban sao.</summary>
         public int phepDaLam = -1;
     }
@@ -427,14 +431,43 @@ public class DongBoTran : MonoBehaviour
             bool batLai = cc != null && cc.enabled;
             if (batLai) cc.enabled = false;
 
-            t.position = n.noiSuy.ViTriHienThi;
+            Vector3 choMoi = n.noiSuy.ViTriHienThi;
+
+            // TOC DO THAT, do bang chinh quang duong vua di.
+            //
+            // Loi da vap: ban sao duoc DAT THANG vi tri nen CharacterController
+            // cua no khong bao gio chuyen dong, va moi bo hoat hinh trong game
+            // deu doc toc do tu cc.velocity. Ket qua: nguoi choi kia TRUOT tren
+            // mat dat nhu dang bay, chan khong nhuc nhich. Nguoi dung goi dung
+            // ten no: "thay nguoi nay dang bay".
+            //
+            // Khong dung co "dangChay" trong goi tin lam nguon: no chi noi
+            // co/khong, ma buoc chan can biet NHANH BAO NHIEU thi moi khop
+            // nhip. Quang duong chia thoi gian moi ra duoc con so ay.
+            float tocDo = 0f;
+            if (n.daCoChoTruoc && dt > 0.0001f)
+            {
+                Vector3 di = choMoi - n.choKhungTruoc;
+                di.y = 0f;
+                tocDo = di.magnitude / dt;
+            }
+            n.choKhungTruoc = choMoi;
+            n.daCoChoTruoc = true;
+
+            t.position = choMoi;
             t.rotation = Quaternion.Euler(0f, n.noiSuy.GocHienThi, 0f);
 
             if (batLai) cc.enabled = true;
 
-            // Cho chan buoc khop voi viec dang di hay dung
+            // Cho chan buoc khop voi viec dang di hay dung, tren CA HAI kieu bo
+            // hoat hinh: nhan vat dung bang code va nhan vat dung tu model san.
+            float tocDo01 = Mathf.Clamp01(tocDo / Mathf.Max(0.1f, n.nhanVat.moveSpeed));
+
             var anim = n.nhanVat.GetComponentInChildren<ProceduralAnimator>();
-            if (anim != null) anim.SetMoveSpeed(n.noiSuy.DangChay ? 1f : 0f);
+            if (anim != null) anim.SetMoveSpeed(tocDo01);
+
+            var hh = n.nhanVat.GetComponentInChildren<NguoiChoiHoatHinh>();
+            if (hh != null) hh.tocDoEp = tocDo01;
         }
     }
 

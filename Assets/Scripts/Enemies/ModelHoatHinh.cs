@@ -50,6 +50,19 @@ public class ModelHoatHinh : MonoBehaviour
 
     [Header("Nhip dieu")]
     [Tooltip("Doi lai mot nhip rieng cho tung con, khoi ca dam lac dong loat")]
+    /// <summary>
+    /// TOC DO DI EP TU BEN NGOAI, cho nhan vat khong tu di bang chan minh.
+    ///
+    /// Ban sao cua nguoi choi khac (va dan quai ben may khach) duoc DAT THANG
+    /// vi tri theo goi tin, khong di qua CharacterController - nen
+    /// <c>cc.velocity</c> cua chung luon bang 0 va bo hoat hinh ket luan la
+    /// "dang dung yen". Ket qua: ho TRUOT tren mat dat nhu dang bay, chan
+    /// khong nhuc nhich.
+    ///
+    /// Am (mac dinh -1) nghia la "tu do lay", tuc duong cu.
+    /// </summary>
+    public float tocDoEp = -1f;
+
     public float nhipRieng;
     public float tocDoTho = 1.35f;
     public float bienDoTho = 1.9f;
@@ -255,6 +268,8 @@ public class ModelHoatHinh : MonoBehaviour
     /// <summary>Con nay dang di nhanh cham the nao, quy ve 0..1.</summary>
     float TocDoDangDi()
     {
+        if (tocDoEp >= 0f) return Mathf.Clamp01(tocDoEp);
+
         var cc = ai != null ? ai.GetComponent<CharacterController>() : null;
         if (cc == null || ai == null) return 0f;
 

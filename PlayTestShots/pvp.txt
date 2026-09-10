@@ -2,7 +2,7 @@
 lop Player co so hieu: 9
 1. choi mot minh -> mask co lop Player: False (phai la False)
 2. choi doi khang -> mask co lop Player: True (phai la True)
-3. no ngay tren dau nguoi kia -> ho mat 38 mau (400 -> 362)
+3. no ngay tren dau nguoi kia -> ho mat 37 mau (30000 -> 29963)
 4. no ngay duoi chan MINH -> minh mat 0 mau (phai la 0)
 4b. cung cu no do nhung KHONG bo qua -> minh mat 40 mau (phai lon hon 0)
 so loi ghi nhan = 0

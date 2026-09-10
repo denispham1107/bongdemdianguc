@@ -926,6 +926,22 @@ public class PlayerController : MonoBehaviour
 
     void HandleMovement(float dt)
     {
+        // BAN SAO CUA NGUOI CHOI KHAC KHONG TU DI.
+        //
+        // Vi tri cua ho den tu goi tin va duoc dat thang moi khung hinh. De
+        // doan nay chay nua thi no lam hai viec hai, ca hai deu im lang:
+        //
+        //   1. cc.Move keo ban sao theo trong luc va va cham cua may NAY, danh
+        //      nhau voi vi tri vua dat - nhan vat giat va troi.
+        //   2. input cua ban sao luon rong, nen dong cuoi ham nay dat nhip buoc
+        //      ve 0 MOI KHUNG HINH, de len con so ma DongBoTran vua tinh. Ket
+        //      qua dung nhu nguoi choi mo ta: ho TRUOT tren mat dat, chan khong
+        //      nhuc nhich - "dang bay".
+        //
+        // Niem chu, hoi chieu va moi thu khac van chay binh thuong: chi rieng
+        // phan tu di la khong.
+        if (!tuDocInput) return;
+
         Vector3 wish = Vector3.zero;
 
         // TREN MAY CAM UNG, KHONG BAO GIO co diem den.

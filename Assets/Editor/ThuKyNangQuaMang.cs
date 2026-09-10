@@ -191,6 +191,19 @@ public static class ThuKyNangQuaMang
 
         Ghi("   qua cau bay gan minh nhat: " + ganNhat.ToString("F2") + " m (tai "
             + choGanNhat.ToString("F1") + "), minh o " + toi.transform.position.ToString("F1"));
+        Ghi("   nguoi tung o " + kia.transform.position.ToString("F1")
+            + ", qua cau dung cach ho "
+            + Vector3.Distance(choGanNhat, kia.transform.position).ToString("F2") + " m");
+
+        // Con gi khac dang dung giua duong khong - mot Damageable la qua cau no
+        int soChan = 0;
+        foreach (var d in Object.FindObjectsByType<Damageable>(FindObjectsSortMode.None))
+        {
+            if (d == null || d == mauToi || d == kia.GetComponent<Damageable>()) continue;
+            Vector3 giua = (toi.transform.position + kia.transform.position) * 0.5f;
+            if (Vector3.Distance(d.transform.position, giua) < 4f) soChan++;
+        }
+        Ghi("   so Damageable la dung gan duong bay: " + soChan);
         Ghi("   mat na vat can cua ban sao co lop Player = "
             + ((kia.MatNaVatCan & (1 << lopPlayer)) != 0)
             + " | collider tren nhan vat minh: "
@@ -243,9 +256,26 @@ public static class ThuKyNangQuaMang
 
         // ---- 5. Goi gui lai ba lan chi duoc no MOT lan ----
         //
-        // Cho DOT cua qua cau lua chay het han da: chot moc luc nguoi con dang
-        // chay thi phan mau mat vi lua se bi tinh nham thanh "no lan hai".
-        yield return new WaitForSeconds(6f);
+        // CHO DEN KHI MAU NGUNG TUT, khong cho mot so giay tu doan.
+        //
+        // Truoc do toi viet "cho 6 giay cho DOT tan" - va no van sai: vung lua
+        // cua thien thach o phep 3c chay them mot lat nua, the la phep thu bao
+        // "mot cu bam ra nhieu lan sat thuong" trong khi goi lap da bi bo dung.
+        // Doi khi mau dung yen mot giay tron thi moi chac khong con gi dang chay.
+        float mauCu = -1f;
+        float yenTu = Time.time;
+        float hanCho = Time.time + 20f;
+        while (Time.time < hanCho)
+        {
+            if (Mathf.Abs(mauToi.health - mauCu) > 0.01f)
+            {
+                mauCu = mauToi.health;
+                yenTu = Time.time;
+            }
+            else if (Time.time - yenTu >= 1.0f) break;
+            yield return null;
+        }
+
         float truocLap = mauToi.health;
         int boTruoc = db.SoPhepBoVITrung;
 

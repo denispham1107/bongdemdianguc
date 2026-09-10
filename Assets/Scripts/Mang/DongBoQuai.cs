@@ -76,6 +76,10 @@ public class DongBoQuai : MonoBehaviour
         public NoiSuy noiSuy = new NoiSuy();
         public float ngheLanCuoi;
 
+        /// <summary>Cho ve o khung truoc - de tinh ra no dang di nhanh bao nhieu.</summary>
+        public Vector3 choKhungTruoc;
+        public bool daCoChoTruoc;
+
         /// <summary>So thu tu don gan nhat da dien - de bo ban sao lap lai.</summary>
         public int donDaDien = -1;
     }
@@ -358,9 +362,49 @@ public class DongBoQuai : MonoBehaviour
             c.noiSuy.CapNhat(dt);
             if (!c.noiSuy.SanSang) continue;
 
-            c.vat.transform.position = c.noiSuy.ViTriHienThi;
+            Vector3 choMoi = c.noiSuy.ViTriHienThi;
+
+            // Y HET ban sao nguoi choi: con quai duoc dat thang vi tri nen
+            // CharacterController cua no khong bao gio chuyen dong, ma
+            // ModelHoatHinh lai doc toc do tu cc.velocity. Khong tinh lay thi
+            // ca dan quai TRUOT tren mat dat nhu dang bay - dung nhu nguoi
+            // dung mo ta khi choi may khach.
+            float tocDo = 0f;
+            if (c.daCoChoTruoc && dt > 0.0001f)
+            {
+                Vector3 di = choMoi - c.choKhungTruoc;
+                di.y = 0f;
+                tocDo = di.magnitude / dt;
+            }
+            c.choKhungTruoc = choMoi;
+            c.daCoChoTruoc = true;
+
+            c.vat.transform.position = choMoi;
             c.vat.transform.rotation = Quaternion.Euler(0f, c.noiSuy.GocHienThi, 0f);
+
+            EpNhipBuoc(c.vat, tocDo);
         }
+    }
+
+    /// <summary>
+    /// Bao cho bo hoat hinh biet con quai nay dang di nhanh bao nhieu.
+    ///
+    /// Hai kieu quai hai kieu hoat hinh: bon dung bang code chay
+    /// <see cref="ProceduralAnimator"/>, con bon dung model san (phu thuy, quy
+    /// du) chay <see cref="ModelHoatHinh"/>. Bo sot mot kieu thi mot nua dan
+    /// quai van bay.
+    /// </summary>
+    static void EpNhipBuoc(GameObject vat, float tocDo)
+    {
+        var ai = vat.GetComponent<EnemyAI>();
+        float toiDa = ai != null ? ai.moveSpeed : 2.6f;
+        float tocDo01 = Mathf.Clamp01(tocDo / Mathf.Max(0.1f, toiDa));
+
+        var anim = vat.GetComponentInChildren<ProceduralAnimator>();
+        if (anim != null) anim.SetMoveSpeed(tocDo01);
+
+        var model = vat.GetComponentInChildren<ModelHoatHinh>();
+        if (model != null) model.tocDoEp = tocDo01;
     }
 
     /// <summary>

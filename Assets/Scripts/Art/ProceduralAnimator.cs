@@ -95,6 +95,9 @@ public class ProceduralAnimator : MonoBehaviour
         moveSpeed01 = Mathf.Clamp01(normalized);
     }
 
+    /// <summary>Dang di nhanh bao nhieu, 0..1. Mo ra cho kich ban chay thu doc.</summary>
+    public float TocDoDi01 { get { return moveSpeed01; } }
+
     public void PlayCast(float duration)
     {
         castDuration = Mathf.Max(0.15f, duration);
