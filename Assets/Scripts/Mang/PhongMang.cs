@@ -253,9 +253,44 @@ public static class PhongMang
         yield return TaiLaiPhong(maPhong, (ok, e) => xong(ok, e));
     }
 
+    /// <summary>Man mac dinh khi khong ai chon - xem <see cref="VaoPhongNhanh"/>.</summary>
+    public const string ManMacDinh = "Act2";
+
+    /// <summary>
+    /// AI GIU PHONG, AI NHUONG, khi hai nguoi lo tao phong cung mot luc.
+    ///
+    /// Tra ve ma cua phong duoc giu lai. Khoa cua Realtime Database (push key)
+    /// tang dan theo thoi gian tao, nen so chuoi la du de biet phong nao co
+    /// truoc - va quan trong hon: HAI MAY DEU RA CUNG MOT DAP AN ma khong phai
+    /// hoi nhau cau nao. Neu moi may tu chon theo y minh thi ca hai cung nhuong
+    /// (khong ai o dau ca) hoac ca hai cung giu (van hai phong).
+    ///
+    /// Ham thuan de con kiem duoc bang so.
+    /// </summary>
+    public static string PhongDuocGiu(string maA, string maB)
+    {
+        if (string.IsNullOrEmpty(maA)) return maB;
+        if (string.IsNullOrEmpty(maB)) return maA;
+        return string.CompareOrdinal(maA, maB) <= 0 ? maA : maB;
+    }
+
     /// <summary>
     /// VAO PHONG NHANH: chon phong dang cho con cho, dong nguoi nhat truoc
     /// (de tran bat dau som). Khong co phong nao thi tu tao mot phong moi.
+    ///
+    /// CUOC DUA PHAI XU LY, VI NO XAY RA GAN NHU MOI LAN. Hai nguoi ban nut
+    /// nay cach nhau vai tram mili giay thi CA HAI cung doc duoc mot danh sach
+    /// rong - phong cua nguoi kia chua kip len - roi ca hai cung tao phong.
+    /// Ket qua: hai phong mot nguoi, va vi man truoc day boc ngau nhien nen
+    /// hai nguoi con vao HAI MAN KHAC NHAU. Do 3 lan qua REST that: 3/3 lan
+    /// khac phong, 2/3 lan khac man.
+    ///
+    /// Nen tao xong phai NGO LAI mot lan: neu co phong khac cung dang cho,
+    /// hai ben cung tinh <see cref="PhongDuocGiu"/> - ai co ma lon hon thi bo
+    /// phong minh vua tao va sang phong kia.
+    ///
+    /// Va man mac dinh phai CO DINH, khong boc ngau nhien: mot cai nut ma moi
+    /// lan bam ra mot man khac thi nguoi choi khong hieu chuyen gi dang xay ra.
     /// </summary>
     public static IEnumerator VaoPhongNhanh(Action<bool, string> xong)
     {
@@ -276,8 +311,53 @@ public static class PhongMang
             }
         }
 
-        string man = UnityEngine.Random.value < 0.5f ? "Act1" : "Act2";
-        yield return TaoPhong(null, man, xong);
+        bool taoDuoc = false;
+        yield return TaoPhong(null, ManMacDinh, (o, e) => { taoDuoc = o; });
+        if (!taoDuoc || PhongHienTai == null)
+        { xong(false, "Khong tao duoc phong."); yield break; }
+
+        yield return NhuongNeuCoPhongCoHon(xong);
+    }
+
+    /// <summary>
+    /// Vua tao phong xong thi ngo lai: co ai cung vua tao phong khong.
+    ///
+    /// Doi mot nhip truoc khi ngo - phong cua nguoi kia mat vai tram mili giay
+    /// moi hien ra trong danh sach. Ngo ngay lap tuc thi lai khong thay gi,
+    /// dung nhu luc nay.
+    /// </summary>
+    static IEnumerator NhuongNeuCoPhongCoHon(Action<bool, string> xong)
+    {
+        string maToi = PhongHienTai.ma;
+
+        yield return new WaitForSecondsRealtime(1.2f);
+
+        List<Phong> ds2 = null;
+        yield return LayDanhSach(k => ds2 = k);
+        if (ds2 == null) { xong(true, null); yield break; }
+
+        // Trong so cac phong dang cho con cho, phong nao "thang" minh
+        string maGiu = maToi;
+        foreach (var p in ds2)
+        {
+            if (p.ma == maToi || !p.DangCho || !p.ConCho) continue;
+            if (p.soNguoi > 1) continue;         // phong dong nguoi thi khong phai cuoc dua
+            maGiu = PhongDuocGiu(maGiu, p.ma);
+        }
+
+        if (maGiu == maToi) { xong(true, null); yield break; }
+
+        // Minh nhuong: bo phong cua minh roi sang phong kia. Bo TRUOC khi vao,
+        // khong thi de lai mot phong ma khong ai cam.
+        yield return RoiPhong(null);
+
+        bool ok = false; string loi = null;
+        yield return VaoPhong(maGiu, (o, e) => { ok = o; loi = e; });
+        if (ok) { xong(true, null); yield break; }
+
+        // Phong kia vua bien mat - tao lai phong cua minh chu khong bo nguoi
+        // choi dung khong o dau ca.
+        yield return TaoPhong(null, ManMacDinh, xong);
     }
 
     public static IEnumerator RoiPhong(Action xong)
@@ -313,11 +393,24 @@ public static class PhongMang
         if (xong != null) xong();
     }
 
+    /// <summary>
+    /// Chu phong doi man. CHI DOI DUOC KHI PHONG CON DANG CHO.
+    ///
+    /// Da bam bat dau roi ma con doi duoc thi may khach co the da doc man cu
+    /// va nhay vao do - hai nguoi hai man. Cua so ay chi vai tram mili giay,
+    /// nhung no thuc su mo.
+    /// </summary>
     public static IEnumerator DoiManChoi(string manChoi, Action xong)
     {
-        if (PhongHienTai == null || !LaHost) { if (xong != null) xong(); yield break; }
+        if (PhongHienTai == null || !LaHost || !PhongHienTai.DangCho)
+        { if (xong != null) xong(); yield break; }
+
         yield return FirebaseMang.Ghi("phong/" + PhongHienTai.ma + "/manChoi",
                                       "\"" + manChoi + "\"", (ok, e) => { });
+
+        // Sua luon ban sao cuc bo: nut phai doi chu ngay chu khong doi lan hoi
+        // ke tiep - khong thi nguoi ta bam hai lan vi tuong nut hong.
+        PhongHienTai.manChoi = manChoi;
         if (xong != null) xong();
     }
 

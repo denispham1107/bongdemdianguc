@@ -89,17 +89,32 @@ public class ManSanh : MonoBehaviour
     {
         var p = PhongMang.PhongHienTai;
         if (p == null) yield break;
+        string ma = p.ma;
+
+        // DOC LAI PHONG MOT LAN NUA NGAY TRUOC KHI NAP MAN.
+        //
+        // Ban sao trong tay co the da mot giay tuoi (sanh hoi lai moi giay).
+        // Mot giay la du de chu phong doi man ma may nay chua biet - va the la
+        // hai nguoi nap hai man khac nhau. Doc lai ton them mot vong di-ve
+        // (~50 ms tren Firebase Singapore), doi lai chac chan cung man.
+        yield return PhongMang.TaiLaiPhong(ma, (ok, loi) => { });
+        if (PhongMang.PhongHienTai != null) p = PhongMang.PhongHienTai;
 
         if (PhongMang.LaHost)
             yield return PhongMang.DanhDauDangChoi(null);
 
+        // Man khong doc duoc thi ve man mac dinh chu khong goi LoadScene(null):
+        // LoadScene(null) nem loi va nguoi choi ket lai o MainMenu khong hieu vi sao.
+        string man = p.manChoi == "Act1" || p.manChoi == "Act2"
+                   ? p.manChoi : PhongMang.ManMacDinh;
+
         // Giu lai thong tin phong de man choi biet minh dang o dau
-        TranHienTai.MaPhong = p.ma;
-        TranHienTai.ManChoi = p.manChoi;
+        TranHienTai.MaPhong = ma;
+        TranHienTai.ManChoi = man;
         TranHienTai.LaHost = PhongMang.LaHost;
         TranHienTai.DangChoiMang = true;
 
-        SceneManager.LoadScene(p.manChoi);
+        SceneManager.LoadScene(man);
     }
 
     // ================================================================

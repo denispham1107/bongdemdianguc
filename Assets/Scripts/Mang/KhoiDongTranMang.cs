@@ -60,7 +60,7 @@ public class KhoiDongTranMang : MonoBehaviour
 
     void Start()
     {
-        TrangThai = ""; DaNoi = false; LoiCuoi = null;
+        TrangThai = ""; DaNoi = false; LoiCuoi = null; NhanDang = "";
 
         // Choi mot minh thi khong lam gi ca - va phai tu bo di, khong nam lai
         // an bo nho cho mot viec khong bao gio xay ra.
@@ -69,10 +69,27 @@ public class KhoiDongTranMang : MonoBehaviour
         StartCoroutine(ChayVao());
     }
 
+    /// <summary>
+    /// BANG NHAN DANG - LUON HIEN O GOC MAN CHOI MANG.
+    ///
+    /// Hai nguoi bao "toi vao hai ban do khac nhau" thi cau hoi dau tien la:
+    /// hai may co dang o cung mot phong khong. Khong co dong nay thi khong ai
+    /// tra loi duoc, ke ca toi - phai doan. Co no thi chi can chup hai man
+    /// hinh la doc ra ngay: cung ma phong hay khac, cung man hay khac.
+    /// </summary>
+    public static string NhanDang = "";
+
     IEnumerator ChayVao()
     {
         batDauLuc = Time.unscaledTime;
         TrangThai = "Đang tìm người chơi khác...";
+
+        string maNgan = string.IsNullOrEmpty(TranHienTai.MaPhong)
+            ? "?" : TranHienTai.MaPhong.Substring(
+                  Mathf.Max(0, TranHienTai.MaPhong.Length - 6));
+        NhanDang = string.Format("phòng …{0} · {1} · {2}", maNgan,
+                                 TranHienTai.ManChoi,
+                                 TranHienTai.LaHost ? "chủ phòng" : "khách");
 
         // Doi nhan vat cua minh duoc dung xong
         float han = Time.unscaledTime + 25f;
@@ -102,6 +119,8 @@ public class KhoiDongTranMang : MonoBehaviour
         yield return PhongMang.TaiLaiPhong(TranHienTai.MaPhong, (o, e) => { ok = o; });
         var phong = PhongMang.PhongHienTai;
         if (!ok || phong == null) { Hong("khong doc duoc phong"); yield break; }
+
+        NhanDang += string.Format(" · {0} người", phong.nguoiChoi.Count);
 
         // ---- 2. Tim nguoi kia ----
         string uidKia = null;
@@ -170,9 +189,19 @@ public class KhoiDongTranMang : MonoBehaviour
 
     void OnGUI()
     {
+        float s = Screen.height / 1080f;
+
+        if (!string.IsNullOrEmpty(NhanDang))
+        {
+            var kieuNho = new GUIStyle(GUI.skin.label);
+            kieuNho.fontSize = Mathf.RoundToInt(15f * s);
+            kieuNho.normal.textColor = new Color(0.70f, 0.70f, 0.74f, 0.85f);
+            GUI.Label(new Rect(10f * s, Screen.height - 26f * s, 520f * s, 22f * s),
+                      NhanDang, kieuNho);
+        }
+
         if (string.IsNullOrEmpty(TrangThai)) return;
 
-        float s = Screen.height / 1080f;
         var kieu = new GUIStyle(GUI.skin.label);
         kieu.fontSize = Mathf.RoundToInt(22f * s);
         kieu.alignment = TextAnchor.MiddleCenter;

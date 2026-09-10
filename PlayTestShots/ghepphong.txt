@@ -1,0 +1,7 @@
+[ban 1] hai nguoi phai vao cung mot phong, cung mot man
+1. doi xung tren 2000 cap -> so cap lech: 0 (phai la 0)
+2. dap an luon la mot trong hai -> so lan ra ngoai: 0 (phai la 0)
+3. phong tao truoc luon thang (515 cap, moc doc thang tu ma) -> so cap sai: 0 (phai la 0)
+4. man mac dinh cua 'vao phong nhanh': Act2 (phai la Act1 hoac Act2, va khong doi giua hai lan goi)
+5. phong dang dem nguoc -> DangCho = False (phai la False, nen DoiManChoi tu choi ngay dong dau)
+so loi ghi nhan = 0

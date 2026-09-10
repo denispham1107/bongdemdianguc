@@ -5519,6 +5519,152 @@ vòng xoay không bao giờ dừng thì nhìn như treo máy.
 **Máu chưa được đồng bộ.** Hai máy thấy nhau chạy, nhưng đánh nhau thì mỗi máy tự tính sát thương
 nên máu có thể lệch. Đó là phần còn thiếu của bước 5, để làm sau khi việc nhìn thấy nhau đã chắc.
 
+### Hai người vào hai bản đồ khác nhau
+
+Anh báo: *"Khi đếm ngược 10 giây xong rồi vào game, 2 người chơi vẫn vào 2 map khác nhau chứ không
+cùng 1 map."*
+
+#### Nghi sai hai lần trước khi đo
+
+Chỗ nạp màn chỉ có một dòng, và trông rất đáng ngờ:
+
+```csharp
+SceneManager.LoadScene(p.manChoi);      // p là bản sao cục bộ, có thể cũ 1 giây
+```
+
+Nên tôi nghi chủ phòng đổi màn ngay trước khi bấm bắt đầu, máy khách chưa kịp hỏi lại. Nghi thứ
+hai: Act1 dựng bằng code nên hai máy có thể ra hai địa hình khác nhau.
+
+Cả hai đều sai, và **phép đo nói ra điều đó chứ không phải tôi**. Tôi viết một kịch bản đi thẳng
+vào Firebase bằng REST — không qua một dòng C# nào — dựng lại đúng tình huống xấu nhất: A tạo
+phòng Act2, B vào, A **đổi sang Act1 rồi bấm bắt đầu ngay lập tức**:
+
+```
+1. A tạo phòng, manChoi=Act2
+2. B vào phòng, B đọc thấy manChoi=Act2
+3. A đổi màn sang Act1
+4. A bấm bắt đầu, mốc = +10s
+   t= 1s  A[màn=Act1 …]  B[màn=Act1 …]
+   …
+   t= 8s  A[màn=Act1 còn=-0.9 đến=True]  B[màn=Act1 còn=-0.9 đến=True]
+
+KẾT QUẢ: A nạp "Act1" | B nạp "Act1" -> CÙNG MỘT MÀN
+```
+
+Đường dữ liệu sạch. (Còn Act1 thì `worldSeed = 12345` cố định, và cảnh đã bake sẵn nên không dựng
+lại lúc chạy.)
+
+#### Lỗi thật nằm ở nút "Vào phòng nhanh"
+
+Phép đo thứ hai: cho hai tài khoản bấm nút đó **cùng một lúc** — đúng như hai người ngồi hai máy
+đếm "một, hai, ba" rồi cùng bấm. Ba lần liên tiếp:
+
+```
+lần 1: A TỰ TẠO phòng -P1Al4K3t9 [Act1] | B TỰ TẠO phòng -P1Al4K6Bb [Act2] -> KHÁC PHÒNG, KHÁC MÀN
+lần 2: A TỰ TẠO phòng -P1Al4nxZX [Act2] | B TỰ TẠO phòng -P1Al4n-nk [Act1] -> KHÁC PHÒNG, KHÁC MÀN
+lần 3: A TỰ TẠO phòng -P1Al5Hgi3 [Act1] | B TỰ TẠO phòng -P1Al5FpqG [Act1] -> KHÁC PHÒNG, cùng màn
+```
+
+**3/3 lần khác phòng.** Hai người không hề ở chung một phòng — mỗi người là chủ phòng của mình,
+nên ai cũng có nút bắt đầu, ai cũng đếm ngược, ai cũng vào được màn chơi. Nhìn từ ngoài thì y hệt
+"cùng vào một trận mà lạc nhau".
+
+Nguyên nhân là một cuộc đua, và nó xảy ra gần như mọi lần:
+
+1. A bấm → đọc danh sách → rỗng (hoặc chưa thấy phòng của B).
+2. B bấm sau 200 ms → cũng đọc danh sách → **vẫn rỗng**, vì phòng của A chưa kịp hiện ra.
+3. Cả hai cùng tạo phòng.
+
+Và vì màn khi ấy được **bốc ngẫu nhiên**:
+
+```csharp
+string man = UnityEngine.Random.value < 0.5f ? "Act1" : "Act2";
+```
+
+nên hai phòng còn ra hai màn khác nhau — 2/3 lần trong phép đo.
+
+#### Cách sửa: hai máy phải tự ra cùng một đáp án
+
+Tạo phòng xong thì **ngó lại một lần** sau 1,2 giây. Nếu thấy phòng khác cũng đang chờ và cũng chỉ
+có một người, hai bên cùng tính:
+
+```csharp
+public static string PhongDuocGiu(string maA, string maB)
+{
+    if (string.IsNullOrEmpty(maA)) return maB;
+    if (string.IsNullOrEmpty(maB)) return maA;
+    return string.CompareOrdinal(maA, maB) <= 0 ? maA : maB;
+}
+```
+
+Điều quan trọng không phải là *chọn ai*, mà là **hai máy phải ra cùng một đáp án mà không hỏi nhau
+câu nào**. Nếu mỗi máy tự quyết theo ý mình thì hoặc cả hai cùng nhường (không ai ở đâu cả), hoặc
+cả hai cùng giữ (vẫn hai phòng).
+
+Vì sao so chuỗi là đủ: khoá mà Realtime Database sinh ra (`-P1Al4K3t9…`) có **tám chữ đầu là mốc
+thời gian**, viết theo một bảng 64 ký tự mà thứ tự của nó *trùng khớp* với thứ tự mã ASCII. Nên
+phòng nào tạo trước thì chuỗi cũng nhỏ hơn — người đang ngồi chờ được giữ phòng, người đến sau
+nhường.
+
+Kèm theo ba chỗ nữa:
+
+| Sửa | Vì sao |
+|---|---|
+| `ManMacDinh = "Act2"` thay cho `Random` | một cái nút mà mỗi lần bấm ra một màn khác thì không ai hiểu chuyện gì đang xảy ra |
+| `DoiManChoi` chỉ chạy khi phòng còn `DangCho` | bấm bắt đầu rồi mà còn đổi được thì cửa sổ vài trăm mili giây kia vẫn mở |
+| `VaoTran()` đọc lại phòng **một lần nữa** ngay trước `LoadScene` | bản sao trong tay có thể đã một giây tuổi; đọc lại tốn ~50 ms, đổi lại chắc chắn cùng màn |
+
+Và `LoadScene` không còn nhận thẳng `p.manChoi` nữa: đọc ra thứ gì không phải `Act1`/`Act2` thì
+về màn mặc định, chứ `LoadScene(null)` ném lỗi và người chơi kẹt lại ở MainMenu không hiểu vì sao.
+
+#### Một dòng chữ nhỏ ở góc màn hình
+
+Câu hỏi đầu tiên khi ai đó nói "tôi vào bản đồ khác" là: *hai máy có đang ở cùng một phòng không?*
+Không có gì trả lời được câu ấy — kể cả tôi, nên tôi đã phải đoán hai lần. Giờ màn chơi mạng luôn
+hiện ở góc dưới trái:
+
+```
+phòng …92Ju · Act2 · chủ phòng · 2 người
+```
+
+Chụp hai màn hình là đọc ra ngay: khác mã phòng, hay cùng phòng mà khác màn.
+
+#### Số đo sau khi sửa
+
+Chạy lại đúng cuộc đua ấy, năm lần:
+
+```
+lần 1: A NHƯỜNG, sang  xk6nHhi [Act2] | B GIỮ phòng mình xk6nHhi [Act2] -> CÙNG PHÒNG, cùng màn
+lần 2: A NHƯỜNG, sang  GGf_Z-T [Act2] | B GIỮ phòng mình GGf_Z-T [Act2] -> CÙNG PHÒNG, cùng màn
+lần 3: A GIỮ phòng mình UBo68Pr [Act2] | B NHƯỜNG, sang  UBo68Pr [Act2] -> CÙNG PHÒNG, cùng màn
+lần 4: A NHƯỜNG, sang  j0l6Vkz [Act2] | B GIỮ phòng mình j0l6Vkz [Act2] -> CÙNG PHÒNG, cùng màn
+lần 5: A GIỮ phòng mình n-CGLv8 [Act2] | B VÀO SẴN       n-CGLv8 [Act2] -> CÙNG PHÒNG, cùng màn
+
+cùng phòng: 5/5
+```
+
+**0/3 → 5/5.** Và luôn đúng *một* bên nhường, không bao giờ cả hai.
+
+#### Phép thử trong Unity, và lần nó bắt được chính tôi
+
+Phép đo trên chạy bằng Python nói chuyện thẳng với Firebase — nó chứng minh *thuật toán* đúng,
+nhưng không chứng minh *code C#* đúng. Nên có thêm **menu 35**, đo ba tính chất của `PhongDuocGiu`:
+
+```
+1. đối xứng trên 2000 cặp -> số cặp lệch: 0
+2. đáp án luôn là một trong hai -> số lần ra ngoài: 0
+3. phòng tạo trước luôn thắng (515 cặp, mốc đọc thẳng từ mã) -> số cặp sai: 0
+4. màn mặc định của 'vào phòng nhanh': Act2
+5. phòng đang đếm ngược -> DangCho = False
+số lỗi ghi nhận = 0
+```
+
+Lần chạy **đầu tiên** phép 3 báo sai một cặp. Tôi đã liệt kê sáu mã phòng thật rồi tự ghi thứ tự
+thời gian của chúng theo trí nhớ — và chính thứ tự tôi ghi mới là cái sai, hàm thì đúng. Nên phép
+thử được viết lại: nó **tự giải mã mốc thời gian ra khỏi mã phòng** rồi mới đối chiếu, cộng thêm
+500 cặp tự chế với mốc biết trước, cách nhau từ 1 ms đến một phút. Không còn chỗ nào để tôi nhét
+giả thiết của mình vào.
+
 ### Việc còn phải làm
 
 **169 MB là quá nặng**, nhất là trên điện thoại — nền tảng chính của game. Gần như toàn bộ nằm ở
@@ -5569,6 +5715,12 @@ cho riêng nền tảng WebGL sẽ ăn cả hai đầu: file nhỏ hơn và khô
 | **27. Chay thu MANG - khoa tai khoan** | Kiểm rằng tài khoản bị admin khoá trên web thì không vào được game, còn tài khoản bình thường vẫn vào được. Kết quả ra `PlayTestShots/mang_khoa.txt`. |
 | **28. Chup man DANG NHAP va SANH PHONG** | Chụp ba màn hình thật của phần mạng ra `PlayTestShots/mang_man_*.png`. Xoá phiên đăng nhập cũ trên máy này (lần sau phải gõ lại mật khẩu) và luôn dọn phòng đã tạo. |
 | **29. Xuat ban WEBGL** | Xuất bản bản chơi trên trình duyệt ra `Build/WebGL` (khoảng 11 phút). Kết quả và dung lượng từng file ghi ra `PlayTestShots/build_webgl.txt`. Chép sang `web/` rồi `firebase deploy --only hosting` là lên mạng. |
+| **30 / 30b. Bom input Act2 · Act1** | Bước 1 giai đoạn 2: bơm một chuỗi ý muốn vào `PlayerController` rồi đo quãng đường đi được, đối chiếu với lý thuyết. Phải chạy cả hai vì hai màn dựng khác hẳn nhau. |
+| **31. Chay thu DU DOAN va HIEU CHINH** | Bước 2: chạy 120 gói input, đặt lại trạng thái rồi chạy lại từ gói N+1, đo độ lệch giữa hai lần — phải là 0. |
+| **32. Chay thu NHIEU NGUOI mot canh** | Bước 3: sinh thêm nhân vật thứ hai rồi đếm xem quái chia nhau ra nhắm hai người hay dồn cả vào một. |
+| **33. Chay thu NOI SUY** | Bước 4: đo độ dày của đệm co giãn ở mạng tốt và mạng 4G, và số lần giật khi ép đệm mỏng. |
+| **34. Chay thu PVP** | Bước 5: bốn chiều — chơi đơn không tự thiêu, chơi đối kháng đánh được nhau, đánh người khác họ mất máu, đánh chính mình thì không. |
+| **35. Chay thu GHEP PHONG (cung man)** | Kiểm rằng hai người bấm "Vào phòng nhanh" cùng lúc thì vẫn về chung một phòng và chung một màn. Không nối mạng — đo tính chất của `PhongMang.PhongDuocGiu` (đối xứng, luôn là một trong hai, phòng tạo trước thắng) trên 2 515 cặp. Kết quả ra `PlayTestShots/ghepphong.txt`. |
 
 > ⚠️ Mục **1** sẽ **xóa và tạo lại** các thư mục Textures / Materials / Models / Prefabs.
 > Nếu bạn tự sửa tay trong đó thì hãy sao lưu trước.
