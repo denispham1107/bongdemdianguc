@@ -246,7 +246,9 @@ public class GameHUD : MonoBehaviour
     // muon dat duoi bang trang thai deu can no de biet bang cao den dau.
     const float BangLeTrai = 14f;
     const float BangLeTren = 12f;
-    const float BangRong = 320f;
+    /// <summary>Be rong bang trang thai goc tren trai, tinh o do phan giai 1080.
+    /// Mo ra cho kich ban chay thu do xem con so co lot trong thanh khong.</summary>
+    public const float BangRong = 320f;
     const float BangKhe = 5f;
     const float BangCaoTen = 26f;
     const float BangCaoMau = 30f;

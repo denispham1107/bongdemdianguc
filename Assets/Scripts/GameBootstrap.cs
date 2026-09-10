@@ -17,7 +17,14 @@ public class GameBootstrap : MonoBehaviour
     public int worldSeed = 12345;
 
     [Header("Nhan vat")]
-    public float playerMaxHealth = 400f;
+    // 30 000 mau la de CHAY THU cho lau, khong phai con so can bang cua game.
+    // Muc that la 400 - doi lai truoc khi phat hanh, khong thi quai danh ca
+    // buoi khong het mot thanh mau va khong ai biet vi sao.
+    //
+    // Con so nay nam trong CA HAI SCENE (Act1.unity, Act2.unity) nua: Unity
+    // luu gia tri cua component vao scene, va gia tri do DE LEN mac dinh viet
+    // o day. Sua moi mot cho la khong doi gi ca.
+    public float playerMaxHealth = 30000f;
     public float playerMaxMana = 250f;
 
     [Header("Do hoa")]
@@ -96,7 +103,14 @@ public class GameBootstrap : MonoBehaviour
         if (hp != null)
         {
             hp.maxHealth = playerMaxHealth;
-            if (hp.health <= 0f || hp.health > playerMaxHealth) hp.health = playerMaxHealth;
+
+            // VAO MAN LA DAY MAU, khong hoi han. Truoc day dong nay chi va khi
+            // gia tri BAT THUONG (am, hoac vuot tran) - nen khi doi muc mau
+            // len, nhan vat da nuong san trong scene giu nguyen con so cu:
+            // maxHealth thanh 30 000 ma health van 400, thanh mau day mot vach
+            // do o dau. Doi muc mau ma quen dong nay thi trong het nhu chua sua
+            // gi ca.
+            hp.health = playerMaxHealth;
         }
         if (player != null)
         {

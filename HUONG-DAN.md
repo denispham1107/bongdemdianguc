@@ -6078,6 +6078,71 @@ Nó nổ vào một con quái đứng chắn giữa. Phép thử dọn quái **n
 xong rồi mới dọn, dọn thêm một lượt nữa, và dọn lần cuối ngay trước phép đo. Sau đó: **48 máu**,
 0 lỗi.
 
+### Máu 30 000 để chạy thử — và con số ấy nằm ở bốn chỗ
+
+Anh muốn nhân vật vào màn có 30 000 máu thay vì 400, để thử game cho lâu.
+
+Nghe như sửa một dòng. Thật ra con số ấy nằm ở **bốn chỗ**, và sửa thiếu một chỗ thì hoặc không đổi
+gì cả, hoặc đổi nửa vời theo kiểu khó hiểu:
+
+| Chỗ | Ảnh hưởng ai |
+|---|---|
+| `GameBootstrap.playerMaxHealth` | mặc định trong code |
+| `Act1.unity` và `Act2.unity` | **đè lên** mặc định trên — Unity lưu giá trị component vào scene |
+| `Player_Sorceress.prefab` | bản sao của người chơi khác, nó không đi qua `GameBootstrap` |
+| `GameBootstrap.EnsurePlayer` | máu **hiện tại** lúc vào màn |
+
+Chỗ thứ tư là chỗ phép thử bắt được, và nó là chỗ khó đoán nhất:
+
+```
+1. nhân vật của mình: 400 / 30000
+[LỖI] vào màn mà không đầy máu
+```
+
+Dòng cũ chỉ vá khi giá trị **bất thường**:
+
+```csharp
+if (hp.health <= 0f || hp.health > playerMaxHealth) hp.health = playerMaxHealth;
+```
+
+400 thì không âm, cũng không vượt 30 000 — nên nó được giữ nguyên. Kết quả: thanh máu tối đa
+30 000 mà máu hiện tại 400, tức một vạch đỏ bằng đầu đũa. Đổi thành *vào màn là đầy máu, không hỏi
+han*.
+
+#### Đo (menu 40), bốn chiều, cả hai màn
+
+```
+1. nhân vật của mình: 30000 / 30000
+2. bản sao người chơi khác: 30000 / 30000 (lấy thẳng từ prefab)
+3. ăn một đòn 250 -> mất 250 máu, còn 29750
+4. chữ "30000 / 30000" rộng 56 điểm, thanh máu rộng 172 điểm
+số lỗi ghi nhận = 0
+```
+
+Chiều 2 không thừa: bản sao người chơi khác lấy máu **thẳng từ prefab**, không qua `GameBootstrap`
+— thiếu chiều này thì sửa prefab hay không cũng chẳng ai biết. Chiều 3 giữ cho "máu lớn" không
+biến thành "máu không trừ được". Chiều 4 hỏi cái mắt sẽ nhìn thấy: `30000 / 30000` dài gần gấp rưỡi
+`400 / 400`, nó có tràn ra ngoài thanh không.
+
+> **30 000 là con số CHẠY THỬ, không phải cân bằng game.** Mức thật là 400. Đổi lại trước khi phát
+> hành, không thì quái đánh cả buổi không hết một thanh máu.
+
+#### Ba lần tự làm khó mình
+
+**`GUI.skin` ngoài `OnGUI`.** Chiều 4 lặng lẽ biến mất khỏi báo cáo — không lỗi, không dòng nào.
+`GUI.skin` chỉ sống trong `OnGUI`; gọi ngoài đó thì ném, mà ngoại lệ trong coroutine bị Unity cắt
+im lặng phần còn lại. Thay bằng font dựng sẵn (`LegacyRuntime.ttf`) và bọc `try/catch` để nó **tự
+khai lỗi ra giấy** thay vì biến mất.
+
+**Console đầy lỗi hạt che mất.** Tôi đọc console để tìm ngoại lệ, nhưng tám dòng
+*"Particle Velocity curves must all be in the same mode"* chiếm hết chỗ. Đọc console mà không lọc
+thì dễ kết luận "không có lỗi nào".
+
+**Và lỗi ngớ ngẩn nhất: tôi đọc báo cáo của lần chạy trước.** Sau khi đổi tên menu để kiểm tra
+assembly, tôi đọc `mau_khoi_dau.txt` mà **quên chạy lại** — file vẫn là kết quả cũ, thiếu chiều 4,
+và tôi suýt kết luận Unity chạy assembly cũ. Bài học: sau khi sửa phép thử, kiểm dấu thời gian của
+file kết quả, đừng tin nội dung của nó.
+
 ### Việc còn phải làm
 
 **169 MB là quá nặng**, nhất là trên điện thoại — nền tảng chính của game. Gần như toàn bộ nằm ở
@@ -6138,6 +6203,7 @@ cho riêng nền tảng WebGL sẽ ăn cả hai đầu: file nhỏ hơn và khô
 | **37. Chay thu KY NANG qua mang** | Tám chiều: gói kỹ năng khứ hồi, người kia tung phép thì mình mất máu, người tung không tự thiêu, gửi lại gói cũ không nổ lần hai, máu nhận từ mạng được áp đúng, mình tung thì có gói đi ra, và khiên của người kia hiện ra bên này. Dọn sạch quái trước khi đo. Kết quả ra `PlayTestShots/kynang_mang.txt`. |
 | **38. Chay thu QUAI CHUNG va BU TRE** | Mười hai chiều: ai được rải quái, mọi con đều có số hiệu, gói quái khứ hồi, băng thông cả đàn, lịch sử vị trí nhớ đúng, cửa sổ bù trễ lùi rồi trả về đúng chỗ, bỏ qua người tung, trần 300 ms, và phép đo chính — cùng cú nổ ấy: không bù thì trượt, có bù thì trúng. Kết quả ra `PlayTestShots/quai_butre.txt`. |
 | **39. Chay thu DON CUA QUAI qua mang** | Sáu chiều: dựng lại lỗ hổng "người khách bất tử trước quái", gói đòn quái khứ hồi, chủ phòng ra đòn thì có gói đi ra, máy khách nghe thì mất máu thật, gói lặp không ăn máu hai lần, và đòn nhắm người khác thì mình không mất máu. Kết quả ra `PlayTestShots/donquai.txt`. |
+| **40. Chay thu MAU KHOI DAU** | Vào Play thật ở **cả hai màn** rồi đọc máu từ `Damageable`: nhân vật mình đầy máu, bản sao người chơi khác cũng đúng mức (nó lấy thẳng từ prefab), máu vẫn trừ được, và con số không tràn ra ngoài thanh máu. Đổi mức máu thì sửa `MauMongDoi` trong phép thử cho khớp. Kết quả ra `PlayTestShots/mau_khoi_dau.txt`. |
 
 > ⚠️ Mục **1** sẽ **xóa và tạo lại** các thư mục Textures / Materials / Models / Prefabs.
 > Nếu bạn tự sửa tay trong đó thì hãy sao lưu trước.

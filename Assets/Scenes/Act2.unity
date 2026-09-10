@@ -30364,7 +30364,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GameBootstrap
   arenaRadius: 50
   worldSeed: 2024
-  playerMaxHealth: 400
+  playerMaxHealth: 30000
   playerMaxMana: 250
   useBloom: 1
   bloomIntensity: 0.9
@@ -95162,7 +95162,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Damageable
   maxHealth: 400
-  health: 400
+  health: 30000
   fireResist: 0
   iceResist: 0
   lightningResist: 0
