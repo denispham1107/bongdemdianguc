@@ -6234,6 +6234,78 @@ máu ngừng tụt** (đứng yên trọn một giây), không đoán một con 
 dừng cách người tung 0,7 m — nó nổ vào một con quái sinh sau lúc phép thử dọn. Đã sửa ở lần trước
 bằng cách đợi `GameDirector` rải xong rồi mới dọn.
 
+### Máy tính bị bắt chơi bằng joystick ảo
+
+Anh báo: mở game bằng trình duyệt trên máy tính để bàn mà vẫn bị đưa vào chế độ cảm ứng — joystick
+ảo che mất màn hình, chuột và bàn phím thành vô dụng.
+
+Thủ phạm là một dòng trông rất hợp lý:
+
+```csharp
+if (Application.platform == RuntimePlatform.WebGLPlayer && Input.touchSupported)
+    return true;
+```
+
+`Input.touchSupported` trả về **TRUE trên gần như mọi máy tính Windows đời mới**. Chrome khai báo
+theo API của hệ điều hành chứ không theo việc máy có màn hình cảm ứng hay không. Nên câu hỏi ấy
+không phân biệt được gì cả.
+
+Cũng không hỏi được `Application.isMobilePlatform`: trên WebGL nó trả về **FALSE kể cả khi đang
+chạy trên điện thoại thật**. Hai câu hỏi có sẵn của Unity, một cái luôn đúng, một cái luôn sai.
+
+#### Hỏi thẳng trình duyệt
+
+Thêm `CauNoiThietBi.jslib` với bốn mảnh lọc, xếp theo thứ tự tin cậy giảm dần:
+
+1. `navigator.userAgentData.mobile` — Chrome/Edge khai báo thẳng. Nhưng **chỉ dùng khi nó nói
+   "có"**: nó báo `false` cho cả máy tính bảng, mà máy tính bảng thì vẫn phải chơi bằng cảm ứng.
+2. `Android` trong user agent. **Không đòi thêm chữ "Mobile"** — điện thoại Android có chữ ấy, máy
+   tính bảng Android thì không; lọc theo "Mobile" là bỏ sót toàn bộ dòng máy tính bảng.
+3. `iPhone|iPod|iPad`.
+4. `Macintosh` **kèm** `maxTouchPoints > 1`.
+
+Mảnh thứ tư là cái bẫy lớn nhất: **từ iPadOS 13, Safari trên iPad khai báo user agent y hệt macOS**
+— `"Macintosh; Intel Mac OS X"`, không còn chữ "iPad" nào. Lọc bằng tên thì cả dòng iPad hiện nay
+lọt qua thành máy tính để bàn. Dấu hiệu phân biệt: máy Mac thật có `maxTouchPoints = 0`, iPad thì
+ít nhất năm.
+
+Hỏi hỏng thì mặc định là **máy tính**. Đoán nhầm về phía ấy chỉ khiến người dùng điện thoại thấy
+thanh kỹ năng kiểu PC; đoán nhầm phía kia thì người dùng máy tính bị một cái joystick ảo che mất
+màn hình và không gỡ được — đúng cái vừa xảy ra.
+
+Câu trả lời được **nhớ lại**, vì nó không bao giờ đổi trong một phiên chơi mà `CamUng.DangDung` thì
+bị hỏi nhiều lần mỗi khung hình.
+
+#### Đo (menu 42), chín loại máy thật
+
+```
+dat  Windows 11 + Chrome (màn hình thường)            chạm=0   -> PC
+dat  Windows 11 + Chrome (laptop CÓ màn hình cảm ứng) chạm=10  -> PC
+dat  MacBook + Safari                                 chạm=0   -> PC
+dat  Linux + Firefox                                  chạm=0   -> PC
+dat  iPhone + Safari                                  chạm=5   -> CẢM ỨNG
+dat  Điện thoại Android + Chrome                      chạm=5   -> CẢM ỨNG
+dat  Máy tính bảng Android (KHÔNG có chữ Mobile)      chạm=5   -> CẢM ỨNG
+dat  iPad đời cũ (còn khai là iPad)                   chạm=5   -> CẢM ỨNG
+dat  iPad đời mới (tự nhận là máy Mac)                chạm=5   -> CẢM ỨNG
+1. 9 loại máy, số kết luận sai: 0
+2. file jslib có đủ 4/4 mảnh lọc
+3. CamUng.DangDung còn hỏi Input.touchSupported: False
+số lỗi ghi nhận = 0
+```
+
+Ba dòng máy trong bảng là ba cái bẫy riêng, và mỗi cái từng làm hỏng một cách khác nhau: **laptop
+Windows có màn hình cảm ứng** (đúng ca của anh), **máy tính bảng Android** không có chữ "Mobile",
+và **iPad đời mới** tự nhận là máy Mac.
+
+Phép thử chạy lại luật lọc bằng một bản chép C# — vì `.jslib` chỉ sống trong trình duyệt, không vào
+Play mà thử được. Nên có thêm chiều 2: đọc lại chính file `.jslib` để chắc bản thật có đủ bốn mảnh,
+và chiều 3: chắc rằng `Input.touchSupported` đã bị cắt khỏi đường quyết định — còn sót một dòng là
+máy tính lại bị bắt cầm joystick.
+
+Bảng chẩn đoán (F9) giờ in thẳng câu trả lời của trình duyệt, còn `touchSupported` vẫn hiện nhưng
+được ghi rõ là *chỉ để tham khảo*.
+
 ### Việc còn phải làm
 
 **169 MB là quá nặng**, nhất là trên điện thoại — nền tảng chính của game. Gần như toàn bộ nằm ở
@@ -6296,6 +6368,7 @@ cho riêng nền tảng WebGL sẽ ăn cả hai đầu: file nhỏ hơn và khô
 | **39. Chay thu DON CUA QUAI qua mang** | Sáu chiều: dựng lại lỗ hổng "người khách bất tử trước quái", gói đòn quái khứ hồi, chủ phòng ra đòn thì có gói đi ra, máy khách nghe thì mất máu thật, gói lặp không ăn máu hai lần, và đòn nhắm người khác thì mình không mất máu. Kết quả ra `PlayTestShots/donquai.txt`. |
 | **40. Chay thu MAU KHOI DAU** | Vào Play thật ở **cả hai màn** rồi đọc máu từ `Damageable`: nhân vật mình đầy máu, bản sao người chơi khác cũng đúng mức (nó lấy thẳng từ prefab), máu vẫn trừ được, và con số không tràn ra ngoài thanh máu. Đổi mức máu thì sửa `MauMongDoi` trong phép thử cho khớp. Kết quả ra `PlayTestShots/mau_khoi_dau.txt`. |
 | **41. Chay thu NHIP BUOC qua mang** | Năm chiều: người chơi khác và đàn quái bên máy khách phải **bước chân** khi di chuyển và **dừng chân** khi đứng yên, cộng một chiều chứng minh nhịp bước không bị vòng di chuyển đặt lại về 0. Đo con số bộ hoạt hình nhận được, không chụp ảnh. Kết quả ra `PlayTestShots/nhipbuoc.txt`. |
+| **42. Chay thu CHE DO DIEU KHIEN** | Chạy luật nhận diện thiết bị trên chín loại máy thật (kèm ba cái bẫy: laptop Windows có màn cảm ứng, máy tính bảng Android, iPad đời mới tự nhận là Mac), đối chiếu lại file `.jslib`, và kiểm rằng `Input.touchSupported` đã bị cắt khỏi đường quyết định. Không vào Play. Kết quả ra `PlayTestShots/chedodieukhien.txt`. |
 
 > ⚠️ Mục **1** sẽ **xóa và tạo lại** các thư mục Textures / Materials / Models / Prefabs.
 > Nếu bạn tự sửa tay trong đó thì hãy sao lưu trước.

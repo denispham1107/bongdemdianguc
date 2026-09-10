@@ -1,0 +1,14 @@
+[ban 1] may tinh choi kieu PC, dien thoai moi choi kieu cam ung
+  dat  Windows 11 + Chrome (man hinh thuong)         cham=0   -> PC  (phai la PC)
+  dat  Windows 11 + Chrome (laptop CO man hinh cam ung) cham=10  -> PC  (phai la PC)
+  dat  MacBook + Safari                              cham=0   -> PC  (phai la PC)
+  dat  Linux + Firefox                               cham=0   -> PC  (phai la PC)
+  dat  iPhone + Safari                               cham=5   -> CAM UNG  (phai la CAM UNG)
+  dat  Dien thoai Android + Chrome                   cham=5   -> CAM UNG  (phai la CAM UNG)
+  dat  May tinh bang Android (KHONG co chu Mobile)   cham=5   -> CAM UNG  (phai la CAM UNG)
+  dat  iPad doi cu (con khai la iPad)                cham=5   -> CAM UNG  (phai la CAM UNG)
+  dat  iPad doi moi (tu nhan la may Mac)             cham=5   -> CAM UNG  (phai la CAM UNG)
+1. 9 loai may, so ket luan sai: 0 (phai la 0)
+2. file jslib co du 4/4 manh loc, va KHONG con hoi touchSupported
+3. CamUng.DangDung con hoi Input.touchSupported: False (phai la False)
+so loi ghi nhan = 0

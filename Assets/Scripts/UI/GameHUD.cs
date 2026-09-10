@@ -1524,9 +1524,14 @@ public class GameHUD : MonoBehaviour
             "--- CAM UNG (F9 de doi che do) ---",
             "Che do          : " + (CamUng.DangDung ? "CAM UNG" : "PC")
                 + "   (epCamUng=" + epCamUng + ")",
+            // touchSupported van in ra, nhung chi de tham khao: no bao TRUE
+            // tren gan nhu moi may tinh Windows doi moi nen KHONG duoc dung
+            // lam thuoc do - xem ghi chu o CamUng.DangDung.
             "Nen tang        : " + Application.platform
-                + " | mobile=" + Application.isMobilePlatform
-                + " | touchSupported=" + Input.touchSupported,
+                + " | mobile=" + Application.isMobilePlatform,
+            "Trinh duyet bao : " + (CamUng.TraLoiCuaTrinhDuyet < 0 ? "chua hoi"
+                : CamUng.TraLoiCuaTrinhDuyet == 1 ? "DI DONG" : "MAY TINH")
+                + "   (touchSupported=" + Input.touchSupported + ", chi tham khao)",
             "So ngon dang cham: " + Input.touchCount
                 + " | chuot trai=" + Input.GetMouseButton(0),
             "Can joystick    : " + (CamUng.DangKeo ? "DANG KEO" : "tha")

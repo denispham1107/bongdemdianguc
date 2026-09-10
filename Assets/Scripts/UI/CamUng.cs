@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices;
 using UnityEngine;
 
 /// <summary>
@@ -19,24 +20,62 @@ public static class CamUng
     /// </summary>
     public static bool EpBat;
 
+#if UNITY_WEBGL && !UNITY_EDITOR
+    [DllImport("__Internal")] static extern int TB_LaDiDong();
+#endif
+
+    /// <summary>
+    /// Da hoi trinh duyet chua, va cau tra loi la gi.
+    ///
+    /// Nho lai vi cau tra loi khong bao gio doi trong mot phien choi, ma
+    /// <see cref="DangDung"/> thi bi hoi nhieu lan moi khung hinh - HUD, nhan
+    /// vat, chi bao ngam deu goi.
+    /// </summary>
+    static int daHoi = -1;
+
     /// <summary>
     /// Co dang dieu khien bang cam ung khong.
     ///
-    /// WebGL chay tren dien thoai la truong hop de sot: Application.isMobilePlatform
-    /// tra ve FALSE cho WebGL du dang chay tren dien thoai that. Nen phai hoi
-    /// them Input.touchSupported.
+    /// KHONG DUOC HOI Input.touchSupported. Truoc day dong ay la thu quyet
+    /// dinh, va no sai: tren WebGL, Chrome bao "co ho tro cam ung" tren gan
+    /// nhu MOI may tinh Windows doi moi - theo API cua he dieu hanh chu khong
+    /// theo viec may co man hinh cam ung hay khong. Ket qua la nguoi choi ngoi
+    /// truoc man hinh 27 inch voi chuot va ban phim bi bat vao che do joystick
+    /// ao, khong go duoc.
+    ///
+    /// Cung khong hoi duoc Application.isMobilePlatform: tren WebGL no tra ve
+    /// FALSE ke ca khi dang chay tren dien thoai that.
+    ///
+    /// Nen tren web thi hoi thang trinh duyet - xem CauNoiThietBi.jslib, o do
+    /// co ca cai bay iPad doi moi tu nhan minh la may Mac.
     /// </summary>
     public static bool DangDung
     {
         get
         {
             if (EpBat) return true;
+
+            // Ban Android/iOS dong goi that thi cau nay du va dung
             if (Application.isMobilePlatform) return true;
-            if (Application.platform == RuntimePlatform.WebGLPlayer && Input.touchSupported)
-                return true;
+
+#if UNITY_WEBGL && !UNITY_EDITOR
+            if (daHoi < 0)
+            {
+                try { daHoi = TB_LaDiDong(); }
+                catch { daHoi = 0; }     // hoi khong duoc thi coi la may tinh
+            }
+            return daHoi == 1;
+#else
             return false;
+#endif
         }
     }
+
+    /// <summary>
+    /// Cau tra loi tho cua trinh duyet: 1 = di dong, 0 = may tinh, -1 = chua hoi
+    /// hoac khong phai ban web. Chi de kich ban chay thu va bang chan doan doc.
+    /// </summary>
+    public static int TraLoiCuaTrinhDuyet { get { return daHoi; } }
 
     /// <summary>
     /// Huong day can, do dai 0..1 trong mat phang man hinh (x = phai, y = len).
