@@ -37,6 +37,24 @@ public class DongBoTran : MonoBehaviour
     /// <summary>Chi so cua minh trong phong (0..3).</summary>
     public byte chiSoCuaToi;
 
+    /// <summary>Bo dong bo dan quai - dat kem de goi quai co cho di ve.</summary>
+    public DongBoQuai quai;
+
+    /// <summary>Bao nhieu lan hoi nhip moi giay - chi de do vong di-ve.</summary>
+    public const float NhipHoiVong = 2f;
+
+    /// <summary>
+    /// Mot vong di-ve mat bao nhieu mili giay, trung binh truot.
+    ///
+    /// Lam min bang trung binh truot chu khong lay so do gan nhat: mot goi ket
+    /// mang lam RTT vot len 300 ms trong dung mot nhip, ma neu tin ngay con so
+    /// ay thi cu don ke tiep se bu tre gap ba - nguoi da nap sau goc tuong roi
+    /// van an don.
+    /// </summary>
+    public float RttMs { get; private set; }
+
+    float hoiVongLanSau;
+
     /// <summary>
     /// Goi ky nang duoc gui LAP LAI may lan, cach nhau bao lau.
     ///
@@ -113,7 +131,11 @@ public class DongBoTran : MonoBehaviour
             chiSo = chiSoCuaToi,
             kyNang = (byte)kyNang,
             soThuTu = ++soPhepDaTung,
-            diemNgam = diemNgam
+            diemNgam = diemNgam,
+
+            // Bao luon cho ben kia biet minh dang nhin thay ho tre bao nhieu.
+            // Ho se lui ve dung khoanh khac nay roi moi tinh trung.
+            doTreMs = (ushort)Mathf.RoundToInt(DoTreNguoiKiaThayMinh() * 1000f)
         });
 
         // Gui ngay mot lan, roi xep hang gui lai
@@ -125,6 +147,56 @@ public class DongBoTran : MonoBehaviour
             conLai = SoLanGuiLaiPhep - 1,
             guiLanSau = Time.unscaledTime + CachNhauGuiLai
         });
+    }
+
+    void HoiNhip()
+    {
+        if (!KenhTrucTiep.DaMo) return;
+        if (Time.unscaledTime < hoiVongLanSau) return;
+        hoiVongLanSau = Time.unscaledTime + 1f / NhipHoiVong;
+
+        GuiMotGoi(GoiTin.VietNhip(true, GioTran()));
+    }
+
+    /// <summary>
+    /// Goi nhip den. Neu la cau HOI thi nem tra lai nguyen ven, neu la cau DAP
+    /// thi lay hieu ra do tre.
+    ///
+    /// Ca hai dau tru deu la gio cua CHINH may nay, nen dong ho hai ben lech
+    /// bao nhieu cung khong anh huong - do la ly do cai moc duoc nem tra lai
+    /// nguyen ven chu khong ai viet lai no.
+    /// </summary>
+    void NhanMotNhip(byte[] b)
+    {
+        bool laHoi; int moc;
+        if (!GoiTin.DocNhip(b, out laHoi, out moc)) { SoGoiHong++; return; }
+
+        if (laHoi) { GuiMotGoi(GoiTin.VietNhip(false, moc)); return; }
+
+        float vong = Mathf.Max(0f, GioTran() - moc);
+        RttMs = RttMs <= 0f ? vong : Mathf.Lerp(RttMs, vong, 0.25f);
+    }
+
+    /// <summary>
+    /// Nguoi kia dang nhin thay MINH tre bao nhieu giay.
+    ///
+    /// Hai phan cong lai: nua vong di-ve (goi tin bay sang do), va do day cua
+    /// dem noi suy ben do (ho co tinh xem cham lai chung ay de bu jitter).
+    /// Dem ben do khong doc duoc tu day, nhung hai may chay cung mot cong thuc
+    /// tren cung mot duong truyen nen dem cua minh la uoc luong sat nhat.
+    /// </summary>
+    public float DoTreNguoiKiaThayMinh()
+    {
+        float nuaVong = RttMs * 0.5f / 1000f;
+
+        float dem = 0f;
+        foreach (var cap in nguoiKhac)
+        {
+            float d = cap.Value.noiSuy.DemGiay;
+            if (d > dem) dem = d;
+        }
+
+        return Mathf.Clamp(nuaVong + dem, 0f, BuTre.LuiToiDaGiay);
     }
 
     void GuiMotGoi(byte[] b)
@@ -181,6 +253,7 @@ public class DongBoTran : MonoBehaviour
         NhanHet();
         VeNguoiKhac(dt);
         GuiLaiPhepDangCho();
+        HoiNhip();
 
         if (Time.unscaledTime >= guiLanSau)
         {
@@ -223,6 +296,14 @@ public class DongBoTran : MonoBehaviour
             byte loai = GoiTin.LoaiCuaGoi(b);
 
             if (loai == GoiTin.LoaiKyNang) { NhanMotPhep(b); continue; }
+            if (loai == GoiTin.LoaiNhip) { NhanMotNhip(b); continue; }
+            if (loai == GoiTin.LoaiQuai)
+            {
+                // May khach nhan dan quai tu chu phong. Chu phong khong nghe
+                // goi loai nay: no la nguoi ke chuyen, khong phai nguoi nghe.
+                if (quai != null && !GameDirector.LaTrongTaiCuaQuai) quai.NhanGoiQuai(b);
+                continue;
+            }
             if (loai != GoiTin.LoaiTrangThai) { SoGoiHong++; continue; }
 
             int moc;
@@ -269,7 +350,7 @@ public class DongBoTran : MonoBehaviour
         n.phepDaLam = p.soThuTu;
 
         SoPhepDaNhan++;
-        n.nhanVat.TungPhepTheoMang(p.kyNang, p.diemNgam);
+        n.nhanVat.TungPhepTheoMang(p.kyNang, p.diemNgam, p.doTreMs / 1000f);
     }
 
     /// <summary>

@@ -81,15 +81,37 @@ public class Fireball : MonoBehaviour
             float goc = (i - giua) * gocToe;
             Vector3 h = Quaternion.AngleAxis(goc, Vector3.up) * huong;
             var qua = Spawn(pos, h, hitMask, damageMask);
-            if (qua != null) qua.boQua = boQua;
+            if (qua != null)
+            {
+                qua.boQua = boQua;
+                qua.tuaTruoc = BuTre.TuaTruocGiay;
+            }
         }
     }
+
+    /// <summary>
+    /// Qua cau nay da "bay" bao lau o may ben kia truoc khi tin den day.
+    ///
+    /// Dat luc sinh, tieu dan trong nhung khung dau: qua cau duoc chay nhanh
+    /// cho duoi kip cai no dang le da di duoc. Khong lam the thi don cua nguoi
+    /// o xa luon toi cham hon cai ho nhin thay dung bang do tre duong truyen.
+    /// </summary>
+    public float tuaTruoc;
 
     void Update()
     {
         if (exploded) return;
 
         float dt = Time.deltaTime;
+
+        // Tra no phan duong da mat vi duong truyen. Chia nho tung buoc chu
+        // khong nhay mot phat: nhay thang thi no xuyen qua ca tuong lan nguoi.
+        if (tuaTruoc > 0f)
+        {
+            float them = Mathf.Min(tuaTruoc, 1f / 60f);
+            tuaTruoc -= them;
+            dt += them;
+        }
         age += dt;
 
         float step = speed * dt;

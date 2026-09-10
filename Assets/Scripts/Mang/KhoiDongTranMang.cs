@@ -177,6 +177,15 @@ public class KhoiDongTranMang : MonoBehaviour
         var nguoiKia = NguoiChoiKhac.Sinh(uidKia, "Người chơi 2", cho);
         if (nguoiKia == null) { Hong("khong sinh duoc nhan vat cho nguoi kia"); yield break; }
 
+        // ---- 4b. Cho ca hai nhan vat ghi lai duong di ----
+        // Bu tre can biet "mot khoang truoc day nguoi nay dung o dau". Gan cho
+        // CA HAI: nhan vat cua minh la nan nhan can lui, con ban sao nguoi kia
+        // thi phep cua chinh ho khong duoc lui - BuTre.Mo tu bo qua nguoi tung.
+        if (toi.GetComponent<LichSuViTri>() == null)
+            toi.gameObject.AddComponent<LichSuViTri>();
+        if (nguoiKia.GetComponent<LichSuViTri>() == null)
+            nguoiKia.gameObject.AddComponent<LichSuViTri>();
+
         // ---- 5. Bat dong bo ----
         dongBo = gameObject.AddComponent<DongBoTran>();
         dongBo.toi = toi;
@@ -185,6 +194,11 @@ public class KhoiDongTranMang : MonoBehaviour
         // tu luc AddComponent, luc ay "toi" con la null nen no khong nghe duoc
         // ai ca - va ky nang se khong bao gio duoc gui sang may kia.
         dongBo.GanTaiNghe();
+
+        // Ca hai nguoi danh chung mot dan quai: chu phong ke lai, khach nghe.
+        var boQuai = gameObject.AddComponent<DongBoQuai>();
+        boQuai.dongBo = dongBo;
+        dongBo.quai = boQuai;
 
         // Chu phong la 0, nguoi vao la 1. Hai nguoi thi the la du - bon nguoi
         // moi can danh so theo thu tu trong phong.

@@ -5887,6 +5887,118 @@ Dọn sạch quái trước khi đo, và chờ hết hiệu ứng cháy trước
 - **Bù trễ khi tính trúng.** Ở 28 ms, người chạy ngang vẫn né được đòn mà trên màn hình người bắn
   thấy trúng rõ ràng.
 
+### Chung một đàn quái, và đòn trúng theo cái người bắn nhìn thấy
+
+Hai việc còn lại của giai đoạn 2, làm cùng một lượt vì cả hai đều là chuyện "ai là trọng tài".
+
+#### Đàn quái: chủ phòng kể, khách nghe
+
+Trước đây mỗi máy tự rải quái của mình. Hai người đứng cạnh nhau mà đánh hai đàn hoàn toàn khác
+nhau — đó chính là lý do **cả hai màn hình cùng ghi "Quái còn lại: 33" một cách độc lập**, và giết
+một con thì chỉ mình mình thấy nó ngã.
+
+Quy ước mới:
+
+| | Chủ phòng | Máy khách |
+|---|---|---|
+| Rải quái | có | **không** |
+| Chạy AI | có | **không** (tắt hẳn `EnemyAI`) |
+| Tính máu quái | có | không — lấy con số nghe được |
+| Nhịp đếm sinh thêm quái | có | không |
+
+Vì sao không cho mỗi máy tự tính: AI quái chọn mục tiêu, đổi hướng, ra đòn theo đồng hồ riêng của
+từng máy — chỉ lệch vài mili giây là hai bên rẽ hai hướng khác nhau, và càng chạy càng xa nhau.
+
+Mỗi con quái được cấp một **số hiệu** (`NhanDangQuai`) để hai máy gọi cùng một tên; thiếu nó thì
+không cách nào nói "con ở góc kia vừa mất 40 máu", vì thứ tự trong danh sách đổi mỗi khi có con
+chết. Số hiệu phải gán ở **mọi** chỗ sinh quái — bỏ sót một chỗ là những con sinh ra ở đó vĩnh viễn
+vô hình trên máy khách mà không ai báo gì.
+
+**Sát thương của máy khách vẫn vào được quái**, và nó đi đường vòng: gói kỹ năng sang chủ phòng,
+bản sao của người khách bên đó tung đúng phép ấy, phép trúng con quái **thật**. Nên không cần gửi
+riêng một gói "tôi vừa đánh con số 7".
+
+Con nào lâu không được nhắc đến thì máy khách gỡ đi. Im lặng là cách rẻ nhất để nói một con quái
+không còn nữa, và nó chịu được cả trường hợp mất gói.
+
+#### Bù trễ: lùi nạn nhân về đúng khoảnh khắc người kia bấm
+
+Vấn đề: A nhìn thấy B **trễ** một khoảng — độ trễ đường truyền cộng đệm nội suy, đo được 82–131 ms.
+A ngắm vào chỗ A *thấy* B đang đứng rồi bấm. Gói tin bay sang máy B mất thêm một lát nữa. Đến lúc
+máy B tính trúng thì B đã chạy tiếp hơn một mét — đòn trượt, dù trên màn hình của A nó trúng rõ
+ràng.
+
+Cách chữa, giống hệt các game bắn súng: máy B **lùi B về quá khứ** đúng bằng khoảng A đã trễ, tính
+trúng ở đó, rồi trả B về chỗ cũ. Tất cả gọn trong một khung hình, không render ở giữa, nên không ai
+thấy nhân vật nhảy.
+
+Ba mảnh:
+
+- `LichSuViTri` — vòng đệm cố định, nhớ một giây vừa qua. Ghi ở `LateUpdate` (lúc nhân vật đã đi
+  xong trong khung ấy); ghi ở `Update` thì mốc luôn chậm một khung so với cái mắt nhìn thấy.
+- `BuTre` — mở cửa sổ: lùi mọi nhân vật có lịch sử, **bỏ qua người tung** (họ ở đúng chỗ họ muốn
+  rồi), gọi `Physics.SyncTransforms()`, tính trúng, rồi trả lại. Thiếu `SyncTransforms` thì
+  `OverlapSphere` vẫn thấy nhân vật ở chỗ cũ và cả việc lùi thành vô nghĩa mà không báo gì.
+- **Gói nhịp** 6 byte để đo vòng đi-về thật. Mốc thời gian được ném trả lại *nguyên vẹn*, nên hai
+  đầu trừ đều là giờ của **cùng một máy** — đồng hồ hai bên lệch bao nhiêu cũng không ảnh hưởng.
+  Làm mịn bằng trung bình trượt: một gói kẹt mạng đẩy RTT lên 300 ms trong đúng một nhịp, tin ngay
+  con số ấy thì cú đòn kế tiếp bù gấp ba.
+
+Đạn bay cần cách riêng. Lùi nạn nhân chỉ cứu được đòn tính trúng **ngay**; quả cầu lửa còn phải bay
+một đoạn, lúc nó tới nơi thì cửa sổ lùi đã đóng từ lâu. Nên quả cầu sinh ra từ một phép đến từ mạng
+được **tua tới trước** đúng bằng thời gian nó đã mất để bay sang đây — chia nhỏ từng bước, vì nhảy
+một phát thì nó xuyên qua cả tường lẫn người.
+
+**Giới hạn cứng 300 ms.** Cái giá của mọi hệ bù trễ là "chết sau góc tường": người đã nấp sau vật
+cản rồi vẫn có thể ăn một đòn bắn từ 100 ms trước. Đó là đánh đổi giữa thưởng cho người bắn hay
+thưởng cho người chạy; các game bắn súng đều chọn người bắn, vì họ là người vừa thao tác và sẽ thấy
+vô lý nếu đòn của mình không ăn. Nhưng bù quá nửa giây thì sinh ra những cảnh không ai giải thích
+nổi — mạng tệ đến thế thì thà chịu trượt.
+
+#### Đo (menu 38), mười hai chiều
+
+```
+ 1. được tự rải quái? chơi đơn=True chủ phòng=True khách=False
+ 2. quái trong cảnh: 25 con, có số hiệu: 25, số hiệu trùng nhau: 0
+ 3. gói 3 con = 45 byte (13 byte/con), đọc lại khớp, lệch vị trí 0,0000 m
+ 4. cả đàn 25 con = 337 byte mỗi lượt, 10 lượt/giây -> 3,3 KB/giây
+ 5. đi 6,00 m trong 0,4 giây, hỏi lại chỗ 0,4 giây trước -> lệch 62 ms (trần: hai khung = 95 ms)
+ 6. mở cửa sổ bù trễ -> người bị lùi 3,56 m; đóng lại -> sai lệch 0,0000 m
+ 7. bù trễ nhưng BỎ QUA chính người này -> họ bị lùi 0,0000 m
+ 8. bảo lùi 5 giây -> thực tế lùi 0,30 giây (trần)
+ 9. gói kỹ năng 16 byte, độ trễ viết 137 ms -> đọc lại 137 ms
+10. gói nhịp 6 byte: hỏi(4242) -> đáp(4242)
+11. chạy ngang 3,00 m rồi nổ vào CHỖ CŨ (lùi 344 ms):
+    a) không bù trễ -> mất 0 máu (đòn trượt)
+    b) CÓ bù trễ    -> mất 32 máu (đòn trúng)
+12. máy khách nghe gói 2 con -> quái trong cảnh 33 -> 35, AI đã tắt: True, máu áp vào: 50%
+số lỗi ghi nhận = 0
+```
+
+**Mục 11 là bằng chứng chính**, và nó phải có *cả hai nửa*. Chỉ đo "có bù thì trúng" thì không phân
+biệt được *bù đúng* với *đòn này vốn trúng sẵn*. Phải chứng minh rằng cùng cú nổ ấy, ở cùng chỗ ấy,
+**không** bù thì **trượt**.
+
+#### Hai lần phép đo tự nói dối, và cách chữa
+
+Lần chạy đầu báo hai lỗi, cả hai đều nằm ở phép đo chứ không ở code:
+
+**Mục 5** báo "lệch 1,48 m, quá ngưỡng 1,0 m". Nhưng 1,48 m ở tốc độ 15 m/giây đúng bằng **một
+khung hình** khi Editor tụt xuống 10 khung/giây — lịch sử không thể nhớ mịn hơn nhịp nó được ghi.
+Ngưỡng tính bằng mét là sai từ gốc; đổi sang quy sai lệch ra **giây** và đòi dưới hai khung hình.
+
+**Mục 11** báo "bù trễ không biến được đòn trượt thành đòn trúng". Hoá ra tôi viết cứng "lùi 0,25
+giây" cho cả hai phép, rồi lại chờ thêm 0,2 giây giữa chúng — nên lùi 0,25 giây chỉ về được đến lúc
+đã đứng ở chỗ **mới**. Bù trễ chưa hề được thử. Sửa: nhớ mốc thời gian lúc còn ở chỗ cũ, lùi đúng
+bằng khoảng đã trôi kể từ mốc ấy, và đo hai phép liền nhau không chờ ở giữa (`AreaDamage` trừ máu
+ngay trong lời gọi).
+
+#### Còn thiếu
+
+Quái được đồng bộ **vị trí và máu**, nhưng hiệu ứng hình ảnh của chúng thì chưa: máy khách thấy con
+quái đứng đúng chỗ và đúng máu, còn cú vung kiếm hay quả thiên thạch mà quỷ dữ gọi xuống thì vẫn do
+máy khách tự đoán. Chưa ai báo là khó chịu nên để nguyên.
+
 ### Việc còn phải làm
 
 **169 MB là quá nặng**, nhất là trên điện thoại — nền tảng chính của game. Gần như toàn bộ nằm ở
@@ -5945,6 +6057,7 @@ cho riêng nền tảng WebGL sẽ ăn cả hai đầu: file nhỏ hơn và khô
 | **35. Chay thu GHEP PHONG (cung man)** | Kiểm rằng hai người bấm "Vào phòng nhanh" cùng lúc thì vẫn về chung một phòng và chung một màn. Không nối mạng — đo tính chất của `PhongMang.PhongDuocGiu` (đối xứng, luôn là một trong hai, phòng tạo trước thắng) trên 2 515 cặp. Kết quả ra `PlayTestShots/ghepphong.txt`. |
 | **36. Chay thu TU GAN bo noi mang** | Đi đúng đường người chơi đi: vào Play ở MainMenu, bật `DangChoiMang`, nạp màn chơi, rồi **đếm** xem bộ nối mạng có được dựng dậy không — trên **cả hai màn**. Kết quả ra `PlayTestShots/tugan.txt`. |
 | **37. Chay thu KY NANG qua mang** | Tám chiều: gói kỹ năng khứ hồi, người kia tung phép thì mình mất máu, người tung không tự thiêu, gửi lại gói cũ không nổ lần hai, máu nhận từ mạng được áp đúng, mình tung thì có gói đi ra, và khiên của người kia hiện ra bên này. Dọn sạch quái trước khi đo. Kết quả ra `PlayTestShots/kynang_mang.txt`. |
+| **38. Chay thu QUAI CHUNG va BU TRE** | Mười hai chiều: ai được rải quái, mọi con đều có số hiệu, gói quái khứ hồi, băng thông cả đàn, lịch sử vị trí nhớ đúng, cửa sổ bù trễ lùi rồi trả về đúng chỗ, bỏ qua người tung, trần 300 ms, và phép đo chính — cùng cú nổ ấy: không bù thì trượt, có bù thì trúng. Kết quả ra `PlayTestShots/quai_butre.txt`. |
 
 > ⚠️ Mục **1** sẽ **xóa và tạo lại** các thư mục Textures / Materials / Models / Prefabs.
 > Nếu bạn tự sửa tay trong đó thì hãy sao lưu trước.

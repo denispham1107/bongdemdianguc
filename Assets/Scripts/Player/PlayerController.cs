@@ -745,9 +745,24 @@ public class PlayerController : MonoBehaviour
     /// </summary>
     public void TungPhepTheoMang(int skill, Vector3 aim)
     {
+        TungPhepTheoMang(skill, aim, 0f);
+    }
+
+    /// <summary>
+    /// Nhu tren, nhung biet ca nguoi tung dang nhin thay ta TRE bao nhieu.
+    ///
+    /// Con so ay duoc giu lai den luc phep thuc su bay ra (Release), roi dung
+    /// de lui moi nguoi ve dung khoanh khac ho bam - xem <see cref="BuTre"/>.
+    /// </summary>
+    public void TungPhepTheoMang(int skill, Vector3 aim, float doTreGiay)
+    {
         if (skill < 0 || skill > 6) return;
+        buTreCuaPhepNay = doTreGiay;
         BeginCast(skill, ThoiGianNiem(skill), aim);
     }
+
+    /// <summary>Do tre cua phep dang niem, neu no den tu mang. 0 = phep cua chinh may nay.</summary>
+    float buTreCuaPhepNay;
 
     /// <summary>Thoi gian niem chu cua tung phep - de cho ca duong mang dung chung.</summary>
     float ThoiGianNiem(int skill)
@@ -807,7 +822,19 @@ public class PlayerController : MonoBehaviour
         if (!castReleased && castTimer <= castTotal * 0.45f)
         {
             castReleased = true;
-            Release();
+
+            // Phep den tu mang thi tinh trung theo cai nguoi ban NHIN THAY:
+            // lui moi nguoi ve dung khoanh khac ho bam, tinh xong tra lai ngay
+            // trong khung hinh nay. Phep cua chinh may nay thi buTreCuaPhepNay
+            // la 0 va ca doan duoi khong lam gi ca.
+            if (buTreCuaPhepNay > 0f)
+            {
+                BuTre.TuaTruocGiay = buTreCuaPhepNay;
+                BuTre.Mo(buTreCuaPhepNay, health);
+                try { Release(); }
+                finally { BuTre.Dong(); BuTre.TuaTruocGiay = 0f; }
+            }
+            else Release();
         }
     }
 

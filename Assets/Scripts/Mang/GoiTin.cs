@@ -43,6 +43,51 @@ public static class GoiTin
     /// </summary>
     public const byte LoaiKyNang = 3;
 
+    /// <summary>
+    /// GOI QUAI: chu phong ke lai ca dan quai cho may khach.
+    ///
+    /// Chi CHU PHONG gui. May khach khong rai quai, khong chay AI - no chi ve
+    /// lai nhung gi nghe duoc. Neu de moi may tu rai thi hai nguoi danh hai dan
+    /// quai khac han nhau, dung nhu da xay ra: ca hai man hinh cung ghi "quai
+    /// con lai 33" mot cach doc lap.
+    ///
+    /// Mot con 13 byte. Ba muoi ba con la 431 byte, gui
+    /// <see cref="DongBoTran.NhipGuiQuai"/> lan moi giay - quai khong can muot
+    /// nhu nguoi choi nen nhip thua hon nhieu, va giua hai moc thi noi suy.
+    ///
+    /// Chia nhieu goi neu dan dong: mot goi qua to di qua duong truyen khong
+    /// tin cay thi mat ca goi, mat ca goi la ca dan quai dung hinh.
+    /// </summary>
+    public const byte LoaiQuai = 4;
+
+    /// <summary>
+    /// GOI NHIP: do xem mot vong di-ve mat bao lau.
+    ///
+    /// Phai DO chu khong doan, vi con so nay quyet dinh bu tre nhieu hay it:
+    /// bu thieu thi nguoi chay ngang van ne duoc don, bu thua thi nguoi da nap
+    /// sau goc tuong roi van an don.
+    ///
+    /// Sau byte: loai, hoi-hay-dap, va mot moc thoi gian 4 byte. Ben nhan chi
+    /// viec doi byte thu hai roi nem tra lai NGUYEN VEN cai moc ay - nen ben
+    /// hoi khong can nho minh da hoi luc nao, va dong ho hai may lech bao nhieu
+    /// cung khong anh huong: ca hai dau tru deu la gio cua CUNG MOT may.
+    /// </summary>
+    public const byte LoaiNhip = 5;
+
+    /// <summary>Bao nhieu con nhieu nhat trong mot goi.</summary>
+    public const int SoQuaiMoiGoi = 16;
+
+    /// <summary>Mot con quai trong goi tin.</summary>
+    public struct MotQuai
+    {
+        public ushort id;
+        public byte loai;       // MonsterType
+        public Vector3 viTri;
+        public float gocY;
+        public float mau01;
+        public bool daChet;
+    }
+
     /// <summary>Mot lan tung phep.</summary>
     public struct MotPhep
     {
@@ -50,6 +95,13 @@ public static class GoiTin
         public byte kyNang;     // 0..6
         public int soThuTu;     // de ben nhan bo qua ban sao lap lai
         public Vector3 diemNgam;
+
+        /// <summary>
+        /// Luc bam phep, nguoi tung dang nhin thay doi phuong TRE bao nhieu
+        /// mili giay. Ben nhan lui doi phuong ve dung khoanh khac ay roi moi
+        /// tinh trung - xem <see cref="BuTre"/>.
+        /// </summary>
+        public ushort doTreMs;
     }
 
     /// <summary>Mot nguoi choi trong goi tin.</summary>
@@ -177,10 +229,10 @@ public static class GoiTin
     //  GOI KY NANG
     // ================================================================
 
-    /// <summary>Dong goi mot lan tung phep. 14 byte.</summary>
+    /// <summary>Dong goi mot lan tung phep. 16 byte.</summary>
     public static byte[] VietKyNang(MotPhep p)
     {
-        var b = new byte[14];
+        var b = new byte[16];
         int i = 0;
 
         b[i++] = LoaiKyNang;
@@ -197,6 +249,9 @@ public static class GoiTin
         b[i++] = (byte)(y & 0xFF); b[i++] = (byte)((y >> 8) & 0xFF);
         b[i++] = (byte)(z & 0xFF); b[i++] = (byte)((z >> 8) & 0xFF);
 
+        b[i++] = (byte)(p.doTreMs & 0xFF);
+        b[i++] = (byte)((p.doTreMs >> 8) & 0xFF);
+
         return b;
     }
 
@@ -205,7 +260,7 @@ public static class GoiTin
     public static bool DocKyNang(byte[] b, out MotPhep ra)
     {
         ra = new MotPhep();
-        if (b == null || b.Length < 14) return false;
+        if (b == null || b.Length < 16) return false;
         if (b[0] != LoaiKyNang) return false;
 
         int i = 1;
@@ -220,7 +275,113 @@ public static class GoiTin
         short z = (short)(b[i] | (b[i + 1] << 8)); i += 2;
         ra.diemNgam = new Vector3(MoToaDo(x), MoToaDo(y), MoToaDo(z));
 
+        ra.doTreMs = (ushort)(b[i] | (b[i + 1] << 8));
+
         return true;
+    }
+
+    // ================================================================
+    //  GOI NHIP (do vong di-ve)
+    // ================================================================
+
+    public static byte[] VietNhip(bool laHoi, int moc)
+    {
+        var b = new byte[6];
+        b[0] = LoaiNhip;
+        b[1] = (byte)(laHoi ? 0 : 1);
+        b[2] = (byte)(moc & 0xFF);
+        b[3] = (byte)((moc >> 8) & 0xFF);
+        b[4] = (byte)((moc >> 16) & 0xFF);
+        b[5] = (byte)((moc >> 24) & 0xFF);
+        return b;
+    }
+
+    public static bool DocNhip(byte[] b, out bool laHoi, out int moc)
+    {
+        laHoi = false; moc = 0;
+        if (b == null || b.Length < 6 || b[0] != LoaiNhip) return false;
+        laHoi = b[1] == 0;
+        moc = b[2] | (b[3] << 8) | (b[4] << 16) | (b[5] << 24);
+        return true;
+    }
+
+    // ================================================================
+    //  GOI QUAI
+    // ================================================================
+
+    /// <summary>Dong goi mot phan dan quai. 6 + 13 byte moi con.</summary>
+    public static byte[] VietQuai(int mocThoiGian, MotQuai[] ds, int tu, int soCon)
+    {
+        var b = new byte[6 + soCon * 13];
+        int i = 0;
+
+        b[i++] = LoaiQuai;
+
+        b[i++] = (byte)(mocThoiGian & 0xFF);
+        b[i++] = (byte)((mocThoiGian >> 8) & 0xFF);
+        b[i++] = (byte)((mocThoiGian >> 16) & 0xFF);
+        b[i++] = (byte)((mocThoiGian >> 24) & 0xFF);
+
+        b[i++] = (byte)soCon;
+
+        for (int n = 0; n < soCon; n++)
+        {
+            var q = ds[tu + n];
+
+            b[i++] = (byte)(q.id & 0xFF);
+            b[i++] = (byte)((q.id >> 8) & 0xFF);
+            b[i++] = q.loai;
+
+            short x = NenToaDo(q.viTri.x), y = NenToaDo(q.viTri.y), z = NenToaDo(q.viTri.z);
+            b[i++] = (byte)(x & 0xFF); b[i++] = (byte)((x >> 8) & 0xFF);
+            b[i++] = (byte)(y & 0xFF); b[i++] = (byte)((y >> 8) & 0xFF);
+            b[i++] = (byte)(z & 0xFF); b[i++] = (byte)((z >> 8) & 0xFF);
+
+            ushort g = (ushort)Mathf.RoundToInt(Mathf.Repeat(q.gocY, 360f) / 360f * 65535f);
+            b[i++] = (byte)(g & 0xFF); b[i++] = (byte)((g >> 8) & 0xFF);
+
+            b[i++] = (byte)Mathf.RoundToInt(Mathf.Clamp01(q.mau01) * 255f);
+            b[i++] = (byte)(q.daChet ? 1 : 0);
+        }
+        return b;
+    }
+
+    /// <summary>Mo mot goi quai. Tra ve so con doc duoc, hoac -1 neu goi hong.</summary>
+    public static int DocQuai(byte[] b, MotQuai[] ra, out int mocThoiGian)
+    {
+        mocThoiGian = 0;
+        if (b == null || b.Length < 6) return -1;
+        if (b[0] != LoaiQuai) return -1;
+
+        int i = 1;
+        mocThoiGian = b[i] | (b[i + 1] << 8) | (b[i + 2] << 16) | (b[i + 3] << 24);
+        i += 4;
+
+        int soCon = b[i++];
+        if (soCon > ra.Length) return -1;
+        if (b.Length < 6 + soCon * 13) return -1;
+
+        for (int n = 0; n < soCon; n++)
+        {
+            var q = new MotQuai();
+
+            q.id = (ushort)(b[i] | (b[i + 1] << 8)); i += 2;
+            q.loai = b[i++];
+
+            short x = (short)(b[i] | (b[i + 1] << 8)); i += 2;
+            short y = (short)(b[i] | (b[i + 1] << 8)); i += 2;
+            short z = (short)(b[i] | (b[i + 1] << 8)); i += 2;
+            q.viTri = new Vector3(MoToaDo(x), MoToaDo(y), MoToaDo(z));
+
+            ushort g = (ushort)(b[i] | (b[i + 1] << 8)); i += 2;
+            q.gocY = g / 65535f * 360f;
+
+            q.mau01 = b[i++] / 255f;
+            q.daChet = b[i++] != 0;
+
+            ra[n] = q;
+        }
+        return soCon;
     }
 
     /// <summary>Byte dau cua goi cho biet no la loai gi. 0 neu goi rong.</summary>

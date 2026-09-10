@@ -175,6 +175,31 @@ public class GameDirector : MonoBehaviour
         return n;
     }
 
+    /// <summary>
+    /// MAY NAY CO DUOC TU RAI QUAI KHONG.
+    ///
+    /// Choi mot minh: co. Choi mang: CHI CHU PHONG. May khach khong rai, khong
+    /// chay AI, chi ve lai dan quai nghe duoc tu chu phong - xem
+    /// <see cref="DongBoQuai"/>.
+    ///
+    /// De moi may tu rai thi hai nguoi danh hai dan quai khac han nhau ma van
+    /// tuong dang choi chung: ca hai man hinh cung ghi "quai con lai 33" mot
+    /// cach doc lap.
+    /// </summary>
+    public static bool LaTrongTaiCuaQuai
+    {
+        get { return !TranHienTai.DangChoiMang || TranHienTai.LaHost; }
+    }
+
+    /// <summary>So hieu cap cho con quai ke tiep. Chi chu phong dung den.</summary>
+    ushort soHieuKeTiep = 1;
+
+    /// <summary>Goc cua moi con quai trong canh - de bo dong bo di qua.</summary>
+    public Transform GocQuai { get { return enemyRoot; } }
+
+    /// <summary>Dat goc quai tu ben ngoai (may khach: bo dong bo tu dung).</summary>
+    public void DatGocQuai(Transform t) { if (enemyRoot == null) enemyRoot = t; }
+
     void Start()
     {
         enemyRoot = new GameObject("Enemies").transform;
@@ -195,11 +220,15 @@ public class GameDirector : MonoBehaviour
             ThemNguoiChoi(player);
         }
 
-        // Rai quai khap ban do TRUOC khi dot dau bat dau. Bon nay dung san o
-        // cho cua chung, khong lien quan gi den nhip dot.
-        RaiQuaiKhapBanDo();
-        RaiDongRieng(MonsterType.QuyDu, soQuyDuBanDau, quyDu, 0.5f, "Quy du");
-        RaiDongRieng(MonsterType.QuyCay, soQuyCayBanDau, quyCay, 0.25f, "Quy cay");
+        // May khach khong rai con nao ca - ca dan den tu chu phong.
+        if (LaTrongTaiCuaQuai)
+        {
+            // Rai quai khap ban do TRUOC khi dot dau bat dau. Bon nay dung san o
+            // cho cua chung, khong lien quan gi den nhip dot.
+            RaiQuaiKhapBanDo();
+            RaiDongRieng(MonsterType.QuyDu, soQuyDuBanDau, quyDu, 0.5f, "Quy du");
+            RaiDongRieng(MonsterType.QuyCay, soQuyCayBanDau, quyCay, 0.25f, "Quy cay");
+        }
 
         waveTimer = 2.5f;
         waiting = true;
@@ -362,6 +391,7 @@ public class GameDirector : MonoBehaviour
                 continue;
 
             var go = EnemyFactory.Spawn(loai, pos, enemyRoot, player);
+            DanhSo(go, loai);
             var d = go.GetComponent<Damageable>();
             if (d != null)
             {
@@ -387,26 +417,31 @@ public class GameDirector : MonoBehaviour
         quyDu.RemoveAll(d => d == null || d.IsDead);
         quyCay.RemoveAll(d => d == null || d.IsDead);
 
-        // Hai dong quai rieng tu sinh them theo DONG HO RIENG cua chung,
-        // khong doi dot cu chet het
-        DemGioDongRieng(ref quyDuTimer, chuKyThemQuyDu, soQuyDuMoiDot, quyDuToiDa,
-                        MonsterType.QuyDu, quyDu, "Quy du");
-        DemGioDongRieng(ref quyCayTimer, chuKyThemQuyCay, soQuyCayMoiDot, quyCayToiDa,
-                        MonsterType.QuyCay, quyCay, "Quy cay");
+        // Nhip sinh quai chi chay o may lam trong tai. May khach ma cung dem
+        // gio thi no se tu de ra mot dot quai rieng khong ai khac nhin thay.
+        if (LaTrongTaiCuaQuai)
+        {
+            // Hai dong quai rieng tu sinh them theo DONG HO RIENG cua chung,
+            // khong doi dot cu chet het
+            DemGioDongRieng(ref quyDuTimer, chuKyThemQuyDu, soQuyDuMoiDot, quyDuToiDa,
+                            MonsterType.QuyDu, quyDu, "Quy du");
+            DemGioDongRieng(ref quyCayTimer, chuKyThemQuyCay, soQuyCayMoiDot, quyCayToiDa,
+                            MonsterType.QuyCay, quyCay, "Quy cay");
 
-        if (waiting)
-        {
-            waveTimer -= Time.deltaTime;
-            if (waveTimer <= 0f)
+            if (waiting)
             {
-                waiting = false;
-                SpawnWave();
+                waveTimer -= Time.deltaTime;
+                if (waveTimer <= 0f)
+                {
+                    waiting = false;
+                    SpawnWave();
+                }
             }
-        }
-        else if (alive.Count == 0)
-        {
-            waiting = true;
-            waveTimer = waveDelay;
+            else if (alive.Count == 0)
+            {
+                waiting = true;
+                waveTimer = waveDelay;
+            }
         }
 
         if (Input.GetKeyDown(KeyCode.R)) SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
@@ -488,6 +523,7 @@ public class GameDirector : MonoBehaviour
                 continue;
 
             var go = EnemyFactory.Spawn(type, pos, enemyRoot, player);
+            DanhSo(go, type);
             var d = go.GetComponent<Damageable>();
             if (d != null)
             {
@@ -496,6 +532,22 @@ public class GameDirector : MonoBehaviour
             }
             return;
         }
+    }
+
+    /// <summary>
+    /// Gan so hieu cho mot con quai vua sinh, de may kia goi dung ten no.
+    ///
+    /// Goi o MOI cho sinh quai, ke ca RaiQuaiKhapBanDo - bo sot mot cho thi
+    /// nhung con sinh ra o do se khong bao gio hien len may khach, va khong ai
+    /// bao gi ca.
+    /// </summary>
+    public void DanhSo(GameObject go, MonsterType loai)
+    {
+        if (go == null) return;
+        var n = go.GetComponent<NhanDangQuai>();
+        if (n == null) n = go.AddComponent<NhanDangQuai>();
+        n.id = soHieuKeTiep++;
+        n.loai = loai;
     }
 
     void OnEnemyDeath(Damageable d)
