@@ -181,6 +181,11 @@ public class KhoiDongTranMang : MonoBehaviour
         dongBo = gameObject.AddComponent<DongBoTran>();
         dongBo.toi = toi;
 
+        // Phai goi TAY sau khi gan "toi": OnEnable cua DongBoTran da chay xong
+        // tu luc AddComponent, luc ay "toi" con la null nen no khong nghe duoc
+        // ai ca - va ky nang se khong bao gio duoc gui sang may kia.
+        dongBo.GanTaiNghe();
+
         // Chu phong la 0, nguoi vao la 1. Hai nguoi thi the la du - bon nguoi
         // moi can danh so theo thu tu trong phong.
         dongBo.chiSoCuaToi = (byte)(TranHienTai.LaHost ? 0 : 1);

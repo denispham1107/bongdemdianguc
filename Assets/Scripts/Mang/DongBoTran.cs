@@ -37,15 +37,43 @@ public class DongBoTran : MonoBehaviour
     /// <summary>Chi so cua minh trong phong (0..3).</summary>
     public byte chiSoCuaToi;
 
+    /// <summary>
+    /// Goi ky nang duoc gui LAP LAI may lan, cach nhau bao lau.
+    ///
+    /// Duong truyen la UDP: mat goi la chuyen binh thuong. Voi trang thai thi
+    /// khong sao - 17 ms sau da co goi moi. Nhung tung phep chi xay ra DUNG
+    /// MOT LAN: mat la nguoi kia khong bao gio thay chieu do, hoac te hon, ho
+    /// thay minh mat mau ma khong hieu vi sao. Nen gui ba lan, va ben nhan bo
+    /// ban sao theo so thu tu.
+    ///
+    /// Ba lan x 14 byte = 42 byte cho mot lan tung phep. Khong dang ke.
+    /// </summary>
+    public const int SoLanGuiLaiPhep = 3;
+    public const float CachNhauGuiLai = 0.05f;
+
     class MotNguoiKhac
     {
         public PlayerController nhanVat;
         public NoiSuy noiSuy = new NoiSuy();
+
+        /// <summary>So thu tu phep gan nhat da thi hanh - de bo ban sao.</summary>
+        public int phepDaLam = -1;
+    }
+
+    /// <summary>Mot goi phep dang cho gui lai.</summary>
+    struct PhepChoGui
+    {
+        public byte[] goi;
+        public int conLai;
+        public float guiLanSau;
     }
 
     readonly Dictionary<byte, MotNguoiKhac> nguoiKhac = new Dictionary<byte, MotNguoiKhac>();
     readonly GoiTin.MotNguoi[] demGui = new GoiTin.MotNguoi[1];
     readonly GoiTin.MotNguoi[] demNhan = new GoiTin.MotNguoi[8];
+    readonly List<PhepChoGui> phepChoGui = new List<PhepChoGui>();
+
+    int soPhepDaTung;
 
     float guiLanSau;
     float batDauLuc;
@@ -55,10 +83,73 @@ public class DongBoTran : MonoBehaviour
     public int SoGoiDaNhan { get; private set; }
     public int SoGoiHong { get; private set; }
     public int SoByteDaGui { get; private set; }
+    public int SoPhepDaGui { get; private set; }
+    public int SoPhepDaNhan { get; private set; }
+    public int SoPhepBoVITrung { get; private set; }
 
     void Awake()
     {
         batDauLuc = Time.unscaledTime;
+    }
+
+    void OnEnable()  { GanTaiNghe(); }
+    void OnDisable() { if (toi != null) toi.DaTungPhep -= KhiToiTungPhep; }
+
+    /// <summary>Nghe nhan vat cua may nay tung phep. Goi lai duoc nhieu lan -
+    /// <c>toi</c> thuong duoc gan SAU khi component nay ra doi.</summary>
+    public void GanTaiNghe()
+    {
+        if (toi == null) return;
+        toi.DaTungPhep -= KhiToiTungPhep;
+        toi.DaTungPhep += KhiToiTungPhep;
+    }
+
+    void KhiToiTungPhep(int kyNang, Vector3 diemNgam)
+    {
+        if (!KenhTrucTiep.DaMo) return;
+
+        var goi = GoiTin.VietKyNang(new GoiTin.MotPhep
+        {
+            chiSo = chiSoCuaToi,
+            kyNang = (byte)kyNang,
+            soThuTu = ++soPhepDaTung,
+            diemNgam = diemNgam
+        });
+
+        // Gui ngay mot lan, roi xep hang gui lai
+        GuiMotGoi(goi);
+        SoPhepDaGui++;
+        phepChoGui.Add(new PhepChoGui
+        {
+            goi = goi,
+            conLai = SoLanGuiLaiPhep - 1,
+            guiLanSau = Time.unscaledTime + CachNhauGuiLai
+        });
+    }
+
+    void GuiMotGoi(byte[] b)
+    {
+        if (KenhTrucTiep.Gui(GoiTin.SangChuoi(b)))
+        {
+            SoGoiDaGui++;
+            SoByteDaGui += b.Length;
+        }
+    }
+
+    void GuiLaiPhepDangCho()
+    {
+        for (int i = phepChoGui.Count - 1; i >= 0; i--)
+        {
+            var p = phepChoGui[i];
+            if (Time.unscaledTime < p.guiLanSau) continue;
+
+            GuiMotGoi(p.goi);
+            p.conLai--;
+            if (p.conLai <= 0) { phepChoGui.RemoveAt(i); continue; }
+
+            p.guiLanSau = Time.unscaledTime + CachNhauGuiLai;
+            phepChoGui[i] = p;
+        }
     }
 
     /// <summary>Gio tran dau, mili giay ke tu luc vao. Dung lam moc thoi gian
@@ -89,6 +180,7 @@ public class DongBoTran : MonoBehaviour
 
         NhanHet();
         VeNguoiKhac(dt);
+        GuiLaiPhepDangCho();
 
         if (Time.unscaledTime >= guiLanSau)
         {
@@ -113,12 +205,7 @@ public class DongBoTran : MonoBehaviour
             daChet = mau != null && mau.IsDead
         };
 
-        byte[] b = GoiTin.VietTrangThai(GioTran(), demGui, 1);
-        if (KenhTrucTiep.Gui(GoiTin.SangChuoi(b)))
-        {
-            SoGoiDaGui++;
-            SoByteDaGui += b.Length;
-        }
+        GuiMotGoi(GoiTin.VietTrangThai(GioTran(), demGui, 1));
     }
 
     /// <summary>Vet sach hang cho - mot khung hinh co the co vai goi den cung luc.</summary>
@@ -129,6 +216,14 @@ public class DongBoTran : MonoBehaviour
         {
             byte[] b = GoiTin.TuChuoi(s);
             if (b == null) { SoGoiHong++; continue; }
+
+            // Doc byte dau de biet goi loai gi. Truoc day o day chi co mot loai
+            // nen doc thang - them loai thu hai ma quen phan loai thi goi ky
+            // nang se bi dem la "goi hong".
+            byte loai = GoiTin.LoaiCuaGoi(b);
+
+            if (loai == GoiTin.LoaiKyNang) { NhanMotPhep(b); continue; }
+            if (loai != GoiTin.LoaiTrangThai) { SoGoiHong++; continue; }
 
             int moc;
             int soNguoi = GoiTin.DocTrangThai(b, demNhan, out moc);
@@ -145,8 +240,66 @@ public class DongBoTran : MonoBehaviour
                 if (!nguoiKhac.TryGetValue(p.chiSo, out n)) continue;
 
                 n.noiSuy.Nhan(moc, p.viTri, p.gocY, p.dangChay);
+                ApMau(n, p.mau01, p.daChet);
             }
         }
+    }
+
+    /// <summary>
+    /// NGUOI KIA VUA TUNG MOT PHEP - cho ban sao cua ho tung dung phep ay.
+    ///
+    /// Phep chay tren may nay nhu moi phep khac: co hieu ung, co sat thuong,
+    /// va co the trung nhan vat CUA MINH. Ban sao tu bo qua chinh no
+    /// (boQua trong PlayerController.Release), nen nguoi tung khong tu thieu.
+    /// </summary>
+    void NhanMotPhep(byte[] b)
+    {
+        GoiTin.MotPhep p;
+        if (!GoiTin.DocKyNang(b, out p)) { SoGoiHong++; return; }
+
+        SoGoiDaNhan++;
+        if (p.chiSo == chiSoCuaToi) return;
+
+        MotNguoiKhac n;
+        if (!nguoiKhac.TryGetValue(p.chiSo, out n) || n.nhanVat == null) return;
+
+        // Goi ky nang duoc gui ba lan cho chac - hai lan sau la ban sao, bo di.
+        // Khong bo thi mot cu bam ra ba dam lua va ba lan sat thuong.
+        if (p.soThuTu <= n.phepDaLam) { SoPhepBoVITrung++; return; }
+        n.phepDaLam = p.soThuTu;
+
+        SoPhepDaNhan++;
+        n.nhanVat.TungPhepTheoMang(p.kyNang, p.diemNgam);
+    }
+
+    /// <summary>
+    /// MAU CUA NGUOI KHAC LAY THANG TU MAY HO, KHONG TU TINH.
+    ///
+    /// Quy uoc: MOI MAY LA TRONG TAI CUA CHINH NHAN VAT MINH. Phep cua nguoi
+    /// kia bay sang day, trung nhan vat cua toi, thi MAY TOI tru mau roi bao
+    /// sang - va may kia chi viec hien thi con so ay. Nguoc lai cung vay.
+    ///
+    /// Vi sao khong cho moi may tu tinh ca hai ben: CombatUtil.AreaFreeze va
+    /// AreaShock dung Random.value, moi may gieo rieng - nguoi nay thay dich
+    /// dong bang, nguoi kia thay khong. Va sat thuong tinh tren vi tri, ma vi
+    /// tri cua nguoi kia o day luon tre hon ben do vai chuc mili giay.
+    ///
+    /// Dat thang health chu khong goi TakeDamage: TakeDamage con ban ra hieu
+    /// ung trung don va tinh lai chet/song - lam hai lan thi giat ca hai dau.
+    /// </summary>
+    void ApMau(MotNguoiKhac n, float mau01, bool daChet)
+    {
+        if (n.nhanVat == null) return;
+
+        var mau = n.nhanVat.GetComponent<Damageable>();
+        if (mau == null || mau.maxHealth <= 0f) return;
+
+        mau.health = Mathf.Clamp(mau01 * mau.maxHealth, 0f, mau.maxHealth);
+
+        // Chet thi phai chet han - khong the de mot xac van chay quanh. Nguoc
+        // lai thi KHONG hoi sinh: song lai la viec cua man choi, khong phai
+        // cua mot goi tin den muon.
+        if (daChet && !mau.IsDead) mau.Die();
     }
 
     void VeNguoiKhac(float dt)

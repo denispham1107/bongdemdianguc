@@ -5766,6 +5766,127 @@ RTCPeerConnection    CÓ
 
 Đủ cả. Meta hai dòng là chuyện bình thường của Unity 6 với `.jslib`.
 
+### Thấy nhau chạy, nhưng đánh nhau thì không
+
+Anh thử lại: **hai người đã thấy nhau, thấy nhau chạy, thấy nhau bị quái giết**. Nhưng một bên
+tung phép thì bên kia không thấy gì, không mất máu, không dính hiệu ứng nào — bật khiên lên người
+kia cũng không thấy cái khiên.
+
+Đây đúng là phần tôi đã ghi là *"còn thiếu trong bước 5"*, và lý do rất đơn giản: **gói tin không
+chở kỹ năng**. Nó chỉ có vị trí, góc, máu, đang chạy, đã chết. Không có lấy một bit nào nói rằng
+"tôi vừa tung phép". Còn máu thì có gửi, nhưng bên nhận chưa bao giờ đọc đến.
+
+Gỡ ra được **bốn lỗi chồng lên nhau** — và ba trong số đó chỉ lộ ra sau khi sửa lỗi trước.
+
+#### Lỗi 1: không có gói kỹ năng
+
+Thêm loại gói thứ ba, 14 byte: ai tung, phép nào, số thứ tự, ngắm vào đâu.
+
+Vì sao phải là gói **riêng** chứ không nhét vào gói trạng thái: trạng thái gửi 60 lần mỗi giây và
+**được phép mất** — mất một gói thì 17 ms sau đã có gói mới. Tung phép thì khác: nó xảy ra đúng
+một lần, mất là mất hẳn, người kia sẽ thấy đám lửa nổ mà không hiểu từ đâu. Nên gói kỹ năng được
+gửi **lặp ba lần**, và bên nhận bỏ bản sao theo số thứ tự.
+
+#### Lỗi 2: bản sao người khác đứng niệm chú vĩnh viễn
+
+Sửa xong lỗi 1, gói đã sang tới nơi, nhưng vẫn không có gì xảy ra. Bản sao nhận lệnh, vào thế niệm
+chú — rồi đứng im mãi mãi.
+
+```csharp
+if (tuDocInput && boDoc != null) input = boDoc.Doc(dt);
+ThiHanhMotKhung(input);        // input.dt van la 0
+```
+
+Bản sao của người khác không đọc bàn phím (`tuDocInput = false`), nên nó giữ nguyên gói ý muốn cũ
+— mà gói ấy có `dt = 0`. Cả `ThiHanhMotKhung` chạy với `dt = 0`: đồng hồ niệm chú không giảm, hồi
+chiêu không chạy, **phép không bao giờ bay ra**. Thêm một dòng `else input.dt = dt;` là xong.
+
+#### Lỗi 3: quả cầu lửa bay xuyên qua người
+
+Giờ ba quả cầu thật sự bay ra — đếm được trên cảnh — mà đối phương vẫn mất **đúng 0 máu**.
+
+Chia đôi bài toán bằng hai phép đo:
+
+```
+3b. nổ thẳng một cú ngay trên đầu mình với mask của người kia -> mình mất 37 máu
+3c. người kia tung THIÊN THẠCH vào chỗ mình              -> mình mất 83 máu
+```
+
+Sát thương ăn được, và đường mạng thông hoàn toàn — thiên thạch từ máy kia gây 83 máu. Vậy lỗi
+nằm riêng ở **đường bay của quả cầu**:
+
+```csharp
+Physics.SphereCast(from, bodyRadius, dir, out hit, step + 0.05f, hitMask, …)
+```
+
+`hitMask` là `obstacleMask` — gồm `Enemy`, `Ground`, `Default`. **Không có `Player`.** Nên quả cầu
+bay xuyên thẳng qua người rồi nổ ở đâu đó phía sau. Đo được: quả gần nhất chỉ cách người 1,67 m.
+
+Cách sửa đầu tiên của tôi — nhét `Player` vào `obstacleMask` — **hỏng**: quả cầu sinh ra ngay bên
+trong collider của chính người tung, nên nó nổ trên đầu họ. Cách đúng là để quả cầu tự hỏi một câu
+khác: *trong tầm ăn đòn có ai không phải người tung không?* Câu hỏi ấy đúng cho cả quái lẫn người.
+
+#### Lỗi 4: quả cầu nhảy qua người khi khung hình tụt
+
+Sửa xong lỗi 3, chạy lần một: **46 máu**. Chạy lần hai: **0 máu**.
+
+Con số nhảy như thế không phải ngẫu nhiên của chùm ba quả — đó là dấu hiệu của **tunneling**. Quả
+cầu đi `speed × dt` mỗi khung; khung hình tụt một cái là nó nhảy qua người mà không chạm vào đâu,
+vì tôi đang hỏi tại **một điểm** chứ không quét **cả đoạn đường**. Đổi `OverlapSphere` thành
+`SphereCastAll` trên đoạn vừa bay.
+
+Ba lần chạy liên tiếp sau khi sửa: **48, 48, 48 máu**.
+
+#### Trọng tài phán xử máu: mỗi máy tự xử chính mình
+
+Quy ước đã chọn: **mỗi máy là trọng tài của chính nhân vật mình**. Phép của người kia bay sang đây,
+trúng nhân vật của tôi, thì **máy tôi** trừ máu rồi báo sang — máy kia chỉ hiển thị con số ấy.
+Ngược lại cũng vậy.
+
+Vì sao không cho mỗi máy tự tính cả hai bên: `CombatUtil.AreaFreeze` và `AreaShock` dùng
+`Random.value`, mỗi máy gieo riêng — người này thấy địch đóng băng, người kia thấy không. Và sát
+thương tính theo vị trí, mà vị trí của người kia ở đây luôn trễ hơn bên đó vài chục mili giây.
+
+Máu nhận được đặt thẳng vào `health`, không gọi `TakeDamage`: `TakeDamage` còn bắn ra hiệu ứng
+trúng đòn và tự tính lại sống chết — làm hai lần thì giật cả hai đầu.
+
+#### Đo (menu 37), tám chiều
+
+```
+1. lớp của nhân vật mình: Player
+2. gói kỹ năng 14 byte, đọc lại khớp, lệch điểm ngắm = 0,0000 m
+3. người kia tung cầu lửa vào chỗ mình -> mình mất 48 máu (400 -> 352)
+4. người tung phép mất 0 máu
+5. gửi lại đúng gói ấy hai lần nữa -> mất thêm 0 máu, số gói bỏ vì trùng = 2
+6. máy kia báo còn 50% máu -> bản sao bên này: 50%
+7. mình tung sấm sét -> số gói kỹ năng gửi đi: 3
+8. người kia bật khiên -> số khiên trên cảnh: 0 -> 1
+số lỗi ghi nhận = 0
+```
+
+Phép thử đi **đúng đường thật**: nó nhét gói vào hàng nhận của kênh (`GiaLapNhan`) rồi để chính
+`DongBoTran` đọc ra, chứ không gọi tắt vào hàm bên trong — gọi tắt thì không kiểm được phần phân
+loại gói, chỗ dễ hỏng nhất khi thêm một loại gói thứ hai.
+
+Chiều 7 không thừa: chiều 3 chỉ chứng minh **nhận** được. Nhận được mà không **gửi** được thì
+người kia vẫn không thấy gì.
+
+#### Và một lần phép đo tự nói dối
+
+Lần chạy đầu tiên báo hai lỗi: "gửi lại gói cũ mà vẫn mất thêm 81 máu" và "máu áp vào ra 42% thay
+vì 50%". Cả hai đều là **lỗi giả**: Act2 có 25–33 con quái, và chúng vẫn cắn người chơi trong lúc
+phép thử đang chờ. Máu tụt vì bị quái cắn thì không nói lên điều gì về mạng cả.
+
+Dọn sạch quái trước khi đo, và chờ hết hiệu ứng cháy trước khi chốt mốc — hai "lỗi" ấy biến mất,
+để lộ ra lỗi thật ở mục 3 mà chúng đang che.
+
+#### Còn thiếu
+
+- **Quái chưa đồng bộ.** Mỗi máy tự rải quái của mình, nên hai người đang đánh hai đàn quái khác
+  nhau. Việc này nằm ngoài phần "đánh nhau" và chưa làm.
+- **Bù trễ khi tính trúng.** Ở 28 ms, người chạy ngang vẫn né được đòn mà trên màn hình người bắn
+  thấy trúng rõ ràng.
+
 ### Việc còn phải làm
 
 **169 MB là quá nặng**, nhất là trên điện thoại — nền tảng chính của game. Gần như toàn bộ nằm ở
@@ -5823,6 +5944,7 @@ cho riêng nền tảng WebGL sẽ ăn cả hai đầu: file nhỏ hơn và khô
 | **34. Chay thu PVP** | Bước 5: bốn chiều — chơi đơn không tự thiêu, chơi đối kháng đánh được nhau, đánh người khác họ mất máu, đánh chính mình thì không. |
 | **35. Chay thu GHEP PHONG (cung man)** | Kiểm rằng hai người bấm "Vào phòng nhanh" cùng lúc thì vẫn về chung một phòng và chung một màn. Không nối mạng — đo tính chất của `PhongMang.PhongDuocGiu` (đối xứng, luôn là một trong hai, phòng tạo trước thắng) trên 2 515 cặp. Kết quả ra `PlayTestShots/ghepphong.txt`. |
 | **36. Chay thu TU GAN bo noi mang** | Đi đúng đường người chơi đi: vào Play ở MainMenu, bật `DangChoiMang`, nạp màn chơi, rồi **đếm** xem bộ nối mạng có được dựng dậy không — trên **cả hai màn**. Kết quả ra `PlayTestShots/tugan.txt`. |
+| **37. Chay thu KY NANG qua mang** | Tám chiều: gói kỹ năng khứ hồi, người kia tung phép thì mình mất máu, người tung không tự thiêu, gửi lại gói cũ không nổ lần hai, máu nhận từ mạng được áp đúng, mình tung thì có gói đi ra, và khiên của người kia hiện ra bên này. Dọn sạch quái trước khi đo. Kết quả ra `PlayTestShots/kynang_mang.txt`. |
 
 > ⚠️ Mục **1** sẽ **xóa và tạo lại** các thư mục Textures / Materials / Models / Prefabs.
 > Nếu bạn tự sửa tay trong đó thì hãy sao lưu trước.

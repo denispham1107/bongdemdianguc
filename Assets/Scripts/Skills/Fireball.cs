@@ -104,6 +104,37 @@ public class Fireball : MonoBehaviour
             return;
         }
 
+        // CHAM AI THI NO NGAY - khong doi cham "vat can".
+        //
+        // Loi da vap trong tran doi khang: nguoi choi nam o lop Player, ma lop
+        // ay khong co trong hitMask (hitMask chi co Enemy/Ground/Default), nen
+        // qua cau BAY XUYEN THANG QUA NGUOI roi no o dau do phia sau. Do duoc:
+        // ba qua bay ra, qua gan nhat chi cach nguoi 1,67 m, doi phuong mat
+        // dung 0 mau.
+        //
+        // Khong sua bang cach nhet lop Player vao hitMask: qua cau sinh ra
+        // ngay ben trong collider cua chinh nguoi tung, lam the thi no no tren
+        // dau ho. Nen o day tu hoi: trong tam an don co ai KHONG PHAI nguoi
+        // tung khong. Cau hoi nay dung cho ca quai lan nguoi.
+        // Va phai QUET CA DOAN DUONG chu khong hoi mot diem: qua cau di
+        // speed*dt moi khung, khung hinh tut xuong mot cai la no NHAY QUA nguoi
+        // ma khong cham vao dau. Do duoc: cung phep thu ay, lan thi 46 mau lan
+        // thi 0 - do dung la dau hieu cua viec nhay qua, khong phai do ngau
+        // nhien cua chum ba qua.
+        var cham = Physics.SphereCastAll(from, bodyRadius + 0.35f, dir, step + 0.05f,
+                                         damageMask, QueryTriggerInteraction.Collide);
+        for (int i = 0; i < cham.Length; i++)
+        {
+            var d = cham[i].collider.GetComponentInParent<Damageable>();
+            if (d == null || d == boQua || d.IsDead) continue;
+
+            // No o cho vua cham chu khong o cho da bay toi
+            transform.position = cham[i].point != Vector3.zero
+                               ? cham[i].point : from + dir * step;
+            Explode();
+            return;
+        }
+
         transform.position = from + dir * step;
 
         if (age >= lifetime) Explode();

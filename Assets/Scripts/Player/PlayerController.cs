@@ -165,6 +165,15 @@ public class PlayerController : MonoBehaviour
     /// </summary>
     public bool DangCoDiemDen { get { return hasMoveTarget; } }
 
+    /// <summary>Dang niem chu hay khong - mo ra cho kich ban chay thu doc.</summary>
+    public bool DangNiemChu { get { return castTimer > 0f; } }
+
+    /// <summary>Phep cua nhan vat nay danh trung nhung lop nao - chi de doc.</summary>
+    public int MatNaKeThu { get { return enemyMask; } }
+
+    /// <summary>Qua cau lua dung lai khi cham nhung lop nao - chi de doc.</summary>
+    public int MatNaVatCan { get { return obstacleMask; } }
+
     float fireballTimer, iceTimer, boltTimer, tornadoTimer;
     float castTimer, castTotal, meteorTimer, khiengTimer, giatSetTimer;
     Khieng khiengHienTai;
@@ -190,6 +199,12 @@ public class PlayerController : MonoBehaviour
         if (health == null) health = GetComponent<Damageable>();
 
         groundMask = LayerMask.GetMask("Ground", "Default");
+
+        // KHONG them lop Player vao day, du qua cau tung bay xuyen qua nguoi.
+        // Da thu va hong: qua cau sinh ra NGAY BEN TRONG collider cua chinh
+        // nguoi tung, nen no no ngay tren dau ho. Cho no nhan biet nguoi choi
+        // bang cach khac - xem Fireball.Update, no tu do xem co ai trong tam
+        // an don khong.
         obstacleMask = LayerMask.GetMask("Enemy", "Ground", "Default");
 
         // BAT PvP CHI BANG MOT DONG.
@@ -219,6 +234,15 @@ public class PlayerController : MonoBehaviour
         // Doc y muon TRUOC khi xet song chet: nguoi da guc van bam phim, va
         // van phai duoc nhac mot cau.
         if (tuDocInput && boDoc != null) input = boDoc.Doc(dt);
+
+        // BAN SAO CUA NGUOI CHOI KHAC KHONG DOC PHIM, NHUNG DONG HO VAN PHAI CHAY.
+        //
+        // Loi da vap: ban sao giu nguyen goi y muon cu, ma goi ay co dt = 0.
+        // The la ThiHanhMotKhung chay voi dt = 0 - dong ho niem chu dung im,
+        // castTimer khong bao gio giam, va phep KHONG BAO GIO bay ra. Nhin tu
+        // may ben kia thi nguoi ta bam phep ma chang thay gi ca, dung hien
+        // tuong nguoi choi bao. Hoi chieu cung dong bang y het.
+        else input.dt = dt;
 
         ThiHanhMotKhung(input);
     }
@@ -696,8 +720,54 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// BAO RA MOI LAN NHAN VAT NAY THUC SU TUNG DUOC MOT PHEP.
+    ///
+    /// Dat o BeginCast chu khong o CastAt: CastAt con co the tu choi vi thieu
+    /// nang luong hoac dang hoi chieu, ma bao ra mot phep khong he bay ra thi
+    /// may ben kia se ve mot dam lua khong co that.
+    ///
+    /// <see cref="DongBoTran"/> nghe su kien nay de gui sang may kia. Khong
+    /// nghe thi khong sao - nhan vat van tung phep binh thuong, chi la mot
+    /// minh minh thay.
+    /// </summary>
+    public event System.Action<int, Vector3> DaTungPhep;
+
+    /// <summary>
+    /// TUNG PHEP THEO LENH TU MAY KIA - khong hoi nang luong, khong hoi chieu.
+    ///
+    /// May ben kia da kiem du ca hai roi; kiem lai o day thi mana va hoi chieu
+    /// cua ban sao nay (von khong ai tru bao gio) se tu choi phep, va nguoi
+    /// choi ben nay khong bao gio thay doi phuong tung chieu.
+    ///
+    /// Van di qua BeginCast nen tu the niem chu, hieu ung don phep va sat
+    /// thuong deu giong het ban that.
+    /// </summary>
+    public void TungPhepTheoMang(int skill, Vector3 aim)
+    {
+        if (skill < 0 || skill > 6) return;
+        BeginCast(skill, ThoiGianNiem(skill), aim);
+    }
+
+    /// <summary>Thoi gian niem chu cua tung phep - de cho ca duong mang dung chung.</summary>
+    float ThoiGianNiem(int skill)
+    {
+        switch (skill)
+        {
+            case 0: return fireballCastTime;
+            case 1: return iceCastTime;
+            case 2: return boltCastTime;
+            case 3: return tornadoCastTime;
+            case 4: return meteorCastTime;
+            case 5: return khiengCastTime;
+            default: return giatSetCastTime;
+        }
+    }
+
     void BeginCast(int skill, float castTime, Vector3 aim)
     {
+        if (DaTungPhep != null) DaTungPhep(skill, aim);
+
         castingSkill = skill;
         castTotal = castTime;
         castTimer = castTime;

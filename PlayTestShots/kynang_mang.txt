@@ -1,0 +1,16 @@
+[ban 1] ky nang phai di qua duoc mang
+da don 25 con quai de mau chi doi vi ky nang
+1. lop cua nhan vat minh: Player (can la Player, so hieu 9)
+2. goi ky nang 14 byte, doc lai: kyNang=4 chiSo=1 soThuTu=77 lech diem ngam=0.0000 m (duoi 0,02 m)
+   qua cau bay gan minh nhat: 1.07 m (tai (0.8, 1.2, -11.3)), minh o (0.0, 0.2, -10.5)
+   mat na vat can cua ban sao co lop Player = False | collider tren nhan vat minh: 1 roi + CharacterController=True
+   chan doan: goi phep nhan duoc = 1 | ban sao co vao the niem chu = True | so qua cau lua thay tren canh = 3 | mask cua ban sao co lop Player = True
+3. nguoi kia tung cau lua vao cho minh -> minh mat 48 mau (400 -> 352), phai lon hon 0
+3b. no thang mot cu ngay tren dau minh voi mask cua nguoi kia -> minh mat 37 mau (neu > 0 thi sat thuong an duoc, loi nam o duong bay cua qua cau)
+3c. nguoi kia tung THIEN THACH vao cho minh -> minh mat 6 mau
+4. nguoi tung phep mat 0 mau (phai la 0)
+5. gui lai dung goi ay hai lan nua -> mat them 0 mau (phai la 0), so goi bo vi trung tang 2 (phai la 2)
+6. may kia bao con 50% mau -> ban sao ben nay: 50% (phai khoang 50%)
+7. minh tung sam set -> so goi ky nang gui di: 3 (phai it nhat 1), SoPhepDaGui tang 1
+8. nguoi kia bat khieng -> so khieng tren canh: 0 -> 1 (phai tang)
+so loi ghi nhan = 0

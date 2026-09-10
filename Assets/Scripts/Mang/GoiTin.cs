@@ -31,6 +31,27 @@ public static class GoiTin
     public const byte LoaiTrangThai = 1;
     public const byte LoaiInput = 2;
 
+    /// <summary>
+    /// GOI KY NANG: "toi vua tung phep so may, nham vao cho nay".
+    ///
+    /// Vi sao phai co mot loai goi RIENG chu khong nhet vao goi trang thai:
+    /// trang thai gui 60 lan moi giay va MAT DUOC PHEP - mat mot goi thi goi
+    /// sau da bu ngay. Tung phep thi khac: no xay ra dung mot lan, mat la mat
+    /// han, nguoi kia se thay dam lua no ra ma khong hieu tu dau. Nen goi ky
+    /// nang duoc gui LAP LAI vai lan (xem DongBoTran) - re, vi no chi 14 byte
+    /// va mot tran chi co vai chuc lan tung phep.
+    /// </summary>
+    public const byte LoaiKyNang = 3;
+
+    /// <summary>Mot lan tung phep.</summary>
+    public struct MotPhep
+    {
+        public byte chiSo;      // ai tung
+        public byte kyNang;     // 0..6
+        public int soThuTu;     // de ben nhan bo qua ban sao lap lai
+        public Vector3 diemNgam;
+    }
+
     /// <summary>Mot nguoi choi trong goi tin.</summary>
     public struct MotNguoi
     {
@@ -150,6 +171,62 @@ public static class GoiTin
             ra[n] = p;
         }
         return soNguoi;
+    }
+
+    // ================================================================
+    //  GOI KY NANG
+    // ================================================================
+
+    /// <summary>Dong goi mot lan tung phep. 14 byte.</summary>
+    public static byte[] VietKyNang(MotPhep p)
+    {
+        var b = new byte[14];
+        int i = 0;
+
+        b[i++] = LoaiKyNang;
+        b[i++] = p.chiSo;
+        b[i++] = p.kyNang;
+
+        b[i++] = (byte)(p.soThuTu & 0xFF);
+        b[i++] = (byte)((p.soThuTu >> 8) & 0xFF);
+        b[i++] = (byte)((p.soThuTu >> 16) & 0xFF);
+        b[i++] = (byte)((p.soThuTu >> 24) & 0xFF);
+
+        short x = NenToaDo(p.diemNgam.x), y = NenToaDo(p.diemNgam.y), z = NenToaDo(p.diemNgam.z);
+        b[i++] = (byte)(x & 0xFF); b[i++] = (byte)((x >> 8) & 0xFF);
+        b[i++] = (byte)(y & 0xFF); b[i++] = (byte)((y >> 8) & 0xFF);
+        b[i++] = (byte)(z & 0xFF); b[i++] = (byte)((z >> 8) & 0xFF);
+
+        return b;
+    }
+
+    /// <summary>Mo mot goi ky nang. Tra ve false neu goi hong hoac khong phai
+    /// loai nay - kiem do dai truoc, vi goi den qua duong truyen khong tin cay.</summary>
+    public static bool DocKyNang(byte[] b, out MotPhep ra)
+    {
+        ra = new MotPhep();
+        if (b == null || b.Length < 14) return false;
+        if (b[0] != LoaiKyNang) return false;
+
+        int i = 1;
+        ra.chiSo = b[i++];
+        ra.kyNang = b[i++];
+
+        ra.soThuTu = b[i] | (b[i + 1] << 8) | (b[i + 2] << 16) | (b[i + 3] << 24);
+        i += 4;
+
+        short x = (short)(b[i] | (b[i + 1] << 8)); i += 2;
+        short y = (short)(b[i] | (b[i + 1] << 8)); i += 2;
+        short z = (short)(b[i] | (b[i + 1] << 8)); i += 2;
+        ra.diemNgam = new Vector3(MoToaDo(x), MoToaDo(y), MoToaDo(z));
+
+        return true;
+    }
+
+    /// <summary>Byte dau cua goi cho biet no la loai gi. 0 neu goi rong.</summary>
+    public static byte LoaiCuaGoi(byte[] b)
+    {
+        return b == null || b.Length < 1 ? (byte)0 : b[0];
     }
 
     /// <summary>Doi mang byte thanh chuoi de gui qua kenh - kenh WebRTC ben
