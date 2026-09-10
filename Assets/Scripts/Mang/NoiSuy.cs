@@ -63,6 +63,28 @@ public class NoiSuy
     float jitterUocLuong;
     float khoangDenTruoc = -1f;
 
+    /// <summary>
+    /// KHOANG CACH THAT giua hai goi den, do lay chu khong tin hang so.
+    ///
+    /// Vi sao khong dung 1/DongBoTran.NhipGui: con so ay chi dung cho nguoi
+    /// choi. Dan quai gui 10 lan moi giay - moc cach nhau 100 ms - ma dem lai
+    /// duoc tinh theo 17 ms, tuc MONG HON KHOANG CACH HAI MOC sau lan. Khi ay
+    /// noi suy luon het moc de ve o giua: nhan vat dung im mot lat roi NHAY
+    /// mot cai toi moc moi, va mat nguoi ta doc cu nhay ay thanh "no di nhanh
+    /// hon that".
+    ///
+    /// Nhip gui thuc te cung khong bang nhip khai bao: goi duoc gui trong
+    /// Update, nen may chay 30 khung/giay thi chi gui duoc 30 goi/giay du co
+    /// khai 60. Do lay la dung cho ca hai truong hop.
+    /// </summary>
+    float mocCachNhauDo = -1f;
+
+    /// <summary>Khoang cach hai moc dang do duoc, giay. Chi de chan doan.</summary>
+    public float MocCachNhauGiay
+    {
+        get { return mocCachNhauDo > 0f ? mocCachNhauDo : 1f / DongBoTran.NhipGui; }
+    }
+
     // ---- Doc de chan doan ----
     public float DemGiay { get { return demGiay; } }
     public float JitterGiay { get { return jitterUocLuong; } }
@@ -95,7 +117,22 @@ public class NoiSuy
         if (khoangDenTruoc >= 0f)
         {
             float khoang = bayGio - khoangDenTruoc;
-            float lech = Mathf.Abs(khoang - 1f / DongBoTran.NhipGui);
+
+            // Trung binh truot cua khoang cach that. Bo qua nhung khoang qua
+            // dai (goi den cum sau mot lan nghen): chung lam con so nay phinh
+            // ra va keo dem day len mai khong rut lai duoc.
+            if (khoang < 0.5f)
+            {
+                mocCachNhauDo = mocCachNhauDo < 0f
+                    ? khoang
+                    : Mathf.Lerp(mocCachNhauDo, khoang, 0.05f);
+            }
+
+            // Jitter do so voi khoang cach THAT, khong so voi hang so: neu so
+            // voi 17 ms trong khi goi that ve 100 ms mot lan thi moi goi deu
+            // bi tinh la "lech 83 ms", va dem phinh len vi mot dao dong khong
+            // he ton tai.
+            float lech = Mathf.Abs(khoang - MocCachNhauGiay);
             jitterUocLuong = Mathf.Lerp(jitterUocLuong, lech, 0.1f);
         }
         khoangDenTruoc = bayGio;
@@ -177,10 +214,13 @@ public class NoiSuy
         // Hai lan dao dong cho du an toan, cong mot khoang giua hai moc.
         //
         // Khoang giua hai moc la san khong the pha: dem mong hon no thi khong
-        // con moc sau de ve o giua. Nen no phai lay tu DongBoTran.NhipGui chu
-        // khong viet cung mot con so - doi nhip gui ma quen sua o day thi dem
-        // sai ma khong bao gi.
-        float mocCachNhau = 1f / DongBoTran.NhipGui;
+        // con moc sau de ve o giua, va nhan vat se dung im roi nhay tung cai -
+        // trong nhu di nhanh hon that.
+        //
+        // DO LAY chu khong tin hang so: nguoi choi gui 60 lan/giay con dan quai
+        // gui 10, ma ca hai dung chung lop nay. Va nhip gui thuc te con tut
+        // theo khung hinh cua may gui nua.
+        float mocCachNhau = MocCachNhauGiay;
         float tran = demToiDaEp > 0f ? demToiDaEp : DemDayNhat;
         float demCan = Mathf.Clamp(jitterUocLuong * 2f + mocCachNhau,
                                    DemMongNhat, tran);
@@ -193,6 +233,7 @@ public class NoiSuy
         mocs.Clear();
         daCoLech = false;
         khoangDenTruoc = -1f;
+        mocCachNhauDo = -1f;
         jitterUocLuong = 0f;
         demGiay = 0.05f;
     }

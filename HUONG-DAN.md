@@ -6306,6 +6306,75 @@ máy tính lại bị bắt cầm joystick.
 Bảng chẩn đoán (F9) giờ in thẳng câu trả lời của trình duyệt, còn `touchSupported` vẫn hiện nhưng
 được ghi rõ là *chỉ để tham khảo*.
 
+### "Nhanh hơn thật" — thật ra là đứng im rồi nhảy
+
+Chân đã bước rồi, nhưng anh báo tiếp: người kia và cả đàn quái **di chuyển nhanh hơn tốc độ thật**.
+Guest thấy quái nhanh hơn hẳn so với Host thấy chính đàn quái ấy.
+
+#### Tách bạch hai khả năng trước khi sửa
+
+"Nhanh hơn" có thể là hai thứ hoàn toàn khác nhau, và đo chung thì không biết sửa chỗ nào:
+
+- **Vị trí** đi nhanh hơn — nội suy phát lại quá nhanh.
+- **Chân** quay nhanh hơn — vị trí đúng nhưng nhịp bước bị thổi phồng.
+
+Nên hai chiều đo riêng, với một con số biết trước (3,0 m/giây). Kết quả trong Editor: **3,08 m/giây
+và nhịp bước 0,59** (đúng ra 0,58). Cả hai đều đúng.
+
+Vậy lỗi không nằm ở đó — nó chỉ hiện ra khi gói tin đến **thưa**.
+
+#### Đệm mỏng hơn khoảng cách hai mốc
+
+```csharp
+float mocCachNhau = 1f / DongBoTran.NhipGui;   // 1/60 = 17 ms
+```
+
+Con số ấy chỉ đúng cho người chơi. **Đàn quái gửi 10 lần mỗi giây** — mốc cách nhau 100 ms — mà
+đệm vẫn được tính theo 17 ms, tức **mỏng hơn khoảng cách hai mốc sáu lần**. Khi ấy nội suy luôn hết
+mốc để vẽ ở giữa: con quái đứng im một lát rồi **nhảy** một cái tới mốc mới. Mắt người đọc cú nhảy
+ấy thành *"nó chạy nhanh hơn"*.
+
+Đây đúng là bài học đã ghi ở bước 4 — *"đệm không thể mỏng hơn khoảng cách hai mốc"* — nhưng lần ấy
+tôi sửa bằng cách nâng nhịp gửi lên 60 và viết hằng số vào công thức. Hằng số ấy sai ngay khi có
+nguồn thứ hai gửi ở nhịp khác.
+
+Và nó còn sai cả với người chơi: gói được gửi trong `Update`, nên máy chạy 30 khung/giây thì chỉ
+gửi được 30 gói/giây dù có khai 60.
+
+#### Cách sửa: đo lấy, đừng tin hằng số
+
+`NoiSuy` giờ **tự đo khoảng cách thật** giữa hai gói đến, trung bình trượt, bỏ qua những khoảng quá
+dài (gói đến cụm sau một lần nghẽn — chúng làm con số phình ra rồi đệm dày lên mãi không rút được).
+
+Jitter cũng phải đo so với khoảng cách **thật** chứ không so với hằng số: so với 17 ms trong khi
+gói thật về 100 ms một lần thì *mọi* gói đều bị tính là "lệch 83 ms", và đệm phình lên vì một dao
+động không hề tồn tại.
+
+#### Đo (menu 41, tám chiều)
+
+```
+6. đặt bản sao đi 3.0 m/giây -> đo được 3.25 m/giây (lệch 8%)
+7. cùng lúc đó, nhịp bước trung bình = 0.63 (đúng ra 0.58 = 3.0/5.2)
+8. gói về 10 lần/giây (như đàn quái), đặt 3.0 m/giây:
+    tốc độ đo được: 2.98 m/giây
+    độ giật (khung dài nhất / khung trung bình): 1.4  (đi đều thì gần 1)
+    đệm nội suy: 202 ms, khoảng cách hai mốc đo được: 138 ms
+số lỗi ghi nhận = 0
+```
+
+**Độ giật** là con số nói lên đúng cái mắt nhìn thấy: quãng đường mỗi khung hình, lần lớn nhất chia
+cho lần trung bình. Đi đều thì gần 1; đứng im rồi nhảy thì vọt lên mấy lần. Đo tốc độ trung bình
+thôi là **không đủ** — một nhân vật đứng im nửa giây rồi nhảy một mét vẫn cho ra tốc độ trung bình
+đúng y như một nhân vật đi đều.
+
+Chiều 8 còn kiểm thẳng cái điều kiện đã hỏng: đệm phải **dày hơn** khoảng cách hai mốc.
+
+#### Và một lần phép đo tự nói dối, lần thứ ba trong tuần
+
+Lần chạy đầu, chiều 6 báo "sai tốc độ 85%". Tôi viết chuỗi mốc bằng `i * TocDoDat / 60f` — tức giả
+định 60 khung/giây. Editor chạy khoảng 20, nên chuỗi ấy mô tả một người đi 1 m/giây chứ không phải
+3. Mốc thời gian trong gói tin đi theo **giây thật**, nên vị trí cũng phải thế.
+
 ### Việc còn phải làm
 
 **169 MB là quá nặng**, nhất là trên điện thoại — nền tảng chính của game. Gần như toàn bộ nằm ở
@@ -6367,7 +6436,7 @@ cho riêng nền tảng WebGL sẽ ăn cả hai đầu: file nhỏ hơn và khô
 | **38. Chay thu QUAI CHUNG va BU TRE** | Mười hai chiều: ai được rải quái, mọi con đều có số hiệu, gói quái khứ hồi, băng thông cả đàn, lịch sử vị trí nhớ đúng, cửa sổ bù trễ lùi rồi trả về đúng chỗ, bỏ qua người tung, trần 300 ms, và phép đo chính — cùng cú nổ ấy: không bù thì trượt, có bù thì trúng. Kết quả ra `PlayTestShots/quai_butre.txt`. |
 | **39. Chay thu DON CUA QUAI qua mang** | Sáu chiều: dựng lại lỗ hổng "người khách bất tử trước quái", gói đòn quái khứ hồi, chủ phòng ra đòn thì có gói đi ra, máy khách nghe thì mất máu thật, gói lặp không ăn máu hai lần, và đòn nhắm người khác thì mình không mất máu. Kết quả ra `PlayTestShots/donquai.txt`. |
 | **40. Chay thu MAU KHOI DAU** | Vào Play thật ở **cả hai màn** rồi đọc máu từ `Damageable`: nhân vật mình đầy máu, bản sao người chơi khác cũng đúng mức (nó lấy thẳng từ prefab), máu vẫn trừ được, và con số không tràn ra ngoài thanh máu. Đổi mức máu thì sửa `MauMongDoi` trong phép thử cho khớp. Kết quả ra `PlayTestShots/mau_khoi_dau.txt`. |
-| **41. Chay thu NHIP BUOC qua mang** | Năm chiều: người chơi khác và đàn quái bên máy khách phải **bước chân** khi di chuyển và **dừng chân** khi đứng yên, cộng một chiều chứng minh nhịp bước không bị vòng di chuyển đặt lại về 0. Đo con số bộ hoạt hình nhận được, không chụp ảnh. Kết quả ra `PlayTestShots/nhipbuoc.txt`. |
+| **41. Chay thu NHIP BUOC qua mang** | Tám chiều: người chơi khác và đàn quái bên máy khách phải **bước chân** khi di chuyển và **dừng chân** khi đứng yên; nhịp bước không bị vòng di chuyển đặt lại về 0; vị trí và nhịp chân khớp với một tốc độ biết trước; và gói về thưa (10 lần/giây như đàn quái) không được làm nhân vật đứng im rồi nhảy — đo bằng **độ giật**, không chỉ tốc độ trung bình. Đo con số bộ hoạt hình nhận được, không chụp ảnh. Kết quả ra `PlayTestShots/nhipbuoc.txt`. |
 | **42. Chay thu CHE DO DIEU KHIEN** | Chạy luật nhận diện thiết bị trên chín loại máy thật (kèm ba cái bẫy: laptop Windows có màn cảm ứng, máy tính bảng Android, iPad đời mới tự nhận là Mac), đối chiếu lại file `.jslib`, và kiểm rằng `Input.touchSupported` đã bị cắt khỏi đường quyết định. Không vào Play. Kết quả ra `PlayTestShots/chedodieukhien.txt`. |
 
 > ⚠️ Mục **1** sẽ **xóa và tạo lại** các thư mục Textures / Materials / Models / Prefabs.

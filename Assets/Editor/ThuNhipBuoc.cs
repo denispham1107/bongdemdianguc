@@ -192,6 +192,151 @@ public static class ThuNhipBuoc
         if (nhipMoi <= 0.01f)
         { Ghi("[LOI] nhip buoc bi dat lai ve 0 - ban sao van tu chay vong di chuyen"); loi++; }
 
+        // ---- 6 & 7. NHANH HON THAT? Tach bach hai kha nang ----
+        //
+        // Nguoi choi bao ban sao "di chuyen nhanh hon toc do thuc te". Co hai
+        // thu hoan toan khac nhau co the gay ra cam giac ay, va phai do rieng:
+        //
+        //   6. VI TRI di nhanh hon - noi suy phat lai qua nhanh.
+        //   7. CHAN quay nhanh hon - vi tri dung nhung nhip buoc bi thoi phong.
+        //
+        // Do chung mot luc thi khong biet sua cho nao.
+        const float TocDoDat = 3.0f;      // met moi giay, con so BIET TRUOC
+
+        Vector3 goc7 = toi.transform.position + new Vector3(9f, 0f, 0f);
+        goc7.y = VfxFactory.GroundY(goc7) + 0.15f;
+
+        // VI TRI PHAI TINH THEO THOI GIAN THAT, khong theo so khung hinh.
+        //
+        // Lan dau toi viet "i * TocDoDat / 60f" - tuc gia dinh 60 khung/giay.
+        // Editor chay khoang 20, nen chuoi moc ay mo ta mot nguoi di 1 m/giay
+        // chu khong phai 3, va phep thu bao "sai toc do 85%" trong khi cai sai
+        // nam o chinh no. Moc thoi gian trong goi tin di theo GIAY THAT, nen
+        // vi tri cung phai the.
+        float t0 = Time.unscaledTime;
+
+        // Nap day dem truoc: noi suy can it nhat hai moc va mot dem day
+        while (Time.unscaledTime - t0 < 0.5f)
+        {
+            float dt7 = Time.unscaledTime - t0;
+            NhetViTri(db, 1, goc7 + new Vector3(0f, 0f, dt7 * TocDoDat), false);
+            yield return null;
+        }
+
+        Vector3 dauDo = kia.transform.position;
+        float lucDau = Time.unscaledTime;
+        float nhipTong = 0f;
+        int soLanDo = 0;
+
+        while (Time.unscaledTime - lucDau < 1.5f)
+        {
+            float dt7 = Time.unscaledTime - t0;
+            NhetViTri(db, 1, goc7 + new Vector3(0f, 0f, dt7 * TocDoDat), false);
+            yield return null;
+            nhipTong += DocNhipNguoi(kia);
+            soLanDo++;
+        }
+
+        float thoiGian = Time.unscaledTime - lucDau;
+        Vector3 diDuoc = kia.transform.position - dauDo;
+        diDuoc.y = 0f;
+        float tocDoDo = thoiGian > 0.01f ? diDuoc.magnitude / thoiGian : 0f;
+        float nhipTB = soLanDo > 0 ? nhipTong / soLanDo : 0f;
+        float nhipDung = TocDoDat / toi.moveSpeed;
+
+        Ghi("6. dat ban sao di " + TocDoDat.ToString("F1") + " m/giay -> do duoc "
+            + tocDoDo.ToString("F2") + " m/giay (lech "
+            + (Mathf.Abs(tocDoDo - TocDoDat) / TocDoDat * 100f).ToString("F0") + "%)");
+        if (Mathf.Abs(tocDoDo - TocDoDat) > TocDoDat * 0.15f)
+        { Ghi("[LOI] VI TRI cua ban sao di sai toc do"); loi++; }
+
+        Ghi("7. cung luc do, nhip buoc trung binh = " + nhipTB.ToString("F2")
+            + " (dung ra phai la " + nhipDung.ToString("F2")
+            + " = " + TocDoDat.ToString("F1") + "/" + toi.moveSpeed.ToString("F1") + ")");
+        if (Mathf.Abs(nhipTB - nhipDung) > 0.15f)
+        { Ghi("[LOI] CHAN quay sai nhip so voi quang duong that su di duoc"); loi++; }
+
+        // ---- 8. GOI THUA (nhu dan quai) khong duoc lam nhan vat NHAY ----
+        //
+        // Day la loi nguoi choi bao: "quai di nhanh hon". Dan quai gui 10 lan
+        // moi giay - moc cach nhau 100 ms - trong khi dem duoc tinh theo nhip
+        // 60 (17 ms). Dem MONG HON khoang cach hai moc thi noi suy luon het moc
+        // de ve o giua: con quai dung im mot lat roi NHAY mot cai, va mat nguoi
+        // ta doc cu nhay ay thanh "no chay nhanh".
+        //
+        // Do bang DO GIAT: quang duong moi khung hinh, lan lon nhat chia cho
+        // lan trung binh. Di deu thi ti so nay gan 1; nhay tung cai thi no vot
+        // len vai lan.
+        const float NhipThua = 10f;      // giong DongBoQuai.NhipGuiQuai
+
+        Vector3 goc8 = toi.transform.position + new Vector3(-11f, 0f, 0f);
+        goc8.y = VfxFactory.GroundY(goc8) + 0.15f;
+
+        var kia8 = NguoiChoiKhac.Sinh("uid-thua", "Nguoi thua", goc8);
+        db.ThemNguoi(2, kia8);
+
+        float t8 = Time.unscaledTime;
+        float guiLanSau = 0f;
+
+        // Nap day dem truoc
+        while (Time.unscaledTime - t8 < 1.5f)
+        {
+            float d = Time.unscaledTime - t8;
+            if (d >= guiLanSau)
+            {
+                guiLanSau = d + 1f / NhipThua;
+                NhetViTri(db, 2, goc8 + new Vector3(0f, 0f, d * TocDoDat), false);
+            }
+            yield return null;
+        }
+
+        Vector3 truoc8 = kia8.transform.position;
+        float tongQuang = 0f, quangLonNhat = 0f;
+        int soKhung = 0;
+        float batDau8 = Time.unscaledTime;
+
+        while (Time.unscaledTime - batDau8 < 2f)
+        {
+            float d = Time.unscaledTime - t8;
+            if (d >= guiLanSau)
+            {
+                guiLanSau = d + 1f / NhipThua;
+                NhetViTri(db, 2, goc8 + new Vector3(0f, 0f, d * TocDoDat), false);
+            }
+            yield return null;
+
+            Vector3 nay = kia8.transform.position;
+            float quang = Vector3.Distance(new Vector3(nay.x, 0f, nay.z),
+                                           new Vector3(truoc8.x, 0f, truoc8.z));
+            truoc8 = nay;
+            tongQuang += quang;
+            if (quang > quangLonNhat) quangLonNhat = quang;
+            soKhung++;
+        }
+
+        float quangTB = soKhung > 0 ? tongQuang / soKhung : 0f;
+        float doGiat = quangTB > 0.0001f ? quangLonNhat / quangTB : 999f;
+        float tocDo8 = tongQuang / Mathf.Max(0.01f, Time.unscaledTime - batDau8);
+
+        Ghi("8. goi ve " + NhipThua.ToString("F0") + " lan/giay (nhu dan quai), dat "
+            + TocDoDat.ToString("F1") + " m/giay:");
+        Ghi("    toc do do duoc: " + tocDo8.ToString("F2") + " m/giay");
+        Ghi("    do giat (khung dai nhat / khung trung binh): " + doGiat.ToString("F1")
+            + "  (di deu thi gan 1; nhay tung cai thi vot len)");
+        Ghi("    dem noi suy: " + (db.DemCuaNguoi(2) * 1000f).ToString("F0")
+            + " ms, khoang cach hai moc do duoc: "
+            + (db.NoiSuyCuaNguoi(2) != null
+               ? (db.NoiSuyCuaNguoi(2).MocCachNhauGiay * 1000f).ToString("F0") : "?") + " ms");
+
+        if (Mathf.Abs(tocDo8 - TocDoDat) > TocDoDat * 0.2f)
+        { Ghi("[LOI] goi thua lam sai toc do"); loi++; }
+        if (doGiat > 3f)
+        { Ghi("[LOI] nhan vat dung im roi nhay - dem mong hon khoang cach hai moc"); loi++; }
+        if (db.DemCuaNguoi(2) < 1f / NhipThua * 0.9f)
+        { Ghi("[LOI] dem mong hon khoang cach hai moc"); loi++; }
+
+        NguoiChoiKhac.Bo(kia8);
+
         // ---- Don ----
         foreach (var n in Object.FindObjectsByType<NhanDangQuai>(FindObjectsSortMode.None))
             if (n.id >= 9100) Object.DestroyImmediate(n.gameObject);
