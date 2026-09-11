@@ -492,7 +492,7 @@ public static class GiaoDien
     }
 
     /// <summary>
-    /// Ten game o giua, CHAP CHON nhu lua: do sang dao dong 0,62-1,0 theo nhieu
+    /// Ten game o giua, CHAP CHON nhu lua: do sang dao dong 0,85-1,0 theo nhieu
     /// Perlin - trang Loading dung cung khoang ay (CSS). Ve anh tieu de vua
     /// khit trong <paramref name="r"/>, giu ti le.
     /// </summary>
@@ -507,7 +507,8 @@ public static class GiaoDien
             float tl = anh.width / (float)anh.height;
             float w = Mathf.Min(r.width, r.height * tl), h = w / tl;
             var o = new Rect(r.center.x - w * 0.5f, r.center.y - h * 0.5f, w, h);
-            float sang = Mathf.Lerp(0.62f, 1f, (nhay - 0.72f) / 0.28f);
+            // 0,85-1,0 (truoc 0,62-1,0: nguoi dung thay chu "hoi bi toi")
+            float sang = Mathf.Lerp(0.85f, 1f, (nhay - 0.72f) / 0.28f);
             var mauAnh = GUI.color;
             GUI.color = new Color(sang, sang, sang, 1f);
             GUI.DrawTexture(o, anh, ScaleMode.StretchToFill, true);

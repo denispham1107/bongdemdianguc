@@ -113,17 +113,18 @@ giot = giot.filter(ImageFilter.GaussianBlur(0.8 * K)).point(lambda v: 255 if v >
 mat_du = ImageChops.lighter(mat, giot)
 
 # ---------------- 3. Long chu: do mau chuyen doc + van san + vet nut ----------------
-long_chu = chuyen_doc((W, H), (0.93, 0.16, 0.08), (0.36, 0.015, 0.012), dinh, chan)
+# Sang hon lan dau (nguoi dung: "hoi bi toi" - do: phan chu dac sang tb 32/255)
+long_chu = chuyen_doc((W, H), (1.00, 0.30, 0.15), (0.66, 0.05, 0.03), dinh, chan)
 # giot mau sam hon than chu
-long_giot = chuyen_doc((W, H), (0.50, 0.03, 0.02), (0.30, 0.01, 0.01), chan, chan + 180 * K)
+long_giot = chuyen_doc((W, H), (0.78, 0.07, 0.04), (0.50, 0.02, 0.015), chan, chan + 180 * K)
 long_chu = Image.composite(long_giot, long_chu, ImageChops.subtract(giot, mat))
 
 # Van mau chay DOC (nhieu keo gian theo chieu doc) + dom mo lon - khong lam tam
 # tam kieu bot bien (ban dau: nhieu min tung diem, nhin ro ri)
 hat = Image.effect_noise((W // (5 * K), H // (28 * K)), 50).resize((W, H), Image.BICUBIC)
 dom = Image.effect_noise((W // (40 * K), H // (40 * K)), 60).resize((W, H), Image.BICUBIC)
-hat = ImageChops.multiply(hat.point(lambda v: int(min(255, 205 + (v - 128) * 0.45))),
-                          dom.point(lambda v: int(min(255, 215 + (v - 128) * 0.35))))
+hat = ImageChops.multiply(hat.point(lambda v: int(min(255, 228 + (v - 128) * 0.35))),
+                          dom.point(lambda v: int(min(255, 236 + (v - 128) * 0.25))))
 long_chu = ImageChops.multiply(long_chu, Image.merge("RGB", (hat, hat, hat)))
 
 nut = Image.new("L", (W, H), 255)
@@ -135,7 +136,7 @@ for _ in range(70):
         import math
         goc += rnd.uniform(-0.9, 0.9)
         dx = math.cos(goc) * rnd.uniform(8, 22) * K; dy = math.sin(goc) * rnd.uniform(8, 22) * K
-        dn.line([x, y, x + dx, y + dy], fill=rnd.randint(60, 120), width=max(1, int(1.2 * K)))
+        dn.line([x, y, x + dx, y + dy], fill=rnd.randint(110, 165), width=max(1, int(1.2 * K)))
         x += dx; y += dy
 nut = nut.filter(ImageFilter.GaussianBlur(0.5 * K))
 long_chu = ImageChops.multiply(long_chu, Image.merge("RGB", (nut, nut, nut)))
@@ -153,12 +154,12 @@ bong = vien.transform(vien.size, Image.AFFINE, (1, 0, -7 * K, 0, 1, -11 * K)).fi
 
 anh = Image.new("RGBA", (W, H), (0, 0, 0, 0))
 anh = Image.alpha_composite(anh, to_mau(bong, (0, 0, 0), 0.85))
-anh = Image.alpha_composite(anh, to_mau(quang, (1.0, 0.10, 0.04), 0.55))
+anh = Image.alpha_composite(anh, to_mau(quang, (1.0, 0.16, 0.06), 0.80))
 anh = Image.alpha_composite(anh, to_mau(vien, (0.07, 0.005, 0.005), 1.0))
 lop_long = long_chu.convert("RGBA"); lop_long.putalpha(mat_du)
 anh = Image.alpha_composite(anh, lop_long)
-anh = Image.alpha_composite(anh, to_mau(ImageChops.multiply(bong_trong, mat_du), (0.10, 0.0, 0.0), 0.55))
-anh = Image.alpha_composite(anh, to_mau(ImageChops.multiply(canh_tren, mat_du), (1.0, 0.62, 0.42), 0.75))
+anh = Image.alpha_composite(anh, to_mau(ImageChops.multiply(bong_trong, mat_du), (0.10, 0.0, 0.0), 0.40))
+anh = Image.alpha_composite(anh, to_mau(ImageChops.multiply(canh_tren, mat_du), (1.0, 0.74, 0.52), 0.95))
 
 anh = anh.resize((RONG, CAO), Image.LANCZOS)
 # Cat sat phan co hinh (alpha > 2%), chua le cho quang do - bo cuc trong game va

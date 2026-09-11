@@ -72,26 +72,16 @@ public class ManDangNhap : MonoBehaviour
         // Anh tieu de (ca giot mau) rong toi 760 don vi, cao theo ti le anh
         float rongTieuDe = Mathf.Min(Screen.width - 40f * s, 760f * s);
         float caoAnh = rongTieuDe / GiaoDien.TiLeTieuDe;
-        float caoTieuDe = caoAnh + 4f * s + 68f * s;
+        float caoTieuDe = caoAnh + 22f * s;
         float tong = caoTieuDe + caoKhung;
         float y = Mathf.Max(16f * s, (Screen.height - tong) * 0.5f - 10f * s);
         float x = (Screen.width - rong) * 0.5f;
 
         // ---- Ten game ----
         GiaoDien.TieuDeGame(new Rect((Screen.width - rongTieuDe) * 0.5f, y, rongTieuDe, caoAnh), s);
-        y += caoAnh + 4f * s;                // giot mau da nam trong anh
-
-        // Dong phu giua hai duong ke
-        float rongPhu = Mathf.Min(Screen.width - 40f * s, 620f * s);
-        var kPhu = GiaoDien.KieuChuNho;
-        var canhCu = kPhu.alignment;
-        kPhu.alignment = TextAnchor.MiddleCenter;
-        GiaoDien.Chu(new Rect((Screen.width - rongPhu) * 0.5f, y, rongPhu, 30f * s),
-                     "KẺ SỐNG SÓT CUỐI CÙNG SẼ CHIẾN THẮNG", kPhu);
-        kPhu.alignment = canhCu;
-        GiaoDien.DuongKe(new Rect(Screen.width * 0.5f - 330f * s, y + 40f * s, 660f * s, Mathf.Max(1f, 1.5f * s)),
-                         new Color(0.75f, 0.12f, 0.08f, 0.8f));
-        y += 68f * s;
+        // Giot mau da nam trong anh. Dong phu "KE SONG SOT CUOI CUNG SE CHIEN
+        // THANG" va duong ke duoi no da bo (nguoi dung 12/09/2026)
+        y += caoAnh + 22f * s;
 
         // ---- Khung ----
         var khung = new Rect(x, y, rong, caoKhung);

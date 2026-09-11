@@ -7506,6 +7506,41 @@ Bản web: build 6,7 phút, 0 lỗi; trang thật: tab "Ác Quỷ Trở Lại", 
 "Đang tải... 0% | Tác giả: PHẠM MINH QUÂN", wasm mới; màn đăng nhập hiện tiêu đề mới, console 0 lỗi
 ```
 
+#### Tiêu đề sáng hơn, bỏ dòng phụ, thanh tải "vạch máu"
+
+Anh xem bản trên: tiêu đề **hơi tối** ở cả hai màn; bỏ dòng "Kẻ sống sót cuối cùng sẽ chiến thắng"; thanh tải
+phải **rùng rợn** hơn.
+
+**Tối vì hai lẽ**, đo trên phần chữ đặc của ảnh (alpha > 200): độ sáng trung bình chỉ **32/255** (kênh đỏ 83) — đỏ
+sẫm, vân máu và vết nứt còn làm tối thêm — rồi hiệu ứng chập chờn lại nhân thêm xuống tới **0,62**. Sửa cả hai:
+
+| | Trước | Giờ |
+|---|---|---|
+| Độ sáng trung bình phần chữ | 32 / 255 (đỏ 83) | **56 / 255 (đỏ 130)** |
+| Màu chữ trên → dưới | 0,93/0,16/0,08 → 0,36/0,015/0,012 | 1,0/0,30/0,15 → 0,66/0,05/0,03 |
+| Vân máu / vết nứt | nhân tối tới ~0,8 / vết 60–120 | ~0,9 / vết 110–165 |
+| Quầng đỏ · cạnh sáng | 0,55 · 0,75 | 0,80 · 0,95 |
+| Chập chờn (game và trang Loading) | 0,62 – 1,0 | **0,85 – 1,0** |
+
+**Dòng phụ** và đường kẻ dưới nó bỏ khỏi màn đăng nhập; khung đăng nhập nhích lên ngay dưới tiêu đề.
+
+**Thanh tải "vạch máu"** (trang Loading, thuần CSS):
+
+- khung sắt đen viền đỏ, hai mép mọc **răng nanh** dài ngắn, nghiêng khác nhau (SVG nhúng thẳng trong CSS);
+- ruột là **máu chảy**: đỏ tươi → sẫm, hai lớp vệt lệch nhịp (46 / 62 px) trôi liên tục — một lớp đều thì nhìn ra
+  kẹo sọc;
+- đầu thanh có **đốm sáng đập như tim** (nhịp đôi 1,1 s), cả thanh phập phồng ánh đỏ cùng nhịp. Đốm tim là phần
+  tử riêng: đặt trong ruột thanh thì bị khung cắt (`overflow: hidden`) xén còn 10 px;
+- **7 giọt máu** nhỏ xuống từ phần đã đầy — mỗi giọt chỉ hiện khi máu đã chảy tới chỗ nó, mỗi giọt một nhịp riêng;
+  quãng rơi ngắn (28 px) để không rơi xuyên qua dòng "Đang tải…".
+
+Xem trước bằng một bản sao trong thư mục nháp (thay các chỗ `{{{ … }}}` của Unity bằng giá trị giả — mở thẳng bản
+mẫu thì khối JavaScript lỗi cú pháp và thanh không chạy).
+
+Đo: menu 50 **0 lỗi**, 0 chữ bị cắt. Bản web build 6,5 phút, 0 lỗi; trang thật: đủ răng nanh / đốm tim / 7 giọt
+(hiện đủ 7 khi tới 100%), font InterViet "loaded", ảnh tiêu đề mới `?v=46475ea594`, màn đăng nhập không còn dòng
+phụ, console 0 lỗi.
+
 ### Việc còn phải làm
 
 **169 MB là quá nặng**, nhất là trên điện thoại — nền tảng chính của game. Gần như toàn bộ nằm ở
