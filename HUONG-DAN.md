@@ -7163,7 +7163,28 @@ khung hình màn chính: 2 325 nghìn tam giác, 175 vật đổ bóng, 637 lầ
 Menu 50: **0 lỗi**, 0 chữ bị cắt ở mọi màn. Menu 48 (tải lại màn chính ba lần): **0 lỗi**. Bản WebGL build
 6,4 phút, 163,8 MB, 0 lỗi; trên trang thật trình duyệt tải mới đủ bốn file theo mã phiên bản. Lần tải
 đầu (thay trang game cũ đang chạy) console có **một** lỗi `RangeError: Maximum call stack size exceeded`
-trong wasm; hai lần tải sau, mỗi lần theo dõi 50–70 giây: **0 lỗi**. Chưa rõ nguồn lỗi đó.
+trong wasm; hai lần tải sau, mỗi lần theo dõi 50–70 giây: **0 lỗi**.
+
+**Truy nguồn lỗi đó — không phải bản mới.** Chrome ghi khung wasm dạng `wasm://wasm/<mã>`; lỗi mang mã
+`03e262ca`. Với file wasm dài như của game, V8 tính mã chỉ từ **độ dài**: mã = độ dài × 4 + 2 (hex). Kiểm
+trên hai bản thật, giải nén file wasm ra đếm byte:
+
+| Bản | wasm giải nén (byte) | Mã dự đoán | Mã Chrome ghi |
+|---|---|---|---|
+| Bản mới (20:59) | 16 317 709 | `03e3f436` | `03e3f436` (hai lần tải, như nhau) |
+| Bản 19:16 | 16 315 926 | `03e3d85a` | `03e3d85a` |
+| Bản 10:49 | 16 309 443 | `03e3730e` | — |
+| Bản 09:51 (bản giao diện mới gây sập vì cache) | 16 308 742 | `03e3681a` | — |
+| Bản 08:45 | 16 283 560 | `03e1dea2` | — |
+| **Module gây lỗi** | **16 292 018** | | `03e262ca` |
+
+Module gây lỗi nằm lọt giữa bản 08:45 và bản 09:51, mà giữa hai bản đó **không có lần triển khai nào** — nó
+là một bản build từng được mở trong chính tab trình duyệt ấy ở phiên trước, lỗi còn đọng trong bộ đệm console
+của tab (bộ đệm này giữ qua các lần chuyển trang). Các bản cũ được mở lại để đo bằng một kênh xem thử tạm của
+Firebase Hosting (`hosting:clone … :thuloi`), đo xong đã xoá; trang live không bị đụng tới.
+
+Thử tái hiện trên bản mới trong một tab mới tinh (bộ đệm console sạch): tải lạnh (xoá cache dữ liệu Unity),
+tải lại, chuyển trang giữa lúc đang tải, chuyển trang đè lên game đang chạy — **cả bốn: 0 lỗi**.
 
 Tệp Blender: `CongCu/Blender/lua_lo_da.blend` (bản sao cảnh mô phỏng, **không kèm** bộ nhớ nướng 654 MB —
 mở ra phải nướng lại). Render qua Blender MCP **chạy được**: `bpy.ops.render.render(write_still=True)` ghi
