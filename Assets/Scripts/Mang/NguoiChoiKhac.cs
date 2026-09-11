@@ -82,6 +82,10 @@ public static class NguoiChoiKhac
         var mauHo = go.GetComponent<Damageable>();
         if (mauHo != null) mauHo.mauDoMayKhacQuyet = true;
 
+        // Ten tren dau - bon nguoi cung mot bo quan ao, khong co ten thi khong
+        // ai biet con nao la ai
+        BangTen.Gan(go, string.IsNullOrEmpty(ten) ? "Người chơi" : ten, false);
+
         var dir = GameDirector.Instance;
         if (dir != null) dir.ThemNguoiChoi(go.transform);
 

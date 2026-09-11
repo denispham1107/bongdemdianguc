@@ -7378,6 +7378,50 @@ WebGL.wasm.unityweb?v=50cbd283e9          tải mới, 5 482 538 byte
 đang tải... 100%, không lỗi, màn đăng nhập hiện đủ dấu tiếng Việt
 ```
 
+### Tên người chơi trên đầu nhân vật
+
+Anh xin: vào map thì trên đầu mỗi nhân vật có tên, để nhận ra ai với ai — bốn người cùng một bộ quần áo
+phù thuỷ, không có tên thì không ai biết con nào là mình, con nào là người khác.
+
+`BangTen` (Assets/Scripts/UI) gắn vào **mọi nhân vật trong trận mạng**: nhân vật của mình (`KhoiDongTranMang`,
+ngay sau khi xếp ghế, nếu phòng có từ hai người) và bản sao của người khác (`NguoiChoiKhac.Sinh`). Chơi một
+mình thì không có tên.
+
+- Vẽ bằng **OnGUI** như số sát thương — chữ 3D trong cảnh bị hạt lửa và bloom phủ trắng. Nằm dưới HUD.
+- Font **Inter** (`GiaoDien.ChuDam`) — font mặc định của Unity thiếu chữ có dấu, lên web là mất chữ.
+- Cỡ chữ 19 ở màn hình cao 1080 (cùng thước với HUD), tối thiểu 12 điểm ảnh.
+- Tên **của mình màu vàng**, người khác trắng ngà; viền tối bốn phía và nền mờ cho đọc được trên nền lửa.
+- Người đã gục: tên **mờ đi** (độ đục 0,45) và **hạ xuống theo đầu**.
+
+#### Cái bẫy: khung bao lưới không phải đỉnh đầu
+
+Lần đầu đặt tên theo **khung bao của lưới** — ảnh chụp thấy tên lơ lửng cao hơn đầu cả một khoảng. Đo lại
+prefab phù thuỷ bằng `BakeMesh` (lấy từng đỉnh thật):
+
+| | Cao (m) |
+|---|---|
+| Chóp mũ thật (đỉnh lưới đã bake) | **1,61** |
+| Xương `head_end` | 1,58 |
+| Khung bao `SkinnedMeshRenderer` | 1,88 — khung "rộng rãi" Unity dùng để cắt hình |
+| Con nhộng va chạm (`CharacterController`) | 2,06 |
+
+Giờ tên **neo vào xương `head_end`**, đọc mỗi khung hình (đi theo đầu khi chạy, khi ngã). Nhân vật dựng bằng
+code không có xương thì mới dùng khung bao.
+
+Đo (menu 52, Play ở Act2, 1 nhân vật của mình + 3 bản sao tên có dấu "Ác Quỷ Bóng Đêm", "Kẻ Săn Hồn",
+"Người chơi 4"; chóp mũ đo **độc lập** bằng lưới bake ở tư thế đang diễn):
+
+```
+4 bảng tên, cả 4 được vẽ trong khung hình vừa rồi, font Inter-SemiBold
+đáy chữ trên chóp mũ 7–9 điểm ảnh (0,30 m = 15–19 điểm ảnh ở góc camera này), không cái nào đè lên mũ
+đúng màu (mình vàng, người khác trắng ngà), 0 cặp bảng tên đè lên nhau
+người gục: độ đục tên 0,45
+số lỗi = 0
+```
+
+Bản web: build 5,7 phút, 0 lỗi; trình duyệt đã từng vào trang tải đúng bản mới, console 0 lỗi. **Chưa thử được
+trận mạng thật hai máy** — WebRTC chỉ chạy trên bản web, và đăng nhập tài khoản thử phải do người làm.
+
 ### Việc còn phải làm
 
 **169 MB là quá nặng**, nhất là trên điện thoại — nền tảng chính của game. Gần như toàn bộ nằm ở
@@ -7451,6 +7495,7 @@ cho riêng nền tảng WebGL sẽ ăn cả hai đầu: file nhỏ hơn và khô
 | **50. Chay thu GIAO DIEN dang nhap - sanh - phong** | Đi hết các màn (đăng nhập, tạo tài khoản, sảnh trống, sảnh có phòng, Cài đặt, trong phòng, phòng đủ 4 người, đếm ngược); ở mỗi màn đếm số lượt vẽ, số chữ bị cắt, số chữ phải thu nhỏ — đếm ngay trong hàm vẽ nên không sót nhãn nào. Kiểm font đang dùng là Inter, và quay về MainMenu khi đã đăng nhập thì vào thẳng sảnh. Ảnh `gd_*.png`, kết quả `PlayTestShots/giaodien.txt`. |
 | **51. Dung man chinh tu canh Act2** | Chép phần cảnh Act2 quanh chỗ đứng (45 m, phía trước camera) sang MainMenu.unity cùng ánh sáng / sương / bầu trời; đặt phù thuỷ, camera, hai lò đá; dọn vật vướng. Tạo luôn prefab lò đá từ FBX + texture Blender. Báo cáo `PlayTestShots/dungmanchinh.txt`. |
 | **51b. Chup thu goc nhin man chinh (Act2)** | Đặt nhân vật trước từng nhà mồ theo bốn hướng, bỏ chỗ vướng vật / giữa nước, chụp bằng khung camera màn chính — để chọn chỗ đứng. Ảnh `PlayTestShots/goc/`. |
+| **52. Chay thu TEN TREN DAU nhan vat** | Vào Play ở Act2, gắn tên cho nhân vật của mình, sinh ba bản sao tên có dấu quanh mình; đo từng bảng tên: có vẽ, trong màn hình, ngay trên chóp mũ (đo độc lập bằng lưới bake) không quá 0,30 m, đúng màu, font Inter, không đè nhau, người gục thì tên mờ. Ảnh `bangten_*.png`, số đo `bangten.txt`. |
 | **51c. Chup nen man chinh (lo da, ngon lua)** | Vào Play, tắt giao diện, chụp toàn cảnh (thêm một ảnh `Camera.main` đúng 1920 × 1080), cận lò đá, cận ngọn lửa; đo từng tấm flipbook (khói đen, hai tấm lửa: số hạt, vật liệu, texture), tam giác, vật đổ bóng. Ảnh `nen_*.png`, số đo `nenmanchinh.txt`. |
 
 > ⚠️ Mục **1** sẽ **xóa và tạo lại** các thư mục Textures / Materials / Models / Prefabs.

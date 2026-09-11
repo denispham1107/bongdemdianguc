@@ -171,6 +171,10 @@ public class KhoiDongTranMang : MonoBehaviour
 
         DatChoDungTheoGhe(gheToi.ghe);
 
+        // Ten cua minh tren dau nhan vat cua minh (mau vang) - ban sao cua nguoi
+        // khac tu gan ten luc sinh (NguoiChoiKhac.Sinh)
+        BangTen.Gan(toi.gameObject, TenCuaGhe(gheToi.ghe), true);
+
         // ---- 3. Dung bo dong bo TRUOC khi bat tay ----
         // Goi tin cua nguoi ta co the den ngay khi kenh vua mo - bo dong bo
         // phai san sang nghe tu truoc, khong thi vai goi dau roi vao khoang.
