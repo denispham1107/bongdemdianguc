@@ -10,8 +10,8 @@ using UnityEngine;
 ///
 /// Vao Play o MainMenu, tat giao dien dang nhap / sanh, doi lua chay deu 3
 /// giay, roi chup: toan canh, can lo da ben trai, can ngon lua. Ghi kem so do:
-/// so hat lua dang song, vat lieu lua co dung flipbook LuaNgon khong, vat lieu
-/// da co du ba texture khong.
+/// tung tam flipbook (khoi den, hai tam lua) co dung mot hat va dung texture
+/// LuaLo / KhoiDen khong, vat lieu da co du ba texture khong.
 ///
 /// Anh ra <c>PlayTestShots/nen_*.png</c>, so do ra <c>PlayTestShots/nenmanchinh.txt</c>.
 /// </summary>
@@ -55,6 +55,19 @@ public static class ChupNenManChinh
         for (int i = 0; i < 60 && !File.Exists(d); i++) yield return new WaitForEndOfFrame();
     }
 
+    static void ChupKhung(Camera cam, string ten, int w, int h)
+    {
+        var rt = new RenderTexture(w, h, 24);
+        var cu = cam.targetTexture;
+        cam.targetTexture = rt; cam.Render(); cam.targetTexture = cu;
+        var truoc = RenderTexture.active; RenderTexture.active = rt;
+        var t = new Texture2D(w, h, TextureFormat.RGB24, false);
+        t.ReadPixels(new Rect(0, 0, w, h), 0, 0); t.Apply();
+        RenderTexture.active = truoc;
+        File.WriteAllBytes("PlayTestShots/" + ten + ".png", t.EncodeToPNG());
+        Object.DestroyImmediate(t); rt.Release(); Object.DestroyImmediate(rt);
+    }
+
     static IEnumerator Kich()
     {
         yield return new WaitForSeconds(0.5f);
@@ -70,19 +83,20 @@ public static class ChupNenManChinh
         bao.AppendLine("so lo da: " + cacLo.Length + ", man hinh " + Screen.width + "x" + Screen.height);
         foreach (var lo in cacLo)
         {
-            int hat = 0; string vlLua = "?";
+            // Moi tam flipbook (KhoiDen, LuaA, LuaB) phai dung dung 1 hat song, dung vat lieu co texture
+            var tam = new StringBuilder();
             foreach (var ps in lo.GetComponentsInChildren<ParticleSystem>())
             {
-                if (ps.name == "LuoiLua")
-                {
-                    hat = ps.particleCount;
-                    vlLua = ps.GetComponent<ParticleSystemRenderer>().sharedMaterial.name;
-                }
+                if (ps.name != "KhoiDen" && ps.name != "LuaA" && ps.name != "LuaB" && ps.name != "TanLua") continue;
+                var vlp = ps.GetComponent<ParticleSystemRenderer>().sharedMaterial;
+                var tx = vlp != null ? vlp.mainTexture : null;
+                tam.AppendFormat(" [{0}: hat {1}, vat lieu {2}, texture {3}]", ps.name, ps.particleCount,
+                    vlp != null ? vlp.name : "-", tx != null ? tx.name + " " + tx.width + "x" + tx.height : "-");
             }
             var mr = lo.GetComponentInChildren<MeshRenderer>();
             var vl = mr != null ? mr.sharedMaterial : null;
-            bao.AppendLine(string.Format("   {0}: hat luoi lua dang song {1}, vat lieu lua {2}, vat lieu da {3} (mau {4}, phap {5}, bong {6})",
-                lo.name, hat, vlLua, vl != null ? vl.name : "-",
+            bao.AppendLine(string.Format("   {0}:{1}\n      vat lieu da {2} (mau {3}, phap {4}, bong {5})",
+                lo.name, tam, vl != null ? vl.name : "-",
                 vl != null && vl.GetTexture("_MainTex") != null, vl != null && vl.GetTexture("_BumpMap") != null,
                 vl != null && vl.GetTexture("_MetallicGlossMap") != null));
         }
@@ -93,6 +107,10 @@ public static class ChupNenManChinh
         int soDen = 0; foreach (var l in Object.FindObjectsByType<Light>()) if (l.enabled) soDen++;
         bao.AppendLine("so den dang bat: " + soDen + ", so renderer: " + Object.FindObjectsByType<Renderer>().Length);
         yield return Chup("nen_1_toancanh");
+        // Game view trong Editor co ti le tuy y (vd 1568x505) - render them dung
+        // khung 16:9 nguoi choi thay
+        yield return new WaitForEndOfFrame();
+        ChupKhung(cam, "nen_0_1080p", 1920, 1080);
 
         // ---- Can lo ben trai ----
         var trai = GameObject.Find("LoLua_Trai");

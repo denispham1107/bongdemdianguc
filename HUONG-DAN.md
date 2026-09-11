@@ -7030,6 +7030,9 @@ Bốn chục mảnh hình giọt nước giống hệt nhau chồng lên nhau th
 
 #### Ngọn lửa mới: lưới 64 khung, mỗi khung một khoảnh khắc của MỘT lưỡi lửa
 
+> **Đã thay** bằng lửa mô phỏng thật trong Blender — xem "Lần 3" ngay dưới mục này. `LuaNgon.png` và
+> `sinh_lua_ngon.py` đã xoá (còn trong git, commit `f69da60`).
+
 `Assets/Resources/Flipbooks/LuaNgon.png` (8×8, 1024×1024), sinh bằng `CongCu/Blender/sinh_lua_ngon.py`
 (chạy bằng Python đi kèm Blender vì Python của máy không có numpy). Mỗi ô là một thời điểm trong đời một
 lưỡi lửa: nhen lên → vươn cao, lắc lư → thân tách thành 2–3 lưỡi, mép trên xé sợi theo nhiễu Perlin cuộn
@@ -7094,6 +7097,77 @@ MainMenu.unity: 393 vật thể
 
 (Cảnh chơi Act2 ở mức Cao là ~5 300 nghìn tam giác.) Menu 50 trên nền mới: **0 chữ bị cắt, 0 chữ phải thu
 nhỏ** ở mọi màn; menu 48 (Cài đặt, tải lại màn chính ba lần): **0 lỗi**.
+
+#### Lần 3: lửa và khói đen mô phỏng thật trong Blender (qua Blender MCP)
+
+Anh xem bản trên: lò đá đẹp, nhưng lửa **vẫn ra hình tam giác và bay lơ lửng trên không** — nhờ dựng lại
+lửa kèm khói đen **bằng Blender MCP**, trong Blender anh đang mở.
+
+Lửa Perlin lần 2 hỏng từ gốc: mỗi hạt là **một lưỡi lửa rời** bốc lên rồi tan, nên lưỡi lửa tách khỏi
+miệng chậu là đúng cái "lơ lửng". Lần này không vẽ lưỡi lửa bằng tay nữa mà **mô phỏng khí cháy**
+(Mantaflow) ngay trong cảnh Blender của anh:
+
+| | |
+|---|---|
+| Miền mô phỏng | 1,2 × 1,2 × 2,6 m, độ phân giải **112**, mở biên trên cho khói thoát ra |
+| Nguồn cháy | đĩa bán kính 0,36 m, nhiên liệu 0,8, nhiễu mây trên nguồn trôi theo thời gian (lửa không đều) |
+| Cháy | tốc độ cháy 0,62 (lửa cao ~1,3 m), khói sinh ra ×3, khói tan dần 40 khung |
+| Nướng | 134 khung, **9,5 phút** (chạy bằng `bpy.app.timers` để Blender không treo lệnh MCP) |
+| Render | EEVEE, camera trực giao 320 × 640, **hai lượt** bằng cách đổi vật liệu miền: lửa (phát sáng vật đen 1 150 + 1 600 × flame K) và khói (mật độ × 18) |
+
+Chỉ lấy khung 70–133 (lửa đã cháy đều, bỏ đợt bùng lúc mới nhen), rồi **ghép vòng lặp 48 khung**: 16 khung
+đầu trộn dần với 16 khung cuối. Đo độ liền mạch: khung cuối → khung đầu khác nhau **0,00526**, hai khung
+liền nhau bình thường khác **0,00534** — mắt không thấy chỗ nối.
+
+Mã hoá ảnh cho đúng shader trong game:
+
+- **Lửa** (`Flipbooks/LuaLo.png`, 2048 × 2048, 8 × 6 ô): shader cộng sáng tính `màu × alpha`, dự án ở không
+  gian màu Gamma, nên alpha = độ sáng lớn nhất của điểm, màu = màu ÷ alpha → cộng lên ra đúng màu render.
+  Dọn nhiễu hạt của render (giá trị ~1/255 chia cho alpha gần 0 thành màu loạn): alpha < 0,015 thì bỏ —
+  **79%** điểm ảnh là nền trống.
+- **Khói** (`Flipbooks/KhoiDen.png`, 1024 × 2048): alpha = độ che phủ, mờ dần ở đáy (lửa đã che), ở đỉnh
+  và hai bên (không có mép cắt). Màu **nướng sẵn**: chân khói hắt ánh cam của lửa, lên cao đen kịt ~0,05.
+
+Trong game (`VfxFactory.LuaLoDa`) mỗi lò chỉ có **ba tấm đứng yên**, mỗi tấm đúng **một hạt** sống mãi, chạy
+ảnh 20 khung/giây: khói phía sau, hai tấm lửa lệch pha 24 khung (một tấm lật ngang). Không còn hạt lửa nào
+bay lên — chuyển động lưỡi lửa, xoắn, tách, tan thành khói đã nằm sẵn trong ảnh. Còn lại tàn lửa và đèn
+chập chờn như cũ.
+
+Những cái bẫy đã vấp, theo thứ tự:
+
+| Hiện tượng | Nguyên nhân thật | Cách sửa |
+|---|---|---|
+| Render ra ảnh rỗng hoàn toàn — nhân mật độ khói ×80 vẫn alpha 0 | Compositor của cảnh đang bật (`render.use_compositing`) | Tắt compositor |
+| Lượt lửa báo "alpha 0" | Volume chỉ **phát sáng**, không che gì → alpha 0 là đúng; phải xét kênh màu | Đo bằng RGB (lửa chiếm 22% khung, đúng nửa dưới) |
+| Noise upres (tăng chi tiết ×2) ra rỗng: 140 file chỉ 0–3,4 KB | Chưa rõ; nướng lại lần hai vẫn rỗng | Bỏ noise, tăng thẳng độ phân giải gốc 80 → 112 |
+| **Lửa vẫn lơ lửng ~0,4 m trên chậu** dù toạ độ tính đúng (đáy lửa 0,94 m, miệng chậu 1,07 m) | Chế độ `VerticalBillboard` của Unity **tự vẽ tứ giác bằng 0,707 lần kích thước đặt**. Đo bằng `BakeMesh`: đặt cao 3,033 m ra **2,145 m** — ở cả 1,5 m, 6 m, 30 m; chuyển sang `Billboard` thường thì ra đúng 3,033 m. Tấm co quanh **tâm** nên đáy lửa bị kéo lên | Nhân kích thước với √2 |
+| Khói đen gần như vô hình | Màu khói 0,10–0,16 ≈ màu trời đêm ~0,15 | Nướng khói tối hơn trời (0,05) + ánh cam ở chân |
+| Lõi lửa trắng loá | Hai tấm cộng sáng chồng nhau + bloom | Mỗi tấm 0,6 thay vì 1,0 |
+| Lửa hơi nhoè khi nhìn gần | Lưới 1280 × 1920 bị Unity co về 1024 → ô còn 128 điểm ngang | Ghép thẳng ra 2048 × 2048 (ô 256 × 341) |
+| Lửa cao 1,4 m trên lò cao 1,3 m, cột khói nằm ngoài khung | Tỉ lệ 1:1 với mô phỏng | Thu cả khối 0,82 |
+
+Tôi đã **đoán sai một lần**: tưởng lửa lơ lửng vì Unity kẹp hạt ≤ 0,5 màn hình (`maxParticleSize`), sửa xong
+chụp lại thấy y hệt. `BakeMesh` mới ra con số thật. Vẫn giữ `maxParticleSize = 100` vì khi camera nhìn cận,
+tấm cao 3 m sẽ chạm trần đó thật.
+
+Game view trong Editor đang là 1568 × 505 (lệch xa 16:9), nên menu 51c giờ render thêm `Camera.main` ở
+**1920 × 1080** (`nen_0_1080p.png`) — đúng khung người chơi thấy.
+
+Đo (menu 51c, Play):
+
+```
+mỗi lò: KhoiDen 1 hạt (KhoiDen 1024x2048) · LuaA 1 hạt · LuaB 1 hạt (LuaLo 2048x2048) · tàn lửa 10–11 hạt
+khung hình màn chính: 2 325 nghìn tam giác, 175 vật đổ bóng, 637 lần gọi vẽ, 4 đèn, 326 renderer
+```
+
+Menu 50: **0 lỗi**, 0 chữ bị cắt ở mọi màn. Menu 48 (tải lại màn chính ba lần): **0 lỗi**. Bản WebGL build
+6,4 phút, 163,8 MB, 0 lỗi; trên trang thật trình duyệt tải mới đủ bốn file theo mã phiên bản. Lần tải
+đầu (thay trang game cũ đang chạy) console có **một** lỗi `RangeError: Maximum call stack size exceeded`
+trong wasm; hai lần tải sau, mỗi lần theo dõi 50–70 giây: **0 lỗi**. Chưa rõ nguồn lỗi đó.
+
+Tệp Blender: `CongCu/Blender/lua_lo_da.blend` (bản sao cảnh mô phỏng, **không kèm** bộ nhớ nướng 654 MB —
+mở ra phải nướng lại). Render qua Blender MCP **chạy được**: `bpy.ops.render.render(write_still=True)` ghi
+ảnh đúng, chỉ có `Render Result` báo kích thước (0, 0) nên dễ tưởng là rỗng.
 
 ### Game sập ngay lúc tải sau mỗi lần cập nhật — cache giữ mã cũ
 
@@ -7220,7 +7294,7 @@ cho riêng nền tảng WebGL sẽ ăn cả hai đầu: file nhỏ hơn và khô
 | **50. Chay thu GIAO DIEN dang nhap - sanh - phong** | Đi hết các màn (đăng nhập, tạo tài khoản, sảnh trống, sảnh có phòng, Cài đặt, trong phòng, phòng đủ 4 người, đếm ngược); ở mỗi màn đếm số lượt vẽ, số chữ bị cắt, số chữ phải thu nhỏ — đếm ngay trong hàm vẽ nên không sót nhãn nào. Kiểm font đang dùng là Inter, và quay về MainMenu khi đã đăng nhập thì vào thẳng sảnh. Ảnh `gd_*.png`, kết quả `PlayTestShots/giaodien.txt`. |
 | **51. Dung man chinh tu canh Act2** | Chép phần cảnh Act2 quanh chỗ đứng (45 m, phía trước camera) sang MainMenu.unity cùng ánh sáng / sương / bầu trời; đặt phù thuỷ, camera, hai lò đá; dọn vật vướng. Tạo luôn prefab lò đá từ FBX + texture Blender. Báo cáo `PlayTestShots/dungmanchinh.txt`. |
 | **51b. Chup thu goc nhin man chinh (Act2)** | Đặt nhân vật trước từng nhà mồ theo bốn hướng, bỏ chỗ vướng vật / giữa nước, chụp bằng khung camera màn chính — để chọn chỗ đứng. Ảnh `PlayTestShots/goc/`. |
-| **51c. Chup nen man chinh (lo da, ngon lua)** | Vào Play, tắt giao diện, chụp toàn cảnh, cận lò đá, cận ngọn lửa; đo số lưỡi lửa, vật liệu, tam giác, vật đổ bóng. Ảnh `nen_*.png`, số đo `nenmanchinh.txt`. |
+| **51c. Chup nen man chinh (lo da, ngon lua)** | Vào Play, tắt giao diện, chụp toàn cảnh (thêm một ảnh `Camera.main` đúng 1920 × 1080), cận lò đá, cận ngọn lửa; đo từng tấm flipbook (khói đen, hai tấm lửa: số hạt, vật liệu, texture), tam giác, vật đổ bóng. Ảnh `nen_*.png`, số đo `nenmanchinh.txt`. |
 
 > ⚠️ Mục **1** sẽ **xóa và tạo lại** các thư mục Textures / Materials / Models / Prefabs.
 > Nếu bạn tự sửa tay trong đó thì hãy sao lưu trước.

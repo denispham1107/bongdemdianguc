@@ -1,5 +1,7 @@
 so lo da: 2, man hinh 1568x505
-   LoLua_Phai: hat luoi lua dang song 17, vat lieu lua P_LuaNgon, vat lieu da LoLuaDa_Da (mau True, phap True, bong True)
-   LoLua_Trai: hat luoi lua dang song 16, vat lieu lua P_LuaNgon, vat lieu da LoLuaDa_Da (mau True, phap True, bong True)
-khung hinh man chinh: tam giac 2326k, vat do bong 175, lan goi ve 640
+   LoLua_Phai: [KhoiDen: hat 1, vat lieu P_KhoiDen, texture KhoiDen 1024x2048] [LuaA: hat 1, vat lieu P_LuaLo, texture LuaLo 2048x2048] [LuaB: hat 1, vat lieu P_LuaLo, texture LuaLo 2048x2048] [TanLua: hat 11, vat lieu P_Ember, texture Tex_dot16 128x128]
+      vat lieu da LoLuaDa_Da (mau True, phap True, bong True)
+   LoLua_Trai: [KhoiDen: hat 1, vat lieu P_KhoiDen, texture KhoiDen 1024x2048] [LuaA: hat 1, vat lieu P_LuaLo, texture LuaLo 2048x2048] [LuaB: hat 1, vat lieu P_LuaLo, texture LuaLo 2048x2048] [TanLua: hat 13, vat lieu P_Ember, texture Tex_dot16 128x128]
+      vat lieu da LoLuaDa_Da (mau True, phap True, bong True)
+khung hinh man chinh: tam giac 2325k, vat do bong 175, lan goi ve 637
 so den dang bat: 4, so renderer: 326

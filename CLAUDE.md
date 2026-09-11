@@ -75,8 +75,10 @@ script Editor có menu rồi gọi.
 **Blender MCP** — có, giao diện tiếng Việt (tên modifier/node bị dịch, phải tra theo type).
 ⚠️ Khi người dùng bảo "dựng/thiết kế bằng Blender (MCP)": họ **đã mở sẵn Blender và kết nối MCP** — dựng
 **trong Blender đó qua MCP**. Không thấy kết nối thì **dừng và bảo người dùng mở Blender MCP**; không tự chạy
-`blender -b -P` để thiết kế bằng code ở ngoài. Blender MCP **không render được** (ảnh ra rỗng) — cần render /
-nướng bằng chạy nền thì **hỏi người dùng trước**.
+`blender -b -P` để thiết kế bằng code ở ngoài. Blender MCP **render được**: `bpy.ops.render.render(write_still=True)`
+ghi ảnh đúng (chỉ `Render Result` báo 0×0, đừng tin nó); ảnh rỗng thật thì kiểm `render.use_compositing`.
+Việc lâu (nướng mô phỏng, render nhiều khung) chạy bằng `bpy.app.timers` rồi đợi file ra từ Bash — gọi thẳng
+thì lệnh MCP hết giờ.
 
 > **Menu 3 (Self Test) THAY scene đang mở** bằng một scene thử đầy `TEST_Vfx`, `Fireball`,
 > `Tornado`. Nó không lưu nên đĩa vẫn sạch, nhưng chạy xong phải
@@ -131,10 +133,10 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
   trong trình duyệt ĐÃ TỪNG vào trang, xem `performance` báo .wasm được tải mới. Lùi bản khẩn cấp:
   `firebase hosting:clone diablo25d-game@<version> diablo25d-game:live`.
 - **Màn chính (MainMenu.unity) dựng từ cảnh Act2** bằng menu 51 — đừng sửa tay trong scene, chạy lại menu.
-  Lò đá: `Assets/Models/LoLuaDa` (FBX + texture nướng từ `CongCu/Blender/lo_lua_da.py`); lửa: flipbook
-  `LuaNgon` (`CongCu/Blender/sinh_lua_ngon.py`) dựng lúc chạy bởi `LoLuaDa` → `VfxFactory.LuaLoDa`.
-  (Hai script ấy chạy nền `blender -b --factory-startup` — từ nay dựng/thiết kế phải qua Blender MCP,
-  chạy nền chỉ khi người dùng đồng ý.)
+  Lò đá: `Assets/Models/LoLuaDa` (FBX + texture nướng từ `CongCu/Blender/lo_lua_da.py`, chạy nền — từ nay
+  dựng/thiết kế phải qua Blender MCP). Lửa + khói đen: mô phỏng Mantaflow trong Blender qua MCP
+  (`CongCu/Blender/lua_lo_da.blend`) → flipbook `LuaLo` / `KhoiDen`, ba tấm đứng yên mỗi lò, dựng lúc chạy
+  bởi `LoLuaDa` → `VfxFactory.LuaLoDa`. ⚠️ `VerticalBillboard` vẽ tứ giác **0,707×** kích thước đặt — đã bù √2.
 - Việc gần đây nhất (xem mục tương ứng trong `HUONG-DAN.md`):
   Thiên thạch **đốt cháy cả cái cây** (lửa lan theo bề mặt thật, cây rụi rồi mọc lại sau 30 s) ·
   Lốc xoáy trả cảnh vật về sau **30 s** thay vì 60 s ·
