@@ -7302,16 +7302,72 @@ trong chính trình duyệt đang giữ bản `.data` cũ không mã:
 | Tải lại lần 2 | 15 090 (chỉ `loader.js`) | + trang 2 541 byte |
 | Tải lại lần 3 | 15 090 (chỉ `loader.js`) | màn tải biến mất ở giây 22,6; 0 lỗi console |
 
-**Việc tiếp theo, chưa làm:** 22,6 giây kia là lúc **không tải gì cả** — vậy giờ nút thắt khi vào game là
-xử lý trong máy, không phải mạng. Một phần là giải nén: `.unityweb` không có header `Content-Encoding` nên
-Unity phải giải nén 166 MB bằng JavaScript (console: *"You can reduce startup time if you configure your web
-server to add Content-Encoding: gzip"*). Firebase còn tự nén gzip thêm một lần nữa khi gửi (166 129 114 →
-165 921 435, bớt được 0,1 %) nên mất `Content-Length` — ra cảnh báo *"[UnityCache] Response is served
-without Content-Length header"*. Bản thân `.data` chỉ nén được 8 % (181 337 664 → 166 129 114) vì texture đã
-nén sẵn. Thêm `Content-Encoding: gzip` cho `*.unityweb` trong `firebase.json` là một thay đổi riêng, phải đo
-riêng (Cache Storage sẽ lưu bản giải nén 181 MB thay vì 166 MB).
+(Con số 22,6 s trong bảng bị nhiễu: lúc đo còn mấy tab khác chạy game ở nền. Đo lại sạch, một tab: 14,3 s.)
 
 Bản trước lần deploy này: `57cf551200457683`.
+
+### Vào game chậm 4 giây vì giải nén 166 MB bằng JavaScript — build không nén, để Firebase nén
+
+Hết tải lại rồi mà vào game vẫn mất ~14 s dù không đi mạng một byte. Console nói thẳng lý do:
+*"You can reduce startup time if you configure your web server to add Content-Encoding: gzip"* — bản build
+nén Gzip sẵn (`.unityweb`) mà máy chủ không báo `Content-Encoding`, nên Unity giải nén cả ba file (166 MB
+`.data`, 5,5 MB wasm, framework) bằng JavaScript **mỗi lần vào game**, kể cả khi lấy từ cache.
+
+**Đo trước ở máy**, hai máy chủ Python giống hệt nhau, chỉ khác header, tải ấm xen kẽ trong một tab:
+
+| | lần 1 | lần 2 | lần 3 | TB |
+|---|---|---|---|---|
+| A — không `Content-Encoding` (như Firebase) | 15,9 s | 13,7 s | 13,8 s | 14,5 s |
+| B — có `Content-Encoding: gzip` | 9,5 s | 9,8 s | 10,1 s | 9,8 s |
+
+**Cách đầu tiên thử — thất bại:** thêm quy tắc `"**/*.unityweb"` → `Content-Encoding: gzip` vào
+`firebase.json`, đưa lên một kênh xem thử. Đọc cấu hình phiên bản qua API: quy tắc **có** trong đó. Nhưng
+phản hồi thật thì **không có** header ấy — Firebase gạt bỏ `Content-Encoding` tự đặt, rồi tự nén thêm lần
+nữa theo ý nó (wasm tải về khác MD5 file gốc). Nghĩa là sáu quy tắc `.gz`/`.br` có sẵn trong `firebase.json`
+từ trước (bản mẫu của Unity) chưa bao giờ có tác dụng, và câu *"Gzip + header Content-Encoding trên Firebase
+Hosting"* ở đầu `XuatBanWebGL.cs` chưa bao giờ đúng. Đã xoá cả sáu.
+
+**Cách làm được: build không nén sẵn**, để Firebase tự nén khi gửi — trình duyệt giải nén bằng mã máy.
+Thử trước khi build, bằng cách giải nén tay các file hiện có (nội dung y hệt bản build không nén):
+
+```
+Firebase gửi            WebGL.wasm         br    4 236 596 byte  (bản nén sẵn: 5 454 506)
+                        WebGL.framework.js br       67 813
+                        WebGL.data         gzip 168 198 261     (bản nén sẵn: 165 921 735)
+giải nén ra             MD5 khớp từng file gốc
+tải ấm, trang thật      14,64 · 14,07 · 14,15 s  (TB 14,3)
+tải ấm, kênh thử        10,90 · 10,46 · 10,48 s  (TB 10,6)
+```
+
+Lần tải đầu chỉ nặng hơn 0,6 % (172,5 MB so với 171,5 MB): wasm nén brotli còn nhỏ hơn bản Gzip của
+Unity, còn `.data` gần như không nén được (texture đã nén sẵn). Firebase gọi `.data` là `text/html` vì không
+biết đuôi ấy — `firebase.json` đặt `application/octet-stream` (đã thử: vẫn được nén).
+
+**Cái bẫy thứ hai:** build không nén thật thì loader **khác**. Chỉ `.data` còn đi qua Cache Storage của Unity;
+framework nạp bằng thẻ `<script>`, wasm do framework tự tải — cả hai đi qua **bộ đệm HTTP** của trình duyệt.
+Với `Build/**` là `no-cache` (và Firebase không trả 304), mỗi lần vào vẫn tải lại 4,3 MB. Muốn bộ đệm HTTP giữ
+được thì phải `immutable` — mà tên cố định + `immutable` chính là lỗi sập lúc tải trước đây. Nên bật
+`nameFilesAsHashes`: **tên file là MD5 nội dung** (`bb0443598881fd7827ba57b633327ce6.wasm`), đổi nội dung là đổi
+tên, không cách nào ghép bản cũ với bản mới — kể cả khi ai đó quên bước gắn `?v=`. Giờ `Build/**` là
+`public, max-age=31536000, immutable`.
+
+Kiểm thêm: `PlayerPrefs` (cài đặt, phiên đăng nhập) nằm ở `/idbfs/<mã>`. Mã đang có trên trang thật là
+`0382ed2a…` = MD5 của `https://diablo25d-game.web.app` — địa chỉ **trang**, không dính gì tới tên file, nên đổi
+tên file không làm ai mất cài đặt.
+
+Trên trang thật (bản trước: `f7f89b60cb08a187`), trình duyệt đang giữ bản cũ:
+
+| Lần | Mạng | Vào game |
+|---|---|---|
+| Đầu sau cập nhật | 172 511 486 byte; 3 mục cũ trong Cache Storage bị xoá | 16,6 s |
+| Tải ấm 1 · 2 · 3 | **2 611 byte** (chỉ trang); `Build/` 0 byte | **10,35 · 9,68 · 9,45 s** |
+
+0 lỗi console, không còn dòng *"reduce startup time"*. Còn lại cảnh báo *"[UnityCache] Response is served
+without Content-Length header"*: Firebase luôn gửi kiểu chunked khi tự nén, phía ta không chỉnh được, và nó chỉ
+là cảnh báo.
+
+⚠️ Deploy giờ phải **xoá sạch `web/Build/` trước khi chép** — tên file đổi mỗi bản, chép đè sẽ để lại file
+~200 MB của bản cũ trên máy chủ.
 
 Kiểm lại trên **chính trình duyệt đã sập**:
 
@@ -7371,7 +7427,7 @@ cho riêng nền tảng WebGL sẽ ăn cả hai đầu: file nhỏ hơn và khô
 | **26. Chay thu MANG - dang nhap va phong cho** | Chạy thật trên Firebase: đăng nhập, tạo phòng, đọc danh sách, đổi màn, đếm ngược, người thứ hai bị từ chối vào phòng đang đếm. Luôn dọn phòng đã tạo. Kết quả ra `PlayTestShots/mang_sanh.txt`. |
 | **27. Chay thu MANG - khoa tai khoan** | Kiểm rằng tài khoản bị admin khoá trên web thì không vào được game, còn tài khoản bình thường vẫn vào được. Kết quả ra `PlayTestShots/mang_khoa.txt`. |
 | **28. Chup man DANG NHAP va SANH PHONG** | Chụp ba màn hình thật của phần mạng ra `PlayTestShots/mang_man_*.png`. Xoá phiên đăng nhập cũ trên máy này (lần sau phải gõ lại mật khẩu) và luôn dọn phòng đã tạo. |
-| **29. Xuat ban WEBGL** | Xuất bản bản chơi trên trình duyệt ra `Build/WebGL` (khoảng 11 phút). Kết quả và dung lượng từng file ghi ra `PlayTestShots/build_webgl.txt`. Chép sang `web/` rồi `firebase deploy --only hosting` là lên mạng. |
+| **29. Xuat ban WEBGL** | Xuất bản bản chơi trên trình duyệt ra `Build/WebGL` (khoảng 11 phút). Kết quả và dung lượng từng file ghi ra `PlayTestShots/build_webgl.txt`. **Xoá sạch `web/Build/`**, chép `Build/WebGL/Build/*` và `Build/WebGL/index.html` sang `web/`, rồi `firebase deploy --only hosting` là lên mạng. |
 | **30 / 30b. Bom input Act2 · Act1** | Bước 1 giai đoạn 2: bơm một chuỗi ý muốn vào `PlayerController` rồi đo quãng đường đi được, đối chiếu với lý thuyết. Phải chạy cả hai vì hai màn dựng khác hẳn nhau. |
 | **31. Chay thu DU DOAN va HIEU CHINH** | Bước 2: chạy 120 gói input, đặt lại trạng thái rồi chạy lại từ gói N+1, đo độ lệch giữa hai lần — phải là 0. |
 | **32. Chay thu NHIEU NGUOI mot canh** | Bước 3: sinh thêm nhân vật thứ hai rồi đếm xem quái chia nhau ra nhắm hai người hay dồn cả vào một. |

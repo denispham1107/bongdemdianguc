@@ -1,12 +1,12 @@
-[ban 2] xuat ban WebGL (co ?v= cho .data)
+[ban 4] xuat ban WebGL (khong nen san, ten file = ma bam)
 ket qua: Succeeded
-thoi gian: 0.1 phut
-tong dung luong: 163.8 MB
-so loi: 0 | so canh bao: 1
+thoi gian: 3.0 phut
+tong dung luong: 188.8 MB
+so loi: 0 | so canh bao: 346
 thu muc ra: C:\Users\HP\Documents\GameUnity\Diablo25D\Build\WebGL
 --- file trong Build/ ---
-  WebGL.data.unityweb  158.4 MB
-  WebGL.framework.js.unityweb  0.1 MB
-  WebGL.loader.js  0.0 MB
-  WebGL.wasm.unityweb  5.2 MB
-gan phien ban vao index.html: WebGL.loader.js?v=666597647d; WebGL.framework.js.unityweb?v=567567efc5; WebGL.wasm.unityweb?v=4b395c425b; WebGL.data.unityweb?v=3c3de4e419; productVersion +3c3de4e419; 
+  09c5b67ed23d81c554b8326055270e4c.data  172.9 MB
+  4e8272bb2ef9f2d522b5a776e691a997.framework.js  0.3 MB
+  bb0443598881fd7827ba57b633327ce6.wasm  15.6 MB
+  c141acb1d8c93135107463e35edb674e.loader.js  0.0 MB
+gan phien ban vao index.html: 09c5b67ed23d81c554b8326055270e4c.data?v=09c5b67ed2; 4e8272bb2ef9f2d522b5a776e691a997.framework.js?v=4e8272bb2e; bb0443598881fd7827ba57b633327ce6.wasm?v=bb04435988; c141acb1d8c93135107463e35edb674e.loader.js?v=c141acb1d8; productVersion +09c5b67ed2; 

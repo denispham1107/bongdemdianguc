@@ -127,12 +127,13 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
 - **Cài đặt đồ hoạ** (nút CÀI ĐẶT ở sảnh, `CaiDatDoHoa.cs`): mức Cao/Trung bình/Yếu lưu trong
   `localStorage` khoá `diablo25d.mucDoHoa`; `index.html` đọc nó để đặt độ phân giải **trước** khi Unity
   khởi động — bảng hệ số ở hai nơi phải khớp nhau (menu 48 kiểm).
-- ⚠️ **Triển khai web**: chép CẢ `Build/WebGL/index.html` sang `web/` (không chỉ thư mục `Build/`) — trong đó
-  có mã phiên bản `?v=` gắn vào đường dẫn .wasm/.framework/**.data** và `productVersion` (menu 29 tự gắn).
-  Thiếu nó thì trình duyệt dùng mã game cũ trong cache ghép với dữ liệu mới và **game sập lúc tải**. File có
-  `?v=` được Unity coi là `immutable` (lấy thẳng từ Cache Storage) — vì **Firebase không bao giờ trả 304 cho
-  file `no-cache`**, hỏi lại là tải lại đủ 166 MB. Kiểm sau khi deploy: tải trang thật trong trình duyệt
-  ĐÃ TỪNG vào trang: lần đầu tải mới đủ, lần sau `performance` chỉ còn `loader.js` trong `Build/`. Lùi bản khẩn cấp:
+- ⚠️ **Triển khai web**: **xoá sạch `web/Build/`**, chép `Build/WebGL/Build/*` VÀ `Build/WebGL/index.html` sang
+  `web/`. Bản build **không nén sẵn** (Firebase tự nén khi gửi — nó gạt bỏ `Content-Encoding` tự đặt) và
+  **tên file = MD5 nội dung** (`nameFilesAsHashes`), nên `Build/**` để `immutable` được; tên cố định +
+  `immutable` từng làm **game sập lúc tải** (mã cũ ghép dữ liệu mới). `index.html` còn gắn `?v=` và
+  `productVersion` (menu 29 tự gắn, báo 4/4 file): Unity coi `.data` có `?v=` là `immutable` và tự xoá bản cũ.
+  **Firebase không bao giờ trả 304 cho file `no-cache`** — đừng dựa vào hỏi lại. Kiểm sau khi deploy: trong
+  trình duyệt ĐÃ TỪNG vào trang, lần sau `performance` báo `Build/` 0 byte, chỉ tải trang ~2,6 KB. Lùi bản khẩn cấp:
   `firebase hosting:clone diablo25d-game@<version> diablo25d-game:live`.
 - **Màn chính (MainMenu.unity) dựng từ cảnh Act2** bằng menu 51 — đừng sửa tay trong scene, chạy lại menu.
   Lò đá: `Assets/Models/LoLuaDa` (FBX + texture nướng từ `CongCu/Blender/lo_lua_da.py`, chạy nền — từ nay
@@ -149,7 +150,7 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
   chạy trên WebGL). Trang web **chỉ để admin quản lý tài khoản**.
   Dự án Firebase `diablo25d-game` (asia-southeast1). Menu 26, 27, 28 chạy thật, **0 lỗi**.
 - **Chơi được trên trình duyệt**: https://diablo25d-game.web.app (bản WebGL, menu 29 —
-  build 11,3 phút, **169 MB** người chơi phải tải, 0 lỗi console). Trang quản trị chuyển
+  build 3–11 phút, lần đầu người chơi tải **172,5 MB**, các lần sau 0 byte và vào game ~10 s, 0 lỗi console). Trang quản trị chuyển
   sang https://diablo25d-game.web.app/quantri/ . Mã nguồn ở
   https://github.com/denispham1107/bongdemdianguc .
   **Cần giảm dung lượng**: 155,7 MB nằm ở tài nguyên, và texture đang nén ASTC nên WebGL

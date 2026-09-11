@@ -11,10 +11,21 @@ using UnityEngine;
 /// WebAssembly. Day GitHub chi la luu ma nguon - khong ai "vao link GitHub"
 /// ma choi duoc.
 ///
-/// NEN: Gzip + header Content-Encoding tren Firebase Hosting. Bat kem
-/// decompressionFallback lam bao hiem: neu header hosting sai thi Unity tu giai
-/// nen bang JavaScript, cham hon nhung van chay - hon la trang trang khong mot
-/// loi nao.
+/// NEN: KHONG nen san - de Firebase Hosting tu nen luc gui (gzip/brotli, tuy
+/// trinh duyet), trinh duyet giai nen bang ma may.
+///
+/// Truoc 11/09/2026 build nen Gzip san + decompressionFallback, voi y dinh dat
+/// header Content-Encoding tren Firebase. Nhung Firebase GAT BO header
+/// Content-Encoding tu dat (da thu voi .unityweb: quy tac co trong cau hinh ma
+/// phan hoi khong co), nen Unity giai nen 166 MB bang JavaScript MOI LAN vao
+/// game. Do tren trang that, tai am (khong di mang): nen san 14,3 s, khong nen
+/// san 10,6 s. Tai lan dau chi nang hon 0,6 % (Firebase nen wasm bang brotli,
+/// con .data thi hau nhu khong nen duoc vi texture da nen san).
+/// firebase.json dat Content-Type cho *.data - khong thi Firebase goi no la
+/// text/html.
+///
+/// Doi sang may chu khac thi xem lai: may chu khong tu nen se bat nguoi choi
+/// tai 198 MB thay vi 172 MB.
 ///
 /// Ket qua ra <c>Build/WebGL</c>, bao ghi ra <c>PlayTestShots/build_webgl.txt</c>.
 /// Buoc copy sang <c>web/</c> lam o ngoai, khong lam o day: build va trien khai
@@ -43,9 +54,21 @@ public static class XuatBanWebGL
                 return;
             }
 
-        // Gzip + fallback. Xem ghi chu dau file ve ly do bat fallback.
-        PlayerSettings.WebGL.compressionFormat = WebGLCompressionFormat.Gzip;
-        PlayerSettings.WebGL.decompressionFallback = true;
+        // Khong nen san, Firebase tu nen. Xem ghi chu dau file.
+        PlayerSettings.WebGL.compressionFormat = WebGLCompressionFormat.Disabled;
+        PlayerSettings.WebGL.decompressionFallback = false;
+
+        // TEN FILE = MA BAM NOI DUNG. Ban khong nen chi dua .data qua Cache
+        // Storage cua Unity; framework (the <script>) va wasm (framework tu tai)
+        // di qua bo dem HTTP cua trinh duyet. De bo dem do giu duoc thi
+        // Build/** phai "immutable" - chi an toan khi ten file doi theo noi
+        // dung. Ten co dinh + immutable chinh la loi sap luc tai truoc day.
+        PlayerSettings.WebGL.nameFilesAsHashes = true;
+
+        // Xoa file cua lan build truoc: doi kieu nen thi doi ca ten file
+        // (.unityweb -> khong duoi), file cu nam lai se bi chep nham len web.
+        string thuMucBuildCu = Path.Combine(ThuMucRa, "Build");
+        if (Directory.Exists(thuMucBuildCu)) Directory.Delete(thuMucBuildCu, true);
 
         // Cat bot ma engine khong dung - ban WebGL cang nho cang de tai tren
         // dien thoai, ma dien thoai moi la nen tang chinh cua game nay.
@@ -70,7 +93,7 @@ public static class XuatBanWebGL
         var tt = bc.summary;
 
         var bao = new System.Text.StringBuilder();
-        bao.AppendLine("[ban 2] xuat ban WebGL (co ?v= cho .data)");
+        bao.AppendLine("[ban 4] xuat ban WebGL (khong nen san, ten file = ma bam)");
         bao.AppendLine("ket qua: " + tt.result);
         bao.AppendLine(string.Format("thoi gian: {0:F1} phut", phut));
         bao.AppendLine(string.Format("tong dung luong: {0:F1} MB", tt.totalSize / 1048576.0));
@@ -122,29 +145,43 @@ public static class XuatBanWebGL
         string trang = Path.Combine(thuMuc, "index.html");
         string build = Path.Combine(thuMuc, "Build");
         if (!File.Exists(trang)) return "khong co index.html";
+        if (!Directory.Exists(build)) return "khong co thu muc Build";
 
+        // Lay ten file tu chinh thu muc Build: ten doi theo kieu nen
+        // (WebGL.data / WebGL.data.unityweb / WebGL.data.gz...).
         string html = File.ReadAllText(trang);
-        var tep = new[] { "WebGL.loader.js", "WebGL.framework.js.unityweb", "WebGL.wasm.unityweb", "WebGL.data.unityweb" };
         var ra = new System.Text.StringBuilder();
         string maDuLieu = null;
-        foreach (var t in tep)
+        int soFileGan = 0;
+        foreach (var duong in Directory.GetFiles(build))
         {
-            string duong = Path.Combine(build, t);
-            if (!File.Exists(duong)) { ra.Append(t + " THIEU; "); continue; }
+            string t = Path.GetFileName(duong);
+            // Chi gan cho file trang that su tro toi
+            if (!html.Contains("/" + t + "\"") && !html.Contains("/" + t + "?v="))
+            {
+                ra.Append(t + " (trang khong dung); ");
+                continue;
+            }
             string ma;
             // Doc theo luong: .data 166 MB, khong nap ca file vao RAM
             using (var md5 = System.Security.Cryptography.MD5.Create())
             using (var luong = File.OpenRead(duong))
                 ma = System.BitConverter.ToString(md5.ComputeHash(luong))
                          .Replace("-", "").Substring(0, 10).ToLowerInvariant();
-            if (t == "WebGL.data.unityweb") maDuLieu = ma;
+            // Ten co the la "WebGL.data" hoac "<ma bam>.data"
+            if (t.EndsWith(".data") || t.Contains(".data.")) maDuLieu = ma;
 
             // Bo ma cu (neu chay lai lan nua) roi gan ma moi
             html = System.Text.RegularExpressions.Regex.Replace(html,
                 "/" + System.Text.RegularExpressions.Regex.Escape(t) + "(\\?v=[0-9a-f]+)?\"",
                 "/" + t + "?v=" + ma + "\"");
             ra.Append(t + "?v=" + ma + "; ");
+            soFileGan++;
         }
+
+        // loader + framework + wasm + data. Thieu la co file di tran - chinh
+        // loi ghep ma cu voi du lieu moi.
+        if (soFileGan != 4) ra.Append("CANH BAO: chi gan duoc " + soFileGan + "/4 file; ");
 
         // productVersion = "<bundleVersion>+<ma .data>": UnityCache xoa moi muc
         // co productVersion khac ngay luc khoi dong, truoc khi tai ban moi.
