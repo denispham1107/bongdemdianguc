@@ -1,7 +1,7 @@
-[ban 1] nut CAI DAT va ba muc do hoa
+[ban 2] nut CAI DAT va bon muc do hoa
 1. font Inter (doc thang bang ky tu trong file): Regular 2519 ky tu, SemiBold 2519 ky tu; 134 chu co dau tieng Viet thieu: khong
    doi chung - Lato cua Unity: thieu 102/134 chu (phai > 0)
-   137 chuoi co dau trong 8 file giao dien, 84 ky tu khac nhau, font thieu: khong
+   139 chuoi co dau trong 8 file giao dien, 81 ky tu khac nhau, font thieu: khong
 2. vi tri nut CAI DAT o hang "PHONG DANG CHO" (co chu that cua Inter):
    1920x1080: ti le 1.00, tieu de het o 723, CAI DAT 936..1106 (chu 112/170), VAO NHANH 1120..1430 (chu 263/310) -> on
    1366x768: ti le 0.71, tieu de het o 514, CAI DAT 666..787 (chu 82/121), VAO NHANH 797..1017 (chu 183/220) -> on
@@ -13,38 +13,47 @@
    1080x1920: ti le 0.92, tieu de het o 328, CAI DAT 518..674 (chu 101/156), VAO NHANH 686..970 (chu 237/284) -> on
    1170x2532: ti le 0.99, tieu de het o 352, CAI DAT 561..730 (chu 112/169), VAO NHANH 744..1051 (chu 263/307) -> on
    1568x581: ti le 0.54, tieu de het o 651, CAI DAT 771..863 (chu 65/91), VAO NHANH 870..1037 (chu 139/167) -> on
-3. trang web (chay that doan ma trong index.html bang node):
-   localStorage=null   dpr=2 -> devicePixelRatio de nguyen  (mong doi de nguyen) 
-   localStorage="0"    dpr=2 -> devicePixelRatio de nguyen  (mong doi de nguyen) 
-   localStorage="1"    dpr=2 -> devicePixelRatio 1.5  (mong doi 1.5) 
-   localStorage="2"    dpr=2 -> devicePixelRatio 1  (mong doi 1) 
-   localStorage="1"    dpr=3 -> devicePixelRatio 2.25  (mong doi 2.25) 
-   localStorage="2"    dpr=3 -> devicePixelRatio 1.5  (mong doi 1.5) 
-   localStorage="2"    dpr=1 -> devicePixelRatio 0.5  (mong doi 0.5) 
-   localStorage="3"    dpr=2 -> devicePixelRatio de nguyen  (mong doi de nguyen) 
-   localStorage="abc"  dpr=2 -> devicePixelRatio de nguyen  (mong doi de nguyen) 
-   localStorage="2"    dpr=2 (trinh duyet cam) -> devicePixelRatio de nguyen  (mong doi de nguyen) 
+3. trang web: dat devicePixelRatio khong, doc khoa cai dat khong (ca hai phai 'khong': khung game luon du net, chi canh 3D thu nho trong game)
+3b. chuyen khoa cu sang khoa moi: [cu khong co -> Cao, khoa moi -1] [cu 0 -> Cao, khoa moi 0] [cu 1 -> Trung bình, khoa moi 1] [cu 2 -> Rất yếu, khoa moi 3]
 
 4. vao sanh: muc dang dung = Cao, muc Unity = High, man hinh Game 1568x505
    mo bang: mo - anh caidat_2_bang.png
 5. OK khi khong doi gi: bang dong, game khong tai lai
 
 6. chon Trung bình roi bam OK:
-   game tai lai: co (sau 1.0 giay), kho luu = 1, muc Unity = Medium
+   game tai lai: co (sau 1.2 giay), kho luu = 1, muc Unity = Medium
    bong = HardOnly, phan giai bong = Low, khu rang cua = 0x, den tinh tung diem anh = 1, vSync = 1
+   chi tiet xa (lodBias) = 0.7 (mong 0.7), kieu bong = HardOnly (mong HardOnly)
    con dang nhap: co; sanh hien ngay sau khi nap lai: co
-   Act2: khoang bong = 40 m (mong 40), vat do bong = 213, tam giac = 4342k
+   Act2: khoang bong = 40 m (mong 40), vat do bong = 213, tam giac = 4313k
+   canh 3D 75%: anh dem 1176x379 (mong 1176x379), phong len man hinh 28 khung / 0,5 s; ngoai luc ve: targetTexture trong, pixelWidth 1568 (man hinh 1568); thu tu bloom 1 < ket xuat 2
+   anh chup caidat_act2_trungbinh: do sang trung binh 0.165
 
 6. chon Yếu roi bam OK:
-   game tai lai: co (sau 1.0 giay), kho luu = 2, muc Unity = Low
-   bong = Disable, phan giai bong = Low, khu rang cua = 0x, den tinh tung diem anh = 0, vSync = 1
+   game tai lai: co (sau 1.1 giay), kho luu = 2, muc Unity = Low
+   bong = HardOnly, phan giai bong = Low, khu rang cua = 0x, den tinh tung diem anh = 0, vSync = 1
+   chi tiet xa (lodBias) = 0.55 (mong 0.55), kieu bong = HardOnly (mong HardOnly)
    con dang nhap: co; sanh hien ngay sau khi nap lai: co
-   Act2: khoang bong = 20 m (mong 20), vat do bong = 0, tam giac = 1602k
+   Act2: khoang bong = 25 m (mong 25), vat do bong = 80, tam giac = 3759k
+   canh 3D 62%: anh dem 972x313 (mong 972x313), phong len man hinh 37 khung / 0,5 s; ngoai luc ve: targetTexture trong, pixelWidth 1568 (man hinh 1568); thu tu bloom 1 < ket xuat 2
+   anh chup caidat_act2_yeu: do sang trung binh 0.163
+
+6. chon Rất yếu roi bam OK:
+   game tai lai: co (sau 1.0 giay), kho luu = 3, muc Unity = Low
+   bong = Disable, phan giai bong = Low, khu rang cua = 0x, den tinh tung diem anh = 0, vSync = 1
+   chi tiet xa (lodBias) = 0.4 (mong 0.4), kieu bong = Disable (mong Disable)
+   con dang nhap: co; sanh hien ngay sau khi nap lai: co
+   Act2: khoang bong = 20 m (mong 20), vat do bong = 0, tam giac = 1579k
+   canh 3D 50%: anh dem 784x252 (mong 784x252), phong len man hinh 54 khung / 0,5 s; ngoai luc ve: targetTexture trong, pixelWidth 1568 (man hinh 1568); thu tu bloom 1 < ket xuat 2
+   anh chup caidat_act2_ratyeu: do sang trung binh 0.165
 
 6. chon Cao roi bam OK:
-   game tai lai: co (sau 1.0 giay), kho luu = 0, muc Unity = High
+   game tai lai: co (sau 1.1 giay), kho luu = 0, muc Unity = High
    bong = All, phan giai bong = Medium, khu rang cua = 8x, den tinh tung diem anh = 2, vSync = 1
+   chi tiet xa (lodBias) = 1 (mong 1), kieu bong = All (mong All)
    con dang nhap: co; sanh hien ngay sau khi nap lai: co
-   Act2: khoang bong = 60 m (mong 60), vat do bong = 435, tam giac = 5378k
+   Act2: khoang bong = 60 m (mong 60), vat do bong = 438, tam giac = 5428k
+   canh 3D 100%: KetXuatThuNho khong gan
+   anh chup caidat_act2_cao: do sang trung binh 0.165
 
 so loi ghi nhan = 0

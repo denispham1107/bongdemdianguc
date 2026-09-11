@@ -10,11 +10,12 @@ using UnityEngine.SceneManagement;
 using Debug = UnityEngine.Debug;
 
 /// <summary>
-/// CHAY THU: NUT CAI DAT VA BA MUC DO HOA.
+/// CHAY THU: NUT CAI DAT VA BON MUC DO HOA.
 ///
 /// Nguoi dung xin: nut "Cai dat" o sanh (ben trai VAO PHONG NHANH), tab
-/// "Giao dien" co ba muc Cao / Trung binh / Yeu, bam OK thi game tai lai va
-/// chay dung muc da chon.
+/// "Giao dien" co cac muc Cao / Trung binh / Yeu / Rat yeu, bam OK thi game tai
+/// lai va chay dung muc da chon. Tu 12/09/2026: muc thap CHI thu nho canh 3D
+/// (KetXuatThuNho) - chu, khung, nut giu du net nhu muc Cao.
 ///
 /// Do nhung gi:
 ///   A. Ngoai Play
@@ -23,17 +24,17 @@ using Debug = UnityEngine.Debug;
 ///         mot chu moi la phep thu khong biet).
 ///      2. Vi tri nut CAI DAT o nhieu kich co man hinh: khong de len tieu de
 ///         "Phong dang cho", khong de len VAO PHONG NHANH, chu vua trong nut.
-///      3. Trang web: chay THAT doan ma doc cai dat trong index.html bang
-///         node, voi tung gia tri trong localStorage - xem no dat
-///         devicePixelRatio dung bang he so cua CaiDatDoHoa.cs khong. Doan ma
-///         nay chi chay trong trinh duyet, Editor khong bao gio cham toi.
+///      3. Trang web KHONG con ha devicePixelRatio cua khung game (ha thi ca
+///         giao dien nhoe theo) va khong doc khoa cai dat nua.
+///      3b. Chuyen khoa cu (3 muc) sang khoa moi (4 muc): 2 cu = Rat yeu.
 ///   B. Trong Play (dang nhap that bang tai khoan chay thu)
 ///      4. Mo bang, chup anh.
 ///      5. OK ma khong doi gi: bang dong, game KHONG tai lai.
-///      6. Lan luot Trung binh -> Yeu -> Cao: bam OK, doi game tai lai, doc lai
-///         tu KHO LUU (khong tin bien trong bo nho), muc chat luong Unity,
-///         bong, khu rang cua; roi vao Act2 do khoang bong va so vat do bong
-///         ma Unity thuc su ve.
+///      6. Lan luot Trung binh -> Yeu -> Rat yeu -> Cao: bam OK, doi game tai
+///         lai, doc lai tu KHO LUU (khong tin bien trong bo nho), muc chat
+///         luong Unity, bong, khu rang cua; roi vao Act2 do khoang bong, so vat
+///         do bong, va anh dem canh 3D (kich thuoc, co phong len man hinh, go
+///         ra ngoai luc ve de toa do OnGUI / chuot khong lech, dung sau bloom).
 ///
 /// Cuoi cung tra lai: muc do hoa, phien dang nhap, muc chat luong cua Editor,
 /// scene dang mo.
@@ -51,11 +52,11 @@ public static class ThuCaiDat
 
     // Tra lai sau khi do
     static bool coMucGoc; static int mucGoc;
+    static bool coMucCu; static int mucCu;
     static bool coPhienGoc; static string phienGoc;
     static int chatLuongGoc;
 
     const string KhoaPhien = "diablo25d_refresh";
-    const string DuongNode = @"C:\Program Files\nodejs\node.exe";
 
     [MenuItem("Diablo 2.5D/48. Chay thu CAI DAT do hoa", false, 135)]
     public static void Chay()
@@ -64,18 +65,21 @@ public static class ThuCaiDat
         if (!ThongTinChayThu.DocHoacBao()) return;
 
         bao.Length = 0; loi = 0; daBatDau = false;
-        Ghi("[ban 1] nut CAI DAT va ba muc do hoa");
+        Ghi("[ban 2] nut CAI DAT va bon muc do hoa");
 
         // ---- A. Ngoai Play ----
         KiemFont();
         KiemViTri();
         KiemTrangWeb();
+        KiemChuyenKhoaCu();
 
         // ---- B. Trong Play ----
         canhCu = EditorSceneManager.GetActiveScene().path;
 
         coMucGoc = PlayerPrefs.HasKey(CaiDatDoHoa.Khoa);
         mucGoc = PlayerPrefs.GetInt(CaiDatDoHoa.Khoa, 0);
+        coMucCu = PlayerPrefs.HasKey(CaiDatDoHoa.KhoaCu);
+        mucCu = PlayerPrefs.GetInt(CaiDatDoHoa.KhoaCu, 0);
         coPhienGoc = PlayerPrefs.HasKey(KhoaPhien);
         phienGoc = PlayerPrefs.GetString(KhoaPhien, "");
         chatLuongGoc = QualitySettings.GetQualityLevel();
@@ -83,6 +87,7 @@ public static class ThuCaiDat
         // Bat dau tu muc Cao nhu nguoi choi moi. Bo phien cu de man dang nhap
         // khong tu dang nhap chen ngang (xem ChupManMang).
         PlayerPrefs.SetInt(CaiDatDoHoa.Khoa, 0);
+        PlayerPrefs.DeleteKey(CaiDatDoHoa.KhoaCu);
         PlayerPrefs.DeleteKey(KhoaPhien);
         PlayerPrefs.Save();
 
@@ -247,95 +252,40 @@ public static class ThuCaiDat
         const string DuongMau = "Assets/WebGLTemplates/Diablo25D/index.html";
         string html = File.ReadAllText(DuongMau);
 
-        int dau = html.IndexOf("var HE_SO_PHAN_GIAI");
-        int cuoi = html.IndexOf("} catch (e) { }", dau < 0 ? 0 : dau);
-        int taoUnity = html.IndexOf("createUnityInstance(");
-        if (dau < 0 || cuoi < 0)
-        { Ghi("[LOI] 3. khong tim thay doan doc cai dat trong " + DuongMau); loi++; return; }
-        cuoi += "} catch (e) { }".Length;
-
-        // Doan nay phai chay TRUOC createUnityInstance - sau thi Unity da doc
-        // devicePixelRatio mat roi
-        Kiem(taoUnity > cuoi, "doan doc cai dat nam SAU createUnityInstance");
-
-        string doan = html.Substring(dau, cuoi - dau);
-        string js =
-            "var doan = " + ChuoiJs(doan) + ";\n" +
-            "var khoa = " + ChuoiJs(CaiDatDoHoa.Khoa) + ";\n" +
-            "function thu(giaTri, dpr, nemLoi) {\n" +
-            "  var kho = { getItem: function (k) { if (nemLoi) throw new Error('cam'); return k === khoa ? giaTri : null; } };\n" +
-            "  var cua = { devicePixelRatio: dpr, localStorage: kho };\n" +
-            "  var cfg = {};\n" +
-            "  new Function('window', 'config', doan)(cua, cfg);\n" +
-            "  return cfg.devicePixelRatio === undefined ? -1 : cfg.devicePixelRatio;\n" +
-            "}\n" +
-            "var ds = [[null,2,0],['0',2,0],['1',2,0],['2',2,0],['1',3,0],['2',3,0],['2',1,0],['3',2,0],['abc',2,0],['2',2,1]];\n" +
-            "ds.forEach(function (t) { console.log(JSON.stringify(t[0]) + '|' + t[1] + '|' + t[2] + '|' + thu(t[0], t[1], t[2])); });\n";
-
-        string tep = Path.Combine(Path.GetTempPath(), "thu_caidat_trangweb.js");
-        File.WriteAllText(tep, js);
-
-        string ra, loiRa;
-        int ma = ChayNode(tep, out ra, out loiRa);
-        if (ma != 0)
-        { Ghi("[LOI] 3. node bao loi (" + ma + "): " + loiRa); loi++; return; }
-
-        Ghi("3. trang web (chay that doan ma trong index.html bang node):");
-        foreach (var dong in ra.Split('\n'))
-        {
-            var p = dong.Trim().Split('|');
-            if (p.Length != 4) continue;
-            string v = p[0].Trim('"');
-            float dpr = float.Parse(p[1], System.Globalization.CultureInfo.InvariantCulture);
-            bool nemLoi = p[2] == "1";
-            float kq = float.Parse(p[3], System.Globalization.CultureInfo.InvariantCulture);
-
-            // Mong doi tinh tu CaiDatDoHoa.cs: muc 1..2 thi dat dpr*he so;
-            // muc 0, khong co, rac, hay trinh duyet cam thi DE NGUYEN (-1)
-            int muc;
-            float mong = -1f;
-            if (!nemLoi && int.TryParse(v, out muc) && muc >= 1 && muc <= 2)
-                mong = dpr * CaiDatDoHoa.heSoPhanGiai[muc];
-
-            bool dung = Mathf.Abs(kq - mong) < 1e-4f;
-            Ghi(string.Format("   localStorage={0,-6} dpr={1} {2}-> devicePixelRatio {3}  (mong doi {4}) {5}",
-                p[0], dpr, nemLoi ? "(trinh duyet cam) " : "",
-                kq < 0 ? "de nguyen" : kq.ToString("0.###"),
-                mong < 0 ? "de nguyen" : mong.ToString("0.###"), dung ? "" : "<-- SAI"));
-            Kiem(dung, "trang web dat sai devicePixelRatio cho localStorage=" + p[0]);
-        }
+        // Bo chu thich JS/CSS/HTML truoc khi do - chu thich duoc phep nhac ten
+        string ma = Regex.Replace(html, @"//[^\n]*|/\*.*?\*/|<!--.*?-->", "", RegexOptions.Singleline);
+        bool datDpr = Regex.IsMatch(ma, @"devicePixelRatio\s*=");
+        bool docKhoa = ma.Contains("diablo25d.mucDoHoa");
+        Ghi("3. trang web: dat devicePixelRatio " + (datDpr ? "CO" : "khong") + ", doc khoa cai dat " + (docKhoa ? "CO" : "khong")
+            + " (ca hai phai 'khong': khung game luon du net, chi canh 3D thu nho trong game)");
+        Kiem(!datDpr, "index.html van ha devicePixelRatio - giao dien se nhoe o muc thap");
+        Kiem(!docKhoa, "index.html van doc khoa cai dat");
     }
 
-    static string ChuoiJs(string s)
+    static void KiemChuyenKhoaCu()
     {
-        var sb = new StringBuilder("\"");
-        foreach (char c in s)
+        // Chay THAT duong doc cua CaiDatDoHoa voi tung gia tri khoa cu; tra lai kho sau
+        bool coMoi = PlayerPrefs.HasKey(CaiDatDoHoa.Khoa), coCu = PlayerPrefs.HasKey(CaiDatDoHoa.KhoaCu);
+        int giuMoi = PlayerPrefs.GetInt(CaiDatDoHoa.Khoa, 0), giuCu = PlayerPrefs.GetInt(CaiDatDoHoa.KhoaCu, 0);
+        int[] cu = { -1, 0, 1, 2 };
+        MucDoHoa[] mong = { MucDoHoa.Cao, MucDoHoa.Cao, MucDoHoa.TrungBinh, MucDoHoa.RatYeu };
+        var sb = new StringBuilder();
+        for (int i = 0; i < cu.Length; i++)
         {
-            if (c == '\\') sb.Append("\\\\");
-            else if (c == '"') sb.Append("\\\"");
-            else if (c == '\n') sb.Append("\\n");
-            else if (c == '\r') { }
-            else sb.Append(c);
+            PlayerPrefs.DeleteKey(CaiDatDoHoa.Khoa);
+            if (cu[i] < 0) PlayerPrefs.DeleteKey(CaiDatDoHoa.KhoaCu); else PlayerPrefs.SetInt(CaiDatDoHoa.KhoaCu, cu[i]);
+            CaiDatDoHoa.QuenBoNho();
+            var m = CaiDatDoHoa.Muc;
+            int ghiMoi = PlayerPrefs.GetInt(CaiDatDoHoa.Khoa, -1);
+            sb.AppendFormat(" [cu {0} -> {1}, khoa moi {2}]", cu[i] < 0 ? "khong co" : cu[i].ToString(), CaiDatDoHoa.Ten[(int)m], ghiMoi);
+            Kiem(m == mong[i], "chuyen khoa cu " + cu[i] + " sai: ra " + CaiDatDoHoa.Ten[(int)m]);
+            if (cu[i] >= 0) Kiem(ghiMoi == (int)mong[i], "chuyen khoa cu " + cu[i] + " khong ghi sang khoa moi");
         }
-        return sb.Append('"').ToString();
-    }
-
-    static int ChayNode(string tep, out string ra, out string loiRa)
-    {
-        var p = new ProcessStartInfo(DuongNode, "\"" + tep + "\"")
-        {
-            UseShellExecute = false,
-            RedirectStandardOutput = true,
-            RedirectStandardError = true,
-            CreateNoWindow = true,
-        };
-        using (var pr = Process.Start(p))
-        {
-            ra = pr.StandardOutput.ReadToEnd();
-            loiRa = pr.StandardError.ReadToEnd();
-            pr.WaitForExit(15000);
-            return pr.ExitCode;
-        }
+        if (coMoi) PlayerPrefs.SetInt(CaiDatDoHoa.Khoa, giuMoi); else PlayerPrefs.DeleteKey(CaiDatDoHoa.Khoa);
+        if (coCu) PlayerPrefs.SetInt(CaiDatDoHoa.KhoaCu, giuCu); else PlayerPrefs.DeleteKey(CaiDatDoHoa.KhoaCu);
+        PlayerPrefs.Save();
+        CaiDatDoHoa.QuenBoNho();
+        Ghi("3b. chuyen khoa cu sang khoa moi:" + sb);
     }
 
     // =============================================================
@@ -398,9 +348,13 @@ public static class ThuCaiDat
         Kiem(conSanhCu && !sanh.DangMoCaiDat, "OK khi khong doi gi phai chi dong bang");
 
         // ---- 6. Ba muc ----
-        MucDoHoa[] thuTu = { MucDoHoa.TrungBinh, MucDoHoa.Yeu, MucDoHoa.Cao };
-        string[] mongMucUnity = { "High", "Medium", "Low" };
-        float[] mongBong = { 60f, 40f, 20f };
+        MucDoHoa[] thuTu = { MucDoHoa.TrungBinh, MucDoHoa.Yeu, MucDoHoa.RatYeu, MucDoHoa.Cao };
+        string[] mongMucUnity = { "High", "Medium", "Low", "Low" };
+        float[] mongBong = { 60f, 40f, 25f, 20f };
+        // Viet thang so, khong lay tu bang cua CaiDatDoHoa (phep kiem doc lap)
+        float[] mongChiTietXa = { 1f, 0.7f, 0.55f, 0.4f };
+        string[] mongKieuBong = { "All", "HardOnly", "HardOnly", "Disable" };
+        var sangMuc = new float[CaiDatDoHoa.SoMuc];
 
         foreach (var m in thuTu)
         {
@@ -412,7 +366,7 @@ public static class ThuCaiDat
             sanh.MoCaiDat();
             sanh.ChonMucDoHoa(m);
             yield return new WaitForSecondsRealtime(0.4f);
-            if (m == MucDoHoa.Yeu) yield return Chup("caidat_3_chon_yeu");
+            if (m == MucDoHoa.RatYeu) yield return Chup("caidat_3_chon_ratyeu");
 
             float truoc = Time.realtimeSinceStartup;
             sanh.BamOKCaiDat();
@@ -439,6 +393,10 @@ public static class ThuCaiDat
             Kiem(trongKho == im, "kho luu khong ghi muc " + CaiDatDoHoa.Ten[im]);
             Kiem(mucUnity == mongMucUnity[im], "muc Unity phai la " + mongMucUnity[im]);
             Kiem(QualitySettings.vSyncCount == 1, "vSync phai giu 1 nhu muc Cao");
+            Ghi(string.Format("   chi tiet xa (lodBias) = {0} (mong {1}), kieu bong = {2} (mong {3})",
+                QualitySettings.lodBias, mongChiTietXa[im], QualitySettings.shadows, mongKieuBong[im]));
+            Kiem(Mathf.Abs(QualitySettings.lodBias - mongChiTietXa[im]) < 0.01f, "chi tiet xa sai o muc " + CaiDatDoHoa.Ten[im]);
+            Kiem(QualitySettings.shadows.ToString() == mongKieuBong[im], "kieu bong sai o muc " + CaiDatDoHoa.Ten[im]);
 
             var sanhMoi = Object.FindAnyObjectByType<ManSanh>();
             Ghi("   con dang nhap: " + (FirebaseMang.DaDangNhap ? "co" : "KHONG")
@@ -447,13 +405,14 @@ public static class ThuCaiDat
 
             yield return VaoSanh();
 
-            if (m == MucDoHoa.Yeu)
+            if (m == MucDoHoa.RatYeu)
             {
-                // Anh bang sau khi tai lai - chu "(hien gio)" phai chuyen sang Yeu
+                // Anh bang sau khi tai lai - chu "(hien gio)" phai chuyen sang Rat yeu;
+                // chu va khung phai net y het muc Cao (chi canh 3D thu nho)
                 sanhMoi = Object.FindAnyObjectByType<ManSanh>();
                 sanhMoi.MoCaiDat();
                 yield return new WaitForSecondsRealtime(0.4f);
-                yield return Chup("caidat_4_yeu_hiengio");
+                yield return Chup("caidat_4_ratyeu_hiengio");
                 sanhMoi.BamOKCaiDat();      // khong doi gi -> chi dong
                 yield return null;
             }
@@ -479,9 +438,60 @@ public static class ThuCaiDat
                 QualitySettings.shadowDistance, mongBong[im], boBong, tamGiac));
             Kiem(Mathf.Abs(QualitySettings.shadowDistance - mongBong[im]) < 0.01f,
                  "khoang bong o Act2 sai");
-            if (m == MucDoHoa.Yeu) Kiem(boBong == 0, "muc Yeu van ve bong");
+            if (m == MucDoHoa.RatYeu) Kiem(boBong == 0, "muc Rat yeu van ve bong");
             else Kiem(boBong > 0, "muc " + CaiDatDoHoa.Ten[im] + " mat bong");
-            yield return Chup("caidat_act2_" + (m == MucDoHoa.Cao ? "cao" : m == MucDoHoa.TrungBinh ? "trungbinh" : "yeu"));
+
+            // ---- Anh dem canh 3D ----
+            yield return new WaitForSecondsRealtime(0.3f);   // TheoDoiCamera gan o LateUpdate
+            var cam = Camera.main;
+            var kx = cam != null ? cam.GetComponent<KetXuatThuNho>() : null;
+            float heSo = CaiDatDoHoa.heSoPhanGiai[im];
+            if (heSo >= 0.999f)
+            {
+                Ghi("   canh 3D 100%: KetXuatThuNho " + (kx == null ? "khong gan" : kx.enabled ? "DANG BAT" : "tat"));
+                Kiem(kx == null || !kx.enabled, "muc Cao van ve qua anh dem");
+            }
+            else if (kx == null || !kx.enabled)
+            {
+                Ghi("[LOI] muc " + CaiDatDoHoa.Ten[im] + ": camera chinh khong co KetXuatThuNho"); loi++;
+            }
+            else
+            {
+                int phongTruoc = kx.SoKhungDaPhong;
+                yield return new WaitForSecondsRealtime(0.5f);
+                yield return new WaitForEndOfFrame();
+                int mongRong = Mathf.Max(16, Mathf.RoundToInt(Screen.width * heSo));
+                int mongCao = Mathf.Max(16, Mathf.RoundToInt(Screen.height * heSo));
+                int thuTuBloom = -1, thuTuKx = -1, k = 0;
+                foreach (var c in cam.GetComponents<MonoBehaviour>())
+                {
+                    if (c is SimpleBloom) thuTuBloom = k;
+                    if (c == kx) thuTuKx = k;
+                    k++;
+                }
+                Ghi(string.Format("   canh 3D {0:0}%: anh dem {1}x{2} (mong {3}x{4}), phong len man hinh {5} khung / 0,5 s; ngoai luc ve: targetTexture {6}, pixelWidth {7} (man hinh {8}); thu tu bloom {9} < ket xuat {10}",
+                    heSo * 100f, kx.RongDem, kx.CaoDem, mongRong, mongCao, kx.SoKhungDaPhong - phongTruoc,
+                    cam.targetTexture == null ? "trong" : cam.targetTexture.name, cam.pixelWidth, Screen.width,
+                    thuTuBloom, thuTuKx));
+                Kiem(kx.RongDem == mongRong && kx.CaoDem == mongCao, "anh dem sai kich thuoc");
+                Kiem(kx.SoKhungDaPhong - phongTruoc >= 3, "anh dem khong duoc phong len man hinh");
+                Kiem(cam.targetTexture == null, "ngoai luc ve camera van gan anh dem - toa do OnGUI/chuot se lech");
+                Kiem(cam.pixelWidth == Screen.width, "pixelWidth camera khac man hinh");
+                Kiem(thuTuBloom < 0 || thuTuBloom < thuTuKx, "KetXuatThuNho dung truoc SimpleBloom");
+            }
+
+            string tenAnh = "caidat_act2_" + (m == MucDoHoa.Cao ? "cao" : m == MucDoHoa.TrungBinh ? "trungbinh"
+                                            : m == MucDoHoa.Yeu ? "yeu" : "ratyeu");
+            yield return Chup(tenAnh);
+            // Canh phai hien that (khong den, khong trong): do sang trung binh anh chup
+            var anh = new Texture2D(2, 2);
+            anh.LoadImage(File.ReadAllBytes("PlayTestShots/" + tenAnh + ".png"));
+            float tong = 0f; int n = 0;
+            for (int y = 0; y < anh.height; y += 7)
+                for (int x = 0; x < anh.width; x += 7) { var c = anh.GetPixel(x, y); tong += 0.299f * c.r + 0.587f * c.g + 0.114f * c.b; n++; }
+            Object.DestroyImmediate(anh);
+            sangMuc[im] = n > 0 ? tong / n : 0f;
+            Ghi(string.Format("   anh chup {0}: do sang trung binh {1:F3}", tenAnh, sangMuc[im]));
 
             SceneManager.LoadScene("MainMenu");
             han = Time.realtimeSinceStartup + 30f;
@@ -490,6 +500,11 @@ public static class ThuCaiDat
             yield return new WaitForSecondsRealtime(0.5f);
             yield return VaoSanh();
         }
+
+        float sangCao = sangMuc[(int)MucDoHoa.Cao];
+        for (int i = 1; i < CaiDatDoHoa.SoMuc; i++)
+            Kiem(sangCao <= 0f || sangMuc[i] > 0.5f * sangCao,
+                 "anh chup muc " + CaiDatDoHoa.Ten[i] + " toi han so voi muc Cao - canh khong duoc phong len man hinh?");
 
         Ket();
     }
@@ -518,6 +533,8 @@ public static class ThuCaiDat
 
         if (coMucGoc) PlayerPrefs.SetInt(CaiDatDoHoa.Khoa, mucGoc);
         else PlayerPrefs.DeleteKey(CaiDatDoHoa.Khoa);
+        if (coMucCu) PlayerPrefs.SetInt(CaiDatDoHoa.KhoaCu, mucCu);
+        else PlayerPrefs.DeleteKey(CaiDatDoHoa.KhoaCu);
         if (coPhienGoc) PlayerPrefs.SetString(KhoaPhien, phienGoc);
         else PlayerPrefs.DeleteKey(KhoaPhien);
         PlayerPrefs.Save();

@@ -7541,6 +7541,63 @@ mẫu thì khối JavaScript lỗi cú pháp và thanh không chạy).
 (hiện đủ 7 khi tới 100%), font InterViet "loaded", ảnh tiêu đề mới `?v=46475ea594`, màn đăng nhập không còn dòng
 phụ, console 0 lỗi.
 
+### Cài đặt đồ hoạ: mức thấp chỉ thu nhỏ cảnh 3D, chữ và nút luôn nét — thêm mức "Rất yếu"
+
+Anh báo: để mức **Yếu** thì các ô Đăng nhập, Tạo tài khoản, Tạo phòng, các nút… **quá mờ và nhoè**. Anh muốn: đổi mức
+chỉ đổi **cảnh trong game và nền màn menu**, còn chữ, khung, nút giữ **y hệt mức Cao**. Đổi tên "Yếu" thành
+**"Rất yếu"** và thêm một mức **"Yếu"** ở giữa Trung bình và Rất yếu.
+
+**Nguyên nhân mờ:** mức thấp được làm bằng cách hạ `devicePixelRatio` của **cả khung game** ngay trên trang web, trước
+khi Unity khởi động — mức Yếu cũ còn 50% mỗi chiều, và mọi thứ vẽ vào khung ấy (kể cả chữ và nút OnGUI) bị phóng to.
+
+**Cách làm mới:** khung game luôn đủ độ phân giải (`index.html` không còn đặt `devicePixelRatio`, không đọc cài đặt).
+Chỉ **camera chính** vẽ vào một ảnh đệm nhỏ (`KetXuatThuNho`), bloom cũng chạy trên ảnh nhỏ, rồi phóng lên màn hình ở
+cuối chuỗi hậu kỳ; OnGUI vẽ **sau** mọi camera, lên thẳng màn hình đủ độ phân giải. `TheoDoiCamera` gắn nó vào camera
+chính của mọi màn (kiểm mỗi khung — Act1 dựng camera sau khi scene nạp).
+
+Cái bẫy phải tránh: để camera **luôn** vẽ vào ảnh đệm thì `pixelWidth` của nó là kích thước ảnh nhỏ — mọi
+`WorldToScreenPoint` / `ScreenPointToRay` (tên trên đầu, số sát thương, chuột nhắm) lệch hết. Nên ảnh đệm chỉ gắn
+**trong lúc camera vẽ** (`OnPreCull`) và gỡ ra ngay khi vẽ xong (`OnRenderImage`).
+
+| Mức | Cảnh 3D | Unity | Bóng | Chi tiết xa |
+|---|---|---|---|---|
+| Cao | 100% | High | mềm, 2 tầng, 60 m | 1,0 |
+| Trung bình | 75% | Medium | cứng, 40 m | 0,7 |
+| **Yếu (mới)** | **62%** | Low + bóng | cứng, phân giải thấp, 25 m | 0,55 |
+| **Rất yếu** (= Yếu cũ) | 50% | Low | tắt | 0,4 |
+
+Lưu ở khoá mới `diablo25d.mucDoHoa2`: khoá cũ lưu 0/1/2 với 2 = Yếu cũ (50%) — đọc bằng nghĩa mới thì người đang
+chọn 50% bị đẩy lên 62%. Lần đầu đọc thì chuyển: 0 → Cao, 1 → Trung bình, **2 → Rất yếu**.
+
+**Cái bẫy menu 48 bắt được:** lần đầu "Rất yếu" **vẫn vẽ bóng** (51 vật đổ bóng). Gán `QualitySettings.shadows` là **ghi
+thẳng vào bộ thông số của mức Unity đang dùng**: "Yếu" bật bóng cứng trên Low, rồi "Rất yếu" đặt lại Low vẫn nhận bóng
+cứng. Giờ mỗi mức tự đặt đủ bốn giá trị (kiểu bóng, phân giải bóng, số tầng, chi tiết xa) bằng bộ gốc của mức Unity
+tương ứng.
+
+Đo (menu 48, Play thật, đăng nhập tài khoản chạy thử, Game view 1568 × 505):
+
+```
+trang web: không đặt devicePixelRatio, không đọc khoá cài đặt
+chuyển khoá cũ: không có -> Cao, 0 -> Cao, 1 -> Trung bình, 2 -> Rất yếu (ghi sang khoá mới 3)
+Trung bình: ảnh đệm 1176x379 (75%), bóng cứng 40 m, 213 vật đổ bóng, 4 313k tam giác
+Yếu:        ảnh đệm  972x313 (62%), bóng cứng 25 m,  80 vật đổ bóng, 3 759k tam giác
+Rất yếu:    ảnh đệm  784x252 (50%), tắt bóng,         0 vật đổ bóng, 1 579k tam giác
+Cao:        không có ảnh đệm, bóng mềm 60 m, 438 vật đổ bóng, 5 428k tam giác
+mọi mức thấp: ảnh đệm được phóng lên màn hình mỗi khung; ngoài lúc vẽ camera không gắn ảnh đệm, pixelWidth 1568 =
+màn hình; KetXuatThuNho đứng sau SimpleBloom; ảnh chụp đủ sáng như mức Cao (0,163-0,165)
+số lỗi = 0
+```
+
+Bảng Cài đặt giờ bốn hàng, dòng phụ "Chất lượng cảnh 3D · chữ và nút luôn giữ nguyên độ nét"; cột tên nới rộng —
+menu 50: 0 chữ bị cắt, **0 chữ phải thu nhỏ** (trước đó "Trung bình (hiện giờ)" phải thu nhỏ).
+
+Trên trang thật, mức Rất yếu: khung game **385 × 703 điểm ảnh = kích thước hiển thị × tỉ lệ điểm ảnh** (đủ độ phân
+giải; bản cũ ở mức thấp nhất chỉ còn 50%), nhật ký game "Rất yếu … cảnh 3D = 0.5", nền phía sau thô đi nhưng chữ và
+nút sắc nét, console 0 lỗi.
+
+Nhân tiện: công cụ ghi file của tôi biến chuỗi `̀` trong mã nguồn thành **ký tự dấu rời thật** (vô hình khi đọc) —
+`GhepDauTiengViet.cs` và `ThuBangTen.cs` đã được đổi lại thành dạng `̀` nhìn thấy được; phép thử 52 vẫn 0 lỗi.
+
 ### Việc còn phải làm
 
 **169 MB là quá nặng**, nhất là trên điện thoại — nền tảng chính của game. Gần như toàn bộ nằm ở
@@ -7609,7 +7666,7 @@ cho riêng nền tảng WebGL sẽ ăn cả hai đầu: file nhỏ hơn và khô
 | **45. Chay thu BON NGUOI (noi hinh sao)** | Mười một chiều cho trận bốn người: xếp ghế tất định (kể cả khi hai người trùng ghế), chủ phòng chuyển tiếp trạng thái và kỹ năng sang đúng những người còn lại và **không vòng về người gửi**, trả lời nhịp đúng kênh, sinh bản sao khi gói đầu tiên đến, một khách rời trận thì những người còn lại đều biết và gói trễ không làm người đó hiện lại. Kết quả ra `PlayTestShots/bonnguoi.txt`. |
 | **46. Chay thu HIEU UNG qua mang** | Mười hai chiều: bản sao không tự gieo đóng băng/choáng (và nhân vật thật vẫn gieo được), cờ và máu khiên đọc đúng rồi đi qua gói tin không to thêm, bản sao vẽ lại theo lời kể, khiên bản sao không bị trừ cục bộ, mất gói thì hiệu ứng tự tan, và quái bên khách choáng theo chủ phòng. Kết quả ra `PlayTestShots/hieuung_mang.txt`. |
 | **47. Chay thu CHE DO BON BO XUONG** | Vào Play thật ở **cả hai màn**, đếm quái trên cảnh theo loại: vào màn đúng 4 bộ xương, giết hết thì đợt mới ra đúng 30 giây game (hai vòng), và để yên 260 giây không sinh thêm con nào. Kết quả ra `PlayTestShots/bonboxuong.txt`. |
-| **48. Chay thu CAI DAT do hoa** | Ngoài Play: font đủ chữ có dấu, vị trí nút ở 8 cỡ màn hình, chạy thật đoạn mã đọc cài đặt của `index.html` bằng node. Trong Play: đăng nhập thật, mở bảng, bấm OK từng mức, đọc lại từ kho lưu, vào Act2 đếm vật đổ bóng. Trả lại mức cũ, phiên đăng nhập và mức chất lượng của Editor. Kết quả ra `PlayTestShots/caidat.txt`. |
+| **48. Chay thu CAI DAT do hoa** | Ngoài Play: font đủ chữ có dấu, vị trí nút ở nhiều cỡ màn hình, `index.html` không hạ `devicePixelRatio`, chuyển khoá cũ 3 mức sang khoá mới 4 mức. Trong Play: đăng nhập thật, bấm OK lần lượt 4 mức, đọc lại từ kho lưu, kiểu bóng / chi tiết xa, vào Act2 đếm vật đổ bóng, đo ảnh đệm cảnh 3D (kích thước, có phóng lên màn hình, gỡ ra ngoài lúc vẽ, đứng sau bloom), độ sáng ảnh chụp. Trả lại mức cũ, phiên đăng nhập và mức chất lượng của Editor. Kết quả ra `PlayTestShots/caidat.txt`. |
 | **49. Chay thu CAU LUA trung nguoi va khieng** | Tự chọn hướng bắn trống, rồi đo hai chiều mạng: người khác bắn mình / mình bắn người khác, có và không có khiên, và khiên của chính người bắn. Ghi từng cú mất máu (cú nổ hay cú cháy), chỗ quả cầu nổ so với mặt vòm, máu khiên; chụp màn hình lúc nổ để xem con số sát thương có đọc được không. Kết quả ra `PlayTestShots/cauluapvp.txt`, ảnh `caulua_no_*.png`. |
 | **50. Chay thu GIAO DIEN dang nhap - sanh - phong** | Đi hết các màn (đăng nhập, tạo tài khoản, sảnh trống, sảnh có phòng, Cài đặt, trong phòng, phòng đủ 4 người, đếm ngược); ở mỗi màn đếm số lượt vẽ, số chữ bị cắt, số chữ phải thu nhỏ — đếm ngay trong hàm vẽ nên không sót nhãn nào. Kiểm font đang dùng là Inter, và quay về MainMenu khi đã đăng nhập thì vào thẳng sảnh. Ảnh `gd_*.png`, kết quả `PlayTestShots/giaodien.txt`. |
 | **51. Dung man chinh tu canh Act2** | Chép phần cảnh Act2 quanh chỗ đứng (45 m, phía trước camera) sang MainMenu.unity cùng ánh sáng / sương / bầu trời; đặt phù thuỷ, camera, hai lò đá; dọn vật vướng. Tạo luôn prefab lò đá từ FBX + texture Blender. Báo cáo `PlayTestShots/dungmanchinh.txt`. |

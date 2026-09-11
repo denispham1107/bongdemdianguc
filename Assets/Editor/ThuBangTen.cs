@@ -259,7 +259,7 @@ public static class ThuBangTen
                 foreach (char ch in b.ten)
                     if (!cmap.Contains(ch)) Loi(b.ten + ": chu '" + ch + "' (U+" + ((int)ch).ToString("X4") + ") khong co trong font");
             foreach (char ch in b.ten)
-                if (ch >= '̀' && ch <= 'ͯ') { Loi(b.ten + ": con dau roi chua ghep"); break; }
+                if (ch >= '\u0300' && ch <= '\u036F') { Loi(b.ten + ": con dau roi chua ghep"); break; }
 
             Color mong = b.laToi ? new Color(1.00f, 0.84f, 0.42f) : new Color(0.95f, 0.92f, 0.86f);
             if (Mathf.Abs(b.mauCuoi.r - mong.r) > 0.02f || Mathf.Abs(b.mauCuoi.b - mong.b) > 0.02f)

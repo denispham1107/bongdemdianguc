@@ -5,7 +5,7 @@ using System.Text;
 ///
 /// Mot so bo go (Unikey che do "Unicode to hop", may Mac, dien thoai) luu chu
 /// co dau thanh CHU CAI + KY TU DAU ROI di sau: "a" + U+0302 + U+0309 thay vi
-/// mot chu "ẩ". Bo ve chu cua Unity (OnGUI, font dong) khong biet dat dau roi
+/// mot chu dung san (a mu hoi, U+1EA9). Bo ve chu cua Unity (OnGUI, font dong) khong biet dat dau roi
 /// len dung chu cai - dau lech sang ben, chong len chu sau, hoac mat han. Ten
 /// nguoi choi do nguoi ta tu go nen phai ghep lai truoc khi ve.
 ///
@@ -35,11 +35,11 @@ public static class GhepDauTiengViet
     {
         switch (d)
         {
-            case '̀': return 1;   // huyen
-            case '́': return 2;   // sac
-            case '̉': return 3;   // hoi
-            case '̃': return 4;   // nga
-            case '̣': return 5;   // nang
+            case '\u0300': return 1;   // huyen
+            case '\u0301': return 2;   // sac
+            case '\u0309': return 3;   // hoi
+            case '\u0303': return 4;   // nga
+            case '\u0323': return 5;   // nang
         }
         return 0;
     }
@@ -47,14 +47,14 @@ public static class GhepDauTiengViet
     /// <summary>Dau mu / trang / moc doi hang nguyen am; -1 neu khong ghep duoc.</summary>
     static int DoiHang(int hang, char d)
     {
-        if (d == '̆') return hang == A ? AW : -1;                    // trang: ă
-        if (d == '̂')                                                  // mu: â ê ô
+        if (d == '\u0306') return hang == A ? AW : -1;                    // trang: a -> a trang
+        if (d == '\u0302')                                                  // mu: a e o -> co mu
             return hang == A ? AA : hang == E ? EE : hang == O ? OO : -1;
-        if (d == '̛') return hang == O ? OW : hang == U ? UW : -1;   // moc: ơ ư
+        if (d == '\u031B') return hang == O ? OW : hang == U ? UW : -1;   // moc: o u -> co moc
         return -1;
     }
 
-    static bool LaDauRoi(char c) { return c >= '̀' && c <= 'ͯ'; }
+    static bool LaDauRoi(char c) { return c >= '\u0300' && c <= '\u036F'; }
 
     static bool TachChu(char c, out int hang, out int thanh, out bool hoa)
     {

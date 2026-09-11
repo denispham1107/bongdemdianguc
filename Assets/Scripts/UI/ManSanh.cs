@@ -612,11 +612,13 @@ public class ManSanh : MonoBehaviour
     string baoCaiDat = "";
     bool dangNapLai;
 
+    // Chi CANH 3D doi do phan giai - chu, khung, nut luon du net nhu muc Cao
     static readonly string[] MoTaMucDoHoa =
     {
-        "100% độ phân giải · bóng mềm · khử răng cưa",
-        "75% độ phân giải · bóng cứng · tắt khử răng cưa",
-        "50% độ phân giải · tắt bóng · cho máy yếu",
+        "Cảnh 100% · bóng mềm · khử răng cưa",
+        "Cảnh 75% · bóng cứng · tắt khử răng cưa",
+        "Cảnh 62% · bóng cứng gần · giảm chi tiết xa",
+        "Cảnh 50% · tắt bóng · cho máy rất yếu",
     };
 
     /// <summary>Mo bang cai dat - nut CAI DAT goi, phep thu (menu 48) cung goi.</summary>
@@ -659,7 +661,7 @@ public class ManSanh : MonoBehaviour
         GiaoDien.To(new Rect(0, 0, Screen.width, Screen.height), new Color(0f, 0f, 0f, 0.4f));
 
         float rong = Mathf.Min(Screen.width - 30f * s, 880f * s);
-        float cao = Mathf.Min(Screen.height - 30f * s, 640f * s);
+        float cao = Mathf.Min(Screen.height - 30f * s, 700f * s);   // bon hang muc do hoa
         float x = (Screen.width - rong) * 0.5f;
         float y = (Screen.height - cao) * 0.5f;
         float le = 34f * s;
@@ -712,12 +714,12 @@ public class ManSanh : MonoBehaviour
 
     void VeTabGiaoDien(float x, float y, float rong, float s)
     {
-        GiaoDien.Chu(new Rect(x, y, rong, 30f * s), "Độ phân giải và chất lượng hình", GiaoDien.KieuChuMo);
+        GiaoDien.Chu(new Rect(x, y, rong, 30f * s), "Chất lượng cảnh 3D · chữ và nút luôn giữ nguyên độ nét", GiaoDien.KieuChuMo);
         y += 42f * s;
 
-        float caoHang = 72f * s;
-        float rongTen = 280f * s;
-        for (int i = 0; i < 3; i++)
+        float caoHang = 64f * s;
+        float rongTen = 310f * s;          // du cho "Trung binh (hien gio)" khong phai thu nho
+        for (int i = 0; i < CaiDatDoHoa.SoMuc; i++)
         {
             var m = (MucDoHoa)i;
             var o = new Rect(x, y, rong, caoHang);
@@ -739,7 +741,7 @@ public class ManSanh : MonoBehaviour
             GiaoDien.Chu(new Rect(o.x + rongTen, o.y, o.width - rongTen - 16f * s, o.height),
                          MoTaMucDoHoa[i], GiaoDien.KieuChuMo);
 
-            y += caoHang + 10f * s;
+            y += caoHang + 8f * s;
         }
     }
 }
