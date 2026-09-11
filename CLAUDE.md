@@ -73,7 +73,10 @@ và các namespace lạ; đoạn code dài dễ bị `COMPILATION_FAILED` với 
 script Editor có menu rồi gọi.
 
 **Blender MCP** — có, giao diện tiếng Việt (tên modifier/node bị dịch, phải tra theo type).
-Blender MCP **không render được** (ảnh ra rỗng) — phải chạy `blender -b -P`.
+⚠️ Khi người dùng bảo "dựng/thiết kế bằng Blender (MCP)": họ **đã mở sẵn Blender và kết nối MCP** — dựng
+**trong Blender đó qua MCP**. Không thấy kết nối thì **dừng và bảo người dùng mở Blender MCP**; không tự chạy
+`blender -b -P` để thiết kế bằng code ở ngoài. Blender MCP **không render được** (ảnh ra rỗng) — cần render /
+nướng bằng chạy nền thì **hỏi người dùng trước**.
 
 > **Menu 3 (Self Test) THAY scene đang mở** bằng một scene thử đầy `TEST_Vfx`, `Fireball`,
 > `Tornado`. Nó không lưu nên đĩa vẫn sạch, nhưng chạy xong phải
@@ -130,7 +133,8 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
 - **Màn chính (MainMenu.unity) dựng từ cảnh Act2** bằng menu 51 — đừng sửa tay trong scene, chạy lại menu.
   Lò đá: `Assets/Models/LoLuaDa` (FBX + texture nướng từ `CongCu/Blender/lo_lua_da.py`); lửa: flipbook
   `LuaNgon` (`CongCu/Blender/sinh_lua_ngon.py`) dựng lúc chạy bởi `LoLuaDa` → `VfxFactory.LuaLoDa`.
-  Blender chạy nền phải có `--factory-startup` mới có Cycles để nướng.
+  (Hai script ấy chạy nền `blender -b --factory-startup` — từ nay dựng/thiết kế phải qua Blender MCP,
+  chạy nền chỉ khi người dùng đồng ý.)
 - Việc gần đây nhất (xem mục tương ứng trong `HUONG-DAN.md`):
   Thiên thạch **đốt cháy cả cái cây** (lửa lan theo bề mặt thật, cây rụi rồi mọc lại sau 30 s) ·
   Lốc xoáy trả cảnh vật về sau **30 s** thay vì 60 s ·
