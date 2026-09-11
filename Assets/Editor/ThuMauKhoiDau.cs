@@ -155,15 +155,17 @@ public static class ThuMauKhoiDau
         try
         {
             float ti = Screen.height / 1080f;
-            float rongThanh = GameHUD.BangRong * ti;
+            // Be rong THAT cua thanh (trong khung HUD kinh di, tru le) - khong phai ca bang
+            float rongThanh = GameHUD.RongThanh(ti);
 
-            var font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            // Do bang DUNG font HUD dang ve (Inter dam) - font mac dinh cu da bo
+            var font = AssetDatabase.LoadAssetAtPath<Font>("Assets/Resources/Fonts/Inter-SemiBold.ttf");
             if (font == null)
-            { Ghi("4. khong lay duoc font he thong - bo qua chieu nay"); return; }
+            { Ghi("4. khong nap duoc font Inter - bo qua chieu nay"); return; }
 
             var kieu = new GUIStyle();
             kieu.font = font;
-            kieu.fontSize = Mathf.RoundToInt(17f * ti);       // co chu thanh mau
+            kieu.fontSize = GameHUD.KieuHUD.Co(GameHUD.CoChuMau, ti);   // co chu thanh mau
 
             string chu = Mathf.CeilToInt(mauToiDa) + " / " + Mathf.CeilToInt(mauToiDa);
             float rongChu = kieu.CalcSize(new GUIContent(chu)).x;

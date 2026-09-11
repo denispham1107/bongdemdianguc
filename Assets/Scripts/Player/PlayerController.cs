@@ -273,7 +273,7 @@ public class PlayerController : MonoBehaviour
             // khong thay gi xay ra, tuong ky nang hong, trong khi that ra nhan vat
             // da guc tu luc nao. Bam phim ky nang luc nay thi nhac lai cho biet.
             if (g.kyNang >= 0)
-                Say("BAN DA GUC NGA - bam R de choi lai");
+                Say("BẠN ĐÃ GỤC NGÃ - bấm R để chơi lại");
             return;
         }
 
@@ -643,14 +643,14 @@ public class PlayerController : MonoBehaviour
     public void CastAt(int skill, Vector3 aim)
     {
         // Bam hut thi phai bao cho nguoi choi biet vi sao, khong duoc im lang.
-        if (castTimer > 0f) { Say("Dang niem chu, cho mot chut!"); return; }
+        if (castTimer > 0f) { Say("Đang niệm chú, chờ một chút!"); return; }
 
         aim = KepVaoTam(aim, TamCuaKyNang(skill));
 
         if (skill == 0)
         {
-            if (fireballTimer > 0f) { Say("QUA CAU LUA dang hoi chieu"); return; }
-            if (mana < fireballCost) { Say("Khong du nang luong!"); return; }
+            if (fireballTimer > 0f) { Say("QUẢ CẦU LỬA đang hồi chiêu"); return; }
+            if (mana < fireballCost) { Say("Không đủ năng lượng!"); return; }
 
             mana -= fireballCost;
             fireballTimer = fireballCooldown;
@@ -658,8 +658,8 @@ public class PlayerController : MonoBehaviour
         }
         else if (skill == 1)
         {
-            if (iceTimer > 0f) { Say("MUA BANG dang hoi chieu"); return; }
-            if (mana < iceCost) { Say("Khong du nang luong!"); return; }
+            if (iceTimer > 0f) { Say("MƯA BĂNG đang hồi chiêu"); return; }
+            if (mana < iceCost) { Say("Không đủ năng lượng!"); return; }
 
             mana -= iceCost;
             iceTimer = iceCooldown;
@@ -667,8 +667,8 @@ public class PlayerController : MonoBehaviour
         }
         else if (skill == 2)
         {
-            if (boltTimer > 0f) { Say("SAM SET dang hoi chieu"); return; }
-            if (mana < boltCost) { Say("Khong du nang luong!"); return; }
+            if (boltTimer > 0f) { Say("SẤM SÉT đang hồi chiêu"); return; }
+            if (mana < boltCost) { Say("Không đủ năng lượng!"); return; }
 
             mana -= boltCost;
             boltTimer = boltCooldown;
@@ -676,8 +676,8 @@ public class PlayerController : MonoBehaviour
         }
         else if (skill == 3)
         {
-            if (tornadoTimer > 0f) { Say("LOC XOAY dang hoi chieu"); return; }
-            if (mana < tornadoCost) { Say("Khong du nang luong!"); return; }
+            if (tornadoTimer > 0f) { Say("LỐC XOÁY đang hồi chiêu"); return; }
+            if (mana < tornadoCost) { Say("Không đủ năng lượng!"); return; }
 
             mana -= tornadoCost;
             tornadoTimer = tornadoCooldown;
@@ -685,8 +685,8 @@ public class PlayerController : MonoBehaviour
         }
         else if (skill == 4)
         {
-            if (meteorTimer > 0f) { Say("THIEN THACH dang hoi chieu"); return; }
-            if (mana < meteorCost) { Say("Khong du nang luong!"); return; }
+            if (meteorTimer > 0f) { Say("THIÊN THẠCH đang hồi chiêu"); return; }
+            if (mana < meteorCost) { Say("Không đủ năng lượng!"); return; }
 
             mana -= meteorCost;
             meteorTimer = meteorCooldown;
@@ -694,8 +694,8 @@ public class PlayerController : MonoBehaviour
         }
         else if (skill == 5)
         {
-            if (khiengTimer > 0f) { Say("KHIENG dang hoi chieu"); return; }
-            if (mana < khiengCost) { Say("Khong du nang luong!"); return; }
+            if (khiengTimer > 0f) { Say("KHIÊN đang hồi chiêu"); return; }
+            if (mana < khiengCost) { Say("Không đủ năng lượng!"); return; }
 
             mana -= khiengCost;
             khiengTimer = khiengCooldown;
@@ -703,8 +703,8 @@ public class PlayerController : MonoBehaviour
         }
         else if (skill == 6)
         {
-            if (giatSetTimer > 0f) { Say("GIUT SET dang hoi chieu"); return; }
-            if (mana < giatSetCost) { Say("Khong du nang luong!"); return; }
+            if (giatSetTimer > 0f) { Say("GIỰT SÉT đang hồi chiêu"); return; }
+            if (mana < giatSetCost) { Say("Không đủ năng lượng!"); return; }
 
             mana -= giatSetCost;
             giatSetTimer = giatSetCooldown;

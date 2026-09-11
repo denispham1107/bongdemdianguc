@@ -1,0 +1,20 @@
+[ban 1] HUD kinh di trong tran
+A. bo cuc (chu dai nhat, moi thong bao cung hien):
+   1920x1080 (ti le 1.00):  PC: dot 341x85, mang 780x67 y107, bao NV y649 -> on  cam ung: dot 341x85, mang 780x67 y107, bao NV y649 -> on
+   1366x768 (ti le 0.71):  PC: dot 244x60, mang 555x48 y76, bao NV y461 -> on  cam ung: dot 244x60, mang 555x48 y76, bao NV y461 -> on
+   1280x720 (ti le 0.67):  PC: dot 227x56, mang 520x45 y71, bao NV y432 -> on  cam ung: dot 227x56, mang 520x45 y71, bao NV y432 -> on
+   1024x768 (ti le 0.71):  PC: dot 244x60, mang 555x48 y107, bao NV y461 -> on  cam ung: dot 244x60, mang 555x48 y107, bao NV y461 -> on
+   2532x1170 (ti le 1.08):  PC: dot 360x91, mang 845x74 y115, bao NV y703 -> on  cam ung: dot 360x91, mang 845x74 y115, bao NV y703 -> on
+   2400x1080 (ti le 1.00):  PC: dot 341x85, mang 780x67 y107, bao NV y649 -> on  cam ung: dot 341x85, mang 780x67 y107, bao NV y649 -> on
+   2732x2048 (ti le 1.90):  PC: dot 649x161, mang 1479x127 y284, bao NV y1230 -> on  cam ung: dot 649x161, mang 1479x127 y284, bao NV y1230 -> on
+   1568x505 (ti le 0.47):  PC: dot 189x42, mang 365x34 y52, bao NV y304 -> on  cam ung: dot 189x42, mang 365x34 y52, bao NV y304 -> on
+   800x360 (ti le 0.33):  PC: dot 181x34, mang 260x43 y41, bao NV y215 -> on  cam ung: dot 181x34, mang 260x43 y41, bao NV y215 -> on
+   1080x1920 (ti le 1.78):  PC: dot 615x152, mang 1023x159 y436, bao NV y1154 -> on  cam ung: dot 615x152, mang 1023x159 y436, bao NV y940 -> on
+   1170x2532 (ti le 2.34):  PC: dot 810x200, mang 1095x207 y575, bao NV y1522 -> on  cam ung: dot 810x200, mang 1095x207 y702, bao NV y1229 -> on
+   tong loi bo cuc (11 co man hinh x 2 che do x 4 bo chu) = 0
+B. chu: 212 chuoi trong 4 file HUD; ky tu khong co trong Inter: ""; cum chu khong dau cu con sot: khong
+C. trong Play 1568x505, moi thong bao cung hien, mau 20%: [bang mau/mana: 7,7 161x58] [khung dot quai: 704,6 160x43] [thong bao mang: 602,53 365x35] [bao ket noi: 659,131 251x41] [bao ngan: 688,177 192x20] [thanh ky nang: 630,455 309x50] [bao nhan vat: 705,303 159x20]
+   de nhau / ra ngoai: 0
+   font khung dot: Inter-SemiBold, font thong bao: Inter-Regular
+   so khung chu dang hien: 6 (mong 6: bang, dot, mang, ket noi, bao ngan, bao nhan vat)
+so loi ghi nhan = 0

@@ -6,7 +6,7 @@ using UnityEngine;
 /// thanh khieng, thanh nang luong), thanh ky nang o giua duoi, thong bao.
 /// Ve bang OnGUI nen khong can cai them package UI nao.
 /// </summary>
-public class GameHUD : MonoBehaviour
+public partial class GameHUD : MonoBehaviour
 {
     public PlayerController player;
     public Damageable playerHealth;
@@ -91,8 +91,8 @@ public class GameHUD : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.F9))
         {
             epCamUng = !epCamUng;
-            Say(epCamUng ? "CAM UNG: joystick + nut tron"
-                         : "PC: thanh ky nang vuong");
+            Say(epCamUng ? "CẢM ỨNG: cần điều khiển + nút tròn"
+                         : "MÁY TÍNH: thanh kỹ năng vuông");
         }
 
         CamUng.EpBat = epCamUng;
@@ -149,12 +149,14 @@ public class GameHUD : MonoBehaviour
         startTime = Time.time;
 
         // Dai mau doc cho tung thanh - xem GradientDoc
-        gradMau = GradientDoc(new Color(1.00f, 0.42f, 0.34f),
-                              new Color(0.78f, 0.08f, 0.07f),
-                              new Color(0.42f, 0.03f, 0.03f));
-        gradMana = GradientDoc(new Color(0.55f, 0.82f, 1.00f),
-                               new Color(0.10f, 0.32f, 0.85f),
-                               new Color(0.04f, 0.13f, 0.45f));
+        // Mau BAM (do sam, day toi gan den) va mana xanh tim "linh hon" - hop
+        // phong cach kinh di cua sanh (12/09/2026; truoc la do tuoi / xanh troi)
+        gradMau = GradientDoc(new Color(0.92f, 0.20f, 0.14f),
+                              new Color(0.58f, 0.03f, 0.03f),
+                              new Color(0.22f, 0.01f, 0.01f));
+        gradMana = GradientDoc(new Color(0.62f, 0.55f, 1.00f),
+                               new Color(0.26f, 0.16f, 0.70f),
+                               new Color(0.08f, 0.04f, 0.28f));
         gradKhieng = GradientDoc(new Color(0.85f, 0.62f, 1.00f),
                                  new Color(0.55f, 0.24f, 0.92f),
                                  new Color(0.28f, 0.10f, 0.52f));
@@ -187,6 +189,11 @@ public class GameHUD : MonoBehaviour
             midStyle = new GUIStyle(GUI.skin.label);
             smallStyle = new GUIStyle(GUI.skin.label);
             keyStyle = new GUIStyle(GUI.skin.label);
+            // Font mac dinh cua Unity thieu chu co dau tieng Viet - len web la mat chu
+            bigStyle.font = GiaoDien.ChuDam;
+            midStyle.font = GiaoDien.ChuThuong;
+            smallStyle.font = GiaoDien.ChuThuong;
+            keyStyle.font = GiaoDien.ChuDam;
         }
         bigStyle.fontSize = Mathf.RoundToInt(46f * s);
         bigStyle.fontStyle = FontStyle.Bold;
@@ -210,182 +217,15 @@ public class GameHUD : MonoBehaviour
         float s = Screen.height / Ref;
         EnsureStyles(s);
 
-        VeBangTrangThai(s);
-
         // PC giu nguyen thanh ky nang vuong o day man hinh; may cam ung thi doi
         // sang cum nut tron o goc phai duoi cho vua tam ngon cai.
         if (CamUng.DangDung) { VeNutKyNangTron(s); VeNutGocNhin(s); VeNutKhoaCam(s); }
         else DrawSkillBar(s);
-        DrawTopInfo(s);
+
+        // Bang mau/mana, khung dot quai, moi dong thong bao - mot bo cuc chung,
+        // khong khung nao de len khung nao (GameHUDKinhDi.cs)
+        VeHUDKinhDi(s);
         DrawMessages(s);
-    }
-
-    // ================================================================
-    //  BANG TRANG THAI GOC TRAI TREN
-    // ================================================================
-
-    /// <summary>Ten nhan vat tren bang. De khong dau cho khoi vo font.</summary>
-    public string tenNhanVat = "PHU THUY";
-
-    /// <summary>
-    /// Bang trang thai: ten, thanh mau, thanh khieng, thanh nang luong - xep
-    /// tu tren xuong o goc trai tren.
-    ///
-    /// Cac dai KHONG duoc de len nhau. Moi thu chiem dung mot dai cao rieng,
-    /// cong don xuong bang bien y - khong dat toa do tay cho tung thanh, vi
-    /// doi chieu cao mot thanh la phai sua toa do tat ca nhung thanh duoi no.
-    /// </summary>
-    // Kich thuoc bang trang thai, de o MOT CHO duy nhat.
-    //
-    // Truoc day co dong "GOC NHIN: ..." ve ngay duoi bang nay - da bo han. Hai
-    // lan no gay chuyen: lan dau ve o (12s, 10s) DE CHONG len ten nhan vat, lan
-    // sau tren man hinh hep thi chu dai xuong hai dong va tran vao thanh nang
-    // luong. Ca hai lan deu chi lo ra khi chup anh that trong Play mode.
-    //
-    // DayBangTrangThai() ben duoi gio khong con ai goi, nhung giu lai: thu gi
-    // muon dat duoi bang trang thai deu can no de biet bang cao den dau.
-    const float BangLeTrai = 14f;
-    const float BangLeTren = 12f;
-    /// <summary>Be rong bang trang thai goc tren trai, tinh o do phan giai 1080.
-    /// Mo ra cho kich ban chay thu do xem con so co lot trong thanh khong.</summary>
-    public const float BangRong = 320f;
-    const float BangKhe = 5f;
-    const float BangCaoTen = 26f;
-    const float BangCaoMau = 30f;
-    const float BangCaoKhieng = 9f;     // MONG, chi la mot vach nho
-    const float BangCaoMana = 22f;
-
-    /// <summary>Day bang trang thai nam o dau tren man hinh.</summary>
-    public static float DayBangTrangThai(float s)
-    {
-        return (BangLeTren + BangCaoTen + BangCaoMau + BangKhe
-              + BangCaoKhieng + BangKhe + BangCaoMana) * s;
-    }
-
-    void VeBangTrangThai(float s)
-    {
-        float leTrai = BangLeTrai * s;
-        float leTren = BangLeTren * s;
-        float rong = BangRong * s;
-        float khe = BangKhe * s;
-
-        float caoTen = BangCaoTen * s;
-        float caoMau = BangCaoMau * s;
-        float caoKhieng = BangCaoKhieng * s;
-        float caoMana = BangCaoMana * s;
-
-        float y = leTren;
-
-        // ---- Ten nhan vat ----
-        var stTen = new GUIStyle(midStyle);
-        stTen.alignment = TextAnchor.MiddleLeft;
-        stTen.fontSize = Mathf.RoundToInt(19f * s);
-        stTen.fontStyle = FontStyle.Bold;
-        stTen.normal.textColor = new Color(0.94f, 0.90f, 0.76f);
-
-        // Bong chu: ve lech mot chut bang mau toi truoc
-        var stBong = new GUIStyle(stTen);
-        stBong.normal.textColor = new Color(0f, 0f, 0f, 0.75f);
-        GUI.Label(new Rect(leTrai + 2f * s, y + 2f * s, rong, caoTen), tenNhanVat, stBong);
-        GUI.Label(new Rect(leTrai, y, rong, caoTen), tenNhanVat, stTen);
-
-        y += caoTen;                     // ten chiem tron dai cua no, thanh mau
-                                         // khong ve de len
-
-        // ---- Thanh mau ----
-        float mau01 = playerHealth != null ? playerHealth.Health01 : 0f;
-        string chuMau = playerHealth != null
-            ? Mathf.CeilToInt(playerHealth.health) + " / " + Mathf.CeilToInt(playerHealth.maxHealth)
-            : "";
-        VeThanh3D(new Rect(leTrai, y, rong, caoMau), mau01, gradMau, chuMau, s, 17f);
-        y += caoMau + khe;
-
-        // ---- Thanh khieng: CHI hien khi dang co khieng ----
-        // Khong co khieng thi de TRONG dai nay chu khong keo thanh mana len -
-        // thanh mana nhay len nhay xuong moi lan bat/tat khieng thi roi mat.
-        float khieng01 = player != null ? player.KhiengMau01 : 0f;
-        if (khieng01 > 0.001f)
-        {
-            VeThanh3D(new Rect(leTrai, y, rong, caoKhieng), khieng01,
-                      khieng01 > 0.35f ? gradKhieng : gradKhiengYeu, "", s, 0f);
-        }
-        y += caoKhieng + khe;
-
-        // ---- Thanh nang luong ----
-        float mana01 = player != null ? player.Mana01 : 0f;
-        string chuMana = player != null
-            ? Mathf.CeilToInt(player.mana) + " / " + Mathf.CeilToInt(player.maxMana)
-            : "";
-        VeThanh3D(new Rect(leTrai, y, rong, caoMana), mana01, gradMana, chuMana, s, 14f);
-    }
-
-    /// <summary>
-    /// Mot thanh chi so kieu NOI KHOI, co do bong.
-    ///
-    /// Bon lop xep tu duoi len, thieu lop nao la thanh xep lai thanh mot hinh
-    /// chu nhat phang:
-    ///   1. BONG DO - hinh chu nhat den mo, lech xuong duoi ben phai. Day la
-    ///      thu tach thanh ra khoi nen, cho no noi len.
-    ///   2. RANH CHIM - nen toi, canh TREN toi va canh DUOI sang. Nguoc voi mot
-    ///      khoi noi (tren sang duoi toi) - nho vay no chim xuong.
-    ///   3. PHAN DAY - to bang dai mau doc (sang tren, dam giua, toi duoi) nen
-    ///      nhin ra mat tru chu khong phai mieng giay mau.
-    ///   4. VET BONG - dai trang mo o mot phan ba tren cung, giong anh sang hat
-    ///      tren mat kinh cong.
-    /// </summary>
-    void VeThanh3D(Rect r, float tiLe, Texture2D grad, string chu, float s, float coChu)
-    {
-        tiLe = Mathf.Clamp01(tiLe);
-        var cu = GUI.color;
-        float vien = Mathf.Max(1f, 2f * s);
-
-        // 1. Bong do
-        GUI.color = new Color(0f, 0f, 0f, 0.55f);
-        GUI.DrawTexture(new Rect(r.x + 3f * s, r.y + 3f * s, r.width, r.height),
-                        barTex, ScaleMode.StretchToFill, true);
-
-        // 2. Ranh chim
-        GUI.color = new Color(0.05f, 0.04f, 0.05f, 0.92f);
-        GUI.DrawTexture(r, barTex, ScaleMode.StretchToFill, true);
-
-        GUI.color = new Color(0f, 0f, 0f, 0.85f);
-        GUI.DrawTexture(new Rect(r.x, r.y, r.width, vien), barTex, ScaleMode.StretchToFill, true);
-        GUI.color = new Color(1f, 1f, 1f, 0.16f);
-        GUI.DrawTexture(new Rect(r.x, r.yMax - vien, r.width, vien), barTex, ScaleMode.StretchToFill, true);
-
-        // 3. Phan day
-        if (tiLe > 0.001f)
-        {
-            var trong = new Rect(r.x + vien, r.y + vien,
-                                 (r.width - vien * 2f) * tiLe, r.height - vien * 2f);
-            GUI.color = Color.white;
-            GUI.DrawTexture(trong, grad, ScaleMode.StretchToFill, true);
-
-            // 4. Vet bong tren mat thanh
-            GUI.color = new Color(1f, 1f, 1f, 0.22f);
-            GUI.DrawTexture(new Rect(trong.x, trong.y, trong.width, trong.height * 0.34f),
-                            barTex, ScaleMode.StretchToFill, true);
-
-            // Vach sang o dau mut - cho thay ro thanh dang day toi dau
-            GUI.color = new Color(1f, 1f, 1f, 0.45f);
-            GUI.DrawTexture(new Rect(trong.xMax - vien, trong.y, vien, trong.height),
-                            barTex, ScaleMode.StretchToFill, true);
-        }
-
-        GUI.color = cu;
-        DrawBorder(r, new Color(0.62f, 0.55f, 0.40f, 0.75f), Mathf.Max(1f, vien * 0.6f));
-
-        // Con so, dat GIUA thanh
-        if (!string.IsNullOrEmpty(chu) && coChu > 0.5f)
-        {
-            var st = new GUIStyle(smallStyle);
-            st.alignment = TextAnchor.MiddleCenter;
-            st.fontSize = Mathf.RoundToInt(coChu * s);
-            st.normal.textColor = new Color(0f, 0f, 0f, 0.8f);
-            GUI.Label(new Rect(r.x + 1f * s, r.y + 1f * s, r.width, r.height), chu, st);
-            st.normal.textColor = Color.white;
-            GUI.Label(r, chu, st);
-        }
     }
 
     // ================================================================
@@ -414,7 +254,7 @@ public class GameHUD : MonoBehaviour
     /// do se an mot cu bam thanh vai cu.
     /// </summary>
     /// <summary>Hien mot dong bao ngan giua man hinh.</summary>
-    void Say(string chu)
+    public void Say(string chu)
     {
         baoChu = chu;
         baoLuc = Time.time;
@@ -793,7 +633,7 @@ public class GameHUD : MonoBehaviour
         st.fontSize = Mathf.RoundToInt(30f * s);
         st.normal.textColor = dangBam ? new Color(1f, 1f, 0.85f)
                                       : new Color(1f, 0.90f, 0.62f);
-        GUI.Label(r, "TRO VE", st);
+        GUI.Label(r, "TRỞ VỀ", st);
     }
 
     /// <summary>
@@ -954,7 +794,7 @@ public class GameHUD : MonoBehaviour
         if (Vector2.Distance(diem, TamNutKhoaCam(s)) > BanKinhNutKhoaCam(s)) return false;
 
         CamUng.KhoaCam = !CamUng.KhoaCam;
-        Say(CamUng.KhoaCam ? "Da khoa goc nhin" : "Da mo khoa goc nhin");
+        Say(CamUng.KhoaCam ? "Đã khoá góc nhìn" : "Đã mở khoá góc nhìn");
         return true;
     }
 
@@ -1398,60 +1238,24 @@ public class GameHUD : MonoBehaviour
     }
 
     // ================================================================
-    //  THONG TIN TREN DINH MAN HINH
-    // ================================================================
-
-    void DrawTopInfo(float s)
-    {
-        float w = 320f * s, h = 76f * s;
-        var r = new Rect((Screen.width - w) * 0.5f, 10f * s, w, h);
-        GUI.DrawTexture(r, panelTex, ScaleMode.StretchToFill, true);
-
-        var st = new GUIStyle(midStyle);
-        st.alignment = TextAnchor.MiddleCenter;
-
-        if (director != null)
-        {
-            string line1 = "DOT " + Mathf.Max(1, director.Wave) + "   -   Quai con lai: " + director.Alive;
-            string line2 = "Da diet: " + director.Kills;
-            if (director.NextWaveIn > 0.01f && director.Alive == 0)
-                line2 = "Dot moi sau " + Mathf.CeilToInt(director.NextWaveIn) + " giay...";
-
-            GUI.Label(new Rect(r.x, r.y + 4f * s, r.width, 34f * s), line1, st);
-            GUI.Label(new Rect(r.x, r.y + 36f * s, r.width, 34f * s), line2, st);
-        }
-
-        // KHONG ve ten goc nhin nua. Nguoi choi biet minh dang o goc nhin nao vi
-        // dang nhin thay no; dong chu chi chiem cho ngay duoi bang trang thai.
-    }
-
-    // ================================================================
     //  THONG BAO / HUONG DAN
     // ================================================================
 
     void DrawMessages(float s)
     {
-        // Dong bao khi vua doi che do PC <-> cam ung (phim F9)
-        float tuoi = Time.time - baoLuc;
-        if (!string.IsNullOrEmpty(baoChu) && tuoi < 2f)
-        {
-            var st = new GUIStyle(midStyle);
-            st.alignment = TextAnchor.MiddleCenter;
-            st.fontSize = Mathf.RoundToInt(22f * s);
-            st.normal.textColor = new Color(1f, 0.92f, 0.6f, Mathf.Clamp01(2f - tuoi));
-            GUI.Label(new Rect(0f, Screen.height * 0.22f, Screen.width, 40f * s), baoChu, st);
-        }
+        // Dong bao ngan (F9, khoa goc nhin) va dong bao cua nhan vat: ve trong
+        // VeHUDKinhDi theo bo cuc chung - khong con de len khung dot quai.
 
         // Huong dan dau man
         if (Time.time - startTime < hintDuration)
         {
             string[] lines =
             {
-                "CHUOT TRAI: di chuyen        GIU CHUOT PHAI: tu xoay camera",
-                "PHIM 1: Qua cau lua   2: Mua bang   3: Sam set   4: Loc xoay (cuon quai len troi)",
-                "Hang so bi ket (bo go tieng Viet) thi dung Z X V B thay cho 1 2 3 4",
-                "PHIM C: doi goc nhin 3D / 2.5D / 2D      Q,E: xoay      Con lan chuot: phong to",
-                "WASD: di chuyen truc tiep     R: choi lai     ESC: ve man hinh chinh",
+                "CHUỘT TRÁI: di chuyển        GIỮ CHUỘT PHẢI: tự xoay camera",
+                "PHÍM 1: Quả cầu lửa   2: Mưa băng   3: Sấm sét   4: Lốc xoáy (cuốn quái lên trời)",
+                "Hàng số bị kẹt (bộ gõ tiếng Việt) thì dùng Z X V B thay cho 1 2 3 4",
+                "PHÍM C: đổi góc nhìn 3D / 2.5D / 2D      Q,E: xoay      Con lăn chuột: phóng to",
+                "WASD: di chuyển trực tiếp     R: chơi lại     ESC: về màn hình chính",
             };
 
             float w = 900f * s, lh = 30f * s;
@@ -1470,41 +1274,10 @@ public class GameHUD : MonoBehaviour
             GUI.color = prev;
         }
 
-        // Thong bao ngan (het nang luong, doi ky nang...)
-        if (player != null && Time.time - player.LastMessageTime < 1.6f && !string.IsNullOrEmpty(player.LastMessage))
-        {
-            var st = new GUIStyle(midStyle);
-            st.alignment = TextAnchor.MiddleCenter;
-            st.normal.textColor = new Color(1f, 0.85f, 0.5f);
-            GUI.Label(new Rect(0f, Screen.height * 0.62f, Screen.width, 40f * s), player.LastMessage, st);
-        }
-
         // Man hinh thua
         if (director != null && director.PlayerDead)
         {
-            var prev = GUI.color;
-            GUI.color = new Color(0f, 0f, 0f, 0.72f);
-            GUI.DrawTexture(new Rect(0f, 0f, Screen.width, Screen.height), barTex);
-            GUI.color = prev;
-
-            var st = new GUIStyle(bigStyle);
-            st.normal.textColor = new Color(0.9f, 0.15f, 0.12f);
-            GUI.Label(new Rect(0f, Screen.height * 0.40f, Screen.width, 60f * s), "BAN DA GUC NGA", st);
-
-            var st2 = new GUIStyle(midStyle);
-            st2.alignment = TextAnchor.MiddleCenter;
-
-            // May cam ung KHONG CO BAN PHIM. Nhac "bam R / ESC" o day la chi ra
-            // hai cai phim ma nguoi choi khong the bam - thay bang mot cai nut.
-            string tomTat = "Da diet " + director.Kills + " quai o dot " + director.Wave + ".";
-            if (!CamUng.DangDung)
-                tomTat += GameDirector.DuocChoiLai
-                    ? "  Bam R de choi lai, ESC de ve man hinh chinh."
-                    // Choi mang thi khong co "choi lai" - chi co ve sanh
-                    : "  Bam ESC de ve sanh.";
-
-            GUI.Label(new Rect(0f, Screen.height * 0.50f, Screen.width, 40f * s), tomTat, st2);
-
+            VeManHinhThua(s);
             if (CamUng.DangDung) VeNutTroVe(s);
         }
         else if (KhoiDongTranMang.CanNutVeSanh && CamUng.DangDung)

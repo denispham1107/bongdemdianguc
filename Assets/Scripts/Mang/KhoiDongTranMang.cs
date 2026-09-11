@@ -40,6 +40,7 @@ public class KhoiDongTranMang : MonoBehaviour
     /// </summary>
     public static string ThongBaoKetNoi = "";
     static bool thongBaoLaLoi;
+    public static bool ThongBaoLaLoi { get { return thongBaoLaLoi; } }
 
     /// <summary>
     /// Chu phong da roi tran, nguoi khach can mot duong ve sanh. HUD doc co nay
@@ -503,6 +504,11 @@ public class KhoiDongTranMang : MonoBehaviour
             GUI.Label(new Rect(10f * s, Screen.height - 26f * s, 520f * s, 22f * s),
                       NhanDang, kieuNho);
         }
+
+        // Trong tran luon co HUD: HUD ve TrangThai va ThongBaoKetNoi theo bo cuc
+        // chung (GameHUDKinhDi). Truoc day ve o day, ngay giua mep tren - DE LEN
+        // khung dot quai cua HUD. Chi tu ve khi khong co HUD.
+        if (GameHUD.Ban != null && GameHUD.Ban.isActiveAndEnabled) return;
 
         if (!string.IsNullOrEmpty(ThongBaoKetNoi))
         {

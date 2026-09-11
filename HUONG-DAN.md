@@ -7595,6 +7595,47 @@ Trên trang thật, mức Rất yếu: khung game **385 × 703 điểm ảnh = k
 giải; bản cũ ở mức thấp nhất chỉ còn 50%), nhật ký game "Rất yếu … cảnh 3D = 0.5", nền phía sau thô đi nhưng chữ và
 nút sắc nét, console 0 lỗi.
 
+### HUD trong trận kiểu kinh dị: máu, mana, thông báo — có dấu, không đè nhau
+
+Anh gửi ảnh: khung "DOT 1 - Quai con lai: 1 / Da diet: 3" bị dòng "Chơi một mình trong phòng…" **đè lên**, bảng
+"PHU THUY" + thanh máu/mana đỏ tươi xanh trời trông lạc giữa game. Xin: thiết kế lại phần thông báo và máu/mana cho
+**rùng rợn, âm u**, gõ đúng **tiếng Việt có dấu**, **không tràn che lẫn nhau**.
+
+**Nguyên nhân đè nhau:** HUD (`GameHUD`) vẽ khung đợt ở giữa mép trên, còn `KhoiDongTranMang` tự vẽ dòng trạng thái mạng
+ở **đúng chỗ ấy** (y = 24) — hai file tự chọn chỗ, không ai biết ai. Chữ không dấu vì cả HUD vẽ bằng font mặc định.
+
+**Làm lại** (`GameHUDKinhDi.cs`, cùng lớp `GameHUD` — partial):
+
+- **Bảng máu/mana**: khung đá tối, móc sắt đỏ ở góc (như sảnh); tên "PHÙ THỦY" (chơi mạng: tên người chơi, đã ghép
+  dấu rời) + đường kẻ đỏ; thanh kiểu **ống chất lỏng** — máu đỏ bầm, mana xanh tím "linh hồn", vạch chia 10%, một vệt
+  sáng trôi ngang như chất lỏng sánh, viền sắt + chỉ đỏ; **máu dưới 30%** thì viền bùng đỏ theo **nhịp tim**.
+- **Khung đợt**: "ĐỢT 1" to đỏ máu, dưới là "Quái còn lại: 4 · Đã diệt: 0" / "Đợt mới sau 5 giây…"; khung tự nới theo chữ.
+- **Thông báo mạng, mất kết nối**: HUD vẽ (KhoiDongTranMang nhường khi có HUD), trong khung đá riêng, tự xuống dòng.
+- **Báo ngắn / báo của nhân vật / màn thua**: chữ Inter có viền tối; "BẠN ĐÃ GỤC NGÃ" chập chờn đỏ; mọi câu
+  `PlayerController.Say` ("Không đủ năng lượng!", "QUẢ CẦU LỬA đang hồi chiêu"…), nút "TRỞ VỀ", phím F9 — **có dấu**.
+- **Một hàm bố cục thuần** `GameHUD.TinhBoCuc` xếp mọi khung theo thứ tự: bảng máu → khung đợt → thông báo mạng → mất
+  kết nối → báo ngắn → báo nhân vật; khung nào vướng khung trước **hoặc** vướng nút điều khiển (thanh kỹ năng PC; cần
+  joystick, cụm nút kỹ năng, cột nút góc nhìn trên bản cảm ứng) thì đẩy xuống (báo nhân vật: đẩy lên). Hết chỗ thì dò
+  khoảng trống gần nhất; vẫn không có (điện thoại dựng dọc, 4 thông báo cùng lúc — cụm nút chiếm hết bề ngang) thì hai
+  dòng báo **ngắn hạn** dùng chung một chỗ — không bao giờ để chữ đè chữ.
+
+Tên "PHU THUY" cũ lưu **trong hai scene** (trường `tenNhanVat`) — sửa mặc định trong code thì scene vẫn đè; trường ấy đã
+bỏ, tên lấy từ code.
+
+Đo (menu 53 mới):
+
+```
+A. hàm bố cục thật, chữ dài nhất, mọi thông báo cùng hiện: 11 cỡ màn hình (1920x1080 … 800x360, 2732x2048, dọc
+   1080x1920, 1170x2532) x PC / cảm ứng x 4 bộ chữ -> 0 khung chữ ra ngoài / đè nhau / đè nút;
+   số máu/mana lọt thanh, chữ lọt khung đợt  (lần đầu: 1170x2532 cảm ứng, báo nhân vật văng ra y = -78 -> đã sửa)
+B. 212 chuỗi trong 4 file HUD: mọi ký tự có trong cmap Inter; 0 cụm chữ không dấu cũ còn sót
+C. Play Act2, 6 khung chữ cùng hiện + máu 20%: 0 đè nhau / ra ngoài; font Inter-SemiBold / Inter-Regular
+```
+
+Menu 40: "30000 / 30000" rộng 72 điểm trong thanh 148 điểm (đo bằng Inter), 0 lỗi; menu 22: 0 lỗi. Bản web build 5,6
+phút, 0 lỗi, trang thật tải đúng bản mới, console 0 lỗi. Còn lại không dấu: bảng chẩn đoán F12 (công cụ gỡ lỗi, mặc
+định tắt).
+
 Nhân tiện: công cụ ghi file của tôi biến chuỗi `̀` trong mã nguồn thành **ký tự dấu rời thật** (vô hình khi đọc) —
 `GhepDauTiengViet.cs` và `ThuBangTen.cs` đã được đổi lại thành dạng `̀` nhìn thấy được; phép thử 52 vẫn 0 lỗi.
 
@@ -7671,6 +7712,7 @@ cho riêng nền tảng WebGL sẽ ăn cả hai đầu: file nhỏ hơn và khô
 | **50. Chay thu GIAO DIEN dang nhap - sanh - phong** | Đi hết các màn (đăng nhập, tạo tài khoản, sảnh trống, sảnh có phòng, Cài đặt, trong phòng, phòng đủ 4 người, đếm ngược); ở mỗi màn đếm số lượt vẽ, số chữ bị cắt, số chữ phải thu nhỏ — đếm ngay trong hàm vẽ nên không sót nhãn nào. Kiểm font đang dùng là Inter, và quay về MainMenu khi đã đăng nhập thì vào thẳng sảnh. Ảnh `gd_*.png`, kết quả `PlayTestShots/giaodien.txt`. |
 | **51. Dung man chinh tu canh Act2** | Chép phần cảnh Act2 quanh chỗ đứng (45 m, phía trước camera) sang MainMenu.unity cùng ánh sáng / sương / bầu trời; đặt phù thuỷ, camera, hai lò đá; dọn vật vướng. Tạo luôn prefab lò đá từ FBX + texture Blender. Báo cáo `PlayTestShots/dungmanchinh.txt`. |
 | **51b. Chup thu goc nhin man chinh (Act2)** | Đặt nhân vật trước từng nhà mồ theo bốn hướng, bỏ chỗ vướng vật / giữa nước, chụp bằng khung camera màn chính — để chọn chỗ đứng. Ảnh `PlayTestShots/goc/`. |
+| **53. Chay thu HUD KINH DI (mau, mana, thong bao)** | Ngoài Play: chạy hàm bố cục HUD với chữ dài nhất ở 11 cỡ màn hình × PC/cảm ứng — khung chữ không ra ngoài, không đè nhau hay đè nút; số máu/mana lọt thanh. Quét chuỗi 4 file HUD: đủ ký tự trong cmap Inter, không còn chữ không dấu cũ. Trong Play (Act2): bật cùng lúc mọi thông báo + máu thấp, đọc bố cục thật, chụp `hud_*.png`. Số đo `hudkinhdi.txt`. |
 | **52. Chay thu TEN TREN DAU nhan vat** | Vào Play ở Act2, gắn tên cho nhân vật của mình, sinh ba bản sao tên có dấu quanh mình; đo từng bảng tên: có vẽ, trong màn hình, ngay trên chóp mũ (đo độc lập bằng lưới bake) không quá 0,30 m, đúng màu, font Inter đủ 134 chữ có dấu (đọc cmap), ghép dấu rời đúng (252 cách gõ), nền trong suốt (đo trên ảnh chụp, có mẫu đối chứng nền đen), không đè nhau, người gục thì tên mờ. Gọi `GiaoDien.ChuanBi` như màn sảnh. Ảnh `bangten_*.png`, số đo `bangten.txt`. |
 | **51c. Chup nen man chinh (lo da, ngon lua)** | Vào Play, tắt giao diện, chụp toàn cảnh (thêm một ảnh `Camera.main` đúng 1920 × 1080), cận lò đá, cận ngọn lửa; đo từng tấm flipbook (khói đen, hai tấm lửa: số hạt, vật liệu, texture), tam giác, vật đổ bóng. Ảnh `nen_*.png`, số đo `nenmanchinh.txt`. |
 
