@@ -1,0 +1,25 @@
+[ban 1] bon cho ho cua buoc 5, theo thu tu 2 - 1 - 4 - 5
+
+--- 2. quai chet gia ben may khach ---
+2a. phep cua khach trung ban sao quai (gap 3 lan mau) -> IsDead = False, mau 70 -> 70 (phai: khong chet, mau khong doi)
+2b. chu phong bao 'da chet' -> ban sao chet: True (phai la True)
+2c. mot goi 'ra don' den muon tu CAI XAC -> minh mat 0 mau (phai la 0)
+2d. chu phong van nhac ten con da chet -> so vat the mang so 8000 tren canh: 1 (phai <= 1, khong dung them xac)
+2e. phep cua minh trung BAN SAO NGUOI CHOI (gap 3 lan mau) -> IsDead = False, mau khong doi: True (phai: False, True)
+
+--- 1. HUD may khach ---
+1a. truoc khi nghe bang so: HUD ghi 'Quai con lai: 7'  'Da diet: 0'
+1b. chu phong bao dot 3, da diet 27, con 19 -> HUD may khach: 'Dot 3  Quai con lai: 19  Da diet: 27'
+1c. het dot, dot moi sau 4,2 giay -> HUD may khach: 'Dot moi sau 5 giay'
+
+--- 4. phim R ---
+4. phim R nap lai man: choi mot minh = True, trong tran mang = False (phai la True, False)
+
+--- 5. mat ket noi giua tran ---
+5a. im lang 3,5 giay -> tinh trang: DangChoTinHieu (phai la DangChoTinHieu)
+5b. im lang 6 giay (qua nguong go quai 5 giay) -> dan quai con 8/8 con (phai giu nguyen)
+5c. tin hieu quay lai o giay thu 6 -> tinh trang: Tot (phai la Tot - chuyen tab mot lat khong duoc lam vo tran)
+5d. im lang 10,5 giay -> tinh trang: DaMat, su kien mat ket noi da ban: True (phai la DaMat, True)
+5e. nguoi kia DONG kenh (bam ve sanh / dong tab) -> ket luan sau 54 ms (phai ngay, khong doi 10 giay)
+
+so loi ghi nhan = 0

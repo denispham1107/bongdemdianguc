@@ -106,6 +106,19 @@ public class DongBoQuai : MonoBehaviour
 
     // ---- So dem de chan doan ----
     public int SoQuaiDangGiu { get { return theoId.Count; } }
+
+    /// <summary>So ban sao con song - duong du phong cho HUD may khach khi chua
+    /// nghe bang so nao tu chu phong.</summary>
+    public int SoQuaiConSong
+    {
+        get
+        {
+            int n = 0;
+            foreach (var cap in theoId)
+                if (cap.Value.vat != null && (cap.Value.mau == null || !cap.Value.mau.IsDead)) n++;
+            return n;
+        }
+    }
     public int SoGoiQuaiDaGui { get; private set; }
     public int SoGoiQuaiDaNhan { get; private set; }
     public int SoQuaiDaSinh { get; private set; }
@@ -126,11 +139,20 @@ public class DongBoQuai : MonoBehaviour
             }
             NgheQuaiRaDon();
             GuiLaiDonDangCho();
+            GuiBangSo();
             return;
         }
 
         VeDanQuai(dt);
-        DonNhungConDaBien();
+
+        // Chi go nhung con "lau khong duoc nhac den" khi DUONG TRUYEN CON TOT.
+        //
+        // Neu ca kenh im lang (chu phong chuyen tab, mat song, hay da roi tran)
+        // thi MOI con deu "lau khong duoc nhac den" cung luc - va truoc day ca
+        // dan quai bien mat sau 5 giay, khong mot loi giai thich. Im lang chung
+        // khong noi len rang con quai nao da chet ca.
+        if (dongBo == null || dongBo.TinhTrang == DongBoTran.TinhTrangKetNoi.Tot)
+            DonNhungConDaBien();
     }
 
     // ================================================================
@@ -221,6 +243,28 @@ public class DongBoQuai : MonoBehaviour
         });
     }
 
+    float guiBangSoLanSau;
+
+    /// <summary>Bao nhieu lan gui bang so moi giay.</summary>
+    public const float NhipGuiBangSo = 2f;
+
+    /// <summary>
+    /// Ke cho may khach nghe bang so cua tran. Hai lan moi giay la du: day la
+    /// con so nguoi ta liec qua, khong phai thu nguoi ta ngam ban vao.
+    /// </summary>
+    void GuiBangSo()
+    {
+        if (dongBo == null || !KenhTrucTiep.DaMo) return;
+        if (Time.unscaledTime < guiBangSoLanSau) return;
+        guiBangSoLanSau = Time.unscaledTime + 1f / NhipGuiBangSo;
+
+        var dir = GameDirector.Instance;
+        if (dir == null) return;
+
+        byte[] b = GoiTin.VietBangSo(dir.Wave, dir.Kills, dir.Alive, dir.NextWaveIn);
+        if (KenhTrucTiep.Gui(GoiTin.SangChuoi(b))) SoGoiQuaiDaGui++;
+    }
+
     void GuiLaiDonDangCho()
     {
         for (int i = donChoGui.Count - 1; i >= 0; i--)
@@ -298,6 +342,11 @@ public class DongBoQuai : MonoBehaviour
             QuaiBenNay c;
             if (!theoId.TryGetValue(q.id, out c))
             {
+                // Chu phong van ke ten con quai trong luc no nam guc cho bien
+                // mat. Ben nay chua thay no bao gio (vua vao, hoac da go di) thi
+                // dung dung lai mot cai xac chi de no chet them lan nua.
+                if (q.daChet) continue;
+
                 c = SinhTheoLoi(q);
                 if (c == null) continue;
                 theoId[q.id] = c;
@@ -337,6 +386,12 @@ public class DongBoQuai : MonoBehaviour
         n.loai = (MonsterType)q.loai;
 
         foreach (var ai in go.GetComponentsInChildren<EnemyAI>(true)) ai.enabled = false;
+
+        // Mau cua con nay do CHU PHONG quyet. Phep cua nguoi khach van trung no
+        // va van hien don danh, nhung khong duoc giet no ngay tren may khach -
+        // sat thuong that da di duong vong sang chu phong roi.
+        var mauQuai = go.GetComponent<Damageable>();
+        if (mauQuai != null) mauQuai.mauDoMayKhacQuyet = true;
 
         // Tat luon phan va cham voi dia hinh: vi tri den tu may kia, ben do da
         // tinh roi. De nguyen thi con quai bi day ra khoi cho hai lan.

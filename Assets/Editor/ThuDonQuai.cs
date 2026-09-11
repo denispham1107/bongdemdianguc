@@ -102,6 +102,11 @@ public static class ThuDonQuai
         if (banSao == null) { Ghi("[LOI] khong sinh duoc ban sao"); loi++; Ket(); yield break; }
 
         var mauBanSao = banSao.GetComponent<Damageable>();
+
+        // Dung lai DUNG tinh huong cu, luc ban sao con tru mau cuc bo. Gio ban
+        // sao mac dinh khong tru nua (mauDoMayKhacQuyet), nhung chieu nay ghi
+        // lai VI SAO can goi don quai - nen phai cho no chay nhu hoi do.
+        mauBanSao.mauDoMayKhacQuyet = false;
         float truocDanh = mauBanSao.health;
         mauBanSao.TakeDamage(40f, DamageType.Physical, banSao.transform.position);
         float sauDanh = mauBanSao.health;

@@ -75,6 +75,13 @@ public static class NguoiChoiKhac
         var doc = go.GetComponent<DocInput>();
         if (doc != null) doc.enabled = false;
 
+        // Mau cua nguoi nay do MAY CUA HO quyet. Phep cua minh trung ho van hien
+        // don danh, nhung khong duoc giet ho ngay tren may minh - neu khong, mot
+        // don ma ben ho ne duoc (vi tre) se de lai mot cai xac vinh vien ben
+        // nay trong khi ho van chay nhay ben kia.
+        var mauHo = go.GetComponent<Damageable>();
+        if (mauHo != null) mauHo.mauDoMayKhacQuyet = true;
+
         var dir = GameDirector.Instance;
         if (dir != null) dir.ThemNguoiChoi(go.transform);
 

@@ -31,6 +31,23 @@ public class KhoiDongTranMang : MonoBehaviour
     /// dang o buoc nao, khong duoc de mot man hinh im lang.</summary>
     public static string TrangThai = "";
     public static bool DaNoi;
+
+    /// <summary>
+    /// Dong bao ve duong truyen giua tran: "dang cho tin hieu", "nguoi kia da
+    /// roi tran". Tach rieng voi TrangThai vi no co the hien ra bat cu luc nao
+    /// sau khi dong "Da noi!" da tat.
+    /// </summary>
+    public static string ThongBaoKetNoi = "";
+    static bool thongBaoLaLoi;
+
+    /// <summary>
+    /// Chu phong da roi tran, nguoi khach can mot duong ve sanh. HUD doc co nay
+    /// de hien nut TRO VE tren may cam ung - ben do khong co phim ESC.
+    /// </summary>
+    public static bool CanNutVeSanh;
+
+    byte chiSoKia;
+    float tatThongBaoLuc = -1f;
     public static string LoiCuoi;
 
     PlayerController toi;
@@ -79,6 +96,7 @@ public class KhoiDongTranMang : MonoBehaviour
     void Start()
     {
         TrangThai = ""; DaNoi = false; LoiCuoi = null; NhanDang = "";
+        ThongBaoKetNoi = ""; thongBaoLaLoi = false; CanNutVeSanh = false;
 
         // Choi mot minh thi khong lam gi ca - va phai tu bo di, khong nam lai
         // an bo nho cho mot viec khong bao gio xay ra.
@@ -203,7 +221,9 @@ public class KhoiDongTranMang : MonoBehaviour
         // Chu phong la 0, nguoi vao la 1. Hai nguoi thi the la du - bon nguoi
         // moi can danh so theo thu tu trong phong.
         dongBo.chiSoCuaToi = (byte)(TranHienTai.LaHost ? 0 : 1);
-        dongBo.ThemNguoi((byte)(TranHienTai.LaHost ? 1 : 0), nguoiKia);
+        chiSoKia = (byte)(TranHienTai.LaHost ? 1 : 0);
+        dongBo.ThemNguoi(chiSoKia, nguoiKia);
+        dongBo.KhiMatKetNoi += KhiNguoiKiaRoiTran;
 
         DaNoi = true;
         TrangThai = string.Format("Đã nối! (bắt tay mất {0:F1} giây)", matBaoLau);
@@ -211,6 +231,68 @@ public class KhoiDongTranMang : MonoBehaviour
         // Ba giay sau thi thoi bao, tra man hinh lai cho game
         yield return new WaitForSecondsRealtime(3f);
         TrangThai = "";
+    }
+
+    // ================================================================
+    //  MAT KET NOI GIUA TRAN
+    // ================================================================
+
+    void Update()
+    {
+        if (dongBo == null || !DaNoi) return;
+
+        if (tatThongBaoLuc > 0f && Time.unscaledTime >= tatThongBaoLuc)
+        {
+            ThongBaoKetNoi = "";
+            tatThongBaoLuc = -1f;
+        }
+
+        if (dongBo.TinhTrang == DongBoTran.TinhTrangKetNoi.DangChoTinHieu)
+        {
+            ThongBaoKetNoi = string.Format(
+                "Đang chờ tín hiệu từ {0}... ({1:F0} giây)",
+                TranHienTai.LaHost ? "người chơi kia" : "chủ phòng", dongBo.ImLangGiay);
+            thongBaoLaLoi = false;
+        }
+        else if (dongBo.TinhTrang == DongBoTran.TinhTrangKetNoi.Tot
+                 && !thongBaoLaLoi && tatThongBaoLuc < 0f)
+        {
+            // Tin hieu da quay lai - thoi bao
+            ThongBaoKetNoi = "";
+        }
+    }
+
+    /// <summary>
+    /// Nguoi kia da roi tran han. Hai phia xu ly khac nhau, vi hai phia mat
+    /// hai thu khac nhau:
+    ///
+    ///   - CHU PHONG mat nguoi khach: tran van chay binh thuong - quai, nhip
+    ///     dot, moi thu deu nam o may nay. Chi can go ban sao cua ho di de quai
+    ///     thoi duoi theo mot cai bong, roi choi tiep mot minh.
+    ///   - NGUOI KHACH mat chu phong: mat LUON ca tran - quai do chu phong dieu
+    ///     khien, mau quai do chu phong tinh. Khong con gi de choi tiep. Phai
+    ///     noi thang ra va dua cho nguoi ta mot duong ve.
+    /// </summary>
+    void KhiNguoiKiaRoiTran()
+    {
+        if (dongBo != null) dongBo.BoNguoi(chiSoKia);
+
+        if (TranHienTai.LaHost)
+        {
+            ThongBaoKetNoi = "Người chơi kia đã rời trận. Bạn chơi tiếp một mình.";
+            thongBaoLaLoi = false;
+            tatThongBaoLuc = Time.unscaledTime + 6f;
+        }
+        else
+        {
+            ThongBaoKetNoi = "Chủ phòng đã rời trận — trận đấu dừng tại đây."
+                + System.Environment.NewLine
+                + (CamUng.DangDung ? "Bấm TRỞ VỀ để về sảnh." : "Bấm ESC để về sảnh.");
+            thongBaoLaLoi = true;
+            CanNutVeSanh = true;
+        }
+
+        Debug.LogWarning("[TranMang] nguoi kia da roi tran");
     }
 
     void Hong(string vi)
@@ -235,6 +317,28 @@ public class KhoiDongTranMang : MonoBehaviour
             kieuNho.normal.textColor = new Color(0.70f, 0.70f, 0.74f, 0.85f);
             GUI.Label(new Rect(10f * s, Screen.height - 26f * s, 520f * s, 22f * s),
                       NhanDang, kieuNho);
+        }
+
+        if (!string.IsNullOrEmpty(ThongBaoKetNoi))
+        {
+            var kieuKN = new GUIStyle(GUI.skin.label);
+            kieuKN.fontSize = Mathf.RoundToInt(24f * s);
+            kieuKN.alignment = TextAnchor.MiddleCenter;
+            kieuKN.wordWrap = true;
+            kieuKN.fontStyle = FontStyle.Bold;
+            kieuKN.normal.textColor = thongBaoLaLoi ? new Color(0.95f, 0.45f, 0.40f)
+                                                    : new Color(0.95f, 0.85f, 0.45f);
+
+            float rongKN = Mathf.Min(Screen.width * 0.85f, 1000f * s);
+            var oKN = new Rect((Screen.width - rongKN) * 0.5f, Screen.height * 0.28f,
+                               rongKN, 110f * s);
+
+            // Nen toi phia sau cho chu doc duoc tren canh sang
+            var cu = GUI.color;
+            GUI.color = new Color(0f, 0f, 0f, 0.55f);
+            GUI.DrawTexture(oKN, Texture2D.whiteTexture);
+            GUI.color = cu;
+            GUI.Label(oKN, ThongBaoKetNoi, kieuKN);
         }
 
         if (string.IsNullOrEmpty(TrangThai)) return;

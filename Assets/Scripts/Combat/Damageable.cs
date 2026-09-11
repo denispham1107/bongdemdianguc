@@ -12,6 +12,23 @@ public class Damageable : MonoBehaviour
     public float maxHealth = 100f;
     public float health = 100f;
 
+    /// <summary>
+    /// MAU CUA VAT NAY DO MAY KHAC QUYET - may nay chi ve lai.
+    ///
+    /// Bat cho ban sao cua quai ben may khach va ban sao cua nguoi choi khac.
+    /// Khi bat, don danh tren may nay van hien day du (nhap nhay, so sat
+    /// thuong, tia hat) nhung KHONG tru mau va KHONG giet duoc no. Mau that
+    /// den tu goi tin, cai chet that den tu mot goi tin noi "da chet".
+    ///
+    /// Loi da vap khi chua co co nay: phep cua nguoi khach van tru mau ban sao
+    /// quai ngay tren may khach. Neu mau ve 0 truoc goi tin ke tiep thi con
+    /// quai CHET o ben khach - va khong bao gio song lai, trong khi o ben chu
+    /// phong no van song va van danh chu phong. Do duoc: IsDead = True ben
+    /// khach, trong khi chu phong van bao "song, 100% mau". Ban sao nguoi choi
+    /// dinh dung loi y het.
+    /// </summary>
+    public bool mauDoMayKhacQuyet;
+
     [Header("Khang")]
     [Range(-1f, 0.9f)] public float fireResist = 0f;
     [Range(-1f, 0.9f)] public float iceResist = 0f;
@@ -83,7 +100,8 @@ public class Damageable : MonoBehaviour
             if (amount <= 0f) return;
         }
 
-        health -= amount;
+        // Ban sao: chi hien don danh, khong dung vao mau - xem mauDoMayKhacQuyet
+        if (!mauDoMayKhacQuyet) health -= amount;
 
         // Nhap nhay theo loai sat thuong
         flashColor = type == DamageType.Fire ? new Color(1f, 0.45f, 0.1f)
@@ -104,7 +122,7 @@ public class Damageable : MonoBehaviour
 
         if (onDamaged != null) onDamaged(this, amount);
 
-        if (health <= 0f) Die();
+        if (!mauDoMayKhacQuyet && health <= 0f) Die();
     }
 
     public void Die()

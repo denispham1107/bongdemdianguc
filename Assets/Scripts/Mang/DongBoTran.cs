@@ -40,7 +40,69 @@ public class DongBoTran : MonoBehaviour
     /// <summary>Bo dong bo dan quai - dat kem de goi quai co cho di ve.</summary>
     public DongBoQuai quai;
 
-    /// <summary>Bao nhieu lan hoi nhip moi giay - chi de do vong di-ve.</summary>
+    // ================================================================
+    //  MAT KET NOI
+    // ================================================================
+
+    /// <summary>
+    /// Im lang bao lau thi bao "dang cho tin hieu" - chua ket luan gi.
+    ///
+    /// Trinh duyet DUNG HAN game khi tab bi an: nguoi kia chuyen tab mot lat,
+    /// hay khoa man hinh dien thoai, la goi tin ngung den. Neu ket luan "da
+    /// roi tran" ngay thi mot cu liec sang tin nhan cung lam vo tran.
+    /// </summary>
+    public const float GiayChoTinHieu = 3f;
+
+    /// <summary>
+    /// Im lang bao lau thi coi nhu nguoi kia da roi tran han.
+    ///
+    /// Truoc day khong co gi ca: nguoi kia dong tab thi ban sao cua ho dung im
+    /// mai mai, khong mot loi bao; chu phong thoat thi 5 giay sau ca dan quai
+    /// ben khach bien mat, cung khong mot loi giai thich.
+    /// </summary>
+    public const float GiayMatKetNoi = 10f;
+
+    public enum TinhTrangKetNoi { Tot, DangChoTinHieu, DaMat }
+
+    public TinhTrangKetNoi TinhTrang { get; private set; }
+
+    /// <summary>Goi DUNG MOT LAN khi ket luan nguoi kia da roi tran.</summary>
+    public event System.Action KhiMatKetNoi;
+
+    /// <summary>Bao lau roi khong nghe thay gi tu nguoi kia, giay.</summary>
+    public float ImLangGiay
+    {
+        get { return daTungNghe ? Time.unscaledTime - ngheLanCuoi : 0f; }
+    }
+
+    float ngheLanCuoi;
+    bool daTungNghe;
+    bool daTungMo;
+
+    void XetMatKetNoi()
+    {
+        if (TinhTrang == TinhTrangKetNoi.DaMat) return;     // ket luan roi thi thoi
+        if (!daTungNghe) return;                            // chua noi xong thi chua tinh
+
+        if (KenhTrucTiep.DaMo) daTungMo = true;
+
+        // Kenh DONG han la dau hieu chac chan nhat - nguoi kia dong tab hoac
+        // bam ve sanh (BackToMenu dong kenh truoc khi di).
+        bool kenhDaDong = daTungMo && !KenhTrucTiep.DaMo;
+
+        float im = ImLangGiay;
+        if (kenhDaDong || im >= GiayMatKetNoi)
+        {
+            TinhTrang = TinhTrangKetNoi.DaMat;
+            if (KhiMatKetNoi != null) KhiMatKetNoi();
+            return;
+        }
+
+        TinhTrang = im >= GiayChoTinHieu ? TinhTrangKetNoi.DangChoTinHieu
+                                         : TinhTrangKetNoi.Tot;
+    }
+
+    /// <summary>Bao lau hoi nhip moi giay - chi de do vong di-ve.</summary>
     public const float NhipHoiVong = 2f;
 
     /// <summary>
@@ -273,6 +335,7 @@ public class DongBoTran : MonoBehaviour
         float dt = Time.unscaledDeltaTime;
 
         NhanHet();
+        XetMatKetNoi();
         VeNguoiKhac(dt);
         GuiLaiPhepDangCho();
         HoiNhip();
@@ -312,6 +375,10 @@ public class DongBoTran : MonoBehaviour
             byte[] b = GoiTin.TuChuoi(s);
             if (b == null) { SoGoiHong++; continue; }
 
+            // Bat cu goi nao doc duoc cung la dau hieu nguoi kia con do
+            ngheLanCuoi = Time.unscaledTime;
+            daTungNghe = true;
+
             // Doc byte dau de biet goi loai gi. Truoc day o day chi co mot loai
             // nen doc thang - them loai thu hai ma quen phan loai thi goi ky
             // nang se bi dem la "goi hong".
@@ -319,6 +386,15 @@ public class DongBoTran : MonoBehaviour
 
             if (loai == GoiTin.LoaiKyNang) { NhanMotPhep(b); continue; }
             if (loai == GoiTin.LoaiNhip) { NhanMotNhip(b); continue; }
+            if (loai == GoiTin.LoaiBangSo)
+            {
+                int wave, kills, con; float dotMoi;
+                if (!GoiTin.DocBangSo(b, out wave, out kills, out con, out dotMoi))
+                { SoGoiHong++; continue; }
+                var dir = GameDirector.Instance;
+                if (dir != null) dir.NhanBangSoTuChuPhong(wave, kills, con, dotMoi);
+                continue;
+            }
             if (loai == GoiTin.LoaiDonQuai)
             {
                 // Chi may khach dien lai don - chu phong da danh that roi,

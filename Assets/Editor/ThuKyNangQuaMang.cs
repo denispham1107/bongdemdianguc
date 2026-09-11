@@ -140,6 +140,11 @@ public static class ThuKyNangQuaMang
 
         var mauToi = toi.GetComponent<Damageable>();
         var mauKia = kia.GetComponent<Damageable>();
+
+        // Chieu 4 hoi "nguoi tung co tu thieu minh khong". De nguyen co ban sao
+        // thi ho KHONG THE mat mau cuc bo, chieu 4 luon dat du boQua co hong -
+        // mot phep do khong the sai thi khong do gi ca. Bat lai viec tru mau.
+        if (mauKia != null) mauKia.mauDoMayKhacQuyet = false;
         if (mauToi == null || mauKia == null)
         { Ghi("[LOI] thieu Damageable"); loi++; Ket(); yield break; }
 

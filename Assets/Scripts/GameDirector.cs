@@ -83,7 +83,47 @@ public class GameDirector : MonoBehaviour
     public int Wave { get; private set; }
     public int Kills { get; private set; }
     /// <summary>So quai con song, TINH CA cac dong quai rieng - con so nguoi choi thay.</summary>
-    public int Alive { get { return alive.Count + quyDu.Count + quyCay.Count; } }
+    public int Alive
+    {
+        get
+        {
+            // May khach khong rai quai nen ba danh sach duoi day RONG - dem tu
+            // do thi HUD ben khach mai mai ghi "Quai con lai: 0" du dang dung
+            // giua ca dan. Phai lay con so cua chu phong.
+            if (!LaTrongTaiCuaQuai)
+            {
+                if (daNgheChuPhong) return aliveTuChuPhong;
+
+                // Chua nghe bang so nao (nua giay dau tran, hoac mat goi): dem
+                // chinh dan ban sao dang giu con hon ghi 0 giua mot bay quai.
+                if (DongBoQuai.Hien != null) return DongBoQuai.Hien.SoQuaiConSong;
+            }
+            return alive.Count + quyDu.Count + quyCay.Count;
+        }
+    }
+
+    // ---- Con so cua chu phong, cho may khach hien len HUD ----
+    bool daNgheChuPhong;
+    int aliveTuChuPhong;
+    float dotMoiTuChuPhong;
+
+    /// <summary>
+    /// May khach nhan bang so cua tran tu chu phong: dot may, da diet bao
+    /// nhieu, con bao nhieu, bao lau nua den dot moi.
+    ///
+    /// Chi chu phong dem duoc ba con so nay, vi chi no rai quai va chi no thay
+    /// con quai nao that su chet. May khach tu dem thi lech ngay: no chi thay
+    /// ban sao, va ban sao chet muon hon con that mot nhip goi tin.
+    /// </summary>
+    public void NhanBangSoTuChuPhong(int wave, int kills, int con, float dotMoiSau)
+    {
+        if (LaTrongTaiCuaQuai) return;
+        Wave = wave;
+        Kills = kills;
+        aliveTuChuPhong = con;
+        dotMoiTuChuPhong = dotMoiSau;
+        daNgheChuPhong = true;
+    }
 
     /// <summary>Rieng so Quy du con song.</summary>
     public int QuyDuSong { get { return quyDu.Count; } }
@@ -91,7 +131,15 @@ public class GameDirector : MonoBehaviour
     /// <summary>Rieng so Quy cay con song.</summary>
     public int QuyCaySong { get { return quyCay.Count; } }
 
-    public float NextWaveIn { get { return Mathf.Max(0f, waveTimer); } }
+    public float NextWaveIn
+    {
+        get
+        {
+            // Dong ho dot chi chay o chu phong - ben khach no dung yen mai.
+            if (!LaTrongTaiCuaQuai && daNgheChuPhong) return Mathf.Max(0f, dotMoiTuChuPhong);
+            return Mathf.Max(0f, waveTimer);
+        }
+    }
     public bool PlayerDead { get; private set; }
 
     readonly List<Damageable> alive = new List<Damageable>();
@@ -407,7 +455,7 @@ public class GameDirector : MonoBehaviour
     {
         if (PlayerDead)
         {
-            if (Input.GetKeyDown(KeyCode.R))
+            if (DuocChoiLai && Input.GetKeyDown(KeyCode.R))
                 SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
             if (Input.GetKeyDown(KeyCode.Escape)) BackToMenu();
             return;
@@ -444,13 +492,31 @@ public class GameDirector : MonoBehaviour
             }
         }
 
-        if (Input.GetKeyDown(KeyCode.R)) SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        if (DuocChoiLai && Input.GetKeyDown(KeyCode.R))
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         if (Input.GetKeyDown(KeyCode.Escape)) BackToMenu();
     }
+
+    /// <summary>
+    /// Phim R (nap lai man) co duoc dung khong. Choi mot minh: co. Choi mang:
+    /// KHONG, ke ca khi da chet.
+    ///
+    /// Nap lai man giua tran mang la pha tran ma khong bao gi ca: chu phong
+    /// bam R thi ca dan quai bi rai lai tu dau, hai may lech nhau hoan toan;
+    /// nguoi khach bam R thi bat tay lai tu dau trong khi chu phong van dang
+    /// cho ban sao cu cua ho dung do. Va R lai nam ngay canh WASD - bam nham
+    /// la chuyen se xay ra.
+    /// </summary>
+    public static bool DuocChoiLai { get { return !TranHienTai.DangChoiMang; } }
 
     /// <summary>Ve man hinh chinh (neu scene MainMenu co trong danh sach build).</summary>
     public static void BackToMenu()
     {
+        // Roi tran mang thi dong kenh TRUOC: may kia nhan ra ngay la minh da
+        // di, thay vi phai doi het thoi gian cho moi biet - xem
+        // DongBoTran.GiayMatKetNoi.
+        if (TranHienTai.DangChoiMang) KenhTrucTiep.Dong();
+
         if (Application.CanStreamedLevelBeLoaded("MainMenu"))
             SceneManager.LoadScene("MainMenu");
     }

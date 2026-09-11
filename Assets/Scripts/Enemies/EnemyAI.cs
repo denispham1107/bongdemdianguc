@@ -346,6 +346,10 @@ public class EnemyAI : MonoBehaviour
     /// </summary>
     public void DienLaiDon(int kieu, Vector3 diemNgam, Damageable nanNhan)
     {
+        // Xac thi khong ra don. Goi tin "ra don" co the den muon hon goi tin
+        // "da chet" mot chut - khong chan o day thi mot cai xac vung kiem.
+        if (health != null && health.IsDead) return;
+
         // Hinh anh vung tay - lam truoc, de ke ca khi don truot van thay dong tac
         if (anim != null) anim.PlayAttack(attackAnimTime);
         if (hoatHinhRieng != null) hoatHinhRieng.RaDon(attackAnimTime);

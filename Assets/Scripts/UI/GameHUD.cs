@@ -459,6 +459,14 @@ public class GameHUD : MonoBehaviour
             DocNutTroVe(s);
             return;
         }
+
+        // Chu phong da roi tran: tran dung han, nguoi khach can mot duong ve
+        // sanh. Tren may cam ung khong co phim ESC - phai co nut.
+        if (KhoiDongTranMang.CanNutVeSanh)
+        {
+            DocNutTroVe(s);
+            return;
+        }
         ngonTroVe = -99;
 
         Vector2 tam = TamJoystick(s);
@@ -1490,11 +1498,18 @@ public class GameHUD : MonoBehaviour
             // hai cai phim ma nguoi choi khong the bam - thay bang mot cai nut.
             string tomTat = "Da diet " + director.Kills + " quai o dot " + director.Wave + ".";
             if (!CamUng.DangDung)
-                tomTat += "  Bam R de choi lai, ESC de ve man hinh chinh.";
+                tomTat += GameDirector.DuocChoiLai
+                    ? "  Bam R de choi lai, ESC de ve man hinh chinh."
+                    // Choi mang thi khong co "choi lai" - chi co ve sanh
+                    : "  Bam ESC de ve sanh.";
 
             GUI.Label(new Rect(0f, Screen.height * 0.50f, Screen.width, 40f * s), tomTat, st2);
 
             if (CamUng.DangDung) VeNutTroVe(s);
+        }
+        else if (KhoiDongTranMang.CanNutVeSanh && CamUng.DangDung)
+        {
+            VeNutTroVe(s);
         }
 
         VeBangChanDoan(s);
@@ -1515,7 +1530,9 @@ public class GameHUD : MonoBehaviour
             "Phim bat ky     : " + PlayerController.SoLanBamPhim
                 + (PlayerController.SoLanBamPhim == 0 ? "  <- BAN PHIM KHONG TOI DUOC GAME" : ""),
             "Phim ky nang    : " + PlayerController.SoLanBamKyNang,
-            "Nhan vat        : " + (chet ? "DA CHET - bam R de choi lai" : "con song"),
+            "Nhan vat        : " + (chet ? (GameDirector.DuocChoiLai ? "DA CHET - bam R de choi lai"
+                                                             : "DA CHET (tran mang - khong choi lai duoc)")
+                                          : "con song"),
             "Cach tung chieu : 1 2 3 4  /  Z X V B  /  bam vao o ky nang",
 
             // Phan CAM UNG. Tren dien thoai khong co Console de xem log, nen

@@ -101,6 +101,15 @@ public static class GoiTin
         public Vector3 diemNgam;
     }
 
+    /// <summary>
+    /// GOI BANG SO: dot may, da diet bao nhieu, con bao nhieu, bao lau nua den
+    /// dot moi. Chu phong gui, may khach dua len HUD.
+    ///
+    /// 9 byte, hai lan moi giay. Khong gui thi HUD ben khach dem tu danh sach
+    /// quai cua rieng no - ma danh sach ay rong, vi khach khong rai quai.
+    /// </summary>
+    public const byte LoaiBangSo = 7;
+
     /// <summary>Bao nhieu con nhieu nhat trong mot goi.</summary>
     public const int SoQuaiMoiGoi = 16;
 
@@ -357,6 +366,42 @@ public static class GoiTin
 
         return true;
     }
+
+    // ================================================================
+    //  GOI BANG SO
+    // ================================================================
+
+    public static byte[] VietBangSo(int wave, int kills, int con, float dotMoiSau)
+    {
+        var b = new byte[9];
+        b[0] = LoaiBangSo;
+        VietUShort(b, 1, wave);
+        VietUShort(b, 3, kills);
+        VietUShort(b, 5, con);
+        VietUShort(b, 7, Mathf.RoundToInt(Mathf.Max(0f, dotMoiSau) * 10f));   // don vi 0,1 giay
+        return b;
+    }
+
+    public static bool DocBangSo(byte[] b, out int wave, out int kills, out int con,
+                                 out float dotMoiSau)
+    {
+        wave = kills = con = 0; dotMoiSau = 0f;
+        if (b == null || b.Length < 9 || b[0] != LoaiBangSo) return false;
+        wave = DocUShort(b, 1);
+        kills = DocUShort(b, 3);
+        con = DocUShort(b, 5);
+        dotMoiSau = DocUShort(b, 7) / 10f;
+        return true;
+    }
+
+    static void VietUShort(byte[] b, int i, int v)
+    {
+        v = Mathf.Clamp(v, 0, 65535);
+        b[i] = (byte)(v & 0xFF);
+        b[i + 1] = (byte)((v >> 8) & 0xFF);
+    }
+
+    static int DocUShort(byte[] b, int i) { return b[i] | (b[i + 1] << 8); }
 
     // ================================================================
     //  GOI NHIP (do vong di-ve)

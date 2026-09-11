@@ -115,6 +115,11 @@ public static class ThuPvP
             t.gameObject.layer = lopNguoiChoi;
 
         var mauBia = bia.GetComponent<Damageable>();
+        // Bia nay dong vai "nguoi choi TREN MAY CUA HO" - mau do chinh may nay
+        // quyet. NguoiChoiKhac.Sinh mac dinh tat viec tru mau cuc bo (ban sao
+        // chi ve lai), nen phai bat lai o day, khong thi phep do sat thuong
+        // luon ra 0 va khong con noi len dieu gi.
+        if (mauBia != null) mauBia.mauDoMayKhacQuyet = false;
         var mauToi = toi.GetComponent<Damageable>();
         if (mauBia == null || mauToi == null)
         { Ghi("[LOI] thieu Damageable"); loi++; Ket(); yield break; }

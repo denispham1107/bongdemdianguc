@@ -6375,6 +6375,129 @@ Lần chạy đầu, chiều 6 báo "sai tốc độ 85%". Tôi viết chuỗi m
 định 60 khung/giây. Editor chạy khoảng 20, nên chuỗi ấy mô tả một người đi 1 m/giây chứ không phải
 3. Mốc thời gian trong gói tin đi theo **giây thật**, nên vị trí cũng phải thế.
 
+### Kiểm toán bước 5, và bốn chỗ hở đã vá
+
+Anh hỏi bước 5 đã xong hết chưa. Trả lời bằng trí nhớ thì dễ nói "xong rồi", nên tôi viết **menu 43**
+— một phép đo *chỉ để báo cáo*, dựng lại đúng tình huống trên máy khách rồi ghi ra số. Nó bắt được
+hai lỗi thật; đọc code thấy thêm hai chỗ. Anh chọn sửa theo thứ tự 2 → 1 → 4 → 5.
+
+#### 2. Quái chết giả bên máy khách
+
+```
+phép của khách trúng con quái -> IsDead = True
+1 giây sau, chủ phòng vẫn báo "sống, 100% máu":
+     IsDead = True, máu = 70
+```
+
+Phép của người khách vẫn trừ máu con quái bản sao **ngay trên máy khách**. Nếu nó về 0 trước khi
+gói tin kế tiếp đến thì con quái chết ở bên khách — và không bao giờ sống lại, vì chỉ có đường "chủ
+phòng bảo chết thì chết", không có đường ngược lại. Trong khi ấy bên chủ phòng nó vẫn sống và vẫn
+đánh chủ phòng.
+
+Và **bản sao người chơi dính đúng lỗi y hệt**: một đòn mà bên họ né được (vì trễ) sẽ để lại một cái
+xác vĩnh viễn bên này, trong khi họ vẫn chạy nhảy bên kia.
+
+Sửa ở gốc, trong `Damageable`: cờ `mauDoMayKhacQuyet`, bật cho mọi bản sao — quái bên khách và
+người chơi khác. Đòn đánh vẫn hiện đầy đủ (nhấp nháy, số sát thương, tia hạt), nhưng **không trừ máu
+và không giết được**. Máu thật đến từ gói tin; cái chết thật đến từ một gói tin nói "đã chết".
+
+Kèm hai chỗ nhỏ:
+- Cái xác không được ra đòn — gói "ra đòn" có thể đến muộn hơn gói "đã chết" một chút.
+- Chủ phòng vẫn nhắc tên con quái trong lúc nó nằm gục; máy khách chưa thấy nó bao giờ thì **không
+  dựng lại một cái xác** chỉ để nó chết thêm lần nữa.
+
+#### 1. HUD máy khách ghi "Quái còn lại: 0" giữa một bầy quái
+
+`GameHUD` đọc `director.Alive` và `director.Kills`, mà hai con số ấy đếm từ danh sách quái riêng của
+máy — rỗng ở máy khách, vì khách không rải quái.
+
+Thêm gói **bảng số**, 9 byte, hai lần mỗi giây: đợt mấy, đã diệt bao nhiêu, còn bao nhiêu, bao lâu
+nữa đến đợt mới. Chỉ chủ phòng đếm được bốn con số này — chỉ nó rải quái và chỉ nó thấy con nào
+chết *thật*.
+
+Và một đường dự phòng: nửa giây đầu trận, trước khi bảng số đầu tiên đến, HUD khách đếm chính đàn
+bản sao nó đang giữ thay vì ghi 0. Chính phép kiểm toán chỉ ra chỗ này — lần chạy lại đầu tiên sau
+khi sửa nó *vẫn* báo 0, vì nó chỉ gửi gói vị trí quái, không gửi bảng số. Đó không phải lỗi của phép
+đo mà là một khoảng hở thật.
+
+#### 4. Phím R nạp lại màn giữa trận mạng
+
+`GameDirector` nạp lại màn khi bấm R — kể cả khi đang sống, kể cả trong trận mạng. Chủ phòng lỡ bấm
+thì cả đàn quái bị rải lại từ đầu, hai máy lệch nhau hoàn toàn; khách bấm thì phải bắt tay lại
+trong khi chủ phòng vẫn chờ bản sao cũ. Và R nằm ngay cạnh WASD.
+
+Giờ `GameDirector.DuocChoiLai` là `false` trong trận mạng. Màn hình gục ngã cũng thôi bảo "bấm R để
+chơi lại" — chỉ còn "bấm ESC để về sảnh".
+
+#### 5. Mất kết nối giữa trận
+
+Trước đây không có gì cả: người kia đóng tab thì bản sao của họ đứng im mãi mãi; chủ phòng thoát thì
+5 giây sau cả đàn quái bên khách biến mất — không một lời nào.
+
+Hai ngưỡng, vì **trình duyệt dừng hẳn game khi tab bị ẩn**: người kia chuyển tab một lát, hay khoá
+màn hình điện thoại, là gói tin ngừng đến. Kết luận "đã rời trận" ngay thì một cú liếc sang tin nhắn
+cũng làm vỡ trận.
+
+| Im lặng | Màn hình |
+|---|---|
+| 3 giây | *"Đang chờ tín hiệu từ người chơi kia... (5 giây)"* — chưa kết luận gì |
+| tín hiệu quay lại | dòng chữ tắt, trận chạy tiếp như cũ |
+| 10 giây, **hoặc kênh đóng hẳn** | kết luận đã rời trận |
+
+Kênh **đóng hẳn** là dấu hiệu chắc nhất — người kia đóng tab hoặc bấm về sảnh (`BackToMenu` giờ đóng
+kênh trước khi đi) — nên kết luận ngay, không đợi đủ 10 giây.
+
+Hai phía mất hai thứ khác nhau, nên xử lý khác nhau:
+
+- **Chủ phòng mất người khách**: trận vẫn chạy — quái, nhịp đợt đều nằm ở máy này. Gỡ bản sao của họ
+  để quái thôi đuổi theo một cái bóng, báo *"Người chơi kia đã rời trận. Bạn chơi tiếp một mình."*
+- **Người khách mất chủ phòng**: mất luôn cả trận, vì quái do chủ phòng điều khiển. Báo thẳng
+  *"Chủ phòng đã rời trận — trận đấu dừng tại đây"*, kèm nút **TRỞ VỀ** trên máy cảm ứng (máy đó không
+  có phím ESC).
+
+Và đàn quái bên khách **không còn biến mất** khi đường truyền im lặng. Việc gỡ con quái "lâu không
+được nhắc đến" chỉ chạy khi đường truyền còn tốt: im lặng chung của cả kênh không nói lên rằng con
+quái nào đã chết.
+
+#### Đo (menu 44), mười lăm chiều
+
+```
+2a. phép của khách trúng bản sao quái (gấp 3 lần máu) -> IsDead = False, máu 70 -> 70
+2b. chủ phòng báo "đã chết" -> bản sao chết: True
+2c. một gói "ra đòn" đến muộn từ CÁI XÁC -> mình mất 0 máu
+2d. chủ phòng vẫn nhắc tên con đã chết -> số vật thể mang số 8000: 1 (không dựng thêm xác)
+2e. phép của mình trúng BẢN SAO NGƯỜI CHƠI -> IsDead = False, máu không đổi
+1b. chủ phòng báo đợt 3, đã diệt 27, còn 19 -> HUD khách: "Đợt 3  Quái còn lại: 19  Đã diệt: 27"
+1c. hết đợt, đợt mới sau 4,2 giây -> HUD khách: "Đợt mới sau 5 giây"
+4.  phím R: chơi một mình = True, trong trận mạng = False
+5a. im lặng 3,5 giây -> DangChoTinHieu
+5b. im lặng 6 giây (qua ngưỡng gỡ quái 5 giây) -> đàn quái còn 8/8 con
+5c. tín hiệu quay lại ở giây thứ 6 -> Tot
+5d. im lặng 10,5 giây -> DaMat, sự kiện mất kết nối đã bắn
+5e. người kia ĐÓNG kênh -> kết luận sau 46 ms
+số lỗi ghi nhận = 0
+```
+
+Chiều 2b không thừa: chỉ đo "bản sao không chết cục bộ" thì không phân biệt được *sửa đúng* với
+*bản sao không bao giờ chết được nữa*. Phải chứng minh rằng khi chủ phòng bảo chết thì nó chết.
+Chiều 5c cũng vậy: nó giữ cho ngưỡng 10 giây không trở thành "cứ im lặng là vỡ trận".
+
+Và **menu 43 chạy lại đổi kết luận cả hai mục** thành *"khớp"* và *"không hở"*.
+
+#### Ba phép thử cũ phải nói rõ vai của bia
+
+Menu 34, 37, 39 dùng `NguoiChoiKhac.Sinh` làm bia để đo sát thương. Giờ bản sao mặc định không mất
+máu cục bộ, nên nếu để nguyên thì phép đo sát thương luôn ra 0 — và tệ hơn, chiều "người tung không
+tự thiêu" của menu 37 sẽ **luôn đạt** dù `boQua` có hỏng. Một phép đo không thể sai thì không đo gì
+cả. Nên cả ba phải tắt cờ trên bia, kèm lời giải thích: bia đóng vai *người chơi trên máy của họ*.
+
+#### Còn lại sau lượt sửa này
+
+- **Chỉ 2 người** (mục 3 của báo cáo) — phòng cho 4, trận chỉ nối với người đầu tiên.
+- **Đóng băng, choáng, máu khiên** không qua mạng (mục 6) — chỉ lệch về hình ảnh.
+- **Chưa đo trên mạng thật**: mọi số đo trên chạy trong Editor với kênh giả lập. Hai ngưỡng 3 và 10
+  giây là con số chọn trên giấy — trên điện thoại thật, khoá màn hình quá 10 giây sẽ làm vỡ trận.
+
 ### Việc còn phải làm
 
 **169 MB là quá nặng**, nhất là trên điện thoại — nền tảng chính của game. Gần như toàn bộ nằm ở
@@ -6438,6 +6561,8 @@ cho riêng nền tảng WebGL sẽ ăn cả hai đầu: file nhỏ hơn và khô
 | **40. Chay thu MAU KHOI DAU** | Vào Play thật ở **cả hai màn** rồi đọc máu từ `Damageable`: nhân vật mình đầy máu, bản sao người chơi khác cũng đúng mức (nó lấy thẳng từ prefab), máu vẫn trừ được, và con số không tràn ra ngoài thanh máu. Đổi mức máu thì sửa `MauMongDoi` trong phép thử cho khớp. Kết quả ra `PlayTestShots/mau_khoi_dau.txt`. |
 | **41. Chay thu NHIP BUOC qua mang** | Tám chiều: người chơi khác và đàn quái bên máy khách phải **bước chân** khi di chuyển và **dừng chân** khi đứng yên; nhịp bước không bị vòng di chuyển đặt lại về 0; vị trí và nhịp chân khớp với một tốc độ biết trước; và gói về thưa (10 lần/giây như đàn quái) không được làm nhân vật đứng im rồi nhảy — đo bằng **độ giật**, không chỉ tốc độ trung bình. Đo con số bộ hoạt hình nhận được, không chụp ảnh. Kết quả ra `PlayTestShots/nhipbuoc.txt`. |
 | **42. Chay thu CHE DO DIEU KHIEN** | Chạy luật nhận diện thiết bị trên chín loại máy thật (kèm ba cái bẫy: laptop Windows có màn cảm ứng, máy tính bảng Android, iPad đời mới tự nhận là Mac), đối chiếu lại file `.jslib`, và kiểm rằng `Input.touchSupported` đã bị cắt khỏi đường quyết định. Không vào Play. Kết quả ra `PlayTestShots/chedodieukhien.txt`. |
+| **43. Kiem toan buoc 5 (chi do, khong sua)** | Dựng lại tình huống máy khách rồi ghi ra số, không sửa gì: HUD khách có đếm đúng số quái không, và phép của khách có giết giả được bản sao quái không. Dùng để trả lời "bước 5 xong chưa" bằng số thay vì trí nhớ. Kết quả ra `PlayTestShots/kiemtoan_buoc5.txt`. |
+| **44. Chay thu SUA BUOC 5 (2-1-4-5)** | Mười lăm chiều cho bốn chỗ hở đã vá: bản sao không chết cục bộ nhưng chết khi chủ phòng bảo, xác không ra đòn, HUD khách lấy bảng số của chủ phòng, phím R bị chặn trong trận mạng, và hai ngưỡng mất kết nối (chờ tín hiệu 3 giây — hồi phục được — rồi rời trận sau 10 giây hoặc ngay khi kênh đóng). Kết quả ra `PlayTestShots/sua_buoc5.txt`. |
 
 > ⚠️ Mục **1** sẽ **xóa và tạo lại** các thư mục Textures / Materials / Models / Prefabs.
 > Nếu bạn tự sửa tay trong đó thì hãy sao lưu trước.
