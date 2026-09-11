@@ -6983,6 +6983,29 @@ phiên đi trước khi vào Play); menu 26 và 27 thì chưa. Cho cả hai cấ
 tài khoản bị khoá bị chặn với câu *"Tài khoản của bạn đã bị khoá. Hãy liên hệ quản trị viên."*; menu 26
 **0 lỗi**.
 
+### Nền khung trong suốt hơn
+
+Anh xin: các khung (đăng nhập, sảnh, phòng, Cài đặt) có **nền trong suốt hơn** để thấy cảnh phía sau; nút
+bấm và chữ giữ nguyên độ đặc.
+
+Lòng khung trước đặc ~0,94 — gần như che kín cảnh. Giờ ảnh lòng khung vẽ đặc hoàn toàn và độ trong suốt đặt
+lúc vẽ, ở ba hằng số trong `GiaoDien`: lòng khung **0,55**, hàng trong danh sách / thẻ ghế **0,45**, bảng nổi
+(Cài đặt) **0,66** — bảng nổi đục hơn một chút vì phía sau nó là cả sảnh, trong quá thì chữ hai lớp chồng lên
+nhau. Bốn góc tối và sương đỏ cũng nhạt bớt (0,92 → 0,72 và 0,55 → 0,45). Viền, móc sắt, nút, ô nhập, chữ:
+không đổi.
+
+Đo trên ảnh chụp (menu 50), ở một vùng lòng khung **không có chữ**: độ lệch chuẩn độ sáng — nền càng lộ cảnh
+phía sau thì càng lệch — và độ tương phản của chữ với chỗ nền **sáng nhất** (phân vị 95):
+
+| Vùng | Lệch chuẩn trước → sau | Tương phản chữ chính / chữ phụ (sau) |
+|---|---|---|
+| Sảnh, lòng danh sách | 0,0005 → 0,0043 (×8,6) | 11,5 : 1 / 5,2 : 1 |
+| Khung đăng nhập | 0,0001 → 0,0017 (×17) | 12,4 : 1 / 5,7 : 1 |
+| Bảng Cài đặt | 0,0000 → 0,0003 | 14,0 : 1 / 6,4 : 1 |
+
+Chữ phụ (màu nhạt) thấp nhất là 5,2 : 1 — vẫn trên mức 4,5 : 1 mà chuẩn WCAG coi là dễ đọc. Menu 50 vẫn
+**0 chữ bị cắt** ở mọi màn.
+
 ### Game sập ngay lúc tải sau mỗi lần cập nhật — cache giữ mã cũ
 
 Đưa bản giao diện mới lên, mở trang thì game **sập ở 90 %**: lần đầu *"memory access out of bounds"*, lần

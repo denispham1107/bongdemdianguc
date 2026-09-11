@@ -59,6 +59,15 @@ public static class GiaoDien
     /// </summary>
     public static float TiLe { get { return TinhTiLe(Screen.width, Screen.height); } }
 
+    /// <summary>Do duc long khung (0 = trong han, 1 = den dac). Truoc la ~0,94 -
+    /// nguoi dung thay khung che mat canh phia sau.</summary>
+    public const float DoDucKhung = 0.55f;
+    /// <summary>Do duc long mot hang trong danh sach / the ghe.</summary>
+    public const float DoDucHang = 0.45f;
+    /// <summary>Bang noi tren sanh (Cai dat) duc hon: sanh mo phia sau lot qua
+    /// long bang qua nhieu thi chu hai lop chong len nhau, kho doc.</summary>
+    public const float DoDucBangNoi = 0.66f;
+
     /// <summary>Ti le cho mot man hinh W x H bat ky - phep thu dung de xep thu nhieu co man hinh.</summary>
     public static float TinhTiLe(float W, float H)
     {
@@ -132,13 +141,13 @@ public static class GiaoDien
         nenBang = Anh(4, 64, (x, y) =>
         {
             float k = y / 63f;
-            Color c = Color.Lerp(new Color(0.030f, 0.022f, 0.022f, 0.95f),
-                                 new Color(0.085f, 0.050f, 0.045f, 0.93f), k * k);
+            Color c = Color.Lerp(new Color(0.030f, 0.022f, 0.022f, 1f),
+                                 new Color(0.085f, 0.050f, 0.045f, 1f), k * k);
             return c;
         });
 
         nenHang = Anh(4, 32, (x, y) =>
-            Color.Lerp(new Color(0.07f, 0.05f, 0.05f, 0.86f), new Color(0.12f, 0.08f, 0.07f, 0.86f), y / 31f));
+            Color.Lerp(new Color(0.07f, 0.05f, 0.05f, 1f), new Color(0.12f, 0.08f, 0.07f, 1f), y / 31f));
 
         // Bon goc man hinh toi lai
         toi4Goc = Anh(128, 128, (x, y) =>
@@ -146,14 +155,14 @@ public static class GiaoDien
             float dx = (x - 63.5f) / 63.5f, dy = (y - 63.5f) / 63.5f;
             float d = Mathf.Sqrt(dx * dx * 0.8f + dy * dy);
             float a = Mathf.SmoothStep(0.25f, 1.25f, d);
-            return new Color(0f, 0f, 0f, a * 0.92f);
+            return new Color(0f, 0f, 0f, a * 0.72f);
         });
 
         // Suong do boc len tu day man hinh
         suong = Anh(4, 64, (x, y) =>
         {
             float k = 1f - y / 63f;                           // 1 = duoi day
-            return new Color(0.30f, 0.02f, 0.02f, Mathf.Pow(k, 2.2f) * 0.55f);
+            return new Color(0.30f, 0.02f, 0.02f, Mathf.Pow(k, 2.2f) * 0.45f);
         });
 
         // Vet mau nho giot - lap theo chieu ngang
@@ -396,9 +405,14 @@ public static class GiaoDien
     /// Khung chinh: long toi, vien do sam, moc sat o bon goc, hinh thoi o
     /// giua mep tren. <paramref name="coGiotMau"/> thi mau nho giot tu mep tren.
     /// </summary>
-    public static void Khung(Rect r, float s, bool coGiotMau = false)
+    public static void Khung(Rect r, float s, bool coGiotMau = false, float doDuc = -1f)
     {
+        // Long khung TRONG SUOT mot phan de thay canh phia sau (nguoi dung xin
+        // 11/09/2026). Chi long khung - vien, moc sat, nut, o nhap va chu van dac.
+        var mauLong = GUI.color;
+        GUI.color = new Color(1f, 1f, 1f, doDuc < 0f ? DoDucKhung : doDuc);
         GUI.DrawTexture(r, nenBang, ScaleMode.StretchToFill, true);
+        GUI.color = mauLong;
 
         float d = Mathf.Max(1f, Mathf.Round(1.5f * s));
         var vien = new Color(0.40f, 0.09f, 0.07f, 0.95f);
@@ -438,7 +452,10 @@ public static class GiaoDien
     /// <summary>Mot hang trong danh sach: long hoi sang hon khung, vach do ben trai.</summary>
     public static void Hang(Rect r, float s, Color vach)
     {
+        var mauLong = GUI.color;
+        GUI.color = new Color(1f, 1f, 1f, DoDucHang);
         GUI.DrawTexture(r, nenHang, ScaleMode.StretchToFill, true);
+        GUI.color = mauLong;
         To(new Rect(r.x, r.y, Mathf.Max(2f, 4f * s), r.height), vach);
         To(new Rect(r.x, r.yMax - 1f, r.width, 1f), new Color(0.3f, 0.1f, 0.08f, 0.6f));
     }

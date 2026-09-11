@@ -450,7 +450,7 @@ public class ManSanh : MonoBehaviour
     {
         if (n == null)
         {
-            GiaoDien.To(o, new Color(0.03f, 0.025f, 0.025f, 0.7f));
+            GiaoDien.To(o, new Color(0.03f, 0.025f, 0.025f, 0.35f));
             GiaoDien.To(new Rect(o.x, o.y, o.width, 1f), new Color(0.3f, 0.15f, 0.12f, 0.6f));
             GiaoDien.To(new Rect(o.x, o.yMax - 1f, o.width, 1f), new Color(0.3f, 0.15f, 0.12f, 0.6f));
             var kt = GiaoDien.KieuChuNho;
@@ -635,7 +635,7 @@ public class ManSanh : MonoBehaviour
     void VeCaiDat(float s)
     {
         // Phu toi ca sanh
-        GiaoDien.To(new Rect(0, 0, Screen.width, Screen.height), new Color(0f, 0f, 0f, 0.72f));
+        GiaoDien.To(new Rect(0, 0, Screen.width, Screen.height), new Color(0f, 0f, 0f, 0.4f));
 
         float rong = Mathf.Min(Screen.width - 30f * s, 880f * s);
         float cao = Mathf.Min(Screen.height - 30f * s, 640f * s);
@@ -643,7 +643,7 @@ public class ManSanh : MonoBehaviour
         float y = (Screen.height - cao) * 0.5f;
         float le = 34f * s;
 
-        GiaoDien.Khung(new Rect(x, y, rong, cao), s, true);
+        GiaoDien.Khung(new Rect(x, y, rong, cao), s, true, GiaoDien.DoDucBangNoi);
 
         GUI.enabled = !dangNapLai;
 
