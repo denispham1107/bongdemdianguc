@@ -128,9 +128,11 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
   `localStorage` khoá `diablo25d.mucDoHoa`; `index.html` đọc nó để đặt độ phân giải **trước** khi Unity
   khởi động — bảng hệ số ở hai nơi phải khớp nhau (menu 48 kiểm).
 - ⚠️ **Triển khai web**: chép CẢ `Build/WebGL/index.html` sang `web/` (không chỉ thư mục `Build/`) — trong đó
-  có mã phiên bản `?v=` gắn vào đường dẫn .wasm/.framework (menu 29 tự gắn). Thiếu nó thì trình duyệt dùng
-  mã game cũ trong cache ghép với dữ liệu mới và **game sập lúc tải**. Kiểm sau khi deploy: tải trang thật
-  trong trình duyệt ĐÃ TỪNG vào trang, xem `performance` báo .wasm được tải mới. Lùi bản khẩn cấp:
+  có mã phiên bản `?v=` gắn vào đường dẫn .wasm/.framework/**.data** và `productVersion` (menu 29 tự gắn).
+  Thiếu nó thì trình duyệt dùng mã game cũ trong cache ghép với dữ liệu mới và **game sập lúc tải**. File có
+  `?v=` được Unity coi là `immutable` (lấy thẳng từ Cache Storage) — vì **Firebase không bao giờ trả 304 cho
+  file `no-cache`**, hỏi lại là tải lại đủ 166 MB. Kiểm sau khi deploy: tải trang thật trong trình duyệt
+  ĐÃ TỪNG vào trang: lần đầu tải mới đủ, lần sau `performance` chỉ còn `loader.js` trong `Build/`. Lùi bản khẩn cấp:
   `firebase hosting:clone diablo25d-game@<version> diablo25d-game:live`.
 - **Màn chính (MainMenu.unity) dựng từ cảnh Act2** bằng menu 51 — đừng sửa tay trong scene, chạy lại menu.
   Lò đá: `Assets/Models/LoLuaDa` (FBX + texture nướng từ `CongCu/Blender/lo_lua_da.py`, chạy nền — từ nay

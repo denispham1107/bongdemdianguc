@@ -70,7 +70,7 @@ public static class XuatBanWebGL
         var tt = bc.summary;
 
         var bao = new System.Text.StringBuilder();
-        bao.AppendLine("[ban 1] xuat ban WebGL");
+        bao.AppendLine("[ban 2] xuat ban WebGL (co ?v= cho .data)");
         bao.AppendLine("ket qua: " + tt.result);
         bao.AppendLine(string.Format("thoi gian: {0:F1} phut", phut));
         bao.AppendLine(string.Format("tong dung luong: {0:F1} MB", tt.totalSize / 1048576.0));
@@ -107,8 +107,15 @@ public static class XuatBanWebGL
     ///
     /// Them "?v=ma" (lay tu noi dung file) thi moi ban mot duong dan moi -
     /// cache cu khong con dung duoc. index.html thi luon duoc hoi lai
-    /// (no-cache). File .data KHONG gan: UnityCache tu hoi lai may chu, va gan
-    /// vao thi moi ban lai de them 160 MB trong IndexedDB cua nguoi choi.
+    /// (no-cache).
+    ///
+    /// File .data CUNG gan (tu 11/09/2026). Truoc do de tran vi tuong "Unity tu
+    /// hoi lai, may chu tra 304" - sai: Firebase khong bao gio tra 304 cho file
+    /// no-cache, nen moi lan vao trang tai lai 166 MB. Gio index.html bao Unity
+    /// coi file co ?v= la "immutable" (lay thang tu cache, khong hoi mang), va
+    /// productVersion mang ma cua .data de Unity tu xoa ban cu luc khoi dong -
+    /// khong don 166 MB moi ban trong may nguoi choi. Xem cacheControl trong
+    /// Assets/WebGLTemplates/Diablo25D/index.html.
     /// </summary>
     public static string GanPhienBanChoTrang(string thuMuc)
     {
@@ -117,16 +124,20 @@ public static class XuatBanWebGL
         if (!File.Exists(trang)) return "khong co index.html";
 
         string html = File.ReadAllText(trang);
-        var tep = new[] { "WebGL.loader.js", "WebGL.framework.js.unityweb", "WebGL.wasm.unityweb" };
+        var tep = new[] { "WebGL.loader.js", "WebGL.framework.js.unityweb", "WebGL.wasm.unityweb", "WebGL.data.unityweb" };
         var ra = new System.Text.StringBuilder();
+        string maDuLieu = null;
         foreach (var t in tep)
         {
             string duong = Path.Combine(build, t);
             if (!File.Exists(duong)) { ra.Append(t + " THIEU; "); continue; }
             string ma;
+            // Doc theo luong: .data 166 MB, khong nap ca file vao RAM
             using (var md5 = System.Security.Cryptography.MD5.Create())
-                ma = System.BitConverter.ToString(md5.ComputeHash(File.ReadAllBytes(duong)))
+            using (var luong = File.OpenRead(duong))
+                ma = System.BitConverter.ToString(md5.ComputeHash(luong))
                          .Replace("-", "").Substring(0, 10).ToLowerInvariant();
+            if (t == "WebGL.data.unityweb") maDuLieu = ma;
 
             // Bo ma cu (neu chay lai lan nua) roi gan ma moi
             html = System.Text.RegularExpressions.Regex.Replace(html,
@@ -134,6 +145,17 @@ public static class XuatBanWebGL
                 "/" + t + "?v=" + ma + "\"");
             ra.Append(t + "?v=" + ma + "; ");
         }
+
+        // productVersion = "<bundleVersion>+<ma .data>": UnityCache xoa moi muc
+        // co productVersion khac ngay luc khoi dong, truoc khi tai ban moi.
+        if (maDuLieu != null)
+        {
+            html = System.Text.RegularExpressions.Regex.Replace(html,
+                "(productVersion:\\s*\")([^\"+]*)(\\+[0-9a-f]+)?\"",
+                "${1}${2}+" + maDuLieu + "\"");
+            ra.Append("productVersion +" + maDuLieu + "; ");
+        }
+
         File.WriteAllText(trang, html);
         return ra.ToString();
     }

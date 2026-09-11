@@ -7233,6 +7233,86 @@ không bao giờ hỏi lại để biết header đã đổi.
 - `Build/**` đổi thành `Cache-Control: no-cache` — vẫn giữ trong cache, nhưng mỗi lần mở đều hỏi lại; không
   đổi thì máy chủ trả 304, gần như không tốn gì.
 
+> ⚠️ **Hai câu trên sai — đo lại ngày 11/09/2026.** Firebase Hosting **không bao giờ trả 304** cho file
+> `no-cache`, nên mỗi lần vào trang người chơi tải lại đủ 166 MB. `.data` giờ **có** gắn mã, và bản cũ
+> không dồn lại trong máy người chơi. Xem mục ngay dưới.
+
+### Mỗi lần vào trang lại tải 166 MB — Firebase không trả 304 cho file `no-cache`
+
+Trình duyệt vừa tải lạnh xong, Cache Storage `UnityCache_DefaultCompany_Diablo 2.5D` đã có đúng bản
+`.data` (166 129 904 byte, `Last-Modified` khớp máy chủ). Vậy mà tải lại trang vẫn thấy thanh tiến độ chạy
+từ đầu. Đo trong trình duyệt ấy, hai lần tải lại liền nhau:
+
+| Lần | `.data` | transferSize | thời gian | Unity tự ghi |
+|---|---|---|---|---|
+| Tải ấm 1 | 200 | 165 921 735 | 59,9 s | *successfully downloaded and stored* |
+| Tải ấm 2 | 200 | 165 921 735 | 6,5 s | *successfully downloaded and stored* |
+
+(Lần quan sát đầu tiên mất 103 s.) wasm (5 454 506) và framework (76 732) cũng tải lại đủ mỗi lần:
+**171 468 063 byte mỗi lần vào trang**.
+
+**Unity có hỏi lại đúng cách.** Đọc `WebGL.loader.js`: mặc định `cacheControl` cho `.data` là
+`"must-revalidate"`. Có sẵn trong cache thì nó gửi `If-Modified-Since: <Last-Modified đã lưu>` kèm
+`Cache-Control: no-cache`, được **304** thì dùng bản trong cache, được **200** thì tải lại hết rồi ghi đè.
+Dòng *"downloaded and stored"* (thay vì *"revalidated"*) cho biết nó đi nhánh 200.
+
+**Máy chủ mới là chỗ hỏng.** Kiểm độc lập bằng `curl`, gửi nguyên ETag máy chủ vừa đưa:
+
+```
+WebGL.data.unityweb (no-cache)  If-None-Match: <đúng ETag>   -> 200, 165 921 435 byte
+/  (index.html, no-cache)       If-None-Match: <đúng ETag>   -> 200, đủ trang
+/css/chung.css (max-age=3600)   lần 1 X-Cache: MISS, lần 2-3: HIT
+                                If-None-Match: <đúng ETag>   -> 304, 0 byte
+                                + Cache-Control: no-cache    -> vẫn 304 (X-Cache: HIT)
+```
+
+Firebase chỉ trả 304 khi **CDN của nó đang giữ file**. File `no-cache` thì CDN không giữ → mọi yêu cầu
+đều `X-Cache: MISS`, đi về máy gốc, mà máy gốc thì trả 200 kèm cả file bất kể điều kiện. Tức là cái giả
+thiết *"no-cache thì 304, gần như không tốn gì"* ở mục trên chưa từng được đo — và sai.
+
+**Cách sửa: đừng hỏi mạng nữa.** Không đổi header để mong 304 (phải chờ CDN, mà CDN có giữ file 166 MB
+của một game ít người chơi hay không thì không chắc) — mà để Unity không hỏi gì cả:
+
+- Menu 29 gắn `?v=<MD5>` cho **cả `.data`** (`WebGL.data.unityweb?v=3c3de4e419`).
+- `index.html` đặt `cacheControl`: đường dẫn nào có `?v=` thì trả `"immutable"` → Unity lấy thẳng từ
+  Cache Storage, không một yêu cầu mạng nào. Mã nằm trong đường dẫn nên nội dung dưới một đường dẫn không
+  bao giờ đổi; bản mới là đường dẫn mới — mã game và dữ liệu vẫn luôn cùng một bản, lỗi sập ở mục trên
+  không thể quay lại.
+- Menu 29 gắn mã `.data` vào `productVersion` (`"1.0+3c3de4e419"`). Unity có sẵn `cleanUpCache`: lúc khởi
+  động, **trước khi tải**, nó xoá mọi mục có `productVersion` khác. Nhờ vậy gắn mã cho `.data` không làm dồn
+  166 MB mỗi bản trong máy người chơi — nỗi lo đã khiến mục trên để trần `.data`.
+
+Thử trên máy (server Python, nó ghi mọi yêu cầu nhận được):
+
+```
+tải lạnh      : GET /, loader, framework, wasm, data            -> cả ba file vào Cache Storage
+tải lại       : GET /, loader.js                                -> hết. Unity: "served from the browser
+                                                                   cache without revalidation" x3
+giả bản mới   : .data và wasm đổi mã, productVersion đổi       -> tải mới đúng hai file đó
+                Cache Storage trước 171 691 470 byte, sau 171 691 470 byte (bản cũ đã bị xoá)
+```
+
+Trên trang thật (deploy chỉ đưa lên **một** file mới là `index.html` — mã game và dữ liệu giữ nguyên),
+trong chính trình duyệt đang giữ bản `.data` cũ không mã:
+
+| Lần | Byte tải từ `Build/` | Ghi chú |
+|---|---|---|
+| Trước khi sửa, mỗi lần | 171 468 063 | |
+| Lần đầu sau cập nhật | 171 468 063 | một lần duy nhất; bản cũ `version 1.0` bị xoá, cache còn 171 692 656 byte |
+| Tải lại lần 2 | 15 090 (chỉ `loader.js`) | + trang 2 541 byte |
+| Tải lại lần 3 | 15 090 (chỉ `loader.js`) | màn tải biến mất ở giây 22,6; 0 lỗi console |
+
+**Việc tiếp theo, chưa làm:** 22,6 giây kia là lúc **không tải gì cả** — vậy giờ nút thắt khi vào game là
+xử lý trong máy, không phải mạng. Một phần là giải nén: `.unityweb` không có header `Content-Encoding` nên
+Unity phải giải nén 166 MB bằng JavaScript (console: *"You can reduce startup time if you configure your web
+server to add Content-Encoding: gzip"*). Firebase còn tự nén gzip thêm một lần nữa khi gửi (166 129 114 →
+165 921 435, bớt được 0,1 %) nên mất `Content-Length` — ra cảnh báo *"[UnityCache] Response is served
+without Content-Length header"*. Bản thân `.data` chỉ nén được 8 % (181 337 664 → 166 129 114) vì texture đã
+nén sẵn. Thêm `Content-Encoding: gzip` cho `*.unityweb` trong `firebase.json` là một thay đổi riêng, phải đo
+riêng (Cache Storage sẽ lưu bản giải nén 181 MB thay vì 166 MB).
+
+Bản trước lần deploy này: `57cf551200457683`.
+
 Kiểm lại trên **chính trình duyệt đã sập**:
 
 ```

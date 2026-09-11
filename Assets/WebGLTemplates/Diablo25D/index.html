@@ -78,6 +78,29 @@
     companyName: {{{ JSON.stringify(COMPANY_NAME) }}},
     productName: {{{ JSON.stringify(PRODUCT_NAME) }}},
     productVersion: {{{ JSON.stringify(PRODUCT_VERSION) }}},
+
+    // CACHE THEO MA PHIEN BAN. File nao co "?v=<ma>" (ma MD5 cua chinh noi
+    // dung file, menu 29 tu gan) thi duoi duong dan do noi dung khong bao gio
+    // doi -> "immutable": lan sau Unity lay thang tu Cache Storage, khong hoi
+    // mang mot byte nao. Ban moi = ma moi = duong dan moi, nen ma game (.wasm)
+    // va du lieu (.data) luon cung mot ban - khong the ghep ma cu voi du lieu
+    // moi (loi sap luc tai truoc day).
+    //
+    // Vi sao phai tu lam: mac dinh Unity de .data la "must-revalidate" - hoi
+    // lai bang If-Modified-Since va cho 304. Nhung Firebase Hosting KHONG BAO
+    // GIO tra 304 cho file "no-cache": CDN khong giu file do, moi lan deu ve
+    // may goc, ma may goc tra 200 kem ca file. Do 11/09/2026: moi lan vao
+    // trang tai lai 165 921 735 byte du Cache Storage da co dung ban do.
+    //
+    // productVersion cung duoc menu 29 gan ma cua .data: Unity tu xoa moi muc
+    // trong cache khac productVersion ngay luc khoi dong (TRUOC khi tai), nen
+    // ban cu 166 MB khong don lai trong may nguoi choi sau moi lan cap nhat.
+    // File khong co ma (ban build chua qua menu 29) thi giu cach cua Unity.
+    cacheControl: function (url) {
+      if (/[?&]v=[0-9a-f]+$/.test(url)) return "immutable";
+      return url == config.dataUrl ? "must-revalidate" : "no-store";
+    },
+
     showBanner: function (msg, type) {
       if (type === "error") oLoi.textContent = msg;
     },
