@@ -7422,6 +7422,45 @@ số lỗi = 0
 Bản web: build 5,7 phút, 0 lỗi; trình duyệt đã từng vào trang tải đúng bản mới, console 0 lỗi. **Chưa thử được
 trận mạng thật hai máy** — WebRTC chỉ chạy trên bản web, và đăng nhập tài khoản thử phải do người làm.
 
+#### Bỏ nền đen, và chắc chắn tên có dấu không mất chữ
+
+Anh thử trận thật: tên hiện đúng nhưng **có ô nền đen phía sau** — xin nền trong suốt, và tên tiếng Việt phải
+đủ dấu, không lỗi font.
+
+**Nền đen mà phép thử không hề thấy.** Ô nền vẽ bằng `GiaoDien.To`, mà hàm này dùng texture `trang` — chỉ được
+tạo trong `GiaoDien.ChuanBi()`, tức lúc màn đăng nhập / sảnh chạy. Người chơi đi qua sảnh nên có texture và
+thấy ô đen; phép thử menu 52 vào **thẳng Act2** nên texture chưa có, ô nền lặng lẽ không vẽ gì — mọi ảnh chụp
+trước đó của tôi đều không có thứ anh nhìn thấy. Giờ:
+
+- `BangTen` **không còn nền**, chỉ còn viền tối mảnh bốn phía (1,5 điểm ảnh ở 1080) cho đọc được trên nền lửa.
+- Phép thử gắn `VeThuOnGUI` gọi `GiaoDien.ChuanBi()` mỗi lượt OnGUI như màn sảnh — dựng lại đúng trạng thái
+  người chơi có.
+
+**Đo nền trong suốt trên ảnh chụp** — và lần đầu đo sai: so độ sáng trung vị *cả ô chữ* với nền quanh thì
+**không nhạy** (ở cỡ chữ 12 điểm ảnh, nét chữ + viền chiếm quá nửa ô; thử trên ảnh cũ vẫn ra tỉ số ≥ 1). Đổi
+sang đo **dải sát hai bên ô chữ** — nơi nền cũ tràn ra, không có nét chữ — so với nền xa hơn một chút, và thêm
+**mẫu đối chứng**: vẽ lại đúng nền đen cũ quanh từng bảng tên, chụp, đo bằng cùng phép đo:
+
+| | Tỉ số độ sáng dải sát mép / nền xa hơn |
+|---|---|
+| Bảng tên bây giờ (4 cái) | 0,96 · 1,07 · 1,07 · 1,14 |
+| Đối chứng: vẽ lại nền đen cũ | 0,71 · 0,78 · 0,79 · 0,88 — bắt được 4/4 |
+
+Ngưỡng 0,90 đặt giữa hai nhóm (dải đo chỉ rộng 1–2 điểm ảnh ở Game view 1568 × 505 nên dao động).
+
+**Font.** Tên dùng Inter-SemiBold, nhúng cả dữ liệu font vào bản build (`includeFontData`) — không phụ thuộc font
+của máy. Đọc **thẳng bảng ký tự (cmap) của file** (không tin `Font.HasCharacter` — trong Editor Windows vẽ bù):
+2 519 ký tự, **đủ cả 200 chữ cần có** (134 chữ có dấu hoa + thường, chữ cái, chữ số, dấu cách, `_ - .`).
+
+**Dấu rời.** Tên do người chơi tự gõ; bộ gõ "Unicode tổ hợp" (Unikey), máy Mac, điện thoại có thể lưu `a` + dấu
+mũ rời + dấu hỏi rời thay vì một chữ `ẩ`. Bộ vẽ chữ của Unity không đặt được dấu rời lên đúng chữ cái — dấu lệch
+hoặc mất. `GhepDauTiengViet.Ghep` ghép lại trước khi vẽ: lưới 12 nguyên âm × 6 thanh + 6 quy tắc mũ/trăng/móc
+(không dùng `string.Normalize` của .NET — chưa chắc chạy trên WebGL). Đối chiếu với chuẩn Unicode của .NET
+trong Editor: **252 cách gõ** của 134 chữ (tách hết, dấu sai thứ tự, nửa tách kiểu Unikey) — **sai 0**; bản sao
+đặt tên ở dạng dấu rời "Ác Quỷ Bóng Đêm" hiện ra đúng chữ dựng sẵn, không còn ký tự dấu rời nào.
+
+Menu 52: **0 lỗi**. Bản web build 5,4 phút, 0 lỗi, trình duyệt đã từng vào trang tải đúng bản mới, console 0 lỗi.
+
 ### Việc còn phải làm
 
 **169 MB là quá nặng**, nhất là trên điện thoại — nền tảng chính của game. Gần như toàn bộ nằm ở
@@ -7495,7 +7534,7 @@ cho riêng nền tảng WebGL sẽ ăn cả hai đầu: file nhỏ hơn và khô
 | **50. Chay thu GIAO DIEN dang nhap - sanh - phong** | Đi hết các màn (đăng nhập, tạo tài khoản, sảnh trống, sảnh có phòng, Cài đặt, trong phòng, phòng đủ 4 người, đếm ngược); ở mỗi màn đếm số lượt vẽ, số chữ bị cắt, số chữ phải thu nhỏ — đếm ngay trong hàm vẽ nên không sót nhãn nào. Kiểm font đang dùng là Inter, và quay về MainMenu khi đã đăng nhập thì vào thẳng sảnh. Ảnh `gd_*.png`, kết quả `PlayTestShots/giaodien.txt`. |
 | **51. Dung man chinh tu canh Act2** | Chép phần cảnh Act2 quanh chỗ đứng (45 m, phía trước camera) sang MainMenu.unity cùng ánh sáng / sương / bầu trời; đặt phù thuỷ, camera, hai lò đá; dọn vật vướng. Tạo luôn prefab lò đá từ FBX + texture Blender. Báo cáo `PlayTestShots/dungmanchinh.txt`. |
 | **51b. Chup thu goc nhin man chinh (Act2)** | Đặt nhân vật trước từng nhà mồ theo bốn hướng, bỏ chỗ vướng vật / giữa nước, chụp bằng khung camera màn chính — để chọn chỗ đứng. Ảnh `PlayTestShots/goc/`. |
-| **52. Chay thu TEN TREN DAU nhan vat** | Vào Play ở Act2, gắn tên cho nhân vật của mình, sinh ba bản sao tên có dấu quanh mình; đo từng bảng tên: có vẽ, trong màn hình, ngay trên chóp mũ (đo độc lập bằng lưới bake) không quá 0,30 m, đúng màu, font Inter, không đè nhau, người gục thì tên mờ. Ảnh `bangten_*.png`, số đo `bangten.txt`. |
+| **52. Chay thu TEN TREN DAU nhan vat** | Vào Play ở Act2, gắn tên cho nhân vật của mình, sinh ba bản sao tên có dấu quanh mình; đo từng bảng tên: có vẽ, trong màn hình, ngay trên chóp mũ (đo độc lập bằng lưới bake) không quá 0,30 m, đúng màu, font Inter đủ 134 chữ có dấu (đọc cmap), ghép dấu rời đúng (252 cách gõ), nền trong suốt (đo trên ảnh chụp, có mẫu đối chứng nền đen), không đè nhau, người gục thì tên mờ. Gọi `GiaoDien.ChuanBi` như màn sảnh. Ảnh `bangten_*.png`, số đo `bangten.txt`. |
 | **51c. Chup nen man chinh (lo da, ngon lua)** | Vào Play, tắt giao diện, chụp toàn cảnh (thêm một ảnh `Camera.main` đúng 1920 × 1080), cận lò đá, cận ngọn lửa; đo từng tấm flipbook (khói đen, hai tấm lửa: số hạt, vật liệu, texture), tam giác, vật đổ bóng. Ảnh `nen_*.png`, số đo `nenmanchinh.txt`. |
 
 > ⚠️ Mục **1** sẽ **xóa và tạo lại** các thư mục Textures / Materials / Models / Prefabs.

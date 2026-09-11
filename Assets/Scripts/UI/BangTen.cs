@@ -13,7 +13,10 @@ using UnityEngine;
 /// vi font mac dinh cua Unity thieu chu co dau tieng Viet - len web la mat chu.
 ///
 /// Ten cua minh mau vang, ten nguoi khac mau trang nga; nguoi da guc thi ten
-/// mo di. Co vien toi va nen mo de doc duoc ca tren nen lua sang.
+/// mo di. NEN TRONG SUOT (ban dau co nen den mo - nguoi dung khong muon), chi
+/// con vien toi mong bon phia de doc duoc tren nen lua sang. Ten di qua
+/// <see cref="GhepDauTiengViet"/>: dau roi do bo go de lai duoc ghep thanh chu
+/// dung san truoc khi ve.
 ///
 /// DINH DAU = XUONG "head_end" cua model, doc MOI KHUNG - ten di theo dau khi
 /// chay, khi nga xuong. Lan dau lam theo khung bao luoi thi ten lo lung cach
@@ -58,7 +61,9 @@ public class BangTen : MonoBehaviour
         if (nv == null) return null;
         var b = nv.GetComponent<BangTen>();
         if (b == null) b = nv.AddComponent<BangTen>();
-        b.ten = ten ?? "";
+        // Ten do nguoi choi tu go - co the mang dau roi (U+0300...) ma Unity
+        // khong dat len dung chu cai duoc
+        b.ten = GhepDauTiengViet.Ghep(ten ?? "");
         b.laToi = laToi;
         return b;
     }
@@ -149,12 +154,8 @@ public class BangTen : MonoBehaviour
         // Nam duoi HUD (do sau 0), cung lop voi so sat thuong
         GUI.depth = 10;
 
-        // Nen mo phia sau - doc duoc ca tren nen lua sang
-        float le = Mathf.Max(3f, 6f * s);
-        var nen = new Rect(o.x - le, o.y + kt.y * 0.08f, o.width + le * 2f, kt.y * 0.86f);
-        GiaoDien.To(nen, new Color(0f, 0f, 0f, 0.38f * doDuc));
-
-        // Vien toi bon phia
+        // KHONG co nen phia sau (nguoi dung muon trong suot) - chi vien toi
+        // mong bon phia de chu van doc duoc tren nen lua sang
         float v = Mathf.Max(1f, 1.5f * s);
         kieu.normal.textColor = new Color(0f, 0f, 0f, 0.85f * doDuc);
         GUI.Label(new Rect(o.x - v, o.y, o.width, o.height), nd, kieu);

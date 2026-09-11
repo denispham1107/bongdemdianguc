@@ -1,11 +1,18 @@
 [ban 1] ten tren dau nhan vat
 man hinh 1568x505, ti le 0.47, co chu 12
 4. font bang ten: Inter-SemiBold
+   cmap Inter-SemiBold: 2519 ky tu; thieu trong 200 chu can co: ""
+4b. ghep dau roi: 252 cach go cua 134 chu, sai 0 ; ca cau dang tach -> dung
 so bang ten trong canh: 4 (mong 4)
    "Phù Thuỷ Đỏ" (cua minh): ve True, o chu x 741..815 y 195..210; chop mu cao 1.60 m, y 219; khe tu day chu den chop mu 9.4 px (0,30 m = 19.0 px); lech ngang so voi chan 6.0 px; mau RGBA(1.000, 0.840, 0.420, 1.000)
+   "Ác Quỷ Bóng Đêm" (nguoi khac): ve True, o chu x 568..673 y 188..202; chop mu cao 1.60 m, y 212; khe tu day chu den chop mu 9.4 px (0,30 m = 19.2 px); lech ngang so voi chan 15.3 px; mau RGBA(0.950, 0.920, 0.860, 1.000)
    "Người chơi 4" (nguoi khac): ve True, o chu x 742..816 y 142..156; chop mu cao 1.60 m, y 163; khe tu day chu den chop mu 7.0 px (0,30 m = 15.1 px); lech ngang so voi chan 4.6 px; mau RGBA(0.950, 0.920, 0.860, 1.000)
    "Kẻ Săn Hồn" (nguoi khac): ve True, o chu x 900..967 y 201..215; chop mu cao 1.60 m, y 225; khe tu day chu den chop mu 9.4 px (0,30 m = 18.8 px); lech ngang so voi chan 3.0 px; mau RGBA(0.950, 0.920, 0.860, 1.000)
-   "Ác Quỷ Bóng Đêm" (nguoi khac): ve True, o chu x 569..673 y 188..202; chop mu cao 1.60 m, y 212; khe tu day chu den chop mu 9.4 px (0,30 m = 19.2 px); lech ngang so voi chan 15.2 px; mau RGBA(0.950, 0.920, 0.860, 1.000)
 5. so cap bang ten de len nhau: 0
+7. "Phù Thuỷ Đỏ": do sang dai sat mep o ten / nen xa hon = 1.14 (nen den cu thi < 0,90)
+7. "Ác Quỷ Bóng Đêm": do sang dai sat mep o ten / nen xa hon = 1.07 (nen den cu thi < 0,90)
+7. "Người chơi 4": do sang dai sat mep o ten / nen xa hon = 1.07 (nen den cu thi < 0,90)
+7. "Kẻ Săn Hồn": do sang dai sat mep o ten / nen xa hon = 0.96 (nen den cu thi < 0,90)
+   doi chung (ve lai nen den cu quanh 4 bang ten): ti so 0.78 0.88 0.71 0.79 -> bat duoc 4/4
 6. "Ác Quỷ Bóng Đêm" da guc: do duc ten 0.45 (mong < 0,6)
 so loi ghi nhan = 0
