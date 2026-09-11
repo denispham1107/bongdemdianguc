@@ -7461,6 +7461,51 @@ trong Editor: **252 cách gõ** của 134 chữ (tách hết, dấu sai thứ t�
 
 Menu 52: **0 lỗi**. Bản web build 5,4 phút, 0 lỗi, trình duyệt đã từng vào trang tải đúng bản mới, console 0 lỗi.
 
+### Tên game mới "ÁC QUỶ TRỞ LẠI", trang Loading đủ dấu, bỏ lớp phủ mờ
+
+Anh xin, ở **màn Loading**: font hiện đúng tiếng Việt có dấu; đổi "DIABLO 2.5D" thành **"ÁC QUỶ TRỞ LẠI"** kiểu chữ
+đáng sợ; "dang tai..." viết hoa chữ đầu; thêm dòng **"Tác giả: PHẠM MINH QUÂN"**. Ở **màn trong game**: cũng đủ dấu,
+tên mới **giống y** màn Loading, và **cảnh phía sau không bị phủ mờ**.
+
+#### Tiêu đề là MỘT ẢNH dùng chung cho cả hai nơi
+
+Màn Loading là trang HTML (chữ vẽ bằng font của trình duyệt), màn trong game là OnGUI (font của Unity) — hai bộ
+vẽ chữ khác nhau thì không thể "giống y". Nên tên game được dựng thành **một ảnh PNG** (1632 × 478, nền trong):
+dấu tiếng Việt nằm sẵn trong ảnh, không còn phụ thuộc font ở máy nào; trang Loading (`<img>`) và màn đăng nhập
+(`GiaoDien.TieuDeGame` → `GUI.DrawTexture`) hiện **cùng một file**, cùng hiệu ứng chập chờn độ sáng 0,62–1,0.
+
+- **Font:** phần lớn font kinh dị (Nosifer, Creepster, Metal Mania…) không có chữ Việt. Chọn **Grenze Gotisch**
+  (chữ Gothic kiểu Diablo, Google Fonts, SIL OFL — anh đồng ý tải), `CongCu/Fonts/`. Đọc cmap: 643 ký tự, **đủ 134
+  chữ có dấu** và mọi chữ trong tên. Chỉ dùng để dựng ảnh, không vào game.
+- **Dựng:** `CongCu/TieuDe/sinh_tieu_de.py` (Pillow, không cần numpy): chữ Black 900, đỏ máu chuyển từ đỏ tươi
+  xuống đỏ sẫm, vân máu chảy dọc + vết nứt, viền đen đỏ, cạnh trên sáng như lưỡi dao, **15 giọt máu** chảy từ
+  chân chữ (cứ ba giọt một giọt dài, rải đều; không đặt dưới chữ Ạ để khỏi nhầm với dấu nặng), quầng đỏ và bóng đổ.
+  Lần đầu vân chữ lấm tấm như bọt biển và giọt máu dài đều như que — đã sửa. Script tự gắn `tieude.png?v=<mã băm>`
+  vào trang Loading.
+
+#### Trang Loading
+
+- Chữ dùng **Inter nhúng kèm trang** (`TemplateData/Inter-Regular.ttf`, `font-display: block` — chưa nạp xong thì
+  ẩn chữ chứ không vẽ bằng font khác rồi nhảy). Đọc cmap: đủ mọi chữ trên trang.
+- "Đang tải... 42%", dòng "Tác giả: PHẠM MINH QUÂN", lỗi "Không chạy được: …" — đều có dấu.
+- Tên trên tab trình duyệt: "Ác Quỷ Trở Lại". **Không đổi `productName`** của Unity: cache dữ liệu (`UnityCache_…`) và
+  chỗ lưu cài đặt / phiên đăng nhập của người chơi tính theo tên ấy — đổi là mất hết.
+- ⚠️ Bản build giờ có thư mục `TemplateData/` — **phải chép sang `web/`** khi triển khai (đã thêm vào quy trình).
+
+#### Bỏ lớp phủ mờ
+
+`GiaoDien.VeNen` (tối bốn góc 0,72 + sương đỏ dưới đáy) không còn được gọi ở màn đăng nhập, sảnh và màn đếm ngược
+(đếm ngược trước còn phủ đen 72%). Con số đếm ngược vẫn đọc rõ nhờ bóng đen và quầng đỏ riêng.
+
+Đo:
+
+```
+Menu 50 (giao diện): 0 chữ bị cắt ở mọi màn, 0 lỗi (bảng Cài đặt thu nhỏ "Trung bình (hiện giờ)" 3 lần - vì mức
+đang lưu là Trung bình, không liên quan)
+Bản web: build 6,7 phút, 0 lỗi; trang thật: tab "Ác Quỷ Trở Lại", font InterViet "loaded", ảnh tiêu đề 1632x478,
+"Đang tải... 0% | Tác giả: PHẠM MINH QUÂN", wasm mới; màn đăng nhập hiện tiêu đề mới, console 0 lỗi
+```
+
 ### Việc còn phải làm
 
 **169 MB là quá nặng**, nhất là trên điện thoại — nền tảng chính của game. Gần như toàn bộ nằm ở
@@ -7510,7 +7555,7 @@ cho riêng nền tảng WebGL sẽ ăn cả hai đầu: file nhỏ hơn và khô
 | **26. Chay thu MANG - dang nhap va phong cho** | Chạy thật trên Firebase: đăng nhập, tạo phòng, đọc danh sách, đổi màn, đếm ngược, người thứ hai bị từ chối vào phòng đang đếm. Luôn dọn phòng đã tạo. Kết quả ra `PlayTestShots/mang_sanh.txt`. |
 | **27. Chay thu MANG - khoa tai khoan** | Kiểm rằng tài khoản bị admin khoá trên web thì không vào được game, còn tài khoản bình thường vẫn vào được. Kết quả ra `PlayTestShots/mang_khoa.txt`. |
 | **28. Chup man DANG NHAP va SANH PHONG** | Chụp ba màn hình thật của phần mạng ra `PlayTestShots/mang_man_*.png`. Xoá phiên đăng nhập cũ trên máy này (lần sau phải gõ lại mật khẩu) và luôn dọn phòng đã tạo. |
-| **29. Xuat ban WEBGL** | Xuất bản bản chơi trên trình duyệt ra `Build/WebGL` (khoảng 11 phút). Kết quả và dung lượng từng file ghi ra `PlayTestShots/build_webgl.txt`. **Xoá sạch `web/Build/`**, chép `Build/WebGL/Build/*` và `Build/WebGL/index.html` sang `web/`, rồi `firebase deploy --only hosting` là lên mạng. |
+| **29. Xuat ban WEBGL** | Xuất bản bản chơi trên trình duyệt ra `Build/WebGL` (khoảng 11 phút). Kết quả và dung lượng từng file ghi ra `PlayTestShots/build_webgl.txt`. **Xoá sạch `web/Build/`**, chép `Build/WebGL/Build/*`, `Build/WebGL/TemplateData/*` và `Build/WebGL/index.html` sang `web/`, rồi `firebase deploy --only hosting` là lên mạng. |
 | **30 / 30b. Bom input Act2 · Act1** | Bước 1 giai đoạn 2: bơm một chuỗi ý muốn vào `PlayerController` rồi đo quãng đường đi được, đối chiếu với lý thuyết. Phải chạy cả hai vì hai màn dựng khác hẳn nhau. |
 | **31. Chay thu DU DOAN va HIEU CHINH** | Bước 2: chạy 120 gói input, đặt lại trạng thái rồi chạy lại từ gói N+1, đo độ lệch giữa hai lần — phải là 0. |
 | **32. Chay thu NHIEU NGUOI mot canh** | Bước 3: sinh thêm nhân vật thứ hai rồi đếm xem quái chia nhau ra nhắm hai người hay dồn cả vào một. |

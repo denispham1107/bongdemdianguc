@@ -64,19 +64,22 @@ public class ManDangNhap : MonoBehaviour
 
         GiaoDien.ChuanBi();
         float s = GiaoDien.TiLe;
-        GiaoDien.VeNen();
+        // Khong con phu toi bon goc + suong do (VeNen): canh phia sau de nguyen
 
         // ---- Do cao ca khoi de dat giua man hinh ----
         float rong = Mathf.Min(Screen.width - 40f * s, 600f * s);
         float caoKhung = (trang == Trang.DangKy ? 616f : 514f) * s;
-        float caoTieuDe = 236f * s;
+        // Anh tieu de (ca giot mau) rong toi 760 don vi, cao theo ti le anh
+        float rongTieuDe = Mathf.Min(Screen.width - 40f * s, 760f * s);
+        float caoAnh = rongTieuDe / GiaoDien.TiLeTieuDe;
+        float caoTieuDe = caoAnh + 4f * s + 68f * s;
         float tong = caoTieuDe + caoKhung;
         float y = Mathf.Max(16f * s, (Screen.height - tong) * 0.5f - 10f * s);
         float x = (Screen.width - rong) * 0.5f;
 
         // ---- Ten game ----
-        GiaoDien.TieuDeGame(new Rect(0f, y, Screen.width, 130f * s), s);
-        y += 168f * s;                       // chua cho vet mau chay duoi ten game
+        GiaoDien.TieuDeGame(new Rect((Screen.width - rongTieuDe) * 0.5f, y, rongTieuDe, caoAnh), s);
+        y += caoAnh + 4f * s;                // giot mau da nam trong anh
 
         // Dong phu giua hai duong ke
         float rongPhu = Mathf.Min(Screen.width - 40f * s, 620f * s);
@@ -88,7 +91,7 @@ public class ManDangNhap : MonoBehaviour
         kPhu.alignment = canhCu;
         GiaoDien.DuongKe(new Rect(Screen.width * 0.5f - 330f * s, y + 40f * s, 660f * s, Mathf.Max(1f, 1.5f * s)),
                          new Color(0.75f, 0.12f, 0.08f, 0.8f));
-        y = y + caoTieuDe - 168f * s;
+        y += 68f * s;
 
         // ---- Khung ----
         var khung = new Rect(x, y, rong, caoKhung);

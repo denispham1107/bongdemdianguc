@@ -368,7 +368,11 @@ public static class GiaoDien
 
     static readonly GUIContent noiDung = new GUIContent();
 
-    /// <summary>Nen toan man hinh: toi bon goc va suong do duoi day.</summary>
+    /// <summary>
+    /// Nen toan man hinh: toi bon goc va suong do duoi day. Man dang nhap va
+    /// sanh KHONG con goi (nguoi dung 12/09/2026: canh vat phia sau khong can
+    /// phu mo) - giu lai cho man nao can lam toi.
+    /// </summary>
     public static void VeNen(float doToiThem = 0f)
     {
         var mauCu = GUI.color;
@@ -460,14 +464,58 @@ public static class GiaoDien
         To(new Rect(r.x, r.yMax - 1f, r.width, 1f), new Color(0.3f, 0.1f, 0.08f, 0.6f));
     }
 
+    public const string TenGame = "ÁC QUỶ TRỞ LẠI";
+
+    static Texture2D anhTieuDe;
+    static bool daNapTieuDe;
+
     /// <summary>
-    /// Ten game o giua, chap chon nhu anh nen: bong den phia duoi, quang do
-    /// quanh chu, do sang dao dong theo nhieu Perlin.
+    /// ANH TIEU DE dung san (Resources/GiaoDien/TieuDe.png, sinh bang
+    /// CongCu/TieuDe/sinh_tieu_de.py tu font Grenze Gotisch). CUNG MOT FILE voi
+    /// man Loading tren web (TemplateData/tieude.png) - nen hai noi giong het
+    /// nhau, va dau tieng Viet nam san trong anh: khong con phu thuoc font
+    /// cua may nao.
     /// </summary>
-    public static void TieuDeGame(Rect r, float s, string chu = "DIABLO 2.5D")
+    public static Texture2D AnhTieuDe
+    {
+        get
+        {
+            if (!daNapTieuDe) { daNapTieuDe = true; anhTieuDe = Resources.Load<Texture2D>("GiaoDien/TieuDe"); }
+            return anhTieuDe;
+        }
+    }
+
+    /// <summary>Rong / cao cua anh tieu de (ca giot mau va quang do).</summary>
+    public static float TiLeTieuDe
+    {
+        get { var a = AnhTieuDe; return a != null ? a.width / (float)a.height : 3.4f; }
+    }
+
+    /// <summary>
+    /// Ten game o giua, CHAP CHON nhu lua: do sang dao dong 0,62-1,0 theo nhieu
+    /// Perlin - trang Loading dung cung khoang ay (CSS). Ve anh tieu de vua
+    /// khit trong <paramref name="r"/>, giu ti le.
+    /// </summary>
+    public static void TieuDeGame(Rect r, float s, string chu = TenGame)
     {
         float t = Time.unscaledTime;
         float nhay = 0.72f + 0.28f * Mathf.PerlinNoise(t * 2.7f, 0.37f);
+
+        var anh = AnhTieuDe;
+        if (anh != null)
+        {
+            float tl = anh.width / (float)anh.height;
+            float w = Mathf.Min(r.width, r.height * tl), h = w / tl;
+            var o = new Rect(r.center.x - w * 0.5f, r.center.y - h * 0.5f, w, h);
+            float sang = Mathf.Lerp(0.62f, 1f, (nhay - 0.72f) / 0.28f);
+            var mauAnh = GUI.color;
+            GUI.color = new Color(sang, sang, sang, 1f);
+            GUI.DrawTexture(o, anh, ScaleMode.StretchToFill, true);
+            GUI.color = mauAnh;
+            return;
+        }
+
+        // Khong co anh (chua sinh) - ve chu bang Inter nhu cu
 
         var k = KieuTieuDeGame;
         var mauGoc = k.normal.textColor;

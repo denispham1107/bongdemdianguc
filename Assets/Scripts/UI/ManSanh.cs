@@ -143,7 +143,7 @@ public class ManSanh : MonoBehaviour
 
         if (dangO != Cho.Sanh) moCaiDat = false;
 
-        GiaoDien.VeNen();
+        // Khong con phu toi bon goc + suong do: canh nghia dia phia sau de nguyen
         if (dangO == Cho.Sanh) VeSanh(s);
         else VeTrongPhong(s);
 
@@ -520,8 +520,8 @@ public class ManSanh : MonoBehaviour
 
     void VeDemNguoc(float s)
     {
-        GiaoDien.VeNen(0.72f);
-
+        // Khong phu toi / suong len canh phia sau (nguoi dung 12/09/2026) - con
+        // so dem nguoc da co bong den va quang do rieng
         double conLai = PhongMang.ConLaiGiay();
         int con = Mathf.Max(0, Mathf.CeilToInt((float)conLai));
 

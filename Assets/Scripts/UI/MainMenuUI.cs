@@ -98,7 +98,7 @@ public class MainMenuUI : MonoBehaviour
         EnsureStyles(s);
 
         // Ten game
-        GUI.Label(new Rect(0f, Screen.height * 0.12f, Screen.width, 100f * s), "DIABLO 2.5D", title);
+        GiaoDien.TieuDeGame(new Rect(0f, Screen.height * 0.12f - 40f * s, Screen.width, 150f * s), s);
         GUI.Label(new Rect(0f, Screen.height * 0.12f + 95f * s, Screen.width, 40f * s),
                   "Nu phu thuy - Lua, Bang, Sam set & Loc xoay", small);
 
