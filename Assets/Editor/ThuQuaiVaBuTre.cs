@@ -162,43 +162,65 @@ public static class ThuQuaiVaBuTre
         Vector3 dau = toi.transform.position;
         yield return new WaitForSeconds(0.35f);
 
-        // Di mot doan roi hoi: "nua giay truoc toi o dau"
+        // Di mot doan roi hoi: "0,3 giay truoc toi o dau".
+        //
+        // LAN SUA THU BA cua chieu nay, va lan nay sua dung cho. Hai lan truoc
+        // toi chinh NGUONG (met -> giay, hai khung -> ba khung) trong khi sai
+        // lech do duoc gan nhu khong doi: 62, 41, 60 ms, bat ke khung hinh
+        // nhanh hay cham. Mot sai so khong co gian theo khung hinh thi khong
+        // phai sai so cua nhip ghi - no la sai so cua CHINH PHEP DO: toi so
+        // lich su voi "cho xuat phat", nhung luc hoi thi dong ho da troi them
+        // mot, hai khung sau khi phep thu dung di chuyen, nen "0,4 giay truoc"
+        // khong con la luc xuat phat nua.
+        //
+        // Gio phep thu TU GHI nhat ky (thoi diem, vi tri) cua chinh no, roi
+        // doi chieu LichSuViTri voi nhat ky ay tai DUNG thoi diem duoc hoi.
+        // Khong con cho nao de sai so cua phep do lan vao ket qua.
         Vector3 xa = dau + new Vector3(6f, 0f, 0f);
+        var nhatKyLuc = new System.Collections.Generic.List<float>();
+        var nhatKyCho = new System.Collections.Generic.List<Vector3>();
         float batDauDi = Time.unscaledTime;
-        while (Time.unscaledTime - batDauDi < 0.4f)
+        while (Time.unscaledTime - batDauDi < 0.6f)
         {
-            float t = (Time.unscaledTime - batDauDi) / 0.4f;
+            float t = (Time.unscaledTime - batDauDi) / 0.6f;
             toi.transform.position = Vector3.Lerp(dau, xa, t);
+            nhatKyLuc.Add(Time.unscaledTime);
+            nhatKyCho.Add(toi.transform.position);
             yield return null;
         }
-        toi.transform.position = xa;
-        yield return null;
 
-        Vector3 hoiLui = ls.ViTriLuc(0.4f);
-        float lechLui = Vector3.Distance(hoiLui, dau);
+        // Hoi lui dung luc con dang di (0,3 giay truoc = giua quang duong)
+        const float HoiLui = 0.3f;
+        float lucHoi = Time.unscaledTime - HoiLui;
+        Vector3 hoiLui = ls.ViTriLuc(HoiLui);
+
+        // Vi tri THAT tai luc ay, noi suy tu nhat ky cua chinh phep thu
+        Vector3 thatSu = nhatKyCho[0];
+        for (int k = 1; k < nhatKyLuc.Count; k++)
+        {
+            if (nhatKyLuc[k] < lucHoi) continue;
+            float a = nhatKyLuc[k - 1], b = nhatKyLuc[k];
+            float u = b > a ? Mathf.Clamp01((lucHoi - a) / (b - a)) : 0f;
+            thatSu = Vector3.Lerp(nhatKyCho[k - 1], nhatKyCho[k], u);
+            break;
+        }
+
+        float lechLui = Vector3.Distance(hoiLui, thatSu);
         float daDi = Vector3.Distance(xa, dau);
-
-        // Nguong phai tinh theo THOI GIAN chu khong theo met, va day la mot
-        // sua sai: lan dau toi doi "lech duoi 1 met", the la phep thu bao hong
-        // khi Editor tut xuong 10 khung/giay. Nhung 1,48 m o toc do 15 m/giay
-        // dung bang MOT KHUNG HINH - lich su khong the nho min hon nhip no
-        // duoc ghi. Doi lai: sai lech quy ra giay phai duoi hai khung hinh.
-        float tocDo = daDi / 0.4f;
+        float tocDo = daDi / 0.6f;
         float saiGiay = tocDo > 0.01f ? lechLui / tocDo : 0f;
-        // BA khung chu khong phai hai, va day la lan sua thu hai cua nguong nay.
-        //
-        // Co BA nguon sai so cong lai, moi cai mot khung: khung luc GHI moc,
-        // khung luc DOC lai, va dao dong cua chinh nhip khung hinh trong 0,4
-        // giay vua chay. Dat tran hai khung thi phep thu bao hong o 41 ms voi
-        // tran 40 - sat nut, va cai sat nut ay chi noi len rang toi dem thieu
-        // mot nguon, chu khong noi gi ve lich su vi tri ca.
-        float baKhung = 3f * Mathf.Max(Time.unscaledDeltaTime, 1f / LichSuViTri.NhipGhi);
 
-        Ghi("5. di " + daDi.ToString("F2") + " m trong 0,4 giay ("
-            + tocDo.ToString("F1") + " m/giay), hoi lai cho 0,4 giay truoc -> lech "
+        // Lich su ghi o LateUpdate, nhat ky cua phep thu ghi truoc do trong cung
+        // khung - cung mot moc thoi gian. Sai lech con lai chi la nhip ghi
+        // (1/60 giay) cong mot khung. Hai khung la du.
+        float haiKhung = 2f * Mathf.Max(Time.unscaledDeltaTime, 1f / LichSuViTri.NhipGhi);
+
+        Ghi("5. di " + daDi.ToString("F2") + " m trong 0,6 giay ("
+            + tocDo.ToString("F1") + " m/giay), hoi lai cho " + HoiLui.ToString("F1")
+            + " giay truoc, doi chieu nhat ky rieng cua phep thu -> lech "
             + lechLui.ToString("F2") + " m = " + (saiGiay * 1000f).ToString("F0")
-            + " ms (tran: ba khung hinh = " + (baKhung * 1000f).ToString("F0") + " ms)");
-        if (saiGiay > baKhung)
+            + " ms (tran: hai khung hinh = " + (haiKhung * 1000f).ToString("F0") + " ms)");
+        if (saiGiay > haiKhung)
         { Ghi("[LOI] lich su vi tri khong nho dung - bu tre se lui sai cho"); loi++; }
 
         // ---- 6. Bu tre that su lui nguoi, va tra lai ----

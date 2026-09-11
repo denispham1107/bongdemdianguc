@@ -161,7 +161,7 @@ public class DongBoQuai : MonoBehaviour
 
     void KeLaiCaDan()
     {
-        if (dongBo == null || !KenhTrucTiep.DaMo) return;
+        if (dongBo == null || !dongBo.CoKenhNaoMo) return;
 
         var ds = Object.FindObjectsByType<NhanDangQuai>(FindObjectsSortMode.None);
         int soCon = 0;
@@ -179,7 +179,8 @@ public class DongBoQuai : MonoBehaviour
                 viTri = n.transform.position,
                 gocY = n.transform.eulerAngles.y,
                 mau01 = d != null && d.maxHealth > 0f ? d.health / d.maxHealth : 1f,
-                daChet = d != null && d.IsDead
+                daChet = d != null && d.IsDead,
+                coHieuUng = HieuUngQuaMang.DocCo(n.gameObject)
             };
         }
 
@@ -190,7 +191,7 @@ public class DongBoQuai : MonoBehaviour
         {
             int lay = Mathf.Min(GoiTin.SoQuaiMoiGoi, soCon - tu);
             byte[] b = GoiTin.VietQuai(moc, demGui, tu, lay);
-            if (KenhTrucTiep.Gui(GoiTin.SangChuoi(b))) SoGoiQuaiDaGui++;
+            if (dongBo.PhatChoTatCa(GoiTin.SangChuoi(b), -1) > 0) SoGoiQuaiDaGui++;
         }
     }
 
@@ -219,7 +220,7 @@ public class DongBoQuai : MonoBehaviour
 
     void KhiQuaiRaDon(EnemyAI conQuai, int kieu, Transform mucTieu, Vector3 diemNgam)
     {
-        if (dongBo == null || !KenhTrucTiep.DaMo || conQuai == null) return;
+        if (dongBo == null || !dongBo.CoKenhNaoMo || conQuai == null) return;
 
         // Khong co so hieu thi may kia khong biet cho don ay vao mieng ai
         var soHieu = conQuai.GetComponent<NhanDangQuai>();
@@ -235,7 +236,7 @@ public class DongBoQuai : MonoBehaviour
         });
 
         SoDonDaKe++;
-        if (KenhTrucTiep.Gui(GoiTin.SangChuoi(goi))) SoGoiQuaiDaGui++;
+        if (dongBo.PhatChoTatCa(GoiTin.SangChuoi(goi), -1) > 0) SoGoiQuaiDaGui++;
         donChoGui.Add(new DonChoGui
         {
             goi = goi, conLai = SoLanGuiLaiDon - 1,
@@ -254,7 +255,7 @@ public class DongBoQuai : MonoBehaviour
     /// </summary>
     void GuiBangSo()
     {
-        if (dongBo == null || !KenhTrucTiep.DaMo) return;
+        if (dongBo == null || !dongBo.CoKenhNaoMo) return;
         if (Time.unscaledTime < guiBangSoLanSau) return;
         guiBangSoLanSau = Time.unscaledTime + 1f / NhipGuiBangSo;
 
@@ -262,7 +263,7 @@ public class DongBoQuai : MonoBehaviour
         if (dir == null) return;
 
         byte[] b = GoiTin.VietBangSo(dir.Wave, dir.Kills, dir.Alive, dir.NextWaveIn);
-        if (KenhTrucTiep.Gui(GoiTin.SangChuoi(b))) SoGoiQuaiDaGui++;
+        if (dongBo.PhatChoTatCa(GoiTin.SangChuoi(b), -1) > 0) SoGoiQuaiDaGui++;
     }
 
     void GuiLaiDonDangCho()
@@ -272,7 +273,7 @@ public class DongBoQuai : MonoBehaviour
             var d = donChoGui[i];
             if (Time.unscaledTime < d.guiLanSau) continue;
 
-            if (KenhTrucTiep.Gui(GoiTin.SangChuoi(d.goi))) SoGoiQuaiDaGui++;
+            if (dongBo.PhatChoTatCa(GoiTin.SangChuoi(d.goi), -1) > 0) SoGoiQuaiDaGui++;
             d.conLai--;
             if (d.conLai <= 0) { donChoGui.RemoveAt(i); continue; }
 
@@ -359,6 +360,7 @@ public class DongBoQuai : MonoBehaviour
                 c.mau.health = Mathf.Clamp(q.mau01 * c.mau.maxHealth, 0f, c.mau.maxHealth);
 
             if (q.daChet && c.mau != null && !c.mau.IsDead) c.mau.Die();
+            else if (c.mau != null) HieuUngQuaMang.ApCo(c.mau, q.coHieuUng);
         }
     }
 

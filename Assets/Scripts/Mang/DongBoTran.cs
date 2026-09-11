@@ -64,42 +64,142 @@ public class DongBoTran : MonoBehaviour
 
     public enum TinhTrangKetNoi { Tot, DangChoTinHieu, DaMat }
 
+    /// <summary>
+    /// Tinh trang CHUNG cua may nay voi tran dau.
+    ///
+    ///   - May khach chi co mot kenh (toi chu phong), nen day chinh la tinh trang
+    ///     kenh ay.
+    ///   - Chu phong co mot kenh cho moi khach: DangChoTinHieu neu co BAT KY ai
+    ///     dang im lang, va chi DaMat khi TAT CA deu da di - con mot nguoi thi
+    ///     tran van con.
+    /// Mat tung nguoi mot thi xem <see cref="KhiMatNguoi"/>.
+    /// </summary>
     public TinhTrangKetNoi TinhTrang { get; private set; }
 
-    /// <summary>Goi DUNG MOT LAN khi ket luan nguoi kia da roi tran.</summary>
+    /// <summary>Goi DUNG MOT LAN khi TinhTrang chung thanh DaMat. Voi may khach
+    /// nghia la chu phong da roi tran - tran het.</summary>
     public event System.Action KhiMatKetNoi;
 
-    /// <summary>Bao lau roi khong nghe thay gi tu nguoi kia, giay.</summary>
-    public float ImLangGiay
-    {
-        get { return daTungNghe ? Time.unscaledTime - ngheLanCuoi : 0f; }
-    }
+    /// <summary>
+    /// Goi khi MOT nguoi choi roi tran - nguoi ay ngoi ghe nao.
+    ///
+    /// Chu phong goi khi mot kenh cua no chet. May khach goi khi chu phong bao
+    /// qua goi <see cref="GoiTin.LoaiRoiTran"/> - vi khach khong noi thang voi
+    /// nhau, khach khong tu biet duoc mot nguoi khach khac vua di.
+    /// </summary>
+    public event System.Action<byte> KhiMatNguoi;
 
-    float ngheLanCuoi;
-    bool daTungNghe;
-    bool daTungMo;
+    /// <summary>Kenh dang im lang lau nhat bao nhieu giay (bo qua kenh da mat).</summary>
+    public float ImLangGiay { get; private set; }
+
+    /// <summary>Ghe cua nguoi dang im lang lau nhat - 255 neu khong ai.</summary>
+    public byte ChiSoDangCho { get; private set; }
+
+    readonly float[] ngheLanCuoi = new float[KenhTrucTiep.SoKenhToiDa];
+    readonly bool[] daTungNghe = new bool[KenhTrucTiep.SoKenhToiDa];
+    readonly bool[] daTungMo = new bool[KenhTrucTiep.SoKenhToiDa];
+    readonly bool[] kenhDaMat = new bool[KenhTrucTiep.SoKenhToiDa];
+
+    /// <summary>Kenh k da ket luan la mat han chua.</summary>
+    public bool KenhDaMat(int k) { return k >= 0 && k < kenhDaMat.Length && kenhDaMat[k]; }
 
     void XetMatKetNoi()
     {
         if (TinhTrang == TinhTrangKetNoi.DaMat) return;     // ket luan roi thi thoi
-        if (!daTungNghe) return;                            // chua noi xong thi chua tinh
 
-        if (KenhTrucTiep.DaMo) daTungMo = true;
+        int soKenhSong = 0, soKenhCho = 0, soKenhDaNoi = 0;
+        float imLauNhat = 0f;
+        byte ai = 255;
 
-        // Kenh DONG han la dau hieu chac chan nhat - nguoi kia dong tab hoac
-        // bam ve sanh (BackToMenu dong kenh truoc khi di).
-        bool kenhDaDong = daTungMo && !KenhTrucTiep.DaMo;
+        for (int k = 0; k < KenhTrucTiep.SoKenhToiDa; k++)
+        {
+            if (!daTungNghe[k]) continue;                   // chua noi xong thi chua tinh
+            soKenhDaNoi++;
+            if (kenhDaMat[k]) continue;
 
-        float im = ImLangGiay;
-        if (kenhDaDong || im >= GiayMatKetNoi)
+            if (KenhTrucTiep.DaMoKenh(k)) daTungMo[k] = true;
+
+            // Kenh DONG han la dau hieu chac chan nhat - nguoi kia dong tab
+            // hoac bam ve sanh (BackToMenu dong kenh truoc khi di).
+            bool kenhDaDong = daTungMo[k] && !KenhTrucTiep.DaMoKenh(k);
+            float im = Time.unscaledTime - ngheLanCuoi[k];
+
+            if (kenhDaDong || im >= GiayMatKetNoi)
+            {
+                MatKenh(k);
+                continue;
+            }
+
+            soKenhSong++;
+            if (im >= GiayChoTinHieu)
+            {
+                soKenhCho++;
+                if (im > imLauNhat) { imLauNhat = im; ai = (byte)k; }
+            }
+        }
+
+        ImLangGiay = imLauNhat;
+        ChiSoDangCho = ai;
+
+        if (soKenhDaNoi > 0 && soKenhSong == 0)
         {
             TinhTrang = TinhTrangKetNoi.DaMat;
             if (KhiMatKetNoi != null) KhiMatKetNoi();
             return;
         }
 
-        TinhTrang = im >= GiayChoTinHieu ? TinhTrangKetNoi.DangChoTinHieu
-                                         : TinhTrangKetNoi.Tot;
+        TinhTrang = soKenhCho > 0 ? TinhTrangKetNoi.DangChoTinHieu : TinhTrangKetNoi.Tot;
+    }
+
+    /// <summary>
+    /// Mot kenh vua chet han. So kenh = so ghe cua nguoi o dau ben kia, nen
+    /// day cung chinh la "nguoi ngoi ghe k vua roi tran".
+    /// </summary>
+    void MatKenh(int k)
+    {
+        if (kenhDaMat[k]) return;
+        kenhDaMat[k] = true;
+        daRoiTran.Add((byte)k);
+        KenhTrucTiep.Dong(k);
+
+        // Chu phong bao cho nhung nguoi khach CON LAI: ho khong noi thang voi
+        // nhau nen khong tu biet duoc. Khong bao thi ban sao cua nguoi vua di
+        // dung im mai mai tren may ho.
+        if (LaChuPhong)
+            PhatChoTatCa(GoiTin.SangChuoi(GoiTin.VietRoiTran((byte)k)), -1);
+
+        if (KhiMatNguoi != null) KhiMatNguoi((byte)k);
+    }
+
+    /// <summary>
+    /// May nay co chuyen tiep goi tin cho nguoi khac khong.
+    ///
+    /// Noi hinh sao: khach chi noi voi chu phong, chu phong noi voi tat ca. Goi
+    /// cua khach ghe 2 phai qua tay chu phong moi toi duoc ghe 1 va ghe 3.
+    /// </summary>
+    public bool LaChuPhong { get { return TranHienTai.LaHost; } }
+
+    /// <summary>Con it nhat mot kenh mo khong - con ai de gui cho khong.</summary>
+    public bool CoKenhNaoMo
+    {
+        get
+        {
+            for (int k = 0; k < KenhTrucTiep.SoKenhToiDa; k++)
+                if (KenhTrucTiep.DaMoKenh(k)) return true;
+            return false;
+        }
+    }
+
+    /// <summary>
+    /// Phat mot goi cho moi nguoi dang noi voi may nay, tru mot kenh.
+    ///
+    /// Chu phong: moi khach. Khach: chi chu phong (khach chi co kenh 0).
+    /// Dung cho ca DongBoQuai - dan quai, bang so va don quai deu phai toi
+    /// moi nguoi khach, khong chi nguoi dau tien.
+    /// </summary>
+    public int PhatChoTatCa(string tin, int truKenh)
+    {
+        return KenhTrucTiep.GuiTatCa(tin, truKenh);
     }
 
     /// <summary>Bao lau hoi nhip moi giay - chi de do vong di-ve.</summary>
@@ -114,6 +214,11 @@ public class DongBoTran : MonoBehaviour
     /// van an don.
     /// </summary>
     public float RttMs { get; private set; }
+
+    /// <summary>Vong di-ve do rieng cho tung kenh. Chu phong co den ba kenh;
+    /// RttMs la kenh CHAM NHAT - bu tre thieu thi don truot, bu thua thi con
+    /// tran 300 ms chan lai.</summary>
+    readonly float[] rttKenh = new float[KenhTrucTiep.SoKenhToiDa];
 
     float hoiVongLanSau;
 
@@ -190,7 +295,7 @@ public class DongBoTran : MonoBehaviour
 
     void KhiToiTungPhep(int kyNang, Vector3 diemNgam)
     {
-        if (!KenhTrucTiep.DaMo) return;
+        if (!CoKenhNaoMo) return;
 
         var goi = GoiTin.VietKyNang(new GoiTin.MotPhep
         {
@@ -217,7 +322,7 @@ public class DongBoTran : MonoBehaviour
 
     void HoiNhip()
     {
-        if (!KenhTrucTiep.DaMo) return;
+        if (!CoKenhNaoMo) return;
         if (Time.unscaledTime < hoiVongLanSau) return;
         hoiVongLanSau = Time.unscaledTime + 1f / NhipHoiVong;
 
@@ -232,15 +337,28 @@ public class DongBoTran : MonoBehaviour
     /// bao nhieu cung khong anh huong - do la ly do cai moc duoc nem tra lai
     /// nguyen ven chu khong ai viet lai no.
     /// </summary>
-    void NhanMotNhip(byte[] b)
+    void NhanMotNhip(byte[] b, int kenh)
     {
         bool laHoi; int moc;
         if (!GoiTin.DocNhip(b, out laHoi, out moc)) { SoGoiHong++; return; }
 
-        if (laHoi) { GuiMotGoi(GoiTin.VietNhip(false, moc)); return; }
+        // Tra loi DUNG kenh vua hoi - khong phat cho ca phong. Phat ra thi ca
+        // phong nhan cau tra loi cua mot cau hoi ho khong he hoi, va con so do
+        // tre cua ho thanh vo nghia.
+        if (laHoi)
+        {
+            byte[] tra = GoiTin.VietNhip(false, moc);
+            if (KenhTrucTiep.Gui(kenh, GoiTin.SangChuoi(tra))) { SoGoiDaGui++; SoByteDaGui += tra.Length; }
+            return;
+        }
 
         float vong = Mathf.Max(0f, GioTran() - moc);
-        RttMs = RttMs <= 0f ? vong : Mathf.Lerp(RttMs, vong, 0.25f);
+        rttKenh[kenh] = rttKenh[kenh] <= 0f ? vong : Mathf.Lerp(rttKenh[kenh], vong, 0.25f);
+
+        float lonNhat = 0f;
+        for (int k = 0; k < rttKenh.Length; k++)
+            if (!kenhDaMat[k] && rttKenh[k] > lonNhat) lonNhat = rttKenh[k];
+        RttMs = lonNhat;
     }
 
     /// <summary>
@@ -283,9 +401,10 @@ public class DongBoTran : MonoBehaviour
         return 255;
     }
 
+    /// <summary>Gui mot goi CUA MAY NAY cho moi nguoi dang noi voi no.</summary>
     void GuiMotGoi(byte[] b)
     {
-        if (KenhTrucTiep.Gui(GoiTin.SangChuoi(b)))
+        if (PhatChoTatCa(GoiTin.SangChuoi(b), -1) > 0)
         {
             SoGoiDaGui++;
             SoByteDaGui += b.Length;
@@ -315,6 +434,29 @@ public class DongBoTran : MonoBehaviour
         return Mathf.RoundToInt((Time.unscaledTime - batDauLuc) * 1000f);
     }
 
+    /// <summary>
+    /// SINH BAN SAO KHI GOI TIN DAU TIEN CUA HO DEN, khong sinh san.
+    ///
+    /// Vi sao: trong phong bon nguoi, neu mot nguoi khach bat tay voi chu phong
+    /// hong thi ho khong bao gio gui gi. Sinh san ban sao cho moi nguoi trong
+    /// danh sach phong la de lai tren may nhung nguoi khac mot buc tuong dung
+    /// im mai mai. Sinh khi can thi chi ai THAT SU dang choi moi hien ra.
+    ///
+    /// Tham so: ghe cua nguoi ay, va vi tri trong goi tin dau tien - de ban
+    /// sao hien ra ngay cho ho dung chu khong troi tu mot goc ban do sang.
+    /// </summary>
+    public System.Func<byte, Vector3, PlayerController> TaoNguoiKhiCan;
+
+    /// <summary>Nhung ghe da roi tran - goi tin muon cua ho khong duoc sinh lai
+    /// ban sao. Khong nho thi mot goi chuyen tiep den tre nua giay la nguoi vua
+    /// di lai hien ra, dung im.</summary>
+    readonly HashSet<byte> daRoiTran = new HashSet<byte>();
+
+    /// <summary>So nguoi khac dang co ban sao tren may nay.</summary>
+    public int SoNguoiKhac { get { return nguoiKhac.Count; } }
+
+    public bool CoNguoi(byte chiSo) { return nguoiKhac.ContainsKey(chiSo); }
+
     /// <summary>Them mot nguoi choi khac vao tran.</summary>
     public void ThemNguoi(byte chiSo, PlayerController nv)
     {
@@ -324,6 +466,7 @@ public class DongBoTran : MonoBehaviour
 
     public void BoNguoi(byte chiSo)
     {
+        daRoiTran.Add(chiSo);
         MotNguoiKhac n;
         if (!nguoiKhac.TryGetValue(chiSo, out n)) return;
         NguoiChoiKhac.Bo(n.nhanVat);
@@ -349,7 +492,7 @@ public class DongBoTran : MonoBehaviour
 
     void GuiTrangThaiCuaToi()
     {
-        if (toi == null || !KenhTrucTiep.DaMo) return;
+        if (toi == null || !CoKenhNaoMo) return;
 
         var mau = toi.GetComponent<Damageable>();
 
@@ -360,40 +503,76 @@ public class DongBoTran : MonoBehaviour
             gocY = toi.transform.eulerAngles.y,
             mau01 = mau != null && mau.maxHealth > 0f ? mau.health / mau.maxHealth : 1f,
             dangChay = toi.input.huongDi.sqrMagnitude > 0.01f || toi.DangCoDiemDen,
-            daChet = mau != null && mau.IsDead
+            daChet = mau != null && mau.IsDead,
+
+            // May nay la trong tai cua chinh nhan vat minh - ke luon ca hieu
+            // ung va khieng, de may khac ve lai dung, khong tu gieo Random.
+            coHieuUng = HieuUngQuaMang.DocCo(toi.gameObject),
+            khieng01 = HieuUngQuaMang.DocKhieng(toi.gameObject)
         };
 
         GuiMotGoi(GoiTin.VietTrangThai(GioTran(), demGui, 1));
     }
 
-    /// <summary>Vet sach hang cho - mot khung hinh co the co vai goi den cung luc.</summary>
+    // ---- So dem chuyen tiep, de chan doan ----
+    public int SoGoiDaChuyenTiep { get; private set; }
+
+    /// <summary>Vet sach hang cho cua MOI kenh - mot khung hinh co the co vai goi
+    /// den cung luc, tu vai nguoi khac nhau.</summary>
     void NhanHet()
     {
-        string s;
-        while ((s = KenhTrucTiep.Nhan()).Length > 0)
+        for (int k = 0; k < KenhTrucTiep.SoKenhToiDa; k++)
+        {
+            if (kenhDaMat[k]) continue;
+            string s;
+            while ((s = KenhTrucTiep.Nhan(k)).Length > 0) NhanMotGoi(s, k);
+        }
+    }
+
+    void NhanMotGoi(string s, int kenh)
+    {
         {
             byte[] b = GoiTin.TuChuoi(s);
-            if (b == null) { SoGoiHong++; continue; }
+            if (b == null) { SoGoiHong++; return; }
 
-            // Bat cu goi nao doc duoc cung la dau hieu nguoi kia con do
-            ngheLanCuoi = Time.unscaledTime;
-            daTungNghe = true;
+            // Bat cu goi nao doc duoc cung la dau hieu nguoi o kenh ay con do
+            ngheLanCuoi[kenh] = Time.unscaledTime;
+            daTungNghe[kenh] = true;
 
             // Doc byte dau de biet goi loai gi. Truoc day o day chi co mot loai
             // nen doc thang - them loai thu hai ma quen phan loai thi goi ky
             // nang se bi dem la "goi hong".
             byte loai = GoiTin.LoaiCuaGoi(b);
 
-            if (loai == GoiTin.LoaiKyNang) { NhanMotPhep(b); continue; }
-            if (loai == GoiTin.LoaiNhip) { NhanMotNhip(b); continue; }
+            // CHU PHONG CHUYEN TIEP. Trang thai va ky nang cua khach ghe 2 phai
+            // toi duoc ghe 1 va ghe 3 - ma khach khong noi thang voi nhau. Chuyen
+            // NGUYEN chuoi da nhan (khong ma hoa lai) sang moi kenh TRU kenh vua
+            // gui: vong nguoc ve thi nguoi gui nhan lai chinh minh tu 30 ms
+            // truoc. Goi nhip thi KHONG chuyen - no la cau hoi rieng cua mot
+            // nguoi, tra loi rieng cho nguoi ay.
+            if (LaChuPhong && (loai == GoiTin.LoaiTrangThai || loai == GoiTin.LoaiKyNang))
+                SoGoiDaChuyenTiep += PhatChoTatCa(s, kenh);
+
+            if (loai == GoiTin.LoaiKyNang) { NhanMotPhep(b); return; }
+            if (loai == GoiTin.LoaiNhip) { NhanMotNhip(b, kenh); return; }
+            if (loai == GoiTin.LoaiRoiTran)
+            {
+                // Chu phong bao: mot nguoi khach khac vua roi tran
+                byte ghe;
+                if (!GoiTin.DocRoiTran(b, out ghe)) { SoGoiHong++; return; }
+                if (ghe == chiSoCuaToi || daRoiTran.Contains(ghe)) return;
+                daRoiTran.Add(ghe);
+                if (KhiMatNguoi != null) KhiMatNguoi(ghe);
+                return;
+            }
             if (loai == GoiTin.LoaiBangSo)
             {
                 int wave, kills, con; float dotMoi;
                 if (!GoiTin.DocBangSo(b, out wave, out kills, out con, out dotMoi))
-                { SoGoiHong++; continue; }
+                { SoGoiHong++; return; }
                 var dir = GameDirector.Instance;
                 if (dir != null) dir.NhanBangSoTuChuPhong(wave, kills, con, dotMoi);
-                continue;
+                return;
             }
             if (loai == GoiTin.LoaiDonQuai)
             {
@@ -401,20 +580,20 @@ public class DongBoTran : MonoBehaviour
                 // dien lai nua la mot cu vung kiem an mau hai lan.
                 if (quai != null && !GameDirector.LaTrongTaiCuaQuai)
                     quai.NhanDonQuai(b, chiSoCuaToi);
-                continue;
+                return;
             }
             if (loai == GoiTin.LoaiQuai)
             {
                 // May khach nhan dan quai tu chu phong. Chu phong khong nghe
                 // goi loai nay: no la nguoi ke chuyen, khong phai nguoi nghe.
                 if (quai != null && !GameDirector.LaTrongTaiCuaQuai) quai.NhanGoiQuai(b);
-                continue;
+                return;
             }
-            if (loai != GoiTin.LoaiTrangThai) { SoGoiHong++; continue; }
+            if (loai != GoiTin.LoaiTrangThai) { SoGoiHong++; return; }
 
             int moc;
             int soNguoi = GoiTin.DocTrangThai(b, demNhan, out moc);
-            if (soNguoi < 0) { SoGoiHong++; continue; }
+            if (soNguoi < 0) { SoGoiHong++; return; }
 
             SoGoiDaNhan++;
 
@@ -424,10 +603,23 @@ public class DongBoTran : MonoBehaviour
                 if (p.chiSo == chiSoCuaToi) continue;   // trang thai cua chinh minh
 
                 MotNguoiKhac n;
-                if (!nguoiKhac.TryGetValue(p.chiSo, out n)) continue;
+                if (!nguoiKhac.TryGetValue(p.chiSo, out n))
+                {
+                    if (TaoNguoiKhiCan == null || daRoiTran.Contains(p.chiSo)) continue;
+                    var nv = TaoNguoiKhiCan(p.chiSo, p.viTri);
+                    if (nv == null) continue;
+                    ThemNguoi(p.chiSo, nv);
+                    n = nguoiKhac[p.chiSo];
+                }
 
                 n.noiSuy.Nhan(moc, p.viTri, p.gocY, p.dangChay);
                 ApMau(n, p.mau01, p.daChet);
+
+                if (n.nhanVat != null && !p.daChet)
+                {
+                    HieuUngQuaMang.ApCo(n.nhanVat.GetComponent<Damageable>(), p.coHieuUng);
+                    HieuUngQuaMang.ApKhieng(n.nhanVat, p.khieng01);
+                }
             }
         }
     }

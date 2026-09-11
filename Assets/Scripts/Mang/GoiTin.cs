@@ -110,6 +110,26 @@ public static class GoiTin
     /// </summary>
     public const byte LoaiBangSo = 7;
 
+    /// <summary>
+    /// GOI ROI TRAN: "nguoi ngoi ghe so may vua roi tran". Chu phong gui cho
+    /// nhung nguoi khach con lai.
+    ///
+    /// Can vi noi hinh sao: khach khong noi thang voi nhau, nen khi khach ghe 2
+    /// dong tab thi chi chu phong biet. Khong co goi nay thi ban sao cua ho dung
+    /// im mai mai tren may cua nhung nguoi khach khac.
+    /// </summary>
+    public const byte LoaiRoiTran = 8;
+
+    public static byte[] VietRoiTran(byte ghe) { return new byte[] { LoaiRoiTran, ghe }; }
+
+    public static bool DocRoiTran(byte[] b, out byte ghe)
+    {
+        ghe = 255;
+        if (b == null || b.Length < 2 || b[0] != LoaiRoiTran) return false;
+        ghe = b[1];
+        return true;
+    }
+
     /// <summary>Bao nhieu con nhieu nhat trong mot goi.</summary>
     public const int SoQuaiMoiGoi = 16;
 
@@ -122,6 +142,9 @@ public static class GoiTin
         public float gocY;
         public float mau01;
         public bool daChet;
+
+        /// <summary>Dong bang / choang - bit HieuUngQuaMang.Co*.</summary>
+        public byte coHieuUng;
     }
 
     /// <summary>Mot lan tung phep.</summary>
@@ -149,6 +172,12 @@ public static class GoiTin
         public float mau01;         // 0..1
         public bool dangChay;
         public bool daChet;
+
+        /// <summary>Dong bang / choang - bit HieuUngQuaMang.Co*.</summary>
+        public byte coHieuUng;
+
+        /// <summary>Mau khieng 0..1, 0 = khong co khieng.</summary>
+        public float khieng01;
     }
 
     // ================================================================
@@ -204,10 +233,17 @@ public static class GoiTin
 
             b[i++] = (byte)Mathf.RoundToInt(Mathf.Clamp01(p.mau01) * 255f);
 
+            // Byte co: bit 0-1 cho di/chet, bit 2-4 cho hieu ung (dong bang,
+            // dong cung, choang) - dich sang 2 bit de khong dam vao hai bit cu.
             byte co = 0;
             if (p.dangChay) co |= 1;
             if (p.daChet) co |= 2;
+            co |= (byte)((p.coHieuUng & 0x07) << 2);
             b[i++] = co;
+
+            // Byte thu 12 moi nguoi: mau khieng. Truoc day byte nay de trong -
+            // mang cap 12 byte ma chi viet 11 - nen them no khong lam goi to ra.
+            b[i++] = (byte)Mathf.RoundToInt(Mathf.Clamp01(p.khieng01) * 255f);
         }
         return b;
     }
@@ -255,6 +291,9 @@ public static class GoiTin
             byte co = b[i++];
             p.dangChay = (co & 1) != 0;
             p.daChet = (co & 2) != 0;
+            p.coHieuUng = (byte)((co >> 2) & 0x07);
+
+            p.khieng01 = b[i++] / 255f;
 
             ra[n] = p;
         }
@@ -464,7 +503,9 @@ public static class GoiTin
             b[i++] = (byte)(g & 0xFF); b[i++] = (byte)((g >> 8) & 0xFF);
 
             b[i++] = (byte)Mathf.RoundToInt(Mathf.Clamp01(q.mau01) * 255f);
-            b[i++] = (byte)(q.daChet ? 1 : 0);
+            // Byte cuoi truoc day chi mang "da chet" (0/1). Gio bit 0 van la
+            // da chet, bit 1-3 la hieu ung - khong phai doi co goi.
+            b[i++] = (byte)((q.daChet ? 1 : 0) | ((q.coHieuUng & 0x07) << 1));
         }
         return b;
     }
@@ -500,7 +541,9 @@ public static class GoiTin
             q.gocY = g / 65535f * 360f;
 
             q.mau01 = b[i++] / 255f;
-            q.daChet = b[i++] != 0;
+            byte coQ = b[i++];
+            q.daChet = (coQ & 1) != 0;
+            q.coHieuUng = (byte)((coQ >> 1) & 0x07);
 
             ra[n] = q;
         }

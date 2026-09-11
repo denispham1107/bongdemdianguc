@@ -893,10 +893,19 @@ public class PlayerController : MonoBehaviour
         }
         else if (castingSkill == 5)
         {
-            // KHIENG bat len quanh CHINH NGUOI CHOI, khong lien quan gi toi cho ngam
-            khiengHienTai = Khieng.Bat(gameObject, khiengMau, khiengBanKinh);
-            if (health != null) health.khieng = khiengHienTai;
-            CameraShake.Shake(0.10f, 0.04f);
+            // KHIENG bat len quanh CHINH NGUOI CHOI, khong lien quan gi toi cho ngam.
+            //
+            // Ban sao KHONG tu dung khieng khi phat lai phep nay: khieng cua ban
+            // sao den tu goi trang thai (HieuUngQuaMang.ApKhieng). Dung o CA HAI
+            // duong thi chung lech nhau vai chuc mili giay - mot goi trang thai
+            // "chua co khieng" den sau la dap vo cai khieng vua dung, roi dung
+            // lai: nhap nhay, kem mot lan vo gia.
+            if (health == null || !health.mauDoMayKhacQuyet)
+            {
+                khiengHienTai = Khieng.Bat(gameObject, khiengMau, khiengBanKinh);
+                if (health != null) health.khieng = khiengHienTai;
+                CameraShake.Shake(0.10f, 0.04f);
+            }
         }
         else if (castingSkill == 6)
         {

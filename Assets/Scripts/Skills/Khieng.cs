@@ -220,6 +220,13 @@ public class Khieng : MonoBehaviour
     {
         if (!DangBat || amount <= 0f) return amount;
 
+        // Khieng cua BAN SAO van chan don (don khong di xuyen qua vom), nhung
+        // KHONG tu tru mau: mau khieng that nam o may cua chu nhan, den day qua
+        // goi tin. Tru o day nua thi khieng vo tren may nay trong khi ben kia
+        // con nua mau - dung loi nguoi choi thay.
+        if (chuNhan == null) chuNhan = GetComponent<Damageable>();
+        if (chuNhan != null && chuNhan.mauDoMayKhacQuyet) { loe = 1f; return 0f; }
+
         mau -= amount;
         loe = 1f;
 
@@ -264,6 +271,27 @@ public class Khieng : MonoBehaviour
         CameraShake.Shake(0.22f, 0.10f);
 
         Tat();
+    }
+
+    Damageable chuNhan;
+
+    /// <summary>Dat mau khieng theo loi ke cua may chu nhan. Chi ban sao dung.</summary>
+    public void DatMauTuMang(float mau01)
+    {
+        if (!DangBat) return;
+        float moi = Mathf.Clamp01(mau01) * mauToiDa;
+        if (moi < mau - 0.5f) loe = 1f;        // vua an don ben kia - loe len cho thay
+        mau = Mathf.Max(0.01f, moi);
+        CapNhatVatLieu();
+    }
+
+    /// <summary>May chu nhan bao khieng da vo - vo theo, co hieu ung, chu khong
+    /// tat im lang: nguoi xem phai thay no vo dung luc no vo that.</summary>
+    public void VoTuMang()
+    {
+        if (!DangBat) return;
+        mau = 0f;
+        Vo();
     }
 
     public void Tat()

@@ -131,6 +131,9 @@ public class IceStorm : MonoBehaviour
                 var d = cols[i].GetComponentInParent<Damageable>();
                 if (d == null || d.IsDead) continue;
 
+                // Ban sao lay lop bang tu goi tin - xem HieuUngQuaMang
+                if (d.mauDoMayKhacQuyet) continue;
+
                 var fr = d.GetComponent<FrozenEffect>();
                 if (fr == null)
                 {

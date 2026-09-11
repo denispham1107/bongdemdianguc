@@ -52,24 +52,34 @@ public static class BatTay
     public static IEnumerator ChuPhongMoi(string maPhong, string uidKia,
                                           System.Action<bool, string> xong)
     {
+        yield return ChuPhongMoi(maPhong, uidKia, 0, xong);
+    }
+
+    /// <summary>
+    /// Nhu tren nhung tren kenh <paramref name="kenh"/> - chu phong moi nhieu
+    /// nguoi thi moi nguoi mot kenh, so kenh = so ghe cua nguoi duoc moi.
+    /// </summary>
+    public static IEnumerator ChuPhongMoi(string maPhong, string uidKia, int kenh,
+                                          System.Action<bool, string> xong)
+    {
         LoiCuoi = null;
         string cho = uidKia + "_" + FirebaseMang.Uid;
 
-        KenhTrucTiep.Tao();
-        if (!KenhTrucTiep.DaTao) { Ket(xong, false, "khong tao duoc ket noi"); yield break; }
+        KenhTrucTiep.Tao(kenh);
+        if (!KenhTrucTiep.DaTaoKenh(kenh)) { Ket(xong, false, "khong tao duoc ket noi"); yield break; }
 
         // Don cho hen gap cua lan truoc. Khong don thi lan vao lai vap phai
         // loi moi cu va bat tay voi mot phien da chet.
         yield return FirebaseMang.Xoa(Duong(maPhong, cho), (o, e) => { });
 
-        KenhTrucTiep.TaoLoiMoi();
+        KenhTrucTiep.TaoLoiMoi(kenh);
 
         // Doi trinh duyet sinh xong loi moi
         string moTa = "";
         float hanMoTa = Time.realtimeSinceStartup + 5f;
         while (moTa.Length == 0 && Time.realtimeSinceStartup < hanMoTa)
         {
-            moTa = KenhTrucTiep.LayMoTa();
+            moTa = KenhTrucTiep.LayMoTa(kenh);
             if (moTa.Length == 0) yield return null;
         }
         if (moTa.Length == 0) { Ket(xong, false, "khong sinh duoc loi moi"); yield break; }
@@ -78,22 +88,30 @@ public static class BatTay
 
         // Vua day ung vien cua minh len, vua ngong cau tra loi
         bool daNhanTraLoi = false;
-        yield return VongBatTay(maPhong, cho, "uv1", "uv2", () =>
+        yield return VongBatTay(kenh, maPhong, cho, "uv1", "uv2", () =>
         {
             if (daNhanTraLoi) return null;
             return Duong(maPhong, cho + "/tra");
-        }, (json) => { KenhTrucTiep.NhanTraLoi(json); daNhanTraLoi = true; }, xong);
+        }, (json) => { KenhTrucTiep.NhanTraLoi(kenh, json); daNhanTraLoi = true; }, xong);
     }
 
     /// <summary>Nguoi vao: nhan loi moi cua chu phong roi tra loi.</summary>
     public static IEnumerator NguoiVaoNhan(string maPhong, string uidChuPhong,
                                            System.Action<bool, string> xong)
     {
+        yield return NguoiVaoNhan(maPhong, uidChuPhong, 0, xong);
+    }
+
+    /// <summary>Nhu tren nhung tren kenh <paramref name="kenh"/>. Nguoi khach
+    /// luon dung kenh 0 - kenh 0 la ghe cua chu phong.</summary>
+    public static IEnumerator NguoiVaoNhan(string maPhong, string uidChuPhong, int kenh,
+                                           System.Action<bool, string> xong)
+    {
         LoiCuoi = null;
         string cho = FirebaseMang.Uid + "_" + uidChuPhong;
 
-        KenhTrucTiep.Tao();
-        if (!KenhTrucTiep.DaTao) { Ket(xong, false, "khong tao duoc ket noi"); yield break; }
+        KenhTrucTiep.Tao(kenh);
+        if (!KenhTrucTiep.DaTaoKenh(kenh)) { Ket(xong, false, "khong tao duoc ket noi"); yield break; }
 
         // Cho chu phong dat loi moi len
         string moi = "";
@@ -105,20 +123,20 @@ public static class BatTay
         }
         if (moi.Length == 0) { Ket(xong, false, "cho mai khong thay loi moi"); yield break; }
 
-        KenhTrucTiep.TraLoi(moi);
+        KenhTrucTiep.TraLoi(kenh, moi);
 
         string moTa = "";
         float hanMoTa = Time.realtimeSinceStartup + 5f;
         while (moTa.Length == 0 && Time.realtimeSinceStartup < hanMoTa)
         {
-            moTa = KenhTrucTiep.LayMoTa();
+            moTa = KenhTrucTiep.LayMoTa(kenh);
             if (moTa.Length == 0) yield return null;
         }
         if (moTa.Length == 0) { Ket(xong, false, "khong sinh duoc cau tra loi"); yield break; }
 
         yield return FirebaseMang.Ghi(Duong(maPhong, cho + "/tra"), moTa, (o, e) => { });
 
-        yield return VongBatTay(maPhong, cho, "uv2", "uv1",
+        yield return VongBatTay(kenh, maPhong, cho, "uv2", "uv1",
                                 () => null, null, xong);
     }
 
@@ -129,7 +147,7 @@ public static class BatTay
     /// <paramref name="duongCho"/> tra ve duong cua thu con phai doi (cau tra
     /// loi), hoac null neu khong doi gi nua.
     /// </summary>
-    static IEnumerator VongBatTay(string maPhong, string cho,
+    static IEnumerator VongBatTay(int kenh, string maPhong, string cho,
                                   string nhanhToi, string nhanhKia,
                                   System.Func<string> duongCho,
                                   System.Action<string> khiCo,
@@ -140,14 +158,14 @@ public static class BatTay
 
         while (Time.realtimeSinceStartup < han)
         {
-            if (KenhTrucTiep.DaMo) { Ket(xong, true, null); yield break; }
+            if (KenhTrucTiep.DaMoKenh(kenh)) { Ket(xong, true, null); yield break; }
 
-            string loi = KenhTrucTiep.LayLoi();
+            string loi = KenhTrucTiep.LayLoi(kenh);
             if (!string.IsNullOrEmpty(loi)) { Ket(xong, false, loi); yield break; }
 
             // Day ung vien cua minh len - moi lan mot cai, het thi thoi
             string uv;
-            while ((uv = KenhTrucTiep.LayUngVien()).Length > 0)
+            while ((uv = KenhTrucTiep.LayUngVien(kenh)).Length > 0)
                 yield return FirebaseMang.Them(Duong(maPhong, cho + "/" + nhanhToi), uv,
                                                (k, e) => { });
 
@@ -158,7 +176,7 @@ public static class BatTay
             {
                 if (daThemUngVien.Contains(cap.Key)) continue;
                 daThemUngVien.Add(cap.Key);
-                KenhTrucTiep.ThemUngVien(cap.Value);
+                KenhTrucTiep.ThemUngVien(kenh, cap.Value);
             }
 
             // Con doi cau tra loi thi doc luon

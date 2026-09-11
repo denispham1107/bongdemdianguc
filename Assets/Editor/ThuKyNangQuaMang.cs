@@ -156,6 +156,16 @@ public static class ThuKyNangQuaMang
         db.GanTaiNghe();
         db.ThemNguoi(1, kia);
 
+        // NHIP GIU SONG, giong mot nguoi that o dau ben kia.
+        //
+        // Bo dong bo gio coi 10 giay im lang la "nguoi kia da roi tran" va thoi
+        // doc kenh ay. Trong tran that khong bao gio im lang the (60 goi moi
+        // giay), nhung phep thu nay co nhung quang cho dai - doi mau ngung tut,
+        // doi thien thach roi - ma khong nhet goi nao. Khong giu song thi tu
+        // chieu 5 tro di moi goi nhet vao deu roi vao mot kenh khong ai nghe.
+        var chay = Object.FindAnyObjectByType<ChayThuMang>();
+        if (chay != null) chay.StartCoroutine(GiuSong());
+
         yield return new WaitForSeconds(0.5f);
         DonSachQuai();      // lan cuoi, ngay truoc khi do
 
@@ -332,14 +342,30 @@ public static class ThuKyNangQuaMang
         { Ghi("[LOI] tung phep ma khong co goi nao di ra - nguoi kia se khong thay gi"); loi++; }
 
         KenhTrucTiep.guiSangBenKia = null;
-        KenhTrucTiep.Dong();
+        // KHONG dong kenh o day: bo dong bo gio coi mot kenh bi dong la "nguoi
+        // o dau ben kia da roi tran" va thoi doc no - chieu 8 ben duoi se nhet
+        // goi vao mot kenh khong ai nghe. Dong o phan don cuoi.
 
         // ---- 8. KHIENG cua nguoi kia phai hien ra ben nay ----
         // Nguoi choi bao rieng cai nay: mot ben bat khieng, ben kia khong thay
         // gi. Khieng khong gay sat thuong nen khong the do bang mau - phai dem
         // xem cai vom co that su moc ra tren canh khong.
+        // Tra co ban sao ve DUNG nhu trong tran that: khieng cua ban sao gio chi
+        // den tu goi trang thai (HieuUngQuaMang.ApKhieng), phat lai phep Khieng
+        // chi con dong tac. Nen phai gui CA goi phep lan goi trang thai co
+        // khieng - dung nhu may cua nguoi kia gui.
+        mauKia.mauDoMayKhacQuyet = true;
         int khiengTruoc = Object.FindObjectsByType<Khieng>(FindObjectsSortMode.None).Length;
         NhetGoiPhep(1, 5, 9, kia.transform.position);   // 5 = khieng
+        {
+            var dsK = new GoiTin.MotNguoi[1];
+            dsK[0] = new GoiTin.MotNguoi
+            {
+                chiSo = 1, viTri = kia.transform.position, gocY = 0f,
+                mau01 = 0.5f, khieng01 = 1f
+            };
+            KenhTrucTiep.GiaLapNhan(GoiTin.SangChuoi(GoiTin.VietTrangThai(db.GioTran(), dsK, 1)));
+        }
 
         int khiengToiDa = khiengTruoc;
         float doiKhieng = Time.time + 6f;
@@ -357,6 +383,7 @@ public static class ThuKyNangQuaMang
         { Ghi("[LOI] khieng cua nguoi kia khong hien ra ben nay"); loi++; }
 
         // ---- Don ----
+        KenhTrucTiep.Dong();
         Object.DestroyImmediate(goDb);
         NguoiChoiKhac.Bo(kia);
         TranHienTai.DangChoiMang = false;
@@ -376,6 +403,15 @@ public static class ThuKyNangQuaMang
     }
 
     /// <summary>Nhet mot goi ky nang vao hang nhan, y nhu vua den tu may kia.</summary>
+    static IEnumerator GiuSong()
+    {
+        while (EditorApplication.isPlaying && GameObject.Find("TAM_DongBo") != null)
+        {
+            KenhTrucTiep.GiaLapNhan(GoiTin.SangChuoi(GoiTin.VietNhip(true, 1)));
+            yield return new WaitForSeconds(0.5f);
+        }
+    }
+
     static void NhetGoiPhep(byte chiSo, byte kyNang, int soThuTu, Vector3 ngam)
     {
         byte[] b = GoiTin.VietKyNang(new GoiTin.MotPhep

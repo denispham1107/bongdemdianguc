@@ -6498,6 +6498,128 @@ cả. Nên cả ba phải tắt cờ trên bia, kèm lời giải thích: bia đ
 - **Chưa đo trên mạng thật**: mọi số đo trên chạy trong Editor với kênh giả lập. Hai ngưỡng 3 và 10
   giây là con số chọn trên giấy — trên điện thoại thật, khoá màn hình quá 10 giây sẽ làm vỡ trận.
 
+### Bốn người trong một trận, và hiệu ứng giống nhau trên mọi máy
+
+Hai mục cuối của báo cáo kiểm toán: **mục 3** (phòng cho 4 người mà trận chỉ nối được 2) và **mục 6**
+(đóng băng, choáng, máu khiên lệch nhau giữa các máy).
+
+#### Mục 3: nối hình sao qua chủ phòng
+
+`KenhTrucTiep` giữ **đúng một** kết nối, cả phía C# lẫn cầu nối JavaScript, và `KhoiDongTranMang`
+dừng ở người đầu tiên nó tìm thấy (`break`). Người thứ ba vào trận không thấy ai.
+
+Viết lại thành **nhiều kênh**, nối hình sao:
+- chủ phòng giữ một kênh cho mỗi người khách;
+- khách chỉ giữ một kênh, tới chủ phòng;
+- chủ phòng **chuyển tiếp** trạng thái và kỹ năng của khách này sang các khách còn lại.
+
+Mẹo giữ mọi thứ đơn giản: **số kênh = số ghế của người ở đầu bên kia**. Trên máy chủ phòng, kênh 2
+là khách ghế 2; trên máy khách, kênh 0 luôn là chủ phòng. Không cần bảng tra nào.
+
+Năm chỗ phải làm cho đúng, mỗi chỗ một cách hỏng riêng:
+
+| Chỗ | Làm sai thì |
+|---|---|
+| Chuyển tiếp **trừ kênh vừa gửi** | người gửi nhận lại chính mình từ 30 ms trước — một bản sao "chính mình" đứng sau lưng |
+| Gói nhịp **trả lời đúng kênh vừa hỏi**, không phát cả phòng | cả phòng nhận câu trả lời của một câu họ không hỏi, con số độ trễ vô nghĩa |
+| **Xếp ghế tất định** từ danh sách phòng, không đọc thẳng ô "chỗ" | hai người vào cách nhau vài trăm mili giây cùng ngồi ghế 1 (lại cuộc đua ấy), gói tin đè lên nhau, một người biến mất |
+| **Sinh bản sao khi gói đầu tiên đến**, không sinh sẵn | một khách bắt tay hỏng thì các máy khác giữ một bức tượng đứng im mãi mãi |
+| Chủ phòng **báo cho khách còn lại** khi một khách đi | khách không nối thẳng với nhau nên không tự biết — bản sao người vừa đi đứng im trên máy họ |
+
+Ngoài ra: bắt tay chạy **song song** (lần lượt thì khách thứ ba phải chờ hai lần bắt tay trước, và một
+lần hỏng 20 giây kéo cả người sau hết giờ theo); mất kết nối theo dõi **từng kênh** (một khách đi thì
+trận vẫn còn, chỉ khi tất cả đi chủ phòng mới coi là hết); và bốn người không còn sinh ra chồng lên
+nhau ở một điểm — mỗi ghế đứng một góc quanh điểm xuất phát.
+
+Còn kết nối nào bắt tay hỏng thì màn hình nói thẳng: *"Đã nối 2/3 người. Không nối được với: Dũng"*,
+thay vì im lặng để người ta tự hỏi sao bạn mình không thấy đâu.
+
+#### Đo (menu 45), mười một chiều
+
+```
+1a. phòng có hai người cùng ghi "ghế 1" -> xếp: An=0(chủ phòng) Bình=1 Dũng=2 Chi=3
+1b. máy khác đọc cùng phòng theo thứ tự ngược -> cùng bảng ghế: True
+2a. gói trạng thái của ghế 2 đến trên kênh 2 -> chủ phòng chuyển sang kênh: 1,3 (KHÔNG vòng về 2)
+2b. chủ phòng sinh bản sao cho ghế 2 khi gói đầu tiên đến: True
+2c. ghế 1 tung phép -> chủ phòng chuyển sang kênh: 2,3
+2d. ghế 3 hỏi nhịp -> chủ phòng trả lời trên kênh: 3 (CHỈ 3)
+2e. chủ phòng kể lại đàn quái -> tới kênh: 1,2,3
+3a. ghế 3 đóng kênh -> chủ phòng kết luận ai đi: [3], báo cho kênh: 1,2
+3b. tình trạng chung của chủ phòng: Tot (không vỡ trận - còn hai người)
+4a. khách nhận trên một kênh duy nhất -> có bản sao cho ghế 0/1/3: True/True/True, cho chính mình: False
+4b. chủ phòng báo "ghế 3 đã rời trận" -> sự kiện: [3]; gói trễ của ghế 3 -> sinh lại: False
+số lỗi ghi nhận = 0
+```
+
+Không bắt tay WebRTC thật được trong Editor, nên phép thử mở thẳng các kênh giả lập và đo đúng những
+chỗ dễ sai kể trên. **Bắt tay thật với ba máy chưa từng chạy** — chỉ đo được khi anh mở trên ba, bốn
+máy.
+
+#### Mục 6: máy chủ sở hữu kể luôn hiệu ứng
+
+Mỗi máy tự gieo hiệu ứng cho bản sao của người khác bằng `Random.value` riêng: A thấy B bị đóng băng,
+B thì vẫn chạy nhảy; khiên của B vỡ trên máy A trong khi trên máy B còn nửa máu.
+
+Quy ước giữ nguyên: **máy chủ sở hữu là trọng tài**. Người chơi kể hiệu ứng và khiên của chính mình
+kèm gói trạng thái; chủ phòng kể hiệu ứng của quái kèm gói quái. Bản sao chỉ vẽ lại, và **không tự
+gieo nữa** — gác ở `FrozenEffect.Apply`, `StunnedEffect.Apply`, chỗ `IceStorm` gắn thẳng lớp băng, và
+`Khieng.HapThu`.
+
+Gói tin **không to thêm một byte nào**: gói trạng thái cấp 12 byte mỗi người mà trước đây chỉ viết 11
+— byte thứ 12 giờ chở máu khiên; ba bit hiệu ứng nhét vào byte cờ cùng hai bit cũ. Gói quái cũng vậy:
+byte "đã chết" (0/1) giờ chở thêm ba bit.
+
+Hiệu ứng áp từ mạng được **giữ sống 0,35 giây** và làm mới mỗi gói. Gói ngừng đến thì nó tự tan —
+không cần một gói "hết đóng băng" riêng, và mất gói không để lại khối băng vĩnh viễn.
+
+Khiên của bản sao chỉ có **một nguồn**: gói trạng thái. Phát lại phép Khiên trên bản sao giờ chỉ còn
+động tác. Để cả hai đường thì chúng lệch nhau vài chục mili giây — một gói "chưa có khiên" đến sau là
+đập vỡ cái khiên vừa dựng, rồi dựng lại: nhấp nháy, kèm một lần vỡ giả.
+
+#### Đo (menu 46), mười hai chiều
+
+```
+1a. gieo đóng băng + choáng: lên BẢN SAO -> False/False; lên NHÂN VẬT THẬT -> True/True
+1b. AreaFreeze tỉ lệ 100% trúng bản sao -> bản sao có băng: False
+2a. nhân vật thật đang bị đóng băng + choáng -> cờ gửi đi: True/True/True
+2b. khiên 150 máu ăn 75 -> gửi đi 0,50
+3a. gói trạng thái 18 byte (không to thêm), đọc lại khớp
+3b. gói quái: (chết, băng) -> (True, 1); (sống, choáng) -> (False, 4)
+4a. máy kia kể "đông cứng + choáng + khiên 60%" -> bản sao: băng / choáng / khiên 0,60
+4b. đòn 100 trúng bản sao trên máy này -> khiên bản sao giữ 0,60
+4c. máy kia kể "hết cả" -> bản sao còn băng/choáng/khiên: False/False/False
+4d. một gói "đóng băng" rồi gói tin ngừng hẳn -> sau 0,95 giây còn băng: False
+4e. phát lại phép Khiên trên bản sao, chưa có gói trạng thái -> có khiên: False
+5a/5b. chủ phòng kể quái choáng rồi hết choáng -> bản sao quái theo đúng
+số lỗi ghi nhận = 0
+```
+
+Chiều 1a đo **cả hai chiều** của chỗ gác: bản sao không tự gieo được, *và* nhân vật thật vẫn gieo được
+bình thường. Thiếu nửa sau thì không phân biệt được "gác đúng" với "hiệu ứng hỏng hẳn".
+
+Chiều **4d bắt được một lỗi của tôi**: lần chạy đầu bản sao còn đóng băng sau khi gói tin đã ngừng.
+`FrozenEffect` vừa gắn mới có sẵn `remaining = 3f`, nên `Max(3; 0,35)` giữ khối băng **3 giây**. Choáng
+cũng vậy (mặc định 2 giây). Sửa: vừa gắn thì đặt thẳng thời gian sống.
+
+#### Ba phép thử cũ phải sửa lại, và vì sao
+
+**Menu 37** hỏng ba chiều sau khi đổi đường truyền. Nó có những quãng chờ dài (đợi máu ngừng tụt, đợi
+thiên thạch rơi) mà không có gói tin nào — quá 10 giây là bộ đồng bộ kết luận "người kia đã rời trận"
+và thôi đọc kênh ấy. Trận thật không bao giờ im lặng thế (60 gói mỗi giây). Sửa phép thử: một nhịp
+giữ sống 0,5 giây, giống một người thật ở đầu bên kia. Và chiều khiên của nó giờ phải gửi cả gói trạng
+thái có khiên — vì đó là con đường thật.
+
+**Menu 38, chiều 5** — lần sửa thứ ba, lần này đúng chỗ. Hai lần trước tôi chỉnh *ngưỡng* (mét → giây,
+hai khung → ba khung), trong khi sai lệch đo được gần như không đổi: **62, 41, 60 ms**, bất kể khung hình
+nhanh hay chậm. Một sai số không co giãn theo khung hình thì không phải sai số của nhịp ghi — nó là sai
+số của **chính phép đo**: tôi so lịch sử với "chỗ xuất phát", nhưng lúc hỏi thì đồng hồ đã trôi thêm
+một, hai khung sau khi phép thử dừng di chuyển. Giờ phép thử tự ghi nhật ký (thời điểm, vị trí) của
+chính nó và đối chiếu đúng thời điểm được hỏi: **lệch 0,00 m**.
+
+**Menu 41** có một lần độ giật 2,1 thay vì 1,3 — chạy lại ra 1,3. Một khung hình Editor chậm.
+
+Và mười phép thử mạng chạy lại đều **0 lỗi**: 34, 36, 37, 38, 39, 41, 43, 44, 45, 46.
+
 ### Việc còn phải làm
 
 **169 MB là quá nặng**, nhất là trên điện thoại — nền tảng chính của game. Gần như toàn bộ nằm ở
@@ -6563,6 +6685,8 @@ cho riêng nền tảng WebGL sẽ ăn cả hai đầu: file nhỏ hơn và khô
 | **42. Chay thu CHE DO DIEU KHIEN** | Chạy luật nhận diện thiết bị trên chín loại máy thật (kèm ba cái bẫy: laptop Windows có màn cảm ứng, máy tính bảng Android, iPad đời mới tự nhận là Mac), đối chiếu lại file `.jslib`, và kiểm rằng `Input.touchSupported` đã bị cắt khỏi đường quyết định. Không vào Play. Kết quả ra `PlayTestShots/chedodieukhien.txt`. |
 | **43. Kiem toan buoc 5 (chi do, khong sua)** | Dựng lại tình huống máy khách rồi ghi ra số, không sửa gì: HUD khách có đếm đúng số quái không, và phép của khách có giết giả được bản sao quái không. Dùng để trả lời "bước 5 xong chưa" bằng số thay vì trí nhớ. Kết quả ra `PlayTestShots/kiemtoan_buoc5.txt`. |
 | **44. Chay thu SUA BUOC 5 (2-1-4-5)** | Mười lăm chiều cho bốn chỗ hở đã vá: bản sao không chết cục bộ nhưng chết khi chủ phòng bảo, xác không ra đòn, HUD khách lấy bảng số của chủ phòng, phím R bị chặn trong trận mạng, và hai ngưỡng mất kết nối (chờ tín hiệu 3 giây — hồi phục được — rồi rời trận sau 10 giây hoặc ngay khi kênh đóng). Kết quả ra `PlayTestShots/sua_buoc5.txt`. |
+| **45. Chay thu BON NGUOI (noi hinh sao)** | Mười một chiều cho trận bốn người: xếp ghế tất định (kể cả khi hai người trùng ghế), chủ phòng chuyển tiếp trạng thái và kỹ năng sang đúng những người còn lại và **không vòng về người gửi**, trả lời nhịp đúng kênh, sinh bản sao khi gói đầu tiên đến, một khách rời trận thì những người còn lại đều biết và gói trễ không làm người đó hiện lại. Kết quả ra `PlayTestShots/bonnguoi.txt`. |
+| **46. Chay thu HIEU UNG qua mang** | Mười hai chiều: bản sao không tự gieo đóng băng/choáng (và nhân vật thật vẫn gieo được), cờ và máu khiên đọc đúng rồi đi qua gói tin không to thêm, bản sao vẽ lại theo lời kể, khiên bản sao không bị trừ cục bộ, mất gói thì hiệu ứng tự tan, và quái bên khách choáng theo chủ phòng. Kết quả ra `PlayTestShots/hieuung_mang.txt`. |
 
 > ⚠️ Mục **1** sẽ **xóa và tạo lại** các thư mục Textures / Materials / Models / Prefabs.
 > Nếu bạn tự sửa tay trong đó thì hãy sao lưu trước.

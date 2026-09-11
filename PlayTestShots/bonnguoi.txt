@@ -1,0 +1,22 @@
+[ban 1] bon nguoi trong mot tran, noi hinh sao qua chu phong
+
+--- 1. xep ghe ---
+1a. phong co hai nguoi cung ghi 'ghe 1' -> xep: An=0(chu phong) Binh=1 Dung=2 Chi=3 
+1b. may khac doc cung phong theo thu tu nguoc -> cung bang ghe: True
+
+--- 2. chu phong chuyen tiep ---
+2a. goi trang thai cua ghe 2 den tren kenh 2 -> chu phong chuyen sang kenh: 1,3 (phai la 1,3 - KHONG vong ve 2)
+2b. chu phong sinh ban sao cho ghe 2 khi goi dau tien den: True (so lan sinh: 1)
+2c. ghe 1 tung phep -> chu phong chuyen sang kenh: 2,3 (phai la 2,3)
+2d. ghe 3 hoi nhip -> chu phong tra loi tren kenh: 3 (phai CHI la 3)
+2e. chu phong ke lai dan quai -> toi kenh: 1,2,3 (phai la 1,2,3)
+
+--- 3. mot nguoi khach roi tran ---
+3a. ghe 3 dong kenh -> chu phong ket luan ai di: [3], bao cho kenh: 1,2 (phai [3], bao 1,2)
+3b. tinh trang chung cua chu phong: Tot (phai KHONG la DaMat - con hai nguoi)
+
+--- 4. phia nguoi khach ghe 2 ---
+4a. khach nhan tren mot kenh duy nhat -> co ban sao cho ghe 0/1/3: True/True/True, co ban sao cho CHINH MINH (ghe 2): False (phai True/True/True, False)
+4b. chu phong bao 'ghe 3 da roi tran' -> su kien: [3]; mot goi tre cua ghe 3 den sau do -> sinh lai ban sao: False (phai [3], False)
+
+so loi ghi nhan = 0

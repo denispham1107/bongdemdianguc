@@ -1,4 +1,4 @@
-// CAU NOI WEBRTC CHO BAN WEBGL.
+// CAU NOI WEBRTC CHO BAN WEBGL - NHIEU KENH.
 //
 // Unity WebGL khong co WebRTC san (goi com.unity.webrtc khong chay tren nen
 // nay). Nhung TRINH DUYET thi co san RTCPeerConnection - file nay goi thang
@@ -9,35 +9,54 @@
 // may voi may trong nuoc thi con 10-30 ms - do la ca khoang cach giua "dat"
 // va "khong dat" muc tieu 50-80 ms.
 //
+// NHIEU KENH, NOI HINH SAO QUA CHU PHONG.
+//
+// Ban dau file nay giu DUNG MOT ket noi - nen phong cho vao bon nguoi ma
+// tran chi noi duoc hai. Gio moi ket noi la mot "kenh", danh so 0..3:
+//   - chu phong giu mot kenh cho moi nguoi khach, SO KENH = SO GHE cua khach
+//   - nguoi khach chi giu kenh 0, noi toi chu phong (ghe 0)
+// Tuc la tren ca hai phia, so kenh luon la so ghe cua NGUOI O DAU BEN KIA.
+// Khach khong noi thang voi nhau: chu phong chuyen tiep.
+//
 // Chu y ve chuoi: chuoi tu C# sang la con tro byte UTF8, phai doi bang
 // UTF8ToString; chuoi tra ve C# phai cap phat trong heap cua Unity roi C# tu
 // giai phong - khong thi ro ri bo nho, ma mot tran dau co hang nghin goi.
 
 var CauNoiWebRTC = {
 
-  $trangThaiRTC: {
-    pc: null,
-    kenh: null,
-    daMo: false,
-    hangCho: [],          // tin nhan da nhan, cho C# lay ra
-    ungVienCuaToi: [],    // ICE candidate cua may nay, cho C# gui di
+  $dsRTC: {
+    // Moi phan tu la mot ket noi. Tao luoi khi can.
+    kenh: [],
 
-    // UNG VIEN CUA BEN KIA DEN SOM THI PHAI XEP HANG, KHONG DUOC VUT DI.
-    //
-    // Firebase phat lai toan bo ung vien da co ngay khi minh bat dau nghe, nen
-    // ung vien dau tien cua ben kia thuong den TRUOC khi minh kip
-    // setRemoteDescription. Goi addIceCandidate luc do la nem loi. Ban dau toi
-    // nuot loi do bang mot catch rong - ket qua la mat sach ung vien cua ben
-    // kia va ICE khong co duong nao de thu. Cung mang LAN thi van noi duoc nho
-    // ung vien noi bo sinh sau, nen loi bi che kin.
-    hangUngVienCho: [],
-    daCoMoTaBenKia: false,
-    moTa: "",             // offer/answer vua tao ra
-    loi: "",
-    kieuKetNoi: "",
+    lay: function (k) {
+      var ds = dsRTC.kenh;
+      if (!ds[k]) {
+        ds[k] = {
+          pc: null,
+          dc: null,             // RTCDataChannel
+          daMo: false,
+          hangCho: [],          // tin nhan da nhan, cho C# lay ra
+          ungVienCuaToi: [],    // ICE candidate cua may nay, cho C# gui di
 
-    themUngVien: function (uv) {
-      var t = trangThaiRTC;
+          // UNG VIEN CUA BEN KIA DEN SOM THI PHAI XEP HANG, KHONG DUOC VUT DI.
+          //
+          // Firebase phat lai toan bo ung vien da co ngay khi minh bat dau
+          // nghe, nen ung vien dau tien cua ben kia thuong den TRUOC khi minh
+          // kip setRemoteDescription. Goi addIceCandidate luc do la nem loi.
+          // Ban dau toi nuot loi do bang mot catch rong - ket qua la mat sach
+          // ung vien cua ben kia va ICE khong co duong nao de thu. Cung mang
+          // LAN thi van noi duoc nho ung vien noi bo sinh sau, nen loi bi che.
+          hangUngVienCho: [],
+          daCoMoTaBenKia: false,
+          moTa: "",
+          loi: "",
+          kieuKetNoi: ""
+        };
+      }
+      return ds[k];
+    },
+
+    themUngVien: function (t, uv) {
       if (!t.daCoMoTaBenKia) { t.hangUngVienCho.push(uv); return; }
       try {
         t.pc.addIceCandidate(new RTCIceCandidate(uv))
@@ -46,10 +65,26 @@ var CauNoiWebRTC = {
     },
 
     /// Goi NGAY SAU moi lan setRemoteDescription.
-    xaHangUngVien: function () {
-      var t = trangThaiRTC;
+    xaHangUngVien: function (t) {
       t.daCoMoTaBenKia = true;
-      while (t.hangUngVienCho.length > 0) t.themUngVien(t.hangUngVienCho.shift());
+      while (t.hangUngVienCho.length > 0) dsRTC.themUngVien(t, t.hangUngVienCho.shift());
+    },
+
+    ganKenh: function (t, dc) {
+      t.dc = dc;
+      dc.binaryType = "arraybuffer";
+      dc.onopen = function () { t.daMo = true; };
+      dc.onclose = function () { t.daMo = false; };
+      dc.onmessage = function (su) { t.hangCho.push(su.data); };
+    },
+
+    dongMot: function (t) {
+      if (!t) return;
+      if (t.dc) { try { t.dc.close(); } catch (e) {} }
+      if (t.pc) { try { t.pc.close(); } catch (e) {} }
+      t.pc = null; t.dc = null; t.daMo = false;
+      t.hangCho = []; t.ungVienCuaToi = [];
+      t.hangUngVienCho = []; t.daCoMoTaBenKia = false;
     },
 
     // Chuoi tra ve C# phai nam trong heap cua Unity. C# goi Marshal.FreeHGlobal
@@ -62,13 +97,12 @@ var CauNoiWebRTC = {
     }
   },
 
-  /// Tao ket noi. mayChu = danh sach STUN, ngan cach bang dau phay.
-  RTC_Tao: function (dsStun) {
+  /// Tao ket noi cho kenh k. dsStun = danh sach STUN, ngan cach bang dau phay.
+  RTC_Tao: function (k, dsStun) {
     var ds = UTF8ToString(dsStun).split(",").filter(function (x) { return x.length > 0; });
-    var t = trangThaiRTC;
-    t.daMo = false; t.hangCho = []; t.ungVienCuaToi = [];
+    var t = dsRTC.lay(k);
+    dsRTC.dongMot(t);
     t.moTa = ""; t.loi = ""; t.kieuKetNoi = "";
-    t.hangUngVienCho = []; t.daCoMoTaBenKia = false;
 
     try {
       t.pc = new RTCPeerConnection({ iceServers: [{ urls: ds }] });
@@ -82,36 +116,25 @@ var CauNoiWebRTC = {
     };
 
     t.pc.oniceconnectionstatechange = function () {
-      if (t.pc.iceConnectionState === "failed") t.loi = "ICE that bai";
+      if (t.pc && t.pc.iceConnectionState === "failed") t.loi = "ICE that bai";
     };
 
     // May tra loi khong tu tao kenh - no nhan kenh do may moi tao ra
-    t.pc.ondatachannel = function (su) {
-      t.kenh = su.channel;
-      trangThaiRTC.ganKenh(t.kenh);
-    };
-
-    t.ganKenh = function (k) {
-      k.binaryType = "arraybuffer";
-      k.onopen = function () { t.daMo = true; };
-      k.onclose = function () { t.daMo = false; };
-      k.onmessage = function (su) { t.hangCho.push(su.data); };
-    };
+    t.pc.ondatachannel = function (su) { dsRTC.ganKenh(t, su.channel); };
 
     return 1;
   },
 
   /// May MOI: tao kenh khong tin cay roi sinh loi moi (offer).
-  RTC_TaoLoiMoi: function () {
-    var t = trangThaiRTC;
+  RTC_TaoLoiMoi: function (k) {
+    var t = dsRTC.lay(k);
     if (!t.pc) { t.loi = "chua tao ket noi"; return; }
 
     // ordered:false + maxRetransmits:0 = hanh xu nhu UDP.
     // De mac dinh (tin cay, dung thu tu) thi mot goi rot se CHAN moi goi sau
     // no - do tre vot len 300 ms dung luc dang danh nhau. Vi tri cu 20 ms
-    // truoc thi gui lai cung vo ich, thà bỏ.
-    t.kenh = t.pc.createDataChannel("tran", { ordered: false, maxRetransmits: 0 });
-    t.ganKenh(t.kenh);
+    // truoc thi gui lai cung vo ich.
+    dsRTC.ganKenh(t, t.pc.createDataChannel("tran", { ordered: false, maxRetransmits: 0 }));
 
     t.pc.createOffer().then(function (moi) {
       return t.pc.setLocalDescription(moi).then(function () {
@@ -121,13 +144,13 @@ var CauNoiWebRTC = {
   },
 
   /// May VAO: nhan loi moi cua may kia roi sinh cau tra loi (answer).
-  RTC_TraLoi: function (jsonMoi) {
-    var t = trangThaiRTC;
+  RTC_TraLoi: function (k, jsonMoi) {
+    var t = dsRTC.lay(k);
     if (!t.pc) { t.loi = "chua tao ket noi"; return; }
     var moi = JSON.parse(UTF8ToString(jsonMoi));
 
     t.pc.setRemoteDescription(new RTCSessionDescription(moi)).then(function () {
-      t.xaHangUngVien();
+      dsRTC.xaHangUngVien(t);
       return t.pc.createAnswer();
     }).then(function (tra) {
       return t.pc.setLocalDescription(tra).then(function () {
@@ -137,62 +160,62 @@ var CauNoiWebRTC = {
   },
 
   /// May MOI: nhan cau tra loi cua may kia.
-  RTC_NhanTraLoi: function (jsonTra) {
-    var t = trangThaiRTC;
+  RTC_NhanTraLoi: function (k, jsonTra) {
+    var t = dsRTC.lay(k);
     if (!t.pc) return;
     var tra = JSON.parse(UTF8ToString(jsonTra));
     t.pc.setRemoteDescription(new RTCSessionDescription(tra))
-      .then(function () { t.xaHangUngVien(); })
+      .then(function () { dsRTC.xaHangUngVien(t); })
       .catch(function (e) { t.loi = "nhan tra loi that bai: " + e; });
   },
 
-  RTC_ThemUngVien: function (jsonUv) {
-    var t = trangThaiRTC;
+  RTC_ThemUngVien: function (k, jsonUv) {
+    var t = dsRTC.lay(k);
     if (!t.pc) return;
-    try { t.themUngVien(JSON.parse(UTF8ToString(jsonUv))); }
+    try { dsRTC.themUngVien(t, JSON.parse(UTF8ToString(jsonUv))); }
     catch (e) { t.loi = "ung vien khong doc duoc: " + e; }
   },
 
   /// Lay offer/answer vua tao. Chua co thi tra ve chuoi rong.
-  RTC_LayMoTa: function () {
-    var t = trangThaiRTC;
+  RTC_LayMoTa: function (k) {
+    var t = dsRTC.lay(k);
     var s = t.moTa; t.moTa = "";
-    return t.traChuoi(s);
+    return dsRTC.traChuoi(s);
   },
 
   /// Lay mot ung vien ICE cua may nay de gui sang may kia. Het thi chuoi rong.
-  RTC_LayUngVien: function () {
-    var t = trangThaiRTC;
+  RTC_LayUngVien: function (k) {
+    var t = dsRTC.lay(k);
     var s = t.ungVienCuaToi.length > 0 ? t.ungVienCuaToi.shift() : "";
-    return t.traChuoi(s);
+    return dsRTC.traChuoi(s);
   },
 
-  RTC_DaMo: function () { return trangThaiRTC.daMo ? 1 : 0; },
+  RTC_DaMo: function (k) { return dsRTC.lay(k).daMo ? 1 : 0; },
 
-  RTC_LayLoi: function () {
-    var t = trangThaiRTC;
+  RTC_LayLoi: function (k) {
+    var t = dsRTC.lay(k);
     var s = t.loi; t.loi = "";
-    return t.traChuoi(s);
+    return dsRTC.traChuoi(s);
   },
 
-  RTC_Gui: function (tin) {
-    var t = trangThaiRTC;
-    if (!t.daMo || !t.kenh) return 0;
-    try { t.kenh.send(UTF8ToString(tin)); return 1; }
+  RTC_Gui: function (k, tin) {
+    var t = dsRTC.lay(k);
+    if (!t.daMo || !t.dc) return 0;
+    try { t.dc.send(UTF8ToString(tin)); return 1; }
     catch (e) { return 0; }
   },
 
-  /// Lay mot tin nhan da nhan. Het thi chuoi rong.
-  RTC_Nhan: function () {
-    var t = trangThaiRTC;
+  /// Lay mot tin nhan da nhan tren kenh k. Het thi chuoi rong.
+  RTC_Nhan: function (k) {
+    var t = dsRTC.lay(k);
     var s = t.hangCho.length > 0 ? t.hangCho.shift() : "";
-    return t.traChuoi(typeof s === "string" ? s : "");
+    return dsRTC.traChuoi(typeof s === "string" ? s : "");
   },
 
   /// Noi thang hay phai nho nguoi khac tiep suc. Doc luc DANG NOI, khong doi
   /// den luc dong - dong roi thi khong con cap ung vien nao de xem.
-  RTC_CapNhatKieuKetNoi: function () {
-    var t = trangThaiRTC;
+  RTC_CapNhatKieuKetNoi: function (k) {
+    var t = dsRTC.lay(k);
     if (!t.pc || !t.pc.getStats) return;
     t.pc.getStats().then(function (so) {
       var cap = null;
@@ -209,18 +232,20 @@ var CauNoiWebRTC = {
     }).catch(function () {});
   },
 
-  RTC_LayKieuKetNoi: function () {
-    return trangThaiRTC.traChuoi(trangThaiRTC.kieuKetNoi);
+  RTC_LayKieuKetNoi: function (k) {
+    return dsRTC.traChuoi(dsRTC.lay(k).kieuKetNoi);
   },
 
-  RTC_Dong: function () {
-    var t = trangThaiRTC;
-    if (t.kenh) { try { t.kenh.close(); } catch (e) {} }
-    if (t.pc) { try { t.pc.close(); } catch (e) {} }
-    t.pc = null; t.kenh = null; t.daMo = false;
-    t.hangCho = []; t.ungVienCuaToi = [];
+  /// Dong kenh k. k < 0 thi dong TAT CA - dung khi roi tran.
+  RTC_Dong: function (k) {
+    var ds = dsRTC.kenh;
+    if (k < 0) {
+      for (var i = 0; i < ds.length; i++) dsRTC.dongMot(ds[i]);
+      return;
+    }
+    dsRTC.dongMot(ds[k]);
   }
 };
 
-autoAddDeps(CauNoiWebRTC, '$trangThaiRTC');
+autoAddDeps(CauNoiWebRTC, '$dsRTC');
 mergeInto(LibraryManager.library, CauNoiWebRTC);

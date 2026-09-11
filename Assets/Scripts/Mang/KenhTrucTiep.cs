@@ -11,20 +11,28 @@ using UnityEngine;
 /// nhip gui, dem noi suy va khung hinh thi vuot 80 ms. Noi thang may voi may
 /// trong nuoc thi con 10-30 ms.
 ///
-/// Firebase van con viec cua no: hai may dung no de TIM THAY NHAU (xem
+/// Firebase van con viec cua no: cac may dung no de TIM THAY NHAU (xem
 /// <see cref="BatTay"/>). Bat tay xong thi no dung sang mot ben, va tran dau
 /// khong con goi tin nao di qua Google nua.
+///
+/// NHIEU KENH, NOI HINH SAO QUA CHU PHONG.
+///
+/// Ban dau lop nay giu DUNG MOT ket noi - phong cho vao bon nguoi ma tran chi
+/// noi duoc hai, nguoi thu ba vao tran khong thay ai. Gio moi ket noi la mot
+/// kenh danh so 0..<see cref="SoKenhToiDa"/>-1, va SO KENH = SO GHE CUA NGUOI
+/// O DAU BEN KIA:
+///   - tren may chu phong, kenh 2 la nguoi khach ngoi ghe 2;
+///   - tren may khach, kenh 0 luon la chu phong (ghe 0).
+/// Khach khong noi thang voi nhau - chu phong chuyen tiep (xem DongBoTran).
+///
+/// Cac ham khong co so kenh la kenh 0, giu lai de nhung cho chi can mot ket
+/// noi (va cac kich ban chay thu cu) khong phai sua.
 ///
 /// HAI DUONG, MOT GIAO DIEN:
 ///   - WebGL (ban choi chinh): goi thang RTCPeerConnection cua trinh duyet
 ///     qua <c>CauNoiWebRTC.jslib</c>.
 ///   - Editor / PC: KHONG co WebRTC. Chay mot kenh gia lap trong bo nho de
-///     kiem duoc phan logic - nhung no KHONG do duoc do tre that. Muon ban PC
-///     noi mang that thi phai them goi com.unity.webrtc (chua lam).
-///
-/// Cho nao can biet "dang chay that hay dang gia lap" thi doc
-/// <see cref="LaGiaLap"/> - dung de bao cao mot con so gia lap nhu the no la
-/// so do that.
+///     kiem duoc phan logic - nhung no KHONG do duoc do tre that.
 /// </summary>
 public static class KenhTrucTiep
 {
@@ -33,21 +41,28 @@ public static class KenhTrucTiep
     public const string MayChuStun =
         "stun:stun.l.google.com:19302,stun:stun1.l.google.com:19302";
 
+    /// <summary>Bon ghe trong phong, nen toi da bon kenh (0..3).</summary>
+    public const int SoKenhToiDa = 4;
+
+    static readonly bool[] daTao = new bool[SoKenhToiDa];
+
+    static bool HopLe(int k) { return k >= 0 && k < SoKenhToiDa; }
+
 #if UNITY_WEBGL && !UNITY_EDITOR
-    [DllImport("__Internal")] static extern int RTC_Tao(string dsStun);
-    [DllImport("__Internal")] static extern void RTC_TaoLoiMoi();
-    [DllImport("__Internal")] static extern void RTC_TraLoi(string jsonMoi);
-    [DllImport("__Internal")] static extern void RTC_NhanTraLoi(string jsonTra);
-    [DllImport("__Internal")] static extern void RTC_ThemUngVien(string jsonUv);
-    [DllImport("__Internal")] static extern IntPtr RTC_LayMoTa();
-    [DllImport("__Internal")] static extern IntPtr RTC_LayUngVien();
-    [DllImport("__Internal")] static extern int RTC_DaMo();
-    [DllImport("__Internal")] static extern IntPtr RTC_LayLoi();
-    [DllImport("__Internal")] static extern int RTC_Gui(string tin);
-    [DllImport("__Internal")] static extern IntPtr RTC_Nhan();
-    [DllImport("__Internal")] static extern void RTC_CapNhatKieuKetNoi();
-    [DllImport("__Internal")] static extern IntPtr RTC_LayKieuKetNoi();
-    [DllImport("__Internal")] static extern void RTC_Dong();
+    [DllImport("__Internal")] static extern int RTC_Tao(int k, string dsStun);
+    [DllImport("__Internal")] static extern void RTC_TaoLoiMoi(int k);
+    [DllImport("__Internal")] static extern void RTC_TraLoi(int k, string jsonMoi);
+    [DllImport("__Internal")] static extern void RTC_NhanTraLoi(int k, string jsonTra);
+    [DllImport("__Internal")] static extern void RTC_ThemUngVien(int k, string jsonUv);
+    [DllImport("__Internal")] static extern IntPtr RTC_LayMoTa(int k);
+    [DllImport("__Internal")] static extern IntPtr RTC_LayUngVien(int k);
+    [DllImport("__Internal")] static extern int RTC_DaMo(int k);
+    [DllImport("__Internal")] static extern IntPtr RTC_LayLoi(int k);
+    [DllImport("__Internal")] static extern int RTC_Gui(int k, string tin);
+    [DllImport("__Internal")] static extern IntPtr RTC_Nhan(int k);
+    [DllImport("__Internal")] static extern void RTC_CapNhatKieuKetNoi(int k);
+    [DllImport("__Internal")] static extern IntPtr RTC_LayKieuKetNoi(int k);
+    [DllImport("__Internal")] static extern void RTC_Dong(int k);
 
     public const bool LaGiaLap = false;
 
@@ -71,139 +86,225 @@ public static class KenhTrucTiep
     // ---- Kenh gia lap cho Editor / PC ----
     //
     // Khong phai WebRTC. Chi de chay thu phan logic (bat tay dung thu tu chua,
-    // tin nhan co toi noi khong) ma khong phai build WebGL 7 phut moi lan.
-    // KHONG dung no de bao cao do tre.
-    static readonly Queue<string> hangNhan = new Queue<string>();
-    static readonly Queue<string> hangUngVien = new Queue<string>();
-    static string moTaGiaLap = "", loiGiaLap = "";
-    static bool daMoGiaLap;
+    // tin nhan co toi noi khong, chu phong chuyen tiep dung cho chua) ma khong
+    // phai build WebGL 5 phut moi lan. KHONG dung no de bao cao do tre.
+    static readonly Queue<string>[] hangNhan = TaoHang();
+    static readonly bool[] daMoGiaLap = new bool[SoKenhToiDa];
+    static readonly string[] moTaGiaLap = new string[SoKenhToiDa];
 
-    /// <summary>Noi hai kenh gia lap lai voi nhau - dung khi chay thu mot may
-    /// dong hai vai. Ben ngoai tu goi, mac dinh khong noi voi ai.</summary>
-    public static Action<string> guiSangBenKia;
-#endif
-
-    static bool daTao;
-
-    /// <summary>Da mo kenh chua - mo roi moi gui duoc.</summary>
-    public static bool DaMo
+    static Queue<string>[] TaoHang()
     {
-        get
-        {
-#if UNITY_WEBGL && !UNITY_EDITOR
-            return daTao && RTC_DaMo() == 1;
-#else
-            return daMoGiaLap;
-#endif
-        }
+        var h = new Queue<string>[SoKenhToiDa];
+        for (int i = 0; i < SoKenhToiDa; i++) h[i] = new Queue<string>();
+        return h;
     }
 
-    public static bool DaTao { get { return daTao; } }
+    /// <summary>Noi kenh gia lap voi ben kia - chay thu dat vao day de bat tin
+    /// nhan gui di tu MOT kenh bat ky. Mac dinh khong noi voi ai.</summary>
+    public static Action<string> guiSangBenKia;
 
+    /// <summary>Nhu tren nhung biet ca so kenh - de kiem chu phong chuyen tiep
+    /// dung cho (khong gui nguoc lai nguoi vua gui).</summary>
+    public static Action<int, string> guiSangKenh;
+
+    /// <summary>Ben gia lap: nhet mot tin nhan vao kenh 0 nhu the vua nhan duoc.</summary>
+    public static void GiaLapNhan(string tin) { GiaLapNhan(0, tin); }
+
+    public static void GiaLapNhan(int k, string tin)
+    {
+        if (HopLe(k)) hangNhan[k].Enqueue(tin);
+    }
+
+    /// <summary>Mo thang mot kenh gia lap ma khong qua bat tay - chi chay thu dung.</summary>
+    public static void GiaLapMo(int k)
+    {
+        if (!HopLe(k)) return;
+        daTao[k] = true;
+        daMoGiaLap[k] = true;
+    }
+#endif
+
+    // ================================================================
+    //  TRANG THAI
+    // ================================================================
+
+    /// <summary>Kenh 0 da mo chua.</summary>
+    public static bool DaMo { get { return DaMoKenh(0); } }
+
+    public static bool DaMoKenh(int k)
+    {
+        if (!HopLe(k)) return false;
+#if UNITY_WEBGL && !UNITY_EDITOR
+        return daTao[k] && RTC_DaMo(k) == 1;
+#else
+        return daMoGiaLap[k];
+#endif
+    }
+
+    public static bool DaTao { get { return daTao[0]; } }
+    public static bool DaTaoKenh(int k) { return HopLe(k) && daTao[k]; }
+
+    // ================================================================
+    //  BAT TAY
+    // ================================================================
+
+    /// <summary>Dong TAT CA roi tao lai kenh 0. Giu nguyen nghia cu - cac kich
+    /// ban chay thu dung no de "bat dau lai tu dau".</summary>
     public static void Tao()
     {
         Dong();
+        Tao(0);
+    }
+
+    /// <summary>Tao (lai) mot kenh. Chi dong chinh kenh ay, cac kenh khac giu nguyen.</summary>
+    public static void Tao(int k)
+    {
+        if (!HopLe(k)) return;
+        Dong(k);
 #if UNITY_WEBGL && !UNITY_EDITOR
-        daTao = RTC_Tao(MayChuStun) == 1;
+        daTao[k] = RTC_Tao(k, MayChuStun) == 1;
 #else
-        hangNhan.Clear(); hangUngVien.Clear();
-        moTaGiaLap = ""; loiGiaLap = ""; daMoGiaLap = false;
-        daTao = true;
+        hangNhan[k].Clear();
+        moTaGiaLap[k] = "";
+        daMoGiaLap[k] = false;
+        daTao[k] = true;
 #endif
     }
 
     /// <summary>May MOI goi: sinh loi moi (offer).</summary>
-    public static void TaoLoiMoi()
+    public static void TaoLoiMoi() { TaoLoiMoi(0); }
+    public static void TaoLoiMoi(int k)
     {
+        if (!HopLe(k)) return;
 #if UNITY_WEBGL && !UNITY_EDITOR
-        RTC_TaoLoiMoi();
+        RTC_TaoLoiMoi(k);
 #else
-        moTaGiaLap = "{\"type\":\"offer\",\"sdp\":\"gia-lap\"}";
+        moTaGiaLap[k] = "{\"type\":\"offer\",\"sdp\":\"gia-lap\"}";
 #endif
     }
 
     /// <summary>May VAO goi: nhan loi moi roi sinh cau tra loi (answer).</summary>
-    public static void TraLoi(string jsonMoi)
+    public static void TraLoi(string jsonMoi) { TraLoi(0, jsonMoi); }
+    public static void TraLoi(int k, string jsonMoi)
     {
+        if (!HopLe(k)) return;
 #if UNITY_WEBGL && !UNITY_EDITOR
-        RTC_TraLoi(jsonMoi);
+        RTC_TraLoi(k, jsonMoi);
 #else
-        moTaGiaLap = "{\"type\":\"answer\",\"sdp\":\"gia-lap\"}";
-        daMoGiaLap = true;
+        moTaGiaLap[k] = "{\"type\":\"answer\",\"sdp\":\"gia-lap\"}";
+        daMoGiaLap[k] = true;
 #endif
     }
 
     /// <summary>May MOI goi khi nhan duoc cau tra loi.</summary>
-    public static void NhanTraLoi(string jsonTra)
+    public static void NhanTraLoi(string jsonTra) { NhanTraLoi(0, jsonTra); }
+    public static void NhanTraLoi(int k, string jsonTra)
     {
+        if (!HopLe(k)) return;
 #if UNITY_WEBGL && !UNITY_EDITOR
-        RTC_NhanTraLoi(jsonTra);
+        RTC_NhanTraLoi(k, jsonTra);
 #else
-        daMoGiaLap = true;
+        daMoGiaLap[k] = true;
 #endif
     }
 
-    public static void ThemUngVien(string jsonUv)
+    public static void ThemUngVien(string jsonUv) { ThemUngVien(0, jsonUv); }
+    public static void ThemUngVien(int k, string jsonUv)
     {
+        if (!HopLe(k)) return;
 #if UNITY_WEBGL && !UNITY_EDITOR
-        RTC_ThemUngVien(jsonUv);
+        RTC_ThemUngVien(k, jsonUv);
 #endif
     }
 
     /// <summary>Offer/answer vua sinh ra. Chua co thi chuoi rong.</summary>
-    public static string LayMoTa()
+    public static string LayMoTa() { return LayMoTa(0); }
+    public static string LayMoTa(int k)
     {
+        if (!HopLe(k)) return "";
 #if UNITY_WEBGL && !UNITY_EDITOR
-        return LayChuoi(RTC_LayMoTa());
+        return LayChuoi(RTC_LayMoTa(k));
 #else
-        string s = moTaGiaLap; moTaGiaLap = ""; return s;
+        string s = moTaGiaLap[k] ?? ""; moTaGiaLap[k] = ""; return s;
 #endif
     }
 
     /// <summary>Mot ung vien ICE cua may nay, de gui sang may kia. Het thi rong.</summary>
-    public static string LayUngVien()
+    public static string LayUngVien() { return LayUngVien(0); }
+    public static string LayUngVien(int k)
     {
+        if (!HopLe(k)) return "";
 #if UNITY_WEBGL && !UNITY_EDITOR
-        return LayChuoi(RTC_LayUngVien());
+        return LayChuoi(RTC_LayUngVien(k));
 #else
-        return hangUngVien.Count > 0 ? hangUngVien.Dequeue() : "";
+        return "";
 #endif
     }
 
-    public static string LayLoi()
+    public static string LayLoi() { return LayLoi(0); }
+    public static string LayLoi(int k)
     {
+        if (!HopLe(k)) return "";
 #if UNITY_WEBGL && !UNITY_EDITOR
-        return LayChuoi(RTC_LayLoi());
+        return LayChuoi(RTC_LayLoi(k));
 #else
-        string s = loiGiaLap; loiGiaLap = ""; return s;
+        return "";
 #endif
     }
 
-    public static bool Gui(string tin)
+    // ================================================================
+    //  GUI / NHAN
+    // ================================================================
+
+    /// <summary>Gui tren kenh 0.</summary>
+    public static bool Gui(string tin) { return Gui(0, tin); }
+
+    public static bool Gui(int k, string tin)
     {
+        if (!HopLe(k)) return false;
 #if UNITY_WEBGL && !UNITY_EDITOR
-        return RTC_Gui(tin) == 1;
+        return daTao[k] && RTC_Gui(k, tin) == 1;
 #else
-        if (!daMoGiaLap) return false;
+        if (!daMoGiaLap[k]) return false;
         if (guiSangBenKia != null) guiSangBenKia(tin);
+        if (guiSangKenh != null) guiSangKenh(k, tin);
         return true;
 #endif
     }
 
-    /// <summary>Lay mot tin nhan da nhan. Het thi chuoi rong.</summary>
-    public static string Nhan()
+    /// <summary>
+    /// Gui tren MOI kenh dang mo, tru mot kenh (-1 = khong tru kenh nao).
+    ///
+    /// Chu phong dung de phat cho ca phong, va de CHUYEN TIEP: goi cua khach
+    /// ghe 2 phai sang ghe 1 va ghe 3, nhung KHONG duoc vong nguoc ve ghe 2 -
+    /// vong ve thi ho nhan lai chinh vi tri cua minh tu 30 ms truoc, va ban sao
+    /// "chinh minh" se hien ra dung sau lung minh.
+    /// Tra ve so kenh da gui duoc.
+    /// </summary>
+    public static int GuiTatCa(string tin, int truKenh)
     {
-#if UNITY_WEBGL && !UNITY_EDITOR
-        return LayChuoi(RTC_Nhan());
-#else
-        return hangNhan.Count > 0 ? hangNhan.Dequeue() : "";
-#endif
+        int n = 0;
+        for (int k = 0; k < SoKenhToiDa; k++)
+        {
+            if (k == truKenh || !DaMoKenh(k)) continue;
+            if (Gui(k, tin)) n++;
+        }
+        return n;
     }
 
-#if !UNITY_WEBGL || UNITY_EDITOR
-    /// <summary>Ben gia lap: nhet mot tin nhan vao nhu the vua nhan duoc.</summary>
-    public static void GiaLapNhan(string tin) { hangNhan.Enqueue(tin); }
+    /// <summary>Lay mot tin nhan da nhan tren kenh 0. Het thi chuoi rong.</summary>
+    public static string Nhan() { return Nhan(0); }
+
+    public static string Nhan(int k)
+    {
+        if (!HopLe(k)) return "";
+#if UNITY_WEBGL && !UNITY_EDITOR
+        if (!daTao[k]) return "";
+        return LayChuoi(RTC_Nhan(k));
+#else
+        return hangNhan[k].Count > 0 ? hangNhan[k].Dequeue() : "";
 #endif
+    }
 
     /// <summary>
     /// Doc kieu ket noi - noi thang hay phai nho nguoi khac tiep suc.
@@ -212,24 +313,49 @@ public static class KenhTrucTiep
     /// ung vien nao de xem, va ket qua se la "khong xac dinh" - dung cai dong
     /// quan trong nhat. Da vap dung loi nay o cong cu do tren web.
     /// </summary>
-    public static string KieuKetNoi()
+    public static string KieuKetNoi() { return KieuKetNoi(0); }
+    public static string KieuKetNoi(int k)
     {
+        if (!HopLe(k)) return "";
 #if UNITY_WEBGL && !UNITY_EDITOR
-        RTC_CapNhatKieuKetNoi();
-        return LayChuoi(RTC_LayKieuKetNoi());
+        RTC_CapNhatKieuKetNoi(k);
+        return LayChuoi(RTC_LayKieuKetNoi(k));
 #else
         return "gia-lap";
 #endif
     }
 
+    // ================================================================
+    //  DONG
+    // ================================================================
+
+    /// <summary>Dong TAT CA cac kenh - dung khi roi tran.</summary>
     public static void Dong()
     {
 #if UNITY_WEBGL && !UNITY_EDITOR
-        if (daTao) RTC_Dong();
+        bool coKenh = false;
+        for (int k = 0; k < SoKenhToiDa; k++) coKenh |= daTao[k];
+        if (coKenh) RTC_Dong(-1);
 #else
-        daMoGiaLap = false;
-        hangNhan.Clear(); hangUngVien.Clear();
+        for (int k = 0; k < SoKenhToiDa; k++)
+        {
+            daMoGiaLap[k] = false;
+            hangNhan[k].Clear();
+        }
 #endif
-        daTao = false;
+        for (int k = 0; k < SoKenhToiDa; k++) daTao[k] = false;
+    }
+
+    /// <summary>Dong mot kenh - chu phong dung khi mot nguoi khach roi tran.</summary>
+    public static void Dong(int k)
+    {
+        if (!HopLe(k)) return;
+#if UNITY_WEBGL && !UNITY_EDITOR
+        if (daTao[k]) RTC_Dong(k);
+#else
+        daMoGiaLap[k] = false;
+        hangNhan[k].Clear();
+#endif
+        daTao[k] = false;
     }
 }

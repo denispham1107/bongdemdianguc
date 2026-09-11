@@ -23,6 +23,11 @@ public class StunnedEffect : MonoBehaviour
     public static void Apply(Damageable d, float seconds)
     {
         if (d == null || d.IsDead || seconds <= 0f) return;
+        // Ban sao (mau do may khac quyet) KHONG tu gieo hieu ung cho minh: ben
+        // kia tung Random.value rieng, gieo them lan nua o day la hai may thay
+        // hai ket qua khac nhau. Hieu ung cua ban sao den tu goi tin - xem
+        // HieuUngQuaMang.ApCo.
+        if (d.mauDoMayKhacQuyet) return;
 
         var s = d.GetComponent<StunnedEffect>();
         bool isNew = s == null;

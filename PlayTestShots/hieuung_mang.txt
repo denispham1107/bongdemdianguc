@@ -1,0 +1,26 @@
+[ban 1] dong bang, choang va mau khieng giong nhau tren moi may
+
+--- 1. cho gac ---
+1a. gieo dong bang + choang: len BAN SAO -> False/False (phai False/False); len NHAN VAT THAT -> True/True (phai True/True)
+1b. AreaFreeze ti le 100% trung ban sao -> ban sao co bang: False (phai False)
+
+--- 2. doc trang thai de gui di ---
+2a. nhan vat that dang bi dong bang + choang -> co gui di: bang=True dongCung=True choang=True (phai True/True/True)
+2b. khieng 150 mau an 75 -> gui di 0.50 (phai 0,50)
+
+--- 3. goi tin ---
+3a. goi trang thai 18 byte (khong to them): hieu ung 5 -> 5, khieng 0,42 -> 0.42, dangChay/daChet con nguyen: True/False
+3b. goi quai: (chet, bang) -> (True, 1); (song, choang) -> (False, 4)
+
+--- 4. ban sao ve lai ---
+4a. may kia ke 'dong cung + choang + khieng 60%' -> ban sao: bang=True choang=True khieng=0.60
+4b. don 100 trung ban sao tren may nay -> khieng ban sao: 0.60 (phai giu 0,60)
+4c. may kia ke 'het ca' -> ban sao con bang/choang/khieng: False/False/False (phai False/False/False)
+4d. mot goi 'dong bang' roi goi tin ngung han -> sau 0.95 giay ban sao con bang: False (phai False - khong ket lai vinh vien)
+4e. phat lai phep Khieng tren ban sao, chua co goi trang thai -> co khieng: False (phai False - mot nguon duy nhat, khong nhap nhay)
+
+--- 5. quai ben may khach ---
+5a. chu phong ke 'con quai nay dang choang' -> ban sao quai choang: True
+5b. chu phong ke 'het choang' -> ban sao quai con choang: False (phai False)
+
+so loi ghi nhan = 0

@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -46,7 +47,6 @@ public class KhoiDongTranMang : MonoBehaviour
     /// </summary>
     public static bool CanNutVeSanh;
 
-    byte chiSoKia;
     float tatThongBaoLuc = -1f;
     public static string LoiCuoi;
 
@@ -156,81 +156,240 @@ public class KhoiDongTranMang : MonoBehaviour
         var phong = PhongMang.PhongHienTai;
         if (!ok || phong == null) { Hong("khong doc duoc phong"); yield break; }
 
-        NhanDang += string.Format(" · {0} người", phong.nguoiChoi.Count);
+        // ---- 2. Xep ghe ----
+        bangGhe = XepGhe(phong.nguoiChoi, phong.hostUid);
+        MotGhe gheToi = TimGhe(bangGhe, FirebaseMang.Uid);
+        if (gheToi.uid == null) { Hong("khong thay minh trong danh sach phong"); yield break; }
 
-        // ---- 2. Tim nguoi kia ----
-        string uidKia = null;
-        for (int i = 0; i < phong.nguoiChoi.Count; i++)
-        {
-            var n = phong.nguoiChoi[i];
-            if (n.uid != FirebaseMang.Uid) { uidKia = n.uid; break; }
-        }
+        NhanDang += string.Format(" · ghế {0} · {1} người", gheToi.ghe, bangGhe.Count);
 
-        if (string.IsNullOrEmpty(uidKia))
+        if (bangGhe.Count < 2)
         {
             TrangThai = "Chơi một mình trong phòng - không có ai để nối.";
             yield break;
         }
 
-        // ---- 3. Bat tay ----
-        TrangThai = TranHienTai.LaHost
-            ? "Đang mời người kia nối vào..."
-            : "Đang nối vào chủ phòng...";
+        DatChoDungTheoGhe(gheToi.ghe);
 
-        bool noiDuoc = false; string loi = null;
-
-        if (TranHienTai.LaHost)
-            yield return BatTay.ChuPhongMoi(TranHienTai.MaPhong, uidKia,
-                                            (o, e) => { noiDuoc = o; loi = e; });
-        else
-            yield return BatTay.NguoiVaoNhan(TranHienTai.MaPhong, uidKia,
-                                             (o, e) => { noiDuoc = o; loi = e; });
-
-        if (!noiDuoc) { Hong(loi ?? "không nối được"); yield break; }
-
-        float matBaoLau = Time.unscaledTime - batDauLuc;
-
-        // ---- 4. Sinh nhan vat cho nguoi kia ----
-        Vector3 cho = toi.transform.position + new Vector3(4f, 0f, 0f);
-        var nguoiKia = NguoiChoiKhac.Sinh(uidKia, "Người chơi 2", cho);
-        if (nguoiKia == null) { Hong("khong sinh duoc nhan vat cho nguoi kia"); yield break; }
-
-        // ---- 4b. Cho ca hai nhan vat ghi lai duong di ----
-        // Bu tre can biet "mot khoang truoc day nguoi nay dung o dau". Gan cho
-        // CA HAI: nhan vat cua minh la nan nhan can lui, con ban sao nguoi kia
-        // thi phep cua chinh ho khong duoc lui - BuTre.Mo tu bo qua nguoi tung.
-        if (toi.GetComponent<LichSuViTri>() == null)
-            toi.gameObject.AddComponent<LichSuViTri>();
-        if (nguoiKia.GetComponent<LichSuViTri>() == null)
-            nguoiKia.gameObject.AddComponent<LichSuViTri>();
-
-        // ---- 5. Bat dong bo ----
+        // ---- 3. Dung bo dong bo TRUOC khi bat tay ----
+        // Goi tin cua nguoi ta co the den ngay khi kenh vua mo - bo dong bo
+        // phai san sang nghe tu truoc, khong thi vai goi dau roi vao khoang.
         dongBo = gameObject.AddComponent<DongBoTran>();
         dongBo.toi = toi;
+        dongBo.chiSoCuaToi = gheToi.ghe;
 
         // Phai goi TAY sau khi gan "toi": OnEnable cua DongBoTran da chay xong
         // tu luc AddComponent, luc ay "toi" con la null nen no khong nghe duoc
         // ai ca - va ky nang se khong bao gio duoc gui sang may kia.
         dongBo.GanTaiNghe();
 
-        // Ca hai nguoi danh chung mot dan quai: chu phong ke lai, khach nghe.
+        // Ca phong danh chung mot dan quai: chu phong ke lai, khach nghe.
         var boQuai = gameObject.AddComponent<DongBoQuai>();
         boQuai.dongBo = dongBo;
         dongBo.quai = boQuai;
 
-        // Chu phong la 0, nguoi vao la 1. Hai nguoi thi the la du - bon nguoi
-        // moi can danh so theo thu tu trong phong.
-        dongBo.chiSoCuaToi = (byte)(TranHienTai.LaHost ? 0 : 1);
-        chiSoKia = (byte)(TranHienTai.LaHost ? 1 : 0);
-        dongBo.ThemNguoi(chiSoKia, nguoiKia);
-        dongBo.KhiMatKetNoi += KhiNguoiKiaRoiTran;
+        dongBo.TaoNguoiKhiCan = SinhBanSao;
+        dongBo.KhiMatNguoi += KhiMotNguoiRoiTran;
+        dongBo.KhiMatKetNoi += KhiMatHetKetNoi;
+
+        // Nhan vat cua minh ghi lai duong di: bu tre can biet "mot khoang truoc
+        // day minh dung o dau" de lui ve do tinh trung.
+        if (toi.GetComponent<LichSuViTri>() == null)
+            toi.gameObject.AddComponent<LichSuViTri>();
+
+        // ---- 4. Bat tay - SONG SONG voi moi nguoi can noi ----
+        //
+        // Chu phong noi voi tung nguoi khach, moi nguoi mot kenh, so kenh =
+        // so ghe cua ho. Khach chi noi voi chu phong.
+        //
+        // Chay song song chu khong lan luot: lan luot thi nguoi khach thu ba
+        // phai doi hai lan bat tay truoc, va neu mot lan hong (het 20 giay) thi
+        // ca nguoi sau cung het gio theo.
+        var canNoi = new List<MotGhe>();
+        foreach (var g in bangGhe)
+        {
+            if (g.ghe == gheToi.ghe) continue;
+            if (TranHienTai.LaHost || g.laChuPhong) canNoi.Add(g);
+        }
+
+        TrangThai = TranHienTai.LaHost
+            ? string.Format("Đang mời {0} người nối vào...", canNoi.Count)
+            : "Đang nối vào chủ phòng...";
+
+        int conDoi = canNoi.Count;
+        var loiTheoGhe = new Dictionary<byte, string>();
+        var noiDuoc = new List<MotGhe>();
+
+        foreach (var g in canNoi)
+        {
+            var gg = g;
+            System.Action<bool, string> xong = (o, e) =>
+            {
+                if (o) noiDuoc.Add(gg);
+                else loiTheoGhe[gg.ghe] = e ?? "không nối được";
+                conDoi--;
+            };
+
+            if (TranHienTai.LaHost)
+                StartCoroutine(BatTay.ChuPhongMoi(TranHienTai.MaPhong, g.uid, g.ghe, xong));
+            else
+                StartCoroutine(BatTay.NguoiVaoNhan(TranHienTai.MaPhong, g.uid, g.ghe, xong));
+        }
+
+        float hanBatTay = Time.unscaledTime + BatTay.GiayHetHan + 10f;
+        while (conDoi > 0 && Time.unscaledTime < hanBatTay) yield return null;
+
+        float matBaoLau = Time.unscaledTime - batDauLuc;
+
+        if (noiDuoc.Count == 0)
+        {
+            string vi = "";
+            foreach (var cap in loiTheoGhe) { vi = cap.Value; break; }
+            Hong(vi.Length > 0 ? vi : "không nối được");
+            yield break;
+        }
 
         DaNoi = true;
-        TrangThai = string.Format("Đã nối! (bắt tay mất {0:F1} giây)", matBaoLau);
 
-        // Ba giay sau thi thoi bao, tra man hinh lai cho game
-        yield return new WaitForSecondsRealtime(3f);
+        if (loiTheoGhe.Count == 0)
+        {
+            TrangThai = TranHienTai.LaHost && noiDuoc.Count > 1
+                ? string.Format("Đã nối cả {0} người! (bắt tay mất {1:F1} giây)", noiDuoc.Count, matBaoLau)
+                : string.Format("Đã nối! (bắt tay mất {0:F1} giây)", matBaoLau);
+        }
+        else
+        {
+            // Noi duoc mot phan: noi THANG ra ai khong vao duoc, dung im lang
+            // de nguoi ta tu hoi vi sao ban minh khong thay dau.
+            var sb = new System.Text.StringBuilder();
+            foreach (var cap in loiTheoGhe)
+            {
+                if (sb.Length > 0) sb.Append(", ");
+                sb.Append(TenCuaGhe(cap.Key));
+            }
+            TrangThai = string.Format("Đã nối {0}/{1} người. Không nối được với: {2}",
+                                      noiDuoc.Count, canNoi.Count, sb);
+        }
+
+        // Vai giay sau thi thoi bao, tra man hinh lai cho game
+        yield return new WaitForSecondsRealtime(loiTheoGhe.Count == 0 ? 3f : 8f);
         TrangThai = "";
+    }
+
+    // ================================================================
+    //  GHE NGOI
+    // ================================================================
+
+    /// <summary>Mot nguoi trong tran va cho ngoi cua ho.</summary>
+    public struct MotGhe
+    {
+        public byte ghe;
+        public string uid;
+        public string ten;
+        public bool laChuPhong;
+    }
+
+    /// <summary>Bang ghe cua tran nay - de tra ten tu so ghe.</summary>
+    List<MotGhe> bangGhe = new List<MotGhe>();
+
+    /// <summary>
+    /// XEP GHE CHO CA PHONG - moi may tu tinh, va moi may ra CUNG MOT DAP AN.
+    ///
+    /// Chu phong luon ghe 0. Nhung nguoi con lai xep theo o "cho" ghi trong
+    /// phong, bang nhau thi theo uid. Ghe cuoi cung la THU TU trong danh sach
+    /// ay, khong phai o "cho" doc thang tu Firebase.
+    ///
+    /// Vi sao khong dung thang o "cho": hai nguoi vao phong cach nhau vai tram
+    /// mili giay co the cung doc thay ghe 1 con trong va cung ngoi vao - dung
+    /// cuoc dua da vap o nut "Vao phong nhanh". Hai nguoi cung ghe 1 thi goi
+    /// tin cua ho de len nhau va mot nguoi bien mat. Xep lai theo mot quy tac
+    /// tat dinh thi hai may doc cung mot danh sach luon ra cung mot bang ghe.
+    ///
+    /// Ham thuan - de con kiem duoc bang so.
+    /// </summary>
+    public static List<MotGhe> XepGhe(List<PhongMang.NguoiTrongPhong> ds, string hostUid)
+    {
+        var chuPhong = new List<PhongMang.NguoiTrongPhong>();
+        var khach = new List<PhongMang.NguoiTrongPhong>();
+        foreach (var n in ds)
+        {
+            if (n == null || string.IsNullOrEmpty(n.uid)) continue;
+            if (n.uid == hostUid) chuPhong.Add(n); else khach.Add(n);
+        }
+
+        khach.Sort((a, b) =>
+        {
+            int c = a.cho.CompareTo(b.cho);
+            return c != 0 ? c : string.CompareOrdinal(a.uid, b.uid);
+        });
+
+        var ra = new List<MotGhe>();
+        foreach (var n in chuPhong)
+            ra.Add(new MotGhe { ghe = 0, uid = n.uid, ten = n.ten, laChuPhong = true });
+        foreach (var n in khach)
+        {
+            if (ra.Count >= KenhTrucTiep.SoKenhToiDa) break;
+            ra.Add(new MotGhe { ghe = (byte)ra.Count, uid = n.uid, ten = n.ten, laChuPhong = false });
+        }
+        return ra;
+    }
+
+    public static MotGhe TimGhe(List<MotGhe> bang, string uid)
+    {
+        foreach (var g in bang) if (g.uid == uid) return g;
+        return new MotGhe { ghe = 255 };
+    }
+
+    string TenCuaGhe(byte ghe)
+    {
+        foreach (var g in bangGhe)
+            if (g.ghe == ghe) return string.IsNullOrEmpty(g.ten) ? ("người chơi " + (ghe + 1)) : g.ten;
+        return "người chơi " + (ghe + 1);
+    }
+
+    /// <summary>
+    /// Moi nguoi dung mot cho quanh diem xuat phat, theo ghe.
+    ///
+    /// Tat ca nhan vat deu sinh ra o CUNG MOT diem trong scene. Hai nguoi thi
+    /// con chiu duoc; bon nguoi chong len nhau thanh mot khoi thi khong ai biet
+    /// minh la ai. Xep thanh bon goc cua mot o vuong nho quanh diem ay.
+    /// </summary>
+    void DatChoDungTheoGhe(byte ghe)
+    {
+        if (toi == null || ghe == 0) return;       // chu phong giu dung cho cu
+
+        const float BanKinh = 1.6f;
+        float goc = ghe * 90f;
+        Vector3 lech = Quaternion.Euler(0f, goc, 0f) * new Vector3(0f, 0f, BanKinh);
+        Vector3 moi = toi.transform.position + lech;
+        moi.y = VfxFactory.GroundY(moi) + 0.1f;
+
+        var cc = toi.GetComponent<CharacterController>();
+        bool batLai = cc != null && cc.enabled;
+        if (batLai) cc.enabled = false;
+        toi.transform.position = moi;
+        if (batLai) cc.enabled = true;
+    }
+
+    /// <summary>
+    /// Goi tin dau tien cua nguoi ngoi ghe <paramref name="ghe"/> vua den -
+    /// dung ban sao cho ho ngay tai cho ho dang dung.
+    /// </summary>
+    PlayerController SinhBanSao(byte ghe, Vector3 viTri)
+    {
+        MotGhe g = new MotGhe { ghe = 255 };
+        foreach (var x in bangGhe) if (x.ghe == ghe) g = x;
+        if (g.uid == null) return null;      // ghe khong co trong phong - goi la
+
+        var nv = NguoiChoiKhac.Sinh(g.uid, TenCuaGhe(ghe), viTri);
+        if (nv == null) return null;
+
+        // Ban sao cung ghi lai duong di - de phep cua CHINH HO khong bi lui
+        // (BuTre.Mo bo qua nguoi tung), va de lui ho khi phep nguoi khac trung.
+        if (nv.GetComponent<LichSuViTri>() == null)
+            nv.gameObject.AddComponent<LichSuViTri>();
+
+        return nv;
     }
 
     // ================================================================
@@ -251,7 +410,8 @@ public class KhoiDongTranMang : MonoBehaviour
         {
             ThongBaoKetNoi = string.Format(
                 "Đang chờ tín hiệu từ {0}... ({1:F0} giây)",
-                TranHienTai.LaHost ? "người chơi kia" : "chủ phòng", dongBo.ImLangGiay);
+                dongBo.ChiSoDangCho == 0 && !TranHienTai.LaHost ? "chủ phòng"
+                    : TenCuaGhe(dongBo.ChiSoDangCho), dongBo.ImLangGiay);
             thongBaoLaLoi = false;
         }
         else if (dongBo.TinhTrang == DongBoTran.TinhTrangKetNoi.Tot
@@ -263,27 +423,25 @@ public class KhoiDongTranMang : MonoBehaviour
     }
 
     /// <summary>
-    /// Nguoi kia da roi tran han. Hai phia xu ly khac nhau, vi hai phia mat
-    /// hai thu khac nhau:
+    /// MOT NGUOI vua roi tran. Xu ly khac nhau tuy AI di, vi moi phia mat
+    /// mot thu khac nhau:
     ///
-    ///   - CHU PHONG mat nguoi khach: tran van chay binh thuong - quai, nhip
-    ///     dot, moi thu deu nam o may nay. Chi can go ban sao cua ho di de quai
-    ///     thoi duoi theo mot cai bong, roi choi tiep mot minh.
-    ///   - NGUOI KHACH mat chu phong: mat LUON ca tran - quai do chu phong dieu
-    ///     khien, mau quai do chu phong tinh. Khong con gi de choi tiep. Phai
-    ///     noi thang ra va dua cho nguoi ta mot duong ve.
+    ///   - Mot NGUOI KHACH di: tran van chay binh thuong - quai, nhip dot, moi
+    ///     thu deu nam o may chu phong. Go ban sao cua ho de quai thoi duoi theo
+    ///     mot cai bong, bao mot cau, roi choi tiep.
+    ///   - CHU PHONG di (tren may khach): mat LUON ca tran - quai do chu phong
+    ///     dieu khien, mau quai do chu phong tinh, va moi goi tin cua nhung
+    ///     nguoi khach khac cung phai qua tay chu phong. Khong con gi de choi
+    ///     tiep. Phai noi thang ra va dua cho nguoi ta mot duong ve.
     /// </summary>
-    void KhiNguoiKiaRoiTran()
+    void KhiMotNguoiRoiTran(byte ghe)
     {
-        if (dongBo != null) dongBo.BoNguoi(chiSoKia);
+        string ten = TenCuaGhe(ghe);
+        if (dongBo != null) dongBo.BoNguoi(ghe);
 
-        if (TranHienTai.LaHost)
-        {
-            ThongBaoKetNoi = "Người chơi kia đã rời trận. Bạn chơi tiếp một mình.";
-            thongBaoLaLoi = false;
-            tatThongBaoLuc = Time.unscaledTime + 6f;
-        }
-        else
+        bool chuPhongDi = !TranHienTai.LaHost && TimGheTheoSo(ghe).laChuPhong;
+
+        if (chuPhongDi)
         {
             ThongBaoKetNoi = "Chủ phòng đã rời trận — trận đấu dừng tại đây."
                 + System.Environment.NewLine
@@ -291,8 +449,30 @@ public class KhoiDongTranMang : MonoBehaviour
             thongBaoLaLoi = true;
             CanNutVeSanh = true;
         }
+        else
+        {
+            bool conAi = dongBo != null && dongBo.SoNguoiKhac > 0;
+            ThongBaoKetNoi = ten + " đã rời trận."
+                + (conAi ? "" : " Bạn chơi tiếp một mình.");
+            thongBaoLaLoi = false;
+            tatThongBaoLuc = Time.unscaledTime + 6f;
+        }
 
-        Debug.LogWarning("[TranMang] nguoi kia da roi tran");
+        Debug.LogWarning("[TranMang] ghe " + ghe + " da roi tran");
+    }
+
+    /// <summary>Het sach ket noi. Voi may khach, KhiMotNguoiRoiTran da bao
+    /// "chu phong da roi tran" roi - day chi la luoi an toan.</summary>
+    void KhiMatHetKetNoi()
+    {
+        if (!TranHienTai.LaHost && !CanNutVeSanh)
+            KhiMotNguoiRoiTran(0);
+    }
+
+    MotGhe TimGheTheoSo(byte ghe)
+    {
+        foreach (var g in bangGhe) if (g.ghe == ghe) return g;
+        return new MotGhe { ghe = 255 };
     }
 
     void Hong(string vi)
