@@ -1,0 +1,19 @@
+[ban 1] che do bon bo xuong (moi dot 4 con, cho 30 giay)
+
+--- man Act2 ---
+1. vao man 2 giay: quai dang song = 4 [Skeleton=4]  (phai: dung 4 bo xuong)
+2a. vong 1: giet het -> con 0 con, HUD dem nguoc: 29.9 giay
+2b. dot moi ra sau 29.9 giay game (dat 30) -> 4 con [Skeleton=4]
+3a. vong 2: giet het -> con 0 con, HUD dem nguoc: 29.9 giay
+3b. dot moi ra sau 30.3 giay game (dat 30) -> 4 con [Skeleton=4]
+4. de nguyen 260 giay game (qua ca dong ho quy du 120 va quy cay 240) -> nhieu nhat 4 con, luc cuoi [Skeleton=4]  (phai khong qua 4, chi bo xuong)
+
+--- man Act1 ---
+1. vao man 2 giay: quai dang song = 4 [Skeleton=4]  (phai: dung 4 bo xuong)
+2a. vong 1: giet het -> con 0 con, HUD dem nguoc: 29.9 giay
+2b. dot moi ra sau 30.1 giay game (dat 30) -> 4 con [Skeleton=4]
+3a. vong 2: giet het -> con 0 con, HUD dem nguoc: 29.9 giay
+3b. dot moi ra sau 30.1 giay game (dat 30) -> 4 con [Skeleton=4]
+4. de nguyen 260 giay game (qua ca dong ho quy du 120 va quy cay 240) -> nhieu nhat 4 con, luc cuoi [Skeleton=4]  (phai khong qua 4, chi bo xuong)
+
+so loi ghi nhan = 0

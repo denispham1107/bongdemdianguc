@@ -1,16 +1,16 @@
 [ban 1] chung mot dan quai, va don trung theo cai nguoi ban nhin thay
 1. duoc tu rai quai? choi don=True chu phong=True khach=False (phai la True True False)
-2. quai trong canh: 25 con, co so hieu: 25, so hieu trung nhau: 0 (phai bang nhau, va 0 trung)
+2. quai trong canh: 4 con, co so hieu: 4, so hieu trung nhau: 0 (phai bang nhau, va 0 trung)
 3. goi 3 con = 45 byte (13 byte/con), doc lai khop: True, lech vi tri xa nhat: 0.0000 m
-4. ca dan 25 con = 337 byte moi luot, 10 luot/giay -> 3.3 KB/giay
-5. di 6.00 m trong 0,6 giay (10.0 m/giay), hoi lai cho 0.3 giay truoc, doi chieu nhat ky rieng cua phep thu -> lech 0.00 m = 0 ms (tran: hai khung hinh = 101 ms)
-6. mo cua so bu tre -> nguoi bi lui 2.50 m; dong lai -> sai lech so voi cho cu: 0.0000 m (phai lui > 0 va tra ve dung 0)
+4. ca dan 4 con = 58 byte moi luot, 10 luot/giay -> 0.6 KB/giay
+5. di 6.00 m trong 0,6 giay (10.0 m/giay), hoi lai cho 0.3 giay truoc, doi chieu nhat ky rieng cua phep thu -> lech 0.00 m = 0 ms (tran: hai khung hinh = 89 ms)
+6. mo cua so bu tre -> nguoi bi lui 2.55 m; dong lai -> sai lech so voi cho cu: 0.0000 m (phai lui > 0 va tra ve dung 0)
 7. bu tre nhung BO QUA chinh nguoi nay -> ho bi lui 0.0000 m (phai la 0)
 8. bao lui 5 giay -> thuc te lui 0.30 giay (tran la 0.30)
 9. goi ky nang 16 byte, do tre viet 137 ms -> doc lai 137 ms
 10. goi nhip 6 byte: hoi(4242) -> doc laHoi=True moc=4242; dap -> laHoi=False moc=4242
-11. chay ngang 3,00 m roi no vao CHO CU (lui 392 ms):
+11. chay ngang 3,00 m roi no vao CHO CU (lui 315 ms):
     a) khong bu tre -> mat 0 mau (phai la 0 - don truot)
-    b) CO bu tre    -> mat 26 mau (phai lon hon 0 - don trung)
-12. may khach nghe goi 2 con -> quai trong canh 33 -> 35 (giu 2 con), AI cua chung da tat: True, mau ap vao: 50% (bao 50%)
+    b) CO bu tre    -> mat 34 mau (phai lon hon 0 - don trung)
+12. may khach nghe goi 2 con -> quai trong canh 4 -> 6 (giu 2 con), AI cua chung da tat: True, mau ap vao: 50% (bao 50%)
 so loi ghi nhan = 0

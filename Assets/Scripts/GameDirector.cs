@@ -239,6 +239,34 @@ public class GameDirector : MonoBehaviour
         get { return !TranHienTai.DangChoiMang || TranHienTai.LaHost; }
     }
 
+    // ================================================================
+    //  CHE DO CHAY THU: BON BO XUONG
+    // ================================================================
+
+    /// <summary>
+    /// CHE DO CHAY THU - CHI BON CON BO XUONG MOT DOT.
+    ///
+    /// Nguoi dung xin: vao tran qua nhieu quai nen giat, khong thu duoc gi. Act2
+    /// mo man la 25 con (7 phu thuy + 7 bo xuong rai san, 7 quy du, 4 quy cay)
+    /// cong mot dot 7 con, va con sinh them theo dong ho.
+    ///
+    /// Bat co nay thi: vao man chi co BON con bo xuong, khong loai nao khac; giet
+    /// het bon con thi doi <see cref="GiayChoDotBoXuong"/> giay roi ra bon con
+    /// moi; cu the lap lai mai.
+    ///
+    /// Viet la HANG SO trong code chu khong phai o [SerializeField]: hai scene
+    /// ghi de gan het cac con so rai quai (Act2 dat startingCount = 7,
+    /// soPhuThuyRaiSan = 7...), va sua tung o trong scene thi sot mot o la van
+    /// giat - dung cai bay da vap voi mau 30 000. Hang so thi scene khong de duoc.
+    ///
+    /// ⚠️ LA CHE DO CHAY THU. Tat (false) truoc khi phat hanh - khong thi game
+    /// chi con bon con bo xuong.
+    /// </summary>
+    public const bool CheDoBonBoXuong = true;
+
+    public const int SoBoXuongMoiDot = 4;
+    public const float GiayChoDotBoXuong = 30f;
+
     /// <summary>So hieu cap cho con quai ke tiep. Chi chu phong dung den.</summary>
     ushort soHieuKeTiep = 1;
 
@@ -269,7 +297,7 @@ public class GameDirector : MonoBehaviour
         }
 
         // May khach khong rai con nao ca - ca dan den tu chu phong.
-        if (LaTrongTaiCuaQuai)
+        if (LaTrongTaiCuaQuai && !CheDoBonBoXuong)
         {
             // Rai quai khap ban do TRUOC khi dot dau bat dau. Bon nay dung san o
             // cho cua chung, khong lien quan gi den nhip dot.
@@ -282,6 +310,20 @@ public class GameDirector : MonoBehaviour
         waiting = true;
         quyDuTimer = chuKyThemQuyDu;
         quyCayTimer = chuKyThemQuyCay;
+
+        // Che do chay thu: bon con bo xuong ra NGAY luc vao man, khong doi
+        if (LaTrongTaiCuaQuai && CheDoBonBoXuong)
+        {
+            SinhDotBoXuong();
+            waiting = false;
+        }
+    }
+
+    /// <summary>Mot dot che do chay thu: dung bon con bo xuong, khong gi khac.</summary>
+    void SinhDotBoXuong()
+    {
+        Wave++;
+        for (int i = 0; i < SoBoXuongMoiDot; i++) SpawnOne(MonsterType.Skeleton);
     }
 
     /// <summary>
@@ -467,7 +509,26 @@ public class GameDirector : MonoBehaviour
 
         // Nhip sinh quai chi chay o may lam trong tai. May khach ma cung dem
         // gio thi no se tu de ra mot dot quai rieng khong ai khac nhin thay.
-        if (LaTrongTaiCuaQuai)
+        if (LaTrongTaiCuaQuai && CheDoBonBoXuong)
+        {
+            // Che do chay thu: khong dong ho rieng nao ca, chi mot vong don gian -
+            // giet het bon con -> doi 30 giay -> bon con moi.
+            if (waiting)
+            {
+                waveTimer -= Time.deltaTime;
+                if (waveTimer <= 0f)
+                {
+                    waiting = false;
+                    SinhDotBoXuong();
+                }
+            }
+            else if (alive.Count == 0)
+            {
+                waiting = true;
+                waveTimer = GiayChoDotBoXuong;
+            }
+        }
+        else if (LaTrongTaiCuaQuai)
         {
             // Hai dong quai rieng tu sinh them theo DONG HO RIENG cua chung,
             // khong doi dot cu chet het

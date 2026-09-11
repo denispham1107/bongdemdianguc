@@ -6620,6 +6620,58 @@ chính nó và đối chiếu đúng thời điểm được hỏi: **lệch 0,0
 
 Và mười phép thử mạng chạy lại đều **0 lỗi**: 34, 36, 37, 38, 39, 41, 43, 44, 45, 46.
 
+### Chế độ chạy thử: bốn bộ xương một đợt
+
+Anh báo vào trận quá nhiều quái, giật đến mức không thử được gì. Đúng vậy: Act2 mở màn là **25 con**
+(7 phù thuỷ + 7 bộ xương rải sẵn, 7 quỷ dữ, 4 quỷ cây) cộng một đợt 7 con, và hai dòng quỷ còn sinh
+thêm theo đồng hồ riêng.
+
+Anh xin: vào màn chỉ có **4 bộ xương**, không loại nào khác; giết hết thì đợi **30 giây** ra 4 con mới;
+lặp lại mãi.
+
+#### Viết cứng trong code, không sửa scene
+
+Hai scene ghi đè gần hết các con số rải quái — Act2 đặt `startingCount = 7`, `soPhuThuyRaiSan = 7`,
+`soBoXuongRaiSan = 7`; Act1 lại đặt khác. Sửa từng ô trong scene thì sót một ô là vẫn giật, đúng cái
+bẫy đã vấp với máu 30 000.
+
+Nên `GameDirector.CheDoBonBoXuong` là **hằng số** trong code, scene không đè được. Bật lên thì bỏ qua
+toàn bộ: rải sẵn khắp bản đồ, hai dòng quỷ có đồng hồ riêng, và nhịp đợt tăng dần. Chỉ còn một vòng:
+bốn con bộ xương ra ngay lúc vào màn → giết hết → đếm ngược 30 giây (HUD hiện *"Đợt mới sau … giây"*)
+→ bốn con mới.
+
+Chơi mạng vẫn đúng: chủ phòng là trọng tài của quái nên chỉ chủ phòng chạy vòng này, khách nhận bốn
+con qua mạng như cũ.
+
+#### Đo (menu 47), cả hai màn, hai vòng mỗi màn
+
+```
+--- màn Act2 ---
+1.  vào màn 2 giây: quái đang sống = 4 [Skeleton=4]
+2a. vòng 1: giết hết -> còn 0 con, HUD đếm ngược: 29,9 giây
+2b. đợt mới ra sau 29,9 giây game -> 4 con [Skeleton=4]
+3b. đợt mới ra sau 30,3 giây game -> 4 con [Skeleton=4]
+4.  để nguyên 260 giây game (qua cả đồng hồ quỷ dữ 120 và quỷ cây 240) -> nhiều nhất 4 con
+--- màn Act1 ---
+1.  vào màn 2 giây: quái đang sống = 4 [Skeleton=4]
+2b. đợt mới ra sau 30,1 giây game -> 4 con
+3b. đợt mới ra sau 30,1 giây game -> 4 con
+4.  để nguyên 260 giây game -> nhiều nhất 4 con
+số lỗi ghi nhận = 0
+```
+
+Phép thử đếm quái **trên cảnh, theo loại** — không tin con số HUD, vì HUD đếm từ danh sách của
+`GameDirector`, tức chính cái đang cần kiểm. Chờ 30 giây bằng cách tăng tốc thời gian game và đo bằng
+đồng hồ game (`Time.time`): 30 giây game mới là con số người chơi cảm thấy.
+
+Chiều 4 là chiều chống lọt: nó để yên đủ lâu để **cả hai đồng hồ riêng** (quỷ dữ 120 giây, quỷ cây 240
+giây) phải điểm. Còn sót đường nào thì đây là lúc quái lạ hiện ra.
+
+Và băng thông đàn quái tụt theo: 4 con là **0,6 KB/giây** thay vì 3,3.
+
+> ⚠️ **Đây là chế độ chạy thử.** Tắt (`CheDoBonBoXuong = false`) trước khi phát hành — không thì game
+> chỉ còn bốn con bộ xương.
+
 ### Việc còn phải làm
 
 **169 MB là quá nặng**, nhất là trên điện thoại — nền tảng chính của game. Gần như toàn bộ nằm ở
@@ -6687,6 +6739,7 @@ cho riêng nền tảng WebGL sẽ ăn cả hai đầu: file nhỏ hơn và khô
 | **44. Chay thu SUA BUOC 5 (2-1-4-5)** | Mười lăm chiều cho bốn chỗ hở đã vá: bản sao không chết cục bộ nhưng chết khi chủ phòng bảo, xác không ra đòn, HUD khách lấy bảng số của chủ phòng, phím R bị chặn trong trận mạng, và hai ngưỡng mất kết nối (chờ tín hiệu 3 giây — hồi phục được — rồi rời trận sau 10 giây hoặc ngay khi kênh đóng). Kết quả ra `PlayTestShots/sua_buoc5.txt`. |
 | **45. Chay thu BON NGUOI (noi hinh sao)** | Mười một chiều cho trận bốn người: xếp ghế tất định (kể cả khi hai người trùng ghế), chủ phòng chuyển tiếp trạng thái và kỹ năng sang đúng những người còn lại và **không vòng về người gửi**, trả lời nhịp đúng kênh, sinh bản sao khi gói đầu tiên đến, một khách rời trận thì những người còn lại đều biết và gói trễ không làm người đó hiện lại. Kết quả ra `PlayTestShots/bonnguoi.txt`. |
 | **46. Chay thu HIEU UNG qua mang** | Mười hai chiều: bản sao không tự gieo đóng băng/choáng (và nhân vật thật vẫn gieo được), cờ và máu khiên đọc đúng rồi đi qua gói tin không to thêm, bản sao vẽ lại theo lời kể, khiên bản sao không bị trừ cục bộ, mất gói thì hiệu ứng tự tan, và quái bên khách choáng theo chủ phòng. Kết quả ra `PlayTestShots/hieuung_mang.txt`. |
+| **47. Chay thu CHE DO BON BO XUONG** | Vào Play thật ở **cả hai màn**, đếm quái trên cảnh theo loại: vào màn đúng 4 bộ xương, giết hết thì đợt mới ra đúng 30 giây game (hai vòng), và để yên 260 giây không sinh thêm con nào. Kết quả ra `PlayTestShots/bonboxuong.txt`. |
 
 > ⚠️ Mục **1** sẽ **xóa và tạo lại** các thư mục Textures / Materials / Models / Prefabs.
 > Nếu bạn tự sửa tay trong đó thì hãy sao lưu trước.
