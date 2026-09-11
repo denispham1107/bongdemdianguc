@@ -1290,62 +1290,10 @@ public static class AssetBaker
 
     static void BuildMenuScene(Library lib)
     {
-        EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
-        Random.InitState(2024);
-        WorldFactory.BuildSkyAndFog();
-
-        var world = new GameObject("World").transform;
-
-        // Mot manh dat nho lam san khau
-        var ground = WorldFactory.BuildGround(world, 12f);
-        SaveMeshes(ground, "MatDat_Menu");
-        RemapMaterials(ground);
-
-        var menuGrass = WorldFactory.BuildGrassField(world, 12f);
-        SaveMeshes(menuGrass, "ThamCo_Menu");
-        RemapMaterials(menuGrass);
-
-        // Phu thuy dung xoay tron
-        var hero = Place(lib.player, null, new Vector3(0f, 0.2f, 0f), Quaternion.Euler(0f, 200f, 0f), Vector3.one);
-        hero.name = "PhuThuy_TrungBay";
-        hero.tag = "Untagged";
-        DisableForShowcase(hero);
-
-        // Hai lo lua hai ben
-        Place(lib.brazier, world, new Vector3(-2.2f, 0f, 1.4f), Quaternion.identity, Vector3.one).name = "LoLua_Trai";
-        Place(lib.brazier, world, new Vector3(2.2f, 0f, 1.4f), Quaternion.identity, Vector3.one).name = "LoLua_Phai";
-        Place(lib.rocks[0], world, new Vector3(-3.4f, -0.2f, -1.2f), Quaternion.Euler(0f, 40f, 0f), Vector3.one * 1.4f).name = "Da_1";
-        Place(lib.rocks[2], world, new Vector3(3.6f, -0.2f, -0.6f), Quaternion.Euler(0f, 130f, 0f), Vector3.one * 1.2f).name = "Da_2";
-        Place(lib.leafyTrees[0], world, new Vector3(-4.6f, 0f, 3.2f), Quaternion.Euler(0f, 20f, 0f), Vector3.one).name = "Cay_1";
-        Place(lib.leafyTrees[1], world, new Vector3(4.8f, 0f, 3.6f), Quaternion.Euler(0f, 200f, 0f), Vector3.one).name = "Cay_2";
-        Place(lib.bushes[0], world, new Vector3(-2.9f, 0f, -1.6f), Quaternion.Euler(0f, 65f, 0f), Vector3.one * 1.2f).name = "Bui_1";
-        Place(lib.bushes[2], world, new Vector3(3.1f, 0f, -1.9f), Quaternion.Euler(0f, 240f, 0f), Vector3.one).name = "Bui_2";
-
-        // Camera nhin nhan vat
-        var camGo = new GameObject("Main Camera");
-        camGo.tag = "MainCamera";
-        var cam = camGo.AddComponent<Camera>();
-        cam.clearFlags = CameraClearFlags.Skybox;
-        cam.nearClipPlane = 0.1f;
-        cam.farClipPlane = 300f;
-        cam.allowHDR = true;
-        cam.fieldOfView = 42f;
-        camGo.AddComponent<AudioListener>();
-        camGo.AddComponent<SimpleBloom>();
-        camGo.transform.position = new Vector3(0f, 1.5f, -4.2f);
-        camGo.transform.rotation = Quaternion.Euler(6f, 0f, 0f);
-
-        var lightGo = new GameObject("Moonlight");
-        WorldFactory.SetupMoonlight(lightGo.AddComponent<Light>());
-        lightGo.transform.rotation = Quaternion.Euler(42f, 160f, 0f);
-
-        var menuGo = new GameObject("MENU");
-        var menu = menuGo.AddComponent<MainMenuUI>();
-        menu.showcase = hero.transform;
-
-        var scene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
-        EditorSceneManager.MarkSceneDirty(scene);
-        EditorSceneManager.SaveScene(scene, MenuPath);
+        // Man hinh chinh gio dung tu CANH ACT2 (nghia dia) voi hai lo da lam
+        // trong Blender - xem DungManChinh (menu 51). Ban cu dung mot bai dat
+        // nho bang code voi hai lo sat; nguoi dung xin doi (11/09/2026).
+        DungManChinh.DungCanh();
     }
 
     /// <summary>Tat dieu khien de nhan vat chi dung trung bay o man hinh chinh.</summary>

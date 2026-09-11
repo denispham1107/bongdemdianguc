@@ -1,0 +1,3 @@
+goc_00_MAUS_A_h2_12: cho (2.5, -0.4, -16.0), huong 90, vat can 0
+goc_01_MAUS_A_h3_12: cho (3.5, 0.3, -41.5), huong 270, vat can 0
+goc_02_MAUS_B_h3_12: cho (-6.5, -0.8, 13.5), huong 270, vat can 0

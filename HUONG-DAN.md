@@ -7017,6 +7017,84 @@ Lợi thêm một điều: cột cũ chỉ rộng ~220 đơn vị, nên tên dà
 *"Nguyễn Thị Hằng Nga" phải thu nhỏ 4 lần*. Xếp theo hàng thì tên có ~560 đơn vị: **0 chữ phải thu nhỏ, 0 chữ
 bị cắt** ở cả phòng 1 người lẫn phòng đủ 4 người.
 
+### Nền màn chính: nghĩa địa Act2, lò lửa bằng đá, ngọn lửa thật
+
+Anh xin: nền phía sau màn đăng nhập / sảnh dùng **cảnh quan Act2**, vẫn hai lò lửa hai bên, nhưng lò
+**dựng lại bằng đá trong Blender** — bề mặt sần sùi, vết nứt thấm máu — và **ngọn lửa thật hơn** (lửa cũ
+trông như các hình tam giác).
+
+#### Vì sao lửa cũ ra tam giác
+
+Mỗi hạt lửa cũ dùng **một ảnh tĩnh** (`TextureFactory.FlameLick`): hạt chỉ biết to lên, nhỏ đi, mờ đi.
+Bốn chục mảnh hình giọt nước giống hệt nhau chồng lên nhau thì mắt đọc ra ngay từng mảnh.
+
+#### Ngọn lửa mới: lưới 64 khung, mỗi khung một khoảnh khắc của MỘT lưỡi lửa
+
+`Assets/Resources/Flipbooks/LuaNgon.png` (8×8, 1024×1024), sinh bằng `CongCu/Blender/sinh_lua_ngon.py`
+(chạy bằng Python đi kèm Blender vì Python của máy không có numpy). Mỗi ô là một thời điểm trong đời một
+lưỡi lửa: nhen lên → vươn cao, lắc lư → thân tách thành 2–3 lưỡi, mép trên xé sợi theo nhiễu Perlin cuộn
+→ gốc rút lên, ngọn đứt ra → tàn. Màu theo **nhiệt độ từng điểm** (vật đen: trắng vàng ở lõi → cam → đỏ ở
+mép), trung bình R 236 / G 121 / B 41.
+
+Lần đầu ra **ngọn nến** (hẹp, tròn, gai nhọn ở đỉnh) — nới đáy, tách thân thành nhiều lưỡi, tắt hẳn ở đỉnh.
+
+Trong game (`VfxFactory.LuaLoDa`) có năm lớp: lưỡi lửa (mỗi hạt sống **trọn một vòng đời**, bắt đầu từ khung
+đầu chứ không ngẫu nhiên như khói, lật ngang ngẫu nhiên một nửa cho khỏi lặp hình) · quầng sáng ở miệng chậu
+· khói xám (lưới `KhoiCuon` có sẵn) · tàn lửa · đèn chập chờn.
+
+Hai lỗi thấy trên ảnh chụp và đã chỉnh:
+
+| | Lần đầu | Giờ |
+|---|---|---|
+| Lửa cháy trắng loá | 26 hạt/giây × độ sáng 1,25 cộng chồng lên nhau | 18 hạt/giây × 0,9, tint ngả cam |
+| Lưỡi lửa lơ lửng trên lò | sống 1,35 s, bốc 0,45 m/s | sống 0,7–1,1 s, bốc 0,08–0,25 m/s |
+
+#### Lò đá: dựng và nướng trong Blender
+
+`CongCu/Blender/lo_lua_da.py`, chạy nền `blender -b --factory-startup -P …`:
+
+1. **Lưới chi tiết** — chân đế bát giác bậc thang, trụ thon, đầu trụ loe, chậu đá dày; voxel remesh
+   (140 nghìn đỉnh) rồi **đục** bằng nhiễu: khối u không đều, các ô lồi lõm như đá đẽo tay (nhiễu tế bào),
+   hạt sần, miệng chậu sứt mẻ.
+2. **Vật liệu nguồn** — đá xám nâu, rêu ẩm ở chân, muội đen gần miệng lửa. **Vết nứt** = Voronoi "khoảng
+   cách tới cạnh" trên toạ độ bị bóp méo, chỉ bật ở vài vùng. **Máu** đọng trong nứt và **chảy xuống**:
+   lấy mặt nạ nứt ở toạ độ dịch lên 2,5 / 5,5 / 9 / 14 / 20 cm, nhân với nhiễu sọc dọc — thành từng vệt nhỏ
+   giọt bên dưới khe. Máu ướt nên bóng (độ nhám 0,22), đá khô 0,92.
+3. **Lưới gọn cho game** — decimate xuống **8 000 tam giác** (+ 2 720 tam giác than hồng), UV tự động.
+4. **Nướng** từ lưới chi tiết sang lưới gọn (Cycles, 1024²): màu (nhân AO 60%), pháp tuyến (khe nứt có
+   chiều sâu thật), độ nhám → kênh alpha của texture kim loại/bóng cho shader Standard.
+
+Hai cái bẫy trong Blender:
+
+- **Cycles vẫn dùng được ở chế độ nền** dù không có trong danh sách engine (ghi chú cũ nói máy chỉ có
+  EEVEE — đó là cài đặt người dùng). `--factory-startup` bật lại add-on Cycles.
+- **Đục mặt đá bằng `mathutils.noise` từng đỉnh mất 1 403 giây** cho 140 nghìn đỉnh (`voronoi` rất chậm).
+  Viết lại bằng numpy (Perlin + nhiễu tế bào tính cả khối) → **1 giây**. Cả quy trình giờ 125 giây.
+
+Máu lần đầu đỏ tươi như sơn (0,30 / 0,015 / 0,01 tuyến tính) — hạ xuống đỏ nâu sẫm như máu khô.
+
+#### Cảnh: chép một phần Act2
+
+`DungManChinh` (menu 51) mở Act2, lấy ánh sáng / sương / bầu trời của nó, rồi chép sang cảnh mới **phần quanh
+chỗ đứng** (địa hình, hàng rào, nhà mồ, bia, đá, cây, nước, cỏ — trong vòng 45 m và phía trước camera):
+**287 vật** được chép, 539 vật bỏ. Tự dọn vật đứng ở chỗ nhân vật / lò lửa / chắn giữa camera và nhân vật
+(bỏ 1 cây chết và 1 bụi cỏ). Menu 1 (dựng lại toàn bộ) cũng gọi hàm này.
+
+Chỗ đứng chọn bằng menu 51b: đặt nhân vật trước từng nhà mồ theo bốn hướng, bỏ chỗ vướng bia/đá hoặc giữa
+vũng nước, chụp bằng đúng khung camera màn chính. Chọn **trước nhà mồ MAUS_A** (cửa song sắt loang máu), cây
+trụi lá phía sau.
+
+Đo (menu 51c, Play, không có giao diện):
+
+```
+2 lò đá: mỗi lò 13–17 lưỡi lửa đang sống, vật liệu lửa P_LuaNgon, vật liệu đá đủ màu / pháp tuyến / bóng
+khung hình màn chính: 2 326 nghìn tam giác, 175 vật đổ bóng, 4 đèn, 326 renderer
+MainMenu.unity: 393 vật thể
+```
+
+(Cảnh chơi Act2 ở mức Cao là ~5 300 nghìn tam giác.) Menu 50 trên nền mới: **0 chữ bị cắt, 0 chữ phải thu
+nhỏ** ở mọi màn; menu 48 (Cài đặt, tải lại màn chính ba lần): **0 lỗi**.
+
 ### Game sập ngay lúc tải sau mỗi lần cập nhật — cache giữ mã cũ
 
 Đưa bản giao diện mới lên, mở trang thì game **sập ở 90 %**: lần đầu *"memory access out of bounds"*, lần
@@ -7140,6 +7218,9 @@ cho riêng nền tảng WebGL sẽ ăn cả hai đầu: file nhỏ hơn và khô
 | **48. Chay thu CAI DAT do hoa** | Ngoài Play: font đủ chữ có dấu, vị trí nút ở 8 cỡ màn hình, chạy thật đoạn mã đọc cài đặt của `index.html` bằng node. Trong Play: đăng nhập thật, mở bảng, bấm OK từng mức, đọc lại từ kho lưu, vào Act2 đếm vật đổ bóng. Trả lại mức cũ, phiên đăng nhập và mức chất lượng của Editor. Kết quả ra `PlayTestShots/caidat.txt`. |
 | **49. Chay thu CAU LUA trung nguoi va khieng** | Tự chọn hướng bắn trống, rồi đo hai chiều mạng: người khác bắn mình / mình bắn người khác, có và không có khiên, và khiên của chính người bắn. Ghi từng cú mất máu (cú nổ hay cú cháy), chỗ quả cầu nổ so với mặt vòm, máu khiên; chụp màn hình lúc nổ để xem con số sát thương có đọc được không. Kết quả ra `PlayTestShots/cauluapvp.txt`, ảnh `caulua_no_*.png`. |
 | **50. Chay thu GIAO DIEN dang nhap - sanh - phong** | Đi hết các màn (đăng nhập, tạo tài khoản, sảnh trống, sảnh có phòng, Cài đặt, trong phòng, phòng đủ 4 người, đếm ngược); ở mỗi màn đếm số lượt vẽ, số chữ bị cắt, số chữ phải thu nhỏ — đếm ngay trong hàm vẽ nên không sót nhãn nào. Kiểm font đang dùng là Inter, và quay về MainMenu khi đã đăng nhập thì vào thẳng sảnh. Ảnh `gd_*.png`, kết quả `PlayTestShots/giaodien.txt`. |
+| **51. Dung man chinh tu canh Act2** | Chép phần cảnh Act2 quanh chỗ đứng (45 m, phía trước camera) sang MainMenu.unity cùng ánh sáng / sương / bầu trời; đặt phù thuỷ, camera, hai lò đá; dọn vật vướng. Tạo luôn prefab lò đá từ FBX + texture Blender. Báo cáo `PlayTestShots/dungmanchinh.txt`. |
+| **51b. Chup thu goc nhin man chinh (Act2)** | Đặt nhân vật trước từng nhà mồ theo bốn hướng, bỏ chỗ vướng vật / giữa nước, chụp bằng khung camera màn chính — để chọn chỗ đứng. Ảnh `PlayTestShots/goc/`. |
+| **51c. Chup nen man chinh (lo da, ngon lua)** | Vào Play, tắt giao diện, chụp toàn cảnh, cận lò đá, cận ngọn lửa; đo số lưỡi lửa, vật liệu, tam giác, vật đổ bóng. Ảnh `nen_*.png`, số đo `nenmanchinh.txt`. |
 
 > ⚠️ Mục **1** sẽ **xóa và tạo lại** các thư mục Textures / Materials / Models / Prefabs.
 > Nếu bạn tự sửa tay trong đó thì hãy sao lưu trước.

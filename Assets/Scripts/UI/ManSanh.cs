@@ -211,7 +211,7 @@ public class ManSanh : MonoBehaviour
 
         // ---- Dau trang: ten nguoi choi, thanh tich, dang xuat ----
         var d = b.dauTrang;
-        float rongNutXuat = 190f * s;
+        float rongNutXuat = 215f * s;
         GiaoDien.Chu(new Rect(d.x, d.y, d.width - rongNutXuat - 20f * s, 42f * s),
                      FirebaseMang.TenHienThi, GiaoDien.KieuTieuDe);
         GiaoDien.Chu(new Rect(d.x, d.y + 42f * s, d.width - rongNutXuat - 20f * s, 28f * s),

@@ -1,0 +1,7 @@
+prefab lo da: 10720 tam giac, cao 1.33 m, rong 1.09 m
+chep tu Act2: 287 vat, bo 539 vat (ngoai 45 m hoac sau lung camera)
+   bo vat vuong: TREE_dead_738
+   bo vat vuong: BuiCo_23
+bo 2 vat vuong cho nhan vat / lo lua / tam nhin camera
+cho dung (2.50, -0.38, -16.00), camera (-1.70, 1.12, -16.00), huong 90
+MainMenu.unity: 393 vat the

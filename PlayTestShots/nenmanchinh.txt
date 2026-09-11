@@ -1,0 +1,5 @@
+so lo da: 2, man hinh 1568x505
+   LoLua_Phai: hat luoi lua dang song 17, vat lieu lua P_LuaNgon, vat lieu da LoLuaDa_Da (mau True, phap True, bong True)
+   LoLua_Trai: hat luoi lua dang song 16, vat lieu lua P_LuaNgon, vat lieu da LoLuaDa_Da (mau True, phap True, bong True)
+khung hinh man chinh: tam giac 2326k, vat do bong 175, lan goi ve 640
+so den dang bat: 4, so renderer: 326

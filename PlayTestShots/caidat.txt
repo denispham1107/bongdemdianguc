@@ -25,7 +25,7 @@
    localStorage="abc"  dpr=2 -> devicePixelRatio de nguyen  (mong doi de nguyen) 
    localStorage="2"    dpr=2 (trinh duyet cam) -> devicePixelRatio de nguyen  (mong doi de nguyen) 
 
-4. vao sanh: muc dang dung = Cao, muc Unity = High, man hinh Game 1568x581
+4. vao sanh: muc dang dung = Cao, muc Unity = High, man hinh Game 1568x505
    mo bang: mo - anh caidat_2_bang.png
 5. OK khi khong doi gi: bang dong, game khong tai lai
 
@@ -33,18 +33,18 @@
    game tai lai: co (sau 1.0 giay), kho luu = 1, muc Unity = Medium
    bong = HardOnly, phan giai bong = Low, khu rang cua = 0x, den tinh tung diem anh = 1, vSync = 1
    con dang nhap: co; sanh hien ngay sau khi nap lai: co
-   Act2: khoang bong = 40 m (mong 40), vat do bong = 206, tam giac = 4306k
+   Act2: khoang bong = 40 m (mong 40), vat do bong = 215, tam giac = 4403k
 
 6. chon Yếu roi bam OK:
    game tai lai: co (sau 0.9 giay), kho luu = 2, muc Unity = Low
    bong = Disable, phan giai bong = Low, khu rang cua = 0x, den tinh tung diem anh = 0, vSync = 1
    con dang nhap: co; sanh hien ngay sau khi nap lai: co
-   Act2: khoang bong = 20 m (mong 20), vat do bong = 0, tam giac = 1561k
+   Act2: khoang bong = 20 m (mong 20), vat do bong = 0, tam giac = 1602k
 
 6. chon Cao roi bam OK:
    game tai lai: co (sau 0.9 giay), kho luu = 0, muc Unity = High
    bong = All, phan giai bong = Medium, khu rang cua = 8x, den tinh tung diem anh = 2, vSync = 1
    con dang nhap: co; sanh hien ngay sau khi nap lai: co
-   Act2: khoang bong = 60 m (mong 60), vat do bong = 420, tam giac = 5294k
+   Act2: khoang bong = 60 m (mong 60), vat do bong = 435, tam giac = 5378k
 
 so loi ghi nhan = 0

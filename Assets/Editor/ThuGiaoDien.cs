@@ -47,6 +47,9 @@ public static class ThuGiaoDien
         phienGoc = PlayerPrefs.GetString(KhoaPhien, "");
         PlayerPrefs.DeleteKey(KhoaPhien);           // de man dang nhap hien ra - xem ChupManMang
         PlayerPrefs.Save();
+        // Bo ca phien CON TRONG BO NHO: tat domain reload thi bien tinh cua
+        // FirebaseMang song qua cac lan Play - xoa khoa thoi van vao thang sanh.
+        FirebaseMang.Quen();
 
         truocBatPlayMode = EditorSettings.enterPlayModeOptionsEnabled;
         truocPlayMode = EditorSettings.enterPlayModeOptions;
