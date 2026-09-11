@@ -23,6 +23,11 @@ mọi quyết định về hiệu năng đều lấy nó làm chuẩn.
 - **Comment trong code bằng tiếng Việt KHÔNG DẤU** (`// Ban kinh dam lua duoi goc`).
   Tên biến, tên hàm, tên file cũng vậy: `banKinhLua`, `CayChay`, `VatTheBiCuon`.
 - `HUONG-DAN.md` thì viết tiếng Việt **có dấu**.
+- ⚠️ **Mọi chữ HIỂN THỊ cho người chơi phải là tiếng Việt CÓ DẤU, và font phải hiển thị đủ — không mất chữ, mất
+  dấu, lỗi font** (người dùng yêu cầu nhiều lần). Mọi nơi: HUD, sảnh, cài đặt, tên trên đầu, trang Loading, trang
+  quản trị, ảnh chữ. Unity: font Inter qua `GiaoDien.ChuThuong/ChuDam` (GUIStyle từ `GUI.skin` phải gán `.font`);
+  web: nhúng Inter kèm trang; font trang trí: đọc cmap (`BangKyTuFont.Doc`) đủ 134 chữ có dấu trước khi dùng;
+  tên người chơi gõ: `GhepDauTiengViet.Ghep`. Chuỗi hiển thị cũ còn không dấu (vd GameHUD) — báo và đề nghị sửa.
 
 ## Cấu trúc
 
