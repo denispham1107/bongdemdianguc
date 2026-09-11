@@ -1,0 +1,12 @@
+[kiem toan buoc 5] chi do, khong sua
+
+A. MAY KHACH dang giu 12 con quai (tren canh: 12 con)
+   HUD se hien: 'Quai con lai: 0'   'Da diet: 0'   'Dot 1'
+   => HO: HUD may khach sai so quai
+
+B. con quai so 7000 ben khach: 70/70 mau
+   phep cua khach trung no cuc bo -> IsDead = True (ben chu phong con so nay chua biet gi)
+   1 giay sau, chu phong van bao 'song, 100% mau':
+     vat the goc con ton tai = True, IsDead = True, mau = 70
+     so vat the mang so hieu 7000 tren canh = 1
+   => HO: quai chet ben khach nhung song ben chu phong - khach thay xac nam do ma chu phong van bi no danh
