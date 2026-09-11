@@ -117,13 +117,30 @@ public class Fireball : MonoBehaviour
         float step = speed * dt;
         Vector3 from = transform.position;
 
+        // Ba thu co the chan qua cau trong buoc nay: vat can, MAT KHIENG, va
+        // nguoi/quai. Lay cai GAN NHAT - hoi lan luot roi no ngay o cai dau
+        // tien thi mot bia mo NAM SAU vom khieng cung lam qua cau no o bia.
+        float ganNhat = float.MaxValue;
+        Vector3 choNo = Vector3.zero;
+
         RaycastHit hit;
         if (Physics.SphereCast(from, bodyRadius, dir, out hit, step + 0.05f, hitMask,
                                QueryTriggerInteraction.Collide))
         {
-            transform.position = hit.point - dir * bodyRadius * 0.5f;
-            Explode();
-            return;
+            ganNhat = hit.distance;
+            choNo = hit.point - dir * bodyRadius * 0.5f;
+        }
+
+        // KHIENG CUA NGUOI KHAC CHAN QUA CAU. hitMask cua qua cau nguoi choi
+        // khong co lop Khieng (xem PlayerController.obstacleMask), nen truoc day
+        // no bay xuyen vao trong vom va no ngay tren nguoi chu khieng. Xem
+        // Khieng.DanChamVom de biet vi sao hoi thang chu khong qua vat ly.
+        float denVom;
+        if (Khieng.DanChamVom(from, dir, step + 0.05f, bodyRadius, damageMask, boQua, out denVom)
+            && denVom < ganNhat)
+        {
+            ganNhat = denVom;
+            choNo = from + dir * denVom;
         }
 
         // CHAM AI THI NO NGAY - khong doi cham "vat can".
@@ -149,10 +166,16 @@ public class Fireball : MonoBehaviour
         {
             var d = cham[i].collider.GetComponentInParent<Damageable>();
             if (d == null || d == boQua || d.IsDead) continue;
+            if (cham[i].distance >= ganNhat) continue;
 
             // No o cho vua cham chu khong o cho da bay toi
-            transform.position = cham[i].point != Vector3.zero
-                               ? cham[i].point : from + dir * step;
+            ganNhat = cham[i].distance;
+            choNo = cham[i].point != Vector3.zero ? cham[i].point : from + dir * step;
+        }
+
+        if (ganNhat < float.MaxValue)
+        {
+            transform.position = choNo;
             Explode();
             return;
         }
@@ -174,7 +197,7 @@ public class Fireball : MonoBehaviour
         // Don no NGAY TREN MAT KHIENG thi tru mau khieng. AreaDamage o tren
         // khong lo duoc viec nay: no chi tim Damageable trong ban kinh, ma chu
         // khieng dung o TAM vom - xa hon ban kinh no. Xem Khieng.NoTrungKhieng.
-        Khieng.NoTrungKhieng(transform.position, blastRadius, impactDamage, damageMask);
+        Khieng.NoTrungKhieng(transform.position, blastRadius, impactDamage, damageMask, boQua);
 
         CameraShake.Shake(0.25f, 0.16f);
         Destroy(gameObject);

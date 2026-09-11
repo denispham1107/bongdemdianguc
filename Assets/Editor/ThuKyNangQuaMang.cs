@@ -134,7 +134,14 @@ public static class ThuKyNangQuaMang
         { Ghi("[LOI] goi ky nang doc ra khong khop luc viet"); loi++; }
 
         // ---- Dung mot nguoi choi thu hai lam nguoi tung phep ----
-        Vector3 choKia = toi.transform.position + new Vector3(5f, 0f, 0f);
+        // CHON HUONG TRONG. Truoc day nguoi kia dung co dinh o +5 m truc x - ma
+        // ngay canh duong bay ay co tam bia TS_round_50 (tam (3,73; -9,95)),
+        // qua cau giua chi con ho 3 cm. Tuy tu the tay luc tung, co lan qua
+        // cau lot qua, co lan no vao bia cach nguoi tung 1,5 m va phep thu bao
+        // "phep khong gay sat thuong". Hoi truoc cho chac, nhu menu 49.
+        Vector3 huongTrong = TimHuongTrong(toi.transform.position);
+        if (huongTrong == Vector3.zero) huongTrong = Vector3.right;
+        Vector3 choKia = toi.transform.position + huongTrong * 5f;
         var kia = NguoiChoiKhac.Sinh("uid-kia", "Nguoi kia", choKia);
         if (kia == null) { Ghi("[LOI] khong sinh duoc nguoi choi kia"); loi++; Ket(); yield break; }
 
@@ -390,6 +397,28 @@ public static class ThuKyNangQuaMang
 
         Ghi("so loi ghi nhan = " + loi);
         Ket();
+    }
+
+    /// <summary>Huong ngang ma ca chum ba qua cau bay 9 m khong vuong gi. Khong co thi zero.</summary>
+    static Vector3 TimHuongTrong(Vector3 P)
+    {
+        int mask = LayerMask.GetMask("Default", "Ground", "Enemy");
+        for (int goc = 0; goc < 360; goc += 10)
+        {
+            Vector3 h = Quaternion.AngleAxis(goc, Vector3.up) * Vector3.forward;
+            bool trong = true;
+            foreach (float lech in new[] { -11f, 0f, 11f })
+            {
+                Vector3 hl = Quaternion.AngleAxis(lech, Vector3.up) * h;
+                Vector3 tu = P + Vector3.up * 1.4f;
+                Vector3 den = P + hl * 9f + Vector3.up * 0.9f;
+                if (Physics.SphereCast(tu, 0.5f, (den - tu).normalized, out _, (den - tu).magnitude,
+                                       mask, QueryTriggerInteraction.Collide))
+                { trong = false; break; }
+            }
+            if (trong) return h;
+        }
+        return Vector3.zero;
     }
 
     /// <summary>Xoa moi con quai trong canh. Tra ve so con da xoa.</summary>

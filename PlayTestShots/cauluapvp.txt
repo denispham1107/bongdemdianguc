@@ -1,0 +1,42 @@
+[ban 1] qua cau lua trung nguoi choi khac va trung khieng
+huong ban: (0.00, 0.00, 1.00) (ca ba lan bay trong 9 m khong vuong vat can)
+A0. luc no: so con so sat thuong dang hien = 1
+A0. da chup luc no: caulua_no_1_ngay / 2_015s / 3_040s / 4_chaydau
+
+A1. NGUOI KIA ban cau lua vao minh (goi phep qua mang, may nay phat lai):
+     qua cau no tai (0.0, 1.2, -10.2), cach minh 0.26 m (ngang 0.26 m)
+     qua cau no tai (-3.9, -0.4, -26.4), cach minh 16.40 m (ngang 16.33 m)
+     qua cau no tai (5.0, -0.6, -28.8), cach minh 19.06 m (ngang 18.99 m)
+     cac cu mat mau (tinh tu luc no gan nhat): +0.00s:48 +0.51s:5 +1.10s:6 +1.65s:5 +2.15s:5 +2.74s:6 +3.28s:5 +3.83s:5 
+     -> cu no: 1 (lon nhat 48), cu chay: 7, tong mat 86 mau, khieng mat 0, dang chay: co
+
+A2. NGUOI KIA ban vao minh khi minh dang BAT KHIENG (ban kinh 3.04 m):
+     qua cau no tai (-0.5, 1.4, -7.4), cach tam khieng 3.34 m (ngang 3.13 m)
+     qua cau no tai (0.0, 1.4, -7.4), cach tam khieng 3.34 m (ngang 3.13 m)
+     qua cau no tai (0.5, 1.4, -7.4), cach tam khieng 3.34 m (ngang 3.13 m)
+     cac cu mat mau (tinh tu luc no gan nhat): (khong co)
+     -> cu no: 0 (lon nhat 0), cu chay: 0, tong mat 0 mau, khieng mat 92, dang chay: khong
+
+B1. MINH ban cau lua vao nguoi kia (qua cau cua may nay trung ban sao):
+     qua cau no tai (0.0, 1.2, -4.8), cach nguoi kia 0.27 m (ngang 0.26 m)
+     qua cau no tai (-2.7, 0.3, 2.5), cach nguoi kia 7.59 m (ngang 7.54 m)
+     qua cau no tai (2.8, 0.0, 4.7), cach nguoi kia 9.69 m (ngang 9.63 m)
+     cac cu mat mau (tinh tu luc no gan nhat): +0.00s:48 +0.55s:5 +1.06s:5 +1.61s:5 +2.13s:5 +2.75s:6 +3.35s:6 +3.95s:6 
+     -> cu no: 1 (lon nhat 48), cu chay: 7, tong mat 0 mau, khieng mat 0, dang chay: co
+
+B2. MINH ban vao nguoi kia khi ho dang BAT KHIENG (khieng tu goi trang thai):
+     qua cau no tai (0.6, 1.4, -7.6), cach tam khieng ho 3.34 m (ngang 3.13 m)
+     qua cau no tai (-0.5, 1.4, -7.6), cach tam khieng ho 3.34 m (ngang 3.13 m)
+     qua cau no tai (0.0, 1.4, -7.6), cach tam khieng ho 3.34 m (ngang 3.13 m)
+     cac cu mat mau (tinh tu luc no gan nhat): (khong co)
+     -> cu no: 0 (lon nhat 0), cu chay: 0, tong mat 0 mau, khieng mat 0, dang chay: khong
+
+B3. MINH dang BAT KHIENG va ban ra - qua cau khong duoc no tren khieng CUA MINH:
+     qua cau no tai (0.0, 1.2, -4.8), cach nguoi kia 0.27 m (ngang 0.26 m)
+     qua cau no tai (-2.7, 0.3, 2.6), cach nguoi kia 7.68 m (ngang 7.64 m)
+     qua cau no tai (2.7, 0.1, 5.0), cach nguoi kia 9.94 m (ngang 9.88 m)
+     cac cu mat mau (tinh tu luc no gan nhat): +0.00s:48 +0.50s:5 +1.01s:5 +1.51s:5 +2.06s:5 +2.64s:6 +3.16s:5 +3.78s:6 
+     -> cu no: 1 (lon nhat 48), cu chay: 7, tong mat 0 mau, khieng mat 0, dang chay: co
+     qua cau xa nguoi ban nhat: 15.74 m, khieng cua minh mat 0 mau
+
+so loi ghi nhan = 0

@@ -187,10 +187,18 @@ public static class CombatUtil
             float dist = Vector3.Distance(center, d.transform.position);
             float falloff = Mathf.Lerp(1f, 0.55f, Mathf.Clamp01(dist / Mathf.Max(0.01f, radius)));
 
+            // Hoi TRUOC khi danh: don nay co the chinh la don lam vo khieng
+            bool khiengDo = d.khieng != null && d.khieng.DangBat;
+
             d.TakeDamage(damage * falloff, type, d.transform.position + Vector3.up * 1f);
             hits++;
 
             if (d.IsDead) continue;
+
+            // KHIENG DO TRON DON THI DO LUON HIEU UNG (chay, dong bang). Qua cau
+            // no tren mat vom ma nguoi ben trong van boc chay thi nhin y nhu lua
+            // da lot qua khieng.
+            if (khiengDo) continue;
 
             if (type == DamageType.Fire && statusSeconds > 0f)
                 BurningEffect.Apply(d, damage * 0.18f, statusSeconds);

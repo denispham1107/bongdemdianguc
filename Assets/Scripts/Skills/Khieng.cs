@@ -77,8 +77,11 @@ public class Khieng : MonoBehaviour
     ///
     /// Tra ve so khieng bi tru mau.
     /// </summary>
+    // boQua la nguoi tung phep. Khieng CUA HO khong bi tru: truoc day thieu cho
+    // nay, cau lua cua minh no trong vong 6,4 m quanh minh la khieng cua minh
+    // mat 55 mau - do duoc o menu 49.
     public static int NoTrungKhieng(Vector3 tamNo, float banKinhNo, float satThuong,
-                                    LayerMask mask)
+                                    LayerMask mask, Damageable boQua = null)
     {
         int trung = 0;
         for (int i = dangBat.Count - 1; i >= 0; i--)
@@ -89,6 +92,9 @@ public class Khieng : MonoBehaviour
 
             // Chi tinh khieng cua nhung ai nam trong mask sat thuong cua don do
             if ((mask.value & (1 << k.gameObject.layer)) == 0) continue;
+
+            // Khieng cua chinh nguoi tung phep
+            if (boQua != null && k.gameObject == boQua.gameObject) continue;
 
             float d = Vector3.Distance(tamNo, k.transform.position);
 
@@ -103,6 +109,59 @@ public class Khieng : MonoBehaviour
             trung++;
         }
         return trung;
+    }
+
+    /// <summary>
+    /// Mot vien dan bay tu <paramref name="tu"/> theo <paramref name="huong"/>
+    /// (da chuan hoa) them <paramref name="quangDuong"/> met: co cham mat vom
+    /// cua ai khong. Tra ve khoang cach toi cho cham GAN NHAT.
+    ///
+    /// VI SAO KHONG DUNG VA CHAM VAT LY (lop "Khieng" trong mask) nhu dan cua
+    /// quai: cau lua cua NGUOI CHOI cung phai bi khieng cua nguoi choi KHAC
+    /// chan - truoc day no bay xuyen thang vao trong vom va no cach tam 1,0 m
+    /// (menu 49). Nhung ba luat sau phai giu, va hoi thang o day thi ro rang
+    /// hon trong cay vao cach Unity xu ly vien cau xuat phat ben trong mot
+    /// collider:
+    ///   - Khieng CUA NGUOI TUNG thi bo qua (<paramref name="boQua"/>).
+    ///   - Chi khieng cua nhung ai nam trong mask sat thuong cua vien dan.
+    ///   - Vien dan xuat phat BEN TRONG vom thi vom khong chan no: dung trong
+    ///     khieng cua nguoi khac ma ban ra thi van ra duoc.
+    /// </summary>
+    public static bool DanChamVom(Vector3 tu, Vector3 huong, float quangDuong, float banKinhDan,
+                                  LayerMask mask, Damageable boQua, out float khoangCach)
+    {
+        khoangCach = float.MaxValue;
+        bool cham = false;
+
+        for (int i = dangBat.Count - 1; i >= 0; i--)
+        {
+            var k = dangBat[i];
+            if (k == null) { dangBat.RemoveAt(i); continue; }
+            if (!k.DangBat) continue;
+            if ((mask.value & (1 << k.gameObject.layer)) == 0) continue;
+            if (boQua != null && k.gameObject == boQua.gameObject) continue;
+
+            // Tam vom o chan nhan vat (xem Dung). Cong ban kinh vien dan: no no
+            // khi MAT NGOAI cua no cham vom, khong phai khi tam no cham.
+            Vector3 c = k.transform.position;
+            float R = k.banKinh + banKinhDan;
+
+            Vector3 oc = tu - c;
+            float c2 = oc.sqrMagnitude - R * R;
+            if (c2 <= 0f) continue;                  // xuat phat trong vom
+
+            float b = Vector3.Dot(oc, huong);
+            if (b >= 0f) continue;                   // dang bay ra xa vom
+
+            float delta = b * b - c2;
+            if (delta < 0f) continue;                // bay truot ben canh
+
+            float t = -b - Mathf.Sqrt(delta);
+            if (t < 0f || t > quangDuong) continue;
+
+            if (t < khoangCach) { khoangCach = t; cham = true; }
+        }
+        return cham;
     }
 
     // ================================================================

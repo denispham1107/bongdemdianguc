@@ -6783,6 +6783,99 @@ con số canvas vẫn khớp đúng tỉ lệ trang nhận được.)
   đang mở. Bản web không vấp chỗ này khi đổi cài đặt, vì tải lại trang là khởi động lại từ đầu và tự
   đăng nhập.
 
+### Cầu lửa trúng người chơi khác và trúng khiên
+
+Anh báo hai lỗi của Quả cầu lửa khi đánh nhau:
+
+1. Trúng người chơi khác thì có nổ, nhưng **không thấy sát thương của cú nổ**, chỉ thấy sát thương
+   cháy liên tục.
+2. Trúng **khiên** của người chơi khác thì không nổ mà **bay xuyên qua**.
+
+Menu 37 trước giờ chỉ hỏi "người trúng đòn có mất máu không" — mất máu vì *cháy* cũng tính là đạt,
+nên nó không bao giờ thấy được lỗi 1. Menu 49 mới ghi **từng cú mất máu** kèm thời điểm và tách hai
+loại: cú nổ (55 × 0,55…1 = 30–55 máu, đúng khung hình quả cầu nổ) và cú cháy (~5 máu mỗi nửa giây).
+Nó cũng ghi **chỗ quả cầu nổ** để biết nổ ở mặt khiên hay đã lọt vào trong. Đo cả hai chiều mạng:
+người khác bắn mình (gói phép qua mạng, máy này phát lại) và mình bắn người khác (quả cầu trúng bản
+sao).
+
+#### Lỗi 1: cú nổ CÓ trừ máu — nhưng con số bị chính vụ nổ che
+
+Đo trên code cũ, với một hướng bắn trống:
+
+```
+người kia bắn mình:  +0,00s: 48   +0,54s: 5   +1,06s: 5 ... (7 cú cháy)   -> mất 85 máu
+mình bắn người kia:  +0,00s: 48   +0,53s: 5 ...
+```
+
+Cú nổ **có** — 48 máu, đúng khung hình quả cầu nổ, trên cả hai máy. Vậy "không thấy" là **không
+nhìn thấy**. Chụp màn hình 0,15 và 0,4 giây sau cú nổ: thanh máu đã tụt (29 953 / 30 000) nhưng con
+số 48 **không hề có trên ảnh**.
+
+Nguyên nhân: con số là chữ 3D (`TextMesh`) nằm **trong cảnh**, ngay giữa quả cầu lửa bán kính 3,4 m.
+Hạt lửa vẽ sau nó và cộng sáng lên, rồi hiệu ứng loé (`SimpleBloom`, chạy **sau** khi cả cảnh đã vẽ)
+phủ trắng thêm một lần nữa. Con số sống 0,9 giây — đúng bằng lúc vụ nổ sáng nhất — nên biến mất trọn.
+Các cú cháy 5 máu đến sau, lúc lửa đã tàn, nên vẫn thấy: đúng y hiện tượng anh tả.
+
+Đổi hàng vẽ (`renderQueue`) không đủ: hiệu ứng loé cộng ánh sáng lên *cả màn hình* sau cùng. Nên số
+sát thương giờ **vẽ trên màn hình bằng OnGUI** — cùng lớp với thanh máu, thanh kỹ năng — qua một đối
+tượng ẩn duy nhất `VeSoSatThuong`, vẽ tất cả trong một lượt. Cỡ chữ tính từ đúng chiều cao 0,35 m tại
+chỗ ấy (bằng chữ 3D cũ), thêm một viền tối để chữ đỏ đọc được trên nền lửa vàng. Hai chi tiết để khỏi
+hại hiệu năng trên điện thoại: cỡ chữ **làm tròn số chẵn** (font động phải vẽ lại bảng chữ cho mỗi cỡ
+mới), và hiệu ứng phồng lên dùng **ma trận** chứ không đổi cỡ chữ.
+
+Sau khi sửa, ảnh chụp ở 0,15 s, 0,4 s và 0,54 s đều thấy rõ số **48** ngay giữa vụ nổ
+(`PlayTestShots/caulua_no_*.png`).
+
+#### Lỗi 2: khiên không chặn cầu lửa của người chơi
+
+Mặt nạ va chạm của cầu lửa người chơi là `Enemy, Ground, Default` — **không có lớp `Khieng`**. Cầu
+lửa của *quái* thì có (xem `EnemyAI`), nên khiên chặn được quái mà không chặn được người. Quả cầu bay
+thẳng vào trong vòm và nổ ngay trên người chủ khiên. Đo được trên code cũ: nổ cách tâm khiên **1,00 m**,
+trong khi khiên bán kính 3,04 m.
+
+Không sửa bằng cách nhét lớp `Khieng` vào mặt nạ va chạm, vì có ba luật phải giữ:
+
+- khiên **của người bắn** thì bỏ qua — quả cầu sinh ra trong khiên của chính mình;
+- chỉ khiên của những ai nằm trong mặt nạ sát thương của quả cầu;
+- quả cầu xuất phát **bên trong** vòm của ai thì vòm ấy không chặn nó (đứng trong khiên người khác mà
+  bắn ra vẫn ra được).
+
+Nhét vào mặt nạ thì cả ba phụ thuộc vào cách Unity xử lý một khối cầu xuất phát bên trong collider —
+đúng, nhưng không ai đọc code mà biết. Nên `Khieng.DanChamVom` hỏi thẳng bằng hình học: đoạn đường quả
+cầu đi trong khung hình này có cắt vòm nào (bán kính khiên + bán kính quả cầu) không, theo đúng ba luật
+trên. `Fireball.Update` giờ lấy thứ **gần nhất** trong ba: vật cản, mặt khiên, người/quái — trước đây
+hỏi lần lượt và nổ ở cái đầu tiên, nên một bia mộ nằm *sau* vòm vẫn có thể thắng.
+
+Thêm hai chỗ, lộ ra khi đo:
+
+- **Cầu lửa của mình trừ máu khiên của mình.** `Khieng.NoTrungKhieng` (trừ máu khiên khi vụ nổ chạm
+  mặt vòm) không có tham số "người bắn": nổ trong vòng 6,4 m quanh mình là khiên mình mất 55. Đo được:
+  khiên của người bắn mất **55** dù quả cầu nổ tận chỗ người kia. Giờ bỏ qua khiên của người bắn.
+- **Khiên đỡ trọn đòn thì đỡ luôn hiệu ứng.** Nổ ở mặt vòm thì người bên trong vẫn nằm trong bán kính
+  nổ, và `AreaDamage` sau khi khiên hút hết sát thương vẫn châm lửa cho họ — nhìn y như lửa lọt qua
+  khiên. Giờ khiên đang bật lúc trúng đòn thì không dính cháy / đóng băng từ đòn đó.
+
+#### Đo (menu 49), sau khi sửa
+
+```
+A1. người kia bắn mình:           nổ cách mình 0,26 m, cú nổ 48 + 7 cú cháy
+A2. người kia bắn, mình BẬT KHIÊN: cả 3 quả nổ cách tâm khiên 3,34 m (mặt vòm),
+                                   khiên mất 92, mình mất 0 máu, không cháy
+B1. mình bắn người kia:           cú nổ 48 + 7 cú cháy hiện trên bản sao
+B2. mình bắn, người kia BẬT KHIÊN: cả 3 quả nổ cách tâm khiên họ 3,34 m, không cháy
+B3. mình BẬT KHIÊN rồi bắn ra:     quả cầu tới được người kia (cú nổ 48), khiên mình mất 0
+số lỗi ghi nhận = 0
+```
+
+Trước khi sửa, cùng phép thử ra 3 lỗi: A2 và B2 nổ cách tâm 1,00 m, B3 khiên mình mất 55.
+
+**Một phép thử cũ bị sửa theo.** Menu 37 đặt người kia cố định ở +5 m trục x — mà ngay cạnh đường bay
+ấy có tấm bia `TS_round_50`, quả cầu giữa chỉ hở **3 cm**. Tuỳ tư thế tay lúc tung, có lần lọt qua, có
+lần nổ vào bia cách người tung 1,5 m và phép thử báo "phép không gây sát thương". Lần chạy menu 49 đầu
+tiên (code cũ) cũng nổ đúng vào bia ấy. Giờ cả menu 37 và 49 **tự chọn một hướng trống** — cả ba
+đường bay của chùm không vướng gì trong 9 m — rồi mới đặt người. Chạy lại menu 34, 37, 38, 46: đều
+**0 lỗi**.
+
 ### Việc còn phải làm
 
 **169 MB là quá nặng**, nhất là trên điện thoại — nền tảng chính của game. Gần như toàn bộ nằm ở
@@ -6852,6 +6945,7 @@ cho riêng nền tảng WebGL sẽ ăn cả hai đầu: file nhỏ hơn và khô
 | **46. Chay thu HIEU UNG qua mang** | Mười hai chiều: bản sao không tự gieo đóng băng/choáng (và nhân vật thật vẫn gieo được), cờ và máu khiên đọc đúng rồi đi qua gói tin không to thêm, bản sao vẽ lại theo lời kể, khiên bản sao không bị trừ cục bộ, mất gói thì hiệu ứng tự tan, và quái bên khách choáng theo chủ phòng. Kết quả ra `PlayTestShots/hieuung_mang.txt`. |
 | **47. Chay thu CHE DO BON BO XUONG** | Vào Play thật ở **cả hai màn**, đếm quái trên cảnh theo loại: vào màn đúng 4 bộ xương, giết hết thì đợt mới ra đúng 30 giây game (hai vòng), và để yên 260 giây không sinh thêm con nào. Kết quả ra `PlayTestShots/bonboxuong.txt`. |
 | **48. Chay thu CAI DAT do hoa** | Ngoài Play: font đủ chữ có dấu, vị trí nút ở 8 cỡ màn hình, chạy thật đoạn mã đọc cài đặt của `index.html` bằng node. Trong Play: đăng nhập thật, mở bảng, bấm OK từng mức, đọc lại từ kho lưu, vào Act2 đếm vật đổ bóng. Trả lại mức cũ, phiên đăng nhập và mức chất lượng của Editor. Kết quả ra `PlayTestShots/caidat.txt`. |
+| **49. Chay thu CAU LUA trung nguoi va khieng** | Tự chọn hướng bắn trống, rồi đo hai chiều mạng: người khác bắn mình / mình bắn người khác, có và không có khiên, và khiên của chính người bắn. Ghi từng cú mất máu (cú nổ hay cú cháy), chỗ quả cầu nổ so với mặt vòm, máu khiên; chụp màn hình lúc nổ để xem con số sát thương có đọc được không. Kết quả ra `PlayTestShots/cauluapvp.txt`, ảnh `caulua_no_*.png`. |
 
 > ⚠️ Mục **1** sẽ **xóa và tạo lại** các thư mục Textures / Materials / Models / Prefabs.
 > Nếu bạn tự sửa tay trong đó thì hãy sao lưu trước.
