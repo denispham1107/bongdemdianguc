@@ -400,22 +400,26 @@ public class ManSanh : MonoBehaviour
             y += 110f * s + 30f * s;
         }
 
-        // ---- Bon ghe ----
+        // ---- Bon ghe - MOI NGUOI MOT HANG ----
+        // Truoc day bon the xep thanh bon cot; nguoi dung xin xep theo hang
+        // (11/09/2026): moi hang rong ca khung, ten dai khong bi ep vao mot cot
+        // hep 220 don vi nua.
         int toiDa = p.toiDa <= 0 ? PhongMang.SoNguoiToiDa : p.toiDa;
-        var kg = new Rect(x, y, rong, 330f * s);
+        const float CaoHangGhe = 64f, KheHangGhe = 8f;
+        float caoKhungGhe = 96f + toiDa * CaoHangGhe + (toiDa - 1) * KheHangGhe + 24f;
+        var kg = new Rect(x, y, rong, caoKhungGhe * s);
         GiaoDien.Khung(kg, s, true);
         GiaoDien.Chu(new Rect(kg.x + le, kg.y + 44f * s, rong - 2f * le, 34f * s),
                      "NGƯỜI CHƠI  " + p.nguoiChoi.Count + "/" + toiDa, GiaoDien.KieuTieuDeNho);
 
-        float khe = 16f * s;
-        float rongThe = (rong - 2f * le - (toiDa - 1) * khe) / toiDa;
-        float yThe = kg.y + 96f * s, caoThe = 200f * s;
+        float yHang = kg.y + 96f * s;
         for (int i = 0; i < toiDa; i++)
         {
-            var o = new Rect(kg.x + le + i * (rongThe + khe), yThe, rongThe, caoThe);
-            VeGhe(o, i < p.nguoiChoi.Count ? p.nguoiChoi[i] : null, p, s);
+            var o = new Rect(kg.x + le, yHang, rong - 2f * le, CaoHangGhe * s);
+            VeGhe(o, i, i < p.nguoiChoi.Count ? p.nguoiChoi[i] : null, p, s);
+            yHang += (CaoHangGhe + KheHangGhe) * s;
         }
-        y += 330f * s + 30f * s;
+        y += caoKhungGhe * s + 30f * s;
 
         // ---- San sang / bat dau ----
         var toi = p.nguoiChoi.Find(n => n.uid == FirebaseMang.Uid);
@@ -445,51 +449,68 @@ public class ManSanh : MonoBehaviour
         k.alignment = canh;
     }
 
-    /// <summary>Mot the ghe trong phong. <paramref name="n"/> null la ghe trong.</summary>
-    void VeGhe(Rect o, PhongMang.NguoiTrongPhong n, PhongMang.Phong p, float s)
+    /// <summary>
+    /// Mot hang ghe trong phong: so ghe, ten (lon) va vai tro (nho) ben trai,
+    /// trang thai san sang o giua phai, nut DUOI sat le phai (chi chu phong
+    /// thay, va khong co o hang cua chinh minh). <paramref name="n"/> null la
+    /// ghe trong.
+    /// </summary>
+    void VeGhe(Rect o, int thuTu, PhongMang.NguoiTrongPhong n, PhongMang.Phong p, float s)
     {
+        float rongSo = 56f * s;
+        float rongDuoi = 140f * s;
+        float rongTrangThai = 190f * s;
+        float xTrangThai = o.xMax - 16f * s - rongDuoi - 24f * s - rongTrangThai;
+        float xTen = o.x + rongSo;
+        float rongTen = xTrangThai - 16f * s - xTen;
+
+        // So ghe o dau hang
+        var kso = GiaoDien.KieuTieuDeNho;
+        var cSo = kso.alignment; var mSo = kso.normal.textColor;
+        kso.alignment = TextAnchor.MiddleCenter;
+        kso.normal.textColor = n == null ? new Color(0.3f, 0.27f, 0.25f) : GiaoDien.MauToi;
+
         if (n == null)
         {
             GiaoDien.To(o, new Color(0.03f, 0.025f, 0.025f, 0.35f));
-            GiaoDien.To(new Rect(o.x, o.y, o.width, 1f), new Color(0.3f, 0.15f, 0.12f, 0.6f));
             GiaoDien.To(new Rect(o.x, o.yMax - 1f, o.width, 1f), new Color(0.3f, 0.15f, 0.12f, 0.6f));
-            var kt = GiaoDien.KieuChuNho;
-            var c0 = kt.alignment; var m0 = kt.normal.textColor;
-            kt.alignment = TextAnchor.MiddleCenter; kt.normal.textColor = GiaoDien.MauToi;
-            GiaoDien.Chu(new Rect(o.x, o.center.y - 15f * s, o.width, 30f * s), "Ghế trống", kt);
-            kt.alignment = c0; kt.normal.textColor = m0;
+            GiaoDien.Chu(new Rect(o.x, o.y, rongSo, o.height), (thuTu + 1).ToString(), kso);
+            kso.alignment = cSo; kso.normal.textColor = mSo;
+
+            var kt = GiaoDien.KieuChuMo;
+            var m0 = kt.normal.textColor;
+            kt.normal.textColor = GiaoDien.MauToi;
+            GiaoDien.Chu(new Rect(xTen, o.y, rongTen, o.height), "Ghế trống", kt);
+            kt.normal.textColor = m0;
             return;
         }
 
         bool laChu = n.uid == p.hostUid;
         bool laToi = n.uid == FirebaseMang.Uid;
         GiaoDien.Hang(o, s, n.sanSang ? GiaoDien.MauXanh : (laChu ? GiaoDien.MauVang : GiaoDien.MauMau));
+        GiaoDien.Chu(new Rect(o.x, o.y, rongSo, o.height), (thuTu + 1).ToString(), kso);
+        kso.alignment = cSo; kso.normal.textColor = mSo;
 
-        float le = 18f * s;
-        float rr = o.width - 2f * le;
-        float y = o.y + 18f * s;
+        // Ten (dong tren) va vai tro (dong duoi)
+        GiaoDien.Chu(new Rect(xTen, o.y + 6f * s, rongTen, 32f * s), n.ten, GiaoDien.KieuTieuDeNho);
 
-        // Nhan vai tro
         string vaiTro = laChu ? "CHỦ PHÒNG" : "NGƯỜI CHƠI";
         var kn = GiaoDien.KieuChuNho;
         var mc = kn.normal.textColor;
         kn.normal.textColor = laChu ? GiaoDien.MauVang : GiaoDien.MauMo;
-        GiaoDien.Chu(new Rect(o.x + le, y, rr, 24f * s), vaiTro + (laToi ? "  ·  BẠN" : ""), kn);
+        GiaoDien.Chu(new Rect(xTen, o.y + 38f * s, rongTen, 22f * s), vaiTro + (laToi ? "  ·  BẠN" : ""), kn);
         kn.normal.textColor = mc;
-        y += 32f * s;
 
-        GiaoDien.Chu(new Rect(o.x + le, y, rr, 38f * s), n.ten, GiaoDien.KieuTieuDeNho);
-        y += 48f * s;
-
-        var ks = GiaoDien.KieuChuMo;
+        // Trang thai san sang
+        var ks = GiaoDien.KieuTieuDeNho;
         var ms = ks.normal.textColor;
         ks.normal.textColor = n.sanSang ? GiaoDien.MauXanh : GiaoDien.MauToi;
-        GiaoDien.Chu(new Rect(o.x + le, y, rr, 28f * s), n.sanSang ? "SẴN SÀNG" : "Đang chờ…", ks);
+        GiaoDien.Chu(new Rect(xTrangThai, o.y, rongTrangThai, o.height), n.sanSang ? "SẴN SÀNG" : "Đang chờ…", ks);
         ks.normal.textColor = ms;
 
         if (PhongMang.LaHost && !laToi)
         {
-            if (GiaoDien.Nut(new Rect(o.x + le, o.yMax - 18f * s - 44f * s, rr, 44f * s),
+            if (GiaoDien.Nut(new Rect(o.xMax - 16f * s - rongDuoi, o.y + (o.height - 44f * s) * 0.5f, rongDuoi, 44f * s),
                              "ĐUỔI", GiaoDien.KieuNutDa))
                 StartCoroutine(PhongMang.DuoiNguoi(n.uid, null));
         }

@@ -9,10 +9,9 @@ man hinh Game: 1568x581, ti le giao dien 0.54
 4. bang cai dat: 3 luot ve, chu bi cat 0 lan, chu phai thu nho 0 lan - anh gd_4_caidat.png
 5. nap lai MainMenu khi dang dang nhap -> sanh hien ngay: co
    sanh sau khi nap lai: 4 luot ve, chu bi cat 0 lan, chu phai thu nho 0 lan - anh gd_5_vethang_sanh.png
-   tao phong: OK - -P1EzxKMF-5Fm1Rdtr52 "Phòng của ChienBinhB"
+   tao phong: OK - -P1F2zouBzEqusB-vVcv "Phòng của ChienBinhB"
 6. trong phong (chu phong): 4 luot ve, chu bi cat 0 lan, chu phai thu nho 0 lan - anh gd_6_trongphong.png
-6b. phong du bon nguoi (du lieu gia): 4 luot ve, chu bi cat 0 lan, chu phai thu nho 4 lan - anh gd_6b_phong_4nguoi.png
-      chu phai thu nho: Nguyễn Thị Hằng Nga
+6b. phong du bon nguoi (du lieu gia): 4 luot ve, chu bi cat 0 lan, chu phai thu nho 0 lan - anh gd_6b_phong_4nguoi.png
 7. dem nguoc: 3 luot ve, chu bi cat 0 lan, chu phai thu nho 0 lan - anh gd_7_demnguoc.png
    don phong thu: xong
 

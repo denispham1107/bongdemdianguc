@@ -7006,6 +7006,17 @@ phía sau thì càng lệch — và độ tương phản của chữ với chỗ
 Chữ phụ (màu nhạt) thấp nhất là 5,2 : 1 — vẫn trên mức 4,5 : 1 mà chuẩn WCAG coi là dễ đọc. Menu 50 vẫn
 **0 chữ bị cắt** ở mọi màn.
 
+### Người chơi trong phòng xếp theo hàng
+
+Anh xin: thay vì bốn thẻ người chơi xếp thành **bốn cột**, mỗi người một **hàng**. Giờ mỗi hàng rộng cả
+khung: số ghế · tên (chữ lớn) và vai trò (CHỦ PHÒNG màu vàng / NGƯỜI CHƠI, kèm "BẠN") ở dòng dưới · trạng
+thái SẴN SÀNG / Đang chờ… · nút ĐUỔI sát lề phải (chỉ chủ phòng thấy, không có ở hàng của chính mình). Ghế
+trống là một hàng mờ ghi "Ghế trống".
+
+Lợi thêm một điều: cột cũ chỉ rộng ~220 đơn vị, nên tên dài phải co chữ — menu 50 lần trước ghi
+*"Nguyễn Thị Hằng Nga" phải thu nhỏ 4 lần*. Xếp theo hàng thì tên có ~560 đơn vị: **0 chữ phải thu nhỏ, 0 chữ
+bị cắt** ở cả phòng 1 người lẫn phòng đủ 4 người.
+
 ### Game sập ngay lúc tải sau mỗi lần cập nhật — cache giữ mã cũ
 
 Đưa bản giao diện mới lên, mở trang thì game **sập ở 90 %**: lần đầu *"memory access out of bounds"*, lần
