@@ -41,7 +41,8 @@ public class GameBootstrap : MonoBehaviour
     void Awake()
     {
         Application.targetFrameRate = 120;
-        QualitySettings.shadowDistance = 60f;
+        // Khoang bong theo muc do hoa nguoi choi chon (Cao 60 m nhu truoc day)
+        QualitySettings.shadowDistance = CaiDatDoHoa.KhoangBong;
 
         bool worldReady = GameObject.Find("World") != null;
         if (!worldReady && buildWorldIfMissing)

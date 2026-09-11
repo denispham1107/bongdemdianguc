@@ -31,13 +31,25 @@ public class ManSanh : MonoBehaviour
 
     float hoiLanSau;
 
+    // ---- Bang CAI DAT ----
+    // Nhieu tab, hien gio mot tab. Them tab thi them ten vao day va mot nhanh
+    // trong VeCaiDat.
+    static readonly string[] TenTabCaiDat = { "Giao diện" };
+    bool moCaiDat;
+    int tabCaiDat;
+    MucDoHoa mucChon;
+
     GUIStyle kieuTieuDe, kieuNhan, kieuNut, kieuNutNho, kieuO, kieuBao, kieuDem, kieuHang;
-    Texture2D nenMo, nenHang;
+    GUIStyle kieuLuaChon, kieuMoTa;
+    Texture2D nenMo, nenHang, nenBang, nenChon, nenVach;
 
     void Start()
     {
         nenMo = Mau(new Color(0f, 0f, 0f, 0.62f));
         nenHang = Mau(new Color(1f, 1f, 1f, 0.05f));
+        nenBang = Mau(new Color(0.07f, 0.07f, 0.09f, 0.97f));
+        nenChon = Mau(new Color(0.85f, 0.20f, 0.10f, 0.35f));
+        nenVach = Mau(new Color(0.85f, 0.20f, 0.10f, 1f));
     }
 
     void Update()
@@ -149,6 +161,17 @@ public class ManSanh : MonoBehaviour
         kieuHang = new GUIStyle(GUI.skin.label);
         kieuHang.normal.textColor = new Color(0.85f, 0.84f, 0.80f);
 
+        // Moi lua chon do hoa la mot nut chu can trai; muc dang chon co nen do
+        // ve rieng phia sau (nut mac dinh luc bat/tat trong gan nhu nhau).
+        kieuLuaChon = new GUIStyle(GUI.skin.button);
+        kieuLuaChon.alignment = TextAnchor.MiddleLeft;
+        kieuLuaChon.fontStyle = FontStyle.Bold;
+
+        kieuMoTa = new GUIStyle(GUI.skin.label);
+        kieuMoTa.alignment = TextAnchor.MiddleLeft;
+        kieuMoTa.wordWrap = true;
+        kieuMoTa.normal.textColor = new Color(0.70f, 0.70f, 0.72f);
+
         CapNhatCo(s);
     }
 
@@ -162,6 +185,9 @@ public class ManSanh : MonoBehaviour
         kieuBao.fontSize    = Mathf.RoundToInt(20f * s);
         kieuDem.fontSize    = Mathf.RoundToInt(150f * s);
         kieuHang.fontSize   = Mathf.RoundToInt(21f * s);
+        kieuLuaChon.fontSize = Mathf.RoundToInt(22f * s);
+        kieuLuaChon.padding.left = Mathf.RoundToInt(22f * s);
+        kieuMoTa.fontSize   = Mathf.RoundToInt(18f * s);
     }
 
     void OnGUI()
@@ -179,8 +205,16 @@ public class ManSanh : MonoBehaviour
             return;
         }
 
+        if (dangO != Cho.Sanh) moCaiDat = false;
+
         if (dangO == Cho.Sanh) VeSanh(s);
         else VeTrongPhong(s);
+
+        // Bang cai dat ve SAU cung de nam tren. Sanh phia duoi da bi khoa
+        // (GUI.enabled) trong luc bang mo - IMGUI trao cu bam cho nut nao ve
+        // TRUOC, nen khong khoa thi bam vao bang lai trung nut cua sanh nam
+        // ngay ben duoi.
+        if (moCaiDat) VeCaiDat(s);
     }
 
     // ---------------- NGOAI SANH ----------------
@@ -190,6 +224,10 @@ public class ManSanh : MonoBehaviour
         float rong = Mathf.Min(Screen.width * 0.92f, 900f * s);
         float x = (Screen.width - rong) * 0.5f;
         float y = 24f * s;
+
+        // Bang cai dat dang mo thi ca sanh bi khoa - xem OnGUI
+        bool khoa = moCaiDat;
+        GUI.enabled = !khoa;
 
         GUI.Label(new Rect(x, y, rong, 40f * s),
                   FirebaseMang.TenHienThi + "   -   "
@@ -222,21 +260,25 @@ public class ManSanh : MonoBehaviour
                        manChoiMoi == "Act1" ? "MAN: DAU TRUONG" : "MAN: NGHIA DIA", kieuNutNho))
             manChoiMoi = manChoiMoi == "Act1" ? "Act2" : "Act1";
 
-        GUI.enabled = !dangCho;
+        GUI.enabled = !dangCho && !khoa;
         if (GUI.Button(new Rect(x + rong - 200f * s, yy, 186f * s, 42f * s), "TAO PHONG", kieuNut))
             StartCoroutine(ChayTaoPhong());
-        GUI.enabled = true;
+        GUI.enabled = !khoa;
 
         y += 144f * s;
 
         // ---- Danh sach ----
         GUI.Label(new Rect(x, y, 300f * s, 32f * s), "Phong dang cho", kieuTieuDe);
 
-        GUI.enabled = !dangCho;
-        if (GUI.Button(new Rect(x + rong - 220f * s, y, 220f * s, 38f * s),
+        // Nut CAI DAT nam ngay ben trai VAO PHONG NHANH, cung hang
+        if (GUI.Button(ViTriNutCaiDat(x, y, rong, s), "CÀI ĐẶT", kieuNutNho))
+            MoCaiDat();
+
+        GUI.enabled = !dangCho && !khoa;
+        if (GUI.Button(ViTriNutVaoNhanh(x, y, rong, s),
                        "VAO PHONG NHANH", kieuNutNho))
             StartCoroutine(ChayVaoNhanh());
-        GUI.enabled = true;
+        GUI.enabled = !khoa;
 
         y += 46f * s;
 
@@ -268,11 +310,11 @@ public class ManSanh : MonoBehaviour
                           p.soNguoi + "/" + (p.toiDa <= 0 ? PhongMang.SoNguoiToiDa : p.toiDa),
                           kieuHang);
 
-                GUI.enabled = !dangCho && p.ConCho;
+                GUI.enabled = !dangCho && p.ConCho && !khoa;
                 if (GUI.Button(new Rect(vungTrong.width - 200f * s, yh + 8f * s, 190f * s, 38f * s),
                                p.ConCho ? "VAO PHONG" : "DA DAY", kieuNutNho))
                     StartCoroutine(ChayVaoPhong(p.ma));
-                GUI.enabled = true;
+                GUI.enabled = !khoa;
 
                 yh += caoHang + 8f * s;
             }
@@ -281,6 +323,157 @@ public class ManSanh : MonoBehaviour
 
         if (!string.IsNullOrEmpty(bao))
             GUI.Label(new Rect(x, Screen.height - 60f * s, rong, 50f * s), bao, kieuBao);
+
+        GUI.enabled = true;
+    }
+
+    /// <summary>Vi tri nut VAO PHONG NHANH - sat le phai cua hang "Phong dang cho".</summary>
+    public static Rect ViTriNutVaoNhanh(float x, float y, float rong, float s)
+    {
+        return new Rect(x + rong - 220f * s, y, 220f * s, 38f * s);
+    }
+
+    /// <summary>Vi tri nut CAI DAT - ngay ben trai VAO PHONG NHANH, cach 12 diem.</summary>
+    public static Rect ViTriNutCaiDat(float x, float y, float rong, float s)
+    {
+        var nhanh = ViTriNutVaoNhanh(x, y, rong, s);
+        return new Rect(nhanh.x - 12f * s - 160f * s, y, 160f * s, 38f * s);
+    }
+
+    // ---------------- CAI DAT ----------------
+
+    string baoCaiDat = "";
+    bool dangNapLai;
+
+    static readonly string[] MoTaMucDoHoa =
+    {
+        "100% độ phân giải · bóng mềm · khử răng cưa",
+        "75% độ phân giải · bóng cứng · tắt khử răng cưa",
+        "50% độ phân giải · tắt bóng · cho máy yếu",
+    };
+
+    /// <summary>Mo bang cai dat - nut CAI DAT goi, phep thu (menu 48) cung goi.</summary>
+    public void MoCaiDat()
+    {
+        moCaiDat = true;
+        tabCaiDat = 0;
+        mucChon = CaiDatDoHoa.Muc;
+        baoCaiDat = "";
+        // O ten phong dang giu ban phim thi van go chu vao duoc du da bi khoa
+        GUIUtility.keyboardControl = 0;
+    }
+
+    public bool DangMoCaiDat { get { return moCaiDat; } }
+
+    public void ChonMucDoHoa(MucDoHoa m) { mucChon = m; baoCaiDat = ""; }
+
+    /// <summary>
+    /// Nut OK. Khong doi gi thi chi dong bang - tai lai ca game chi de ve y
+    /// het nhu cu la bat nguoi choi doi vo ich. Co doi thi luu roi tai lai.
+    /// </summary>
+    public void BamOKCaiDat()
+    {
+        if (mucChon == CaiDatDoHoa.Muc) { moCaiDat = false; return; }
+
+        // Luu hong ma van tai lai thi game khoi dong voi muc CU - nguoi choi
+        // thay minh bam OK ma khong co gi xay ra. Bao ro thay vi im lang.
+        if (!CaiDatDoHoa.Luu(mucChon))
+        {
+            baoCaiDat = "Trình duyệt không cho lưu cài đặt (có thể đang ở chế độ ẩn danh).";
+            return;
+        }
+        dangNapLai = true;
+        CaiDatDoHoa.NapLaiGame();
+    }
+
+    void VeCaiDat(float s)
+    {
+        // Phu toi ca sanh
+        GUI.DrawTexture(new Rect(0, 0, Screen.width, Screen.height), nenMo, ScaleMode.StretchToFill, true);
+
+        float rong = Mathf.Min(Screen.width * 0.94f, 860f * s);
+        float cao = Mathf.Min(Screen.height * 0.94f, 600f * s);
+        float x = (Screen.width - rong) * 0.5f;
+        float y = (Screen.height - cao) * 0.5f;
+        float le = 28f * s;
+
+        GUI.DrawTexture(new Rect(x, y, rong, cao), nenBang, ScaleMode.StretchToFill, true);
+        GUI.DrawTexture(new Rect(x, y, rong, 4f * s), nenVach, ScaleMode.StretchToFill, true);
+
+        GUI.enabled = !dangNapLai;
+
+        GUI.Label(new Rect(x + le, y + 18f * s, rong - 2f * le, 42f * s), "CÀI ĐẶT", kieuTieuDe);
+
+        // ---- Hang tab ----
+        float yt = y + 74f * s;
+        float xt = x + le;
+        for (int i = 0; i < TenTabCaiDat.Length; i++)
+        {
+            var o = new Rect(xt, yt, 200f * s, 46f * s);
+            if (GUI.Button(o, TenTabCaiDat[i], kieuNutNho)) tabCaiDat = i;
+            if (i == tabCaiDat)
+            {
+                GUI.DrawTexture(o, nenChon, ScaleMode.StretchToFill, true);
+                GUI.DrawTexture(new Rect(o.x, o.yMax, o.width, 4f * s), nenVach,
+                                ScaleMode.StretchToFill, true);
+            }
+            xt += 210f * s;
+        }
+        GUI.DrawTexture(new Rect(x + le, yt + 50f * s, rong - 2f * le, 1f * s), nenHang,
+                        ScaleMode.StretchToFill, true);
+
+        float yn = yt + 66f * s;
+        if (tabCaiDat == 0) VeTabGiaoDien(x + le, yn, rong - 2f * le, s);
+
+        // ---- Nut duoi cung ----
+        float yb = y + cao - 74f * s;
+        string ghiChu = !string.IsNullOrEmpty(baoCaiDat) ? baoCaiDat
+                      : dangNapLai ? "Đang tải lại game..."
+                      : mucChon != CaiDatDoHoa.Muc ? "Bấm OK: game sẽ tải lại để áp dụng."
+                      : "";
+        if (ghiChu.Length > 0)
+            GUI.Label(new Rect(x + le, yb - 44f * s, rong - 2f * le, 36f * s), ghiChu,
+                      string.IsNullOrEmpty(baoCaiDat) ? kieuNhan : kieuBao);
+
+        if (GUI.Button(new Rect(x + rong - le - 180f * s - 14f * s - 180f * s, yb, 180f * s, 52f * s),
+                       "HỦY", kieuNutNho))
+            moCaiDat = false;
+
+        if (GUI.Button(new Rect(x + rong - le - 180f * s, yb, 180f * s, 52f * s), "OK", kieuNut))
+            BamOKCaiDat();
+
+        GUI.enabled = true;
+    }
+
+    void VeTabGiaoDien(float x, float y, float rong, float s)
+    {
+        GUI.Label(new Rect(x, y, rong, 32f * s), "Độ phân giải và chất lượng hình", kieuNhan);
+        y += 42f * s;
+
+        float caoHang = 64f * s;
+        float rongTen = 290f * s;
+        for (int i = 0; i < 3; i++)
+        {
+            var m = (MucDoHoa)i;
+            var o = new Rect(x, y, rong, caoHang);
+
+            string ten = CaiDatDoHoa.Ten[i] + (m == CaiDatDoHoa.Muc ? " (hiện giờ)" : "");
+            if (GUI.Button(o, ten, kieuLuaChon)) ChonMucDoHoa(m);
+
+            if (m == mucChon)
+            {
+                GUI.DrawTexture(o, nenChon, ScaleMode.StretchToFill, true);
+                GUI.DrawTexture(new Rect(o.x, o.y, 6f * s, o.height), nenVach,
+                                ScaleMode.StretchToFill, true);
+            }
+
+            // Mo ta nam de len nut: nhan chu khong an cu bam, bam vao dau
+            // tren hang cung trung nut
+            GUI.Label(new Rect(o.x + rongTen, o.y, o.width - rongTen - 12f * s, o.height),
+                      MoTaMucDoHoa[i], kieuMoTa);
+
+            y += caoHang + 10f * s;
+        }
     }
 
     // ---------------- TRONG PHONG ----------------

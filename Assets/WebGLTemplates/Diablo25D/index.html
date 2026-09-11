@@ -83,6 +83,19 @@
     },
   };
 
+  // DO PHAN GIAI THEO CAI DAT CUA NGUOI CHOI (Cai dat > Giao dien trong game).
+  //
+  // Unity chi doc devicePixelRatio MOT LAN, luc khoi dong - nen chon xong game
+  // phai tai lai trang. Khoa va bang he so phai KHOP voi CaiDatDoHoa.cs:
+  //   0 = Cao 100%, 1 = Trung binh 75%, 2 = Yeu 50% (theo moi chieu).
+  // Doc loi (trinh duyet cam luu) thi de nguyen - tuc la muc Cao nhu cu.
+  var HE_SO_PHAN_GIAI = [1, 0.75, 0.5];
+  try {
+    var mucDoHoa = parseInt(window.localStorage.getItem("diablo25d.mucDoHoa"), 10);
+    if (mucDoHoa >= 1 && mucDoHoa <= 2)
+      config.devicePixelRatio = (window.devicePixelRatio || 1) * HE_SO_PHAN_GIAI[mucDoHoa];
+  } catch (e) { }
+
   var script = document.createElement("script");
   script.src = buildUrl + "/{{{ LOADER_FILENAME }}}";
   script.onload = function () {

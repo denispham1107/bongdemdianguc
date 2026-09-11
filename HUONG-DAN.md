@@ -6672,6 +6672,117 @@ Và băng thông đàn quái tụt theo: 4 con là **0,6 KB/giây** thay vì 3,3
 > ⚠️ **Đây là chế độ chạy thử.** Tắt (`CheDoBonBoXuong = false`) trước khi phát hành — không thì game
 > chỉ còn bốn con bộ xương.
 
+### Nút "Cài đặt" và ba mức đồ hoạ
+
+Anh xin một nút **Cài đặt** ở sảnh, ngay bên trái *VAO PHONG NHANH*; bấm vào có nhiều tab (hiện
+một tab **Giao diện**), trong đó chọn độ phân giải **Cao (hiện giờ) / Trung bình / Yếu**, bấm **OK**
+thì game tải lại và chạy đúng mức đã chọn.
+
+#### Mỗi mức đổi hai thứ
+
+| Mức | Độ phân giải vẽ | Mức chất lượng Unity | Bóng |
+|---|---|---|---|
+| **Cao** (như trước giờ) | 100 % | High — khử răng cưa 8×, 2 đèn tính từng điểm ảnh | mềm, xa 60 m |
+| **Trung bình** | 75 % mỗi chiều (≈ 56 % số điểm ảnh) | Medium — tắt khử răng cưa, 1 đèn | cứng, xa 40 m |
+| **Yếu** | 50 % mỗi chiều (25 % số điểm ảnh) | Low — tắt khử răng cưa, 0 đèn | tắt |
+
+Độ phân giải là thứ đáng tiền nhất trên điện thoại: iPhone có `devicePixelRatio = 3`, tức game vẽ
+gấp 9 lần số điểm ảnh của một màn hình thường. Mức Yếu cắt còn một phần tư.
+
+#### Vì sao phải tải lại cả trang
+
+Trên WebGL, **độ phân giải chỉ đặt được một lần, trước khi Unity khởi động** — nó là
+`config.devicePixelRatio` mà trang web đưa cho `createUnityInstance`. Nên lựa chọn phải nằm ở chỗ
+**trang web đọc được trước khi Unity chạy**, rồi tải lại trang.
+
+Chỗ đó là `localStorage` của trình duyệt, không phải `PlayerPrefs`:
+
+- `PlayerPrefs` trên WebGL ghi xuống IndexedDB **không đồng bộ**. Bấm OK là trang tải lại ngay — ghi
+  chưa kịp xong thì lựa chọn mất, người chơi thấy game "không nghe lời".
+- `PlayerPrefs` nằm trong file của Unity; trang web không đọc được. `localStorage` thì cả hai phía
+  cùng đọc.
+
+Nên có thêm cầu nối `CauNoiCaiDat.jslib` (đọc, ghi, tải lại trang), và `index.html` đọc khoá
+`diablo25d.mucDoHoa` rồi nhân `devicePixelRatio` với hệ số **trước** `createUnityInstance`.
+Mức chất lượng Unity thì đặt trong `CaiDatDoHoa.cs`, **trước khi nạp scene đầu tiên**.
+
+Người chơi **không phải đăng nhập lại**: phiên đăng nhập đã nằm trong kho trình duyệt từ lúc đăng
+nhập, tải lại trang là tự vào sảnh như mọi lần mở game.
+
+Ba chi tiết nhỏ:
+
+- Bấm OK mà **không đổi gì** thì chỉ đóng bảng — tải lại cả game để vẽ y hệt là bắt người chơi đợi
+  vô ích.
+- Trình duyệt **cấm lưu** (vài chế độ ẩn danh) thì báo rõ trên bảng thay vì tải lại — tải lại lúc ấy
+  game khởi động với mức cũ và người chơi tưởng nút OK hỏng.
+- **Giữ nhịp khung hình như cũ.** Mức Low của Unity tắt vSync; tắt vSync thì trên WebGL dòng
+  `Application.targetFrameRate = 120` (GameBootstrap) bắt đầu có hiệu lực — Unity bỏ
+  `requestAnimationFrame` sang `setTimeout` và cố chạy 120 khung. Máy yếu chọn "Yếu" để nhẹ đi lại bị
+  ép vẽ **nhiều khung hơn**. Nên cả ba mức đều giữ `vSyncCount = 1` như mức Cao.
+
+Trong lúc bảng mở, cả sảnh bên dưới bị khoá: IMGUI trao cú bấm cho nút nào **vẽ trước**, nên không
+khoá thì bấm vào bảng lại trúng nút *TAO PHONG* nằm ngay bên dưới.
+
+#### Đo (menu 48)
+
+**Ngoài Play:**
+
+```
+1. font: 14 chuỗi có dấu trong ManSanh.cs + CaiDatDoHoa.cs, 32 ký tự khác nhau, thiếu: không
+2. vị trí nút CÀI ĐẶT:
+   1920x1080: nút 1018..1178, VAO NHANH từ 1190, tiêu đề hết ở 759, chữ 76/160 điểm -> ổn
+   2532x1170 (iPhone ngang): nút 1329..1502, VAO NHANH từ 1515, tiêu đề hết ở 1041 -> ổn
+   ... (8 cỡ màn hình, 7 cỡ nằm ngang đều ổn)
+3. trang web - chạy THẬT đoạn mã trong index.html bằng node:
+   localStorage=null  dpr=2 -> để nguyên      localStorage="1" dpr=3 -> 2.25
+   localStorage="0"   dpr=2 -> để nguyên      localStorage="2" dpr=3 -> 1.5
+   localStorage="1"   dpr=2 -> 1.5            localStorage="3"/"abc" -> để nguyên
+   localStorage="2"   dpr=2 -> 1              trình duyệt cấm lưu    -> để nguyên
+```
+
+Phép 1 quét thẳng file nguồn lấy mọi chuỗi có dấu, không chép lại danh sách chữ — chép lại thì thêm
+một chữ mới là phép thử không biết. Phép 3 là đoạn mã **chỉ chạy trong trình duyệt**, Editor không bao
+giờ chạm tới; nên phải chạy nó thật bằng node, và so với bảng hệ số lấy từ `CaiDatDoHoa.cs` chứ không
+chép tay.
+
+**Trong Play**, đăng nhập thật bằng tài khoản chạy thử, mở bảng, bấm OK từng mức; sau mỗi lần tải lại
+thì đọc lại **từ kho lưu** (không tin biến trong bộ nhớ) rồi vào Act2 đếm những gì Unity thật sự vẽ:
+
+```
+5. OK khi không đổi gì: bảng đóng, game không tải lại
+6. Trung bình: tải lại có, kho = 1, Unity Medium, bóng cứng, khử răng cưa 0x, vSync 1
+   Act2: bóng 40 m, vật đổ bóng 205, tam giác 4 276k
+   Yếu:       tải lại có, kho = 2, Unity Low, tắt bóng, khử răng cưa 0x, vSync 1
+   Act2: vật đổ bóng 0, tam giác 1 561k
+   Cao:       tải lại có, kho = 0, Unity High, bóng mềm, khử răng cưa 8x, vSync 1
+   Act2: bóng 60 m, vật đổ bóng 418, tam giác 5 254k
+số lỗi ghi nhận = 0
+```
+
+Số tam giác gồm cả lượt vẽ bóng: mức Yếu vẽ **ít hơn 3,4 lần** mức Cao, chưa tính việc mỗi khung
+chỉ tô một phần tư số điểm ảnh.
+
+**Trên bản web thật** (https://diablo25d-game.web.app, khung 1280×720):
+
+| Kho lưu | `devicePixelRatio` Unity nhận | Canvas vẽ | Unity báo |
+|---|---|---|---|
+| (chưa có) | mặc định 1,25 | 1600 × 900 | `mức Cao, Unity High` |
+| `1` | 1,25 × 0,75 = 0,9375 | 1200 × 675 | |
+| `2` | 1 × 0,5 = 0,5 | 640 × 360 | `mức Yếu, Unity Low` |
+
+(Lần đo mức 2, trang được nạp lúc khung trình duyệt thử đang ẩn nên nó báo tỉ lệ 1 thay vì 1,25 —
+con số canvas vẫn khớp đúng tỉ lệ trang nhận được.)
+
+#### Chưa làm / cần anh biết
+
+- Màn hình **dựng đứng** (điện thoại cầm dọc): nút đè lên chữ *"Phong dang cho"*. Sảnh chưa từng
+  được xếp cho màn hình dọc — ở cỡ ấy chữ tiêu đề đã sát nút VAO PHONG NHANH từ trước.
+- Trong Editor, "tải lại" là nạp lại scene MainMenu, và lúc ấy game hiện **menu chơi đơn cũ** chứ
+  không hiện sảnh. Đó là lỗi có sẵn: **mọi lần quay về MainMenu khi đang đăng nhập** (kể cả bấm
+  *TRỞ VỀ* sau trận) đều rơi vào menu cũ, vì sảnh chỉ bật khi đăng nhập *xảy ra* trong lúc MainMenu
+  đang mở. Bản web không vấp chỗ này khi đổi cài đặt, vì tải lại trang là khởi động lại từ đầu và tự
+  đăng nhập.
+
 ### Việc còn phải làm
 
 **169 MB là quá nặng**, nhất là trên điện thoại — nền tảng chính của game. Gần như toàn bộ nằm ở
@@ -6740,6 +6851,7 @@ cho riêng nền tảng WebGL sẽ ăn cả hai đầu: file nhỏ hơn và khô
 | **45. Chay thu BON NGUOI (noi hinh sao)** | Mười một chiều cho trận bốn người: xếp ghế tất định (kể cả khi hai người trùng ghế), chủ phòng chuyển tiếp trạng thái và kỹ năng sang đúng những người còn lại và **không vòng về người gửi**, trả lời nhịp đúng kênh, sinh bản sao khi gói đầu tiên đến, một khách rời trận thì những người còn lại đều biết và gói trễ không làm người đó hiện lại. Kết quả ra `PlayTestShots/bonnguoi.txt`. |
 | **46. Chay thu HIEU UNG qua mang** | Mười hai chiều: bản sao không tự gieo đóng băng/choáng (và nhân vật thật vẫn gieo được), cờ và máu khiên đọc đúng rồi đi qua gói tin không to thêm, bản sao vẽ lại theo lời kể, khiên bản sao không bị trừ cục bộ, mất gói thì hiệu ứng tự tan, và quái bên khách choáng theo chủ phòng. Kết quả ra `PlayTestShots/hieuung_mang.txt`. |
 | **47. Chay thu CHE DO BON BO XUONG** | Vào Play thật ở **cả hai màn**, đếm quái trên cảnh theo loại: vào màn đúng 4 bộ xương, giết hết thì đợt mới ra đúng 30 giây game (hai vòng), và để yên 260 giây không sinh thêm con nào. Kết quả ra `PlayTestShots/bonboxuong.txt`. |
+| **48. Chay thu CAI DAT do hoa** | Ngoài Play: font đủ chữ có dấu, vị trí nút ở 8 cỡ màn hình, chạy thật đoạn mã đọc cài đặt của `index.html` bằng node. Trong Play: đăng nhập thật, mở bảng, bấm OK từng mức, đọc lại từ kho lưu, vào Act2 đếm vật đổ bóng. Trả lại mức cũ, phiên đăng nhập và mức chất lượng của Editor. Kết quả ra `PlayTestShots/caidat.txt`. |
 
 > ⚠️ Mục **1** sẽ **xóa và tạo lại** các thư mục Textures / Materials / Models / Prefabs.
 > Nếu bạn tự sửa tay trong đó thì hãy sao lưu trước.
