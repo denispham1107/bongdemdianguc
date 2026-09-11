@@ -1,0 +1,34 @@
+tam ban do (giua dia hinh): (0.00, 0.00, 0.00)
+  o tam: nuoc: (0.0, 0.0, 0.0)
+lo giua: (1.75, 0.00, -4.50), cach tam 4.83 m
+luoi 1 m trong vong 46 m: 6625 diem, hop le 773
+   loai vi vat can: 2179
+   loai vi doc: 169
+   loai vi cay: 399
+   loai vi khong phai mat dat: 1031
+   loai vi bia cao: 489
+   loai vi bui co: 87
+   loai vi nha mo: 372
+   loai vi nuoc: 1048
+   loai vi cho xuat phat: 78
+vung 1: 76 diem, tam (-1.1, 0.0, 37.4) -> lo (-1.0, 0.0, 37.0) (lech 0.5 m)
+vung 2: 84 diem, tam (-37.7, 0.0, 3.5) -> lo (-37.0, 0.0, 2.0) (lech 1.7 m)
+vung 3: 75 diem, tam (29.3, 0.0, 1.1) -> lo (29.0, 0.0, 1.0) (lech 0.3 m)
+vung 4: 10 diem, tam (30.0, 0.0, -30.3) -> lo (31.0, 0.0, -29.0) (lech 1.6 m)
+vung 5: 188 diem, tam (1.0, 0.0, -31.4) -> lo (1.0, 0.0, -31.0) (lech 0.4 m)
+vung 6: 44 diem, tam (-20.9, 0.0, -18.9) -> lo (-25.0, 0.0, -17.0) (lech 4.5 m)
+vung 7: 82 diem, tam (-14.9, 0.0, 3.5) -> lo (-14.0, 0.0, 2.0) (lech 1.7 m)
+vung 8: 13 diem, tam (18.0, 0.0, 31.2) -> lo (14.0, 0.0, 29.0) (lech 4.6 m)
+vung 9: 119 diem, tam (0.5, 0.0, 17.4) -> lo (0.0, 0.0, 17.0) (lech 0.6 m)
+LoLua_GiuaMap: (1.75, 0.48, -4.50), cach tam 4.8 m
+LoLua_01: (-1.00, -0.35, 37.00), cach tam 37.0 m
+LoLua_02: (-37.00, -0.38, 2.00), cach tam 37.1 m
+LoLua_03: (29.00, -0.98, 1.00), cach tam 29.0 m
+LoLua_04: (31.00, -0.43, -29.00), cach tam 42.4 m
+LoLua_05: (1.00, -0.51, -31.00), cach tam 31.0 m
+LoLua_06: (-25.00, -0.30, -17.00), cach tam 30.2 m
+LoLua_07: (-14.00, -0.50, 2.00), cach tam 14.1 m
+LoLua_08: (14.00, -0.56, 29.00), cach tam 32.2 m
+LoLua_09: (0.00, -0.84, 17.00), cach tam 17.0 m
+khoang cach nho nhat giua hai lo: 17.0 m
+da luu Assets/Scenes/Act2.unity - 10 lo trong nhom LoLua_Act2

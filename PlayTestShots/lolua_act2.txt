@@ -1,0 +1,25 @@
+[ban 3] 10 lo lua trong Act2
+
+A. vi tri (ngoai Play)
+so lo trong nhom LoLua_Act2: 10
+LoLua_GiuaMap (1.8, 0.5, -4.5): mep nuoc 2.00 m; nha mo 13.6 m; bia/da gan nhat 1.70 m (Da/PR_rockA_679), bia cao gan nhat 4.7 m; chan lo: ho 0.00 m, chon 0.10 m; cach tam 4.8 m
+LoLua_01 (-1.0, -0.4, 37.0): mep nuoc 2.25 m; nha mo 25.8 m; bia/da gan nhat 2.96 m (BiaMo/TS_ledger_407), bia cao gan nhat 4.1 m; chan lo: ho 0.00 m, chon 0.11 m; cach tam 37.0 m
+LoLua_02 (-37.0, -0.4, 2.0): mep nuoc 6.50 m; nha mo 19.0 m; bia/da gan nhat 1.41 m (BiaMo/TS_slab_241), bia cao gan nhat 2.7 m; chan lo: ho 0.00 m, chon 0.02 m; cach tam 37.1 m
+LoLua_03 (29.0, -1.0, 1.0): mep nuoc 3.50 m; nha mo 18.8 m; bia/da gan nhat 2.58 m (BiaMo/TS_slab_234), bia cao gan nhat 4.1 m; chan lo: ho 0.00 m, chon 0.05 m; cach tam 29.0 m
+LoLua_04 (31.0, -0.4, -29.0): mep nuoc 10.50 m; nha mo 17.4 m; bia/da gan nhat 0.79 m (Da/PR_rockC_582), bia cao gan nhat 2.5 m; chan lo: ho 0.00 m, chon 0.03 m; cach tam 42.4 m
+LoLua_05 (1.0, -0.5, -31.0): mep nuoc 5.25 m; nha mo 10.9 m; bia/da gan nhat 5.49 m (BiaMo/TS_slab_278), bia cao gan nhat 8.1 m; chan lo: ho 0.00 m, chon 0.11 m; cach tam 31.0 m
+LoLua_06 (-25.0, -0.3, -17.0): mep nuoc 8.00 m; nha mo 10.7 m; bia/da gan nhat 0.95 m (BiaMo/TS_shoulder_78), bia cao gan nhat 2.1 m; chan lo: ho 0.00 m, chon 0.05 m; cach tam 30.2 m
+LoLua_07 (-14.0, -0.5, 2.0): mep nuoc 7.00 m; nha mo 9.7 m; bia/da gan nhat 0.53 m (Da/PR_rockA_667), bia cao gan nhat 2.9 m; chan lo: ho 0.00 m, chon 0.05 m; cach tam 14.1 m
+LoLua_08 (14.0, -0.6, 29.0): mep nuoc 4.25 m; nha mo 10.5 m; bia/da gan nhat 0.76 m (BiaMo/TS_shoulder_100), bia cao gan nhat 2.8 m; chan lo: ho 0.00 m, chon 0.08 m; cach tam 32.2 m
+LoLua_09 (0.0, -0.8, 17.0): mep nuoc 10.75 m; nha mo 16.7 m; bia/da gan nhat 3.74 m (Da/PR_rockB_551), bia cao gan nhat 8.6 m; chan lo: ho 0.00 m, chon 0.05 m; cach tam 17.0 m
+hai lo gan nhau nhat: 17.0 m
+
+B. trong Play
+lo co lua chay: 10/10, co den: 10/10
+nhan vat di thang vao lo: bi chan 10/10 lan
+anh: PlayTestShots/lolua_1_LoLua_GiuaMap.png
+anh: PlayTestShots/lolua_2_LoLua_03.png
+anh: PlayTestShots/lolua_3_LoLua_06.png
+anh: PlayTestShots/lolua_bando.png (vong vang = lo giua, vong do = 9 lo con lai)
+
+so loi ghi nhan = 0

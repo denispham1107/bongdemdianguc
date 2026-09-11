@@ -7636,8 +7636,59 @@ Menu 40: "30000 / 30000" rộng 72 điểm trong thanh 148 điểm (đo bằng I
 phút, 0 lỗi, trang thật tải đúng bản mới, console 0 lỗi. Còn lại không dấu: bảng chẩn đoán F12 (công cụ gỡ lỗi, mặc
 định tắt).
 
-Nhân tiện: công cụ ghi file của tôi biến chuỗi `̀` trong mã nguồn thành **ký tự dấu rời thật** (vô hình khi đọc) —
-`GhepDauTiengViet.cs` và `ThuBangTen.cs` đã được đổi lại thành dạng `̀` nhìn thấy được; phép thử 52 vẫn 0 lỗi.
+Nhân tiện: công cụ ghi file của tôi biến chuỗi `\u0300` trong mã nguồn thành **ký tự dấu rời thật** (vô hình khi đọc) —
+`GhepDauTiengViet.cs` và `ThuBangTen.cs` đã được đổi lại thành dạng `\u0300` nhìn thấy được; phép thử 52 vẫn 0 lỗi.
+
+### Mười lò lửa đá trong Act2
+
+Anh xin: đưa cái lò lửa đá của màn chính vào Act2, **10 lò**, một lò **ngay chính giữa bản đồ**; lò nào cũng **không
+dưới nước, không trong nhà mồ, không trên bia mộ — chỉ trên mặt đất**.
+
+**Chính giữa bản đồ (0, 0) là hồ nước trung tâm.** Hai yêu cầu chọi nhau, và luật "không dưới nước" thắng: lò giữa là
+**chỗ đất khô gần tâm nhất** — dò từ tâm ra, bước 0,25 m — ra bờ nam hồ, **cách tâm 4,8 m**, mép lò cách mép nước 2 m.
+
+**Luật một chỗ hợp lệ** (menu 54 mới, `DatLoLuaAct2.cs`):
+
+- **Mặt đất**: tia chiếu từ trên xuống ở tâm và 8 điểm quanh chân lò đều chạm **địa hình** trước tiên (không phải mái
+  nhà, đá, bia); chênh cao dưới chân lò ≤ 0,22 m; chân lò đặt ở điểm **thấp nhất** nên không hở.
+- **Nước**: mọi điểm trong vòng 2,05 m quanh tâm lò không nằm **dưới mặt nước** — tức nằm trong tam giác lưới nước
+  **và** địa hình thấp hơn mặt nước (mép lưới nước chìm vào đất, xét lưới thôi thì bờ hồ phình ra).
+- **Nhà mồ**: ngoài hộp bao nhà (tính cả mái) nới rộng 2 m. **Bia, đá, hàng rào**: không va chạm nào trong ống trụ
+  bán kính 1,45 m quanh lò. **Cây**: cách thân 3 m (lửa + khói cao ~3 m). **Bụi cỏ**: cách 1,15 m.
+- **Bia cao** (tháp, cột > 1,5 m): cách 3 m — xem lỗi thứ hai bên dưới.
+
+Chín lò còn lại **rải đều trên phần đất hợp lệ**: chia vùng kiểu k-means (Lloyd) với lò giữa cố định, rồi đặt mỗi lò vào
+điểm hợp lệ gần tâm vùng nhất, cách nhau ≥ 10 m. (Chọn kiểu "xa nhất" đơn giản thì cả chín lò dạt ra sát hàng rào.)
+Chỉ **773 / 6625** điểm lưới 1 m trong vòng 46 m là hợp lệ — nghĩa địa rất dày: 2179 điểm vướng bia/đá, 1048 nước,
+1031 tia không chạm đất trước, 489 gần bia cao, 399 gần cây, 372 nhà mồ.
+
+Lò nằm trong nhóm gốc riêng `LoLua_Act2`, **không** trong `World` — menu 51 chép `World` sang màn chính, không được kéo
+lò Act2 theo. Mỗi lò có **va chạm** (người chơi, quái không đi xuyên; GameDirector không thả quái vào lò) và vẫn là
+prefab `Assets/Models/LoLuaDa` — sửa lò một chỗ, cả màn chính lẫn Act2 đổi theo. Lốc xoáy **không** cuốn lò (nó bỏ qua
+vật có hệ hạt con). Chạy lại menu 54 ra y hệt (không ngẫu nhiên), xoá lò cũ trước.
+
+**Lỗi thứ nhất — nhân vật đi xuyên 7/10 lò.** Va chạm đầu tiên là con nhộng cao bằng lò (1,33 m), bán kính 0,65 m —
+tức gần như **một quả cầu**. Nhân vật bước được bậc 0,55 m, dốc 55°: nó trượt lên mặt cầu rồi **đứng trên đỉnh lò**
+(cách tâm 0,00–0,08 m). Giờ là cột đứng bán kính 0,50 m, **cao hơn lò 1 m** (vùng ngọn lửa) — thành đứng từ 0,5 m trở
+lên, quá bậc bước được. Sau khi sửa: **bị chặn 10/10**.
+
+**Lỗi thứ hai — ảnh chụp, không phải số đo.** Lần đầu lò giữa đứng cách một cột tháp 1,45 m — đúng luật "không trên
+bia". Nhưng nhìn từ camera game (phía nam), cột tháp nằm **thẳng dưới miệng lò**, trông y như lò **đặt trên đỉnh bia**.
+Thêm luật bia cao cách 3 m; lò giữa dời sang bờ nam hồ.
+
+Đo (menu 54b mới — kiểm bằng cách **khác** lúc đặt: nước bằng va chạm tạm gắn vào lưới nước + tia chiếu xuống; nhà
+bằng tia chiếu **lên** từ miệng lò; bia bằng hộp bao **hình**; mặt đất bằng độ cao địa hình ở 16 điểm quanh chân):
+
+```
+10 lò; lò giữa cách tâm 4,8 m; hai lò gần nhau nhất 17,0 m
+mép nước gần nhất 2,00 .. >12 m; nhà mồ gần nhất 9,7 m; bia/đá gần nhất 0,53 m; bia cao gần nhất 2,1 m
+chân lò: hở 0,00 m, chôn tối đa 0,11 m (cả 10 lò)
+Play: lửa chạy 10/10, đèn 10/10; nhân vật đi thẳng vào lò: bị chặn 10/10; 0 lỗi console
+```
+
+Ảnh: `lolua_bando.png` (nhìn từ trên xuống, vòng vàng = lò giữa), `lolua_1/2/3_*.png` (camera game).
+Cái giá: mỗi lò 10 720 tam giác + một đèn điểm (tầm 9 m) — 10 lò thêm 107 nghìn tam giác vào 2,69 triệu của Act2 (+4%);
+mức Yếu/Rất yếu của Unity cho 0 đèn điểm tính theo điểm ảnh nên đèn lò chỉ còn tính theo đỉnh, rẻ.
 
 ### Việc còn phải làm
 
@@ -7712,6 +7763,8 @@ cho riêng nền tảng WebGL sẽ ăn cả hai đầu: file nhỏ hơn và khô
 | **50. Chay thu GIAO DIEN dang nhap - sanh - phong** | Đi hết các màn (đăng nhập, tạo tài khoản, sảnh trống, sảnh có phòng, Cài đặt, trong phòng, phòng đủ 4 người, đếm ngược); ở mỗi màn đếm số lượt vẽ, số chữ bị cắt, số chữ phải thu nhỏ — đếm ngay trong hàm vẽ nên không sót nhãn nào. Kiểm font đang dùng là Inter, và quay về MainMenu khi đã đăng nhập thì vào thẳng sảnh. Ảnh `gd_*.png`, kết quả `PlayTestShots/giaodien.txt`. |
 | **51. Dung man chinh tu canh Act2** | Chép phần cảnh Act2 quanh chỗ đứng (45 m, phía trước camera) sang MainMenu.unity cùng ánh sáng / sương / bầu trời; đặt phù thuỷ, camera, hai lò đá; dọn vật vướng. Tạo luôn prefab lò đá từ FBX + texture Blender. Báo cáo `PlayTestShots/dungmanchinh.txt`. |
 | **51b. Chup thu goc nhin man chinh (Act2)** | Đặt nhân vật trước từng nhà mồ theo bốn hướng, bỏ chỗ vướng vật / giữa nước, chụp bằng khung camera màn chính — để chọn chỗ đứng. Ảnh `PlayTestShots/goc/`. |
+| **54. Dat 10 lo lua vao Act2** | Đặt 10 lò đá (prefab `Assets/Models/LoLuaDa`) vào Act2: lò giữa = chỗ đất khô gần tâm bản đồ nhất, 9 lò rải đều; không dưới nước, trong nhà mồ, trên/sát bia, chỉ trên mặt đất. Xoá lò cũ trước, chạy lại ra y hệt. Lưu Act2. Số đo `lolua_act2_dat.txt`. |
+| **54b. Chay thu lo lua Act2** | Kiểm 10 lò bằng cách khác lúc đặt (va chạm tạm cho lưới nước, tia chiếu lên tìm mái nhà, hộp bao bia, độ cao địa hình quanh chân); trong Play: lửa + đèn bật, nhân vật đi thẳng vào lò bị chặn; chụp `lolua_*.png` + bản đồ. Số đo `lolua_act2.txt`. |
 | **53. Chay thu HUD KINH DI (mau, mana, thong bao)** | Ngoài Play: chạy hàm bố cục HUD với chữ dài nhất ở 11 cỡ màn hình × PC/cảm ứng — khung chữ không ra ngoài, không đè nhau hay đè nút; số máu/mana lọt thanh. Quét chuỗi 4 file HUD: đủ ký tự trong cmap Inter, không còn chữ không dấu cũ. Trong Play (Act2): bật cùng lúc mọi thông báo + máu thấp, đọc bố cục thật, chụp `hud_*.png`. Số đo `hudkinhdi.txt`. |
 | **52. Chay thu TEN TREN DAU nhan vat** | Vào Play ở Act2, gắn tên cho nhân vật của mình, sinh ba bản sao tên có dấu quanh mình; đo từng bảng tên: có vẽ, trong màn hình, ngay trên chóp mũ (đo độc lập bằng lưới bake) không quá 0,30 m, đúng màu, font Inter đủ 134 chữ có dấu (đọc cmap), ghép dấu rời đúng (252 cách gõ), nền trong suốt (đo trên ảnh chụp, có mẫu đối chứng nền đen), không đè nhau, người gục thì tên mờ. Gọi `GiaoDien.ChuanBi` như màn sảnh. Ảnh `bangten_*.png`, số đo `bangten.txt`. |
 | **51c. Chup nen man chinh (lo da, ngon lua)** | Vào Play, tắt giao diện, chụp toàn cảnh (thêm một ảnh `Camera.main` đúng 1920 × 1080), cận lò đá, cận ngọn lửa; đo từng tấm flipbook (khói đen, hai tấm lửa: số hạt, vật liệu, texture), tam giác, vật đổ bóng. Ảnh `nen_*.png`, số đo `nenmanchinh.txt`. |
