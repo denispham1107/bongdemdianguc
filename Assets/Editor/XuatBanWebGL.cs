@@ -87,7 +87,54 @@ public static class XuatBanWebGL
                         Path.GetFileName(f), new FileInfo(f).Length / 1048576.0));
         }
 
+        if (tt.result == BuildResult.Succeeded)
+            bao.AppendLine("gan phien ban vao index.html: " + GanPhienBanChoTrang(ThuMucRa));
+
         File.WriteAllText("PlayTestShots/build_webgl.txt", bao.ToString());
         Debug.Log("[BuildWebGL]\n" + bao);
+    }
+
+    /// <summary>
+    /// GAN MA PHIEN BAN VAO DUONG DAN CAC FILE MA GAME trong index.html.
+    ///
+    /// Ten file khong doi giua cac ban (WebGL.wasm.unityweb...), ma truoc day
+    /// firebase.json cho Build/** header "max-age=31536000, immutable": trinh
+    /// duyet da vao trang giu ban wasm CU mot nam va khong hoi lai. Ban moi
+    /// len thi du lieu (.data) moi ghep voi ma (.wasm) cu - va game sap ngay
+    /// luc tai ("memory access out of bounds", "Maximum call stack size
+    /// exceeded"). Do duoc 11/09/2026: trinh duyet dung wasm 5 472 605 byte
+    /// (transferSize = 0, lay tu cache) trong khi may chu co 5 482 538.
+    ///
+    /// Them "?v=ma" (lay tu noi dung file) thi moi ban mot duong dan moi -
+    /// cache cu khong con dung duoc. index.html thi luon duoc hoi lai
+    /// (no-cache). File .data KHONG gan: UnityCache tu hoi lai may chu, va gan
+    /// vao thi moi ban lai de them 160 MB trong IndexedDB cua nguoi choi.
+    /// </summary>
+    public static string GanPhienBanChoTrang(string thuMuc)
+    {
+        string trang = Path.Combine(thuMuc, "index.html");
+        string build = Path.Combine(thuMuc, "Build");
+        if (!File.Exists(trang)) return "khong co index.html";
+
+        string html = File.ReadAllText(trang);
+        var tep = new[] { "WebGL.loader.js", "WebGL.framework.js.unityweb", "WebGL.wasm.unityweb" };
+        var ra = new System.Text.StringBuilder();
+        foreach (var t in tep)
+        {
+            string duong = Path.Combine(build, t);
+            if (!File.Exists(duong)) { ra.Append(t + " THIEU; "); continue; }
+            string ma;
+            using (var md5 = System.Security.Cryptography.MD5.Create())
+                ma = System.BitConverter.ToString(md5.ComputeHash(File.ReadAllBytes(duong)))
+                         .Replace("-", "").Substring(0, 10).ToLowerInvariant();
+
+            // Bo ma cu (neu chay lai lan nua) roi gan ma moi
+            html = System.Text.RegularExpressions.Regex.Replace(html,
+                "/" + System.Text.RegularExpressions.Regex.Escape(t) + "(\\?v=[0-9a-f]+)?\"",
+                "/" + t + "?v=" + ma + "\"");
+            ra.Append(t + "?v=" + ma + "; ");
+        }
+        File.WriteAllText(trang, html);
+        return ra.ToString();
     }
 }

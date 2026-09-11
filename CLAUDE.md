@@ -41,7 +41,8 @@ Assets/Scripts/
    Art/            ProcMesh, WorldFactory, TextureFactory, MaterialLibrary (Mats)
    Cam/            CameraRig
    UI/             GameHUD (OnGUI), CamUng, ChiBaoNgam, MayNgam,
-                   ManDangNhap, ManSanh (dang nhap + sanh phong, deu OnGUI)
+                   ManDangNhap, ManSanh (dang nhap + sanh phong, deu OnGUI),
+                   GiaoDien (bo giao dien kinh di dung chung + font Inter)
    Mang/           FirebaseMang (cau REST), HoSoMang, PhongMang, TranHienTai,
                    KenhTrucTiep (WebRTC), BatTay, DuDoan, TrangThaiNhanVat,
                    NguoiChoiKhac, GoiTin (nhi phan), NoiSuy, DongBoTran,
@@ -79,10 +80,10 @@ Blender MCP **không render được** (ảnh ra rỗng) — phải chạy `blen
 > `EditorSceneManager.OpenScene("Assets/Scenes/Act2.unity", Single)` trả lại ngay — không thì
 > người dùng quay lại Unity thấy màn của mình biến mất.
 
-**Menu `Diablo 2.5D`** trong Unity (47 mục): 1 nướng asset + dựng màn, 3 tự kiểm tra,
+**Menu `Diablo 2.5D`** trong Unity (48 mục): 1 nướng asset + dựng màn, 3 tự kiểm tra,
 4 chạy thử & chụp hình, 14 chống ô vuông đen, 15–17 ảnh vỏ cây / đá mộ / sứt mẻ bia,
 18–18d chạy thử cây cháy, 19 hồi sinh sau lốc, 20 nướng điểm mồi lửa, 21 nút khoá góc nhìn,
-22 thanh kỹ năng bản PC, **26 chạy thử mạng (sảnh phòng), 27 chạy thử khoá tài khoản, 28 chụp màn đăng nhập·sảnh, 29 xuất bản WebGL, 30/30b bơm input Act2·Act1 (bước 1), 31 dự đoán & hiệu chỉnh (bước 2), 32 nhiều người một cảnh (bước 3), 33 nội suy (bước 4), 34 PvP (bước 5), 35 ghép phòng cùng màn, 36 tự gắn bộ nối mạng, 37 kỹ năng qua mạng, 38 quái chung & bù trễ, 39 đòn của quái qua mạng, 40 máu khởi đầu, 41 nhịp bước qua mạng, 42 chế độ điều khiển, 43 kiểm toán bước 5, 44 sửa bước 5, 45 bốn người, 46 hiệu ứng qua mạng, 47 chế độ bốn bộ xương, 48 cài đặt đồ hoạ, 49 cầu lửa trúng người·khiên**.
+22 thanh kỹ năng bản PC, **26 chạy thử mạng (sảnh phòng), 27 chạy thử khoá tài khoản, 28 chụp màn đăng nhập·sảnh, 29 xuất bản WebGL, 30/30b bơm input Act2·Act1 (bước 1), 31 dự đoán & hiệu chỉnh (bước 2), 32 nhiều người một cảnh (bước 3), 33 nội suy (bước 4), 34 PvP (bước 5), 35 ghép phòng cùng màn, 36 tự gắn bộ nối mạng, 37 kỹ năng qua mạng, 38 quái chung & bù trễ, 39 đòn của quái qua mạng, 40 máu khởi đầu, 41 nhịp bước qua mạng, 42 chế độ điều khiển, 43 kiểm toán bước 5, 44 sửa bước 5, 45 bốn người, 46 hiệu ứng qua mạng, 47 chế độ bốn bộ xương, 48 cài đặt đồ hoạ, 49 cầu lửa trúng người·khiên, 50 giao diện đăng nhập·sảnh·phòng**.
 Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
 
 ## Quy tắc làm việc (rút ra từ những lần đã sai)
@@ -113,10 +114,19 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
   trong code): vào màn chỉ 4 bộ xương, giết hết đợi 30 giây ra 4 con mới. Menu 47 kiểm.
   **Tắt trước khi phát hành** — không thì game chỉ còn bốn con bộ xương.
 - Bảy kỹ năng chạy được: Cầu lửa, Mưa băng, Sấm sét, Lốc xoáy, Thiên thạch, Khiên, Giựt sét.
+- ⚠️ **Chữ tiếng Việt có dấu phải dùng font Inter** (`GiaoDien.ChuThuong/ChuDam`, file ở
+  `Assets/Resources/Fonts`). Font mặc định của Unity thiếu ạ ả ấ ệ ơ ư… — trong Editor vẫn hiện đúng vì
+  Windows vẽ bù, lên web thì mất chữ. Kiểm bằng cách đọc cmap của file font (menu 48), đừng tin `HasCharacter`.
+- Phép thử mạng vào Play phải **cất phiên đăng nhập đang lưu** (`diablo25d_refresh`) rồi trả lại — không thì
+  màn đăng nhập tự đăng nhập chen giữa và tráo tài khoản (menu 26/27/28/48/50 đều làm).
 - **Cài đặt đồ hoạ** (nút CÀI ĐẶT ở sảnh, `CaiDatDoHoa.cs`): mức Cao/Trung bình/Yếu lưu trong
   `localStorage` khoá `diablo25d.mucDoHoa`; `index.html` đọc nó để đặt độ phân giải **trước** khi Unity
-  khởi động — bảng hệ số ở hai nơi phải khớp nhau (menu 48 kiểm). Triển khai nhớ chép cả
-  `Build/WebGL/index.html` sang `web/`, không chỉ thư mục `Build/`.
+  khởi động — bảng hệ số ở hai nơi phải khớp nhau (menu 48 kiểm).
+- ⚠️ **Triển khai web**: chép CẢ `Build/WebGL/index.html` sang `web/` (không chỉ thư mục `Build/`) — trong đó
+  có mã phiên bản `?v=` gắn vào đường dẫn .wasm/.framework (menu 29 tự gắn). Thiếu nó thì trình duyệt dùng
+  mã game cũ trong cache ghép với dữ liệu mới và **game sập lúc tải**. Kiểm sau khi deploy: tải trang thật
+  trong trình duyệt ĐÃ TỪNG vào trang, xem `performance` báo .wasm được tải mới. Lùi bản khẩn cấp:
+  `firebase hosting:clone diablo25d-game@<version> diablo25d-game:live`.
 - Việc gần đây nhất (xem mục tương ứng trong `HUONG-DAN.md`):
   Thiên thạch **đốt cháy cả cái cây** (lửa lan theo bề mặt thật, cây rụi rồi mọc lại sau 30 s) ·
   Lốc xoáy trả cảnh vật về sau **30 s** thay vì 60 s ·

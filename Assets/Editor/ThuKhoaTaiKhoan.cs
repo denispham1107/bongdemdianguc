@@ -52,6 +52,18 @@ public static class ThuKhoaTaiKhoan
         // moi hong - vao Play xong bao loi thi nhin het nhu loi mang.
         if (!ThongTinChayThu.DocHoacBao()) return;
 
+        // CAT PHIEN DANG NHAP DANG LUU TRUOC KHI VAO PLAY, tra lai khi xong.
+        //
+        // Con phien luu san thi ManDangNhap.Start TU DANG NHAP LAI ngay khung
+        // hinh dau - chay song song voi phep thu va doi FirebaseMang.Uid sang
+        // tai khoan khac giua chung. Da vap 11/09/2026: buoc 3 doc ho so cua
+        // tai khoan kia (khong bi khoa) va bao "A bi khoa ma van vao duoc game".
+        // Menu 28 va 50 da cat phien vi dung ly do nay.
+        coPhienGoc = PlayerPrefs.HasKey(KhoaPhien);
+        phienGoc = PlayerPrefs.GetString(KhoaPhien, "");
+        PlayerPrefs.DeleteKey(KhoaPhien);
+        PlayerPrefs.Save();
+
         truocBatPlayMode = EditorSettings.enterPlayModeOptionsEnabled;
         truocPlayMode = EditorSettings.enterPlayModeOptions;
         EditorSettings.enterPlayModeOptionsEnabled = true;
@@ -185,7 +197,7 @@ public static class ThuKhoaTaiKhoan
         Ghi("3. sau khi khoa, A vao game: " + (ok ? "VAN VAO DUOC" : "bi chan - " + e));
 
         if (ok) { Ghi("[LOI] tai khoan bi khoa ma van vao duoc game"); loi++; }
-        else if (e == null || !e.Contains("bi khoa"))
+        else if (!FirebaseMang.LaLoiBiKhoa(e))
         { Ghi("[LOI] bi chan nhung khong phai vi khoa: " + e); loi++; }
 
         // Phien phai bi bo di, khong duoc giu lai de lan sau tu vao thang
@@ -208,6 +220,9 @@ public static class ThuKhoaTaiKhoan
         Ket();
     }
 
+    static bool coPhienGoc; static string phienGoc;
+    const string KhoaPhien = "diablo25d_refresh";
+
     static void Ket()
     {
         File.WriteAllText("PlayTestShots/mang_khoa.txt", bao.ToString());
@@ -215,9 +230,20 @@ public static class ThuKhoaTaiKhoan
         var rac = GameObject.Find("TAM_ThuKhoa");
         if (rac != null) Object.DestroyImmediate(rac);
 
+        FirebaseMang.Quen();
         EditorApplication.update -= Nhip;
         EditorSettings.enterPlayModeOptionsEnabled = truocBatPlayMode;
         EditorSettings.enterPlayModeOptions = truocPlayMode;
         EditorApplication.isPlaying = false;
+        EditorApplication.update += TraPhien;
+    }
+
+    static void TraPhien()
+    {
+        if (EditorApplication.isPlaying) return;
+        EditorApplication.update -= TraPhien;
+        if (coPhienGoc) PlayerPrefs.SetString(KhoaPhien, phienGoc);
+        else PlayerPrefs.DeleteKey(KhoaPhien);
+        PlayerPrefs.Save();
     }
 }

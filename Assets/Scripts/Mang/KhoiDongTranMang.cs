@@ -493,6 +493,7 @@ public class KhoiDongTranMang : MonoBehaviour
         if (!string.IsNullOrEmpty(NhanDang))
         {
             var kieuNho = new GUIStyle(GUI.skin.label);
+            kieuNho.font = GiaoDien.ChuThuong;     // font mac dinh thieu chu co dau tieng Viet
             kieuNho.fontSize = Mathf.RoundToInt(15f * s);
             kieuNho.normal.textColor = new Color(0.70f, 0.70f, 0.74f, 0.85f);
             GUI.Label(new Rect(10f * s, Screen.height - 26f * s, 520f * s, 22f * s),
@@ -502,6 +503,7 @@ public class KhoiDongTranMang : MonoBehaviour
         if (!string.IsNullOrEmpty(ThongBaoKetNoi))
         {
             var kieuKN = new GUIStyle(GUI.skin.label);
+            kieuKN.font = GiaoDien.ChuDam;
             kieuKN.fontSize = Mathf.RoundToInt(24f * s);
             kieuKN.alignment = TextAnchor.MiddleCenter;
             kieuKN.wordWrap = true;
@@ -524,6 +526,7 @@ public class KhoiDongTranMang : MonoBehaviour
         if (string.IsNullOrEmpty(TrangThai)) return;
 
         var kieu = new GUIStyle(GUI.skin.label);
+        kieu.font = GiaoDien.ChuThuong;
         kieu.fontSize = Mathf.RoundToInt(22f * s);
         kieu.alignment = TextAnchor.MiddleCenter;
         kieu.wordWrap = true;

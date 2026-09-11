@@ -43,6 +43,13 @@ public static class ThuMangSanh
         // moi hong - vao Play xong bao loi thi nhin het nhu loi mang.
         if (!ThongTinChayThu.DocHoacBao()) return;
 
+        // Cat phien dang nhap dang luu - khong thi ManDangNhap tu dang nhap
+        // lai chen giua phep thu va doi tai khoan. Xem ThuKhoaTaiKhoan.Chay.
+        coPhienGoc = PlayerPrefs.HasKey(KhoaPhien);
+        phienGoc = PlayerPrefs.GetString(KhoaPhien, "");
+        PlayerPrefs.DeleteKey(KhoaPhien);
+        PlayerPrefs.Save();
+
         truocBatPlayMode = EditorSettings.enterPlayModeOptionsEnabled;
         truocPlayMode = EditorSettings.enterPlayModeOptions;
         EditorSettings.enterPlayModeOptionsEnabled = true;
@@ -304,6 +311,9 @@ public static class ThuMangSanh
         Ket();
     }
 
+    static bool coPhienGoc; static string phienGoc;
+    const string KhoaPhien = "diablo25d_refresh";
+
     static void Ket()
     {
         File.WriteAllText("PlayTestShots/mang_sanh.txt", bao.ToString());
@@ -311,9 +321,20 @@ public static class ThuMangSanh
         var rac = GameObject.Find("TAM_ThuMang");
         if (rac != null) Object.DestroyImmediate(rac);
 
+        FirebaseMang.Quen();
         EditorApplication.update -= Nhip;
         EditorSettings.enterPlayModeOptionsEnabled = truocBatPlayMode;
         EditorSettings.enterPlayModeOptions = truocPlayMode;
         EditorApplication.isPlaying = false;
+        EditorApplication.update += TraPhien;
+    }
+
+    static void TraPhien()
+    {
+        if (EditorApplication.isPlaying) return;
+        EditorApplication.update -= TraPhien;
+        if (coPhienGoc) PlayerPrefs.SetString(KhoaPhien, phienGoc);
+        else PlayerPrefs.DeleteKey(KhoaPhien);
+        PlayerPrefs.Save();
     }
 }

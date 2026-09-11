@@ -97,7 +97,7 @@ public static class FirebaseMang
     public static IEnumerator TuDangNhapLai(Action<bool, string> xong)
     {
         string luu = PlayerPrefs.GetString(KhoaLuuToken, "");
-        if (string.IsNullOrEmpty(luu)) { xong(false, "Chua tung dang nhap"); yield break; }
+        if (string.IsNullOrEmpty(luu)) { xong(false, "Chưa từng đăng nhập."); yield break; }
 
         refreshToken = luu;
         yield return LamMoiToken(xong);
@@ -144,7 +144,7 @@ public static class FirebaseMang
             if (yc.result != UnityWebRequest.Result.Success)
             {
                 PlayerPrefs.DeleteKey(KhoaLuuToken);
-                xong(false, "Phien dang nhap da het han, hay dang nhap lai.");
+                xong(false, "Phiên đăng nhập đã hết hạn, hãy đăng nhập lại.");
                 yield break;
             }
 
@@ -284,23 +284,33 @@ public static class FirebaseMang
         return sb.ToString();
     }
 
+    /// <summary>
+    /// Cau bao loi nay co phai "tai khoan bi khoa" khong. Hoi qua day chu dung
+    /// so chuoi rai rac: cau chu co dau, so bang ban khong dau cu ("bi khoa")
+    /// la khong bao gio khop.
+    /// </summary>
+    public static bool LaLoiBiKhoa(string bao)
+    {
+        return !string.IsNullOrEmpty(bao) && bao.Contains("bị khoá");
+    }
+
     /// <summary>Doi ma loi cua Firebase thanh cau tieng Viet nguoi choi hieu.</summary>
     public static string DichLoi(string thanLoi)
     {
-        if (string.IsNullOrEmpty(thanLoi)) return "Mat ket noi mang.";
+        if (string.IsNullOrEmpty(thanLoi)) return "Mất kết nối mạng.";
 
-        if (thanLoi.Contains("EMAIL_EXISTS"))        return "Email nay da co nguoi dung roi.";
-        if (thanLoi.Contains("INVALID_EMAIL"))       return "Email khong hop le.";
-        if (thanLoi.Contains("WEAK_PASSWORD"))       return "Mat khau phai tu 6 ky tu tro len.";
-        if (thanLoi.Contains("EMAIL_NOT_FOUND"))     return "Khong co tai khoan nao dung email nay.";
-        if (thanLoi.Contains("INVALID_PASSWORD"))    return "Sai mat khau.";
-        if (thanLoi.Contains("INVALID_LOGIN_CREDENTIALS")) return "Sai email hoac mat khau.";
-        if (thanLoi.Contains("USER_DISABLED"))       return "Tai khoan da bi khoa.";
-        if (thanLoi.Contains("TOO_MANY_ATTEMPTS"))   return "Thu qua nhieu lan. Doi mot lat roi thu lai.";
+        if (thanLoi.Contains("EMAIL_EXISTS"))        return "Email này đã có người dùng rồi.";
+        if (thanLoi.Contains("INVALID_EMAIL"))       return "Email không hợp lệ.";
+        if (thanLoi.Contains("WEAK_PASSWORD"))       return "Mật khẩu phải từ 6 ký tự trở lên.";
+        if (thanLoi.Contains("EMAIL_NOT_FOUND"))     return "Không có tài khoản nào dùng email này.";
+        if (thanLoi.Contains("INVALID_PASSWORD"))    return "Sai mật khẩu.";
+        if (thanLoi.Contains("INVALID_LOGIN_CREDENTIALS")) return "Sai email hoặc mật khẩu.";
+        if (thanLoi.Contains("USER_DISABLED"))       return "Tài khoản đã bị khoá.";
+        if (thanLoi.Contains("TOO_MANY_ATTEMPTS"))   return "Thử quá nhiều lần. Đợi một lát rồi thử lại.";
         if (thanLoi.Contains("OPERATION_NOT_ALLOWED"))
-            return "Dang nhap bang email chua duoc bat trong Firebase Console.";
+            return "Đăng nhập bằng email chưa được bật trong Firebase Console.";
         if (thanLoi.Contains("CONFIGURATION_NOT_FOUND"))
-            return "Firebase Authentication chua duoc bat cho du an nay.";
+            return "Firebase Authentication chưa được bật cho dự án này.";
         // Realtime Database noi "Permission denied", con Firestore noi
         // "Missing or insufficient permissions." - hai chu khac han nhau, phai
         // bat ca hai. Thieu ve Firestore thi nguoi choi nhin thay nguyen khoi
@@ -308,13 +318,13 @@ public static class FirebaseMang
         if (thanLoi.Contains("Permission denied") || thanLoi.Contains("permission_denied")
             || thanLoi.Contains("Missing or insufficient permissions")
             || thanLoi.Contains("PERMISSION_DENIED"))
-            return "Khong du quyen. Tai khoan cua ban co the da bi khoa.";
+            return "Không đủ quyền. Tài khoản của bạn có thể đã bị khoá.";
 
         if (thanLoi.Contains("UNAUTHENTICATED") || thanLoi.Contains("invalid authentication")
             || thanLoi.Contains("INVALID_ID_TOKEN") || thanLoi.Contains("TOKEN_EXPIRED"))
-            return "Phien dang nhap da het han, hay dang nhap lai.";
+            return "Phiên đăng nhập đã hết hạn, hãy đăng nhập lại.";
 
-        return "Loi: " + (thanLoi.Length > 120 ? thanLoi.Substring(0, 120) : thanLoi);
+        return "Lỗi: " + (thanLoi.Length > 120 ? thanLoi.Substring(0, 120) : thanLoi);
     }
 
     // ================================================================

@@ -6729,6 +6729,7 @@ khoá thì bấm vào bảng lại trúng nút *TAO PHONG* nằm ngay bên dư�
 
 ```
 1. font: 14 chuỗi có dấu trong ManSanh.cs + CaiDatDoHoa.cs, 32 ký tự khác nhau, thiếu: không
+   ⚠️ SAI — xem mục "Giao diện đăng nhập và sảnh chờ, làm lại": trên bản web chữ vẫn mất dấu.
 2. vị trí nút CÀI ĐẶT:
    1920x1080: nút 1018..1178, VAO NHANH từ 1190, tiêu đề hết ở 759, chữ 76/160 điểm -> ổn
    2532x1170 (iPhone ngang): nút 1329..1502, VAO NHANH từ 1515, tiêu đề hết ở 1041 -> ổn
@@ -6876,6 +6877,164 @@ tiên (code cũ) cũng nổ đúng vào bia ấy. Giờ cả menu 37 và 49 **t�
 đường bay của chùm không vướng gì trong 9 m — rồi mới đặt người. Chạy lại menu 34, 37, 38, 46: đều
 **0 lỗi**.
 
+### Giao diện đăng nhập và sảnh chờ, làm lại
+
+Anh gửi bốn ảnh và báo ba việc:
+
+1. Vào game vẫn hiện **menu chơi đơn cũ** (MÀN 1 – ĐẤU TRƯỜNG / MÀN 2 – NGHĨA ĐỊA / THOÁT) — chỉ nên có sảnh.
+2. Màn đăng nhập và sảnh **sơ sài**, **nhiều chỗ chữ tràn, bị che** — làm lại cho đẹp, đúng chất game kinh dị.
+3. Tiếng Việt phải **có dấu đầy đủ**; bảng Cài đặt đang mất chữ: "CÀI Đ T", "Giao di n", "Y u", "H Y".
+
+#### Lỗi 3: font mặc định của Unity thiếu chữ tiếng Việt — và phép thử cũ đã nói dối
+
+Font mà OnGUI dùng khi không chỉ định gì (`LegacyRuntime`) **thiếu** các chữ ạ ả ấ ầ ẩ ẫ ậ ắ ặ ẹ ẻ ẽ ế ệ ỉ ị ọ ỏ
+ố ộ ớ ợ ụ ủ ứ ự ỳ ỷ ỹ ỵ… (dải U+1EA0–U+1EF9) và cả ơ, ư. Còn à á â ã è é ê ì í ò ó ô õ ù ú ý đ ă thì có, nên
+"Trung bình" hiện đúng mà "Yếu" thành "Y u".
+
+Trong Editor **không ai thấy**: font động của Unity mượn Arial của Windows để vẽ bù những chữ nó thiếu. Mục
+"Nút Cài đặt" ở trên ghi *"font: … thiếu: không"* — con số đó **sai**. Nó hỏi `Font.HasCharacter`, mà trong
+Editor hàm ấy trả lời luôn cả phần mượn của Windows. Lên trình duyệt thì chẳng có gì để mượn. Phép kiểm dùng
+chính cơ chế đang che lỗi nên nó luôn báo đúng.
+
+Cách sửa: dùng font **Inter** (bộ cài Unity có sẵn, giấy phép **SIL OFL** cho phép đóng gói kèm game; file
+giấy phép đi theo trong `Assets/Resources/Fonts/Inter-LICENSE.txt`). Mọi chữ trên đăng nhập, sảnh, phòng,
+đếm ngược, Cài đặt, và thông báo mạng trong trận đều dùng Inter.
+
+Phép kiểm mới **đọc thẳng bảng ký tự (cmap) trong file font**, không hỏi Unity:
+
+```
+font Inter: Regular 2519 ký tự, SemiBold 2519 ký tự; 134 chữ có dấu tiếng Việt thiếu: không
+đối chứng — Lato đi kèm Unity: thiếu 102/134 chữ (phải > 0)
+137 chuỗi có dấu trong 8 file giao diện, 84 ký tự khác nhau, font thiếu: không
+```
+
+Dòng đối chứng là để chứng minh bộ đọc không "cái gì cũng đủ": một font biết chắc thiếu tiếng Việt thì nó
+phải báo thiếu, và nó báo thiếu 102 chữ.
+
+#### Lỗi 1: menu chơi đơn cũ hiện ra khi đã đăng nhập
+
+Sảnh chỉ được bật khi việc đăng nhập **xảy ra** trong lúc MainMenu đang mở. Quay về MainMenu mà đã đăng nhập
+từ trước (bấm TRỞ VỀ sau trận, hay tải lại màn) thì không ai bật sảnh, và menu chơi đơn cũ lộ ra. Đây là
+lỗi đã ghi ở mục "Nút Cài đặt". Giờ khi chơi mạng, màn này **chỉ có** đăng nhập và sảnh: đã đăng nhập thì
+vào thẳng sảnh, menu cũ và phím Enter-vào-Act1 không còn nữa (vẫn còn nếu tắt hẳn chơi mạng,
+`batChoiMang = false`).
+
+#### Lỗi 2: làm lại giao diện
+
+Tất cả nằm trong `GiaoDien.cs` — một bộ dùng chung, ba màn chỉ việc gọi:
+
+- **Không khí:** bốn góc màn hình tối lại, sương đỏ bốc lên từ đáy; khung gần như đen, viền đỏ sẫm, **móc
+  sắt ở bốn góc**, hình thoi đỏ giữa mép trên; **máu nhỏ giọt** từ mép trên khung và dưới tên game (ảnh vẽ
+  bằng code, số ngẫu nhiên cố định nên lần nào mở cũng một hình). Tên game **chập chờn như ánh nến** (độ
+  sáng theo nhiễu Perlin), có quầng đỏ và bóng đổ.
+- **Nút:** hai loại — đỏ máu cho việc chính (VÀO GAME, TẠO PHÒNG, VÀO PHÒNG NHANH, BẮT ĐẦU TRẬN, OK) và đá
+  tối cho việc phụ; sáng lên khi rê chuột.
+- **Sảnh:** tên + thành tích ở đầu, khung "TẠO PHÒNG MỚI" (chọn màn bằng hai nút Đấu trường / Nghĩa địa thay
+  cho một nút bấm xoay vòng khó hiểu), khung "PHÒNG ĐANG CHỜ" có CÀI ĐẶT và VÀO PHÒNG NHANH cùng hàng. Mỗi
+  phòng một hàng: tên, màn, chủ phòng, **bốn ô người** tô đỏ theo số người, nút VÀO / ĐẦY.
+- **Trong phòng:** bốn thẻ ghế — vai trò (CHỦ PHÒNG màu vàng · BẠN), tên, SẴN SÀNG màu xanh hay "Đang chờ…",
+  nút ĐUỔI cho chủ phòng; ghế trống ghi "Ghế trống".
+- **Đếm ngược:** con số lớn đỏ, mỗi giây đập một nhịp.
+- **Thông báo lỗi** từ Firebase và phòng cũng viết lại có dấu ("Phòng này đã bắt đầu chơi rồi.", "Tài khoản
+  của bạn đã bị khoá…").
+
+**Chữ không bao giờ tràn.** Mọi nhãn và nút đi qua `GiaoDien.Chu` / `GiaoDien.Nut`: dài hơn chỗ thì tự thu
+nhỏ cỡ chữ (tới 62 %), vẫn dài thì cắt và thêm "…". Và mọi thứ xếp trong một **khung ảo rộng 1000 đơn vị**
+nhân với tỉ lệ = nhỏ hơn giữa (cao / 1080) và (rộng / 1180) — nên điện thoại cầm dọc cũng không còn đè chữ
+như trước.
+
+#### Đo (menu 50)
+
+Phép đo **đếm ngay trong hàm vẽ**, nên mọi nhãn mọi nút đều được tính, không phải chọn mẫu:
+
+```
+man hinh Game: 1568x581, tỉ lệ giao diện 0,54
+1. màn đăng nhập:                4 lượt vẽ, chữ bị cắt 0, phải thu nhỏ 0
+   font đang dùng: Inter-Regular / Inter-SemiBold
+2. tab tạo tài khoản:            3 lượt vẽ, cắt 0, thu nhỏ 0
+3. sảnh chờ:                     4 lượt vẽ, cắt 0, thu nhỏ 0
+3b. sảnh có hai phòng (giả):     4 lượt vẽ, cắt 0, thu nhỏ 0
+4. bảng Cài đặt:                 3 lượt vẽ, cắt 0, thu nhỏ 0
+5. nạp lại MainMenu khi đã đăng nhập -> sảnh hiện ngay: có
+6. trong phòng (chủ phòng):      4 lượt vẽ, cắt 0, thu nhỏ 0
+6b. phòng đủ 4 người (giả):      4 lượt vẽ, cắt 0, thu nhỏ 4 ("Nguyễn Thị Hằng Nga" — tên dài, co chữ cho vừa)
+7. đếm ngược:                    3 lượt vẽ, cắt 0, thu nhỏ 0
+số lỗi ghi nhận = 0
+```
+
+Ba lần phép đo tự sửa mình:
+
+- **"0 chữ bị cắt" khi chẳng vẽ gì.** Lần chạy đầu, ảnh sảnh **trống trơn** mà phép đo vẫn báo 0 lần cắt —
+  không vẽ thì làm gì có chữ để cắt. Giờ nó đếm cả **số lượt vẽ** và báo lỗi nếu bằng 0.
+- Lần chạy thứ hai bắt được "VÀO PHÒNG NHANH" bị cắt thành "VÀO PHÒNG NHA…" ở tỉ lệ 0,54 → nút rộng thêm.
+  Dòng gợi ý tên phòng quá dài và nút "Đấu trường" hơi chật → rút gọn, nới rộng.
+- Ảnh "phòng 4 người" vẫn ra 1/4: sảnh tự tải lại phòng từ máy chủ mỗi giây và ghi đè dữ liệu giả trước lúc
+  chụp. Phép đo tạm hoãn nhịp tải lại trong lúc chụp.
+
+Menu 48 kiểm hàng "PHÒNG ĐANG CHỜ" ở **10 cỡ màn hình** bằng cỡ chữ thật của Inter — kể cả hai điện thoại
+cầm dọc (1080×1920, 1170×2532), trước đây bị đè chữ: giờ đều "ổn".
+
+#### Hai phép thử cũ bị sửa theo
+
+Menu 27 (khoá tài khoản) báo **"tài khoản bị khoá mà vẫn vào được game"**. Không phải lỗ hổng: trong Editor
+đang lưu sẵn một phiên đăng nhập, lúc vào Play màn đăng nhập **tự đăng nhập lại song song** với phép thử và
+đổi tài khoản giữa chừng — bước 3 đọc hồ sơ của một tài khoản khác. Menu 28 đã tránh việc này từ lâu (cất
+phiên đi trước khi vào Play); menu 26 và 27 thì chưa. Cho cả hai cất phiên rồi trả lại: menu 27 **0 lỗi**,
+tài khoản bị khoá bị chặn với câu *"Tài khoản của bạn đã bị khoá. Hãy liên hệ quản trị viên."*; menu 26
+**0 lỗi**.
+
+### Game sập ngay lúc tải sau mỗi lần cập nhật — cache giữ mã cũ
+
+Đưa bản giao diện mới lên, mở trang thì game **sập ở 90 %**: lần đầu *"memory access out of bounds"*, lần
+sau *"Maximum call stack size exceeded"*. Cùng bộ file ấy chạy trên máy (server cục bộ) thì tải bình thường
+ở cả ba mức đồ hoạ, tải đi tải lại bốn lần.
+
+Đã đoán sai hai lần trước khi đo đúng chỗ:
+
+1. *"Tab trình duyệt cạn bộ nhớ vì đã tải game 160 MB bảy tám lần."* — mở một tab sạch, vẫn sập.
+2. *"Unity nạp mức chất lượng thấp đã lưu, rồi code chuyển lên High (bật khử răng cưa 8×) lúc khởi động."*
+   — dựng đúng điều kiện ấy trên máy: không sập.
+
+Khác biệt thật giữa hai nơi nằm ở header. `firebase.json` đặt cho mọi file trong `Build/`:
+
+```
+Cache-Control: public, max-age=31536000, immutable
+```
+
+tức *"giữ một năm, đừng bao giờ hỏi lại"* — trong khi **tên file không đổi** giữa các bản
+(`WebGL.wasm.unityweb`…). Trình duyệt từng vào trang giữ nguyên mã game (.wasm, .framework.js) của bản cũ.
+File dữ liệu (.data) thì Unity tự hỏi lại máy chủ nên luôn là bản mới. **Dữ liệu mới + mã cũ = sập.**
+
+Đo được ngay trong trình duyệt bị sập:
+
+```
+WebGL.wasm.unityweb   transfer = 0 (lấy từ cache)   dài 5 472 605 byte   <- bản 14:32
+máy chủ đang có                                      dài 5 482 538 byte   <- bản mới
+```
+
+Lỗi này **có từ trước**, không phải do giao diện mới — chỉ là lần này dữ liệu thay đổi đủ nhiều (thêm font,
+thêm kiểu dữ liệu) để lệch là sập. Người chơi nào không bấm Ctrl+F5 sau mỗi lần cập nhật đều có thể gặp.
+Lúc phát hiện, tôi đã đưa trang về bản trước (bằng `firebase hosting:clone`) trong lúc tìm lỗi.
+
+**Cách sửa** — hai chỗ, vì chỉ đổi header thì không cứu được ai: trình duyệt đã giữ bản "immutable" sẽ
+không bao giờ hỏi lại để biết header đã đổi.
+
+- `index.html` (luôn được hỏi lại) gắn **mã phiên bản** vào đường dẫn các file mã:
+  `WebGL.wasm.unityweb?v=50cbd283e9`. Mã lấy từ nội dung file (MD5), nên mỗi bản một đường dẫn mới và
+  cache cũ không còn khớp. Menu 29 tự gắn sau khi build (`XuatBanWebGL.GanPhienBanChoTrang`). File .data
+  **không** gắn: Unity tự hỏi lại nó, và gắn vào thì mỗi bản để lại thêm 160 MB trong trình duyệt người chơi.
+- `Build/**` đổi thành `Cache-Control: no-cache` — vẫn giữ trong cache, nhưng mỗi lần mở đều hỏi lại; không
+  đổi thì máy chủ trả 304, gần như không tốn gì.
+
+Kiểm lại trên **chính trình duyệt đã sập**:
+
+```
+WebGL.loader.js?v=23b18e8fa0            tải mới
+WebGL.framework.js.unityweb?v=eb5475452d  tải mới
+WebGL.wasm.unityweb?v=50cbd283e9          tải mới, 5 482 538 byte
+đang tải... 100%, không lỗi, màn đăng nhập hiện đủ dấu tiếng Việt
+```
+
 ### Việc còn phải làm
 
 **169 MB là quá nặng**, nhất là trên điện thoại — nền tảng chính của game. Gần như toàn bộ nằm ở
@@ -6946,6 +7105,7 @@ cho riêng nền tảng WebGL sẽ ăn cả hai đầu: file nhỏ hơn và khô
 | **47. Chay thu CHE DO BON BO XUONG** | Vào Play thật ở **cả hai màn**, đếm quái trên cảnh theo loại: vào màn đúng 4 bộ xương, giết hết thì đợt mới ra đúng 30 giây game (hai vòng), và để yên 260 giây không sinh thêm con nào. Kết quả ra `PlayTestShots/bonboxuong.txt`. |
 | **48. Chay thu CAI DAT do hoa** | Ngoài Play: font đủ chữ có dấu, vị trí nút ở 8 cỡ màn hình, chạy thật đoạn mã đọc cài đặt của `index.html` bằng node. Trong Play: đăng nhập thật, mở bảng, bấm OK từng mức, đọc lại từ kho lưu, vào Act2 đếm vật đổ bóng. Trả lại mức cũ, phiên đăng nhập và mức chất lượng của Editor. Kết quả ra `PlayTestShots/caidat.txt`. |
 | **49. Chay thu CAU LUA trung nguoi va khieng** | Tự chọn hướng bắn trống, rồi đo hai chiều mạng: người khác bắn mình / mình bắn người khác, có và không có khiên, và khiên của chính người bắn. Ghi từng cú mất máu (cú nổ hay cú cháy), chỗ quả cầu nổ so với mặt vòm, máu khiên; chụp màn hình lúc nổ để xem con số sát thương có đọc được không. Kết quả ra `PlayTestShots/cauluapvp.txt`, ảnh `caulua_no_*.png`. |
+| **50. Chay thu GIAO DIEN dang nhap - sanh - phong** | Đi hết các màn (đăng nhập, tạo tài khoản, sảnh trống, sảnh có phòng, Cài đặt, trong phòng, phòng đủ 4 người, đếm ngược); ở mỗi màn đếm số lượt vẽ, số chữ bị cắt, số chữ phải thu nhỏ — đếm ngay trong hàm vẽ nên không sót nhãn nào. Kiểm font đang dùng là Inter, và quay về MainMenu khi đã đăng nhập thì vào thẳng sảnh. Ảnh `gd_*.png`, kết quả `PlayTestShots/giaodien.txt`. |
 
 > ⚠️ Mục **1** sẽ **xóa và tạo lại** các thư mục Textures / Materials / Models / Prefabs.
 > Nếu bạn tự sửa tay trong đó thì hãy sao lưu trước.

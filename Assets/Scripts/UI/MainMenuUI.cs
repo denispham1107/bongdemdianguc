@@ -21,7 +21,6 @@ public class MainMenuUI : MonoBehaviour
 
     ManDangNhap manDangNhap;
     ManSanh manSanh;
-    bool dangOSanh;
 
     GUIStyle title, button, small;
     Texture2D panel, line;
@@ -41,7 +40,15 @@ public class MainMenuUI : MonoBehaviour
         manDangNhap = gameObject.AddComponent<ManDangNhap>();
         manSanh = gameObject.AddComponent<ManSanh>();
         manSanh.enabled = false;
-        manDangNhap.daVao = () => { manSanh.enabled = true; dangOSanh = true; };
+        manDangNhap.daVao = () => { manSanh.enabled = true; };
+
+        // DA DANG NHAP SAN THI VAO THANG SANH.
+        //
+        // Truoc day sanh chi bat khi viec dang nhap XAY RA trong luc man nay dang
+        // mo. Quay ve day sau tran (bam TRO VE / ESC) thi da dang nhap tu truoc,
+        // khong ai goi daVao - va nguoi choi roi vao menu choi don cu voi hai
+        // nut "MAN 1 / MAN 2" thay vi sanh cho.
+        if (FirebaseMang.DaDangNhap) manDangNhap.daVao();
     }
 
     void Update()
@@ -49,9 +56,9 @@ public class MainMenuUI : MonoBehaviour
         if (showcase != null)
             showcase.Rotate(Vector3.up, spinSpeed * Time.deltaTime, Space.World);
 
-        // Dang go email hay dang o sanh thi khong cuop phim: bam Enter de gui
-        // bieu mau ma lai nhay thang vao man choi thi rat kho chiu.
-        if (batChoiMang && (!FirebaseMang.DaDangNhap || dangOSanh)) return;
+        // Choi mang thi man nay CHI CO dang nhap va sanh cho - menu choi don cu
+        // (hai nut MAN 1 / MAN 2, phim Enter vao thang Act1) khong con nua.
+        if (batChoiMang) return;
 
         if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
             Play(act1Scene);
@@ -83,9 +90,9 @@ public class MainMenuUI : MonoBehaviour
 
     void OnGUI()
     {
-        // ManDangNhap va ManSanh tu ve lay phan cua chung. Menu cu chi hien khi
-        // choi don, hoac khi nguoi choi bam "choi mot minh" tu sanh.
-        if (batChoiMang && (!FirebaseMang.DaDangNhap || dangOSanh)) return;
+        // ManDangNhap va ManSanh tu ve lay phan cua chung. Menu cu chi con
+        // khi tat han choi mang (batChoiMang = false).
+        if (batChoiMang) return;
 
         float s = Screen.height / 1080f;
         EnsureStyles(s);

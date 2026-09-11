@@ -188,7 +188,7 @@ public static class PhongMang
                                        Action<bool, string> xong)
     {
         string ten = string.IsNullOrEmpty(tenPhong)
-            ? "Phong cua " + FirebaseMang.TenHienThi : tenPhong;
+            ? "Phòng của " + FirebaseMang.TenHienThi : tenPhong;
         if (ten.Length > 24) ten = ten.Substring(0, 24);
 
         string tenToi = FirebaseMang.TenHienThi ?? "NguoiChoi";
@@ -208,7 +208,7 @@ public static class PhongMang
         string ma = null; string loi = null;
         yield return FirebaseMang.Them("phong", than, (k, e) => { ma = k; loi = e; });
 
-        if (string.IsNullOrEmpty(ma)) { xong(false, loi ?? "Khong tao duoc phong."); yield break; }
+        if (string.IsNullOrEmpty(ma)) { xong(false, loi ?? "Không tạo được phòng."); yield break; }
 
         yield return TaiLaiPhong(ma, (ok, e) => xong(ok, e));
     }
@@ -218,15 +218,15 @@ public static class PhongMang
         string json = null;
         yield return FirebaseMang.Doc("phong/" + maPhong, s => json = s);
         if (string.IsNullOrEmpty(json) || json == "null")
-        { xong(false, "Phong nay khong con nua."); yield break; }
+        { xong(false, "Phòng này không còn nữa."); yield break; }
 
         var p = DocPhong(maPhong, json);
-        if (!p.DangCho) { xong(false, "Phong nay da bat dau choi roi."); yield break; }
+        if (!p.DangCho) { xong(false, "Phòng này đã bắt đầu chơi rồi."); yield break; }
 
         bool daTrongPhong = p.nguoiChoi.Exists(n => n.uid == FirebaseMang.Uid);
         if (!daTrongPhong)
         {
-            if (!p.ConCho) { xong(false, "Phong da du " + SoNguoiToiDa + " nguoi."); yield break; }
+            if (!p.ConCho) { xong(false, "Phòng đã đủ " + SoNguoiToiDa + " người."); yield break; }
 
             // Chon cho ngoi con trong, de bon nhan vat khong de chong len nhau
             // khi vao man choi.
@@ -243,7 +243,7 @@ public static class PhongMang
             bool ok = false; string loi = null;
             yield return FirebaseMang.Ghi("phong/" + maPhong + "/nguoiChoi/" + FirebaseMang.Uid,
                                           than, (o, e) => { ok = o; loi = e; });
-            if (!ok) { xong(false, loi ?? "Khong vao duoc phong."); yield break; }
+            if (!ok) { xong(false, loi ?? "Không vào được phòng."); yield break; }
 
             // Cap nhat so nguoi. Luat cho phep nhich mot don vi mot lan.
             yield return FirebaseMang.Ghi("phong/" + maPhong + "/soNguoi",
@@ -314,7 +314,7 @@ public static class PhongMang
         bool taoDuoc = false;
         yield return TaoPhong(null, ManMacDinh, (o, e) => { taoDuoc = o; });
         if (!taoDuoc || PhongHienTai == null)
-        { xong(false, "Khong tao duoc phong."); yield break; }
+        { xong(false, "Không tạo được phòng."); yield break; }
 
         yield return NhuongNeuCoPhongCoHon(xong);
     }
@@ -495,7 +495,7 @@ public static class PhongMang
         if (string.IsNullOrEmpty(json) || json == "null")
         {
             PhongHienTai = null;
-            xong(false, "Phong da dong.");
+            xong(false, "Phòng đã đóng.");
             yield break;
         }
 

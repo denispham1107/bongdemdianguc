@@ -1,24 +1,24 @@
 [ban 4] phong chet bi XOA han, phong song khong bi dung toi
-dang nhap B: OK (649 ms)
-tai ho so: OK, ten = ChienBinhB, 0 thang / 0 tran (669 ms)
-do dong ho may chu: 590 ms
-tao phong: OK (387 ms)
-  ma phong = -P0u7nxDLHst6AT2YT8A, man = Act2, host = ChienBinhB, la host = True, so nguoi = 1
-doc danh sach: 1 phong, co phong vua tao = True (1130 ms)
+dang nhap B: OK (594 ms)
+tai ho so: OK, ten = ChienBinhB, 0 thang / 0 tran (655 ms)
+do dong ho may chu: 403 ms
+tao phong: OK (265 ms)
+  ma phong = -P1EpyoroLGpduuLlXHj, man = Act2, host = ChienBinhB, la host = True, so nguoi = 1
+doc danh sach: 1 phong, co phong vua tao = True (80 ms)
 doi man sang Act1 -> doc lai duoc: Act1
-bat dau dem nguoc: trang thai = demNguoc, con lai 9.63 giay (369 ms)
+bat dau dem nguoc: trang thai = demNguoc, con lai 9.80 giay (205 ms)
 sau 3 giay thuc: dem nguoc tut 3.02 giay (dung ra phai ~3,00)
 phong vua dap nhip -> con song = True (phai la True)
 cung phong do, 65 giay sau -> con song = False (phai la False)
 danh sach sanh: 1 phong, trong do phong ma = 0 (phai la 0)
-dung mot phong ma (im lang 600 giay): -P0u7pOFlynEDX1ULa2w
+dung mot phong ma (im lang 600 giay): -P1EpzpSNYT81XQydtsX
 sau khi doc sanh, phong ma con khong: da bi xoa
 phong dang mo cua minh con nguyen: True (phai la True)
-con 5.0 giay, dang dem nguoc -> khach vao tran = False (phai la False)
+con 5.7 giay, dang dem nguoc -> khach vao tran = False (phai la False)
 het gio dem nguoc -> khach vao tran = True
 host da vao tran -> trang thai doc duoc = dangChoi, khach vao tran = True
-dang nhap A: OK, ten = thunghiem.a.diab (551 ms)
-vao phong dang dem nguoc: bi tu choi - Phong nay da bat dau choi roi.
+dang nhap A: OK, ten = thunghiem.a.diab (607 ms)
+vao phong dang dem nguoc: bi tu choi - Phòng này đã bắt đầu chơi rồi.
 don phong chay thu: sach
-tong thoi gian: 10.7 giay
+tong thoi gian: 8.1 giay
 so loi ghi nhan = 0

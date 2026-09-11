@@ -11,39 +11,37 @@ using UnityEngine;
 ///
 /// Ban Editor va ban PC deu chay duoc vi tat ca di qua REST API - xem
 /// <see cref="FirebaseMang"/>.
+///
+/// Giao dien (khung, nut, font co dau tieng Viet) lay tu <see cref="GiaoDien"/>.
 /// </summary>
 public class ManDangNhap : MonoBehaviour
 {
-    const float Ref = 1080f;
-
     public enum Trang { DangNhap, DangKy }
 
     Trang trang = Trang.DangNhap;
     string email = "", matKhau = "", ten = "";
     string bao = "";
+    bool baoLaLoi;
     bool dangCho;
     bool daThuTuDangNhap;
-
-    GUIStyle kieuTieuDe, kieuNhan, kieuNut, kieuNutPhu, kieuO, kieuBao, kieuTab;
-    Texture2D nenMo;
 
     /// <summary>Goi khi dang nhap xong - ManSanh se nghe cai nay.</summary>
     public System.Action daVao;
 
     void Start()
     {
-        nenMo = Mau(new Color(0f, 0f, 0f, 0.62f));
-
         // Con phien tu lan truoc thi vao thang, khong bat go lai mat khau
         if (FirebaseMang.CoTheTuDangNhapLai && !FirebaseMang.DaDangNhap)
             StartCoroutine(ThuTuDangNhap());
     }
 
+    void Bao(string chu, bool loi) { bao = chu ?? ""; baoLaLoi = loi; }
+
     IEnumerator ThuTuDangNhap()
     {
         daThuTuDangNhap = true;
         dangCho = true;
-        bao = "Dang khoi phuc phien truoc...";
+        Bao("Đang khôi phục phiên trước...", false);
 
         bool ok = false; string loi = null;
         yield return FirebaseMang.TuDangNhapLai((o, e) => { ok = o; loi = e; });
@@ -54,124 +52,113 @@ public class ManDangNhap : MonoBehaviour
         }
 
         dangCho = false;
-        if (ok) { bao = ""; if (daVao != null) daVao(); }
-        else { bao = loi ?? ""; FirebaseMang.Quen(); }
+        if (ok) { Bao("", false); if (daVao != null) daVao(); }
+        else { Bao(loi, true); FirebaseMang.Quen(); }
     }
 
     // ================================================================
-
-    void EnsureStyles(float s)
-    {
-        if (kieuTieuDe != null) { CapNhatCo(s); return; }
-
-        kieuTieuDe = new GUIStyle(GUI.skin.label);
-        kieuTieuDe.fontStyle = FontStyle.Bold;
-        kieuTieuDe.alignment = TextAnchor.MiddleCenter;
-        kieuTieuDe.normal.textColor = new Color(0.85f, 0.15f, 0.08f);
-
-        kieuNhan = new GUIStyle(GUI.skin.label);
-        kieuNhan.normal.textColor = new Color(0.70f, 0.70f, 0.72f);
-
-        kieuNut = new GUIStyle(GUI.skin.button);
-        kieuNut.fontStyle = FontStyle.Bold;
-
-        kieuNutPhu = new GUIStyle(GUI.skin.button);
-
-        kieuO = new GUIStyle(GUI.skin.textField);
-
-        kieuBao = new GUIStyle(GUI.skin.label);
-        kieuBao.alignment = TextAnchor.MiddleCenter;
-        kieuBao.wordWrap = true;
-
-        kieuTab = new GUIStyle(GUI.skin.button);
-        kieuTab.fontStyle = FontStyle.Bold;
-
-        CapNhatCo(s);
-    }
-
-    void CapNhatCo(float s)
-    {
-        kieuTieuDe.fontSize = Mathf.RoundToInt(64f * s);
-        kieuNhan.fontSize   = Mathf.RoundToInt(20f * s);
-        kieuNut.fontSize    = Mathf.RoundToInt(26f * s);
-        kieuNutPhu.fontSize = Mathf.RoundToInt(20f * s);
-        kieuO.fontSize      = Mathf.RoundToInt(24f * s);
-        kieuBao.fontSize    = Mathf.RoundToInt(20f * s);
-        kieuTab.fontSize    = Mathf.RoundToInt(22f * s);
-    }
 
     void OnGUI()
     {
         if (FirebaseMang.DaDangNhap) return;
 
-        float s = Screen.height / Ref;
-        EnsureStyles(s);
+        GiaoDien.ChuanBi();
+        float s = GiaoDien.TiLe;
+        GiaoDien.VeNen();
 
-        float rong = Mathf.Min(Screen.width * 0.86f, 620f * s);
+        // ---- Do cao ca khoi de dat giua man hinh ----
+        float rong = Mathf.Min(Screen.width - 40f * s, 600f * s);
+        float caoKhung = (trang == Trang.DangKy ? 616f : 514f) * s;
+        float caoTieuDe = 236f * s;
+        float tong = caoTieuDe + caoKhung;
+        float y = Mathf.Max(16f * s, (Screen.height - tong) * 0.5f - 10f * s);
         float x = (Screen.width - rong) * 0.5f;
-        float y = Screen.height * 0.16f;
 
-        GUI.Label(new Rect(0f, y, Screen.width, 90f * s), "DIABLO 2.5D", kieuTieuDe);
-        y += 105f * s;
+        // ---- Ten game ----
+        GiaoDien.TieuDeGame(new Rect(0f, y, Screen.width, 130f * s), s);
+        y += 168f * s;                       // chua cho vet mau chay duoi ten game
 
-        GUI.DrawTexture(new Rect(x - 18f * s, y - 14f * s, rong + 36f * s, 470f * s),
-                        nenMo, ScaleMode.StretchToFill, true);
+        // Dong phu giua hai duong ke
+        float rongPhu = Mathf.Min(Screen.width - 40f * s, 620f * s);
+        var kPhu = GiaoDien.KieuChuNho;
+        var canhCu = kPhu.alignment;
+        kPhu.alignment = TextAnchor.MiddleCenter;
+        GiaoDien.Chu(new Rect((Screen.width - rongPhu) * 0.5f, y, rongPhu, 30f * s),
+                     "KẺ SỐNG SÓT CUỐI CÙNG SẼ CHIẾN THẮNG", kPhu);
+        kPhu.alignment = canhCu;
+        GiaoDien.DuongKe(new Rect(Screen.width * 0.5f - 330f * s, y + 40f * s, 660f * s, Mathf.Max(1f, 1.5f * s)),
+                         new Color(0.75f, 0.12f, 0.08f, 0.8f));
+        y = y + caoTieuDe - 168f * s;
 
-        // ---- Hai tab ----
-        float rongTab = (rong - 10f * s) * 0.5f;
-        var mauCu = GUI.backgroundColor;
+        // ---- Khung ----
+        var khung = new Rect(x, y, rong, caoKhung);
+        GiaoDien.Khung(khung, s, true);
 
-        GUI.backgroundColor = trang == Trang.DangNhap ? new Color(0.62f, 0.16f, 0.14f) : mauCu;
-        if (GUI.Button(new Rect(x, y, rongTab, 46f * s), "DANG NHAP", kieuTab))
-        { trang = Trang.DangNhap; bao = ""; }
+        float le = 36f * s;
+        float xx = x + le, rr = rong - 2f * le;
+        float yy = y + 46f * s;
 
-        GUI.backgroundColor = trang == Trang.DangKy ? new Color(0.62f, 0.16f, 0.14f) : mauCu;
-        if (GUI.Button(new Rect(x + rongTab + 10f * s, y, rongTab, 46f * s), "TAO TAI KHOAN", kieuTab))
-        { trang = Trang.DangKy; bao = ""; }
-
-        GUI.backgroundColor = mauCu;
-        y += 62f * s;
-
+        // Hai tab
+        float rongTab = rr * 0.5f;
         GUI.enabled = !dangCho;
+        if (GiaoDien.Tab(new Rect(xx, yy, rongTab, 50f * s), "ĐĂNG NHẬP", trang == Trang.DangNhap, s))
+        { trang = Trang.DangNhap; Bao("", false); }
+        if (GiaoDien.Tab(new Rect(xx + rongTab, yy, rongTab, 50f * s), "TẠO TÀI KHOẢN", trang == Trang.DangKy, s))
+        { trang = Trang.DangKy; Bao("", false); }
+        yy += 50f * s + 26f * s;
 
-        // ---- Ten (chi khi dang ky) ----
         if (trang == Trang.DangKy)
         {
-            GUI.Label(new Rect(x, y, rong, 26f * s), "Ten trong game (2-16 ky tu)", kieuNhan);
-            y += 28f * s;
-            ten = GUI.TextField(new Rect(x, y, rong, 44f * s), ten, 16, kieuO);
-            y += 56f * s;
+            GiaoDien.NhanO(new Rect(xx, yy, rr, 26f * s), "Tên trong game (2–16 ký tự)");
+            yy += 30f * s;
+            ten = GiaoDien.ONhap(new Rect(xx, yy, rr, 52f * s), "o_ten", ten, 16, "Tên người khác sẽ thấy");
+            yy += 52f * s + 18f * s;
         }
 
-        GUI.Label(new Rect(x, y, rong, 26f * s), "Email", kieuNhan);
-        y += 28f * s;
-        email = GUI.TextField(new Rect(x, y, rong, 44f * s), email, 64, kieuO);
-        y += 56f * s;
+        GiaoDien.NhanO(new Rect(xx, yy, rr, 26f * s), "Email");
+        yy += 30f * s;
+        email = GiaoDien.ONhap(new Rect(xx, yy, rr, 52f * s), "o_email", email, 64, "ten@email.com");
+        yy += 52f * s + 18f * s;
 
-        GUI.Label(new Rect(x, y, rong, 26f * s), "Mat khau (it nhat 6 ky tu)", kieuNhan);
-        y += 28f * s;
-        matKhau = GUI.PasswordField(new Rect(x, y, rong, 44f * s), matKhau, '*', 64, kieuO);
-        y += 60f * s;
+        GiaoDien.NhanO(new Rect(xx, yy, rr, 26f * s), "Mật khẩu (ít nhất 6 ký tự)");
+        yy += 30f * s;
+        matKhau = GiaoDien.ONhap(new Rect(xx, yy, rr, 52f * s), "o_matkhau", matKhau, 64, "", true);
+        yy += 52f * s + 30f * s;
 
         string chuNut = dangCho
-            ? "DANG CHO..."
-            : (trang == Trang.DangKy ? "TAO TAI KHOAN" : "DANG NHAP");
+            ? "ĐANG CHỜ..."
+            : (trang == Trang.DangKy ? "TẠO TÀI KHOẢN" : "VÀO GAME");
 
-        if (GUI.Button(new Rect(x, y, rong, 54f * s), chuNut, kieuNut) && !dangCho)
+        if (GiaoDien.Nut(new Rect(xx, yy, rr, 62f * s), chuNut, GiaoDien.KieuNutMau) && !dangCho)
             BamNutChinh();
-
-        y += 64f * s;
         GUI.enabled = true;
+        yy += 62f * s + 16f * s;
 
+        // Thong bao - nhieu dong, chu do khi la loi
         if (!string.IsNullOrEmpty(bao))
         {
-            kieuBao.normal.textColor = bao.StartsWith("Dang")
-                ? new Color(0.75f, 0.75f, 0.78f)
-                : new Color(0.90f, 0.42f, 0.40f);
-            GUI.Label(new Rect(x, y, rong, 64f * s), bao, kieuBao);
+            var k = GiaoDien.KieuChuMo;
+            var mauCu = k.normal.textColor;
+            var canh = k.alignment;
+            k.normal.textColor = baoLaLoi ? GiaoDien.MauLoi : GiaoDien.MauMo;
+            k.alignment = TextAnchor.UpperCenter;
+            GiaoDien.ChuNhieuDong(new Rect(xx, yy, rr, khung.yMax - yy - 12f * s), bao, k);
+            k.normal.textColor = mauCu;
+            k.alignment = canh;
         }
 
-        // Enter de gui - go xong mat khau la bam Enter, khong phai rê chuot
+        // Goi y o day man hinh
+        var kd = GiaoDien.KieuChuNho;
+        var cd = kd.alignment;
+        var md = kd.normal.textColor;
+        kd.alignment = TextAnchor.MiddleCenter;
+        kd.normal.textColor = GiaoDien.MauToi;
+        GiaoDien.Chu(new Rect(0f, Mathf.Min(Screen.height - 40f * s, khung.yMax + 18f * s), Screen.width, 28f * s),
+                     "Nhấn Enter để xác nhận", kd);
+        kd.alignment = cd;
+        kd.normal.textColor = md;
+
+        // Enter de gui - go xong mat khau la bam Enter, khong phai re chuot
         var e = Event.current;
         if (e.type == EventType.KeyDown
             && (e.keyCode == KeyCode.Return || e.keyCode == KeyCode.KeypadEnter)
@@ -185,18 +172,18 @@ public class ManDangNhap : MonoBehaviour
     void BamNutChinh()
     {
         if (trang == Trang.DangKy && ten.Trim().Length < 2)
-        { bao = "Ten phai tu 2 ky tu tro len."; return; }
+        { Bao("Tên phải từ 2 ký tự trở lên.", true); return; }
         if (string.IsNullOrEmpty(email) || !email.Contains("@"))
-        { bao = "Email khong hop le."; return; }
+        { Bao("Email không hợp lệ.", true); return; }
         if (matKhau.Length < 6)
-        { bao = "Mat khau phai tu 6 ky tu tro len."; return; }
+        { Bao("Mật khẩu phải từ 6 ký tự trở lên.", true); return; }
 
         StartCoroutine(trang == Trang.DangKy ? ChayDangKy() : ChayDangNhap());
     }
 
     IEnumerator ChayDangKy()
     {
-        dangCho = true; bao = "Dang tao tai khoan...";
+        dangCho = true; Bao("Đang tạo tài khoản...", false);
         bool ok = false; string loi = null;
 
         yield return FirebaseMang.DangKy(email.Trim(), matKhau, (o, e) => { ok = o; loi = e; });
@@ -205,13 +192,13 @@ public class ManDangNhap : MonoBehaviour
             yield return HoSoMang.TaiHoacTao(ten.Trim(), (o, e) => { ok = o; loi = e; });
 
         dangCho = false;
-        if (ok) { bao = ""; if (daVao != null) daVao(); }
-        else bao = loi ?? "Khong tao duoc tai khoan.";
+        if (ok) { Bao("", false); if (daVao != null) daVao(); }
+        else Bao(loi ?? "Không tạo được tài khoản.", true);
     }
 
     IEnumerator ChayDangNhap()
     {
-        dangCho = true; bao = "Dang dang nhap...";
+        dangCho = true; Bao("Đang đăng nhập...", false);
         bool ok = false; string loi = null;
 
         yield return FirebaseMang.DangNhap(email.Trim(), matKhau, (o, e) => { ok = o; loi = e; });
@@ -220,20 +207,12 @@ public class ManDangNhap : MonoBehaviour
             yield return HoSoMang.TaiHoacTao(null, (o, e) => { ok = o; loi = e; });
 
         dangCho = false;
-        if (ok) { bao = ""; if (daVao != null) daVao(); }
+        if (ok) { Bao("", false); if (daVao != null) daVao(); }
         else
         {
-            bao = loi ?? "Khong dang nhap duoc.";
+            Bao(loi ?? "Không đăng nhập được.", true);
             // Ho so bao bi khoa thi phai bo phien di, khong giu lai
-            if (bao.Contains("bi khoa")) FirebaseMang.Quen();
+            if (FirebaseMang.LaLoiBiKhoa(bao)) FirebaseMang.Quen();
         }
-    }
-
-    static Texture2D Mau(Color c)
-    {
-        var t = new Texture2D(1, 1);
-        t.SetPixel(0, 0, c);
-        t.Apply();
-        return t;
     }
 }

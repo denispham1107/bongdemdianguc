@@ -115,33 +115,75 @@ public static class ThuCaiDat
     // A1. FONT
     // =============================================================
 
+    /// <summary>Cac file co chu hien len man dang nhap, sanh, phong, cai dat.</summary>
+    public static readonly string[] TepGiaoDien =
+    {
+        "Assets/Scripts/UI/ManSanh.cs", "Assets/Scripts/UI/ManDangNhap.cs",
+        "Assets/Scripts/UI/GiaoDien.cs", "Assets/Scripts/CaiDatDoHoa.cs",
+        "Assets/Scripts/Mang/FirebaseMang.cs", "Assets/Scripts/Mang/PhongMang.cs",
+        "Assets/Scripts/Mang/HoSoMang.cs", "Assets/Scripts/Mang/KhoiDongTranMang.cs",
+    };
+
     static void KiemFont()
     {
-        var font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-        if (font == null) { Ghi("[LOI] khong lay duoc font LegacyRuntime"); loi++; return; }
+        // DOC THANG BANG KY TU CUA FILE FONT se dong goi vao game - KHONG hoi
+        // Font.HasCharacter. Ban cu cua phep thu nay hoi font mac dinh bang
+        // HasCharacter va bao "thieu: khong"; len ban web thi "CAI DAT" hien
+        // thanh "CAI D T" - trong Editor, Windows ve bu bang Arial va
+        // HasCharacter tinh ca phan ay.
+        string[] fonts = { "Assets/Resources/Fonts/Inter-Regular.ttf", "Assets/Resources/Fonts/Inter-SemiBold.ttf" };
+        var bang = new System.Collections.Generic.List<System.Collections.Generic.HashSet<int>>();
+        foreach (var f in fonts)
+        {
+            var b = BangKyTuFont.Doc(f);
+            if (b == null) { Ghi("[LOI] khong doc duoc bang ky tu cua " + f); loi++; return; }
+            bang.Add(b);
+        }
 
-        string nguon = File.ReadAllText("Assets/Scripts/UI/ManSanh.cs")
-                     + File.ReadAllText("Assets/Scripts/CaiDatDoHoa.cs");
-        var chuoi = Regex.Matches(nguon, "\"([^\"\\\\]|\\\\.)*\"");
+        // Doi chung: mot font BIET LA thieu tieng Viet (Lato di kem Unity) phai
+        // bi bo doc bao thieu - khong thi bo doc hong va cai gi cung "du".
+        string lato = EditorApplication.applicationContentsPath
+            + "/Resources/PackageManager/BuiltInPackages/com.unity.render-pipelines.universal/Samples~/URPPackageSamples/SharedAssets/Fonts/Lato-Regular.ttf";
+        var bangLato = BangKyTuFont.Doc(lato);
+        int latoThieu = 0;
+        if (bangLato != null)
+            foreach (char c in BangKyTuFont.ChuVietCoDau) if (!bangLato.Contains(c)) latoThieu++;
 
+        // Du 134 chu co dau
+        var thieuBangChu = new StringBuilder();
+        foreach (char c in BangKyTuFont.ChuVietCoDau)
+            foreach (var b in bang) if (!b.Contains(c)) { thieuBangChu.Append(c); break; }
+
+        // Moi chu (ca chuoi lan ky tu don) trong cac file giao dien
         var daXet = new System.Collections.Generic.HashSet<char>();
         var thieu = new StringBuilder();
         int soChuoiCoDau = 0;
-        foreach (Match mt in chuoi)
+        foreach (var tep in TepGiaoDien)
         {
-            bool coDau = false;
-            foreach (char c in mt.Value)
+            string nguon = File.ReadAllText(tep);
+            foreach (Match mt in Regex.Matches(nguon, "\"([^\"\\\\]|\\\\.)*\"|'([^'\\\\]|\\\\.)'"))
             {
-                if (c < 128) continue;
-                coDau = true;
-                if (!daXet.Add(c)) continue;
-                if (!font.HasCharacter(c)) thieu.Append(c).Append(' ');
+                bool coDau = false;
+                foreach (char c in mt.Value)
+                {
+                    if (c < 128) continue;
+                    coDau = true;
+                    if (!daXet.Add(c)) continue;
+                    foreach (var b in bang) if (!b.Contains(c)) { thieu.Append(c).Append(' '); break; }
+                }
+                if (coDau) soChuoiCoDau++;
             }
-            if (coDau) soChuoiCoDau++;
         }
-        Ghi("1. font: " + soChuoiCoDau + " chuoi co dau trong ManSanh.cs + CaiDatDoHoa.cs, "
-            + daXet.Count + " ky tu khac nhau, thieu: " + (thieu.Length == 0 ? "khong" : thieu.ToString()));
-        Kiem(thieu.Length == 0, "font thieu ky tu: " + thieu);
+
+        Ghi("1. font Inter (doc thang bang ky tu trong file): Regular " + bang[0].Count + " ky tu, SemiBold "
+            + bang[1].Count + " ky tu; 134 chu co dau tieng Viet thieu: "
+            + (thieuBangChu.Length == 0 ? "khong" : thieuBangChu.ToString()));
+        Ghi("   doi chung - Lato cua Unity: " + (bangLato == null ? "khong tim thay file" : "thieu " + latoThieu + "/134 chu (phai > 0)"));
+        Ghi("   " + soChuoiCoDau + " chuoi co dau trong " + TepGiaoDien.Length + " file giao dien, "
+            + daXet.Count + " ky tu khac nhau, font thieu: " + (thieu.Length == 0 ? "khong" : thieu.ToString()));
+        Kiem(thieuBangChu.Length == 0, "font Inter thieu chu tieng Viet: " + thieuBangChu);
+        Kiem(thieu.Length == 0, "font thieu ky tu dang dung: " + thieu);
+        if (bangLato != null) Kiem(latoThieu > 0, "bo doc bang ky tu bao Lato du tieng Viet - bo doc hong");
     }
 
     // =============================================================
@@ -150,53 +192,49 @@ public static class ThuCaiDat
 
     static void KiemViTri()
     {
-        var font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-        var kieuTieuDe = new GUIStyle { font = font, fontStyle = FontStyle.Bold };
-        var kieuNut = new GUIStyle { font = font };
+        var dam = AssetDatabase.LoadAssetAtPath<Font>("Assets/Resources/Fonts/Inter-SemiBold.ttf");
+        if (dam == null) { Ghi("[LOI] khong nap duoc font Inter-SemiBold"); loi++; return; }
+        var kTieuDe = new GUIStyle { font = dam };
+        var kNutDa = new GUIStyle { font = dam };
+        var kNutMau = new GUIStyle { font = dam };
 
         int[,] manHinh =
         {
             { 1920, 1080 }, { 1366, 768 }, { 1280, 720 }, { 1024, 768 },
-            { 2532, 1170 }, { 2400, 1080 }, { 2732, 2048 }, { 1080, 1920 },
+            { 2532, 1170 }, { 2400, 1080 }, { 2732, 2048 }, { 1080, 1920 }, { 1170, 2532 },
+            { 1568, 581 },   // cua so Game trong Editor - cho menu 50 bat duoc chu bi cat
         };
 
-        Ghi("2. vi tri nut CAI DAT (x trai..phai, tieu de ket thuc o):");
+        Ghi("2. vi tri nut CAI DAT o hang \"PHONG DANG CHO\" (co chu that cua Inter):");
         for (int i = 0; i < manHinh.GetLength(0); i++)
         {
             float W = manHinh[i, 0], H = manHinh[i, 1];
-            float s = H / 1080f;
-            // Y het cong thuc cua ManSanh.VeSanh
-            float rong = Mathf.Min(W * 0.92f, 900f * s);
-            float x = (W - rong) * 0.5f;
-            float y = (24f + 52f + 144f) * s;
+            float s = GiaoDien.TinhTiLe(W, H);
+            var b = ManSanh.TinhBoCucSanh(W, H, s);
 
-            var cd = ManSanh.ViTriNutCaiDat(x, y, rong, s);
-            var vn = ManSanh.ViTriNutVaoNhanh(x, y, rong, s);
+            // Co chu va dem hai ben lay dung nhu GiaoDien.ChuanBi
+            kTieuDe.fontSize = Mathf.Max(10, Mathf.RoundToInt(25f * s));
+            kNutDa.fontSize = Mathf.Max(10, Mathf.RoundToInt(20f * s));
+            kNutMau.fontSize = Mathf.Max(10, Mathf.RoundToInt(23f * s));
+            float dem = 2f * Mathf.RoundToInt(14f * s) + 4f;
 
-            kieuTieuDe.fontSize = Mathf.RoundToInt(30f * s);
-            float cuoiTieuDe = x + kieuTieuDe.CalcSize(new GUIContent("Phong dang cho")).x;
+            float rongTieuDe = kTieuDe.CalcSize(new GUIContent("PHÒNG ĐANG CHỜ")).x;
+            float rongCaiDat = kNutDa.CalcSize(new GUIContent("CÀI ĐẶT")).x + dem;
+            float rongNhanh = kNutMau.CalcSize(new GUIContent("VÀO PHÒNG NHANH")).x + dem;
 
-            kieuNut.fontSize = Mathf.RoundToInt(19f * s);
-            float rongChu = kieuNut.CalcSize(new GUIContent("CÀI ĐẶT")).x;
+            var cd = b.nutCaiDat; var vn = b.nutVaoNhanh; var td = b.tieuDePhongCho;
+            bool deNhau = cd.Overlaps(vn);
+            bool deTieuDe = td.x + rongTieuDe > cd.x;
+            bool trongKhung = cd.x >= b.khungDanhSach.x && vn.xMax <= b.khungDanhSach.xMax
+                              && b.khungDanhSach.x >= 0f && b.khungDanhSach.xMax <= W;
+            bool vuaChu = rongCaiDat <= cd.width && rongNhanh <= vn.width;
 
-            bool doc = W < H;
-            bool deVaoNhanh = cd.Overlaps(vn);
-            bool deTieuDe = cd.x < cuoiTieuDe;
-            bool trongKhung = cd.x >= x;
-            bool vuaChu = rongChu + 12f <= cd.width;   // 12 = dem hai ben cua nut
-
-            Ghi(string.Format("   {0}x{1}{2}: nut {3:F0}..{4:F0}, VAO NHANH tu {5:F0}, tieu de het o {6:F0}, chu {7:F0}/{8:F0} diem -> {9}",
-                W, H, doc ? " (dung doc)" : "", cd.x, cd.xMax, vn.x, cuoiTieuDe, rongChu, cd.width,
-                (!deVaoNhanh && !deTieuDe && trongKhung && vuaChu) ? "on"
-                : (deVaoNhanh ? "DE VAO NHANH " : "") + (deTieuDe ? "DE TIEU DE " : "")
+            Ghi(string.Format("   {0}x{1}: ti le {2:F2}, tieu de het o {3:F0}, CAI DAT {4:F0}..{5:F0} (chu {6:F0}/{7:F0}), VAO NHANH {8:F0}..{9:F0} (chu {10:F0}/{11:F0}) -> {12}",
+                W, H, s, td.x + rongTieuDe, cd.x, cd.xMax, rongCaiDat, cd.width, vn.x, vn.xMax, rongNhanh, vn.width,
+                (!deNhau && !deTieuDe && trongKhung && vuaChu) ? "on"
+                : (deNhau ? "DE NHAU " : "") + (deTieuDe ? "DE TIEU DE " : "")
                   + (!trongKhung ? "RA NGOAI " : "") + (!vuaChu ? "CHU TRAN" : "")));
-
-            // Man hinh dung doc: tieu de va VAO PHONG NHANH DA de nhau tu truoc
-            // khi co nut nay (sanh chua lam cho man hinh doc) - ghi lai, khong
-            // tinh la loi cua viec nay.
-            if (!doc)
-                Kiem(!deVaoNhanh && !deTieuDe && trongKhung && vuaChu,
-                     "nut CAI DAT sai cho o man hinh " + W + "x" + H);
+            Kiem(!deNhau && !deTieuDe && trongKhung && vuaChu, "hang PHONG DANG CHO sai o man hinh " + W + "x" + H);
         }
     }
 

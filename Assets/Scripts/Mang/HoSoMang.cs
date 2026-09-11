@@ -46,7 +46,7 @@ public static class HoSoMang
         string uid = FirebaseMang.Uid;
         if (string.IsNullOrEmpty(uid) || string.IsNullOrEmpty(FirebaseMang.IdToken))
         {
-            xong(false, "Phien dang nhap khong con hieu luc, hay dang nhap lai.");
+            xong(false, "Phiên đăng nhập không còn hiệu lực, hãy đăng nhập lại.");
             yield break;
         }
 
@@ -77,7 +77,7 @@ public static class HoSoMang
                     // TaiHoacTao ma quen xu ly la tai khoan bi khoa van con
                     // token trong tay - lan sau mo game len la tu vao thang.
                     FirebaseMang.Quen();
-                    xong(false, "Tai khoan cua ban da bi khoa. Hay lien he quan tri vien.");
+                    xong(false, "Tài khoản của bạn đã bị khoá. Hãy liên hệ quản trị viên.");
                     yield break;
                 }
                 xong(true, null);
@@ -118,7 +118,7 @@ public static class HoSoMang
 
             if (yc.result != UnityWebRequest.Result.Success)
             {
-                xong(false, "Khong tao duoc ho so: "
+                xong(false, "Không tạo được hồ sơ: "
                           + FirebaseMang.DichLoi(yc.downloadHandler.text));
                 yield break;
             }

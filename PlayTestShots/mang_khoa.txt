@@ -2,7 +2,7 @@
 1. truoc khi khoa, A vao game: VAO DUOC
 1b. nguoi choi thuong (B) thu khoa A: bi tu choi - dung nhu mong doi
 2. admin khoa A: OK
-3. sau khi khoa, A vao game: bi chan - Tai khoan cua ban da bi khoa. Hay lien he quan tri vien.
+3. sau khi khoa, A vao game: bi chan - Tài khoản của bạn đã bị khoá. Hãy liên hệ quản trị viên.
    phien cua A con giu lai khong: da bo
 4. admin mo khoa A: OK
 5. sau khi mo khoa, A vao game: VAO DUOC
