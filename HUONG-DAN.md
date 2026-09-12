@@ -7924,6 +7924,46 @@ Lần chạy đầu **phép thử bắt được lỗi thật**: trang "Tạo t�
 
 Sảnh phòng không cần sửa: ô "Tên phòng" nằm ở phần trên màn hình (đáy ở 284 đơn vị), bàn phím che nửa dưới không tới.
 
+### Cài được như một ứng dụng: iOS, Android và máy tính
+
+Anh xin: trên iOS thêm vào Màn hình chính, trên Android và máy tính thì cài đặt / tải về như một ứng dụng, và dùng
+**ảnh đầu ác quỷ anh gửi** làm bộ icon.
+
+**Ba nền tảng, ba đường khác nhau** — đây là chỗ dễ tưởng làm một lần là xong:
+
+| Nền tảng | Cần gì | Ai mở hộp thoại |
+|---|---|---|
+| Android, Chrome, Edge (máy tính) | manifest + **bộ chạy nền** (service worker có xử lý `fetch`) + HTTPS | Trình duyệt bắn `beforeinstallprompt`; ta **giữ lại** rồi gọi khi người chơi bấm nút |
+| iOS Safari | các thẻ `apple-*` + `apple-touch-icon` | **Không có hộp thoại nào cả** — người dùng phải tự bấm Chia sẻ → "Thêm vào MH chính". Ta chỉ nhắc được |
+
+Nên trang có một nút **"CÀI ĐẶT ỨNG DỤNG"** (Android/máy tính) và một dòng nhắc riêng cho iOS Safari; cả hai nằm **trong
+màn chờ tải**, không phải nút nổi trên khung game — trên điện thoại, cạnh phải và cạnh dưới là chỗ của cần điều khiển
+và cụm nút kỹ năng, để một nút HTML đè lên đó là cướp mất cú chạm của người chơi. Đã cài rồi (mở từ biểu tượng) thì
+không hiện gì.
+
+**Bộ chạy nền cố ý KHÔNG lưu cache gì.** Nó chỉ tồn tại để trình duyệt cho phép cài đặt. Bản game nặng 174 MB và Unity
+**đã** tự quản lý cache riêng theo mã phiên bản; lưu thêm một bản nữa là tốn gấp đôi chỗ trên máy người chơi. Nguy hiểm
+hơn: một bộ chạy nền giữ bản `index.html` cũ sẽ ghép **mã game cũ với dữ liệu mới** sau mỗi lần cập nhật — đúng cái lỗi
+đã làm game sập lúc tải (mục "Game sập ngay lúc tải"). `sw.js` và `manifest.webmanifest` đều để `no-cache`.
+
+**Icon** sinh từ ảnh anh gửi bằng `CongCu/Icon/sinh_icon.py`, ba kiểu vì ba luật khác nhau:
+
+- **icon thường**: nền tối đặc. iOS và Windows không chấp nhận nền trong — chúng ghép lên nền trắng, ảnh đỏ trên trắng
+  thì nhạt và viền đen bị chìm.
+- **maskable**: Android **cắt** icon theo hình của máy (tròn, vuông bo góc, giọt nước). Phần chắc chắn không bị cắt chỉ
+  là vòng tròn đường kính 80%, nên hình phải thu còn **68%** và đặt giữa.
+- **apple-touch-icon** 180×180, nền đặc, không bo góc (iOS tự bo).
+
+Đo trên trang thật (`PlayTestShots/pwa.txt`):
+
+```
+manifest: 200, Content-Type application/manifest+json, display=standalone, 8 icon (có 192, 512, maskable)
+bộ chạy nền: đã đăng ký, trạng thái "active", phạm vi / ; sw.js 200, Cache-Control no-cache
+8 icon tải thật: 192x192, 512x512, 1024x1024, maskable 192/512, apple 180x180, favicon 32, ảnh chia sẻ 1200x630
+nút cài đặt: giả lập beforeinstallprompt -> nút hiện, bấm thì gọi prompt() của trình duyệt, xong thì tự ẩn
+0 lỗi
+```
+
 ### Việc còn phải làm
 
 **169 MB là quá nặng**, nhất là trên điện thoại — nền tảng chính của game. Gần như toàn bộ nằm ở

@@ -6,6 +6,34 @@
   <!-- Ten tren tab trinh duyet. KHONG doi productName trong Unity: cache du lieu
        va thu muc luu cua nguoi choi tinh theo ten ay - doi la mat het. -->
   <title>Ác Quỷ Trở Lại</title>
+  <!-- ================================================================
+       CAI DUOC NHU MOT UNG DUNG (PWA)
+       ================================================================
+       Nguoi dung xin (12/09/2026): iOS them vao Man hinh chinh, Android va may
+       tinh thi cai dat / tai ve duoc.
+
+       Ba nen tang doi ba thu khac nhau:
+         * Android, Chrome, Edge: manifest + bo chay nen (sw.js) -> trinh duyet
+           tu cho "Cai dat ung dung", va ban co the goi tay qua beforeinstallprompt.
+         * iOS: KHONG co loi moi cai dat nao ca - nguoi dung phai tu bam Chia se
+           roi "Them vao Man hinh chinh". Ta chi co the NHAC ho, va phai co day du
+           the apple-* duoi day thi icon moi dung va mo ra moi khong con thanh dia chi.
+         * Icon: sinh tu anh nguoi dung gui, bang CongCu/Icon/sinh_icon.py -->
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#7a0b07">
+  <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16.png">
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Ác Quỷ Trở Lại">
+  <meta name="application-name" content="Ác Quỷ Trở Lại">
+  <meta property="og:title" content="Ác Quỷ Trở Lại">
+  <meta property="og:description" content="Game nhập vai hành động kiểu Diablo - nghĩa địa, phép thuật và người sống sót cuối cùng.">
+  <meta property="og:image" content="/icons/anh-chia-se.png">
+  <meta property="og:type" content="website">
+
   <!-- Nap truoc font va anh tieu de: man cho la thu dau tien nguoi choi thay -->
   <link rel="preload" href="TemplateData/Inter-Regular.ttf?v=1" as="font" type="font/ttf" crossorigin>
   <link rel="preload" href="TemplateData/tieude.png?v=46475ea594" as="image">
@@ -74,6 +102,33 @@
       84%  { filter: brightness(.92); }
       100% { filter: brightness(1); }
     }
+    /* ---------------- NUT CAI DAT UNG DUNG ----------------
+       Nam TRONG man cho, khong phai mot nut noi tren khung game: tren dien
+       thoai, canh phai va canh duoi la cho cua can dieu khien va cum nut ky
+       nang - de mot nut HTML de len do la cuop mat cu cham cua nguoi choi. */
+    #cai-dat {
+      display: none;
+      margin-top: 16px;
+      padding: 12px 22px;
+      font: 600 15px/1.3 "InterViet", system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+      color: #ffdca8;
+      background: linear-gradient(180deg, #3a0f0b, #1a0705);
+      border: 1px solid #8d2418; border-radius: 4px;
+      letter-spacing: .04em;
+      cursor: pointer;
+      box-shadow: 0 0 16px rgba(150, 20, 8, .35);
+    }
+    #cai-dat:active { background: linear-gradient(180deg, #5a1610, #2a0a07); }
+    #nhac-ios {
+      display: none;
+      margin-top: 14px; max-width: min(86vw, 420px);
+      padding: 12px 16px;
+      font: 13px/1.6 "InterViet", system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+      color: #cbb9a6; text-align: center;
+      background: rgba(20, 8, 6, .75);
+      border: 1px solid #4d1a12; border-radius: 4px;
+    }
+    #nhac-ios b { color: #ffdca8; font-weight: 600; }
     #tac-gia {
       margin-top: 6px;
       font-size: 13px; letter-spacing: .08em;
@@ -192,6 +247,9 @@
   </div>
   <div id="so-phan-tram">Đang tải... 0%</div>
   <div id="tac-gia">Tác giả: PHẠM MINH QUÂN</div>
+  <button id="cai-dat" type="button">CÀI ĐẶT ỨNG DỤNG</button>
+  <div id="nhac-ios">Muốn chơi như một ứng dụng? Bấm <b>Chia sẻ</b> ở thanh dưới rồi chọn
+    <b>“Thêm vào MH chính”</b>.</div>
   <div id="loi-nang"></div>
 </div>
 
@@ -211,6 +269,69 @@
     soPhanTram.textContent = "Đang tải... " + p + "%";
     for (var i = 0; i < cacGiot.length; i++)
       if (p >= +cacGiot[i].getAttribute("data-o")) cacGiot[i].classList.add("hien");
+  }
+
+  // ================================================================
+  //  CAI DAT NHU MOT UNG DUNG
+  // ================================================================
+  //
+  // Ba nen tang, ba duong khac nhau:
+  //
+  //   Android / Chrome / Edge: trinh duyet ban ra "beforeinstallprompt" khi
+  //     trang du dieu kien (manifest + bo chay nen + HTTPS). Ta GIU LAI su kien
+  //     ay roi tu goi khi nguoi choi bam nut - goi ngay luc nhan duoc thi
+  //     trinh duyet chan, va nguoi choi cung dang doi tai game.
+  //
+  //   iOS: KHONG co su kien nao ca, khong the tu mo hop thoai. Chi co the NHAC:
+  //     Chia se -> Them vao Man hinh chinh. Nen chi hien loi nhac khi dung
+  //     Safari tren iOS va CHUA cai (navigator.standalone).
+  //
+  //   Da cai roi (mo tu bieu tuong): khong hien gi ca - display-mode: standalone.
+  var nutCai = document.querySelector("#cai-dat");
+  var nhacIos = document.querySelector("#nhac-ios");
+  var loiMoiCai = null;
+
+  function daCaiRoi() {
+    return (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches)
+        || window.navigator.standalone === true;
+  }
+
+  function laIos() {
+    var ua = navigator.userAgent || "";
+    var iOS = /iPad|iPhone|iPod/.test(ua)
+           || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);   // iPad moi
+    var safari = /Safari/.test(ua) && !/CriOS|FxiOS|EdgiOS|OPiOS/.test(ua);
+    return iOS && safari;
+  }
+
+  window.addEventListener("beforeinstallprompt", function (e) {
+    e.preventDefault();                 // giu lai, bam nut moi goi
+    loiMoiCai = e;
+    if (!daCaiRoi()) nutCai.style.display = "block";
+  });
+
+  nutCai.addEventListener("click", function () {
+    if (!loiMoiCai) return;
+    nutCai.style.display = "none";
+    loiMoiCai.prompt();
+    loiMoiCai.userChoice.then(function () { loiMoiCai = null; });
+  });
+
+  window.addEventListener("appinstalled", function () {
+    nutCai.style.display = "none";
+    nhacIos.style.display = "none";
+  });
+
+  if (laIos() && !daCaiRoi()) nhacIos.style.display = "block";
+
+  // Bo chay nen: dieu kien bat buoc de Chrome / Edge / Android cho cai dat.
+  // No KHONG luu cache gi (xem sw.js) - Unity da tu quan ly cache ban build.
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", function () {
+      navigator.serviceWorker.register("/sw.js").catch(function (e) {
+        console.warn("khong dang ky duoc bo chay nen:", e);
+      });
+    });
   }
 
   var buildUrl = "Build";

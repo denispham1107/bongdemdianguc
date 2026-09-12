@@ -149,6 +149,11 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
   **Firebase không bao giờ trả 304 cho file `no-cache`** — đừng dựa vào hỏi lại. Kiểm sau khi deploy: trong
   trình duyệt ĐÃ TỪNG vào trang, lần sau `performance` báo `Build/` 0 byte, chỉ tải trang ~2,6 KB. Lùi bản khẩn cấp:
   `firebase hosting:clone diablo25d-game@<version> diablo25d-game:live`.
+- **Cài được như ứng dụng (PWA)**: `web/manifest.webmanifest` + `web/sw.js` (bộ chạy nền **không cache gì** — Unity đã tự
+  quản lý cache bản build; giữ index.html cũ là ghép mã cũ với dữ liệu mới) + thẻ `apple-*` trong template. Nút "CÀI ĐẶT
+  ỨNG DỤNG" và dòng nhắc iOS nằm **trong màn chờ tải**, không nổi trên khung game (cạnh phải/dưới là chỗ cần điều khiển).
+  Icon sinh từ ảnh người dùng gửi bằng `python CongCu/Icon/sinh_icon.py` → `web/icons/` (thường 92%, **maskable 68%** vì
+  Android cắt icon, apple-touch 180). Số đo: `PlayTestShots/pwa.txt`.
 - **Bàn phím điện thoại**: Unity không biết bàn phím ảo che bao nhiêu (canvas không đổi kích thước). `index.html` đo bằng
   `window.visualViewport` rồi `SendMessage("BanPhimAo", "DatChe", <tỉ lệ>)`; `ManDangNhap.TinhBoCuc` bỏ ảnh tiêu đề và
   đẩy khung lên, ưu tiên giữ ô nhập trên mép bàn phím. Menu 57 kiểm. Vật thể **phải tên "BanPhimAo"** (SendMessage tìm theo tên).
