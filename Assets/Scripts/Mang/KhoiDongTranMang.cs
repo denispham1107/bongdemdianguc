@@ -197,6 +197,13 @@ public class KhoiDongTranMang : MonoBehaviour
         dongBo.KhiMatNguoi += KhiMotNguoiRoiTran;
         dongBo.KhiMatKetNoi += KhiMatHetKetNoi;
 
+        // Ket tran: ai song sot cuoi cung thi thang (buoc 6). Chu phong phan
+        // quyet, moi may hien cung mot bang diem.
+        KetTran.Xoa();
+        var ketTran = gameObject.AddComponent<KetTran>();
+        ketTran.TenCuaGhe = TenCuaGhe;
+        ketTran.Gan(dongBo, toi, gheToi.ghe);
+
         // Nhan vat cua minh ghi lai duong di: bu tre can biet "mot khoang truoc
         // day minh dung o dau" de lui ve do tinh trung.
         if (toi.GetComponent<LichSuViTri>() == null)

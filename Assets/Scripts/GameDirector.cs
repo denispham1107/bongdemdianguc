@@ -684,6 +684,13 @@ public class GameDirector : MonoBehaviour
     void OnEnemyDeath(Damageable d)
     {
         Kills++;
+
+        // Bang diem cuoi tran: con nay la cong cua AI. Chi may lam trong tai
+        // cua quai moi ghi - may khach chi ve lai dan quai nghe duoc, dem o do
+        // la dem ca nhung con minh khong he giet.
+        if (LaTrongTaiCuaQuai && KetTran.Hien != null && d != null)
+            KetTran.Hien.GhiQuaiChet(d.keDanhCuoi);
+
         alive.Remove(d);
         quyDu.Remove(d);
         quyCay.Remove(d);

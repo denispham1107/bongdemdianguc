@@ -363,8 +363,12 @@ public class EnemyAI : MonoBehaviour
         if (kieu == 0)
         {
             if (nanNhan != null && !nanNhan.IsDead)
+            {
+                // Ghi cong de man hinh thua noi duoc "Bị Bộ xương hạ"
+                nanNhan.GhiKeDanh(health);
                 nanNhan.TakeDamage(attackDamage, DamageType.Physical,
                                    nanNhan.transform.position + Vector3.up * 1.1f);
+            }
             return;
         }
 
@@ -402,6 +406,7 @@ public class EnemyAI : MonoBehaviour
         if (d == null || d.IsDead) return;
 
         // Damageable tu chuyen don nay vao khieng neu muc tieu dang co khieng
+        d.GhiKeDanh(health);
         d.TakeDamage(attackDamage, DamageType.Physical,
                      target.position + Vector3.up * 1.1f);
 

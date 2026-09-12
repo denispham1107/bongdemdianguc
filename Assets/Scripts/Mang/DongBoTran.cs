@@ -89,6 +89,12 @@ public class DongBoTran : MonoBehaviour
     /// </summary>
     public event System.Action<byte> KhiMatNguoi;
 
+    /// <summary>Nghe tin "ghe A vua chet, ke ha ho ngoi ghe B" (B = 255 la khong ai).</summary>
+    public event System.Action<byte, byte> KhiNgheChet;
+
+    /// <summary>Chu phong bao van dau da xong kem bang diem.</summary>
+    public event System.Action<GoiTin.KetQua> KhiNgheKetTran;
+
     /// <summary>Kenh dang im lang lau nhat bao nhieu giay (bo qua kenh da mat).</summary>
     public float ImLangGiay { get; private set; }
 
@@ -464,6 +470,20 @@ public class DongBoTran : MonoBehaviour
         nguoiKhac[chiSo] = new MotNguoiKhac { nhanVat = nv };
     }
 
+    /// <summary>Nhan vat cua ghe nay tren may nay - ke ca ghe cua chinh minh.</summary>
+    public PlayerController NhanVatCuaGhe(byte ghe)
+    {
+        if (ghe == chiSoCuaToi) return toi;
+        MotNguoiKhac n;
+        return nguoiKhac.TryGetValue(ghe, out n) ? n.nhanVat : null;
+    }
+
+    /// <summary>Ghe nay da roi tran chua.</summary>
+    public bool GheDaRoi(byte ghe) { return daRoiTran.Contains(ghe); }
+
+    /// <summary>Gui mot goi bat ky cua may nay di (KetTran dung de bao chet, bao ket tran).</summary>
+    public void GuiGoi(byte[] b) { if (b != null) GuiMotGoi(b); }
+
     public void BoNguoi(byte chiSo)
     {
         daRoiTran.Add(chiSo);
@@ -550,10 +570,29 @@ public class DongBoTran : MonoBehaviour
             // gui: vong nguoc ve thi nguoi gui nhan lai chinh minh tu 30 ms
             // truoc. Goi nhip thi KHONG chuyen - no la cau hoi rieng cua mot
             // nguoi, tra loi rieng cho nguoi ay.
-            if (LaChuPhong && (loai == GoiTin.LoaiTrangThai || loai == GoiTin.LoaiKyNang))
+            // Goi CHET cung phai chuyen tiep: khach ghe 2 chet thi ghe 1 va ghe 3
+            // chi biet qua tay chu phong.
+            if (LaChuPhong && (loai == GoiTin.LoaiTrangThai || loai == GoiTin.LoaiKyNang
+                               || loai == GoiTin.LoaiChet))
                 SoGoiDaChuyenTiep += PhatChoTatCa(s, kenh);
 
             if (loai == GoiTin.LoaiKyNang) { NhanMotPhep(b); return; }
+            if (loai == GoiTin.LoaiChet)
+            {
+                byte gheChet, gheHa;
+                if (!GoiTin.DocChet(b, out gheChet, out gheHa)) { SoGoiHong++; return; }
+                if (KhiNgheChet != null) KhiNgheChet(gheChet, gheHa);
+                return;
+            }
+            if (loai == GoiTin.LoaiKetTran)
+            {
+                // Chi chu phong ra phan quyet - no khong nghe loai nay cua ai ca
+                if (LaChuPhong) return;
+                GoiTin.KetQua kq;
+                if (!GoiTin.DocKetTran(b, out kq)) { SoGoiHong++; return; }
+                if (KhiNgheKetTran != null) KhiNgheKetTran(kq);
+                return;
+            }
             if (loai == GoiTin.LoaiNhip) { NhanMotNhip(b, kenh); return; }
             if (loai == GoiTin.LoaiRoiTran)
             {

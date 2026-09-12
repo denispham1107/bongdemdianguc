@@ -7729,6 +7729,83 @@ vật khác có hệ hạt: vẫn KHÔNG cuốn được; lò đang cháy: KHÔN
 Ô đo độ sáng lúc đầu rộng quá (gồm cả mặt đất chung quanh) nên chỉ thấy giảm 42% và phép thử báo lỗi — tôi **thu ô đo
 vào đúng miệng chậu**, không nới ngưỡng.
 
+### Giai đoạn 2, bước 6: trận đấu kết thúc — người sống sót cuối cùng thắng
+
+Đến trước bước này, trận mạng **không bao giờ kết thúc**: ai chết thì nằm đó, ai sống thì đánh quái mãi, và không ai
+được ghi một trận thắng nào — `HoSoMang.CongThanhTich` viết xong từ giai đoạn 1 mà **chưa hề có ai gọi**.
+
+**Ai phán quyết: chủ phòng, một mình.** Để mỗi máy tự kết luận thì hai màn hình có thể báo hai người thắng khác nhau —
+gói tin không đến cùng lúc, máy này thấy đối phương chết trước khi máy kia thấy mình chết. Chủ phòng đếm, rồi phát
+`LoaiKetTran` **kèm cả bảng điểm**, nên mọi máy hiện đúng một kết quả.
+
+**Ai chết thì máy của chính họ biết** (quy ước từ bước 5: mỗi máy là trọng tài của nhân vật mình). Cái chết đã đi theo
+cờ `daChet` trong gói trạng thái — nhưng cờ ấy **không nói ai hạ**. Nên nạn nhân gửi thêm một gói `LoaiChet` 3 byte:
+"tôi chết, kẻ hạ tôi ngồi ghế kia", đọc từ `Damageable.keDanhCuoi`.
+
+**Ghi công mà không phải sửa mười một chỗ.** Mọi phép đã mang sẵn `boQua` — chính là người tung nó (để không tự thiêu
+mình, làm ở bước 5). Nên chỉ cần ở ba chỗ tính sát thương (`Damageable.AreaDamage`, `Tornado`, `GiatSet`) ghi
+`d.GhiKeDanh(boQua)` trước khi trừ máu. Đòn của quái không ghi gì, nên chết vì quái thì không ai được tính công.
+Quái chết thì `GameDirector` cộng cho ghế của kẻ hạ nó — **chỉ ở máy chủ phòng**, vì máy khách chỉ vẽ lại đàn quái
+nghe được, đếm ở đó là đếm cả những con mình không hề giết.
+
+**Rời trận cũng là ra khỏi trận.** Người đóng tab không còn là "người sống sót". Không tính thế thì hai người đánh
+nhau, một người thoát, người còn lại đứng giữa nghĩa địa đợi một kết quả không bao giờ đến.
+
+Còn lại:
+
+- **Chết rồi thì ngồi xem**: camera chuyển sang bám một người **còn sống** (phím R chơi lại đã bị chặn từ bước 5), HUD
+  ghi "Đang xem trận đấu — chờ người sống sót cuối cùng."
+- **Màn kết trận**: "BẠN SỐNG SÓT CUỐI CÙNG" (vàng) hoặc "<TÊN> ĐÃ THẮNG" (đỏ), dưới là bảng điểm ba cột — người chơi ·
+  quái đã diệt · đã hạ — dòng của người thắng màu vàng, dòng của mình ghi "(bạn)". Cỡ chữ tiêu đề **tự thu nhỏ** cho
+  vừa bề ngang màn hình.
+- **Ghi thành tích**: mỗi máy tự ghi hồ sơ **của mình** (luật bảo mật Firestore chỉ cho sửa document của chính mình, và
+  cũng không ai muốn điểm của mình do máy người khác quyết).
+- `TranHienTai.Xoa()` xoá luôn kết quả — không thì vào trận sau là hiện ngay bảng điểm trận trước.
+
+Đo (menu 55 mới — mở thẳng các kênh **giả lập** như menu 45, vì Editor không bắt tay WebRTC thật được):
+
+```
+A. gói tin: gói kết trận 10 byte, viết ra đọc lại nguyên vẹn; gói cụt đuôi bị từ chối
+B. máy chủ phòng (3 người): giết 1 quái -> cộng đúng ghế; ghế 1 chết -> CHƯA xong; ghế 2 chết -> xong,
+   ghế thắng 0, gói kết trận phát 4 lần tới cả kênh 1 và 2, bảng điểm "hạ 2 người / diệt 1 quái",
+   nhân vật hết điều khiển được
+C. máy khách: mình chết -> gửi gói chết đúng "ghế 1, kẻ hạ ghế 0"; CẢ BA cùng chết mà khách vẫn KHÔNG tự
+   kết luận; nghe chủ phòng báo -> hiện đúng ghế thắng, tên, bảng điểm
+D. chết rồi camera bám nhân vật người khác (ngồi xem)
+E. màn kết trận: chụp ảnh, chữ đủ dấu, bảng điểm không đè nhau
+0 lỗi. Không sót lại gì: về sảnh thì KetTran.DaXong = False
+```
+
+Lần chạy đầu báo một lỗi ở phần D — nhưng là **kịch bản thử sai**, không phải mã sai: tôi cho hai người kia chết
+trước rồi mới đo camera, nên không còn ai để bám. Đảo lại thứ tự (mình chết trước, hai người kia còn sống) thì đúng.
+
+Chạy lại các phép thử cũ sau khi sửa: menu 53 (HUD, 224 chuỗi, 0 lỗi), 45 (bốn người, 0), 44 (bước 5, 0),
+49 (cầu lửa trúng người · khiên, 0).
+
+**Chưa làm, và phải nói rõ**: mới chạy trên kênh giả lập trong Editor — **chưa thử trên hai máy thật**. Hai phần
+"còn thiếu" của bước 5 (trọng tài phán xử máu, bù trễ khi tính trúng) vẫn còn nguyên.
+
+#### Hai chỗ anh nhìn ảnh là thấy ngay
+
+**"Ai vừa giết tôi?"** — câu hỏi đầu tiên khi gục ngã, mà màn hình thua không trả lời. Giờ ngay dưới "BẠN ĐÃ GỤC NGÃ"
+có một dòng: **"Bị Người 1 hạ."**, **"Bị Bộ xương hạ."**, hay "Không rõ ai đã hạ bạn." Màn kết trận cũng có dòng ấy nếu
+mình không phải người thắng. Tên quái viết tiếng Việt theo loại (Bộ xương, Mụ phù thủy, Quỷ dữ, Quỷ cây…).
+
+Đòn của quái trước đây **không ghi công gì cả** — `GhiKeDanh` chỉ được gọi từ phép của người chơi. Thêm hai dòng trong
+`EnemyAI` (đánh gần và đánh tầm xa) là xong: con quái ghi chính nó vào `keDanhCuoi` của nạn nhân.
+
+**Nút "TRỞ VỀ" trên cảm ứng có vẽ mà bấm không ăn** — anh hỏi đúng chỗ hỏng. HUD chỉ đọc cú chạm vào nút khi
+`director.PlayerDead` hoặc chủ phòng rời trận. Mà **người THẮNG thì còn sống**, nên cả hai đều sai: nút hiện ra trên màn
+kết trận, bấm không có gì xảy ra, và trên điện thoại không có phím ESC để thoát — kẹt luôn trong màn kết quả. Giờ nhánh
+ấy xét thêm `KetTran.DaXong`.
+
+Đo thêm (menu 55, bản 5): kẻ hạ là người chơi → "Người 1"; kẻ hạ là quái → "Bộ xương" (loại Skeleton); trận xong thì
+cần điều khiển bị khoá (`CamUng.Huong = (0,0)`, `DangKeo = False`) — chính là nhánh đọc nút TRỞ VỀ. Ảnh
+`kettran_3_vua_bi_ha.png`. 0 lỗi.
+
+Báo cáo lần chạy trước **in đôi từng dòng**: một lần chạy dở dang để lại đăng ký `EditorApplication.update`, lần sau
+kịch bản chạy hai lượt chồng lên nhau. Gỡ đăng ký trước khi gắn, và bỏ qua nếu lượt cũ còn vật thể trong cảnh.
+
 ### Việc còn phải làm
 
 **169 MB là quá nặng**, nhất là trên điện thoại — nền tảng chính của game. Gần như toàn bộ nằm ở
@@ -7803,6 +7880,7 @@ cho riêng nền tảng WebGL sẽ ăn cả hai đầu: file nhỏ hơn và khô
 | **51. Dung man chinh tu canh Act2** | Chép phần cảnh Act2 quanh chỗ đứng (45 m, phía trước camera) sang MainMenu.unity cùng ánh sáng / sương / bầu trời; đặt phù thuỷ, camera, hai lò đá; dọn vật vướng. Tạo luôn prefab lò đá từ FBX + texture Blender. Báo cáo `PlayTestShots/dungmanchinh.txt`. |
 | **51b. Chup thu goc nhin man chinh (Act2)** | Đặt nhân vật trước từng nhà mồ theo bốn hướng, bỏ chỗ vướng vật / giữa nước, chụp bằng khung camera màn chính — để chọn chỗ đứng. Ảnh `PlayTestShots/goc/`. |
 | **54. Dat 10 lo lua vao Act2** | Đặt 10 lò đá (prefab `Assets/Models/LoLuaDa`) vào Act2: lò giữa = chỗ đất khô gần tâm bản đồ nhất, 9 lò rải đều; không dưới nước, trong nhà mồ, trên/sát bia, chỉ trên mặt đất. Xoá lò cũ trước, chạy lại ra y hệt. Lưu Act2. Số đo `lolua_act2_dat.txt`. |
+| **55. Chay thu KET TRAN (nguoi song sot cuoi cung)** | Mở kênh giả lập như menu 45: kiểm gói tin kết trận/chết, máy chủ phòng phán quyết đúng lúc còn một người, bảng điểm cộng đúng người, máy khách không tự kết luận và hiện đúng kết quả nghe được, chết rồi camera chuyển sang người còn sống, chụp màn kết trận. Số đo `kettran.txt`, ảnh `kettran_*.png`. |
 | **54c. Chay thu LOC XOAY cuon lo lua** | Vào Play Act2, thả một cơn lốc đi thẳng vào lò: đo mốc thời gian lửa tắt / lò nhấc lên / lò biến mất / lò mọc lại, kiểm than trong chậu tắt bằng độ sáng trên ảnh, và kiểm vật có hệ hạt khác vẫn không bị cuốn. Ảnh `locxoay_*.png`, số đo `locxoay_lolua.txt`. |
 | **54b. Chay thu lo lua Act2** | Kiểm 10 lò bằng cách khác lúc đặt (va chạm tạm cho lưới nước, tia chiếu lên tìm mái nhà, hộp bao bia, độ cao địa hình quanh chân); trong Play: lửa + đèn bật, nhân vật đi thẳng vào lò bị chặn; chụp `lolua_*.png` + bản đồ. Số đo `lolua_act2.txt`. |
 | **53. Chay thu HUD KINH DI (mau, mana, thong bao)** | Ngoài Play: chạy hàm bố cục HUD với chữ dài nhất ở 11 cỡ màn hình × PC/cảm ứng — khung chữ không ra ngoài, không đè nhau hay đè nút; số máu/mana lọt thanh. Quét chuỗi 4 file HUD: đủ ký tự trong cmap Inter, không còn chữ không dấu cũ. Trong Play (Act2): bật cùng lúc mọi thông báo + máu thấp, đọc bố cục thật, chụp `hud_*.png`. Số đo `hudkinhdi.txt`. |

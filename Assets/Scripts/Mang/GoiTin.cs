@@ -120,7 +120,86 @@ public static class GoiTin
     /// </summary>
     public const byte LoaiRoiTran = 8;
 
+    /// <summary>
+    /// GOI CHET: "toi ngoi ghe nay vua chet, va NGUOI HA TOI ngoi ghe kia".
+    ///
+    /// Vi sao can rieng mot goi trong khi goi trang thai da co co <c>daChet</c>:
+    /// co ay chi noi AI CHET, khong noi AI HA. Ma bang diem cuoi tran phai ghi
+    /// duoc "ha 2 nguoi" - va chi may cua NAN NHAN moi biet dieu do: moi may la
+    /// trong tai cua chinh nhan vat minh, no thay don cuoi cung den tu dau.
+    ///
+    /// Gui LAP LAI nhu goi ky nang: chet xay ra dung mot lan, mat goi la mat han.
+    /// </summary>
+    public const byte LoaiChet = 9;
+
+    /// <summary>
+    /// GOI KET TRAN: "van dau xong, ghe nay thang, bang diem nhu sau".
+    ///
+    /// CHI CHU PHONG gui - va do la co y. De moi may tu ket luan thi hai man
+    /// hinh co the bao hai nguoi thang khac nhau: goi tin den khong cung luc,
+    /// may nay thay doi phuong chet truoc khi may kia thay minh chet.
+    ///
+    /// 10 byte: loai, ghe thang (255 = khong ai song sot), roi 4 ghe x (quai
+    /// diet, nguoi ha).
+    /// </summary>
+    public const byte LoaiKetTran = 10;
+
+    /// <summary>So ghe nhieu nhat trong mot tran - bang so kenh cua KenhTrucTiep.</summary>
+    public const int SoGheToiDa = 4;
+
+    /// <summary>Bang diem cuoi tran.</summary>
+    public struct KetQua
+    {
+        public byte gheThang;                 // 255 = khong ai song sot
+        public byte[] quaiTheoGhe;            // SoGheToiDa phan tu
+        public byte[] nguoiTheoGhe;
+    }
+
     public static byte[] VietRoiTran(byte ghe) { return new byte[] { LoaiRoiTran, ghe }; }
+
+    public static byte[] VietChet(byte ghe, byte gheKeHa)
+    {
+        return new byte[] { LoaiChet, ghe, gheKeHa };
+    }
+
+    public static bool DocChet(byte[] b, out byte ghe, out byte gheKeHa)
+    {
+        ghe = gheKeHa = 255;
+        if (b == null || b.Length < 3 || b[0] != LoaiChet) return false;
+        ghe = b[1]; gheKeHa = b[2];
+        return true;
+    }
+
+    public static byte[] VietKetTran(KetQua k)
+    {
+        var b = new byte[2 + SoGheToiDa * 2];
+        b[0] = LoaiKetTran;
+        b[1] = k.gheThang;
+        for (int i = 0; i < SoGheToiDa; i++)
+        {
+            b[2 + i * 2] = k.quaiTheoGhe != null && i < k.quaiTheoGhe.Length ? k.quaiTheoGhe[i] : (byte)0;
+            b[3 + i * 2] = k.nguoiTheoGhe != null && i < k.nguoiTheoGhe.Length ? k.nguoiTheoGhe[i] : (byte)0;
+        }
+        return b;
+    }
+
+    public static bool DocKetTran(byte[] b, out KetQua k)
+    {
+        k = new KetQua
+        {
+            gheThang = 255,
+            quaiTheoGhe = new byte[SoGheToiDa],
+            nguoiTheoGhe = new byte[SoGheToiDa]
+        };
+        if (b == null || b.Length < 2 + SoGheToiDa * 2 || b[0] != LoaiKetTran) return false;
+        k.gheThang = b[1];
+        for (int i = 0; i < SoGheToiDa; i++)
+        {
+            k.quaiTheoGhe[i] = b[2 + i * 2];
+            k.nguoiTheoGhe[i] = b[3 + i * 2];
+        }
+        return true;
+    }
 
     public static bool DocRoiTran(byte[] b, out byte ghe)
     {

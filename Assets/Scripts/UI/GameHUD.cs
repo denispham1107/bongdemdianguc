@@ -289,7 +289,11 @@ public partial class GameHUD : MonoBehaviour
         // Xet truoc moi thu roi thoat luon. De chay tiep thi ngon tay dat len
         // lop man hinh thua van keo joystick va bam trung nut ky nang nam ngay
         // phia duoi: nhan vat da guc ma HUD van sang nut, nhin nhu game treo.
-        if (director != null && director.PlayerDead)
+        // Van dau da xong (choi mang): NGUOI THANG van con song, nen
+        // director.PlayerDead la false - khong xet o day thi nut TRO VE co ve ra
+        // ma khong ai doc cu cham, va nguoi thang ket trong man ket qua. Tren
+        // may cam ung khong co phim ESC de thoat.
+        if (KetTran.DaXong || (director != null && director.PlayerDead))
         {
             CamUng.Huong = Vector2.zero;
             CamUng.DangKeo = false;
@@ -1274,8 +1278,14 @@ public partial class GameHUD : MonoBehaviour
             GUI.color = prev;
         }
 
-        // Man hinh thua
-        if (director != null && director.PlayerDead)
+        // Man ket tran (choi mang) de LEN man hinh thua: chet roi ngoi xem, den
+        // luc co nguoi song sot cuoi cung thi ca hai deu thay bang diem.
+        if (KetTran.DaXong)
+        {
+            VeManKetTran(s);
+            if (CamUng.DangDung) VeNutTroVe(s);
+        }
+        else if (director != null && director.PlayerDead)
         {
             VeManHinhThua(s);
             if (CamUng.DangDung) VeNutTroVe(s);

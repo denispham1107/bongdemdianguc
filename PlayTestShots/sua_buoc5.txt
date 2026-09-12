@@ -20,6 +20,6 @@
 5b. im lang 6 giay (qua nguong go quai 5 giay) -> dan quai con 8/8 con (phai giu nguyen)
 5c. tin hieu quay lai o giay thu 6 -> tinh trang: Tot (phai la Tot - chuyen tab mot lat khong duoc lam vo tran)
 5d. im lang 10,5 giay -> tinh trang: DaMat, su kien mat ket noi da ban: True (phai la DaMat, True)
-5e. nguoi kia DONG kenh (bam ve sanh / dong tab) -> ket luan sau 48 ms (phai ngay, khong doi 10 giay)
+5e. nguoi kia DONG kenh (bam ve sanh / dong tab) -> ket luan sau 29 ms (phai ngay, khong doi 10 giay)
 
 so loi ghi nhan = 0

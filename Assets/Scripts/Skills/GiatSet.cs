@@ -159,6 +159,7 @@ public class GiatSet : MonoBehaviour
             VfxFactory.SetChayDen(den, 1.25f);
             VfxFactory.NamChuongNgai(den, 2.2f, VfxFactory.LopChuongNgai);
 
+            muc.GhiKeDanh(boQua);
             muc.TakeDamage(sat, DamageType.Lightning, den);
             daTrung.Add(muc);
 

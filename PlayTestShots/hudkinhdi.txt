@@ -12,7 +12,7 @@ A. bo cuc (chu dai nhat, moi thong bao cung hien):
    1080x1920 (ti le 1.78):  PC: dot 615x152, mang 1023x159 y436, bao NV y1154 -> on  cam ung: dot 615x152, mang 1023x159 y436, bao NV y940 -> on
    1170x2532 (ti le 2.34):  PC: dot 810x200, mang 1095x207 y575, bao NV y1522 -> on  cam ung: dot 810x200, mang 1095x207 y702, bao NV y1229 -> on
    tong loi bo cuc (11 co man hinh x 2 che do x 4 bo chu) = 0
-B. chu: 212 chuoi trong 4 file HUD; ky tu khong co trong Inter: ""; cum chu khong dau cu con sot: khong
+B. chu: 224 chuoi trong 4 file HUD; ky tu khong co trong Inter: ""; cum chu khong dau cu con sot: khong
 C. trong Play 1568x505, moi thong bao cung hien, mau 20%: [bang mau/mana: 7,7 161x58] [khung dot quai: 704,6 160x43] [thong bao mang: 602,53 365x35] [bao ket noi: 659,131 251x41] [bao ngan: 688,177 192x20] [thanh ky nang: 630,455 309x50] [bao nhan vat: 705,303 159x20]
    de nhau / ra ngoai: 0
    font khung dot: Inter-SemiBold, font thong bao: Inter-Regular

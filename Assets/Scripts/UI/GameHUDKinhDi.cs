@@ -534,6 +534,144 @@ public partial class GameHUD
 
     // ---------------- Man hinh thua ----------------
 
+    /// <summary>
+    /// MAN KET TRAN (choi mang): ai song sot cuoi cung, va bang diem.
+    ///
+    /// Ve tu tren xuong theo chieu cao DO THAT cua tung dong (CalcHeight), roi
+    /// moi dong day dong sau xuong - khong dat toa do co dinh: ten nguoi choi
+    /// dai ngan khac nhau, va man hinh dien thoai dung doc thi mot bang cung
+    /// nhac se tran ra ngoai.
+    /// </summary>
+    void VeManKetTran(float s)
+    {
+        var prev = GUI.color;
+        GUI.color = new Color(0f, 0f, 0f, 0.78f);
+        GUI.DrawTexture(new Rect(0f, 0f, Screen.width, Screen.height), barTex);
+        GUI.color = prev;
+
+        string tieuDe = KetTran.GheThang == 255 ? "KHÔNG AI SỐNG SÓT"
+                      : KetTran.ToiThang ? "BẠN SỐNG SÓT CUỐI CÙNG"
+                      : GhepDauTiengViet.Ghep(KetTran.TenNguoiThang).ToUpperInvariant() + " ĐÃ THẮNG";
+
+        // Tieu de: co chu tu thu nho lai cho vua be ngang man hinh
+        var kT = new GUIStyle(kieu.tieuDeChet);
+        float leNgang = 30f * s;
+        while (kT.fontSize > 20 && kT.CalcSize(new GUIContent(tieuDe)).x > Screen.width - leNgang * 2f)
+            kT.fontSize -= 2;
+
+        float nhay = 0.8f + 0.2f * Mathf.PerlinNoise(Time.unscaledTime * 2.4f, 0.11f);
+        var mauTieuDe = KetTran.ToiThang
+            ? Color.Lerp(new Color(0.85f, 0.62f, 0.18f), new Color(1f, 0.88f, 0.45f), nhay)
+            : Color.Lerp(new Color(0.55f, 0.04f, 0.03f), new Color(0.96f, 0.16f, 0.10f), nhay);
+
+        float caoT = kT.CalcSize(new GUIContent(tieuDe)).y;
+        float y = Screen.height * 0.22f;
+        var oT = new Rect(0f, y, Screen.width, caoT);
+        VeChuVien(oT, tieuDe, kT, mauTieuDe, s);
+        y = oT.yMax + 8f * s;
+
+        GiaoDien.DuongKe(new Rect(Screen.width * 0.5f - 300f * s, y, 600f * s, Mathf.Max(1f, 2f * s)),
+                         new Color(0.8f, 0.1f, 0.06f, 0.9f));
+        y += 18f * s;
+
+        // ---- Bang diem ----
+        var kDong = kieu.tomTatChet;
+        float caoDong = kDong.CalcHeight(new GUIContent("X"), 400f * s) + 6f * s;
+        float rongBang = Mathf.Min(Screen.width - 40f * s, 760f * s);
+        float xBang = (Screen.width - rongBang) * 0.5f;
+        float cotTen = rongBang * 0.5f, cotQuai = rongBang * 0.28f;
+
+        VeChuVien(new Rect(xBang, y, cotTen, caoDong), "NGƯỜI CHƠI", kDong, GiaoDien.MauMo, s);
+        VeChuVien(new Rect(xBang + cotTen, y, cotQuai, caoDong), "Quái đã diệt", kDong, GiaoDien.MauMo, s);
+        VeChuVien(new Rect(xBang + cotTen + cotQuai, y, rongBang - cotTen - cotQuai, caoDong),
+                  "Đã hạ", kDong, GiaoDien.MauMo, s);
+        y += caoDong + 2f * s;
+
+        for (byte g = 0; g < GoiTin.SoGheToiDa; g++)
+        {
+            if (!KetTran.CoTrongTran[g]) continue;
+            string ten = GhepDauTiengViet.Ghep(KetTran.TenTheoGhe[g] ?? ("người chơi " + (g + 1)));
+            if (g == KetTran.GheCuaToi) ten += " (bạn)";
+            var mau = g == KetTran.GheThang ? new Color(1f, 0.86f, 0.45f) : GiaoDien.MauGiay;
+
+            VeChuVien(new Rect(xBang, y, cotTen, caoDong), ten, kDong, mau, s);
+            VeChuVien(new Rect(xBang + cotTen, y, cotQuai, caoDong),
+                      KetTran.BangDiem.quaiTheoGhe[g].ToString(), kDong, mau, s);
+            VeChuVien(new Rect(xBang + cotTen + cotQuai, y, rongBang - cotTen - cotQuai, caoDong),
+                      KetTran.BangDiem.nguoiTheoGhe[g].ToString(), kDong, mau, s);
+            y += caoDong;
+        }
+
+        // ---- Ai da ha minh (neu minh khong phai nguoi thang) ----
+        if (!KetTran.ToiThang)
+        {
+            string keHa = DongKeHa();
+            float caoKH = kDong.CalcHeight(new GUIContent(keHa), rongBang);
+            VeChuVien(new Rect(xBang, y + 12f * s, rongBang, caoKH), keHa, kDong,
+                      new Color(1f, 0.72f, 0.62f), s);
+            y += 12f * s + caoKH;
+        }
+
+        // ---- Loi nhac ve sanh ----
+        if (!CamUng.DangDung)
+        {
+            string nhac = "Bấm ESC để về sảnh.";
+            float rongN = Mathf.Min(Screen.width - 40f * s, 760f * s);
+            float caoN = kieu.tomTatChet.CalcHeight(new GUIContent(nhac), rongN);
+            VeChuVien(new Rect((Screen.width - rongN) * 0.5f, y + 16f * s, rongN, caoN), nhac,
+                      kieu.tomTatChet, GiaoDien.MauGiay, s);
+        }
+    }
+
+    /// <summary>
+    /// TEN KE VUA HA NHAN VAT NAY - de man hinh thua noi ro "Bị ... hạ".
+    ///
+    /// Doc <see cref="Damageable.keDanhCuoi"/>: moi phep cua nguoi choi va moi
+    /// don cua quai deu ghi vao do. null la khong ro (chet vi ngã, vi hieu ung
+    /// con sot lai...).
+    /// </summary>
+    public static string TenKeHa(Damageable nanNhan)
+    {
+        if (nanNhan == null) return null;
+        var ke = nanNhan.keDanhCuoi;
+        if (ke == null) return null;
+        if (ke == nanNhan) return "chính mình";
+
+        if (ke.isPlayer || ke.GetComponent<PlayerController>() != null)
+        {
+            string ten = KetTran.TenNhanVat(ke);
+            if (!string.IsNullOrEmpty(ten)) return GhepDauTiengViet.Ghep(ten);
+            return "một người chơi khác";
+        }
+
+        var nd = ke.GetComponent<NhanDangQuai>();
+        return nd != null ? TenQuai(nd.loai) : "quái vật";
+    }
+
+    /// <summary>Ten tieng Viet cua tung loai quai.</summary>
+    public static string TenQuai(MonsterType loai)
+    {
+        switch (loai)
+        {
+            case MonsterType.Skeleton: return "Bộ xương";
+            case MonsterType.Witch:    return "Mụ phù thủy";
+            case MonsterType.QuyDu:    return "Quỷ dữ";
+            case MonsterType.QuyCay:   return "Quỷ cây";
+            case MonsterType.Fallen:   return "Quỷ lùn";
+            case MonsterType.Ghoul:    return "Xác sống";
+            case MonsterType.Brute:    return "Quỷ khổng lồ";
+            default:                   return "quái vật";
+        }
+    }
+
+    /// <summary>Dong "Bị ... hạ." cho man hinh thua / man ket tran.</summary>
+    string DongKeHa()
+    {
+        var mau = player != null ? player.GetComponent<Damageable>() : null;
+        string ke = TenKeHa(mau);
+        return string.IsNullOrEmpty(ke) ? "Không rõ ai đã hạ bạn." : "Bị " + ke + " hạ.";
+    }
+
     void VeManHinhThua(float s)
     {
         var prev = GUI.color;
@@ -559,13 +697,25 @@ public partial class GameHUD
 
         // May cam ung KHONG CO BAN PHIM: khong nhac "bam R / ESC" - co nut TRO VE
         string tomTat = "Đã diệt " + director.Kills + " quái ở đợt " + director.Wave + ".";
+        // Choi mang: tran chua xong, minh ngoi xem nguoi khac danh not
+        if (TranHienTai.DangChoiMang)
+            tomTat = "Đã diệt " + director.Kills + " quái. Đang xem trận đấu — chờ người sống sót cuối cùng.";
         if (!CamUng.DangDung)
             tomTat += GameDirector.DuocChoiLai
                 ? "  Bấm R để chơi lại, ESC để về màn hình chính."
                 : "  Bấm ESC để về sảnh.";          // choi mang: khong co "choi lai"
         float rongTT = Mathf.Min(Screen.width - 40f * s, 900f * s);
+
+        // AI DA HA MINH - dong rieng, ngay duoi tieu de: nguoi choi hoi dau
+        // tien khi guc nga la "vua roi ai giet toi?"
+        string keHa = DongKeHa();
+        float caoKH = kieu.tomTatChet.CalcHeight(new GUIContent(keHa), rongTT);
+        float yKH = oT.yMax + 22f * s;
+        VeChuVien(new Rect((Screen.width - rongTT) * 0.5f, yKH, rongTT, caoKH), keHa,
+                  kieu.tomTatChet, new Color(1f, 0.72f, 0.62f), s);
+
         float caoTT = kieu.tomTatChet.CalcHeight(new GUIContent(tomTat), rongTT);
-        VeChuVien(new Rect((Screen.width - rongTT) * 0.5f, oT.yMax + 22f * s, rongTT, caoTT), tomTat,
+        VeChuVien(new Rect((Screen.width - rongTT) * 0.5f, yKH + caoKH + 8f * s, rongTT, caoTT), tomTat,
                   kieu.tomTatChet, GiaoDien.MauGiay, s);
     }
 }

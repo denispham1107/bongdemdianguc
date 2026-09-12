@@ -341,6 +341,7 @@ public class Tornado : MonoBehaviour
         arc.segments = 14;
         arc.branches = 1;
 
+        d.GhiKeDanh(boQua);
         d.TakeDamage(boltDamage, DamageType.Lightning, d.transform.position + Vector3.up * 1f);
     }
 

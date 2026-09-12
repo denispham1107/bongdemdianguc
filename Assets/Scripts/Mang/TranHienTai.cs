@@ -28,6 +28,10 @@ public static class TranHienTai
 
     public static void Xoa()
     {
+        // Ket qua tran cu phai quen theo: khong thi vao tran sau la man hinh
+        // hien ngay bang diem cua tran truoc.
+        KetTran.Xoa();
+
         DangChoiMang = false;
         MaPhong = null;
         ManChoi = null;

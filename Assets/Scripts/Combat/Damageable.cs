@@ -50,6 +50,17 @@ public class Damageable : MonoBehaviour
     public System.Action<Damageable> onDeath;
     public System.Action<Damageable, float> onDamaged;
 
+    /// <summary>
+    /// AI VUA DANH VAT NAY - de bang diem cuoi tran ghi duoc "ha 2 nguoi" va
+    /// "diet 7 quai" cho DUNG NGUOI.
+    ///
+    /// Chi cac phep cua nguoi choi ghi vao day (qua <see cref="GhiKeDanh"/>):
+    /// moi phep deu da mang san <c>boQua</c> - chinh la nguoi tung no - nen
+    /// khong phai luon them mot tham so "ai gay" xuyen qua muoi mot cho.
+    /// Don cua quai khong ghi gi, nen chet vi quai thi khong ai duoc tinh cong.
+    /// </summary>
+    public Damageable keDanhCuoi;
+
     float flashTimer;
     Color flashColor = Color.white;
 
@@ -77,6 +88,12 @@ public class Damageable : MonoBehaviour
     {
         if (IsDead) return;
         health = Mathf.Min(maxHealth, health + amount);
+    }
+
+    /// <summary>Ghi lai ai vua danh vat nay. null thi giu nguoi truoc do.</summary>
+    public void GhiKeDanh(Damageable ai)
+    {
+        if (ai != null && ai != this) keDanhCuoi = ai;
     }
 
     public void TakeDamage(float amount, DamageType type, Vector3 hitPoint)
@@ -190,6 +207,7 @@ public static class CombatUtil
             // Hoi TRUOC khi danh: don nay co the chinh la don lam vo khieng
             bool khiengDo = d.khieng != null && d.khieng.DangBat;
 
+            d.GhiKeDanh(boQua);
             d.TakeDamage(damage * falloff, type, d.transform.position + Vector3.up * 1f);
             hits++;
 

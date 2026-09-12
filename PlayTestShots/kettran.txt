@@ -1,0 +1,32 @@
+[ban 5] ket tran - nguoi song sot cuoi cung thang
+
+A. goi tin (khong can Play)
+A1. goi ket tran 10 byte, doc lai nguyen ven: True
+
+B. may chu phong (ghe 0, ba nguoi trong tran)
+B1. ban sao cua ghe 1 va 2: True / True
+B1b. giet mot con quai (Enemy_BoXuong)
+B2. ghe 1 chet (ke ha: ghe 0) -> tran xong chua: False (phai la False)
+B3. ghe 2 chet -> tran xong: True, ghe thang: 0, toi thang: True
+B4. goi ket tran phat ra 4 lan, toi kenh 1,2
+B5. bang diem trong goi: ghe 0 ha 2 nguoi (phai la 2), ghe 0 diet 1 quai
+B6. nhan vat con dieu khien duoc khong: False (phai la False)
+
+C. may khach (ghe 1)
+C2. minh chet -> gui goi chet 1 lan: ghe 1, ke ha ghe 0 (phai la ghe 1, ke ha 0)
+D. chet roi, camera bam: NguoiChoi_Người 1 (phai la nhan vat nguoi khac)
+anh: PlayTestShots/kettran_3_vua_bi_ha.png
+C1. ca ba deu chet, khach tu ket luan: False (phai la False)
+C3. nghe chu phong bao -> xong: True, ghe thang 2, toi thang False, ten nguoi thang "Người 3"
+
+E. man ket tran tren HUD
+anh: PlayTestShots/kettran_1_thua.png
+anh: PlayTestShots/kettran_2_thang.png
+E1. HUD dang song: True
+E2. ke ha minh (ban sao ghe 0): "Người 1" (phai la ten nguoi choi)
+E3. bi quai ha: "Bộ xương" (loai Skeleton)
+E4. tran xong -> can dieu khien bi khoa: Huong = (0.00, 0.00), DangKeo = False (phai la (0,0) / False)
+
+sau khi ve sanh: KetTran.DaXong = False (phai la False)
+
+so loi ghi nhan = 0
