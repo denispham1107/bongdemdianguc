@@ -351,6 +351,7 @@ public class KetTran : MonoBehaviour
         if (string.IsNullOrEmpty(FirebaseMang.Uid)) return;
         int quai = gheToi < kq.quaiTheoGhe.Length ? kq.quaiTheoGhe[gheToi] : 0;
         int nguoi = gheToi < kq.nguoiTheoGhe.Length ? kq.nguoiTheoGhe[gheToi] : 0;
-        StartCoroutine(HoSoMang.CongThanhTich(1, ToiThang ? 1 : 0, quai, nguoi, null));
+        StartCoroutine(HoSoMang.CongThanhTich(1, ToiThang ? 1 : 0, quai, nguoi,
+            ok => Debug.Log("[KetTran] ghi thanh tich: " + (ok ? "xong" : "khong ghi duoc"))));
     }
 }

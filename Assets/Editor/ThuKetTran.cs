@@ -44,8 +44,10 @@ public static class ThuKetTran
             return;
         }
         Directory.CreateDirectory("PlayTestShots");
-        bao.Length = 0; loi = 0; daBatDau = false;
-        Ghi("[ban 5] ket tran - nguoi song sot cuoi cung thang");
+        bao.Length = 0; loi = 0; daBatDau = false; soNgoaiLe = 0;
+        Application.logMessageReceived -= NgheNhatKy;
+        Application.logMessageReceived += NgheNhatKy;
+        Ghi("[ban 7] ket tran - nguoi song sot cuoi cung thang");
 
         KiemGoiTin();
 
@@ -71,6 +73,18 @@ public static class ThuKetTran
         daBatDau = true;
         var go = new GameObject("TAM_KetTran");
         go.AddComponent<ChayThuMang>().batDau = KichBan();
+    }
+
+    /// <summary>So ngoai le (Exception) ghi nhan tu luc bat dau phep thu.</summary>
+    static int soNgoaiLe;
+
+    static void NgheNhatKy(string chu, string vet, LogType loai)
+    {
+        if (loai == LogType.Exception)
+        {
+            soNgoaiLe++;
+            bao.AppendLine("[NGOAI LE] " + chu);
+        }
     }
 
     static void Ghi(string s) { bao.AppendLine(s); Debug.Log("[KetTran-thu] " + s); }
@@ -344,6 +358,30 @@ public static class ThuKetTran
              "bang diem ben khach sai");
 
         // ================================================================
+        // F. GHI THANH TICH KHONG DUOC NEM NGOAI LE
+        // ================================================================
+        //
+        // LOI THAT da xay ra tren trang that: KetTran goi CongThanhTich voi ham
+        // goi lai RONG, va ham ay goi thang xong(ok) -> NullReferenceException.
+        // Tren WebGL, mot ngoai le khong ai bat lam Unity NGUNG HAN vong lap
+        // game (_JS_CallAsLongAsNoExceptionsSeen): ca game dung hinh ngay man
+        // ket tran, bam ESC hay cham nut TRO VE deu vo ich.
+        //
+        // Phep thu cu khong bat duoc vi trong Editor khong co Uid - GhiThanhTich
+        // thoat som. Gio goi THANG ham ay, va DEM NGOAI LE.
+        int ngoaiLeTruoc = soNgoaiLe;
+        var goTT = new GameObject("TAM_ThanhTich");
+        var chay = goTT.AddComponent<ChayThuMang>();
+        chay.batDau = HoSoMang.CongThanhTich(1, 1, 2, 1, null);
+        yield return new WaitForSeconds(4f);
+        Object.DestroyImmediate(goTT);
+        Ghi("");
+        Ghi("F. goi CongThanhTich voi ham goi lai rong -> so ngoai le moi: "
+            + (soNgoaiLe - ngoaiLeTruoc) + " (phai la 0)");
+        Kiem(soNgoaiLe == ngoaiLeTruoc,
+             "ghi thanh tich nem ngoai le - tren WebGL la game dung hinh, khong ve sanh duoc");
+
+        // ================================================================
         // E. MAN KET TRAN
         // ================================================================
         Ghi("");
@@ -429,6 +467,9 @@ public static class ThuKetTran
         TranHienTai.Xoa();
         KenhTrucTiep.guiSangKenh = null;
         KenhTrucTiep.Dong();
+        Ghi("tong so ngoai le trong ca phep thu: " + soNgoaiLe);
+        if (soNgoaiLe > 0) { bao.AppendLine("[LOI] co ngoai le - tren WebGL la game dung hinh"); loi++; }
+        Application.logMessageReceived -= NgheNhatKy;
         File.WriteAllText("PlayTestShots/kettran.txt", bao.ToString());
         var rac = GameObject.Find("TAM_KetTran");
         if (rac != null) Object.DestroyImmediate(rac);

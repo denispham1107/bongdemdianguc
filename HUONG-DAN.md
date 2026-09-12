@@ -7860,6 +7860,35 @@ Hai lần phép thử tự báo lỗi oan, và cả hai đều là lỗi của *
 Menu 47 (chế độ bốn bộ xương) từ nay **chỉ đo Act1** — đo nó trên Act2 là đo một thứ không còn tồn tại ở đó.
 Chạy lại menu 45 (bốn người) và 55 (kết trận): 0 lỗi.
 
+### Kết trận xong thì game đứng hình — một hàm gọi lại rỗng làm sập cả vòng lặp
+
+Trận đấu thật đầu tiên có người thắng: cả hai máy hiện đúng màn kết trận và bảng điểm, rồi **hiện một hộp lỗi
+JavaScript** đầy `wasm-function[...]`, và từ đó **bấm ESC trên máy tính hay chạm nút TRỞ VỀ trên điện thoại đều không
+có tác dụng** — không ai về sảnh được.
+
+**Nguyên nhân, một dòng:** `KetTran.GhiThanhTich` gọi `HoSoMang.CongThanhTich(..., null)` — không cần biết kết quả nên
+tôi truyền `null` làm hàm gọi lại. Mà cuối hàm ấy là `xong(ok);`, **không kiểm null** → `NullReferenceException`.
+
+**Vì sao một ngoại lệ lại làm kẹt cả nút bấm:** trong vệt lỗi có `_JS_CallAsLongAsNoExceptionsSeen` — đúng như tên nó,
+bản WebGL **ngừng hẳn việc gọi vòng lặp game khi thấy một ngoại lệ không ai bắt**. Game đứng hình: `Update` không chạy
+nữa thì phím ESC không ai đọc, cú chạm nút TRỞ VỀ cũng không ai đọc. Một hộp lỗi = mất luôn đường về sảnh.
+
+Sửa: `if (xong != null) xong(ok);` trong `HoSoMang`, và `KetTran` truyền một hàm gọi lại ghi nhật ký thật.
+
+**Vì sao menu 55 không bắt được:** trong Editor không có `FirebaseMang.Uid`, nên `GhiThanhTich` thoát ngay ở dòng đầu —
+đường đi hỏng **chưa bao giờ được chạy**. Giờ phép thử gọi **thẳng** `CongThanhTich` với hàm gọi lại rỗng, và **đếm
+ngoại lệ** qua `Application.logMessageReceived` suốt cả bài.
+
+Kiểm rằng phép thử mới thật sự bắt được lỗi (bỏ chỗ vá ra rồi chạy lại):
+
+```
+bỏ vá   -> [NGOAI LE] NullReferenceException ; so ngoai le moi: 1 ; so loi = 1
+vá lại  -> so ngoai le moi: 0 ; tong so ngoai le ca phep thu: 0 ; so loi = 0
+```
+
+Bài học rộng hơn cho bản WebGL: **mọi ngoại lệ đều là lỗi chí mạng**, không phải "một dòng đỏ trong console". Chỗ nào
+nhận hàm gọi lại từ ngoài cũng phải kiểm null trước khi gọi.
+
 ### Việc còn phải làm
 
 **169 MB là quá nặng**, nhất là trên điện thoại — nền tảng chính của game. Gần như toàn bộ nằm ở

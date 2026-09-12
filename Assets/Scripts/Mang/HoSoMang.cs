@@ -185,7 +185,13 @@ public static class HoSoMang
                 CuaToi.soNguoiDaHa = nguoiHa;
             }
             else Debug.LogWarning("[HoSo] khong cong duoc thanh tich: " + yc.downloadHandler.text);
-            xong(ok);
+
+            // PHAI kiem null. Goi thang xong(ok) voi mot ham goi lai rong la
+            // NEM NgoaiLe - va tren WebGL, mot ngoai le khong ai bat thi Unity
+            // NGUNG HAN vong lap game (_JS_CallAsLongAsNoExceptionsSeen): ca
+            // game dung hinh, bam ESC hay nut TRO VE deu vo ich. Da xay ra that
+            // ngay cuoi tran dau tien co nguoi thang.
+            if (xong != null) xong(ok);
         }
     }
 
