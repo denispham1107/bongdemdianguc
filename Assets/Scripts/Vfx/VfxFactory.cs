@@ -927,7 +927,10 @@ public static partial class VfxFactory
         //
         // Gio tang 0,55-1,95 m (mesh Blender dai san 0,7-1,3 don vi), manh vo
         // 0,07-0,32 m. Hai dai roi han nhau, ti le trung binh khoang 6 lan.
-        float size = Random.Range(1.04f, 2.08f);
+        //
+        // 1,196-2,392 = (1,04-2,08) x 1,15 - to them 15% theo yeu cau
+        // nguoi dung (12/09/2026).
+        float size = Random.Range(1.196f, 2.392f);
 
         var ms = MeshTangBang;
         if (ms != null && ms.Length > 0)
@@ -1058,7 +1061,8 @@ public static partial class VfxFactory
             var mf = tang.GetComponent<MeshFilter>();
             if (ms != null && ms.Length > 0 && mf != null)
                 mf.sharedMesh = ms[Random.Range(0, ms.Length)];
-            tang.localScale = Vector3.one * Random.Range(1.04f, 2.08f);
+            // To them 15% - xem ghi chu trong BuildIceShardFalling
+            tang.localScale = Vector3.one * Random.Range(1.196f, 2.392f);
         }
 
         var mover = go.GetComponent<FallingShard>();
@@ -1112,8 +1116,9 @@ public static partial class VfxFactory
                 // Chi xoay quanh truc DUNG. Nghieng nguyen ca cum di thi chan
                 // cum nhac khoi mat dat, nhin ra cai cum bang dang bay lo lung.
                 spike.transform.localRotation = Quaternion.Euler(0f, Random.Range(0f, 360f), 0f);
-                // 1,0925 = 0,95 x 1,15 - to them 15%.
-                spike.transform.localScale = Vector3.one * (h * 1.0925f);
+                // 1,20175 = 0,95 x 1,15 x 1,10 - to them 15% roi to tiep 10%
+                // (yeu cau nguoi dung 12/09/2026).
+                spike.transform.localScale = Vector3.one * (h * 1.20175f);
 
                 var mfg = spike.AddComponent<MeshFilter>();
                 mfg.sharedMesh = cg[Random.Range(0, cg.Length)];

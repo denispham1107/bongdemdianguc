@@ -640,10 +640,63 @@ public class PlayerController : MonoBehaviour
         return kq;
     }
 
+    // ================================================================
+    //  BI DONG BANG / BI CHOANG
+    // ================================================================
+    //
+    // TRUOC DAY NGUOI CHOI MIEN NHIEM CA HAI. Quai thi da biet dung im tu lau
+    // (EnemyAI doc FrozenEffect va StunnedEffect), con PlayerController KHONG
+    // he doc hai thu do - nen nguoi choi bi phu kin trong vo bang van chay va
+    // van tung phep binh thuong. Nguoi dung bao dung hien tuong nay (12/09/2026):
+    // "danh vao nguoi choi khac chi hien len hieu ung hinh anh".
+    //
+    // Chi ap cho NHAN VAT CUA MAY NAY. Ban sao cua nguoi khac khong tu di
+    // (HandleMovement thoat som) va khong tu tung phep (di duong TungPhepTheoMang),
+    // vi trang thai that cua ho do MAY HO quyet - xem HieuUngQuaMang.
+
+    /// <summary>He so toc do con lai do lop bang, 1 = khong bi gi.</summary>
+    public float HeSoTocBang
+    {
+        get
+        {
+            var f = GetComponent<FrozenEffect>();
+            return f != null ? f.HeSoToc : 1f;
+        }
+    }
+
+    /// <summary>Dang bi dong cung hoan toan hoac bi choang - khong di, khong tung phep.</summary>
+    public bool DangBiKhoaCung
+    {
+        get
+        {
+            var f = GetComponent<FrozenEffect>();
+            if (f != null && f.IsFullyFrozen) return true;
+            var st = GetComponent<StunnedEffect>();
+            return st != null && st.IsStunned;
+        }
+    }
+
+    /// <summary>Ly do dang khong tung duoc phep, null neu tung duoc.</summary>
+    string LyDoKhongTungDuoc()
+    {
+        var f = GetComponent<FrozenEffect>();
+        if (f != null && f.IsFullyFrozen) return "BẠN ĐANG BỊ ĐÓNG BĂNG!";
+        var st = GetComponent<StunnedEffect>();
+        if (st != null && st.IsStunned) return "BẠN ĐANG BỊ CHOÁNG!";
+        return null;
+    }
+
     public void CastAt(int skill, Vector3 aim)
     {
         // Bam hut thi phai bao cho nguoi choi biet vi sao, khong duoc im lang.
         if (castTimer > 0f) { Say("Đang niệm chú, chờ một chút!"); return; }
+
+        // Bi dong cung trong tang bang hay bi set danh choang thi KHONG TUNG
+        // DUOC PHEP NAO. Chan o day chu khong ngat phep dang niem do:
+        // goi "toi vua tung phep" da gui di tu luc BeginCast, ngat giua chung
+        // thi may ben kia van ve ra qua phep va van tinh sat thuong cua no.
+        string caidangkhoa = LyDoKhongTungDuoc();
+        if (caidangkhoa != null) { Say(caidangkhoa); return; }
 
         aim = KepVaoTam(aim, TamCuaKyNang(skill));
 
@@ -949,7 +1002,14 @@ public class PlayerController : MonoBehaviour
         //
         // Niem chu, hoi chieu va moi thu khac van chay binh thuong: chi rieng
         // phan tu di la khong.
-        if (!tuDocInput) return;
+        //
+        // Dieu kien la "KHONG doc phim VA mau do may khac quyet" chu khong chi
+        // moi "khong doc phim": ban sao mang luon co ca hai co (NguoiChoiKhac
+        // dat ca hai trong cung mot ham), nen cho nay van chan ban sao y het.
+        // Con phep thu bom input thi dat moi tuDocInput - truoc day no bi chan
+        // luon, va moi phep do di chuyen deu ra 0,00 m du nhan vat khong he bi
+        // lam sao.
+        if (!tuDocInput && health != null && health.mauDoMayKhacQuyet) return;
 
         Vector3 wish = Vector3.zero;
 
@@ -988,6 +1048,11 @@ public class PlayerController : MonoBehaviour
         // Loi nuoc thi nang chan lai - xem LoiNuoc.HeSoToc
         float speed = moveSpeed * (loiNuoc != null ? loiNuoc.HeSoToc : 1f);
         if (castTimer > 0f) { wish = Vector3.zero; speed = 0f; }
+
+        // LOP BANG NANG CHAN, DONG CUNG VA CHOANG THI DUNG HAN.
+        // Nhan chu khong gan de, de con cong don voi loi nuoc o tren.
+        speed *= HeSoTocBang;
+        if (DangBiKhoaCung) { wish = Vector3.zero; speed = 0f; }
 
         velocity.x = wish.x * speed;
         velocity.z = wish.z * speed;

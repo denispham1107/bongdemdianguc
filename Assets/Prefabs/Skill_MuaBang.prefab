@@ -51,8 +51,10 @@ MonoBehaviour:
   shardRadius: 1.7
   fallHeight: 20
   fallTime: 0.96
-  freezeSeconds: 2.6
-  freezeChance: 0.3
+  freezeSeconds: 1.5
+  freezeChance: 0.35
+  chamTiLe: 0.5
+  chamGiay: 2
   chillSlow: 0.55
   aimAtEnemyChance: 1
   aimSpread: 0.55

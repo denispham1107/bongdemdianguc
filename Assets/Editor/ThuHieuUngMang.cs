@@ -117,7 +117,7 @@ public static class ThuHieuUngMang
         int mask = LayerMask.GetMask("Enemy", "Player");
         int soDong;
         CombatUtil.AreaFreeze(banSao.transform.position + Vector3.up * 0.5f, 2f, 1f, mask,
-                              1f, 3f, null, out soDong);
+                              0.5f, 2f, 1f, 3f, null, out soDong);
         Ghi("1b. AreaFreeze ti le 100% trung ban sao -> ban sao co bang: "
             + (banSao.GetComponent<FrozenEffect>() != null) + " (phai False)");
         Kiem(banSao.GetComponent<FrozenEffect>() == null, "AreaFreeze van dong bang ban sao cuc bo");

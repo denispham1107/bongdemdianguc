@@ -84,13 +84,22 @@ public static class HieuUngQuaMang
                 f = go.AddComponent<FrozenEffect>();
                 f.remaining = GiuSongGiay;
             }
-            f.slow = (co & CoBangHoanToan) != 0 ? 1f : 0.5f;
+            // DONG CUNG la mot dong ho RIENG (xem FrozenEffect): dat theo co,
+            // va HA XUONG 0 khi ben kia bao da het dong cung - neu khong ban sao
+            // cu dung im mai du ben kia da cua quay duoc tu lau.
+            if ((co & CoBangHoanToan) != 0)
+                f.dongCungConLai = Mathf.Max(f.dongCungConLai, GiuSongGiay);
+            else
+                f.dongCungConLai = 0f;
+
+            f.slow = 0.5f;
             f.remaining = Mathf.Max(f.remaining, GiuSongGiay);
         }
         else if (f != null && f.remaining > 0.05f)
         {
             // Ben kia da tan bang - tan theo ngay, dung doi het khoang giu song
             f.remaining = 0.05f;
+            f.dongCungConLai = 0f;
         }
 
         // ---- Choang ----

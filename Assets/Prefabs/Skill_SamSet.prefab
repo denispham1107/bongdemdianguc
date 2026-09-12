@@ -51,7 +51,7 @@ MonoBehaviour:
   strikeRadius: 2.1
   boltHeight: 20
   aimAtEnemyChance: 0.65
-  stunChance: 0.4
+  stunChance: 0.35
   stunSeconds: 2.2
   damageMask:
     serializedVersion: 2

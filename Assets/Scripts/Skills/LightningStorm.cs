@@ -5,8 +5,9 @@ using UnityEngine;
 ///
 /// Goi mot con giong xuong khu vuc chi dinh: may den keo den, khong khi tich dien,
 /// roi HANG LOAT TIA SET tu tren cao lien tiep giang xuong. Moi tia no ra mot vung
-/// sang trang tren mat dat, gay sat thuong va co 40% kha nang lam ke dich BI CHOANG
-/// (dung im, khong danh duoc) trong vai giay.
+/// sang trang tren mat dat, gay sat thuong va co 35% kha nang lam ke dich BI CHOANG
+/// trong vai giay - ca quai LAN NGUOI CHOI KHAC deu dung im, khong danh, khong
+/// tung duoc phep (xem PlayerController.DangBiKhoaCung).
 ///
 /// Set uu tien nham vao quai dang dung trong vung, con lai thi danh ngau nhien
 /// cho phu kin ca khu vuc.
@@ -25,7 +26,11 @@ public class LightningStorm : MonoBehaviour
     public float aimAtEnemyChance = 0.65f;
 
     [Header("Gay choang")]
-    [Range(0f, 1f)] public float stunChance = 0.4f;
+    // 0,35 - nguoi dung chot 12/09/2026 (truoc do 0,40).
+    //
+    // Sua o day CHUA DU: Skill_SamSet.prefab cung luu san mot ban, va gia tri
+    // trong prefab luon thang gia tri mac dinh trong code.
+    [Range(0f, 1f)] public float stunChance = 0.35f;
     public float stunSeconds = 2.2f;
 
     public LayerMask damageMask;
@@ -101,6 +106,11 @@ public class LightningStorm : MonoBehaviour
             {
                 var d = buffer[i].GetComponentInParent<Damageable>();
                 if (d == null || d.IsDead) continue;
+
+                // KHONG NHAM VAO CHINH NGUOI TUNG PHEP. Khi choi mang, damageMask
+                // co ca lop Player nen nguoi tung cung quet duoc - giong het cho
+                // da sua o IceStorm.ChonDiemRoi.
+                if (boQua != null && d == boQua) continue;
 
                 alive++;
                 if (Random.Range(0, alive) == 0) pick = d;

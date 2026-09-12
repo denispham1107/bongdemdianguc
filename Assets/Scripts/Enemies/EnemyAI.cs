@@ -132,7 +132,7 @@ public class EnemyAI : MonoBehaviour
         float speedMul = 1f;
         if (loiNuoc != null) speedMul *= loiNuoc.HeSoToc;   // loi nuoc thi nang chan
         var frozen = GetComponent<FrozenEffect>();
-        if (frozen != null) speedMul = Mathf.Clamp01(1f - frozen.slow);
+        if (frozen != null) speedMul = frozen.HeSoToc;
 
         // Dang bi loc cuon len troi thi khong tu dieu khien duoc nua
         if (GetComponent<WhirledEffect>() != null) return;

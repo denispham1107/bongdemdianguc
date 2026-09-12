@@ -4,7 +4,12 @@ using UnityEngine;
 /// KY NANG 2 - MUA BANG.
 /// Goi mot con bao lanh phu xuong khu vuc chi dinh: tuyet roi, suong lanh la dat,
 /// va tung tang bang lon lien tuc roi xuong. Moi cu roi trung se no ra hoi lanh,
-/// dung gai bang tu duoi dat len va DONG BANG quai vat trong vung.
+/// dung gai bang tu duoi dat len.
+///
+/// Tang bang roi TRUNG ke dich (quai hay nguoi choi khac) thi:
+///   - CHAC CHAN lam cham 50% trong 2 giay;
+///   - va 35% so lan DONG CUNG han 1,5 giay - khong di, khong tung duoc phep.
+/// Tang bang KHONG BAO GIO nham vao chinh nguoi tung phep.
 /// </summary>
 public class IceStorm : MonoBehaviour
 {
@@ -39,12 +44,23 @@ public class IceStorm : MonoBehaviour
     public float fallTime = 0.96f;
 
     [Header("Dong bang")]
-    public float freezeSeconds = 2.6f;
+    [Tooltip("Dong cung hoan toan bao lau (khong di, khong tung phep)")]
+    public float freezeSeconds = 1.5f;
 
-    [Tooltip("Xac suat tang bang lam ke dich dong cung khi roi trung")]
+    [Tooltip("Xac suat tang bang lam ke dich DONG CUNG khi roi trung")]
     [Range(0f, 1f)]
-    public float freezeChance = 0.30f;
-    public float chillSlow = 0.55f;      // 1 = dung im hoan toan
+    public float freezeChance = 0.35f;
+
+    [Header("Lam cham khi trung")]
+    [Tooltip("Giam bao nhieu phan toc do - ap CHAC CHAN cho moi muc tieu trung tang bang")]
+    [Range(0f, 1f)]
+    public float chamTiLe = 0.5f;
+
+    [Tooltip("Lam cham keo dai bao lau sau khi trung")]
+    public float chamGiay = 2f;
+
+    [Tooltip("Khi lanh trong vung - cham hon nhung chi khi dang dung trong bao")]
+    public float chillSlow = 0.55f;
 
     [Header("Nham muc tieu")]
     [Tooltip("Xac suat tang bang nham vao ke dich thay vi roi bua. 1 = luon nham")]
@@ -117,6 +133,8 @@ public class IceStorm : MonoBehaviour
                 fall.boQua = boQua;
                 fall.freezeSeconds = freezeSeconds;
                 fall.freezeChance = freezeChance;
+                fall.chamTiLe = chamTiLe;
+                fall.chamGiay = chamGiay;
             }
         }
 
@@ -130,6 +148,11 @@ public class IceStorm : MonoBehaviour
             {
                 var d = cols[i].GetComponentInParent<Damageable>();
                 if (d == null || d.IsDead) continue;
+
+                // KHONG uop lanh chinh nguoi tung phep. Truoc day thieu dong
+                // nay: phu thuy dung trong con bao cua chinh minh thi bi cham
+                // 55% - tu trung phep minh.
+                if (boQua != null && d == boQua) continue;
 
                 // Ban sao lay lop bang tu goi tin - xem HieuUngQuaMang
                 if (d.mauDoMayKhacQuyet) continue;
@@ -177,6 +200,18 @@ public class IceStorm : MonoBehaviour
             {
                 var d = buffer[i].GetComponentInParent<Damageable>();
                 if (d == null || d.IsDead) continue;
+
+                // KHONG NHAM VAO CHINH NGUOI TUNG PHEP (nguoi dung bao 12/09/2026,
+                // co anh chup: tang bang cu dap lien tuc xuong dau chinh minh).
+                //
+                // Khi choi mang, enemyMask co ca lop Player, nen nguoi tung cung
+                // nam trong danh sach quet duoc - va vi anh ta gan nhu luon dung
+                // giua vung minh vua nham, gan nhu tang nao cung chon anh ta.
+                // AreaFreeze co bo qua boQua nen khong mat mau, nhung ca tran
+                // mua do xuong dau minh trong khi ke dich ben canh khong dinh
+                // giot nao.
+                if (boQua != null && d == boQua) continue;
+
                 song++;
                 if (Random.Range(0, song) == 0) chon = d;
             }

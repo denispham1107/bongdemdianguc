@@ -7981,6 +7981,101 @@ cho riêng nền tảng WebGL sẽ ăn cả hai đầu: file nhỏ hơn và khô
 
 ---
 
+## Mưa băng và Sấm sét: người chơi bị đóng băng thì phải đứng yên thật
+
+### Hiện tượng
+
+Anh gửi hai ảnh chụp trên điện thoại: đứng giữa Act2, tung Mưa băng, và **tảng băng cứ dội
+xuống đúng đầu mình**, hết tảng này đến tảng khác, trong khi chung quanh chẳng có gì. Kèm theo
+đó là một nhận xét quan trọng hơn nhiều:
+
+> "Hai skill ở trên, tôi cảm thấy đánh vào người chơi khác chỉ hiện lên hiệu ứng hình ảnh chứ
+> không làm cho người chơi khác bị đứng yên và không thể sử dụng skill."
+
+Anh nói đúng. Cả hai đều là lỗi thật, và lỗi thứ hai là lỗi nặng.
+
+### Nguyên nhân 1 — người chơi miễn nhiễm với chính hệ trạng thái của game
+
+Game có sẵn hai trạng thái `FrozenEffect` (đóng băng) và `StunnedEffect` (choáng). **Chỉ quái
+đọc chúng**: `EnemyAI` mỗi khung hình đều hỏi "tôi có đang bị đóng băng không" rồi đứng im.
+`PlayerController` thì **không hỏi một câu nào** — không có lấy một dòng nào nhắc đến hai
+trạng thái đó.
+
+Hậu quả: đắp lên người chơi lớp vỏ băng dày đến đâu thì đó cũng chỉ là **một lớp vật liệu phủ
+lên hình**. Người bên trong vẫn chạy đủ tốc độ và vẫn bấm được cả bảy kỹ năng. Nhìn màn hình
+thì thấy đối thủ đóng băng, nhưng đối thủ chẳng hề hấn gì — đúng như anh mô tả.
+
+Sửa: `PlayerController` nay có `HeSoTocBang` và `DangBiKhoaCung`, đọc y hệt cách quái đọc.
+Bị đóng cứng hoặc bị choáng thì tốc độ về 0 và `CastAt` từ chối mọi phép, kèm câu nhắc
+"BẠN ĐANG BỊ ĐÓNG BĂNG!" / "BẠN ĐANG BỊ CHOÁNG!" — im lặng thì người chơi tưởng nút hỏng.
+
+Chặn ở lúc **bắt đầu** niệm chú chứ không ngắt phép đang niệm dở: gói tin "tôi vừa tung phép"
+đã gửi đi từ lúc bắt đầu, ngắt giữa chừng thì máy bên kia vẫn vẽ ra quả phép đó và vẫn tính
+sát thương của nó — hai máy kể hai câu chuyện khác nhau.
+
+### Nguyên nhân 2 — mưa băng coi chính người tung là một mục tiêu ngon
+
+Mưa băng không rơi bừa: nó **ưu tiên nhắm vào kẻ địch** đang đứng trong vùng (quét
+`OverlapSphere` theo `damageMask`). Khi chơi mạng, `damageMask` có cả lớp `Player` — vì phải
+đánh được người chơi khác. Mà người tung thì gần như luôn đứng giữa vùng mình vừa nhắm, nên
+**gần như tảng nào cũng chọn chính anh ta**.
+
+Không mất máu (`AreaFreeze` có bỏ qua người tung), nhưng cả trận mưa đổ xuống đầu mình trong
+khi kẻ địch bên cạnh không dính giọt nào. Sấm sét có đúng lỗi ấy ở `PickTarget`.
+
+Sửa: một dòng `if (boQua != null && d == boQua) continue;` trong cả hai chỗ chọn mục tiêu, và
+thêm một dòng nữa cho làn khí lạnh trong vùng — trước đây phù thủy đứng trong cơn bão của
+chính mình cũng bị ướp lạnh chậm 55%.
+
+### Hai lớp băng chồng nhau, đếm giờ riêng
+
+Luật anh đặt cho Mưa băng có hai tầng: **chắc chắn chậm 50% trong 2 giây**, và **35% số lần
+đóng cứng hoàn toàn 1,5 giây**. `FrozenEffect` cũ không diễn tả nổi: nó chỉ có một cặp
+(`slow`, `remaining`), và "đóng cứng" được suy ra từ `slow > 0,85`. Hạ `slow` xuống 0,5 là mất
+sạch dấu vết đóng cứng; giữ `slow = 1` là đứng im suốt cả 2 giây.
+
+Nay tách hẳn: `dongCungConLai` là **một đồng hồ riêng**. Vỏ băng và lớp chậm chạy theo
+`remaining`, đóng cứng chạy theo đồng hồ của nó. Hết 1,5 giây đóng cứng thì còn nửa giây lê
+bước chậm — đúng như anh hình dung.
+
+### Số đo (`PlayTestShots/bang_set.txt`, menu 58, 0 lỗi)
+
+| Đo | Kết quả |
+|---|---|
+| Tảng băng rơi | cao 0,82–2,90 m, trung bình 1,601 m — **to thêm 15,6%** (trước: 1,385 m) |
+| Cụm băng dưới đất | tổng cỡ 8 cụm 10,0901 (trước 9,1729) — **to thêm 10,0%** |
+| Mưa băng, 1000 lần gieo | đóng cứng **35,5%**, làm chậm **100,0%** |
+| Sấm sét, 1000 lần gieo | choáng **34,9%** |
+| Người chơi không bị gì | đi 3,18 m trong 0,6 s, bấm phép → bay ra 1 |
+| Người chơi bị **đóng cứng** | đi **0,00 m**, bấm 2 phép → bay ra **0** |
+| Người chơi chỉ bị **chậm 50%** | đi 1,64 m = **51%** quãng đường bình thường |
+| Người chơi bị **choáng** | đi **0,00 m**, bấm phép → bay ra **0** |
+| Tan băng xong | đi lại 3,19 m — không bị giữ chân oan |
+| Mưa băng của mình, 43 tảng | rơi vào mình **0**, rơi vào kẻ địch **36** |
+| *Mẫu đối chứng*: bỏ dòng vừa vá | rơi vào mình **10/22** — phép đo này bắt được đúng lỗi cũ |
+| Mưa băng **của người khác** rơi trúng mình | bị chậm ✔, có lúc bị đóng cứng ✔ |
+
+Hàng áp chót là hàng quan trọng nhất của bảng: nó chứng minh phép thử **không phải lúc nào
+cũng báo xanh**. Bỏ đúng một dòng vừa vá thì nó lập tức đỏ lên với đúng hiện tượng trong ảnh
+anh gửi.
+
+### Một lỗi ngầm lộ ra trong lúc đo
+
+Phép đo di chuyển đầu tiên cho **0,00 m ngay cả khi nhân vật không bị làm sao**. Thủ phạm nằm
+trong `HandleMovement`: dòng chặn bản sao mạng tự đi được viết là `if (!tuDocInput) return;`.
+Bản sao mạng đúng là có cờ đó, nhưng **mọi phép thử bơm input cũng đặt đúng cờ đó** — nên từ
+lúc dòng ấy ra đời, menu 30 và mọi phép đo di chuyển đều đo một nhân vật bị khoá chân mà không
+ai biết. Nay điều kiện là "không đọc phím **và** máu do máy khác quyết", tức đúng nghĩa "là bản
+sao mạng". Menu 30 chạy lại: đi 6,37 m, 0 lỗi.
+
+### Đường đi của hiệu ứng khi chơi mạng (không đổi)
+
+Vẫn theo quy ước cũ: **máy của ai quyết trạng thái người ấy**. A bắn B thì trên máy B phép ấy
+được phát lại, B tự gieo xác suất cho chính mình, rồi B kể lại "tôi đang đóng cứng" trong gói
+trạng thái 60 lần/giây để A vẽ theo. Menu 46 chạy lại sau khi đổi `FrozenEffect`: 0 lỗi.
+
+---
+
 ## Phần 4 — Menu công cụ "Diablo 2.5D"
 
 | Mục | Tác dụng |
@@ -8039,6 +8134,7 @@ cho riêng nền tảng WebGL sẽ ăn cả hai đầu: file nhỏ hơn và khô
 | **51b. Chup thu goc nhin man chinh (Act2)** | Đặt nhân vật trước từng nhà mồ theo bốn hướng, bỏ chỗ vướng vật / giữa nước, chụp bằng khung camera màn chính — để chọn chỗ đứng. Ảnh `PlayTestShots/goc/`. |
 | **54. Dat 10 lo lua vao Act2** | Đặt 10 lò đá (prefab `Assets/Models/LoLuaDa`) vào Act2: lò giữa = chỗ đất khô gần tâm bản đồ nhất, 9 lò rải đều; không dưới nước, trong nhà mồ, trên/sát bia, chỉ trên mặt đất. Xoá lò cũ trước, chạy lại ra y hệt. Lưu Act2. Số đo `lolua_act2_dat.txt`. |
 | **57. Chay thu BAN PHIM AO (o nhap khong bi che)** | Chạy thẳng trên hàm bố cục màn đăng nhập với 8 cỡ màn hình × 3 mức bàn phím che (35/45/55%) × 2 trang: khung và ô nhập cuối phải nằm trên mép bàn phím, ô nhập đầu không tràn lên khỏi mép trên. Số đo `banphimao.txt`. |
+| **58. Chay thu MUA BANG + SAM SET (dong bang, choang)** | Đo kích thước tảng băng và cụm băng (đối chiếu mốc lấy từ git), xác suất đóng cứng/choáng trên 1000 lần gieo, người chơi bị đóng băng·choáng có thực sự đứng yên và không tung được phép (có mẫu đối chứng), mưa băng không nhắm vào chính người tung, và phép của người khác rơi trúng mình thì mình có dính. Số đo `bang_set.txt`. |
 | **56. Chay thu DOT QUAI Act2 + cho xuat phat** | Kiểm chỗ xuất phát ngẫu nhiên (hai máy cùng mã phòng ra cùng danh sách, cách nhau ≥ 22 m, trên đất, ngoài nước, không vướng vật cản) và luật đợt quái Act2 (đợt 1 bốn con quanh mỗi người; đợt sau cộng dồn quái và mạnh thêm 5% máu · sát thương); kiểm Act1 không bị đổi. Số đo `dotquai_act2.txt`. |
 | **55. Chay thu KET TRAN (nguoi song sot cuoi cung)** | Mở kênh giả lập như menu 45: kiểm gói tin kết trận/chết, máy chủ phòng phán quyết đúng lúc còn một người, bảng điểm cộng đúng người, máy khách không tự kết luận và hiện đúng kết quả nghe được, chết rồi camera chuyển sang người còn sống, chụp màn kết trận. Số đo `kettran.txt`, ảnh `kettran_*.png`. |
 | **54c. Chay thu LOC XOAY cuon lo lua** | Vào Play Act2, thả một cơn lốc đi thẳng vào lò: đo mốc thời gian lửa tắt / lò nhấc lên / lò biến mất / lò mọc lại, kiểm than trong chậu tắt bằng độ sáng trên ảnh, và kiểm vật có hệ hạt khác vẫn không bị cuốn. Ảnh `locxoay_*.png`, số đo `locxoay_lolua.txt`. |

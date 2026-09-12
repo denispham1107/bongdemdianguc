@@ -1,0 +1,34 @@
+[ban 1] mua bang + sam set: kich thuoc, lam cham, dong cung, choang
+
+A2. cum bang duoi dat (doc thang Vfx_NoBang.prefab)
+    8 cum, tong co = 10.0901 (truoc khi sua: 9.1729) -> to them 10.0%
+
+A1. tang bang roi (do 600 tang sinh ra that)
+    luoi goc cao trung binh 0.888 m (6 hinh)
+    600 tang: cao 0.84 - 2.88 m, trung binh 1.585 m
+    truoc khi sua co 1.04-2.08 -> cao trung binh 1.385 m; nay to them 14.4%
+
+B. tham so di tu prefab xuong tung tang bang
+B1. prefab Skill_MuaBang: cham 50% trong 2 giay; dong cung 35% trong 1.5 giay
+B2. prefab Skill_SamSet: choang 35% trong 2.2 giay
+B3. tang bang that nhan duoc: cham 50% trong 2 giay; dong cung 35% trong 1.5 giay
+
+C. gieo 1000 lan len mot bia do don
+C1. mua bang: dong cung 36.0% (mong doi 35%), lam cham 100.0% (mong doi 100%)
+C2. sam set: choang 36.7% (mong doi 35%)
+
+D. nguoi choi bi dong cung / choang (day can 0,6 giay moi lan)
+D1. khong bi gi: di duoc 3.18 m, tung phep ra 1 lan
+D2. dong cung: DangBiKhoaCung = True, di duoc 0.00 m, bam 2 phep -> bay ra 0, loi nhac: BẠN ĐANG BỊ ĐÓNG BĂNG!
+D3. chi bi cham 50%: di duoc 1.64 m = 51% quang duong binh thuong
+D4. choang: DangBiKhoaCung = True, di duoc 0.00 m, bam phep -> bay ra 0, loi nhac: BẠN ĐANG BỊ CHOÁNG!
+D5. sau khi tan bang: di duoc 3.19 m (truoc do 3.18 m)
+
+E. mua bang tung ngay duoi chan minh, canh co hai bia
+E1. co bo qua nguoi tung: 43 tang - roi vao nguoi tung 0, roi vao ke dich 36
+E2. KHONG bo qua nguoi tung (kieu cu): 22 tang - roi vao nguoi tung 10, roi vao ke dich 12
+
+F. mua bang cua NGUOI KHAC roi trung minh
+F1. sau 4 giay duoi con mua cua nguoi khac: co bi cham = True, co luc bi dong cung = True
+
+so loi ghi nhan = 0

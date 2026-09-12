@@ -228,15 +228,18 @@ public static class CombatUtil
     }
 
     /// <summary>
-    /// Sat thuong BANG theo vung, kem MOT XAC SUAT dong bang.
+    /// Sat thuong BANG theo vung, kem HAI LOP hieu ung (nguoi dung chot 12/09/2026):
     ///
-    /// Moi muc tieu duoc gieo RIENG mot lan, nen trong cung mot cu no co con bi
-    /// dong cung co con chi an sat thuong - giong AreaShock cua set. Dung
-    /// AreaDamage thi statusSeconds ap cho TAT CA, tuc cu trung la dong bang
-    /// het, khong con la "xac suat" nua.
+    ///   - LAM CHAM: ap cho MOI muc tieu trung don, khong gieo xac suat.
+    ///   - DONG CUNG: gieo RIENG mot lan cho tung muc tieu, nen trong cung mot
+    ///     cu no co con bi dong cung co con chi bi cham.
+    ///
+    /// Dung AreaDamage thi statusSeconds ap cho TAT CA, tuc cu trung la dong
+    /// bang het, khong con la "xac suat" nua.
     /// </summary>
-    /// <returns>So muc tieu trung don. <paramref name="soDongBang"/> tra ve so con bi dong.</returns>
+    /// <returns>So muc tieu trung don. <paramref name="soDongBang"/> tra ve so con bi dong cung.</returns>
     public static int AreaFreeze(Vector3 center, float radius, float damage, LayerMask mask,
+                                 float chamTiLe, float chamGiay,
                                  float freezeChance, float freezeSeconds, Damageable boQua,
                                  out int soDongBang)
     {
@@ -258,6 +261,11 @@ public static class CombatUtil
 
             if (d.IsDead) continue;
 
+            // 1) Lam cham - CHAC CHAN, moi cu trung deu dinh
+            if (chamGiay > 0f && chamTiLe > 0f)
+                FrozenEffect.ApCham(d, chamTiLe, chamGiay);
+
+            // 2) Dong cung - theo xac suat
             if (freezeSeconds > 0f && Random.value < freezeChance)
             {
                 FrozenEffect.Apply(d, freezeSeconds);
