@@ -26,6 +26,15 @@ public class WhirledEffect : MonoBehaviour
 
     public Tornado tornado;
 
+    /// <summary>
+    /// Nguoi tung con loc. Giu RIENG mot ban luc bi hut vao: con loc co the tan
+    /// (bi Destroy) truoc khi nguoi nay rot xuong dat, ma don rot cung phai
+    /// tinh cong cho nguoi tung.
+    /// </summary>
+    public Damageable keCuon;
+
+    Damageable KeCuonHienTai { get { return tornado != null && tornado.boQua != null ? tornado.boQua : keCuon; } }
+
     Damageable target;
     EnemyAI ai;
     CharacterController cc;
@@ -42,6 +51,7 @@ public class WhirledEffect : MonoBehaviour
 
         var w = d.gameObject.AddComponent<WhirledEffect>();
         w.tornado = tornado;
+        w.keCuon = tornado.boQua;
 
         Vector3 off = d.transform.position - tornado.transform.position;
         w.angle = Mathf.Atan2(off.z, off.x) * Mathf.Rad2Deg;
@@ -99,6 +109,9 @@ public class WhirledEffect : MonoBehaviour
         tick += dt;
         if (tick >= 0.4f)
         {
+            // Ghi ke danh truoc: con nao chet vi bi cuon ma khong ai ghi thi
+            // thanh vo danh (13/09/2026 - menu 61 bat duoc)
+            target.GhiKeDanh(KeCuonHienTai);
             target.TakeDamage(tornado.damagePerSecond * tick, DamageType.Physical,
                               transform.position);
             tick = 0f;
@@ -120,7 +133,10 @@ public class WhirledEffect : MonoBehaviour
 
             // Nga tu tren cao xuong thi dau don hon
             if (applyFall && height > 1.5f)
+            {
+                target.GhiKeDanh(KeCuonHienTai);
                 target.TakeDamage(height * 4f, DamageType.Physical, transform.position);
+            }
 
             // Dung nguoi lai cho khoi nam nghieng giua khong trung
             var e = transform.eulerAngles;

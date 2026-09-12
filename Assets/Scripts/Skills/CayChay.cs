@@ -114,6 +114,9 @@ public class CayChay : MonoBehaviour
     public float nhipDot = 0.3f;
     public LayerMask damageMask;
 
+    /// <summary>Nguoi da dot cai cay nay - quai chet vi cay chay thi tinh cong cho ho.</summary>
+    public Damageable keDot;
+
     /// <summary>Ban kinh dam lua duoi goc - dung cho CA hinh ve lan sat thuong.</summary>
     public float banKinhLua = 2.4f;
 
@@ -237,7 +240,7 @@ public class CayChay : MonoBehaviour
     /// </summary>
     /// <returns>So cay vua bat lua.</returns>
     public static int DotCayQuanh(Vector3 tam, float banKinh, LayerMask damageMask,
-                                  float satThuongMoiGiay)
+                                  float satThuongMoiGiay, Damageable keDot = null)
     {
         var col = Physics.OverlapSphere(tam, banKinh, 1 << 0, QueryTriggerInteraction.Ignore);
         int n = 0;
@@ -246,13 +249,14 @@ public class CayChay : MonoBehaviour
         {
             var goc = GocCay(col[i].transform);
             if (goc == null) continue;
-            if (Dot(goc.gameObject, damageMask, satThuongMoiGiay) != null) n++;
+            if (Dot(goc.gameObject, damageMask, satThuongMoiGiay, keDot) != null) n++;
         }
         return n;
     }
 
     /// <summary>Cham lua vao mot cai cay. Tra ve null neu no khong chay duoc.</summary>
-    public static CayChay Dot(GameObject cay, LayerMask damageMask, float satThuongMoiGiay)
+    public static CayChay Dot(GameObject cay, LayerMask damageMask, float satThuongMoiGiay,
+                              Damageable keDot = null)
     {
         if (cay == null || !LaCay(cay)) return null;
         if (cay.GetComponent<CayChay>() != null) return null;          // dang chay roi
@@ -262,6 +266,7 @@ public class CayChay : MonoBehaviour
         var c = cay.AddComponent<CayChay>();
         c.damageMask = damageMask;
         c.satThuongMoiGiay = satThuongMoiGiay;
+        c.keDot = keDot;
 
         // Dem NGAY o day chu khong doi toi Start.
         //
@@ -472,7 +477,7 @@ public class CayChay : MonoBehaviour
             float moiNhip = satThuongMoiGiay * nhipDot * manh;
             if (moiNhip > 0.01f)
                 CombatUtil.AreaDamage(chanCay + Vector3.up * 0.8f, banKinhLua, moiNhip,
-                                      damageMask, DamageType.Fire, 1.6f);
+                                      damageMask, DamageType.Fire, 1.6f, keDot);
         }
 
         // ---- Than cay den dan, theo dung buoc lua lan ----

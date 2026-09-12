@@ -9,16 +9,24 @@ public class BurningEffect : MonoBehaviour
     public float damagePerSecond = 6f;
     public float remaining = 4f;
 
+    /// <summary>
+    /// Ai chay lua vao nguoi nay. Moi nhip chay deu ghi lai lam "ke danh cuoi"
+    /// - khong thi con nao chet vi CHAY (sau khi qua cau da no xong) thanh vo
+    /// danh neu co ai khac cham vao no truoc do, hoac chua ai ghi gi.
+    /// </summary>
+    public Damageable keGayChay;
+
     Damageable target;
     GameObject vfx;
     float tick;
 
-    public static void Apply(Damageable d, float dps, float seconds)
+    public static void Apply(Damageable d, float dps, float seconds, Damageable keGay = null)
     {
         if (d == null || d.IsDead) return;
 
         var b = d.GetComponent<BurningEffect>();
         if (b == null) b = d.gameObject.AddComponent<BurningEffect>();
+        if (keGay != null) b.keGayChay = keGay;       // lua moi nhat la cua nguoi vua gay
 
         b.damagePerSecond = Mathf.Max(b.damagePerSecond, dps);
         b.remaining = Mathf.Max(b.remaining, seconds);
@@ -45,6 +53,7 @@ public class BurningEffect : MonoBehaviour
 
         if (tick >= 0.5f)
         {
+            target.GhiKeDanh(keGayChay);
             target.TakeDamage(damagePerSecond * tick, DamageType.Fire, transform.position + Vector3.up * 1f);
             tick = 0f;
         }

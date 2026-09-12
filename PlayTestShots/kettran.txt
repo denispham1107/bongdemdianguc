@@ -5,7 +5,7 @@ A1. goi ket tran 10 byte, doc lai nguyen ven: True
 
 B. may chu phong (ghe 0, ba nguoi trong tran)
 B1. ban sao cua ghe 1 va 2: True / True
-B1b. giet mot con quai (Enemy_QuyDu)
+B1b. giet mot con quai (Enemy_PhuThuy)
 B2. ghe 1 chet (ke ha: ghe 0) -> tran xong chua: False (phai la False)
 B3. ghe 2 chet -> tran xong: True, ghe thang: 0, toi thang: True
 B4. goi ket tran phat ra 4 lan, toi kenh 1,2
@@ -26,7 +26,7 @@ anh: PlayTestShots/kettran_1_thua.png
 anh: PlayTestShots/kettran_2_thang.png
 E1. HUD dang song: True
 E2. ke ha minh (ban sao ghe 0): "Người 1" (phai la ten nguoi choi)
-E3. bi quai ha: "Quỷ cây" (loai QuyCay)
+E3. bi quai ha: "Bộ xương" (loai Skeleton)
 E4. tran xong -> can dieu khien bi khoa: Huong = (0.00, 0.00), DangKeo = False (phai la (0,0) / False)
 
 sau khi ve sanh: KetTran.DaXong = False (phai la False)

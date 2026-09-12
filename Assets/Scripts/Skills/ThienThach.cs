@@ -198,7 +198,12 @@ public class ThienThach : MonoBehaviour
         // san thanh bien lua va nguoi choi khong con cho dat chan.
         if (chayThoiGian > 0f && chayBanKinh > 0f)
         {
-            VungLua.Spawn(tam, chayBanKinh, chayThoiGian, chaySatThuongMoiGiay, damageMask);
+            // PHAI GIAO NGUOI TUNG cho vung lua. Truoc day bo trong: con nao chet
+            // trong lua (khong dinh vu no) thanh vo danh - khong ai duoc kinh
+            // nghiem - va vi boQua rong nen lua con dot ca chinh nguoi tung khi
+            // choi mang.
+            var vung = VungLua.Spawn(tam, chayBanKinh, chayThoiGian, chaySatThuongMoiGiay, damageMask);
+            if (vung != null) vung.boQua = boQua;
 
             // 4. Cay dung trong dam lua thi BAT LUA ca cai cay.
             //
@@ -207,7 +212,7 @@ public class ThienThach : MonoBehaviour
             // con cung nem thi ca san thanh bien lua), va neu no van dot duoc
             // cay thi ca khu rung chay het trong mot dot ban - dung cai loi da
             // tranh duoc o vung lua.
-            CayChay.DotCayQuanh(tam, chayBanKinh, damageMask, cayChaySatThuong);
+            CayChay.DotCayQuanh(tam, chayBanKinh, damageMask, cayChaySatThuong, boQua);
         }
 
         Destroy(gameObject);

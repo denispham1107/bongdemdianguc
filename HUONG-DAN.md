@@ -8230,6 +8230,37 @@ kéo trần lên thì tự nhiên còn 43%.
 đọc thẳng điểm ảnh: lòng chữ U của quai alpha **0,03**, hai chân quai / đỉnh quai / thân **1,00** — ảnh có quai thật.
 Ô tròn gần dòng chữ nhất trên 16 trường hợp vẫn còn hở; cụm ô to thêm **18%** (tỉ lệ thu nhỏ 0,5133 → 0,6080) nhờ căn theo hộp bao thật, hình cụm vẫn lệch **0,00%**.
 
+### Lỗi nghiêm trọng: giết bằng Mưa băng, Sấm sét… không được kinh nghiệm (13/09/2026)
+
+**Hiện tượng anh báo:** giết quái hoặc người chơi khác bằng Mưa băng và Sấm sét thì không nhận được
+kinh nghiệm.
+
+**Nguyên nhân:** kinh nghiệm, bảng điểm cuối trận và dòng "Bị … hạ" đều đọc một trường duy nhất —
+`Damageable.keDanhCuoi` ("ai đánh đòn cuối"). Trường ấy chỉ được ghi ở chỗ nào **nhớ gọi**
+`GhiKeDanh`. Đường gây sát thương nào quên, kẻ giết thành **vô danh** và không ai được gì.
+
+Tôi không đoán từ code mà viết **menu 61** chạy trên code chưa sửa trước: tung từng kỹ năng thật vào
+một con quái máu 1. Kết quả: **11 lỗi** — rộng hơn anh thấy nhiều.
+
+| Đường gây sát thương | Trước | Sau |
+|---|---|---|
+| Quả cầu lửa (nổ) | ✔ | ✔ |
+| Thiên thạch (nổ) | ✔ | ✔ |
+| **Mưa băng** (`AreaFreeze`) | ✘ không ghi | ✔ |
+| **Sấm sét** (`AreaShock`) | ✘ không ghi | ✔ |
+| **Lốc xoáy** — bị cuốn, bị ném xuống đất (`WhirledEffect`) | ✘ không ghi | ✔ nhớ người tung ngay lúc hút vào, kể cả khi cơn lốc đã tan |
+| **Cháy theo thời gian** (`BurningEffect`) | ✘ không biết ai gây cháy | ✔ `keGayChay` |
+| **Vũng lửa của Thiên thạch** (`VungLua`) | ✘ không được giao người tung — còn **đốt cả chính người tung** khi chơi mạng | ✔ |
+| **Cây bị đốt cháy** (`CayChay`) | ✘ không biết ai đốt | ✔ `keDot` |
+| Giựt sét | ✔ (lần đầu phép thử báo sai: con quái đứng đúng chỗ vũng lửa Thiên thạch còn cháy — nay dọn sạch phép cũ giữa các lần) | ✔ |
+
+**Số đo** (`PlayTestShots/kinhnghiem_kynang.txt`, menu 61): **11 lỗi → 0**. Sáu kỹ năng gây sát thương
+đều giết được, "kẻ đánh cuối" đúng là người tung, kinh nghiệm cộng đúng giá con quái (+18, +30, +32,
++40). Tách riêng các đường chết chậm (cháy, bị cuốn, vũng lửa, cây cháy) để đòn trực tiếp không che
+mất lỗi. Phần **người chơi khác làm nạn nhân**: Mưa băng, Sấm sét, vụ nổ và lửa cháy trúng nhân vật
+đều ghi đúng người kia — đó là trường máy nạn nhân gửi đi trong gói báo tử. Menu 55 (kết trận) chạy
+lại vẫn 0 lỗi.
+
 ### Hai lần phép thử báo đỏ oan
 
 Lần đầu nó báo "sát thương không tăng theo cấp" vì tôi tung Mưa băng lần hai chỉ **0,9 giây** sau
@@ -8303,6 +8334,7 @@ còn sống: True" để lần sau đọc số đo là biết ngay.
 | **58. Chay thu MUA BANG + SAM SET (dong bang, choang)** | Đo kích thước tảng băng và cụm băng (đối chiếu mốc lấy từ git), xác suất đóng cứng/choáng trên 1000 lần gieo, người chơi bị đóng băng·choáng có thực sự đứng yên và không tung được phép (có mẫu đối chứng), mưa băng không nhắm vào chính người tung, và phép của người khác rơi trúng mình thì mình có dính. Số đo `bang_set.txt`. |
 | **59. Chay thu SACH PHEP (keo tha o ky nang)** | Đo bố cục bảng trên 8 cỡ màn hình × 2 bản, kiểm ô tròn trong bảng xếp đúng hình cụm nút thật, kho kỹ năng (đổi chỗ · bỏ khỏi ô · lưu/nạp · hai bản riêng), và trong trận: nút con mắt ở góc phải trên, mở bảng thì input trận đấu bị khoá. Chụp 4 ảnh. Số đo `sachphep.txt`. |
 | **60. Chay thu CAP DO (kinh nghiem, diem ky nang)** | Đo bảng kinh nghiệm và cách cộng dồn, hệ số chỉ số và hệ số kỹ năng, điểm kỹ năng (mở khoá · nâng cấp · hết điểm), gói mạng mang cấp kỹ năng; trong Play đo chỉ số **thật** trước/sau khi lên cấp, kỹ năng chưa mở không tung được, nâng cấp xong phép mạnh lên thật, giết quái được đúng số điểm. Số đo `capdo.txt`. |
+| **61. Chay thu KINH NGHIEM theo tung ky nang** | Tung từng kỹ năng thật vào một con quái máu 1: phải chết, "kẻ đánh cuối" phải là người tung, kinh nghiệm phải cộng đúng giá. Tách riêng các đường chết chậm (cháy, bị lốc cuốn, vũng lửa Thiên thạch, cây cháy) và trường hợp nạn nhân là người chơi. Số đo `kinhnghiem_kynang.txt`. |
 | **56. Chay thu DOT QUAI Act2 + cho xuat phat** | Kiểm chỗ xuất phát ngẫu nhiên (hai máy cùng mã phòng ra cùng danh sách, cách nhau ≥ 22 m, trên đất, ngoài nước, không vướng vật cản) và luật đợt quái Act2 (đợt 1 bốn con quanh mỗi người; đợt sau cộng dồn quái và mạnh thêm 5% máu · sát thương); kiểm Act1 không bị đổi. Số đo `dotquai_act2.txt`. |
 | **55. Chay thu KET TRAN (nguoi song sot cuoi cung)** | Mở kênh giả lập như menu 45: kiểm gói tin kết trận/chết, máy chủ phòng phán quyết đúng lúc còn một người, bảng điểm cộng đúng người, máy khách không tự kết luận và hiện đúng kết quả nghe được, chết rồi camera chuyển sang người còn sống, chụp màn kết trận. Số đo `kettran.txt`, ảnh `kettran_*.png`. |
 | **54c. Chay thu LOC XOAY cuon lo lua** | Vào Play Act2, thả một cơn lốc đi thẳng vào lò: đo mốc thời gian lửa tắt / lò nhấc lên / lò biến mất / lò mọc lại, kiểm than trong chậu tắt bằng độ sáng trên ảnh, và kiểm vật có hệ hạt khác vẫn không bị cuốn. Ảnh `locxoay_*.png`, số đo `locxoay_lolua.txt`. |

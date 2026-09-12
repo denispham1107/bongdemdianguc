@@ -1,0 +1,25 @@
+[ban 1] giet bang ky nang nao cung phai duoc kinh nghiem
+chuan bi: cap 7, mo khoa TrueTrueTrueTrueTrueTrue
+quai dung de thu: 9 con
+
+A. tung tung ky nang that vao mot con quai mau 1
+A0. Qua cau lua -> Skeleton: chet True, ke danh cuoi la minh True, kinh nghiem +18 (gia 18)
+A1. Mua bang -> Skeleton: chet True, ke danh cuoi la minh True, kinh nghiem +18 (gia 18)
+A2. Sam set -> QuyDu: chet True, ke danh cuoi la minh True, kinh nghiem +40 (gia 40)
+A3. Loc xoay -> Witch: chet True, ke danh cuoi la minh True, kinh nghiem +32 (gia 32)
+A4. Thien thach -> QuyCay: chet True, ke danh cuoi la minh True, kinh nghiem +30 (gia 30)
+A6. Giut set -> QuyDu: chet True, ke danh cuoi la minh True, kinh nghiem +40 (gia 40)
+
+B. chet vi hieu ung cham (khong co don truc tiep ghi ke danh truoc)
+B1. chet vi chay: co bi chay True, chet True, ke danh cuoi la minh True
+B2. chet vi bi loc cuon: chet True, ke danh cuoi la minh True
+B3. vung lua cua thien thach: co vung lua True, biet nguoi tung True
+B4. dot cay TREE_oakA_706: bat lua True, nho ke dot True
+
+C. don cua NGUOI CHOI KHAC trung nhan vat cua may nay
+C. Mua bang trung minh -> ke danh cuoi la nguoi kia: True
+C. Sam set trung minh -> ke danh cuoi la nguoi kia: True
+C. Qua cau lua / Thien thach (no) trung minh -> ke danh cuoi la nguoi kia: True
+C. chay (sau vu no) tren minh -> ke danh cuoi la nguoi kia: True
+
+so loi ghi nhan = 0

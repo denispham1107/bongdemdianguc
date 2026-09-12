@@ -219,7 +219,7 @@ public static class CombatUtil
             if (khiengDo) continue;
 
             if (type == DamageType.Fire && statusSeconds > 0f)
-                BurningEffect.Apply(d, damage * 0.18f, statusSeconds);
+                BurningEffect.Apply(d, damage * 0.18f, statusSeconds, boQua);
             else if (type == DamageType.Ice && statusSeconds > 0f)
                 FrozenEffect.Apply(d, statusSeconds);
         }
@@ -256,6 +256,10 @@ public static class CombatUtil
             float dist = Vector3.Distance(center, d.transform.position);
             float falloff = Mathf.Lerp(1f, 0.55f, Mathf.Clamp01(dist / Mathf.Max(0.01f, radius)));
 
+            // GHI KE DANH TRUOC KHI DANH. Thieu dong nay (13/09/2026) thi con nao
+            // chet vi Mua bang cung thanh vo danh: khong ai duoc kinh nghiem,
+            // bang diem khong ghi, dong "Bi ... ha" de trong. Menu 61 kiem.
+            d.GhiKeDanh(boQua);
             d.TakeDamage(damage * falloff, DamageType.Ice, d.transform.position + Vector3.up * 1f);
             hits++;
 
@@ -294,6 +298,8 @@ public static class CombatUtil
             float dist = Vector3.Distance(center, d.transform.position);
             float falloff = Mathf.Lerp(1f, 0.55f, Mathf.Clamp01(dist / Mathf.Max(0.01f, radius)));
 
+            // Ghi ke danh truoc - xem ghi chu o AreaFreeze (Sam set cung sot dong nay)
+            d.GhiKeDanh(boQua);
             d.TakeDamage(damage * falloff, DamageType.Lightning, d.transform.position + Vector3.up * 1f);
             hits++;
 
