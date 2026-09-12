@@ -107,6 +107,7 @@ public class KetTran : MonoBehaviour
         {
             dongBo.KhiNgheChet += NgheChet;
             dongBo.KhiNgheKetTran += NgheKetTran;
+            dongBo.KhiNgheKinhNghiem += NgheKinhNghiem;
         }
     }
 
@@ -115,6 +116,7 @@ public class KetTran : MonoBehaviour
         if (dongBo == null) return;
         dongBo.KhiNgheChet -= NgheChet;
         dongBo.KhiNgheKetTran -= NgheKetTran;
+        dongBo.KhiNgheKinhNghiem -= NgheKinhNghiem;
     }
 
     // ================================================================
@@ -159,7 +161,21 @@ public class KetTran : MonoBehaviour
 
     void NgheChet(byte ghe, byte gheKeHa)
     {
+        bool moi = !daChet.Contains(ghe);
         ThemChet(ghe, gheKeHa);
+
+        // HA MOT NGUOI CHOI thi duoc kinh nghiem. Goi chet do chinh may NAN
+        // NHAN gui (no la trong tai cai chet cua minh) va duoc gui lai vai lan,
+        // nen chi cong o lan dau nghe.
+        if (moi && gheKeHa == gheToi && gheKeHa != ghe)
+            CapDo.Them(CapDo.KnGietNguoi);
+    }
+
+    /// <summary>Chu phong bao: ghe nay vua ha mot con quai, duoc bay nhieu diem.</summary>
+    void NgheKinhNghiem(byte ghe, int diem)
+    {
+        if (ghe != gheToi) return;      // goi phat cho ca phong, chi phan cua minh moi tinh
+        CapDo.Them(diem);
     }
 
     void ThemChet(byte ghe, byte gheKeHa)

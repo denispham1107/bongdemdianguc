@@ -227,6 +227,44 @@ public class PlayerController : MonoBehaviour
         if (boDoc == null) boDoc = gameObject.AddComponent<DocInput>();
     }
 
+    // ================================================================
+    //  LEN CAP
+    // ================================================================
+
+    void OnEnable() { CapDo.KhiLenCap += LenCap; }
+    void OnDisable() { CapDo.KhiLenCap -= LenCap; }
+
+    /// <summary>
+    /// Vua len mot cap: mau +15%, nang luong +10%, toc do +3,5%.
+    ///
+    /// Mau va nang luong ĐANG CO cung duoc cong dung phan chenh - khong hoi day
+    /// (len cap thanh mot binh mau mien phi) ma cung khong de nguoi choi tut
+    /// ti le: dang 50% mau ma chi keo tran len thi tu nhien con 43%.
+    ///
+    /// CHI NHAN VAT CUA MAY NAY: ban sao cua nguoi khac lay mau tu goi tin theo
+    /// TI LE, va cap cua ho may nay khong theo doi.
+    /// </summary>
+    void LenCap(int capMoi)
+    {
+        if (health != null && health.mauDoMayKhacQuyet) return;
+        if (!tuDocInput) return;
+
+        if (health != null)
+        {
+            float them = health.maxHealth * 0.15f;
+            health.maxHealth += them;
+            health.health = Mathf.Min(health.maxHealth, health.health + them);
+        }
+
+        float themMana = maxMana * 0.10f;
+        maxMana += themMana;
+        mana = Mathf.Min(maxMana, mana + themMana);
+
+        moveSpeed *= 1.035f;
+
+        Say("LÊN CẤP " + capMoi + "! Bạn có 1 điểm kỹ năng — mở SÁCH PHÉP");
+    }
+
     void Update()
     {
         float dt = Time.deltaTime;
@@ -698,68 +736,80 @@ public class PlayerController : MonoBehaviour
         string caidangkhoa = LyDoKhongTungDuoc();
         if (caidangkhoa != null) { Say(caidangkhoa); return; }
 
+        // KY NANG CHUA MO THI KHONG TUNG DUOC. Vao tran ai cung cap 1 va moi
+        // ky nang deu khoa; mo bang diem ky nang trong Sach phep.
+        if (!CapDo.DaMo(skill))
+        {
+            Say(SachPhep.Ten(skill) + " chưa mở khoá — vào SÁCH PHÉP để mở");
+            return;
+        }
+
+        // Ky nang cang cao cap cang ton nang luong (+10% moi cap)
+        float tonThem = CapDo.ManaTheoCap(CapDo.CapCuaKyNang(skill));
+        capPhepDangTung = CapDo.CapCuaKyNang(skill);
+
         aim = KepVaoTam(aim, TamCuaKyNang(skill));
 
         if (skill == 0)
         {
             if (fireballTimer > 0f) { Say("QUẢ CẦU LỬA đang hồi chiêu"); return; }
-            if (mana < fireballCost) { Say("Không đủ năng lượng!"); return; }
+            if (mana < fireballCost * tonThem) { Say("Không đủ năng lượng!"); return; }
 
-            mana -= fireballCost;
+            mana -= fireballCost * tonThem;
             fireballTimer = fireballCooldown;
             BeginCast(0, fireballCastTime, aim);
         }
         else if (skill == 1)
         {
             if (iceTimer > 0f) { Say("MƯA BĂNG đang hồi chiêu"); return; }
-            if (mana < iceCost) { Say("Không đủ năng lượng!"); return; }
+            if (mana < iceCost * tonThem) { Say("Không đủ năng lượng!"); return; }
 
-            mana -= iceCost;
+            mana -= iceCost * tonThem;
             iceTimer = iceCooldown;
             BeginCast(1, iceCastTime, aim);
         }
         else if (skill == 2)
         {
             if (boltTimer > 0f) { Say("SẤM SÉT đang hồi chiêu"); return; }
-            if (mana < boltCost) { Say("Không đủ năng lượng!"); return; }
+            if (mana < boltCost * tonThem) { Say("Không đủ năng lượng!"); return; }
 
-            mana -= boltCost;
+            mana -= boltCost * tonThem;
             boltTimer = boltCooldown;
             BeginCast(2, boltCastTime, aim);
         }
         else if (skill == 3)
         {
             if (tornadoTimer > 0f) { Say("LỐC XOÁY đang hồi chiêu"); return; }
-            if (mana < tornadoCost) { Say("Không đủ năng lượng!"); return; }
+            if (mana < tornadoCost * tonThem) { Say("Không đủ năng lượng!"); return; }
 
-            mana -= tornadoCost;
+            mana -= tornadoCost * tonThem;
             tornadoTimer = tornadoCooldown;
             BeginCast(3, tornadoCastTime, aim);
         }
         else if (skill == 4)
         {
             if (meteorTimer > 0f) { Say("THIÊN THẠCH đang hồi chiêu"); return; }
-            if (mana < meteorCost) { Say("Không đủ năng lượng!"); return; }
+            if (mana < meteorCost * tonThem) { Say("Không đủ năng lượng!"); return; }
 
-            mana -= meteorCost;
+            mana -= meteorCost * tonThem;
             meteorTimer = meteorCooldown;
             BeginCast(4, meteorCastTime, aim);
         }
         else if (skill == 5)
         {
             if (khiengTimer > 0f) { Say("KHIÊN đang hồi chiêu"); return; }
-            if (mana < khiengCost) { Say("Không đủ năng lượng!"); return; }
+            if (mana < khiengCost * tonThem) { Say("Không đủ năng lượng!"); return; }
 
-            mana -= khiengCost;
+            mana -= khiengCost * tonThem;
             khiengTimer = khiengCooldown;
             BeginCast(5, khiengCastTime, aim);
         }
         else if (skill == 6)
         {
             if (giatSetTimer > 0f) { Say("GIỰT SÉT đang hồi chiêu"); return; }
-            if (mana < giatSetCost) { Say("Không đủ năng lượng!"); return; }
+            if (mana < giatSetCost * tonThem) { Say("Không đủ năng lượng!"); return; }
 
-            mana -= giatSetCost;
+            mana -= giatSetCost * tonThem;
             giatSetTimer = giatSetCooldown;
             BeginCast(6, giatSetCastTime, aim);
         }
@@ -798,7 +848,12 @@ public class PlayerController : MonoBehaviour
     /// </summary>
     public void TungPhepTheoMang(int skill, Vector3 aim)
     {
-        TungPhepTheoMang(skill, aim, 0f);
+        TungPhepTheoMang(skill, aim, 0f, 1);
+    }
+
+    public void TungPhepTheoMang(int skill, Vector3 aim, float doTreGiay)
+    {
+        TungPhepTheoMang(skill, aim, doTreGiay, 1);
     }
 
     /// <summary>
@@ -807,10 +862,16 @@ public class PlayerController : MonoBehaviour
     /// Con so ay duoc giu lai den luc phep thuc su bay ra (Release), roi dung
     /// de lui moi nguoi ve dung khoanh khac ho bam - xem <see cref="BuTre"/>.
     /// </summary>
-    public void TungPhepTheoMang(int skill, Vector3 aim, float doTreGiay)
+    public void TungPhepTheoMang(int skill, Vector3 aim, float doTreGiay, int capKyNang)
     {
         if (skill < 0 || skill > 6) return;
         buTreCuaPhepNay = doTreGiay;
+
+        // CAP CUA NGUOI TUNG, khong phai cap cua nguoi xem: goi tin mang theo
+        // con so nay. Lay cap cua minh o day thi don cua nguoi cap 5 danh vao
+        // may nay lai yeu di theo cap cua minh, va hai may thay hai con so sat
+        // thuong khac nhau.
+        capPhepDangTung = Mathf.Clamp(capKyNang, 1, CapDo.CapKyNangToiDa);
         BeginCast(skill, ThoiGianNiem(skill), aim);
     }
 
@@ -891,8 +952,19 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Cap cua ky nang dang tung. Phep cua CHINH may nay thi doc tu CapDo; phep
+    /// den tu mang thi lay cap DI KEM GOI - nguoi tung cap 5 phai manh dung nhu
+    /// cap 5 tren moi man hinh, khong phai manh theo cap cua nguoi xem.
+    /// </summary>
+    int capPhepDangTung = 1;
+
     void Release()
     {
+        int capPhep = Mathf.Max(1, capPhepDangTung);
+        float manhHon = CapDo.SatThuongTheoCap(capPhep);
+        float themGiay = CapDo.ThemGiayHieuUngTheoCap(capPhep);
+
         Vector3 origin = rig != null && rig.castPoint != null
             ? rig.castPoint.position
             : transform.position + Vector3.up * 1.4f;
@@ -907,18 +979,30 @@ public class PlayerController : MonoBehaviour
             // BA qua bay cung luc, toe hinh quat ve phia truoc.
             // Xem Fireball.SpawnChum - chum toe quanh truc DUNG nen nham chech
             // len hay xuong deu khong lam hai qua bien lech khoi mat phang ngang.
-            Fireball.SpawnChum(origin, dir.normalized, obstacleMask, enemyMask, health);
+            Fireball.SpawnChum(origin, dir.normalized, obstacleMask, enemyMask, health,
+                               3, 11f, manhHon, themGiay);
             CameraShake.Shake(0.12f, 0.05f);
         }
         else if (castingSkill == 1)
         {
             var mua = IceStorm.Spawn(castAim, enemyMask);
-            if (mua != null) mua.boQua = health;
+            if (mua != null)
+            {
+                mua.boQua = health;
+                mua.shardDamage *= manhHon;
+                mua.freezeSeconds += themGiay;
+                mua.chamGiay += themGiay;
+            }
         }
         else if (castingSkill == 2)
         {
             var bao = LightningStorm.Spawn(castAim, enemyMask);
-            if (bao != null) bao.boQua = health;
+            if (bao != null)
+            {
+                bao.boQua = health;
+                bao.strikeDamage *= manhHon;
+                bao.stunSeconds += themGiay;
+            }
         }
         else if (castingSkill == 3)
         {
@@ -932,7 +1016,13 @@ public class PlayerController : MonoBehaviour
             spawnAt.y = VfxFactory.GroundY(spawnAt);
 
             var loc = Tornado.Spawn(spawnAt, dir, enemyMask);
-            if (loc != null) loc.boQua = health;
+            if (loc != null)
+            {
+                loc.boQua = health;
+                loc.damagePerSecond *= manhHon;
+                loc.boltDamage *= manhHon;
+                loc.duration += themGiay;       // con loc song lau hon = cuon lau hon
+            }
         }
         else if (castingSkill == 4)
         {
@@ -942,7 +1032,8 @@ public class PlayerController : MonoBehaviour
             // Goi CA LOAT ba qua noi duoi nhau, cach nhau 0,5 giay. Xem
             // ThienThach.SpawnLoat - hai qua sau lech ra chung quanh chu khong
             // roi trung mot cho.
-            ThienThach.SpawnLoat(castAim, obstacleMask, enemyMask, health);
+            ThienThach.SpawnLoat(castAim, obstacleMask, enemyMask, health,
+                                 3, 0.7f, 2.8f, manhHon, themGiay);
         }
         else if (castingSkill == 5)
         {
@@ -955,7 +1046,10 @@ public class PlayerController : MonoBehaviour
             // lai: nhap nhay, kem mot lan vo gia.
             if (health == null || !health.mauDoMayKhacQuyet)
             {
-                khiengHienTai = Khieng.Bat(gameObject, khiengMau, khiengBanKinh);
+                // Khien khong manh len theo sat thuong ma theo MAU KHIEN (+15% moi cap)
+                khiengHienTai = Khieng.Bat(gameObject,
+                                           khiengMau * CapDo.MauKhiengTheoCap(capPhep),
+                                           khiengBanKinh);
                 if (health != null) health.khieng = khiengHienTai;
                 CameraShake.Shake(0.10f, 0.04f);
             }
@@ -970,7 +1064,11 @@ public class PlayerController : MonoBehaviour
             if (dir.sqrMagnitude < 0.01f) dir = transform.forward;
 
             var set = GiatSet.Phong(origin, dir.normalized, enemyMask);
-            if (set != null) set.boQua = health;
+            if (set != null)
+            {
+                set.boQua = health;
+                set.damage *= manhHon;
+            }
         }
         else
         {

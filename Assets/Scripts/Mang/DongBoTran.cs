@@ -92,6 +92,9 @@ public class DongBoTran : MonoBehaviour
     /// <summary>Nghe tin "ghe A vua chet, ke ha ho ngoi ghe B" (B = 255 la khong ai).</summary>
     public event System.Action<byte, byte> KhiNgheChet;
 
+    /// <summary>Chu phong bao: ghe nay vua duoc bay nhieu kinh nghiem (ha quai).</summary>
+    public event System.Action<byte, int> KhiNgheKinhNghiem;
+
     /// <summary>Chu phong bao van dau da xong kem bang diem.</summary>
     public event System.Action<GoiTin.KetQua> KhiNgheKetTran;
 
@@ -307,6 +310,11 @@ public class DongBoTran : MonoBehaviour
         {
             chiSo = chiSoCuaToi,
             kyNang = (byte)kyNang,
+
+            // Cap ky nang CUA MINH: ben kia phat lai phep nay de tinh trung, va
+            // no phai manh dung nhu tren may minh.
+            capKyNang = (byte)Mathf.Clamp(CapDo.CapCuaKyNang(kyNang), 1, CapDo.CapKyNangToiDa),
+
             soThuTu = ++soPhepDaTung,
             diemNgam = diemNgam,
 
@@ -584,6 +592,16 @@ public class DongBoTran : MonoBehaviour
                 if (KhiNgheChet != null) KhiNgheChet(gheChet, gheHa);
                 return;
             }
+            if (loai == GoiTin.LoaiKinhNghiem)
+            {
+                // Chi chu phong gui loai nay; chu phong tu cong cho minh khong
+                // qua duong mang nen no khong can nghe lai cua ai.
+                if (LaChuPhong) return;
+                byte gheNhan; int diem;
+                if (!GoiTin.DocKinhNghiem(b, out gheNhan, out diem)) { SoGoiHong++; return; }
+                if (KhiNgheKinhNghiem != null) KhiNgheKinhNghiem(gheNhan, diem);
+                return;
+            }
             if (loai == GoiTin.LoaiKetTran)
             {
                 // Chi chu phong ra phan quyet - no khong nghe loai nay cua ai ca
@@ -687,7 +705,7 @@ public class DongBoTran : MonoBehaviour
         n.phepDaLam = p.soThuTu;
 
         SoPhepDaNhan++;
-        n.nhanVat.TungPhepTheoMang(p.kyNang, p.diemNgam, p.doTreMs / 1000f);
+        n.nhanVat.TungPhepTheoMang(p.kyNang, p.diemNgam, p.doTreMs / 1000f, p.capKyNang);
     }
 
     /// <summary>

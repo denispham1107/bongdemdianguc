@@ -68,9 +68,12 @@ public class Fireball : MonoBehaviour
     /// ho se lam ba qua toe theo mot mat phang NGHIENG, hai qua bien mot cai
     /// chui xuong dat mot cai bay len troi.
     /// </summary>
+    /// <param name="heSoSatThuong">Nhan them theo CAP ky nang cua nguoi tung (xem CapDo).</param>
+    /// <param name="themGiayChay">Lua chay them bao nhieu giay - cung theo cap.</param>
     public static void SpawnChum(Vector3 pos, Vector3 direction, LayerMask hitMask,
                                  LayerMask damageMask, Damageable boQua = null,
-                                 int soQua = 3, float gocToe = 11f)
+                                 int soQua = 3, float gocToe = 11f,
+                                 float heSoSatThuong = 1f, float themGiayChay = 0f)
     {
         Vector3 huong = direction.normalized;
 
@@ -85,6 +88,8 @@ public class Fireball : MonoBehaviour
             {
                 qua.boQua = boQua;
                 qua.tuaTruoc = BuTre.TuaTruocGiay;
+                qua.impactDamage *= heSoSatThuong;
+                qua.burnSeconds += themGiayChay;
             }
         }
     }

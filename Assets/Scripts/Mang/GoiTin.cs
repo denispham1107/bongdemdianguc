@@ -144,6 +144,33 @@ public static class GoiTin
     /// </summary>
     public const byte LoaiKetTran = 10;
 
+    /// <summary>
+    /// GOI KINH NGHIEM: "ghe so N vua ha mot con quai, duoc bay nhieu diem".
+    ///
+    /// CHI CHU PHONG GUI. Quai la cua chu phong - may khach khong chay AI quai
+    /// va khong biet con nao vua chet vi tay ai, nen khong the tu cong kinh
+    /// nghiem cho minh. Giet NGUOI CHOI thi khong can goi nay: may nan nhan da
+    /// gui goi CHET kem ghe cua ke ha (xem KetTran).
+    ///
+    /// Bon byte: loai, ghe duoc cong, va so diem 2 byte.
+    /// </summary>
+    public const byte LoaiKinhNghiem = 11;
+
+    public static byte[] VietKinhNghiem(byte ghe, int diem)
+    {
+        int d = Mathf.Clamp(diem, 0, 65535);
+        return new byte[] { LoaiKinhNghiem, ghe, (byte)(d & 0xFF), (byte)((d >> 8) & 0xFF) };
+    }
+
+    public static bool DocKinhNghiem(byte[] b, out byte ghe, out int diem)
+    {
+        ghe = 255; diem = 0;
+        if (b == null || b.Length < 4 || b[0] != LoaiKinhNghiem) return false;
+        ghe = b[1];
+        diem = b[2] | (b[3] << 8);
+        return true;
+    }
+
     /// <summary>So ghe nhieu nhat trong mot tran - bang so kenh cua KenhTrucTiep.</summary>
     public const int SoGheToiDa = 4;
 
@@ -231,6 +258,15 @@ public static class GoiTin
     {
         public byte chiSo;      // ai tung
         public byte kyNang;     // 0..6
+
+        /// <summary>
+        /// CAP cua ky nang ay (1..5) o may NGUOI TUNG.
+        ///
+        /// Phai di kem goi: may ben kia phat lai phep nay de tinh trung, ma suc
+        /// manh cua no la cua NGUOI TUNG. Khong gui thi don cua nguoi cap 5 vao
+        /// may minh lai yeu theo cap cua minh - hai man hinh hai con so.
+        /// </summary>
+        public byte capKyNang;
         public int soThuTu;     // de ben nhan bo qua ban sao lap lai
         public Vector3 diemNgam;
 
@@ -386,12 +422,13 @@ public static class GoiTin
     /// <summary>Dong goi mot lan tung phep. 16 byte.</summary>
     public static byte[] VietKyNang(MotPhep p)
     {
-        var b = new byte[16];
+        var b = new byte[17];
         int i = 0;
 
         b[i++] = LoaiKyNang;
         b[i++] = p.chiSo;
         b[i++] = p.kyNang;
+        b[i++] = p.capKyNang == 0 ? (byte)1 : p.capKyNang;
 
         b[i++] = (byte)(p.soThuTu & 0xFF);
         b[i++] = (byte)((p.soThuTu >> 8) & 0xFF);
@@ -414,12 +451,14 @@ public static class GoiTin
     public static bool DocKyNang(byte[] b, out MotPhep ra)
     {
         ra = new MotPhep();
-        if (b == null || b.Length < 16) return false;
+        if (b == null || b.Length < 17) return false;
         if (b[0] != LoaiKyNang) return false;
 
         int i = 1;
         ra.chiSo = b[i++];
         ra.kyNang = b[i++];
+        ra.capKyNang = b[i++];
+        if (ra.capKyNang < 1) ra.capKyNang = 1;
 
         ra.soThuTu = b[i] | (b[i + 1] << 8) | (b[i + 2] << 16) | (b[i + 3] << 24);
         i += 4;

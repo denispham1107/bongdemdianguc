@@ -104,9 +104,12 @@ public class ThienThach : MonoBehaviour
     /// ra chung quanh. Roi chong len nhau thi ba vu no gop thanh mot, nhin ra
     /// mot qua to chu khong ra mot loat.
     /// </summary>
+    /// <param name="heSoSatThuong">Nhan them theo CAP ky nang cua nguoi tung (xem CapDo).</param>
+    /// <param name="themGiayChay">Vung lua chay them bao nhieu giay - cung theo cap.</param>
     public static void SpawnLoat(Vector3 diemNgam, LayerMask hitMask, LayerMask damageMask,
                                  Damageable boQua = null,
-                                 int soQua = 3, float cachNhau = 0.7f, float tanRong = 2.8f)
+                                 int soQua = 3, float cachNhau = 0.7f, float tanRong = 2.8f,
+                                 float heSoSatThuong = 1f, float themGiayChay = 0f)
     {
         for (int i = 0; i < soQua; i++)
         {
@@ -121,6 +124,9 @@ public class ThienThach : MonoBehaviour
             var tt = Spawn(diem, hitMask, damageMask);
             tt.treTruocKhiRoi = i * cachNhau;
             tt.boQua = boQua;
+            tt.impactDamage *= heSoSatThuong;
+            tt.chaySatThuongMoiGiay *= heSoSatThuong;
+            tt.chayThoiGian += themGiayChay;
         }
     }
 

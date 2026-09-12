@@ -8150,6 +8150,85 @@ Thả vào ô đã có kỹ năng thì **hai ô đổi chỗ cho nhau**, không 
 
 ---
 
+## Cấp độ, kinh nghiệm và điểm kỹ năng
+
+> **Mọi con số nằm trong `kinhnghiem.md`** — bảng kinh nghiệm từng cấp, giá của từng loại quái,
+> lên cấp được gì, nâng kỹ năng được gì. Mục này chỉ kể những chỗ **khó** khi làm.
+
+### Cấp tính theo trận, không cất lại
+
+Mỗi trận là một ván đấu riêng (người sống sót cuối cùng thắng). Giữ cấp giữa các trận thì người
+chơi lâu năm vào trận với cấp 10 trong khi người mới cấp 1 — không còn là một ván đấu nữa. Nên
+`CapDo.BatDauTranMoi()` được gọi trong `GameDirector.Awake`, tức mỗi lần vào màn.
+
+Đặt ở `GameDirector` chứ không ở `PlayerController`: **bản sao của người chơi khác cũng là một
+`PlayerController`**, mà chúng được dựng lên giữa trận — xoá sạch ở đó thì mỗi lần có người vào
+là cả phòng tụt về cấp 1.
+
+### Chỗ khó nhất: sức mạnh kỹ năng khi chơi mạng
+
+Sát thương của phép **không được tính theo cấp của người xem**. A nâng Mưa băng lên cấp 5 rồi bắn
+sang B: trên máy B phép ấy được phát lại để tính trúng, và nếu máy B lấy cấp Mưa băng *của B* thì
+đòn đó yếu đi — hai màn hình hiện hai con số sát thương khác nhau cho cùng một cú đánh.
+
+Nên **cấp kỹ năng đi kèm từng lần tung phép**: gói kỹ năng thêm một byte, từ 16 lên 17 byte.
+`PlayerController.capPhepDangTung` giữ cấp ấy tới lúc phép thật sự bay ra (`Release`), rồi nhân
+vào sát thương và cộng vào thời gian hiệu ứng.
+
+### Ai chia kinh nghiệm cho ai
+
+| Việc | Ai biết | Đi đường nào |
+|---|---|---|
+| Giết quái | **chủ phòng** — chỉ nó chạy trí tuệ quái, máy khách chỉ vẽ lại đàn quái nghe được | chủ phòng gửi gói `LoaiKinhNghiem` 4 byte (ghế + điểm) tới máy người hạ |
+| Giết người chơi | **máy nạn nhân** — nó là trọng tài cái chết của mình | đã có sẵn: gói `LoaiChet` mang theo ghế của kẻ hạ, máy kẻ hạ nghe thấy thì tự cộng |
+
+Gói chết được gửi lại vài lần cho chắc, nên chỗ cộng kinh nghiệm phải kiểm "đây có phải lần đầu
+nghe không" — không thì hạ một người được cộng ba bốn lần.
+
+### Kỹ năng khoá phải khoá ở cả ba nơi
+
+Một kỹ năng chưa mở mà chỉ chặn ở một chỗ là lọt: người chơi vẫn bấm được từ chỗ còn lại.
+
+1. `PlayerController.CastAt` — từ chối và **nói ra lý do** ("… chưa mở khoá — vào SÁCH PHÉP để mở").
+2. Cụm nút tròn / thanh ô vuông — vẽ xám kèm hình ổ khoá, và `NutTaiDiem` không nhận ngón tay ở đó.
+3. Sách phép — không kéo thả được kỹ năng còn khoá (kéo được thì nó nằm trên thanh như một nút
+   thật, bấm vào chỉ hiện ra lời từ chối).
+
+### Lên cấp thì cộng máu thế nào
+
+Máu tối đa +15%, và **máu đang có cũng được cộng đúng phần vừa tăng thêm**. Không hồi đầy (lên
+cấp thành một bình máu miễn phí), nhưng cũng không để người chơi tụt tỉ lệ: đang 50% máu mà chỉ
+kéo trần lên thì tự nhiên còn 43%.
+
+### Số đo (`PlayTestShots/capdo.txt`, menu 60, 0 lỗi)
+
+| Đo | Kết quả |
+|---|---|
+| Bảng kinh nghiệm | 100 · 135 · 180 · 245 · 330 · 445 · 600 · 810 · 1090 — **tổng 3 935** để đạt cấp 10 |
+| Một đợt Act2 (4 con quanh mình) | 120 kinh nghiệm — đủ lên cấp 2 ngay đợt đầu |
+| Cộng một phát 500 từ cấp 1 | lên cấp 4, còn dư 85 — nhảy nhiều bậc và giữ phần thừa |
+| Cả trận | 10 điểm kỹ năng (1 lúc đầu + 9 lần lên cấp) |
+| Nhân vật cấp 10 | máu ×3,518 · năng lượng ×2,358 · tốc độ ×1,363 |
+| Kỹ năng cấp 5 | sát thương ×2,074 · năng lượng ×1,464 · hiệu ứng +0,60 s · máu khiên ×1,749 |
+| Vào trận | cấp 1, máu 600, năng lượng 250, tốc độ 5,20, **0 kỹ năng mở** |
+| Bấm kỹ năng chưa mở | **0 phép bay ra**, báo "MƯA BĂNG chưa mở khoá — vào SÁCH PHÉP để mở" |
+| Lên cấp 2 (đo thật trên nhân vật) | máu 600 → 690 (×1,150) · năng lượng 250 → 275 (×1,100) · tốc độ 5,20 → 5,38 (×1,035) |
+| Mưa băng cấp 1 → cấp 5 (đo trên cơn bão thật) | sát thương 29,04 → **60,22** (×2,074) · đóng cứng 1,50 s → **2,10 s** |
+| Giết một con quỷ cây | **+30** kinh nghiệm, đúng bảng giá |
+| Gói mạng | kỹ năng 17 byte giữ đúng cấp 5; gói kinh nghiệm 4 byte đúng ghế và điểm |
+
+### Hai lần phép thử báo đỏ oan
+
+Lần đầu nó báo "sát thương không tăng theo cấp" vì tôi tung Mưa băng lần hai chỉ **0,9 giây** sau
+lần đầu, trong khi kỹ năng này hồi chiêu **6 giây** — phép bị từ chối, không có cơn bão nào trong
+cảnh, và số đo ra 0.
+
+Sửa xong vẫn đỏ: chờ 6,6 giây đứng giữa Act2 thì **nhân vật bị đàn quái giết**, mà người chết thì
+không niệm chú được nữa. Nay phép thử cho máu thật lớn trong lúc chờ, và in thêm dòng "nhân vật
+còn sống: True" để lần sau đọc số đo là biết ngay.
+
+---
+
 ## Phần 4 — Menu công cụ "Diablo 2.5D"
 
 | Mục | Tác dụng |
@@ -8210,6 +8289,7 @@ Thả vào ô đã có kỹ năng thì **hai ô đổi chỗ cho nhau**, không 
 | **57. Chay thu BAN PHIM AO (o nhap khong bi che)** | Chạy thẳng trên hàm bố cục màn đăng nhập với 8 cỡ màn hình × 3 mức bàn phím che (35/45/55%) × 2 trang: khung và ô nhập cuối phải nằm trên mép bàn phím, ô nhập đầu không tràn lên khỏi mép trên. Số đo `banphimao.txt`. |
 | **58. Chay thu MUA BANG + SAM SET (dong bang, choang)** | Đo kích thước tảng băng và cụm băng (đối chiếu mốc lấy từ git), xác suất đóng cứng/choáng trên 1000 lần gieo, người chơi bị đóng băng·choáng có thực sự đứng yên và không tung được phép (có mẫu đối chứng), mưa băng không nhắm vào chính người tung, và phép của người khác rơi trúng mình thì mình có dính. Số đo `bang_set.txt`. |
 | **59. Chay thu SACH PHEP (keo tha o ky nang)** | Đo bố cục bảng trên 8 cỡ màn hình × 2 bản, kiểm ô tròn trong bảng xếp đúng hình cụm nút thật, kho kỹ năng (đổi chỗ · bỏ khỏi ô · lưu/nạp · hai bản riêng), và trong trận: nút con mắt ở góc phải trên, mở bảng thì input trận đấu bị khoá. Chụp 4 ảnh. Số đo `sachphep.txt`. |
+| **60. Chay thu CAP DO (kinh nghiem, diem ky nang)** | Đo bảng kinh nghiệm và cách cộng dồn, hệ số chỉ số và hệ số kỹ năng, điểm kỹ năng (mở khoá · nâng cấp · hết điểm), gói mạng mang cấp kỹ năng; trong Play đo chỉ số **thật** trước/sau khi lên cấp, kỹ năng chưa mở không tung được, nâng cấp xong phép mạnh lên thật, giết quái được đúng số điểm. Số đo `capdo.txt`. |
 | **56. Chay thu DOT QUAI Act2 + cho xuat phat** | Kiểm chỗ xuất phát ngẫu nhiên (hai máy cùng mã phòng ra cùng danh sách, cách nhau ≥ 22 m, trên đất, ngoài nước, không vướng vật cản) và luật đợt quái Act2 (đợt 1 bốn con quanh mỗi người; đợt sau cộng dồn quái và mạnh thêm 5% máu · sát thương); kiểm Act1 không bị đổi. Số đo `dotquai_act2.txt`. |
 | **55. Chay thu KET TRAN (nguoi song sot cuoi cung)** | Mở kênh giả lập như menu 45: kiểm gói tin kết trận/chết, máy chủ phòng phán quyết đúng lúc còn một người, bảng điểm cộng đúng người, máy khách không tự kết luận và hiện đúng kết quả nghe được, chết rồi camera chuyển sang người còn sống, chụp màn kết trận. Số đo `kettran.txt`, ảnh `kettran_*.png`. |
 | **54c. Chay thu LOC XOAY cuon lo lua** | Vào Play Act2, thả một cơn lốc đi thẳng vào lò: đo mốc thời gian lửa tắt / lò nhấc lên / lò biến mất / lò mọc lại, kiểm than trong chậu tắt bằng độ sáng trên ảnh, và kiểm vật có hệ hạt khác vẫn không bị cuốn. Ảnh `locxoay_*.png`, số đo `locxoay_lolua.txt`. |

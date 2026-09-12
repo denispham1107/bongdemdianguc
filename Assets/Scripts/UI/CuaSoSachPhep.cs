@@ -67,6 +67,7 @@ public static class CuaSoSachPhep
         public Rect chiTiet;      // phai tren
         public Rect vungO;        // phai duoi
         public float caoHang;     // mot hang trong kho
+        public Rect nutHoc;       // nut mo khoa / nang cap
     }
 
     public static BoCuc TinhBoCuc(float W, float H, float s)
@@ -84,7 +85,9 @@ public static class CuaSoSachPhep
         float kt = 34f * s;
         b.nutDong = new Rect(b.khung.xMax - kt - le, b.khung.y + 12f * s, kt, kt);
 
-        float tren = b.tieuDe.yMax + 8f * s;
+        // +24 chu khong +8: duoi tieu de con mot dong phu de (cap nhan vat,
+        // diem ky nang chua dung), khong chua cho thi no de len cot trai.
+        float tren = b.tieuDe.yMax + 24f * s;
         float duoi = b.khung.yMax - le;
         float rongKho = Mathf.Round(b.khung.width * 0.36f);
 
@@ -95,11 +98,15 @@ public static class CuaSoSachPhep
 
         // Vung O chiem phan duoi. Ban cam ung can cho hon vi cum nut tron xoe
         // rong; ban may tinh chi can mot hang o vuong.
-        float caoO = CamUng.DangDung ? (duoi - tren) * 0.58f : 150f * s;
+        float caoO = CamUng.DangDung ? (duoi - tren) * 0.50f : 150f * s;
         b.chiTiet = new Rect(xPhai, tren, rongPhai, duoi - tren - caoO - 10f * s);
         b.vungO = new Rect(xPhai, b.chiTiet.yMax + 10f * s, rongPhai, caoO);
 
         b.caoHang = 64f * s;
+
+        // Dai nut MO KHOA / NANG CAP nam sat day khung chi tiet
+        b.nutHoc = new Rect(b.chiTiet.x + 14f * s, b.chiTiet.yMax - 50f * s,
+                            b.chiTiet.width - 28f * s, 40f * s);
         return b;
     }
 
@@ -196,8 +203,22 @@ public static class CuaSoSachPhep
 
             if (b.nutDong.Contains(tro)) { Dong(); return; }
 
+            // Nut MO KHOA / NANG CAP
+            if (b.nutHoc.Contains(tro))
+            {
+                if (CapDo.MoKhoaDuoc(dangXem)) CapDo.MoKhoa(dangXem);
+                else if (CapDo.NangCapDuoc(dangXem)) CapDo.NangCap(dangXem);
+                return;
+            }
+
             int hang = HangTaiDiem(b, tro, s);
-            if (hang >= 0) { dangXem = hang; keoTuKho = hang; cuonChiTiet = 0f; }
+            if (hang >= 0)
+            {
+                dangXem = hang; cuonChiTiet = 0f;
+                // KY NANG CON KHOA THI KHONG KEO DUOC: keo duoc thi no nam tren
+                // thanh ky nang nhu mot nut that, bam vao chi hien ra loi tu choi.
+                keoTuKho = CapDo.DaMo(hang) ? hang : -1;
+            }
             else
             {
                 int o = OTaiDiem(b, tro, s);
@@ -308,6 +329,14 @@ public static class CuaSoSachPhep
         kTieuDe.normal.textColor = GiaoDien.MauMauSang;
         GUI.Label(b.tieuDe, "SÁCH PHÉP", kTieuDe);
 
+        var kPhuDe = new GUIStyle(GiaoDien.KieuChuNho);
+        kPhuDe.alignment = TextAnchor.MiddleCenter;
+        kPhuDe.fontSize = Mathf.RoundToInt(15f * s);
+        kPhuDe.normal.textColor = CapDo.DiemKyNang > 0 ? GiaoDien.MauVang : GiaoDien.MauMo;
+        GUI.Label(new Rect(b.tieuDe.x, b.tieuDe.yMax - 6f * s, b.tieuDe.width, 20f * s),
+                  "Nhân vật cấp " + CapDo.Cap + " / " + CapDo.CapToiDa
+                  + "   ·   điểm kỹ năng chưa dùng: " + CapDo.DiemKyNang, kPhuDe);
+
         VeNutDong(b.nutDong, s);
         VeKho(b, s, icon);
         VeChiTiet(b, s, pc, icon);
@@ -357,16 +386,19 @@ public static class CuaSoSachPhep
             GUI.Label(new Rect(xChu, hang.y + 6f * s, rongChu, 22f * s), SachPhep.Ten(i), kTen);
             GUI.Label(new Rect(xChu, hang.y + 28f * s, rongChu, 20f * s), SachPhep.TomTat(i), kPhu);
 
-            // Da nam trong o nao thi danh dau, khoi keo tha hai lan
+            // Goc phai moi hang: cap ky nang (hoac "chưa mở"), va o dang giu no
+            var kGoc = new GUIStyle(kPhu);
+            kGoc.alignment = TextAnchor.MiddleRight;
+            int capKy = CapDo.CapCuaKyNang(i);
+            kGoc.normal.textColor = capKy > 0 ? GiaoDien.MauVang : GiaoDien.MauToi;
+            string chuGoc = capKy > 0 ? ("Cấp " + capKy + "/" + CapDo.CapKyNangToiDa) : "chưa mở";
+
             int o = SachPhep.ONaoGiu(i);
-            if (o >= 0)
-            {
-                var kO = new GUIStyle(kPhu);
-                kO.alignment = TextAnchor.MiddleRight;
-                kO.normal.textColor = GiaoDien.MauVang;
-                GUI.Label(new Rect(hang.x, hang.yMax - 22f * s, hang.width - 8f * s, 20f * s),
-                          "ô " + (o + 1), kO);
-            }
+            if (capKy > 0 && o >= 0) chuGoc += "  ·  ô " + (o + 1);
+            GUI.Label(new Rect(hang.x, hang.yMax - 24f * s, hang.width - 8f * s, 20f * s), chuGoc, kGoc);
+
+            // Con khoa thi ca hang xam di - liec mot cai la biet cai nao dung duoc
+            if (capKy == 0) GiaoDien.To(hang, new Color(0.02f, 0.02f, 0.03f, 0.45f));
         }
         GUI.EndGroup();
     }
@@ -385,10 +417,13 @@ public static class CuaSoSachPhep
         kChu.wordWrap = true;
         kChu.alignment = TextAnchor.UpperLeft;
 
-        GUI.BeginGroup(b.chiTiet);
+        // Chua cho cho dai nut o day: cat group ngan lai thi loi ke dai khong
+        // chay xuong duoi nut roi lo ra o hai ben.
+        var vungChu = new Rect(b.chiTiet.x, b.chiTiet.y, b.chiTiet.width, b.chiTiet.height - 62f * s);
+        GUI.BeginGroup(vungChu);
         float le = 14f * s;
         float y = le - cuonChiTiet;
-        float rong = b.chiTiet.width - le * 2f;
+        float rong = vungChu.width - le * 2f;
 
         float kt = 56f * s;
         if (icon != null && dangXem < icon.Length && icon[dangXem] != null)
@@ -408,16 +443,74 @@ public static class CuaSoSachPhep
         GiaoDien.DuongKe(new Rect(le, y, rong, Mathf.Max(1f, s)), new Color(0.40f, 0.09f, 0.07f, 0.9f));
         y += 10f * s;
 
+        // Suc manh theo cap - doc THANG tu CapDo, khong chep lai cong thuc
+        int capKy = CapDo.CapCuaKyNang(dangXem);
+        var kCap = new GUIStyle(kSo);
+        kCap.normal.textColor = capKy > 0 ? GiaoDien.MauXanh : GiaoDien.MauLoi;
+        string dongCap = capKy > 0
+            ? "Kỹ năng cấp " + capKy + " / " + CapDo.CapKyNangToiDa
+              + "   ·   sát thương ×" + CapDo.SatThuongTheoCap(capKy).ToString("0.00")
+              + "   ·   năng lượng ×" + CapDo.ManaTheoCap(capKy).ToString("0.00")
+              + (dangXem == 5
+                 ? "   ·   máu khiên ×" + CapDo.MauKhiengTheoCap(capKy).ToString("0.00")
+                 : "   ·   hiệu ứng +" + CapDo.ThemGiayHieuUngTheoCap(capKy).ToString("0.00") + " giây")
+            : "CHƯA MỞ KHOÁ — cần 1 điểm kỹ năng";
+        GUI.Label(new Rect(le, y, rong, 22f * s), dongCap, kCap);
+        y += 26f * s;
+
         string mo = SachPhep.MoTa(dangXem);
         float caoChu = kChu.CalcHeight(new GUIContent(mo), rong);
         GUI.Label(new Rect(le, y, rong, caoChu), mo, kChu);
 
         GUI.EndGroup();
 
+        VeNutHoc(b, s);
+
         // Kep lai cho khoi cuon qua day
-        float tongCao = kt + 24f * s + caoChu + le * 2f;
+        float tongCao = kt + 50f * s + caoChu + le * 2f + 56f * s;   // +56 cho dai nut
         float toiDa = Mathf.Max(0f, tongCao - b.chiTiet.height);
         cuonChiTiet = Mathf.Clamp(cuonChiTiet, 0f, toiDa);
+    }
+
+    /// <summary>
+    /// Nut MO KHOA / NANG CAP o day khung chi tiet.
+    ///
+    /// Mot cho duy nhat cho ca hai viec: con khoa thi la "mo khoa", da mo thi
+    /// la "nang cap", het diem hoac da toi da thi ghi ro VI SAO khong bam duoc -
+    /// nut xam khong noi gi chi lam nguoi choi bam mai.
+    /// </summary>
+    static void VeNutHoc(BoCuc b, float s)
+    {
+        var r = b.nutHoc;
+        int capKy = CapDo.CapCuaKyNang(dangXem);
+        bool moDuoc = CapDo.MoKhoaDuoc(dangXem);
+        bool nangDuoc = CapDo.NangCapDuoc(dangXem);
+        bool bamDuoc = moDuoc || nangDuoc;
+
+        string chu;
+        if (capKy == 0)
+            chu = CapDo.DiemKyNang > 0 ? "MỞ KHOÁ  (1 điểm)" : "Hết điểm kỹ năng — lên cấp để có thêm";
+        else if (capKy >= CapDo.CapKyNangToiDa)
+            chu = "ĐÃ TỐI ĐA (cấp " + CapDo.CapKyNangToiDa + ")";
+        else
+            chu = CapDo.DiemKyNang > 0
+                ? "NÂNG LÊN CẤP " + (capKy + 1) + "  (1 điểm)"
+                : "Hết điểm kỹ năng — lên cấp để có thêm";
+
+        GiaoDien.To(r, bamDuoc ? new Color(0.45f, 0.09f, 0.06f, 0.92f)
+                               : new Color(0.12f, 0.11f, 0.11f, 0.85f));
+        float d = Mathf.Max(1f, 2f * s);
+        var vien = bamDuoc ? GiaoDien.MauMauSang : new Color(0.30f, 0.27f, 0.25f);
+        GiaoDien.To(new Rect(r.x, r.y, r.width, d), vien);
+        GiaoDien.To(new Rect(r.x, r.yMax - d, r.width, d), vien);
+        GiaoDien.To(new Rect(r.x, r.y, d, r.height), vien);
+        GiaoDien.To(new Rect(r.xMax - d, r.y, d, r.height), vien);
+
+        var k = new GUIStyle(GiaoDien.KieuTieuDeNho);
+        k.alignment = TextAnchor.MiddleCenter;
+        k.fontSize = Mathf.RoundToInt(17f * s);
+        k.normal.textColor = bamDuoc ? GiaoDien.MauGiay : GiaoDien.MauToi;
+        GUI.Label(r, chu, k);
     }
 
     static void VeVungO(BoCuc b, float s, Texture2D[] icon)

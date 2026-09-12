@@ -29,6 +29,10 @@ public class VeSoSatThuong : MonoBehaviour
         // luot Repaint moi ve that
         if (Event.current.type != EventType.Repaint) return;
 
+        // Dang mo Sach phep thi tran dau dung im sau mot lop man toi - so sat
+        // thuong bay len de len ca bang la nhin nhu bang bi loi.
+        if (CuaSoSachPhep.DangMo) return;
+
         var cam = Camera.main;
         if (cam == null) return;
 

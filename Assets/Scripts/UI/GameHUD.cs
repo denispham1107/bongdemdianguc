@@ -21,7 +21,7 @@ public partial class GameHUD : MonoBehaviour
     const float Ref = 1080f;             // thiet ke theo man hinh cao 1080
 
     Texture2D iconFire, iconIce, iconBolt, iconWind, iconMeteor, iconKhieng, iconGiatSet;
-    Texture2D gradMau, gradMana, gradKhieng, gradKhiengYeu;
+    Texture2D gradMau, gradMana, gradKhieng, gradKhiengYeu, gradKinhNghiem;
     Texture2D vongNen, vongNum, vanhNut;
 
     [Header("Cam ung (web / iOS / Android)")]
@@ -186,6 +186,10 @@ public partial class GameHUD : MonoBehaviour
         gradKhiengYeu = GradientDoc(new Color(1.00f, 0.72f, 0.35f),
                                     new Color(0.95f, 0.34f, 0.14f),
                                     new Color(0.48f, 0.12f, 0.04f));
+        // Kinh nghiem: vang do nhu anh nen - khong trung mau nao dang dung
+        gradKinhNghiem = GradientDoc(new Color(0.98f, 0.82f, 0.38f),
+                                     new Color(0.80f, 0.48f, 0.10f),
+                                     new Color(0.36f, 0.18f, 0.02f));
         iconFire = IconKyNang.Lua();
         iconIce = IconKyNang.Bang();
         iconBolt = IconKyNang.Set();
@@ -683,7 +687,8 @@ public partial class GameHUD : MonoBehaviour
         {
             // O TRONG khong nhan ngon tay: khong ve gi o do thi cung khong duoc
             // an mot vung bam vo hinh - cham vao day phai la xoay camera.
-            if (SachPhep.OTron[o] == SachPhep.Trong) continue;
+            int ky = SachPhep.OTron[o];
+            if (ky == SachPhep.Trong || !CapDo.DaMo(ky)) continue;
             if (Vector2.Distance(diem, TamNut(o, s)) <= r) return o;
         }
         return -1;
@@ -1111,6 +1116,10 @@ public partial class GameHUD : MonoBehaviour
             int i = SachPhep.OTron[o];
             if (i == SachPhep.Trong) continue;
 
+            // KY NANG CHUA MO KHOA: van ve (cho nguoi choi biet minh da xep gi
+            // vao day) nhung TOI HAN di, va NutTaiDiem khong nhan ngon tay.
+            bool daMo = CapDo.DaMo(i);
+
             Vector2 t = TamNut(o, s);
             var rect = new Rect(t.x - r, Screen.height - t.y - r, r * 2f, r * 2f);
 
@@ -1125,10 +1134,28 @@ public partial class GameHUD : MonoBehaviour
             // Bieu tuong da tu ve lay cai dia co mat loi va bong do cua no roi,
             // nen o day khong phu them lop nen nao nua: phu vao la sau cai nut
             // lai ra cung mot mau xam, ma hinh thi bi bop nho o giua.
-            GUI.color = Color.white;
+            GUI.color = daMo ? Color.white : new Color(0.38f, 0.36f, 0.40f, 0.75f);
             float m = r * 0.04f;
             GUI.DrawTexture(new Rect(rect.x + m, rect.y + m, rect.width - m * 2f, rect.height - m * 2f),
                             icon[i], ScaleMode.StretchToFill, true);
+
+            if (!daMo)
+            {
+                // O khoa: mot then ngang va quai khoa - du de doc ra o co nut
+                GUI.color = new Color(0.85f, 0.80f, 0.72f, 0.95f);
+                float w = r * 0.52f, h = r * 0.40f;
+                GUI.DrawTexture(new Rect(rect.center.x - w * 0.5f, rect.center.y - h * 0.15f, w, h),
+                                Texture2D.whiteTexture, ScaleMode.StretchToFill, false);
+                float wq = r * 0.30f, hq = r * 0.26f;
+                GUI.DrawTexture(new Rect(rect.center.x - wq * 0.5f, rect.center.y - h * 0.15f - hq, wq, hq * 0.28f),
+                                Texture2D.whiteTexture, ScaleMode.StretchToFill, false);
+                GUI.DrawTexture(new Rect(rect.center.x - wq * 0.5f, rect.center.y - h * 0.15f - hq, wq * 0.26f, hq),
+                                Texture2D.whiteTexture, ScaleMode.StretchToFill, false);
+                GUI.DrawTexture(new Rect(rect.center.x + wq * 0.24f, rect.center.y - h * 0.15f - hq, wq * 0.26f, hq),
+                                Texture2D.whiteTexture, ScaleMode.StretchToFill, false);
+                GUI.color = Color.white;
+                continue;      // khong ve vanh sang, khong ve hoi chieu
+            }
 
             // Vanh sang bao ngoai: chi mot net mong, cho thay vung bam den dau.
             // Nut DANG GIU thi vanh sang han len - nguoi choi dang nhin san choi
@@ -1207,6 +1234,7 @@ public partial class GameHUD : MonoBehaviour
             string ten = o < phim.Length ? phim[o] : (o + 1).ToString();
 
             if (ky == SachPhep.Trong) { DrawSkillSlotTrong(r, ten, s); continue; }
+            if (!CapDo.DaMo(ky)) { DrawSkillSlotKhoa(r, icon[ky], ten, s); continue; }
 
             DrawSkillSlot(r, icon[ky], ten, ky,
                           player != null ? HoiChieu01(ky) : 0f,
@@ -1216,6 +1244,29 @@ public partial class GameHUD : MonoBehaviour
         // Mau khieng KHONG ve o day nua - no da co dai rieng tren bang trang
         // thai goc trai. Ve ca hai cho thi cung mot con so hien hai lan, ma cho
         // nay lai chen ngay tren hang ky nang.
+    }
+
+    /// <summary>O co ky nang nhung ky nang ay CHUA MO KHOA: ve toi di, khong bam
+    /// duoc. Van ve hinh chu khong bo trong - nguoi choi phai thay minh dang co
+    /// gi cho san de mo.</summary>
+    void DrawSkillSlotKhoa(Rect r, Texture2D icon, string key, float s)
+    {
+        GUI.DrawTexture(r, panelTex, ScaleMode.StretchToFill, true);
+        var cu = GUI.color;
+        GUI.color = new Color(0.36f, 0.34f, 0.38f, 0.8f);
+        GUI.DrawTexture(new Rect(r.x + 4f * s, r.y + 4f * s, r.width - 8f * s, r.height - 8f * s),
+                        icon, ScaleMode.StretchToFill, true);
+
+        // Then ngang + quai khoa
+        GUI.color = new Color(0.85f, 0.80f, 0.72f, 0.95f);
+        float w = r.width * 0.34f, h = r.height * 0.24f;
+        GUI.DrawTexture(new Rect(r.center.x - w * 0.5f, r.center.y - h * 0.1f, w, h),
+                        barTex, ScaleMode.StretchToFill, false);
+        GUI.color = cu;
+
+        DrawBorder(r, new Color(0.30f, 0.27f, 0.24f), Mathf.Max(1f, 2f * s));
+        GUI.Label(new Rect(r.x, r.y + r.height + 2f * s, r.width, 22f * s),
+                  "[" + key + "]", keyStyle);
     }
 
     /// <summary>O chua duoc gan ky nang nao: chi mot khung rong cho nguoi choi

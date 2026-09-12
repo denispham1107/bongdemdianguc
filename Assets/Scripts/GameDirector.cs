@@ -163,6 +163,13 @@ public class GameDirector : MonoBehaviour
     void Awake()
     {
         Instance = this;
+
+        // MOI TRAN LA MOT VAN RIENG: cap 1, chua co kinh nghiem, mot diem ky
+        // nang, moi ky nang deu khoa. Dat o day chu khong o PlayerController:
+        // ban sao cua nguoi choi khac cung la PlayerController, ma chung duoc
+        // dung len giua tran - xoa sach o do la moi lan co nguoi vao la ca
+        // phong tut ve cap 1.
+        CapDo.BatDauTranMoi();
     }
 
     // ================================================================
@@ -862,9 +869,41 @@ public class GameDirector : MonoBehaviour
         if (LaTrongTaiCuaQuai && KetTran.Hien != null && d != null)
             KetTran.Hien.GhiQuaiChet(d.keDanhCuoi);
 
+        // KINH NGHIEM cho nguoi ha no - cung chi may trong tai cua quai moi
+        // chia, vi chi no biet con nay chet vi tay ai.
+        if (LaTrongTaiCuaQuai && d != null) ChiaKinhNghiem(d);
+
         alive.Remove(d);
         quyDu.Remove(d);
         quyCay.Remove(d);
+    }
+
+    /// <summary>
+    /// Chia kinh nghiem cua mot con quai vua chet cho nguoi ha no.
+    ///
+    /// Ke ha la nhan vat CUA MAY NAY thi cong thang; la nguoi choi khac thi
+    /// GUI mot goi kinh nghiem sang may ho - ho khong chay AI quai nen khong
+    /// the tu biet con nay chet vi tay minh.
+    /// </summary>
+    void ChiaKinhNghiem(Damageable quai)
+    {
+        var keDanh = quai.keDanhCuoi;
+        if (keDanh == null || keDanh.IsDead) return;
+
+        var nhanDang = quai.GetComponent<NhanDangQuai>();
+        int kn = CapDo.KnCuaQuai(nhanDang != null ? nhanDang.loai : MonsterType.Skeleton);
+        if (kn <= 0) return;
+
+        // Nhan vat cua may nay: mau KHONG do may khac quyet
+        if (!keDanh.mauDoMayKhacQuyet) { CapDo.Them(kn); return; }
+
+        // Nguoi choi khac: gui sang may ho
+        if (KetTran.Hien == null) return;
+        byte ghe = KetTran.Hien.GheCuaDamageable(keDanh);
+        if (ghe == 255) return;
+
+        var db = Object.FindAnyObjectByType<DongBoTran>();
+        if (db != null) db.GuiGoi(GoiTin.VietKinhNghiem(ghe, kn));
     }
 
     void OnPlayerDeath(Damageable d)

@@ -37,6 +37,8 @@ public partial class GameHUD
     const float BangCaoMau = 28f;
     const float BangCaoKhieng = 8f;
     const float BangCaoMana = 20f;
+    /// <summary>Thanh kinh nghiem - mong hon mana, no chi de liec.</summary>
+    const float BangCaoKinhNghiem = 10f;
     const float BangKhe = 6f;
     public const float CoChuMau = 16f, CoChuMana = 13f, CoChuTen = 19f;
 
@@ -45,7 +47,8 @@ public partial class GameHUD
 
     public static float CaoBangTrangThai(float s)
     {
-        return (BangLe * 2f + BangCaoTen + BangCaoMau + BangKhe + BangCaoKhieng + BangKhe + BangCaoMana) * s;
+        return (BangLe * 2f + BangCaoTen + BangCaoMau + BangKhe + BangCaoKhieng
+                + BangKhe + BangCaoMana + BangKhe + BangCaoKinhNghiem) * s;
     }
 
     /// <summary>Day bang trang thai nam o dau tren man hinh.</summary>
@@ -312,9 +315,12 @@ public partial class GameHUD
         get
         {
             // Choi mang: ten nguoi choi (co the go dau roi - ghep lai); choi don: ten lop nhan vat
-            if (TranHienTai.DangChoiMang && !string.IsNullOrEmpty(FirebaseMang.TenHienThi))
-                return GhepDauTiengViet.Ghep(FirebaseMang.TenHienThi);
-            return "PHÙ THỦY";
+            string ten = TranHienTai.DangChoiMang && !string.IsNullOrEmpty(FirebaseMang.TenHienThi)
+                ? GhepDauTiengViet.Ghep(FirebaseMang.TenHienThi)
+                : "PHÙ THỦY";
+
+            // CAP ngay sau ten (nguoi dung xin 13/09/2026)
+            return ten + "  ·  Cấp " + CapDo.Cap;
         }
     }
 
@@ -399,6 +405,19 @@ public partial class GameHUD
 
         float mana01 = player != null ? player.Mana01 : 0f;
         VeThanhKinhDi(new Rect(x, y, rong, BangCaoMana * s), mana01, gradMana, soMana, CoChuMana, s, 0f, 0.09f);
+        y += BangCaoMana * s + BangKhe * s;
+
+        // ---- Kinh nghiem ----
+        //
+        // Thanh mong, chu nho: no khong phai thu phai liec moi giay nhu mau.
+        // Cap toi da thi ghi thang "CẤP TỐI ĐA" thay vi mot thanh day mai mai.
+        bool toiDa = CapDo.Cap >= CapDo.CapToiDa;
+        string chuKn = toiDa
+            ? "CẤP TỐI ĐA"
+            : CapDo.KinhNghiem + " / " + CapDo.CanDeLenCap(CapDo.Cap) + " KN";
+        if (CapDo.DiemKyNang > 0) chuKn += "   ·   " + CapDo.DiemKyNang + " điểm kỹ năng";
+        VeThanhKinhDi(new Rect(x, y, rong, BangCaoKinhNghiem * s),
+                      toiDa ? 1f : CapDo.TienDo01, gradKinhNghiem, chuKn, 10f, s, 0f, 0.10f);
     }
 
     /// <summary>
