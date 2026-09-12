@@ -360,27 +360,36 @@ public class KhoiDongTranMang : MonoBehaviour
     }
 
     /// <summary>
-    /// Moi nguoi dung mot cho quanh diem xuat phat, theo ghe.
+    /// MOI NGUOI HIEN RA O MOT CHO NGAU NHIEN TREN BAN DO, khong ai gan ai.
     ///
-    /// Tat ca nhan vat deu sinh ra o CUNG MOT diem trong scene. Hai nguoi thi
-    /// con chiu duoc; bon nguoi chong len nhau thanh mot khoi thi khong ai biet
-    /// minh la ai. Xep thanh bon goc cua mot o vuong nho quanh diem ay.
+    /// Truoc day ca phong sinh ra o MOT diem trong scene, xep bon goc mot o
+    /// vuong 1,6 m - vao tran la dam ngay vao nhau. Nguoi dung xin moi nguoi
+    /// mot goc ban do.
+    ///
+    /// Cho duoc tinh tu MA PHONG (xem <see cref="ChoXuatPhat"/>) nen moi may ra
+    /// cung mot danh sach - khong can goi tin nao, va khong ai roi trung cho
+    /// nguoi khac.
     /// </summary>
     void DatChoDungTheoGhe(byte ghe)
     {
-        if (toi == null || ghe == 0) return;       // chu phong giu dung cho cu
+        if (toi == null) return;
 
-        const float BanKinh = 1.6f;
-        float goc = ghe * 90f;
-        Vector3 lech = Quaternion.Euler(0f, goc, 0f) * new Vector3(0f, 0f, BanKinh);
-        Vector3 moi = toi.transform.position + lech;
-        moi.y = VfxFactory.GroundY(moi) + 0.1f;
+        var dir = GameDirector.Instance;
+        Vector3 tam = dir != null ? dir.arenaCenter : Vector3.zero;
+        float banKinh = dir != null ? dir.arenaRadius : 34f;
+
+        var cho = ChoXuatPhat.ChoChoCaPhong(ChoXuatPhat.HatTuMaPhong(TranHienTai.MaPhong),
+                                            KenhTrucTiep.SoKenhToiDa, tam, banKinh);
+        if (ghe >= cho.Count) return;
+        Vector3 moi = cho[ghe];
 
         var cc = toi.GetComponent<CharacterController>();
         bool batLai = cc != null && cc.enabled;
         if (batLai) cc.enabled = false;
         toi.transform.position = moi;
         if (batLai) cc.enabled = true;
+
+        Debug.Log("[TranMang] ghe " + ghe + " xuat phat o " + moi.ToString("F1"));
     }
 
     /// <summary>

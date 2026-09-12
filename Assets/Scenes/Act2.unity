@@ -30921,7 +30921,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GameBootstrap
   arenaRadius: 50
   worldSeed: 2024
-  playerMaxHealth: 30000
+  playerMaxHealth: 600
   playerMaxMana: 250
   useBloom: 1
   bloomIntensity: 0.9
@@ -96145,8 +96145,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 360f592535894616bc8a273c7d40dc9f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Damageable
-  maxHealth: 400
-  health: 30000
+  maxHealth: 600
+  health: 600
   mauDoMayKhacQuyet: 0
   fireResist: 0
   iceResist: 0
@@ -96156,6 +96156,7 @@ MonoBehaviour:
   rig: {fileID: 1584530893893109145}
   anim: {fileID: 0}
   khieng: {fileID: 0}
+  keDanhCuoi: {fileID: 0}
 --- !u!1 &7418736752332986481
 GameObject:
   m_ObjectHideFlags: 0

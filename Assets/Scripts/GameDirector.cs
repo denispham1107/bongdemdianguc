@@ -267,6 +267,41 @@ public class GameDirector : MonoBehaviour
     public const int SoBoXuongMoiDot = 4;
     public const float GiayChoDotBoXuong = 30f;
 
+    // ================================================================
+    //  ACT2: DOT QUAI QUANH TUNG NGUOI CHOI
+    // ================================================================
+
+    /// <summary>
+    /// LUAT DOT QUAI MOI - CHI CHO ACT2 (12/09/2026, nguoi dung chot).
+    ///
+    ///   - Dot 1: quanh MOI nguoi choi hien ra bon con, moi loai mot con:
+    ///     bo xuong, mu phu thuy, quy cay, quy du. Hai nguoi la tam con.
+    ///   - Giet het -> doi 30 giay -> dot sau GIONG HET dot truoc, CONG THEM
+    ///     mot so quai bat ki: dot 2 them 1, dot 3 them 2 (thanh 3), dot 4 them
+    ///     3 (thanh 6)... cong don.
+    ///   - Moi dot, quai manh hon dot truoc 5% mau va 5% sat thuong.
+    ///
+    /// Act1 GIU NGUYEN luat cu (ke ca che do chay thu bon bo xuong).
+    /// </summary>
+    public bool CheDoDotQuanhNguoi { get; private set; }
+
+    public const float GiayChoDotQuanhNguoi = 30f;
+
+    /// <summary>Moi dot quai manh hon dot truoc bao nhieu (0,05 = 5%).</summary>
+    public const float ManhThemMoiDot = 0.05f;
+
+    /// <summary>Bon loai quai co mat quanh MOI nguoi choi o moi dot.</summary>
+    static readonly MonsterType[] BonLoaiMoiNguoi =
+    {
+        MonsterType.Skeleton, MonsterType.Witch, MonsterType.QuyCay, MonsterType.QuyDu
+    };
+
+    /// <summary>Tong so quai "bat ki" cong them - cong don qua tung dot.</summary>
+    int soThemCongDon;
+
+    /// <summary>Quai dot nay manh gap may lan dot dau.</summary>
+    public float HeSoManhDot { get { return Mathf.Pow(1f + ManhThemMoiDot, Mathf.Max(0, Wave - 1)); } }
+
     /// <summary>So hieu cap cho con quai ke tiep. Chi chu phong dung den.</summary>
     ushort soHieuKeTiep = 1;
 
@@ -296,6 +331,20 @@ public class GameDirector : MonoBehaviour
             ThemNguoiChoi(player);
         }
 
+        // Act2 dung LUAT MOI: quai chi hien ra quanh nguoi choi theo tung dot,
+        // khong rai san khap ban do, khong dong quai rieng, khong che do chay
+        // thu bon bo xuong.
+        CheDoDotQuanhNguoi = SceneManager.GetActiveScene().name == "Act2";
+        if (CheDoDotQuanhNguoi)
+        {
+            // Cho mot nhip truoc dot dau: choi mang thi ban sao cua nhung nguoi
+            // kia chi hien ra sau khi bat tay xong (1-2 giay). Sinh ngay thi
+            // quanh ho khong co con nao ca.
+            waveTimer = TranHienTai.DangChoiMang ? 6f : 1.5f;
+            waiting = true;
+            return;
+        }
+
         // May khach khong rai con nao ca - ca dan den tu chu phong.
         if (LaTrongTaiCuaQuai && !CheDoBonBoXuong)
         {
@@ -316,6 +365,114 @@ public class GameDirector : MonoBehaviour
         {
             SinhDotBoXuong();
             waiting = false;
+        }
+    }
+
+    /// <summary>
+    /// MOT DOT CUA ACT2: bon con quanh MOI nguoi choi, cong so quai "bat ki".
+    ///
+    /// Quanh TUNG nguoi chu khong phai quanh mot nguoi: bon nguoi dung bon goc
+    /// ban do ma chi mot nguoi bi quai vay thi ba nguoi kia dung khong.
+    /// </summary>
+    public void SinhDotQuanhNguoi()
+    {
+        Wave++;
+        if (Wave >= 2) soThemCongDon += Wave - 1;    // cong don: 1, rồi 3, rồi 6...
+
+        float heSo = HeSoManhDot;
+        int soNguoi = 0;
+
+        for (int i = 0; i < moiNguoi.Count; i++)
+        {
+            var t = moiNguoi[i];
+            if (t == null) continue;
+            soNguoi++;
+            for (int k = 0; k < BonLoaiMoiNguoi.Length; k++)
+                SinhQuanhNguoi(BonLoaiMoiNguoi[k], t, heSo);
+        }
+
+        // Quai cong them: loai bat ki, quanh mot nguoi bat ki
+        for (int i = 0; i < soThemCongDon; i++)
+        {
+            var t = NguoiBatKy();
+            if (t == null) break;
+            SinhQuanhNguoi(BonLoaiMoiNguoi[Random.Range(0, BonLoaiMoiNguoi.Length)], t, heSo);
+        }
+
+        Debug.Log("[GameDirector] Dot " + Wave + ": " + soNguoi + " nguoi x 4 con + "
+                  + soThemCongDon + " con bat ki, manh x" + heSo.ToString("F2"));
+    }
+
+    Transform NguoiBatKy()
+    {
+        int n = 0;
+        for (int i = 0; i < moiNguoi.Count; i++) if (moiNguoi[i] != null) n++;
+        if (n == 0) return null;
+        int chon = Random.Range(0, n);
+        for (int i = 0; i < moiNguoi.Count; i++)
+        {
+            if (moiNguoi[i] == null) continue;
+            if (chon-- == 0) return moiNguoi[i];
+        }
+        return null;
+    }
+
+    /// <summary>Khoang cach tu nguoi choi toi con quai vua hien ra.</summary>
+    public const float GanNhatQuanhNguoi = 7f;
+    public const float XaNhatQuanhNguoi = 13f;
+
+    /// <summary>
+    /// Tha mot con quai quanh mot nguoi choi, roi lam no manh len theo dot.
+    ///
+    /// Manh len bang cach nhan THANG vao mau va sat thuong cua con vua sinh -
+    /// khong sua prefab, khong sua gia tri goc, nen dot sau khong bi cong don
+    /// nham len dot truoc.
+    /// </summary>
+    void SinhQuanhNguoi(MonsterType loai, Transform nguoi, float heSo)
+    {
+        for (int lan = 0; lan < 14; lan++)
+        {
+            float goc = Random.Range(0f, 360f);
+            float xa = Random.Range(GanNhatQuanhNguoi, XaNhatQuanhNguoi);
+            Vector3 pos = nguoi.position + Quaternion.Euler(0f, goc, 0f) * new Vector3(0f, 0f, xa);
+
+            Vector3 tuTam = pos - arenaCenter;
+            if (tuTam.magnitude > arenaRadius) pos = arenaCenter + tuTam.normalized * (arenaRadius * 0.92f);
+
+            pos.y = VfxFactory.GroundY(pos) + 0.15f;
+
+            if (Physics.CheckSphere(pos + Vector3.up * 1f, 0.6f,
+                                    LayerMask.GetMask("Default", "Enemy"), QueryTriggerInteraction.Ignore))
+                continue;
+
+            var go = EnemyFactory.Spawn(loai, pos, enemyRoot, nguoi);
+            if (go == null) return;
+            DanhSo(go, loai);
+            LamManhTheoDot(go, heSo);
+
+            var d = go.GetComponent<Damageable>();
+            if (d != null) { d.onDeath += OnEnemyDeath; alive.Add(d); }
+            return;
+        }
+    }
+
+    /// <summary>Nhan mau va sat thuong cua mot con quai theo he so cua dot.</summary>
+    void LamManhTheoDot(GameObject go, float heSo)
+    {
+        if (go == null || heSo <= 1.0001f) return;
+
+        var d = go.GetComponent<Damageable>();
+        if (d != null)
+        {
+            d.maxHealth *= heSo;
+            d.health = d.maxHealth;
+        }
+
+        var ai = go.GetComponent<EnemyAI>();
+        if (ai != null)
+        {
+            ai.attackDamage *= heSo;
+            ai.satThuongCau *= heSo;     // don danh xa: cau lua, thien thach, tia set
         }
     }
 
@@ -509,7 +666,21 @@ public class GameDirector : MonoBehaviour
 
         // Nhip sinh quai chi chay o may lam trong tai. May khach ma cung dem
         // gio thi no se tu de ra mot dot quai rieng khong ai khac nhin thay.
-        if (LaTrongTaiCuaQuai && CheDoBonBoXuong)
+        if (LaTrongTaiCuaQuai && CheDoDotQuanhNguoi)
+        {
+            // Act2: giet het -> doi 30 giay -> dot sau, dong hinh quanh tung nguoi
+            if (waiting)
+            {
+                waveTimer -= Time.deltaTime;
+                if (waveTimer <= 0f) { waiting = false; SinhDotQuanhNguoi(); }
+            }
+            else if (alive.Count == 0)
+            {
+                waiting = true;
+                waveTimer = GiayChoDotQuanhNguoi;
+            }
+        }
+        else if (LaTrongTaiCuaQuai && CheDoBonBoXuong)
         {
             // Che do chay thu: khong dong ho rieng nao ca, chi mot vong don gian -
             // giet het bon con -> doi 30 giay -> bon con moi.

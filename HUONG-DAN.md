@@ -6080,6 +6080,11 @@ xong rồi mới dọn, dọn thêm một lượt nữa, và dọn lần cuối 
 
 ### Máu 30 000 để chạy thử — và con số ấy nằm ở bốn chỗ
 
+> **Cập nhật 12/09/2026: máu chính thức là 600.** Anh chốt mức 600 thay cho 30 000 của lúc chạy thử. Vẫn đúng bốn chỗ
+> ấy, sửa bằng đúng cách kể dưới đây; menu 40 đo lại ở **cả hai màn**: nhân vật của mình 600/600, bản sao người chơi
+> khác 600/600 (lấy thẳng từ prefab), ăn một đòn 250 còn 350, chữ "600 / 600" rộng 46 điểm trong thanh máu rộng 158
+> điểm — **0 lỗi**. Hai scene ghi `maxHealth` là 400 nhưng `GameBootstrap` đè 30 000 lúc chạy: đúng cái bẫy mục này kể.
+
 Anh muốn nhân vật vào màn có 30 000 máu thay vì 400, để thử game cho lâu.
 
 Nghe như sửa một dòng. Thật ra con số ấy nằm ở **bốn chỗ**, và sửa thiếu một chỗ thì hoặc không đổi
@@ -7806,6 +7811,55 @@ cần điều khiển bị khoá (`CamUng.Huong = (0,0)`, `DangKeo = False`) —
 Báo cáo lần chạy trước **in đôi từng dòng**: một lần chạy dở dang để lại đăng ký `EditorApplication.update`, lần sau
 kịch bản chạy hai lượt chồng lên nhau. Gỡ đăng ký trước khi gắn, và bỏ qua nếu lượt cũ còn vật thể trong cảnh.
 
+### Mỗi người một góc bản đồ, và luật đợt quái mới của Act2
+
+Anh xin hai việc: hết đếm ngược 10 giây thì **mỗi người hiện ra một chỗ ngẫu nhiên**, không ai gần ai; và Act2 bỏ hết
+luật quái cũ, thay bằng: **quanh mỗi người bốn con** (bộ xương, mụ phù thủy, quỷ cây, quỷ dữ), giết hết đợi **30 giây**
+ra đợt sau **giống hệt + thêm quái bất kì cộng dồn**, mỗi đợt quái **mạnh hơn 5% máu và 5% sát thương**. Act1 giữ nguyên.
+
+**Chỗ xuất phát: cái khó không nằm ở "ngẫu nhiên" mà ở "không gần nhau".** Muốn tránh nhau thì các máy phải **biết chỗ
+của nhau** — mà lúc vừa vào màn chưa ai gửi gói tin nào. Mỗi máy tự bốc riêng thì hai người có thể rơi vào cùng một góc
+nghĩa địa.
+
+Cách làm (`ChoXuatPhat.cs`): **gieo hạt ngẫu nhiên từ MÃ PHÒNG** — con số mọi máy đều có sẵn và đều giống nhau. Cùng
+một hạt, cùng bản đồ, cùng đoạn mã thì mọi máy tính ra **cùng một danh sách chỗ**; mỗi người lấy chỗ theo ghế của mình.
+Không tốn một gói tin nào, không có cuộc đua nào. Chỗ hợp lệ: đứng trên đất (tia chiếu xuống chạm địa hình trước), không
+dưới nước (so với hộp bao lưới nước), không vướng bia/đá/nhà (`CheckCapsule` lớp Default), và cách người trước **≥ 22 m**.
+
+**Luật đợt quái Act2** (`GameDirector.SinhDotQuanhNguoi`): bật theo **tên scene** (`Act2`), nên Act1 không phải sửa gì —
+kể cả chế độ chạy thử bốn bộ xương vẫn còn nguyên ở đó. Ở Act2, chế độ mới **tắt hẳn** rải quái khắp bản đồ, dòng quỷ dữ
+và quỷ cây theo đồng hồ riêng, và chế độ bốn bộ xương.
+
+- Quanh **từng** người chơi, không phải quanh một người: bốn người đứng bốn góc mà chỉ một người bị vây thì ba người kia
+  đứng không. Quái rơi trong vành đai **7–13 m**.
+- Quái cộng thêm **cộng dồn**: đợt 2 thêm 1, đợt 3 thêm 2 (thành 3), đợt 4 thêm 3 (thành 6) — đúng câu "y chang lần vừa
+  rồi và cộng thêm". Hai người chơi: 8 → 9 → 11 → 14 con.
+- Mạnh thêm 5% mỗi đợt: nhân **thẳng vào con vừa sinh** (`maxHealth`, `attackDamage`, `satThuongCau`), không đụng prefab
+  — nếu sửa prefab thì đợt sau nhân chồng lên đợt trước và số sẽ phình theo cấp số nhân.
+- Đợt đầu chờ 6 giây khi chơi mạng: bản sao của những người kia chỉ hiện ra sau khi bắt tay xong, sinh ngay thì quanh
+  họ không có con nào.
+
+Đo (menu 56 mới):
+
+```
+A. cùng mã phòng -> hai máy ra cùng danh sách chỗ; phòng khác -> chỗ khác;
+   bốn chỗ cách nhau gần nhất 22,2 m (cần ≥ 22); 0 chỗ lơ lửng / dưới nước / vướng vật cản
+B. Act2 đợt 1, hai người: 8 con = Skeleton 2, Witch 2, QuyCay 2, QuyDu 2; con xa người chơi nhất 11,9 m
+C. đợt 2 = 9 con, máu và sát thương x1,050 | đợt 3 = 11 con, x1,103 | đợt 4 = 14 con, x1,158
+D. Act1: chế độ đợt quanh người chơi = tắt, vẫn 4 bộ xương như cũ
+0 lỗi
+```
+
+Hai lần phép thử tự báo lỗi oan, và cả hai đều là lỗi của **phép thử**, không phải của mã:
+
+- Kịch bản chết giữa chừng ở phần D vì vật thể chạy thử **không được đánh dấu giữ qua lần nạp cảnh** — nạp Act1 là nó
+  biến mất, báo cáo không bao giờ được ghi. (`Object.DontDestroyOnLoad`.)
+- Bốn lỗi "máu không tăng 5%": tôi lấy con bộ xương **đầu tiên tìm thấy**, mà xác quái đợt trước còn nằm lại 6 giây —
+  vớ phải xác đợt 1. Lọc `IsDead` là đúng ngay.
+
+Menu 47 (chế độ bốn bộ xương) từ nay **chỉ đo Act1** — đo nó trên Act2 là đo một thứ không còn tồn tại ở đó.
+Chạy lại menu 45 (bốn người) và 55 (kết trận): 0 lỗi.
+
 ### Việc còn phải làm
 
 **169 MB là quá nặng**, nhất là trên điện thoại — nền tảng chính của game. Gần như toàn bộ nằm ở
@@ -7880,6 +7934,7 @@ cho riêng nền tảng WebGL sẽ ăn cả hai đầu: file nhỏ hơn và khô
 | **51. Dung man chinh tu canh Act2** | Chép phần cảnh Act2 quanh chỗ đứng (45 m, phía trước camera) sang MainMenu.unity cùng ánh sáng / sương / bầu trời; đặt phù thuỷ, camera, hai lò đá; dọn vật vướng. Tạo luôn prefab lò đá từ FBX + texture Blender. Báo cáo `PlayTestShots/dungmanchinh.txt`. |
 | **51b. Chup thu goc nhin man chinh (Act2)** | Đặt nhân vật trước từng nhà mồ theo bốn hướng, bỏ chỗ vướng vật / giữa nước, chụp bằng khung camera màn chính — để chọn chỗ đứng. Ảnh `PlayTestShots/goc/`. |
 | **54. Dat 10 lo lua vao Act2** | Đặt 10 lò đá (prefab `Assets/Models/LoLuaDa`) vào Act2: lò giữa = chỗ đất khô gần tâm bản đồ nhất, 9 lò rải đều; không dưới nước, trong nhà mồ, trên/sát bia, chỉ trên mặt đất. Xoá lò cũ trước, chạy lại ra y hệt. Lưu Act2. Số đo `lolua_act2_dat.txt`. |
+| **56. Chay thu DOT QUAI Act2 + cho xuat phat** | Kiểm chỗ xuất phát ngẫu nhiên (hai máy cùng mã phòng ra cùng danh sách, cách nhau ≥ 22 m, trên đất, ngoài nước, không vướng vật cản) và luật đợt quái Act2 (đợt 1 bốn con quanh mỗi người; đợt sau cộng dồn quái và mạnh thêm 5% máu · sát thương); kiểm Act1 không bị đổi. Số đo `dotquai_act2.txt`. |
 | **55. Chay thu KET TRAN (nguoi song sot cuoi cung)** | Mở kênh giả lập như menu 45: kiểm gói tin kết trận/chết, máy chủ phòng phán quyết đúng lúc còn một người, bảng điểm cộng đúng người, máy khách không tự kết luận và hiện đúng kết quả nghe được, chết rồi camera chuyển sang người còn sống, chụp màn kết trận. Số đo `kettran.txt`, ảnh `kettran_*.png`. |
 | **54c. Chay thu LOC XOAY cuon lo lua** | Vào Play Act2, thả một cơn lốc đi thẳng vào lò: đo mốc thời gian lửa tắt / lò nhấc lên / lò biến mất / lò mọc lại, kiểm than trong chậu tắt bằng độ sáng trên ảnh, và kiểm vật có hệ hạt khác vẫn không bị cuốn. Ảnh `locxoay_*.png`, số đo `locxoay_lolua.txt`. |
 | **54b. Chay thu lo lua Act2** | Kiểm 10 lò bằng cách khác lúc đặt (va chạm tạm cho lưới nước, tia chiếu lên tìm mái nhà, hộp bao bia, độ cao địa hình quanh chân); trong Play: lửa + đèn bật, nhân vật đi thẳng vào lò bị chặn; chụp `lolua_*.png` + bản đồ. Số đo `lolua_act2.txt`. |

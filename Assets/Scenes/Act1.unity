@@ -6287,11 +6287,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4848970868905774978, guid: cd7ac4506b0680648a370849101a7cac, type: 3}
       propertyPath: health
-      value: 400
+      value: 600
       objectReference: {fileID: 0}
     - target: {fileID: 4848970868905774978, guid: cd7ac4506b0680648a370849101a7cac, type: 3}
       propertyPath: maxHealth
-      value: 400
+      value: 600
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -9195,7 +9195,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GameBootstrap
   arenaRadius: 42
   worldSeed: 777
-  playerMaxHealth: 30000
+  playerMaxHealth: 600
   playerMaxMana: 250
   useBloom: 1
   bloomIntensity: 0.9
@@ -16581,7 +16581,6 @@ MonoBehaviour:
   hintDuration: 0
   epCamUng: 0
   hienChanDoan: 0
-  tenNhanVat: PHU THUY
 --- !u!4 &1408746487
 Transform:
   m_ObjectHideFlags: 0

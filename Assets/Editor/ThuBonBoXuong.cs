@@ -70,7 +70,10 @@ public static class ThuBonBoXuong
         Ghi("[ban 1] che do bon bo xuong (moi dot " + GameDirector.SoBoXuongMoiDot
             + " con, cho " + GameDirector.GiayChoDotBoXuong + " giay)");
 
-        yield return ThuMotMan("Act2");
+        // CHI CON ACT1. Tu 12/09/2026 Act2 dung LUAT DOT MOI (quanh tung nguoi
+        // choi, cong don quai moi dot, manh them 5%) - xem menu 56. Do che do
+        // bon bo xuong tren Act2 nua la do mot thu khong con ton tai o do.
+        Ghi("(Act2 da chuyen sang luat dot quanh nguoi choi - xem menu 56)");
         yield return ThuMotMan("Act1");
 
         Time.timeScale = 1f;

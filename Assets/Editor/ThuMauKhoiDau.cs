@@ -25,7 +25,7 @@ using UnityEngine;
 public static class ThuMauKhoiDau
 {
     /// <summary>Muc mau dang mong doi. Doi o day khi doi muc mau chay thu.</summary>
-    public const float MauMongDoi = 30000f;
+    public const float MauMongDoi = 600f;
 
     static readonly StringBuilder bao = new StringBuilder();
     static int loi;

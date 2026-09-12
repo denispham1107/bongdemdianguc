@@ -787,8 +787,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 360f592535894616bc8a273c7d40dc9f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Damageable
-  maxHealth: 30000
-  health: 30000
+  maxHealth: 600
+  health: 600
+  mauDoMayKhacQuyet: 0
   fireResist: 0
   iceResist: 0
   lightningResist: 0
@@ -797,6 +798,7 @@ MonoBehaviour:
   rig: {fileID: 3732168720037933338}
   anim: {fileID: 0}
   khieng: {fileID: 0}
+  keDanhCuoi: {fileID: 0}
 --- !u!114 &4292490187337956294
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -825,6 +827,7 @@ MonoBehaviour:
   bienDoTho: 1.7
   thoiGianVeChuan: 0.26
   mocPhepBayRa: 0.41
+  tocDoEp: -1
 --- !u!114 &2988768732004582241
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -874,6 +877,19 @@ MonoBehaviour:
   hoatHinhRieng: {fileID: 4292490187337956294}
   health: {fileID: 4848970868905774978}
   cameraRig: {fileID: 0}
+  input:
+    soThuTu: 0
+    dt: 0
+    huongDi: {x: 0, y: 0, z: 0}
+    huongCan: {x: 0, y: 0, z: 0}
+    kyNang: -1
+    muonDiToi: 0
+    diemToi: {x: 0, y: 0, z: 0}
+    coNgam: 0
+    diemNgam: {x: 0, y: 0, z: 0}
+    laCamUng: 0
+    coBamPhim: 0
+  tuDocInput: 1
 --- !u!1 &4806059546236612452
 GameObject:
   m_ObjectHideFlags: 0

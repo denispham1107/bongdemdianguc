@@ -1,0 +1,28 @@
+[ban 3] cho xuat phat ngau nhien + luat dot quai Act2
+
+A. cho xuat phat ngau nhien (ham thuan, khong can vao tran)
+A1. cung ma phong -> hai may tinh ra cung danh sach: True
+A2. phong khac -> cho khac: True
+A3. bon cho: (27.0, -0.4, -6.3) (-30.5, -0.1, -27.1) (23.2, -0.5, -28.2) (-31.6, -0.3, 31.3)
+    hai nguoi gan nhau nhat: 22.2 m (can >= 22)
+A4. bon cho: lo lung 0, duoi nuoc 0, vuong vat can 0
+
+B. Act2 - dot dau
+che do dot quanh nguoi choi: True
+B1. so nguoi choi trong canh: 2
+B2. dot 1: tong 8 con - Skeleton=2 QuyCay=2 Witch=2 QuyDu=2
+B3. con quai xa nguoi choi nhat: 11.9 m (dat trong 7-13 m), so con xa qua: 0
+B4. bo xuong dot 1: mau 70.0, sat thuong 12.0
+
+C. cac dot sau
+C2. dot 2: tong 9 con (mong doi 9) - Skeleton=3 QuyCay=2 Witch=2 QuyDu=2
+     bo xuong: mau 73.5 (x1.050), sat thuong 12.6 (x1.050), mong doi x1.050
+C3. dot 3: tong 11 con (mong doi 11) - QuyDu=3 QuyCay=4 Witch=2 Skeleton=2
+     bo xuong: mau 77.2 (x1.103), sat thuong 13.2 (x1.103), mong doi x1.103
+C4. dot 4: tong 14 con (mong doi 14) - QuyDu=4 Witch=3 QuyCay=3 Skeleton=4
+     bo xuong: mau 81.0 (x1.158), sat thuong 13.9 (x1.158), mong doi x1.158
+
+D. Act1 giu nguyen luat cu
+D1. Act1: che do dot quanh nguoi = False (phai la False), quai dang co: 4 - Skeleton=4
+
+so loi ghi nhan = 0
