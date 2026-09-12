@@ -1,0 +1,28 @@
+[ban 1] nut con mat o goc, va cua so Sach phep
+
+A. bo cuc cua so tren 8 co man hinh x 2 ban giao dien
+do 16 truong hop: 0 loi
+hai o gan nhau nhat: cam ung (844.00, 390.00) o 2-3 - con ho 3.5 diem
+
+B. o tron trong bang co dung hinh cum nut ngoai tran dau khong
+21 cap o: ti le thu nho tu 0.6851 den 0.6851 -> lech 0.00%
+
+C. kho ky nang: dat vao o, bo khoi o, luu roi nap lai
+C1. mac dinh: 0 1 2 3 4 5 6 (phai la 0..6)
+C2. dat ky nang 5 vao o 0 -> 5 1 2 3 4 0 6
+C3. bo o 2 -> 5 1 -1 3 4 0 6 (o 2 phai la -1)
+C4. nap lai -> 5 1 -1 3 4 0 6
+C5. doi sang ban may tinh -> 0 1 2 3 4 5 6 (phai con 0..6)
+
+D. trong tran dau
+D1. ban cam ung: dung cam ung = True, goc phai tren o (1533, 541)
+    anh sachphep_1_hud_camung: 911 KB
+D2. mo sach phep: DangMo = True
+    anh sachphep_2_bang_camung: 518 KB
+D3. dang mo sach: goi input = huongDi (0.00, 0.00, 0.00), kyNang -1, muonDiToi False
+D4. ban may tinh: dung cam ung = False, so o = 7
+    anh sachphep_3_bang_maytinh: 422 KB
+D5. keo Thien thach (4) vao o 1 -> 4 1 2 3 0 5 6
+    anh sachphep_4_hud_da_doi_cho: 956 KB
+
+so loi ghi nhan = 0

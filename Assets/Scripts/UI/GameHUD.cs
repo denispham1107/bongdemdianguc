@@ -98,6 +98,29 @@ public partial class GameHUD : MonoBehaviour
         CamUng.EpBat = epCamUng;
 
         if (Input.GetKeyDown(KeyCode.F12)) hienChanDoan = !hienChanDoan;
+
+        // SACH PHEP: phim P tren may tinh, nut hinh cuon sach tren may cam ung.
+        //
+        // Dang mo sach thi TRAN DAU KHONG DUOC NHAN INPUT NUA: khong doc can,
+        // khong doc nut ky nang, khong xoay camera - nguoi choi dang keo tha
+        // trong bang, moi ngon tay cua ho la cua cai bang ay.
+        if (Input.GetKeyDown(KeyCode.P)) CuaSoSachPhep.DaoTrangThai();
+        if (CuaSoSachPhep.DangMo && Input.GetKeyDown(KeyCode.Escape)) CuaSoSachPhep.Dong();
+
+        if (CuaSoSachPhep.DangMo)
+        {
+            CamUng.Huong = Vector2.zero;
+            CamUng.DangKeo = false;
+            CamUng.XoayCam = Vector2.zero;
+            CamUng.ChumZoom = 0f;
+            ngonJoy = -1;
+            ngonNut.Clear();
+            HuyNgam();
+            CuaSoSachPhep.CapNhat(Screen.height / Ref);
+            CapNhatChiBao();
+            return;
+        }
+
         DocCamUng();
         CapNhatChiBao();
     }
@@ -219,13 +242,17 @@ public partial class GameHUD : MonoBehaviour
 
         // PC giu nguyen thanh ky nang vuong o day man hinh; may cam ung thi doi
         // sang cum nut tron o goc phai duoi cho vua tam ngon cai.
-        if (CamUng.DangDung) { VeNutKyNangTron(s); VeNutGocNhin(s); VeNutKhoaCam(s); }
-        else DrawSkillBar(s);
+        if (CamUng.DangDung) { VeNutKyNangTron(s); VeNutKhoaCam(s); VeNutSachPhep(s); }
+        else { DrawSkillBar(s); VeNutSachPhep(s); }
 
         // Bang mau/mana, khung dot quai, moi dong thong bao - mot bo cuc chung,
         // khong khung nao de len khung nao (GameHUDKinhDi.cs)
         VeHUDKinhDi(s);
         DrawMessages(s);
+
+        // Sach phep ve SAU CUNG: no phu kin tran dau, khong duoc de thanh mau
+        // hay dong thong bao noi len tren no.
+        CuaSoSachPhep.Ve(s, player, BoIcon());
     }
 
     // ================================================================
@@ -337,29 +364,31 @@ public partial class GameHUD : MonoBehaviour
                 ngonJoy = t.fingerId;
                 continue;
             }
-            // Nut KHOA xet TRUOC nut doi goc nhin: hai nut nam sat nhau, va
-            // cai nay doi hanh vi cua cai kia.
             if (BamNutKhoaCam(t.position, s))
             {
                 ngonNut.Add(t.fingerId);
                 continue;
             }
-            if (BamNutGocNhin(t.position, s))
+            if (BamNutSachPhep(t.position, s))
             {
                 ngonNut.Add(t.fingerId);
                 continue;
             }
 
-            int nut = NutTaiDiem(t.position, s);
-            if (nut >= 0)
+            int o = NutTaiDiem(t.position, s);
+            if (o >= 0)
             {
                 // CHUA DANH GI CA. Chi nhan lay ngon nay va cho xem no se
                 // duoc keo ra hay tha ngay tai cho - hai viec khac han nhau.
+                //
+                // MayNgam giu SO HIEU KY NANG chu khong giu so o: luc tha tay
+                // no goi thang PlayerController.DanhTuDong(ky), va so hieu ay
+                // con di qua mang.
                 ngonNut.Add(t.fingerId);
                 if (ngonNgam == -99)
                 {
                     ngonNgam = t.fingerId;
-                    mayNgam.BatDau(nut, t.position, TamNut(nut, s),
+                    mayNgam.BatDau(SachPhep.OTron[o], t.position, TamNut(o, s),
                                    BanKinhNut(s), KeoToiDa(s));
                 }
                 continue;
@@ -402,17 +431,17 @@ public partial class GameHUD : MonoBehaviour
                 {
                     // da bat/tat khoa ngay luc bam, khong phai lam gi them
                 }
-                else if (BamNutGocNhin(pos, s))
+                else if (BamNutSachPhep(pos, s))
                 {
-                    // da doi goc nhin ngay luc bam, khong phai lam gi them
+                    // da mo sach phep ngay luc bam
                 }
                 else
                 {
-                    int nut = NutTaiDiem(pos, s);
-                    if (nut >= 0)
+                    int o = NutTaiDiem(pos, s);
+                    if (o >= 0)
                     {
                         ngonNgam = -2;
-                        mayNgam.BatDau(nut, pos, TamNut(nut, s),
+                        mayNgam.BatDau(SachPhep.OTron[o], pos, TamNut(o, s),
                                        BanKinhNut(s), KeoToiDa(s));
                     }
                     else
@@ -641,21 +670,6 @@ public partial class GameHUD : MonoBehaviour
     }
 
     /// <summary>
-    /// Cham vao nut DOI GOC NHIN khong. Nut nay lam viec ngay luc cham xuong -
-    /// no khong co gi de ngam ca.
-    /// </summary>
-    bool BamNutGocNhin(Vector2 diem, float s)
-    {
-        if (Vector2.Distance(diem, TamNutGocNhin(s)) > BanKinhNutGocNhin(s)) return false;
-
-        // Dang khoa thi khong doi goc nhin, nhung VAN nhan lay ngon tay nay:
-        // tra ve false la ngon do thanh "ngon tu do" va di keo camera - dung
-        // cai ma khoa dang phai chan. (CameraRig con chan them mot lop nua.)
-        if (cameraRig != null && !CamUng.KhoaCam) cameraRig.CycleView();
-        return true;
-    }
-
-    /// <summary>
     /// Nut ky nang nam duoi diem cham, -1 neu khong trung nut nao.
     ///
     /// CHI TRA LOI, khong danh gi. Truoc day ham nay danh luon tai cho - khong
@@ -665,8 +679,13 @@ public partial class GameHUD : MonoBehaviour
     int NutTaiDiem(Vector2 diem, float s)
     {
         float r = BanKinhNut(s);
-        for (int i = 0; i < SoNut; i++)
-            if (Vector2.Distance(diem, TamNut(i, s)) <= r) return i;
+        for (int o = 0; o < SoNut; o++)
+        {
+            // O TRONG khong nhan ngon tay: khong ve gi o do thi cung khong duoc
+            // an mot vung bam vo hinh - cham vao day phai la xoay camera.
+            if (SachPhep.OTron[o] == SachPhep.Trong) continue;
+            if (Vector2.Distance(diem, TamNut(o, s)) <= r) return o;
+        }
         return -1;
     }
 
@@ -709,84 +728,25 @@ public partial class GameHUD : MonoBehaviour
         if (chiBao != null) chiBao.An();
     }
 
-    /// <summary>
-    /// Nut DOI GOC NHIN - thay cho phim C tren may cam ung.
-    ///
-    /// Dat o goc PHAI TREN: goc trai tren la bang trang thai, giua tren la so
-    /// quai con lai, phai duoi la cum ky nang. Goc phai tren la cho trong duy
-    /// nhat con lai, va cung la cho ngon cai it quet qua nhat - dung cho mot
-    /// nut ma bam nham thi doi ca goc nhin.
-    /// </summary>
-    float BanKinhNutGocNhin(float s) { return 40f * s; }
-
-    /// <summary>
-    /// Ve nut doi goc nhin: vong tron mo, ben trong la hinh mot may quay phim.
-    ///
-    /// Ve bang cac hinh chu nhat chu khong dung anh: mot nut duy nhat khong bo
-    /// cong lam ca mot texture, ma hinh may quay thi chi can than va ong kinh
-    /// la nhan ra.
-    /// </summary>
-    void VeNutGocNhin(float s)
-    {
-        Vector2 t = TamNutGocNhin(s);
-        float r = BanKinhNutGocNhin(s);
-
-        // GUI dem y tu TREN xuong con cham dem tu DUOI len - phai lat lai
-        float gx = t.x, gy = Screen.height - t.y;
-
-        var cu = GUI.color;
-
-        // Dang khoa goc nhin thi nut nay khong lam gi nua - ve MO han di de
-        // nguoi choi khoi bam mai ma khong hieu sao khong doi duoc.
-        float dam = CamUng.KhoaCam ? 0.35f : 1f;
-
-        GUI.color = new Color(1f, 1f, 1f, 0.20f * dam);
-        GUI.DrawTexture(new Rect(gx - r, gy - r, r * 2f, r * 2f),
-                        vongNen, ScaleMode.StretchToFill, true);
-
-        // Than may quay
-        GUI.color = new Color(0.92f, 0.94f, 1f, 0.80f * dam);
-        float w = r * 0.86f, h = r * 0.58f;
-        GUI.DrawTexture(new Rect(gx - w * 0.62f, gy - h * 0.5f, w, h),
-                        Texture2D.whiteTexture, ScaleMode.StretchToFill, false);
-
-        // Ong kinh nho ra phia phai
-        GUI.DrawTexture(new Rect(gx + w * 0.38f, gy - h * 0.28f, r * 0.34f, h * 0.56f),
-                        Texture2D.whiteTexture, ScaleMode.StretchToFill, false);
-
-        // Cuon phim tren nap
-        GUI.DrawTexture(new Rect(gx - w * 0.34f, gy - h * 0.5f - r * 0.20f, r * 0.30f, r * 0.20f),
-                        Texture2D.whiteTexture, ScaleMode.StretchToFill, false);
-
-        GUI.color = cu;
-    }
-
-    Vector2 TamNutGocNhin(float s)
-    {
-        // Toa do dem tu DUOI len, giong Input.mousePosition
-        return new Vector2(Screen.width - 62f * s, Screen.height - 62f * s);
-    }
-
     // ================================================================
-    //  NUT KHOA GOC NHIN - hinh CON MAT, ngay duoi nut doi goc nhin
+    //  NUT KHOA GOC NHIN - hinh CON MAT, GOC PHAI TREN
     // ================================================================
     //
     // Bam mot cai la camera dung im o dung goc dang co: khong xoay, khong phong
     // to, khong doi che do - khong bang bat cu thao tac nao. Bam lai la mo.
     //
-    // Dat NGAY DUOI nut doi goc nhin vi hai nut cung noi ve mot thu, va vi goc
-    // phai tren la cho ngon cai it quet qua nhat - hai nut nay bam nham thi doi
-    // ca khung hinh dang nhin.
-    //
-    // Cach nhau 88s tu tam den tam, trong khi ban kinh moi nut la 40s: con lai
-    // 8s ho giua hai vanh, du de khong bam nham cai nay ra cai kia.
+    // O NGAY GOC PHAI TREN (12/09/2026, nguoi dung xin): truoc day cho ay la
+    // nut DOI GOC NHIN hinh may quay, con con mat nam duoi no. Nut doi goc nhin
+    // da bo han - phim C ben ban may tinh van con - va con mat don len dung cho
+    // do. Goc phai tren la cho ngon cai it quet qua nhat, hop cho mot nut ma
+    // bam nham thi doi ca khung hinh dang nhin.
 
     float BanKinhNutKhoaCam(float s) { return 40f * s; }
 
     Vector2 TamNutKhoaCam(float s)
     {
-        Vector2 t = TamNutGocNhin(s);
-        return new Vector2(t.x, t.y - 88f * s);
+        // Toa do dem tu DUOI len, giong Input.mousePosition
+        return new Vector2(Screen.width - 62f * s, Screen.height - 62f * s);
     }
 
     /// <summary>
@@ -885,6 +845,109 @@ public partial class GameHUD : MonoBehaviour
         GUI.color = cu;
     }
 
+    // ================================================================
+    //  NUT SACH PHEP - hinh CUON SACH
+    // ================================================================
+    //
+    // Mo bang cua so keo tha cac o ky nang (CuaSoSachPhep). Tren may tinh con
+    // co phim P.
+    //
+    // Cho dat: ban cam ung thi NGAY DUOI con mat o goc phai tren - ba nut cung
+    // mot cot doc, cach nhau 88s, deu nam o cho ngon cai it quet qua nhat. Ban
+    // may tinh khong ve con mat (camera dieu khien bang chuot), nen sach phep
+    // don len dung goc.
+
+    float BanKinhNutSachPhep(float s) { return 40f * s; }
+
+    Vector2 TamNutSachPhep(float s)
+    {
+        if (CamUng.DangDung)
+        {
+            Vector2 t = TamNutKhoaCam(s);
+            return new Vector2(t.x, t.y - 88f * s);
+        }
+        return new Vector2(Screen.width - 62f * s, Screen.height - 62f * s);
+    }
+
+    bool BamNutSachPhep(Vector2 diem, float s)
+    {
+        if (Vector2.Distance(diem, TamNutSachPhep(s)) > BanKinhNutSachPhep(s)) return false;
+        CuaSoSachPhep.Mo();
+        return true;
+    }
+
+    /// <summary>
+    /// Ve nut sach phep: mot cuon sach dong bia da, gay sach ben trai, mep giay
+    /// ben phai va mot hinh thoi do giua bia.
+    ///
+    /// Ve bang hinh chu nhat chu khong dung anh - giong nut con mat ngay tren
+    /// no, de hai nut cung mot ngon ngu hinh.
+    /// </summary>
+    void VeNutSachPhep(float s)
+    {
+        Vector2 t = TamNutSachPhep(s);
+        float r = BanKinhNutSachPhep(s);
+
+        // GUI dem y tu TREN xuong con cham dem tu DUOI len - phai lat lai
+        float gx = t.x, gy = Screen.height - t.y;
+
+        var cu = GUI.color;
+        bool dangMo = CuaSoSachPhep.DangMo;
+
+        GUI.color = dangMo ? new Color(1f, 0.72f, 0.45f, 0.30f)
+                           : new Color(1f, 1f, 1f, 0.20f);
+        GUI.DrawTexture(new Rect(gx - r, gy - r, r * 2f, r * 2f),
+                        vongNen, ScaleMode.StretchToFill, true);
+
+        float w = r * 0.92f, h = r * 1.08f;
+        float x0 = gx - w * 0.5f, y0 = gy - h * 0.5f;
+
+        // Bia da
+        GUI.color = new Color(0.42f, 0.11f, 0.07f, 0.95f);
+        GUI.DrawTexture(new Rect(x0, y0, w, h), Texture2D.whiteTexture, ScaleMode.StretchToFill, false);
+
+        // Gay sach - dai toi hon chay doc mep trai
+        GUI.color = new Color(0.22f, 0.05f, 0.03f, 0.95f);
+        GUI.DrawTexture(new Rect(x0, y0, w * 0.20f, h), Texture2D.whiteTexture, ScaleMode.StretchToFill, false);
+
+        // Mep giay ben phai
+        GUI.color = new Color(0.86f, 0.80f, 0.68f, 0.92f);
+        GUI.DrawTexture(new Rect(x0 + w, y0 + h * 0.06f, w * 0.12f, h * 0.88f),
+                        Texture2D.whiteTexture, ScaleMode.StretchToFill, false);
+
+        // Hinh thoi giua bia: mot hinh vuong xoay 45 do
+        var mCu = GUI.matrix;
+        GUIUtility.RotateAroundPivot(45f, new Vector2(gx + w * 0.08f, gy));
+        float kt = r * 0.30f;
+        GUI.color = dangMo ? new Color(1f, 0.86f, 0.45f, 0.95f)
+                           : new Color(0.95f, 0.18f, 0.11f, 0.92f);
+        GUI.DrawTexture(new Rect(gx + w * 0.08f - kt * 0.5f, gy - kt * 0.5f, kt, kt),
+                        Texture2D.whiteTexture, ScaleMode.StretchToFill, false);
+        GUI.matrix = mCu;
+
+        // Ten nut - chu co dau, font Inter (GiaoDien), khong de font mac dinh
+        var k = new GUIStyle(GUI.skin.label);
+        k.font = GiaoDien.ChuDam;
+        k.alignment = TextAnchor.UpperCenter;
+        k.fontSize = Mathf.RoundToInt(15f * s);
+        k.normal.textColor = new Color(0.93f, 0.86f, 0.74f, 0.92f);
+        GUI.color = Color.white;
+        GUI.Label(new Rect(gx - r * 1.6f, gy + r * 0.92f, r * 3.2f, 22f * s), "Sách phép", k);
+
+        GUI.color = cu;
+
+        // BAN MAY TINH bat cu bam ngay tai day. Ban cam ung thi KHONG - no da
+        // co duong doc ngon tay rieng (BamNutSachPhep); them nut o day nua thi
+        // mot cu cham vao WebGL (vua sinh cham, vua sinh chuot) mo roi dong
+        // ngay sach phep.
+        // Dang mo thi KHONG bat cu bam nua: nut nay ve TRUOC cua so, ma IMGUI
+        // cho cai ve truoc gianh su kien - bam vao bang (ngay cho nut nay nam
+        // duoi) se dong sach phep giua chung.
+        if (!CamUng.DangDung && !CuaSoSachPhep.DangMo
+            && GUI.Button(new Rect(gx - r, gy - r, r * 2f, r * 2f), GUIContent.none, GUIStyle.none))
+            CuaSoSachPhep.Mo();
+    }
+
     // Nut phai DU TO cho ngon cai (dau ngon cai nguoi lon khoang 45-57 diem anh
     // o mat do man hinh thong thuong), nhung to qua thi sau nut khong xep vua
     // mot cum ma khong de len nhau.
@@ -938,17 +1001,34 @@ public partial class GameHUD : MonoBehaviour
         //
         // Kiem lai khoang cach: toi nut Sam set 147,7 | toi nut Mua bang 149,0
         // | duong kinh nut 121,4. Cho hep nhat con ho 26,3.
+        Vector2 lech = LechNut(i);
+        return new Vector2(Screen.width - lech.x * s, lech.y * s);
+    }
+
+    /// <summary>
+    /// Do lech cua nut thu <paramref name="i"/> so voi GOC PHAI DUOI man hinh,
+    /// tinh bang don vi bo cuc (chua nhan ti le man hinh).
+    ///
+    /// Ham THUAN - khong doc Screen, khong doc trang thai gi. Tach ra de:
+    ///   1. do duoc ngoai Play (le cua du an), va
+    ///   2. cua so Sach phep ve lai DUNG hinh dang cum nut nay trong bang chon,
+    ///      chu khong ve mot hang ngang roi de nguoi choi tu doan o nao ung voi
+    ///      nut nao.
+    /// </summary>
+    public static Vector2 LechNut(int i)
+    {
+        // NUT THU BAY nam o mot cung RIENG, trong cung, sat goc man hinh.
         if (i == 6)
         {
             const float banBay = 92.23f;
             const float gocBay = 26.1f;
             float radBay = gocBay * Mathf.Deg2Rad;
-            return new Vector2(Screen.width - Le * s - Mathf.Cos(radBay) * banBay * s,
-                               Le * s + Mathf.Sin(radBay) * banBay * s);
+            return new Vector2(Le + Mathf.Cos(radBay) * banBay,
+                               Le + Mathf.Sin(radBay) * banBay);
         }
 
         bool trong = i < 3;
-        float ban = (trong ? 234.03f : 392.15f) * s;
+        float ban = trong ? 234.03f : 392.15f;
         int k = trong ? i : i - 3;
 
         // Trai ra (goc lon) den len tren (goc nho)
@@ -958,8 +1038,24 @@ public partial class GameHUD : MonoBehaviour
 
         // Le tinh tu goc man hinh phai lon hon ban kinh nut, khong thi nut ngoai
         // cung bi cat mat mot mieng o mep.
-        return new Vector2(Screen.width - Le * s - Mathf.Cos(rad) * ban,
-                           Le * s + Mathf.Sin(rad) * ban);
+        return new Vector2(Le + Mathf.Cos(rad) * ban, Le + Mathf.Sin(rad) * ban);
+    }
+
+    /// <summary>
+    /// Kich thuoc tong cua cum nut, cung don vi voi <see cref="LechNut"/>:
+    /// ban kinh mot nut, va be ngang / chieu cao ma ca cum chiem cho.
+    /// Cua so Sach phep dung de thu nho ca cum cho vua mot o trong bang.
+    /// </summary>
+    public static void HinhHocCumNut(out float banKinhNut, out float rong, out float cao)
+    {
+        banKinhNut = 60.72f;
+        rong = 0f; cao = 0f;
+        for (int i = 0; i < SoNut; i++)
+        {
+            Vector2 l = LechNut(i);
+            rong = Mathf.Max(rong, l.x + banKinhNut);
+            cao = Mathf.Max(cao, l.y + banKinhNut);
+        }
     }
 
     /// <summary>Can joystick va cum nut tron - chi ve tren may cam ung.</summary>
@@ -992,18 +1088,30 @@ public partial class GameHUD : MonoBehaviour
     /// Cum nut ky nang hinh TRON o goc phai duoi. Chi ve hinh, khong ve ten -
     /// tren man hinh dien thoai chu do qua nho de doc ma lai an mat san choi.
     /// </summary>
+    /// <summary>Bieu tuong cua bay ky nang, xep theo SO HIEU ky nang (0..6).</summary>
+    public Texture2D[] BoIcon()
+    {
+        return new Texture2D[] { iconFire, iconIce, iconBolt, iconWind,
+                                 iconMeteor, iconKhieng, iconGiatSet };
+    }
+
     void VeNutKyNangTron(float s)
     {
         VeCanJoystick(s);
 
-        var icon = new Texture2D[] { iconFire, iconIce, iconBolt, iconWind,
-                                     iconMeteor, iconKhieng, iconGiatSet };
+        var icon = BoIcon();
         float r = BanKinhNut(s);
         var cu = GUI.color;
 
-        for (int i = 0; i < SoNut; i++)
+        for (int o = 0; o < SoNut; o++)
         {
-            Vector2 t = TamNut(i, s);
+            // O NAO GIU KY NANG NAO la do nguoi choi sap trong Sach phep.
+            // O trong thi khong ve gi - va NutTaiDiem cung khong nhan ngon tay
+            // o do, nen cham vao day la xoay camera nhu vung trong.
+            int i = SachPhep.OTron[o];
+            if (i == SachPhep.Trong) continue;
+
+            Vector2 t = TamNut(o, s);
             var rect = new Rect(t.x - r, Screen.height - t.y - r, r * 2f, r * 2f);
 
             // Bong nut hat xuong nen, cho cum nut khong nhu dan bet vao san
@@ -1078,43 +1186,49 @@ public partial class GameHUD : MonoBehaviour
 
     void DrawSkillBar(float s)
     {
+        int n = SachPhep.SoOVuong;
         float slot = 84f * s;
         float gap = 12f * s;
-        float total = slot * 7f + gap * 6f;
+        float total = slot * n + gap * (n - 1);
         float x = (Screen.width - total) * 0.5f;
         float y = Screen.height - slot - 22f * s;
 
-        DrawSkillSlot(new Rect(x, y, slot, slot), iconFire, "1/Z", 0,
-                      player != null ? player.FireballCooldown01 : 0f,
-                      player != null && player.SelectedSkill == 0, s);
+        var icon = BoIcon();
+        var bo = SachPhep.OVuong;
 
-        DrawSkillSlot(new Rect(x + slot + gap, y, slot, slot), iconIce, "2/X", 1,
-                      player != null ? player.IceCooldown01 : 0f,
-                      player != null && player.SelectedSkill == 1, s);
+        // Phim tat cua tung O (khong phai cua tung ky nang): nguoi choi keo
+        // Sam set sang o mot thi bam so 1 phai ra Sam set. Xem DocInput.
+        string[] phim = { "1/Z", "2/X", "3/V", "4/B", "5/N", "6/M", "7/G" };
 
-        DrawSkillSlot(new Rect(x + (slot + gap) * 2f, y, slot, slot), iconBolt, "3/V", 2,
-                      player != null ? player.BoltCooldown01 : 0f,
-                      player != null && player.SelectedSkill == 2, s);
+        for (int o = 0; o < n; o++)
+        {
+            var r = new Rect(x + (slot + gap) * o, y, slot, slot);
+            int ky = bo[o];
+            string ten = o < phim.Length ? phim[o] : (o + 1).ToString();
 
-        DrawSkillSlot(new Rect(x + (slot + gap) * 3f, y, slot, slot), iconWind, "4/B", 3,
-                      player != null ? player.TornadoCooldown01 : 0f,
-                      player != null && player.SelectedSkill == 3, s);
+            if (ky == SachPhep.Trong) { DrawSkillSlotTrong(r, ten, s); continue; }
 
-        DrawSkillSlot(new Rect(x + (slot + gap) * 4f, y, slot, slot), iconMeteor, "5/N", 4,
-                      player != null ? player.MeteorCooldown01 : 0f,
-                      player != null && player.SelectedSkill == 4, s);
-
-        DrawSkillSlot(new Rect(x + (slot + gap) * 5f, y, slot, slot), iconKhieng, "6/M", 5,
-                      player != null ? player.KhiengCooldown01 : 0f,
-                      player != null && player.SelectedSkill == 5, s);
-
-        DrawSkillSlot(new Rect(x + (slot + gap) * 6f, y, slot, slot), iconGiatSet, "7/G", 6,
-                      player != null ? player.GiatSetCooldown01 : 0f,
-                      player != null && player.SelectedSkill == 6, s);
+            DrawSkillSlot(r, icon[ky], ten, ky,
+                          player != null ? HoiChieu01(ky) : 0f,
+                          player != null && player.SelectedSkill == ky, s);
+        }
 
         // Mau khieng KHONG ve o day nua - no da co dai rieng tren bang trang
         // thai goc trai. Ve ca hai cho thi cung mot con so hien hai lan, ma cho
         // nay lai chen ngay tren hang ky nang.
+    }
+
+    /// <summary>O chua duoc gan ky nang nao: chi mot khung rong cho nguoi choi
+    /// biet con cho de xep them, chu khong bam duoc.</summary>
+    void DrawSkillSlotTrong(Rect r, string key, float s)
+    {
+        var cu = GUI.color;
+        GUI.color = new Color(1f, 1f, 1f, 0.35f);
+        GUI.DrawTexture(r, panelTex, ScaleMode.StretchToFill, true);
+        GUI.color = cu;
+        DrawBorder(r, new Color(0.30f, 0.27f, 0.24f), Mathf.Max(1f, 2f * s));
+        GUI.Label(new Rect(r.x, r.y + r.height + 2f * s, r.width, 22f * s),
+                  "[" + key + "]", keyStyle);
     }
 
     void DrawSkillSlot(Rect r, Texture2D icon, string key, int skill,
@@ -1154,7 +1268,12 @@ public partial class GameHUD : MonoBehaviour
 
         // Bam thang vao o cung tung duoc ky nang. Luc nay con tro dang o tren
         // thanh ky nang nen khong ngam theo chuot duoc -> danh thang ve phia truoc.
-        if (player != null && GUI.Button(r, GUIContent.none, GUIStyle.none))
+        //
+        // Dang mo Sach phep thi khong: thanh nay van ve (nam duoi bang) nhung
+        // IMGUI cho no gianh su kien truoc, nen moi cu keo tha trong bang di
+        // ngang qua day la mot phat ban ra.
+        if (player != null && !CuaSoSachPhep.DangMo
+            && GUI.Button(r, GUIContent.none, GUIStyle.none))
             player.CastForward(skill);
     }
 

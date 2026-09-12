@@ -8076,6 +8076,80 @@ trạng thái 60 lần/giây để A vẽ theo. Menu 46 chạy lại sau khi đ�
 
 ---
 
+## Sách phép: người chơi tự sắp xếp các ô kỹ năng
+
+### Anh xin gì
+
+Hai việc, trong cùng một tin nhắn kèm bản vẽ tay `cuasokynang.png`:
+
+1. Bản cảm ứng bỏ hẳn nút tròn **đổi góc nhìn** (hình máy quay) ở góc phải trên; nút **con mắt**
+   dọn lên đúng chỗ đó.
+2. Thêm nút hình cuốn sách tên **"Sách phép"**. Bấm vào mở một bảng: cột trái là kho kỹ năng
+   (cuộn được), phải trên là lời kể chi tiết của kỹ năng đang chọn (cuộn được), phải dưới là các
+   **ô** — kéo thả từ cột trái vào. *"Trong này sắp xếp thế nào thì ra ngoài màn hình game sắp
+   xếp giống như vậy."* Bản máy tính thì các ô tròn đổi thành **một hàng ô vuông nằm ngang**.
+
+### Cái khó không nằm ở chỗ vẽ bảng
+
+Bảy kỹ năng trước đây nằm cứng: nút số 1 luôn là Quả cầu lửa, ô vuông thứ ba luôn là Sấm sét.
+Số hiệu kỹ năng vừa là **chỗ ngồi trên màn hình**, vừa là **thứ đi qua mạng** (gói "tôi vừa tung
+phép số 2"). Cho người chơi xếp lại mà không tách hai thứ ấy ra thì hai máy sắp xếp khác nhau sẽ
+bắn ra hai phép khác nhau.
+
+Nên `SachPhep.cs` chỉ giữ **bản đồ ô → số hiệu kỹ năng**. Số hiệu không bao giờ đổi; chỉ chỗ ngồi
+đổi. Mọi thứ đi ra ngoài (gói tin, `PlayerController.CastAt`, `MayNgam`) vẫn nhận số hiệu.
+
+**Hai bộ ô riêng** — một cho bản cảm ứng, một cho bản máy tính. Một người chơi WebGL đổi qua đổi
+lại giữa hai bản (trình duyệt trả lời có cảm ứng hay không), và bảy nút tròn xếp thành hai cung
+thì không có "thứ tự trái sang phải" để mà dùng chung với hàng ô vuông.
+
+Cất trong `PlayerPrefs` — trên WebGL chính là `localStorage`. Bản ghi hỏng hoặc số ô không khớp
+thì bỏ hẳn, quay về thứ tự gốc: thà xếp lại từ đầu còn hơn bấm ô này ra phép kia.
+
+### Ô trong bảng xếp đúng hình cụm nút ngoài trận
+
+Chỗ này là ý anh nhấn mạnh nên tôi không vẽ một hàng ngang cho dễ: bảng dùng **chính hàm bố cục
+của cụm nút thật** (`GameHUD.LechNut`), thu nhỏ cả cụm cho vừa khung. Ô thứ tư trong bảng nằm
+đúng vị trí tương đối của nút thứ tư ngoài trận — không phải đoán.
+
+Đo: 21 cặp ô, tỉ lệ thu nhỏ của mọi cặp đều là **0,6851**, lệch **0,00%**. Cụm không bị kéo méo.
+
+### Những chỗ phải chặn, nếu không sẽ vừa sắp xếp vừa đánh nhau
+
+| Chỗ | Nếu không chặn |
+|---|---|
+| `DocInput.Doc` | Mỗi cú chạm để kéo thả bị hiểu thành "bấm chuột xuống sân" — nhân vật chạy đi trong lúc đang sắp xếp |
+| `GUI.Button` của thanh kỹ năng (máy tính) | Thanh vẫn nằm dưới bảng, mà IMGUI cho cái vẽ trước giành sự kiện — kéo ngang qua đó là một phát bắn ra |
+| `GUI.Button` của chính nút Sách phép | Bấm vào vùng đó trong bảng sẽ đóng bảng giữa chừng |
+| Ô trống trên cụm nút tròn | Không vẽ gì mà vẫn ăn cú chạm, thành một vùng bấm vô hình |
+
+### Kéo dọc là cuộn, kéo ngang là mang kỹ năng đi
+
+Trên điện thoại, một ngón tay phải làm hai việc trong cùng một cột. Phân biệt theo hướng: đi
+dọc nhiều hơn ngang (gấp 1,2 lần) thì là **cuộn danh sách**; còn lại là **kéo thả**. Không tách
+thì mỗi lần vuốt để xem kỹ năng phía dưới là một lần kéo thả hụt.
+
+Thả vào ô đã có kỹ năng thì **hai ô đổi chỗ cho nhau**, không nhân bản — kéo Sấm sét từ ô 3 sang
+ô 1 mà để nguyên ô 3 thì người chơi có hai nút Sấm sét và mất một kỹ năng khác.
+
+### Số đo (`PlayTestShots/sachphep.txt`, menu 59, 0 lỗi)
+
+| Đo | Kết quả |
+|---|---|
+| Bố cục bảng, 8 cỡ màn hình × 2 bản | 16 trường hợp, **0 lỗi** — không khung nào đè khung nào, không ô nào tràn |
+| Hai ô gần nhau nhất | màn 844×390 (điện thoại nhỏ nhất), còn hở **3,5 điểm** |
+| Ô tròn so với cụm nút thật | 21 cặp, tỉ lệ 0,6851 → 0,6851, lệch **0,00%** |
+| Đặt kỹ năng 5 vào ô 0 | `5 1 2 3 4 0 6` — đổi chỗ, không nhân bản |
+| Lưu rồi nạp lại | y nguyên |
+| Sửa bản cảm ứng | bản máy tính vẫn `0 1 2 3 4 5 6` |
+| Đang mở bảng | gói input = hướng (0,0,0), kỹ năng −1, không đòi đi — trận đấu bị khoá hẳn |
+| Kéo Thiên thạch vào ô 1 | cụm nút ngoài trận đổi theo ngay (ảnh `sachphep_4`) |
+
+Ảnh: `sachphep_1_hud_camung`, `sachphep_2_bang_camung`, `sachphep_3_bang_maytinh`,
+`sachphep_4_hud_da_doi_cho`.
+
+---
+
 ## Phần 4 — Menu công cụ "Diablo 2.5D"
 
 | Mục | Tác dụng |
@@ -8135,6 +8209,7 @@ trạng thái 60 lần/giây để A vẽ theo. Menu 46 chạy lại sau khi đ�
 | **54. Dat 10 lo lua vao Act2** | Đặt 10 lò đá (prefab `Assets/Models/LoLuaDa`) vào Act2: lò giữa = chỗ đất khô gần tâm bản đồ nhất, 9 lò rải đều; không dưới nước, trong nhà mồ, trên/sát bia, chỉ trên mặt đất. Xoá lò cũ trước, chạy lại ra y hệt. Lưu Act2. Số đo `lolua_act2_dat.txt`. |
 | **57. Chay thu BAN PHIM AO (o nhap khong bi che)** | Chạy thẳng trên hàm bố cục màn đăng nhập với 8 cỡ màn hình × 3 mức bàn phím che (35/45/55%) × 2 trang: khung và ô nhập cuối phải nằm trên mép bàn phím, ô nhập đầu không tràn lên khỏi mép trên. Số đo `banphimao.txt`. |
 | **58. Chay thu MUA BANG + SAM SET (dong bang, choang)** | Đo kích thước tảng băng và cụm băng (đối chiếu mốc lấy từ git), xác suất đóng cứng/choáng trên 1000 lần gieo, người chơi bị đóng băng·choáng có thực sự đứng yên và không tung được phép (có mẫu đối chứng), mưa băng không nhắm vào chính người tung, và phép của người khác rơi trúng mình thì mình có dính. Số đo `bang_set.txt`. |
+| **59. Chay thu SACH PHEP (keo tha o ky nang)** | Đo bố cục bảng trên 8 cỡ màn hình × 2 bản, kiểm ô tròn trong bảng xếp đúng hình cụm nút thật, kho kỹ năng (đổi chỗ · bỏ khỏi ô · lưu/nạp · hai bản riêng), và trong trận: nút con mắt ở góc phải trên, mở bảng thì input trận đấu bị khoá. Chụp 4 ảnh. Số đo `sachphep.txt`. |
 | **56. Chay thu DOT QUAI Act2 + cho xuat phat** | Kiểm chỗ xuất phát ngẫu nhiên (hai máy cùng mã phòng ra cùng danh sách, cách nhau ≥ 22 m, trên đất, ngoài nước, không vướng vật cản) và luật đợt quái Act2 (đợt 1 bốn con quanh mỗi người; đợt sau cộng dồn quái và mạnh thêm 5% máu · sát thương); kiểm Act1 không bị đổi. Số đo `dotquai_act2.txt`. |
 | **55. Chay thu KET TRAN (nguoi song sot cuoi cung)** | Mở kênh giả lập như menu 45: kiểm gói tin kết trận/chết, máy chủ phòng phán quyết đúng lúc còn một người, bảng điểm cộng đúng người, máy khách không tự kết luận và hiện đúng kết quả nghe được, chết rồi camera chuyển sang người còn sống, chụp màn kết trận. Số đo `kettran.txt`, ảnh `kettran_*.png`. |
 | **54c. Chay thu LOC XOAY cuon lo lua** | Vào Play Act2, thả một cơn lốc đi thẳng vào lò: đo mốc thời gian lửa tắt / lò nhấc lên / lò biến mất / lò mọc lại, kiểm than trong chậu tắt bằng độ sáng trên ảnh, và kiểm vật có hệ hạt khác vẫn không bị cuốn. Ảnh `locxoay_*.png`, số đo `locxoay_lolua.txt`. |

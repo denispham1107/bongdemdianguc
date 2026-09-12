@@ -41,6 +41,16 @@ public class DocInput : MonoBehaviour
     /// </summary>
     public static int BamPhimKyNang()
     {
+        // Tra ve SO HIEU KY NANG, nhung phim so la so cua O chu khong phai cua
+        // ky nang: nguoi choi keo Sam set sang o 1 trong Sach phep thi bam phim
+        // 1 phai ra Sam set. Cach doi nam o BamPhimO ngay duoi.
+        int o = BamPhimO();
+        return o < 0 ? -1 : SachPhep.KyNangTaiO(o);
+    }
+
+    /// <summary>O ky nang vua duoc bam, 0..6; khong bam thi -1.</summary>
+    public static int BamPhimO()
+    {
         if (Input.GetKeyDown(KeyCode.Alpha1) || Input.GetKeyDown(KeyCode.Keypad1)
             || Input.GetKeyDown(KeyCode.Z)) return 0;
         if (Input.GetKeyDown(KeyCode.Alpha5) || Input.GetKeyDown(KeyCode.Keypad5)
@@ -63,6 +73,15 @@ public class DocInput : MonoBehaviour
     {
         GoiInput g = GoiInput.Rong(dt);
         g.soThuTu = ++demSoThuTu;
+
+        // DANG MO SACH PHEP: tra ve goi RONG (nhung van tang so thu tu, va van
+        // giu dt - xem PlayerController.Update).
+        //
+        // Khong chan o day thi moi cu cham de keo tha trong bang deu bi hieu
+        // thanh "bam chuot trai xuong san" - nhan vat chay di trong khi nguoi
+        // choi dang sap xep ky nang, va bam phim 1..7 van ban ra phep.
+        if (CuaSoSachPhep.DangMo) return g;
+
         g.laCamUng = CamUng.DangDung;
         g.coBamPhim = Input.anyKeyDown;
         g.kyNang = BamPhimKyNang();
@@ -130,6 +149,12 @@ public class DocInput : MonoBehaviour
     static bool ConTroTrenThanhKyNang()
     {
         // Thanh ky nang nam duoi day man hinh - khong di chuyen khi bam vao do
-        return Input.mousePosition.y < Screen.height * 0.09f;
+        if (Input.mousePosition.y < Screen.height * 0.09f) return true;
+
+        // Nut SACH PHEP o goc phai tren: bam vao no ma khong chan o day thi
+        // nhan vat vua mo sach vua chay ve phia goc man hinh.
+        float s = Screen.height / 1080f;
+        var tam = new Vector2(Screen.width - 62f * s, Screen.height - 62f * s);
+        return Vector2.Distance(Input.mousePosition, tam) <= 46f * s;
     }
 }
