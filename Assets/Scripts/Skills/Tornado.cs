@@ -288,6 +288,12 @@ public class Tornado : MonoBehaviour
             if (vatCuon.Count >= VatToiDa) break;
             if (buffer[i] == null) continue;
 
+            // LO LUA: gio quat qua thi DAP TAT LUA TRUOC. Khung hinh sau, khi
+            // lua da tat han (va het khoang cho cua VatTheBiCuon.ChoSauKhiTat),
+            // cai lo moi bi boc len nhu cay va bia mo.
+            var lo = buffer[i].GetComponentInParent<LoLuaDa>();
+            if (lo != null && lo.DangChay) { lo.DapTat(); continue; }
+
             var v = VatTheBiCuon.Cuon(buffer[i].gameObject, this);
             if (v != null) vatCuon.Add(v);
         }

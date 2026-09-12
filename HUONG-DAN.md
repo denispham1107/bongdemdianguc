@@ -7690,6 +7690,45 @@ Play: lửa chạy 10/10, đèn 10/10; nhân vật đi thẳng vào lò: bị ch
 Cái giá: mỗi lò 10 720 tam giác + một đèn điểm (tầm 9 m) — 10 lò thêm 107 nghìn tam giác vào 2,69 triệu của Act2 (+4%);
 mức Yếu/Rất yếu của Unity cho 0 đèn điểm tính theo điểm ảnh nên đèn lò chỉ còn tính theo đỉnh, rẻ.
 
+### Lốc xoáy dập tắt lò lửa rồi cuốn cả cái lò đi
+
+Anh xin: lốc xoáy **của mọi người chơi** khi trúng lò lửa thì **dập tắt lửa trước**, rồi **cuốn cái lò bay theo** như
+cây và bia mộ, **30 giây sau** lò hiện lại và **cháy tiếp**.
+
+Trước đó lốc xoáy **không đụng được** vào lò: `VatTheBiCuon.CuonDuoc` loại mọi vật **có hệ hạt con** (lửa, khói, vòng
+phép) — cuốn một cái đang phát hiệu ứng lên trời thì vừa vô lý vừa hỏng vòng đời của hiệu ứng. Lò lửa đúng là một vật
+như vậy. Nên luật mới: **lò là ngoại lệ, nhưng phải tắt lửa đã** — tắt xong thì nó không còn hệ hạt nào nữa, và cái
+luật cũ tự nhiên lại đúng.
+
+Trình tự (`Tornado.CuonVatThe` → `LoLuaDa.DapTat` → `VatTheBiCuon`):
+
+1. Gió quạt tới lò → `DapTat`: xoá cụm lửa (lửa, khói, tàn, đèn), để lại **một cuộn khói xám** bốc lên. Cuộn khói đặt
+   ở **thế giới**, không làm con của lò — lát nữa lò bay đi, khói phải ở lại chỗ cũ.
+2. Chờ **0,35 giây** rồi mới bốc lò lên, để mắt kịp thấy lửa tắt trước khi cái lò rời đất.
+3. Lò bay quanh thân lốc, tan biến cùng lốc, **30 giây** sau mọc lại đúng chỗ cũ và `Chay()` nhóm lửa lại — dùng
+   nguyên bộ máy có sẵn của cây và bia mộ, không viết đồng hồ riêng.
+
+**Than trong chậu phải tắt theo.** Lần đầu lửa tắt nhưng ảnh chụp lúc lò bay vẫn thấy **đống than đỏ rực**: vật liệu
+`M_Coals` **tự phát sáng** (emission 2,5), nó không liên quan gì tới hệ hạt. Giờ `DapTat` phủ `MaterialPropertyBlock`
+lên riêng lưới "Than" cho nó thành tro xám, `Chay()` gỡ ra.
+
+Lốc của người chơi khác cũng là một `Tornado` chạy trên máy mình, nên luật này áp cho **mọi người chơi** mà không cần
+gói tin mới — giống hệt cách cây và bia mộ vẫn bị cuốn từ trước.
+
+Đo (menu 54c mới — đọc trạng thái thật từng khung hình, không hỏi lại chính cái luật vừa sửa):
+
+```
+lửa tắt ở giây 0,83  →  lò nhấc khỏi đất ở giây 1,41   (đúng thứ tự, cách nhau 0,58 giây)
+lò bay cao nhất 3,76 m; biến mất ở giây 6,02 cùng lúc lốc tan; lúc biến mất: hình tắt, va chạm tắt, đã về chỗ cũ
+sau 30 giây: hình bật, va chạm bật, lửa cháy lại (12 hạt, có đèn), lệch chỗ cũ 0,00 m, không còn VatTheBiCuon
+độ sáng vùng miệng chậu: đang cháy 147,9 → vừa tắt 45,5 (giảm 69%)
+vật khác có hệ hạt: vẫn KHÔNG cuốn được; lò đang cháy: KHÔNG cuốn được
+0 lỗi console
+```
+
+Ô đo độ sáng lúc đầu rộng quá (gồm cả mặt đất chung quanh) nên chỉ thấy giảm 42% và phép thử báo lỗi — tôi **thu ô đo
+vào đúng miệng chậu**, không nới ngưỡng.
+
 ### Việc còn phải làm
 
 **169 MB là quá nặng**, nhất là trên điện thoại — nền tảng chính của game. Gần như toàn bộ nằm ở
@@ -7764,6 +7803,7 @@ cho riêng nền tảng WebGL sẽ ăn cả hai đầu: file nhỏ hơn và khô
 | **51. Dung man chinh tu canh Act2** | Chép phần cảnh Act2 quanh chỗ đứng (45 m, phía trước camera) sang MainMenu.unity cùng ánh sáng / sương / bầu trời; đặt phù thuỷ, camera, hai lò đá; dọn vật vướng. Tạo luôn prefab lò đá từ FBX + texture Blender. Báo cáo `PlayTestShots/dungmanchinh.txt`. |
 | **51b. Chup thu goc nhin man chinh (Act2)** | Đặt nhân vật trước từng nhà mồ theo bốn hướng, bỏ chỗ vướng vật / giữa nước, chụp bằng khung camera màn chính — để chọn chỗ đứng. Ảnh `PlayTestShots/goc/`. |
 | **54. Dat 10 lo lua vao Act2** | Đặt 10 lò đá (prefab `Assets/Models/LoLuaDa`) vào Act2: lò giữa = chỗ đất khô gần tâm bản đồ nhất, 9 lò rải đều; không dưới nước, trong nhà mồ, trên/sát bia, chỉ trên mặt đất. Xoá lò cũ trước, chạy lại ra y hệt. Lưu Act2. Số đo `lolua_act2_dat.txt`. |
+| **54c. Chay thu LOC XOAY cuon lo lua** | Vào Play Act2, thả một cơn lốc đi thẳng vào lò: đo mốc thời gian lửa tắt / lò nhấc lên / lò biến mất / lò mọc lại, kiểm than trong chậu tắt bằng độ sáng trên ảnh, và kiểm vật có hệ hạt khác vẫn không bị cuốn. Ảnh `locxoay_*.png`, số đo `locxoay_lolua.txt`. |
 | **54b. Chay thu lo lua Act2** | Kiểm 10 lò bằng cách khác lúc đặt (va chạm tạm cho lưới nước, tia chiếu lên tìm mái nhà, hộp bao bia, độ cao địa hình quanh chân); trong Play: lửa + đèn bật, nhân vật đi thẳng vào lò bị chặn; chụp `lolua_*.png` + bản đồ. Số đo `lolua_act2.txt`. |
 | **53. Chay thu HUD KINH DI (mau, mana, thong bao)** | Ngoài Play: chạy hàm bố cục HUD với chữ dài nhất ở 11 cỡ màn hình × PC/cảm ứng — khung chữ không ra ngoài, không đè nhau hay đè nút; số máu/mana lọt thanh. Quét chuỗi 4 file HUD: đủ ký tự trong cmap Inter, không còn chữ không dấu cũ. Trong Play (Act2): bật cùng lúc mọi thông báo + máu thấp, đọc bố cục thật, chụp `hud_*.png`. Số đo `hudkinhdi.txt`. |
 | **52. Chay thu TEN TREN DAU nhan vat** | Vào Play ở Act2, gắn tên cho nhân vật của mình, sinh ba bản sao tên có dấu quanh mình; đo từng bảng tên: có vẽ, trong màn hình, ngay trên chóp mũ (đo độc lập bằng lưới bake) không quá 0,30 m, đúng màu, font Inter đủ 134 chữ có dấu (đọc cmap), ghép dấu rời đúng (252 cách gõ), nền trong suốt (đo trên ảnh chụp, có mẫu đối chứng nền đen), không đè nhau, người gục thì tên mờ. Gọi `GiaoDien.ChuanBi` như màn sảnh. Ảnh `bangten_*.png`, số đo `bangten.txt`. |

@@ -26,6 +26,9 @@ public class VatTheBiCuon : MonoBehaviour
     /// <summary>Vat rong ngang hon chung nay met thi khong cuon - do la vach da, nen nha.</summary>
     public const float RongToiDa = 6f;
 
+    /// <summary>Lo lua vua bi dap tat thi doi chung nay giay moi cuon len.</summary>
+    public const float ChoSauKhiTat = 0.35f;
+
     public Tornado tornado;
 
     [Header("Quy dao")]
@@ -78,9 +81,19 @@ public class VatTheBiCuon : MonoBehaviour
         // se bat lai mot cai cay ma cai kia da tat, hoac nguoc lai.
         if (go.GetComponentInParent<CayChay>() != null) return false;
 
+        // LO LUA: cuon duoc, nhung phai DAP TAT LUA TRUOC (Tornado.CuonVatThe
+        // lo viec ay khi con loc cham toi lo). Lua con chay thi chua cuon; lua
+        // vua tat cung doi <see cref="ChoSauKhiTat"/> giay de nguoi choi kip
+        // thay no tat truoc khi ca cai lo bay len troi.
+        var lo = go.GetComponent<LoLuaDa>();
+        if (lo != null)
+        {
+            if (lo.DangChay) return false;
+            if (lo.GiayTuLucTat < ChoSauKhiTat) return false;
+        }
         // Hieu ung dang chay (lua, khoi, vong phep) - cuon len thi vua vo ly
         // vua lam hong vong doi cua chung.
-        if (go.GetComponentInChildren<ParticleSystem>(true) != null) return false;
+        else if (go.GetComponentInChildren<ParticleSystem>(true) != null) return false;
         if (go.GetComponent<GroundRing>() != null) return false;
 
         // Khong co gi de nhin thay thi cuon cung bang khong.
@@ -207,6 +220,11 @@ public class VatTheBiCuon : MonoBehaviour
 
         VfxFactory.HitBurst(transform.position + Vector3.up * 0.4f,
                             new Color(0.72f, 0.66f, 0.52f));
+
+        // Lo lua moc lai thi chay tiep - loc xoay da dap tat no truoc khi cuon
+        var lo = GetComponent<LoLuaDa>();
+        if (lo != null) lo.Chay();
+
         Destroy(this);
     }
 

@@ -1,0 +1,30 @@
+[ban 3] loc xoay dap tat lua roi cuon lo
+
+lo thu: LoLua_GiuaMap (1.75, 0.48, -4.50)
+truoc khi danh: lua chay = True, 12 hat, co den
+anh: PlayTestShots/locxoay_1_dang_chay.png (do sang giua 128.9)
+tha loc o (1.8, 0.0, -11.5), di ve huong lo
+anh: PlayTestShots/locxoay_2_lua_vua_tat.png (do sang giua 210.5)
+anh: PlayTestShots/locxoay_3_dang_bay.png (do sang giua 57.0)
+
+moc thoi gian (giay tu luc tha loc):
+   lua tat      : 0.83
+   lo nhac len  : 1.41
+   lo bien mat  : 6.02
+   cao nhat     : 3.76 m tren cho cu
+   co bi cuon   : True
+   thu tu dung: tat lua truoc, boc lo sau 0.58 giay
+
+luc dang bien mat: hinh bat = False, va cham bat = False, cach cho cu 0.00 m
+
+sau 30 giay: hinh bat = True, va cham bat = True, lua chay = True, 12 hat, co den, lech cho cu 0.00 m
+anh: PlayTestShots/locxoay_4_moc_lai.png (do sang giua 128.6)
+
+vat co hieu ung (khong phai lo): cuon duoc = False (phai la False)
+lo DANG CHAY: cuon duoc = False (phai la False - phai tat lua truoc)
+anh: PlayTestShots/locxoay_5_than_do.png (do sang giua 147.9)
+anh: PlayTestShots/locxoay_6_than_nguoi.png (do sang giua 45.5)
+
+do sang vung mieng chau (LoLua_01): dang chay 147.9 -> vua tat 45.5 (giam 69%)
+
+so loi ghi nhan = 0

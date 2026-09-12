@@ -172,4 +172,72 @@ public static partial class VfxFactory
 
         return go;
     }
+
+    /// <summary>
+    /// KHOI LUC LUA VUA BI DAP TAT (loc xoay quat qua mieng chau).
+    ///
+    /// Dat o THE GIOI chu khong lam con cua lo: ngay sau do con loc boc cai lo
+    /// bay di, ma cuon khoi thi phai o lai tai cho. Tu xoa sau khi khoi tan.
+    /// </summary>
+    public static GameObject KhoiTatLua(Vector3 viTri, float banKinh)
+    {
+        var go = new GameObject("KhoiTatLua");
+        go.transform.position = viTri;
+        AutoDestroy.Add(go, 4.5f);
+
+        // Khoi: mot cuon xam nhat bung len roi loang ra
+        var khoi = NewPS("Khoi", go.transform, Vector3.zero,
+                         KhoiCuonMat != null ? KhoiCuonMat : SmokeMat,
+                         ParticleSystemRenderMode.Billboard);
+        if (KhoiCuonMat != null) BatFlipbook(khoi, 6, 6, 1);
+        var m = khoi.main;
+        m.duration = 0.6f; m.loop = false;
+        m.startLifetime = new ParticleSystem.MinMaxCurve(1.2f, 2.6f);
+        m.startSpeed = new ParticleSystem.MinMaxCurve(0.5f, 1.4f);
+        m.startSize = new ParticleSystem.MinMaxCurve(banKinh * 1.6f, banKinh * 3.2f);
+        m.startRotation = new ParticleSystem.MinMaxCurve(0f, Mathf.PI * 2f);
+        m.simulationSpace = ParticleSystemSimulationSpace.World;
+        m.gravityModifier = -0.05f;
+        m.maxParticles = 40;
+        m.startColor = new ParticleSystem.MinMaxGradient(
+            new Color(0.42f, 0.40f, 0.38f), new Color(0.62f, 0.60f, 0.57f));
+        var em = khoi.emission;
+        em.rateOverTime = 0f;
+        em.SetBursts(new[] { new ParticleSystem.Burst(0f, 14), new ParticleSystem.Burst(0.25f, 8) });
+        var sh = khoi.shape;
+        sh.shapeType = ParticleSystemShapeType.Circle;
+        sh.radius = banKinh * 0.8f; sh.radiusThickness = 1f;
+        var col = khoi.colorOverLifetime; col.enabled = true;
+        col.color = new ParticleSystem.MinMaxGradient(Grad(
+            Color.white, 0f, Color.white, 0.5f, new Color(0.8f, 0.8f, 0.8f), 1f,
+            0f, 0.75f, 0.45f, 0f));
+        var sz = khoi.sizeOverLifetime; sz.enabled = true;
+        sz.size = new ParticleSystem.MinMaxCurve(1f,
+            new AnimationCurve(new Keyframe(0f, 0.5f), new Keyframe(1f, 2.0f)));
+        var nz = khoi.noise; nz.enabled = true; nz.strength = 0.5f; nz.frequency = 0.5f;
+
+        // Tan lua cuoi cung vang ra roi tat - de mat thay "lua vua chet o day"
+        var tan = NewPS("TanTat", go.transform, Vector3.zero, EmberMat,
+                        ParticleSystemRenderMode.Billboard);
+        var mt = tan.main;
+        mt.duration = 0.3f; mt.loop = false;
+        mt.startLifetime = new ParticleSystem.MinMaxCurve(0.5f, 1.3f);
+        mt.startSpeed = new ParticleSystem.MinMaxCurve(1.2f, 3.2f);
+        mt.startSize = new ParticleSystem.MinMaxCurve(0.02f, 0.05f);
+        mt.simulationSpace = ParticleSystemSimulationSpace.World;
+        mt.gravityModifier = 0.35f;
+        mt.maxParticles = 30;
+        var emt = tan.emission;
+        emt.rateOverTime = 0f;
+        emt.SetBursts(new[] { new ParticleSystem.Burst(0f, 18) });
+        var sht = tan.shape;
+        sht.shapeType = ParticleSystemShapeType.Cone;
+        sht.angle = 55f; sht.radius = banKinh * 0.6f; sht.rotation = new Vector3(-90f, 0f, 0f);
+        var colt = tan.colorOverLifetime; colt.enabled = true;
+        colt.color = new ParticleSystem.MinMaxGradient(Grad(
+            new Color(1f, 0.75f, 0.35f), 0f, new Color(1f, 0.35f, 0.08f), 0.5f,
+            new Color(0.45f, 0.07f, 0.01f), 1f, 0f, 1f, 0.7f, 0f));
+
+        return go;
+    }
 }
