@@ -8217,6 +8217,19 @@ kéo trần lên thì tự nhiên còn 43%.
 | Giết một con quỷ cây | **+30** kinh nghiệm, đúng bảng giá |
 | Gói mạng | kỹ năng 17 byte giữ đúng cấp 5; gói kinh nghiệm 4 byte đúng ghế và điểm |
 
+### Ổ khoá vẽ lại, và ba lỗi hiển thị anh chụp được (13/09/2026)
+
+| Anh thấy | Nguyên nhân | Sửa |
+|---|---|---|
+| Ổ khoá quá đơn giản, không hợp không khí game | ghép từ 4 hình chữ nhật trắng | `IconKhoa.cs`: **một ảnh sinh bằng code** (trường khoảng cách, mép mềm) — quai sắt tròn có ánh sáng dọc thân, thân sắt gỉ viền đỏ, 4 đinh tán, lỗ khoá hình giọt hắt ánh đỏ, viền đen + bóng đổ |
+| Bản máy tính: ổ khoá chỉ là **hình vuông trắng** | hàm của bản máy tính chỉ vẽ **một thanh ngang**, quên mất cái quai | cả hai bản gọi **chung một hàm** `IconKhoa.Ve` — không thể lệch nhau nữa |
+| Sách phép: ô tròn đè lên dòng chữ hướng dẫn | cụm nút được căn giữa **cả** vùng ô, gồm cả dải chữ | chừa dải chữ (`DongNhacO`, dùng chung lúc vẽ và lúc xếp ô); căn giữa theo **hộp bao thật** của bảy nút thay vì hộp tính từ góc màn hình (hộp cũ còn cả lề 101 điểm nên cụm bị đẩy lệch, chừa khoảng trống lớn bên dưới) |
+| *(thấy thêm khi sửa)* sau mỗi ô tròn lộ ra một ô vuông xám | nền ô dùng `GiaoDien.Trang` — một ảnh vuông | nền tròn mép mềm |
+
+**Số đo** (menu 59, 0 lỗi): ổ khoá rộng **×0,800** so với bản cũ trên cả nút tròn (31,6 → 25,3) lẫn ô vuông (28,6 → 22,8);
+đọc thẳng điểm ảnh: lòng chữ U của quai alpha **0,03**, hai chân quai / đỉnh quai / thân **1,00** — ảnh có quai thật.
+Ô tròn gần dòng chữ nhất trên 16 trường hợp vẫn còn hở; cụm ô to thêm **18%** (tỉ lệ thu nhỏ 0,5133 → 0,6080) nhờ căn theo hộp bao thật, hình cụm vẫn lệch **0,00%**.
+
 ### Hai lần phép thử báo đỏ oan
 
 Lần đầu nó báo "sát thương không tăng theo cấp" vì tôi tung Mưa băng lần hai chỉ **0,9 giây** sau

@@ -124,19 +124,33 @@ public static class CuaSoSachPhep
             float rNut, chuanX, chuanY;
             GameHUD.HinhHocCumNut(out rNut, out chuanX, out chuanY);
 
+            // CHUA DAI CHU NHAC o tren cung. Truoc day cum nut duoc can giua CA
+            // vung o, nen o tren cung (loc xoay) chom len de len dong "Kéo kỹ
+            // năng bên trái thả vào ô…" - nguoi dung chup anh bao 13/09/2026.
+            float dinhChu = DongNhacO(vung, s).yMax + 6f * s;
+            vung = Rect.MinMaxRect(vung.xMin, dinhChu, vung.xMax, vung.yMax);
+
+            // Can giua theo HOP BAO THAT cua bay nut, khong theo hop tinh tu goc
+            // man hinh: hop ay con ca le 101 diem giua cum va mep man hinh, nen
+            // cum bi day len va de lai mot khoang trong lon ben duoi.
+            float minX = float.MaxValue, maxX = float.MinValue, minY = float.MaxValue, maxY = float.MinValue;
+            for (int j = 0; j < SachPhep.SoOTron; j++)
+            {
+                Vector2 l = GameHUD.LechNut(j);
+                minX = Mathf.Min(minX, l.x - rNut); maxX = Mathf.Max(maxX, l.x + rNut);
+                minY = Mathf.Min(minY, l.y - rNut); maxY = Mathf.Max(maxY, l.y + rNut);
+            }
+            float rongCum = maxX - minX, caoCum = maxY - minY;
+
             float le = 8f;
-            float k = Mathf.Min((vung.width - le * 2f) / chuanX,
-                                (vung.height - le * 2f) / chuanY);
+            float k = Mathf.Min((vung.width - le * 2f) / rongCum,
+                                (vung.height - le * 2f) / caoCum);
             float r = rNut * k;
 
-            Vector2 lech = GameHUD.LechNut(i);     // tu goc PHAI DUOI cua cum
-            // Dat cum vao giua vung
-            float cumRong = chuanX * k, cumCao = chuanY * k;
-            float x0 = vung.x + (vung.width - cumRong) * 0.5f;
-            float y1 = vung.y + (vung.height + cumCao) * 0.5f;
-
-            float cx = x0 + cumRong - lech.x * k;
-            float cy = y1 - lech.y * k;
+            Vector2 lech = GameHUD.LechNut(i);     // tu goc PHAI DUOI man hinh
+            // Lech tang ve BEN TRAI va LEN TREN; dat tam hop bao vao tam vung
+            float cx = vung.center.x - ((lech.x - (minX + maxX) * 0.5f) * k);
+            float cy = vung.center.y - ((lech.y - (minY + maxY) * 0.5f) * k);
             return new Rect(cx - r, cy - r, r * 2f, r * 2f);
         }
 
@@ -513,6 +527,38 @@ public static class CuaSoSachPhep
         GUI.Label(r, chu, k);
     }
 
+    /// <summary>Dong chu nhac o tren cung vung o. Dung CHUNG cho luc ve va luc xep
+    /// o - hai cho tu tinh rieng thi mot ngay nao do lech nhau va o de len chu.</summary>
+    public static Rect DongNhacO(Rect vungO, float s)
+    {
+        return new Rect(vungO.x, vungO.y + 4f * s, vungO.width, 20f * s);
+    }
+
+    static Texture2D nenTron;
+
+    /// <summary>Mot dia tron mep mem - nen cho o tron.</summary>
+    static Texture2D NenTron
+    {
+        get
+        {
+            if (nenTron != null) return nenTron;
+            const int n = 64;
+            nenTron = new Texture2D(n, n, TextureFormat.RGBA32, false);
+            nenTron.wrapMode = TextureWrapMode.Clamp;
+            var px = new Color[n * n];
+            for (int y = 0; y < n; y++)
+                for (int x = 0; x < n; x++)
+                {
+                    float dx = (x + 0.5f) / n - 0.5f, dy = (y + 0.5f) / n - 0.5f;
+                    float d = Mathf.Sqrt(dx * dx + dy * dy);
+                    px[y * n + x] = new Color(1f, 1f, 1f, Mathf.Clamp01((0.5f - d) * n));
+                }
+            nenTron.SetPixels(px);
+            nenTron.Apply(false, false);
+            return nenTron;
+        }
+    }
+
     static void VeVungO(BoCuc b, float s, Texture2D[] icon)
     {
         GiaoDien.To(b.vungO, new Color(0.05f, 0.04f, 0.04f, 0.55f));
@@ -520,7 +566,7 @@ public static class CuaSoSachPhep
         var kNhac = new GUIStyle(GiaoDien.KieuChuNho);
         kNhac.fontSize = Mathf.RoundToInt(14f * s);
         kNhac.alignment = TextAnchor.UpperCenter;
-        GUI.Label(new Rect(b.vungO.x, b.vungO.y + 4f * s, b.vungO.width, 20f * s),
+        GUI.Label(DongNhacO(b.vungO, s),
                   CamUng.DangDung
                     ? "Kéo kỹ năng bên trái thả vào ô — sắp xếp ở đây thế nào thì trong trận hiện ra y hệt"
                     : "Kéo kỹ năng bên trái thả vào ô — thứ tự ô cũng là thứ tự phím 1…7",
@@ -534,10 +580,14 @@ public static class CuaSoSachPhep
             bool tron = CamUng.DangDung;
             int ky = bo[i];
 
-            // Nen o
+            // Nen o. O TRON thi nen cung phai TRON: truoc day dung GiaoDien.Trang
+            // (mot anh vuong) nen sau moi o tron lo ra mot o vuong xam.
             var mauCu = GUI.color;
-            GUI.color = new Color(1f, 1f, 1f, 0.16f);
-            if (tron) GUI.DrawTexture(r, GiaoDien.Trang, ScaleMode.StretchToFill, true);
+            if (tron)
+            {
+                GUI.color = new Color(0f, 0f, 0f, 0.55f);
+                GUI.DrawTexture(r, NenTron, ScaleMode.StretchToFill, true);
+            }
             else GiaoDien.To(r, new Color(0.10f, 0.09f, 0.09f, 0.75f));
             GUI.color = mauCu;
 

@@ -108,6 +108,8 @@ public static class ThuSachPhep
         int soDo = 0, loiA = 0;
         float hoNhoNhat = 999999f;
         string choChat = "";
+        float hoChuNhoNhat = 999999f;
+        string choChuChat = "";
 
         foreach (bool camUng in new[] { true, false })
         {
@@ -133,9 +135,14 @@ public static class ThuSachPhep
 
                 // Moi o phai nam TRON trong vung o, va hai o khong cham nhau
                 int n = camUng ? SachPhep.SoOTron : SachPhep.SoOVuong;
+                float dayChu = CuaSoSachPhep.DongNhacO(b.vungO, s).yMax;
                 for (int i = 0; i < n; i++)
                 {
                     var ri = CuaSoSachPhep.OTaiVung(b.vungO, i, s);
+                    float hoChu = ri.yMin - dayChu;
+                    if (hoChu < hoChuNhoNhat) { hoChuNhoNhat = hoChu; choChuChat = ten + " o " + (i + 1); }
+                    if (hoChu < 0f)
+                    { Loi(ten + ": o " + (i + 1) + " de len dong chu nhac " + (-hoChu).ToString("F1") + " diem"); loiA++; }
                     if (ri.xMin < b.vungO.xMin - 0.5f || ri.xMax > b.vungO.xMax + 0.5f
                         || ri.yMin < b.vungO.yMin - 0.5f || ri.yMax > b.vungO.yMax + 0.5f)
                     { Loi(ten + ": o " + (i + 1) + " tran ra ngoai vung o"); loiA++; }
@@ -157,6 +164,38 @@ public static class ThuSachPhep
         }
         Ghi("do " + soDo + " truong hop: " + loiA + " loi");
         Ghi("hai o gan nhau nhat: " + choChat + " - con ho " + hoNhoNhat.ToString("F1") + " diem");
+        Ghi("o gan dong chu nhac nhat: " + choChuChat + " - con ho " + hoChuNhoNhat.ToString("F1") + " diem");
+
+        // ---- O KHOA: co quai that, va nho hon ban cu 20% ----
+        Ghi("");
+        Ghi("A2. hinh o khoa");
+        var anh = IconKhoa.Anh;
+        var nd = IconKhoa.NoiDung;
+        // Doc thang diem anh: giua long chu U cua quai phai TRONG SUOT, hai chan
+        // quai va than phai DAC. Ban may tinh cu chi co mot thanh ngang - phep
+        // nay tren anh ay se bao "khong co quai".
+        System.Func<float, float, float> alpha = (u, v) =>
+            anh.GetPixel(Mathf.Clamp(Mathf.RoundToInt(u * anh.width), 0, anh.width - 1),
+                         Mathf.Clamp(Mathf.RoundToInt((1f - v) * anh.height), 0, anh.height - 1)).a;
+        float aLongQuai = alpha(0.5f, 0.30f), aChanTrai = alpha(0.31f, 0.40f),
+              aChanPhai = alpha(0.69f, 0.40f), aDinhQuai = alpha(0.5f, 0.17f), aThan = alpha(0.35f, 0.72f);
+        Ghi("    alpha: long quai " + aLongQuai.ToString("F2") + " (phai ~0), chan trai " + aChanTrai.ToString("F2")
+            + ", chan phai " + aChanPhai.ToString("F2") + ", dinh quai " + aDinhQuai.ToString("F2")
+            + ", than " + aThan.ToString("F2") + " (phai ~1)");
+        Kiem(aLongQuai < 0.1f && aChanTrai > 0.9f && aChanPhai > 0.9f && aDinhQuai > 0.9f && aThan > 0.9f,
+             "hinh o khoa khong co quai chu U / than khong dac");
+
+        // Kich thuoc so voi ban cu (ban cu: than rong 0,52r tren nut tron,
+        // thanh rong 0,34 canh tren o vuong - doc tu git truoc lan sua nay)
+        float r0 = 60.72f, canh0 = 84f;
+        float rongTron = IconKhoa.KhungVe(Vector2.zero, r0 * GameHUD.RongKhoaTron).width * nd.width;
+        float rongVuong = IconKhoa.KhungVe(Vector2.zero, canh0 * GameHUD.RongKhoaVuong).width * nd.width;
+        Ghi("    nut tron ban kinh " + r0 + ": o khoa rong " + rongTron.ToString("F1") + " (cu " + (0.52f * r0).ToString("F1")
+            + ") -> x" + (rongTron / (0.52f * r0)).ToString("0.000"));
+        Ghi("    o vuong canh " + canh0 + ": o khoa rong " + rongVuong.ToString("F1") + " (cu " + (0.34f * canh0).ToString("F1")
+            + ") -> x" + (rongVuong / (0.34f * canh0)).ToString("0.000"));
+        Kiem(Mathf.Abs(rongTron / (0.52f * r0) - 0.8f) < 0.01f, "o khoa tren nut tron khong nho di 20%");
+        Kiem(Mathf.Abs(rongVuong / (0.34f * canh0) - 0.8f) < 0.01f, "o khoa tren o vuong khong nho di 20%");
 
         // ---- B. O tron phai xep DUNG hinh cum nut ngoai tran dau ----
         Ghi("");
@@ -325,6 +364,9 @@ public static class ThuSachPhep
         hud.epCamUng = false;
         CamUng.EpBat = false;
         yield return new WaitForSeconds(0.6f);
+        CapDo.BatDauTranMoi();                      // moi ky nang deu khoa
+        yield return new WaitForSeconds(0.2f);
+        yield return Chup("sachphep_5_hud_maytinh_khoa");
         CuaSoSachPhep.Mo();
         yield return new WaitForSeconds(0.5f);
         Ghi("D4. ban may tinh: dung cam ung = " + CamUng.DangDung

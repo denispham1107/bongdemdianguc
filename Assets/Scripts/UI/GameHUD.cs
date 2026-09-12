@@ -1093,6 +1093,14 @@ public partial class GameHUD : MonoBehaviour
     /// Cum nut ky nang hinh TRON o goc phai duoi. Chi ve hinh, khong ve ten -
     /// tren man hinh dien thoai chu do qua nho de doc ma lai an mat san choi.
     /// </summary>
+    /// <summary>Be rong phan co hinh cua o khoa tren nut tron, theo BAN KINH nut.
+    /// 0,416 = 0,52 (ban cu) x 0,8 - nguoi dung xin nho di 20% (13/09/2026).</summary>
+    public const float RongKhoaTron = 0.416f;
+
+    /// <summary>Be rong phan co hinh cua o khoa tren o vuong, theo CANH o.
+    /// 0,272 = 0,34 (ban cu) x 0,8.</summary>
+    public const float RongKhoaVuong = 0.272f;
+
     /// <summary>Bieu tuong cua bay ky nang, xep theo SO HIEU ky nang (0..6).</summary>
     public Texture2D[] BoIcon()
     {
@@ -1141,18 +1149,11 @@ public partial class GameHUD : MonoBehaviour
 
             if (!daMo)
             {
-                // O khoa: mot then ngang va quai khoa - du de doc ra o co nut
-                GUI.color = new Color(0.85f, 0.80f, 0.72f, 0.95f);
-                float w = r * 0.52f, h = r * 0.40f;
-                GUI.DrawTexture(new Rect(rect.center.x - w * 0.5f, rect.center.y - h * 0.15f, w, h),
-                                Texture2D.whiteTexture, ScaleMode.StretchToFill, false);
-                float wq = r * 0.30f, hq = r * 0.26f;
-                GUI.DrawTexture(new Rect(rect.center.x - wq * 0.5f, rect.center.y - h * 0.15f - hq, wq, hq * 0.28f),
-                                Texture2D.whiteTexture, ScaleMode.StretchToFill, false);
-                GUI.DrawTexture(new Rect(rect.center.x - wq * 0.5f, rect.center.y - h * 0.15f - hq, wq * 0.26f, hq),
-                                Texture2D.whiteTexture, ScaleMode.StretchToFill, false);
-                GUI.DrawTexture(new Rect(rect.center.x + wq * 0.24f, rect.center.y - h * 0.15f - hq, wq * 0.26f, hq),
-                                Texture2D.whiteTexture, ScaleMode.StretchToFill, false);
+                // O KHOA - anh dung chung voi ban may tinh, xem IconKhoa.
+                //
+                // Rong phan co hinh = 0,416 ban kinh nut: ban o khoa ghep tu
+                // hinh chu nhat truoc day rong 0,52r, nguoi dung xin nho di 20%.
+                IconKhoa.Ve(rect.center, r * RongKhoaTron);
                 GUI.color = Color.white;
                 continue;      // khong ve vanh sang, khong ve hoi chieu
             }
@@ -1257,12 +1258,12 @@ public partial class GameHUD : MonoBehaviour
         GUI.DrawTexture(new Rect(r.x + 4f * s, r.y + 4f * s, r.width - 8f * s, r.height - 8f * s),
                         icon, ScaleMode.StretchToFill, true);
 
-        // Then ngang + quai khoa
-        GUI.color = new Color(0.85f, 0.80f, 0.72f, 0.95f);
-        float w = r.width * 0.34f, h = r.height * 0.24f;
-        GUI.DrawTexture(new Rect(r.center.x - w * 0.5f, r.center.y - h * 0.1f, w, h),
-                        barTex, ScaleMode.StretchToFill, false);
         GUI.color = cu;
+
+        // O KHOA - CUNG MOT ANH voi cum nut tron. Ban cu o day chi ve MOT
+        // THANH NGANG (quen mat cai quai), nen nguoi choi thay mot hinh vuong
+        // trang chu khong thay o khoa. Rong 0,272 canh o = 0,34 cu nho di 20%.
+        IconKhoa.Ve(r.center, r.width * RongKhoaVuong);
 
         DrawBorder(r, new Color(0.30f, 0.27f, 0.24f), Mathf.Max(1f, 2f * s));
         GUI.Label(new Rect(r.x, r.y + r.height + 2f * s, r.width, 22f * s),
