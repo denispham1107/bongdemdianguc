@@ -58,6 +58,87 @@ public class ManDangNhap : MonoBehaviour
 
     // ================================================================
 
+    /// <summary>Bo cuc man dang nhap - ham THUAN de phep thu goi duoc.</summary>
+    public struct BoCucDangNhap
+    {
+        public Rect tieuDe;        // anh ten game; width = 0 la khong ve
+        public Rect khung;         // khung dang nhap / dang ky
+        public Rect oNhapCuoi;     // o "Mat khau" - o de bi ban phim che nhat
+        public bool hienTieuDe;
+    }
+
+    /// <summary>
+    /// Day o mat khau nam cach dinh khung bao nhieu (don vi giao dien).
+    ///
+    /// Cong tu chinh thu tu ve trong <see cref="OnGUI"/>: 46 (le tren) + 50 (hai
+    /// tab) + 26 + [100 neu co o Ten] + 100 (o Email) + 30 (nhan) + 52 (o nhap).
+    /// </summary>
+    public static float DayONhapCuoi(bool trangDangKy, float s)
+    {
+        return (304f + (trangDangKy ? 100f : 0f)) * s;
+    }
+
+    /// <summary>Phan khung duoc phep tran len khoi mep tren khi ban phim day len:
+    /// dung bang hang tab, tuc cung lam la mat hai tab, khong bao gio mat o nhap.</summary>
+    public static float TranLenToiDa(float s) { return 122f * s; }
+
+    /// <summary>
+    /// XEP MAN DANG NHAP, CO TINH DEN BAN PHIM AO.
+    ///
+    /// Tren dien thoai, ban phim che kin o nhap va nguoi choi go ma khong thay
+    /// minh go gi (nguoi dung gap 12/09/2026). Vung con nhin thay do trang bao
+    /// sang qua <see cref="BanPhimAo"/>.
+    ///
+    /// Ban phim chiem gan nua man hinh nen KHONG DU cho ca anh tieu de lan
+    /// khung: ban phim len thi BO anh tieu de va day khung sao cho DAY khung
+    /// nam ngay tren mep ban phim.
+    ///
+    /// Ham thuan (khong doc Screen, khong ve gi) de menu 50 goi thang voi hang
+    /// chuc co man hinh va do cao ban phim khac nhau.
+    /// </summary>
+    public static BoCucDangNhap TinhBoCuc(float W, float H, float s, bool trangDangKy,
+                                          float tiLeBanPhimChe, float tiLeAnhTieuDe)
+    {
+        var b = new BoCucDangNhap();
+
+        float rong = Mathf.Min(W - 40f * s, 600f * s);
+        float caoKhung = (trangDangKy ? 616f : 514f) * s;
+        float rongTieuDe = Mathf.Min(W - 40f * s, 760f * s);
+        float caoAnh = rongTieuDe / Mathf.Max(0.01f, tiLeAnhTieuDe);
+        float caoTieuDe = caoAnh + 22f * s;
+
+        float che = Mathf.Clamp01(tiLeBanPhimChe);
+        bool coBanPhim = che > 0.05f;
+        float nhinThay = H * (1f - che);
+
+        b.hienTieuDe = !coBanPhim;
+        float tong = (coBanPhim ? 0f : caoTieuDe) + caoKhung;
+
+        float y = Mathf.Max(16f * s, (H - tong) * 0.5f - 10f * s);
+        if (coBanPhim)
+        {
+            // Truoc het thu day ca khung len tren ban phim...
+            y = Mathf.Min(y, nhinThay - caoKhung - 10f * s);
+
+            // ...nhung trang "Tao tai khoan" cao 616 don vi, ban phim che quá
+            // nua man hinh thi KHONG DU CHO ca khung. Luc ay uu tien O NHAP:
+            // day tiep cho DAY O MAT KHAU nam tren mep ban phim, chap nhan hai
+            // TAB tran len khoi mep tren (khong bao gio de mat o nhap).
+            float canDay = nhinThay - 8f * s - DayONhapCuoi(trangDangKy, s);
+            y = Mathf.Min(y, canDay);
+            y = Mathf.Max(-TranLenToiDa(s), y);
+        }
+        float x = (W - rong) * 0.5f;
+
+        b.tieuDe = coBanPhim ? new Rect(0f, 0f, 0f, 0f)
+                             : new Rect((W - rongTieuDe) * 0.5f, y, rongTieuDe, caoAnh);
+        if (!coBanPhim) y += caoAnh + 22f * s;
+        b.khung = new Rect(x, y, rong, caoKhung);
+        b.oNhapCuoi = new Rect(x + 36f * s, y + DayONhapCuoi(trangDangKy, s) - 52f * s,
+                               rong - 72f * s, 52f * s);
+        return b;
+    }
+
     void OnGUI()
     {
         if (FirebaseMang.DaDangNhap) return;
@@ -66,25 +147,15 @@ public class ManDangNhap : MonoBehaviour
         float s = GiaoDien.TiLe;
         // Khong con phu toi bon goc + suong do (VeNen): canh phia sau de nguyen
 
-        // ---- Do cao ca khoi de dat giua man hinh ----
-        float rong = Mathf.Min(Screen.width - 40f * s, 600f * s);
-        float caoKhung = (trang == Trang.DangKy ? 616f : 514f) * s;
-        // Anh tieu de (ca giot mau) rong toi 760 don vi, cao theo ti le anh
-        float rongTieuDe = Mathf.Min(Screen.width - 40f * s, 760f * s);
-        float caoAnh = rongTieuDe / GiaoDien.TiLeTieuDe;
-        float caoTieuDe = caoAnh + 22f * s;
-        float tong = caoTieuDe + caoKhung;
-        float y = Mathf.Max(16f * s, (Screen.height - tong) * 0.5f - 10f * s);
-        float x = (Screen.width - rong) * 0.5f;
+        var bc = TinhBoCuc(Screen.width, Screen.height, s, trang == Trang.DangKy,
+                           BanPhimAo.TiLeChe, GiaoDien.TiLeTieuDe);
 
-        // ---- Ten game ----
-        GiaoDien.TieuDeGame(new Rect((Screen.width - rongTieuDe) * 0.5f, y, rongTieuDe, caoAnh), s);
-        // Giot mau da nam trong anh. Dong phu "KE SONG SOT CUOI CUNG SE CHIEN
-        // THANG" va duong ke duoi no da bo (nguoi dung 12/09/2026)
-        y += caoAnh + 22f * s;
+        // ---- Ten game (an di khi ban phim dang len - khong du cho) ----
+        if (bc.hienTieuDe) GiaoDien.TieuDeGame(bc.tieuDe, s);
 
         // ---- Khung ----
-        var khung = new Rect(x, y, rong, caoKhung);
+        var khung = bc.khung;
+        float x = khung.x, rong = khung.width, y = khung.y;
         GiaoDien.Khung(khung, s, true);
 
         float le = 36f * s;

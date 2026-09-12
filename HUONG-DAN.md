@@ -7889,6 +7889,41 @@ vá lại  -> so ngoai le moi: 0 ; tong so ngoai le ca phep thu: 0 ; so loi = 0
 Bài học rộng hơn cho bản WebGL: **mọi ngoại lệ đều là lỗi chí mạng**, không phải "một dòng đỏ trong console". Chỗ nào
 nhận hàm gọi lại từ ngoài cũng phải kiểm null trước khi gọi.
 
+### Bàn phím điện thoại che kín ô nhập
+
+Anh gửi ảnh chụp trên điện thoại: chạm vào ô nhập ở màn đăng nhập thì bàn phím trượt lên **che kín cả khung** — gõ mà
+không thấy mình đang gõ gì.
+
+**Unity không hề biết có bàn phím.** Bàn phím là của hệ điều hành, nó không làm đổi kích thước khung game (canvas), nên
+`Screen.height` giữ nguyên. Chỉ **trang web** biết: trình duyệt có `window.visualViewport` — phần màn hình đang thực sự
+nhìn thấy; bàn phím lên thì vùng ấy thấp đi.
+
+Nên `index.html` đo rồi gọi sang game: `SendMessage("BanPhimAo", "DatChe", "<tỉ lệ>")`. **Gửi tỉ lệ chứ không gửi số
+điểm ảnh**: trang đo bằng CSS pixel, game đo bằng pixel thật của canvas — hai hệ đơn vị khác nhau, nhân với
+`Screen.height` ở phía game mới đúng. Bên game, `BanPhimAo.cs` là một vật thể sống qua mọi lần nạp cảnh và **phải tên
+đúng "BanPhimAo"** vì `SendMessage` tìm theo tên.
+
+Màn đăng nhập (`ManDangNhap.TinhBoCuc`, hàm thuần để đo được):
+
+- Bàn phím lên thì **bỏ ảnh tiêu đề** — nó chiếm gần một phần tư màn hình, giữ lại thì không còn chỗ cho khung.
+- Đẩy khung lên sao cho **đáy khung** nằm trên mép bàn phím.
+- Không đủ chỗ thì **ưu tiên ô nhập**: đẩy tiếp cho **đáy ô Mật khẩu** nằm trên mép bàn phím, chấp nhận hai cái tab
+  tràn lên khỏi mép trên. Mất tab thì còn đóng bàn phím rồi kéo lại được; mất ô nhập là gõ mù.
+
+Đo (menu 57 mới, chạy thẳng trên hàm thuần — không cần Play, không cần điện thoại):
+
+```
+A. không bàn phím: 8 cỡ màn hình x 2 trang -> 0 lỗi, vẫn có ảnh tiêu đề, khung không tràn
+B. bàn phím che 35% / 45% / 55%: 48 trường hợp -> 0 lỗi;
+   chỗ chật nhất (844x390, che 55%, trang tạo tài khoản) ô cuối còn cách mép bàn phím 74 điểm
+E. che càng cao khung càng lên: y = 319 -> 152 -> 60 -> -32 (âm = hai tab bị che, ô nhập vẫn nguyên)
+```
+
+Lần chạy đầu **phép thử bắt được lỗi thật**: trang "Tạo tài khoản" cao 616 đơn vị, bàn phím che 55% thì không đủ chỗ —
+5/48 trường hợp ô mật khẩu vẫn bị che 14–40 điểm. Đó là lúc thêm luật "ưu tiên ô nhập, cho tab tràn lên".
+
+Sảnh phòng không cần sửa: ô "Tên phòng" nằm ở phần trên màn hình (đáy ở 284 đơn vị), bàn phím che nửa dưới không tới.
+
 ### Việc còn phải làm
 
 **169 MB là quá nặng**, nhất là trên điện thoại — nền tảng chính của game. Gần như toàn bộ nằm ở
@@ -7963,6 +7998,7 @@ cho riêng nền tảng WebGL sẽ ăn cả hai đầu: file nhỏ hơn và khô
 | **51. Dung man chinh tu canh Act2** | Chép phần cảnh Act2 quanh chỗ đứng (45 m, phía trước camera) sang MainMenu.unity cùng ánh sáng / sương / bầu trời; đặt phù thuỷ, camera, hai lò đá; dọn vật vướng. Tạo luôn prefab lò đá từ FBX + texture Blender. Báo cáo `PlayTestShots/dungmanchinh.txt`. |
 | **51b. Chup thu goc nhin man chinh (Act2)** | Đặt nhân vật trước từng nhà mồ theo bốn hướng, bỏ chỗ vướng vật / giữa nước, chụp bằng khung camera màn chính — để chọn chỗ đứng. Ảnh `PlayTestShots/goc/`. |
 | **54. Dat 10 lo lua vao Act2** | Đặt 10 lò đá (prefab `Assets/Models/LoLuaDa`) vào Act2: lò giữa = chỗ đất khô gần tâm bản đồ nhất, 9 lò rải đều; không dưới nước, trong nhà mồ, trên/sát bia, chỉ trên mặt đất. Xoá lò cũ trước, chạy lại ra y hệt. Lưu Act2. Số đo `lolua_act2_dat.txt`. |
+| **57. Chay thu BAN PHIM AO (o nhap khong bi che)** | Chạy thẳng trên hàm bố cục màn đăng nhập với 8 cỡ màn hình × 3 mức bàn phím che (35/45/55%) × 2 trang: khung và ô nhập cuối phải nằm trên mép bàn phím, ô nhập đầu không tràn lên khỏi mép trên. Số đo `banphimao.txt`. |
 | **56. Chay thu DOT QUAI Act2 + cho xuat phat** | Kiểm chỗ xuất phát ngẫu nhiên (hai máy cùng mã phòng ra cùng danh sách, cách nhau ≥ 22 m, trên đất, ngoài nước, không vướng vật cản) và luật đợt quái Act2 (đợt 1 bốn con quanh mỗi người; đợt sau cộng dồn quái và mạnh thêm 5% máu · sát thương); kiểm Act1 không bị đổi. Số đo `dotquai_act2.txt`. |
 | **55. Chay thu KET TRAN (nguoi song sot cuoi cung)** | Mở kênh giả lập như menu 45: kiểm gói tin kết trận/chết, máy chủ phòng phán quyết đúng lúc còn một người, bảng điểm cộng đúng người, máy khách không tự kết luận và hiện đúng kết quả nghe được, chết rồi camera chuyển sang người còn sống, chụp màn kết trận. Số đo `kettran.txt`, ảnh `kettran_*.png`. |
 | **54c. Chay thu LOC XOAY cuon lo lua** | Vào Play Act2, thả một cơn lốc đi thẳng vào lò: đo mốc thời gian lửa tắt / lò nhấc lên / lò biến mất / lò mọc lại, kiểm than trong chậu tắt bằng độ sáng trên ảnh, và kiểm vật có hệ hạt khác vẫn không bị cuốn. Ảnh `locxoay_*.png`, số đo `locxoay_lolua.txt`. |

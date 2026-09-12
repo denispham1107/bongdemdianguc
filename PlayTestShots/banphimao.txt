@@ -1,0 +1,13 @@
+[ban 2] ban phim ao khong duoc che o nhap
+
+A. khong co ban phim (che = 0)
+8 co man hinh x 2 trang: 0 loi
+
+B. co ban phim - khung va o nhap cuoi phai nam tren mep ban phim
+do 48 truong hop (8 co man hinh x 3 muc che x 2 trang): 0 loi
+cho chat nhat: (844.00, 390.00) che 0.55 (dang ky) - o nhap cuoi con cach mep ban phim 74 diem
+
+E. ban phim cao hon thi khung phai len cao hon
+che 0 -> khung y=319  che 0.35 -> khung y=152  che 0.45 -> khung y=60  che 0.55 -> khung y=-32  
+
+so loi ghi nhan = 0

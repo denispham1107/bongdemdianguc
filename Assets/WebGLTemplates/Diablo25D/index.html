@@ -256,13 +256,45 @@
   // (chu, khung, nut OnGUI) ve o do phan giai thap va bi nhoe. Gio chi CANH 3D
   // thu nho, lam trong game (KetXuatThuNho + CaiDatDoHoa.cs).
 
+  // ================================================================
+  //  BAN PHIM AO CHE MAT O NHAP
+  // ================================================================
+  //
+  // Tren dien thoai, ban phim truot len che kin o nhap ma Unity KHONG HE BIET:
+  // ban phim khong lam doi kich thuoc canvas nen Screen.height giu nguyen.
+  // Chi trang biet, qua window.visualViewport (phan man hinh dang thuc su nhin
+  // thay). Do o day roi bao sang game de no day khung nhap len tren ban phim.
+  //
+  // Gui TI LE chu khong gui so diem anh: trang do bang CSS pixel, con game do
+  // bang pixel that cua canvas - hai he don vi khac nhau.
+  var trochoi = null;
+  var cheCu = -1;
+
+  function doBanPhim() {
+    if (!trochoi || !window.visualViewport) return;
+    var vv = window.visualViewport;
+    var che = (window.innerHeight - vv.height - vv.offsetTop) / window.innerHeight;
+    if (!(che > 0)) che = 0;
+    if (che > 0.9) che = 0.9;
+    if (Math.abs(che - cheCu) < 0.01) return;      // doi khong dang ke thi thoi
+    cheCu = che;
+    try { trochoi.SendMessage("BanPhimAo", "DatChe", che.toFixed(3)); } catch (e) {}
+  }
+
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener("resize", doBanPhim);
+    window.visualViewport.addEventListener("scroll", doBanPhim);
+  }
+
   var script = document.createElement("script");
   script.src = buildUrl + "/{{{ LOADER_FILENAME }}}";
   script.onload = function () {
     createUnityInstance(canvas, config, function (tienDo) {
       datTienDo(Math.round(tienDo * 100));
-    }).then(function () {
+    }).then(function (ban) {
+      trochoi = ban;
       manTai.style.display = "none";
+      doBanPhim();
     }).catch(function (loi) {
       oLoi.textContent = "Không chạy được: " + loi;
     });
