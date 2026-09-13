@@ -77,18 +77,6 @@ trong một đợt.
 ⚠️ Nếu thấy lên cấp **quá nhanh** khi chơi một mình, chỗ chỉnh là bảng kinh nghiệm ở mục 2 hoặc giá từng loại quái
 ở trên — số quái mỗi đợt là luật anh đã chốt nên tôi không đụng vào.
 
----|---:|---|
-| 1 | ~120 | 2 |
-| 2 | ~270 | 3 |
-| 3 | ~480 | 4 |
-| 5 | ~1 000 | 6 |
-| 7 | ~1 700 | 7 |
-| 10 | ~3 100 | 9 |
-| 12 | ~4 000 | **10** |
-
-Nghĩa là: chơi một mình, chăm giết quái thì khoảng **12 đợt** là chạm cấp 10. Hạ được một người
-chơi khác thì rút ngắn quãng đường bằng hơn hai đợt quái.
-
 ---
 
 ## 4. Lên cấp được gì
