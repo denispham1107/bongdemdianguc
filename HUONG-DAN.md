@@ -8334,6 +8334,44 @@ sát thương hiện ra** (2,1 m) để số không đè lên chữ. Bỏ chữ 
 **Số đo** (menu 62, 0 lỗi): tung thật 10 lần → trúng 10, ngã 7; dấu hiệu hiện **376/383 khung hình đang ngã (98%)**;
 chuỗi ảnh mới thấy chữ NGÃ rõ ở cả 5 thời điểm, đè lên lửa.
 
+### Sách phép: cửa sổ to hơn, dòng / ô đang chọn sáng lên, ổ khoá trong ô (13/09/2026)
+
+Anh vẽ một khung xanh trên ảnh chụp (màn 1560×572) và xin: cửa sổ to bằng khung ấy; cột trái — dòng đang chọn phải
+**sáng hẳn**, kỹ năng đã mở / nâng cấp nổi bật hơn kỹ năng còn khoá; vùng ô — chạm ô nào thì ô ấy hiện là đang chọn, ô giữ
+kỹ năng chưa mở vẫn có **ổ khoá như ngoài trận**.
+
+**Sửa:**
+
+- **Kích thước** `1180s × 720s → 1640s × 836s` (vẫn giữ trần 94% × 90% màn hình để thấy trận đấu phía sau). Khung xanh anh vẽ
+  đo được ~865 × 442 điểm = 1640s × 836s với s = 572/1080.
+- **Cột trái, ba mức sáng:** đang chọn = lòng đỏ rực (đập nhẹ), viền sáng hai lớp, chữ gần trắng; đã mở = lòng ấm vàng đồng,
+  chữ vàng, vạch trái vàng; còn khoá = lòng tối hẳn, chữ mờ, hình tối kèm ổ khoá. Trước đây dòng đang chọn chỉ thêm một lớp
+  đỏ 28% và dòng khoá bị phủ tối 45% — chọn một kỹ năng còn khoá thì dòng ấy tối y như các dòng khác.
+- **Một lỗi cũ lộ ra:** khung quanh hình ở cột trái gọi `GiaoDien.DuongKe` — hàm vẽ *đường kẻ ngang mờ hai đầu* — bị kéo giãn
+  phủ kín cả hình thành **một dải nâu cam dọc giữa biểu tượng**, và đè mất luôn ổ khoá. Thay bằng viền mảnh, ổ khoá vẽ sau cùng.
+- **Vùng ô:** ô có kỹ năng sáng theo *kỹ năng đang xem* — chọn ở cột trái cũng sáng luôn ô đang giữ nó, kéo đổi chỗ thì quầng
+  sáng đi theo; chạm vào ô *trống* thì chính ô trống ấy sáng. Quầng sáng cam đập nhẹ phía sau + viền vàng dày.
+  Kỹ năng chưa mở trong ô: nhân màu (0,38; 0,36; 0,40) và ổ khoá — **đúng màu, đúng tỉ lệ** với cụm nút / thanh ô ngoài trận
+  (`GameHUD.RongKhoaTron`, `RongKhoaVuong`).
+
+**Số đo** (menu 59 phần F, đo độ sáng điểm ảnh trên **ảnh chụp**, cả bản cảm ứng lẫn máy tính, **0 lỗi**; phần A–E cũ vẫn 0 lỗi):
+
+| | Cảm ứng | Máy tính |
+|---|---|---|
+| Cửa sổ trên màn 1560×572 | 869 × 443 (bản cũ 625 × 381) | — |
+| Chọn kỹ năng **còn khoá**: dòng chọn / dòng khác sáng nhất | 0,314 / 0,182 (×1,73) | 0,291 / 0,182 (×1,60) |
+| Chọn kỹ năng **đã mở** | 0,357 / 0,163 (×2,19) | 0,344 / 0,163 (×2,11) |
+| Dòng đã mở / dòng khoá | 0,163–0,182 / 0,054–0,060 (~×3) | như bên trái |
+| Ổ khoá ở dòng còn khoá (điểm sáng > 0,5 trong hình) | 18 | 18 |
+| Vành ô đang chọn / vành ô khác sáng nhất | 0,167 / 0,101 | 0,315 / 0,128 |
+| Chạm ô trống: vành ô trống / ô vừa chọn trước | 0,176 / 0,107 | 0,330 / 0,132 |
+| Ô giữ Khiên: độ sáng lúc khoá / sau khi mở khoá | 0,219 / 0,796 | 0,243 / 0,828 |
+| Ổ khoá trong ô (điểm sáng > 0,5) | 8 | 23 |
+
+Hai phép đo lần đầu sai và đã sửa: "xám đi" ngoài trận là **nhân màu** nên làm *tối* chứ không giảm độ bão hoà (đo bão hoà
+ra 0,39 vs 0,40, báo nhầm "không xám") → đo độ sáng; tìm ổ khoá bằng màu đỏ của lỗ khoá thì lỗ quá nhỏ (bản cảm ứng ra 0) →
+đếm điểm sáng > 0,5: hình kỹ năng đã bị nhân ≤ 0,40 nên điểm sáng ấy chỉ có thể là quai / đinh tán của ổ khoá.
+
 ### Android: ứng dụng đã cài vẫn không kín màn hình (13/09/2026)
 
 Anh chụp ba ảnh trên điện thoại Android (đã cài game thành ứng dụng web): còn **dải đỏ có đồng hồ** (thanh trạng thái),
@@ -8596,7 +8634,7 @@ Lần chạy đầu phép thử báo cả 10 con "lơ lửng": tia chiếu từ 
 | **54. Dat 10 lo lua vao Act2** | Đặt 10 lò đá (prefab `Assets/Models/LoLuaDa`) vào Act2: lò giữa = chỗ đất khô gần tâm bản đồ nhất, 9 lò rải đều; không dưới nước, trong nhà mồ, trên/sát bia, chỉ trên mặt đất. Xoá lò cũ trước, chạy lại ra y hệt. Lưu Act2. Số đo `lolua_act2_dat.txt`. |
 | **57. Chay thu BAN PHIM AO (o nhap khong bi che)** | Chạy thẳng trên hàm bố cục màn đăng nhập với 8 cỡ màn hình × 3 mức bàn phím che (35/45/55%) × 2 trang: khung và ô nhập cuối phải nằm trên mép bàn phím, ô nhập đầu không tràn lên khỏi mép trên. Số đo `banphimao.txt`. |
 | **58. Chay thu MUA BANG + SAM SET (dong bang, choang)** | Đo kích thước tảng băng và cụm băng (đối chiếu mốc lấy từ git), xác suất đóng cứng/choáng trên 1000 lần gieo, người chơi bị đóng băng·choáng có thực sự đứng yên và không tung được phép (có mẫu đối chứng), mưa băng không nhắm vào chính người tung, và phép của người khác rơi trúng mình thì mình có dính. Số đo `bang_set.txt`. |
-| **59. Chay thu SACH PHEP (keo tha o ky nang)** | Đo bố cục bảng trên 8 cỡ màn hình × 2 bản, kiểm ô tròn trong bảng xếp đúng hình cụm nút thật, kho kỹ năng (đổi chỗ · bỏ khỏi ô · lưu/nạp · hai bản riêng), và trong trận: nút con mắt ở góc phải trên, mở bảng thì input trận đấu bị khoá. Phần E: chữ "Sách phép" dưới nút không bị cắt — đo nét chữ trên ảnh chụp so với nhãn chuẩn không cắt, có mẫu đối chứng kiểu chữ cũ ở 4 cỡ màn (phải cắt ở màn điện thoại) — và quyển sách vẽ bằng ảnh có chi tiết. Chụp 4 ảnh. Số đo `sachphep.txt`. |
+| **59. Chay thu SACH PHEP (keo tha o ky nang)** | Đo bố cục bảng trên 8 cỡ màn hình × 2 bản, kiểm ô tròn trong bảng xếp đúng hình cụm nút thật, kho kỹ năng (đổi chỗ · bỏ khỏi ô · lưu/nạp · hai bản riêng), và trong trận: nút con mắt ở góc phải trên, mở bảng thì input trận đấu bị khoá. Phần E: chữ "Sách phép" dưới nút không bị cắt — đo nét chữ trên ảnh chụp so với nhãn chuẩn không cắt, có mẫu đối chứng kiểu chữ cũ ở 4 cỡ màn (phải cắt ở màn điện thoại) — và quyển sách vẽ bằng ảnh có chi tiết. Phần F: cửa sổ to bằng khung xanh người dùng vẽ, độ sáng dòng đang chọn / đã mở / còn khoá, vành ô đang chọn (cả ô trống), ổ khoá trong ô — đo trên ảnh chụp, cả hai bản. Chụp 8 ảnh. Số đo `sachphep.txt`. |
 | **60. Chay thu CAP DO (kinh nghiem, diem ky nang)** | Đo bảng kinh nghiệm và cách cộng dồn, hệ số chỉ số và hệ số kỹ năng, điểm kỹ năng (mở khoá · nâng cấp · hết điểm), gói mạng mang cấp kỹ năng; trong Play đo chỉ số **thật** trước/sau khi lên cấp, kỹ năng chưa mở không tung được, nâng cấp xong phép mạnh lên thật, giết quái được đúng số điểm. Số đo `capdo.txt`. |
 | **61. Chay thu KINH NGHIEM theo tung ky nang** | Tung từng kỹ năng thật vào một con quái máu 1: phải chết, "kẻ đánh cuối" phải là người tung, kinh nghiệm phải cộng đúng giá. Tách riêng các đường chết chậm (cháy, bị lốc cuốn, vũng lửa Thiên thạch, cây cháy) và trường hợp nạn nhân là người chơi. Số đo `kinhnghiem_kynang.txt`. |
 | **62. Chay thu THIEN THACH DANH NGA** | Xác suất đánh ngã trên 1000 lần gieo; thiên thạch của Quỷ dữ không đánh ngã; quả nhân vật tung mang đúng 40%·1,5 giây; trên quái thật đo độ cao bị hất, vị trí xương đầu lúc nằm (ngửa, sát đất), đứng im, đứng dậy; người chơi bị ngã không đi / không tung phép; bit "đang ngã" qua mạng. Số đo `danhnga.txt`. |

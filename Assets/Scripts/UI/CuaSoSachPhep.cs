@@ -34,6 +34,28 @@ public static class CuaSoSachPhep
     /// <summary>Ky nang dang xem chi tiet ben phai.</summary>
     static int dangXem;
 
+    /// <summary>O vua cham vao. Chi dung khi o ay TRONG (khong co ky nang de
+    /// ma chon theo) - o co ky nang thi sang theo dangXem.</summary>
+    static int oDangChon = -1;
+
+    public static int DangXem { get { return dangXem; } }
+
+    /// <summary>Chon mot ky nang de xem (nhu cham vao hang cua no o cot trai).</summary>
+    public static void ChonKyNang(int ky)
+    {
+        if (ky < 0 || ky >= SachPhep.SoKyNang) return;
+        dangXem = ky; cuonChiTiet = 0f; oDangChon = -1;
+    }
+
+    /// <summary>Chon mot o (nhu cham vao o ay trong vung o).</summary>
+    public static void ChonO(int o)
+    {
+        if (o < 0 || o >= SachPhep.SoODangDung) return;
+        oDangChon = o;
+        int ky = SachPhep.BoDangDung[o];
+        if (ky != SachPhep.Trong) { dangXem = ky; cuonChiTiet = 0f; }
+    }
+
     static float cuonKho, cuonChiTiet;
 
     // ---- Keo tha ----
@@ -76,8 +98,12 @@ public static class CuaSoSachPhep
 
         // Chua het man hinh nhung de lai vien: nguoi choi phai thay minh van
         // dang o trong tran dau chu khong phai da roi ra mot man khac.
-        float rong = Mathf.Min(W * 0.92f, 1180f * s);
-        float cao = Mathf.Min(H * 0.88f, 720f * s);
+        //
+        // 1640 x 836 (truoc 1180 x 720): nguoi dung ve khung xanh tren anh chup
+        // 1560x572 (13/09/2026) xin cua so to bang the de hien nhieu thong tin hon
+        // - khung ay do duoc ~865 x 442 diem = 1640s x 836s voi s = 572/1080.
+        float rong = Mathf.Min(W * 0.94f, 1640f * s);
+        float cao = Mathf.Min(H * 0.90f, 836f * s);
         b.khung = new Rect((W - rong) * 0.5f, (H - cao) * 0.5f, rong, cao);
 
         float le = 16f * s;
@@ -228,7 +254,7 @@ public static class CuaSoSachPhep
             int hang = HangTaiDiem(b, tro, s);
             if (hang >= 0)
             {
-                dangXem = hang; cuonChiTiet = 0f;
+                ChonKyNang(hang);
                 // KY NANG CON KHOA THI KHONG KEO DUOC: keo duoc thi no nam tren
                 // thanh ky nang nhu mot nut that, bam vao chi hien ra loi tu choi.
                 keoTuKho = CapDo.DaMo(hang) ? hang : -1;
@@ -238,8 +264,7 @@ public static class CuaSoSachPhep
                 int o = OTaiDiem(b, tro, s);
                 if (o >= 0)
                 {
-                    int ky = SachPhep.BoDangDung[o];
-                    if (ky != SachPhep.Trong) { dangXem = ky; cuonChiTiet = 0f; }
+                    ChonO(o);
                     keoTuO = o;
                 }
                 // Cham ra ngoai han cua so thi dong lai - giong moi cua so khac
@@ -274,7 +299,7 @@ public static class CuaSoSachPhep
                 int o = OTaiDiem(b, tro, s);
                 if (keoTuKho >= 0)
                 {
-                    if (o >= 0) SachPhep.DatVaoO(o, keoTuKho);
+                    if (o >= 0) { SachPhep.DatVaoO(o, keoTuKho); ChonO(o); }
                 }
                 else if (keoTuO >= 0)
                 {
@@ -377,6 +402,9 @@ public static class CuaSoSachPhep
         var kPhu = new GUIStyle(GiaoDien.KieuChuNho);
         kPhu.fontSize = Mathf.RoundToInt(14f * s);
 
+        // Nhip dap cua hang / o dang chon (khong phu thuoc Time.timeScale)
+        float nhip = 0.5f + 0.5f * Mathf.Sin(Time.unscaledTime * 4f);
+
         GUI.BeginGroup(b.kho);
         float le = 6f * s;
         for (int i = 0; i < SachPhep.SoKyNang; i++)
@@ -386,14 +414,45 @@ public static class CuaSoSachPhep
 
             var hang = new Rect(le, y, b.kho.width - le * 2f, b.caoHang - 6f * s);
             bool chon = dangXem == i;
-            GiaoDien.Hang(hang, s, chon ? GiaoDien.MauMauSang : GiaoDien.MauMau);
-            if (chon) GiaoDien.To(hang, new Color(0.45f, 0.08f, 0.06f, 0.28f));
+            int capKy = CapDo.CapCuaKyNang(i);
+            bool daMo = capKy > 0;
+
+            // BA MUC SANG (nguoi dung 13/09/2026: hang dang chon phai "sang han
+            // len", ky nang da mo / nang cap phai noi bat hon ky nang con khoa):
+            //   dang chon  - long do ruc (dap nhe), vien sang, chu gan trang;
+            //   da mo      - long am vang dong, chu vang sang, hinh du mau;
+            //   con khoa   - long toi han, chu mo, hinh xam co o khoa.
+            // Truoc day hang dang chon chi them mot lop do 28% va hang khoa bi phu
+            // toi 45% - hang dang chon ma con khoa thi toi y nhu cac hang khac.
+            GiaoDien.Hang(hang, s, GiaoDien.MauMau);
+            if (chon) GiaoDien.To(hang, new Color(0.80f, 0.17f, 0.08f, 0.80f + 0.12f * nhip));
+            else if (daMo) GiaoDien.To(hang, new Color(0.36f, 0.22f, 0.08f, 0.34f));
+            else GiaoDien.To(hang, new Color(0.01f, 0.01f, 0.015f, 0.55f));
+
+            float vach = Mathf.Max(2f, 5f * s);
+            GiaoDien.To(new Rect(hang.x, hang.y, vach, hang.height),
+                        chon ? new Color(1f, 0.80f, 0.45f) : daMo ? GiaoDien.MauVang : new Color(0.24f, 0.21f, 0.19f));
 
             float kt = hang.height - 10f * s;
-            var rIcon = new Rect(hang.x + 8f * s, hang.y + 5f * s, kt, kt);
+            var rIcon = new Rect(hang.x + 10f * s, hang.y + 5f * s, kt, kt);
             if (icon != null && i < icon.Length && icon[i] != null)
+            {
+                var mc = GUI.color;
+                GUI.color = daMo ? Color.white : new Color(0.38f, 0.36f, 0.40f, chon ? 0.95f : 0.70f);
                 GUI.DrawTexture(rIcon, icon[i], ScaleMode.StretchToFill, true);
-            GiaoDien.DuongKe(rIcon, new Color(0.40f, 0.30f, 0.20f, 0.9f));
+                GUI.color = mc;
+            }
+            // Vien MANH quanh hinh. Ban cu goi GiaoDien.DuongKe(rIcon) - ham ve DUONG
+            // KE NGANG mo hai dau, bi keo gian phu kin ca hinh thanh mot dai nau cam
+            // doc giua bieu tuong, va de mat luon o khoa (anh chup 13/09/2026).
+            VienChuNhat(rIcon, chon ? new Color(1f, 0.75f, 0.40f, 1f) : new Color(0.40f, 0.30f, 0.20f, 0.9f),
+                        Mathf.Max(1f, 1f * s));
+            if (!daMo) IconKhoa.Ve(rIcon.center, rIcon.width * 0.55f);
+
+            kTen.normal.textColor = chon ? new Color(1f, 0.95f, 0.84f)
+                                  : daMo ? new Color(1f, 0.82f, 0.46f) : new Color(0.46f, 0.43f, 0.40f);
+            kPhu.normal.textColor = chon ? GiaoDien.MauGiay
+                                  : daMo ? new Color(0.80f, 0.74f, 0.66f) : new Color(0.38f, 0.36f, 0.34f);
 
             float xChu = rIcon.xMax + 10f * s;
             float rongChu = hang.xMax - xChu - 6f * s;
@@ -403,16 +462,21 @@ public static class CuaSoSachPhep
             // Goc phai moi hang: cap ky nang (hoac "chưa mở"), va o dang giu no
             var kGoc = new GUIStyle(kPhu);
             kGoc.alignment = TextAnchor.MiddleRight;
-            int capKy = CapDo.CapCuaKyNang(i);
-            kGoc.normal.textColor = capKy > 0 ? GiaoDien.MauVang : GiaoDien.MauToi;
-            string chuGoc = capKy > 0 ? ("Cấp " + capKy + "/" + CapDo.CapKyNangToiDa) : "chưa mở";
+            kGoc.normal.textColor = daMo ? (chon ? new Color(0.72f, 1f, 0.62f) : GiaoDien.MauXanh)
+                                         : (chon ? GiaoDien.MauLoi : new Color(0.40f, 0.37f, 0.35f));
+            string chuGoc = daMo ? ("Cấp " + capKy + "/" + CapDo.CapKyNangToiDa) : "chưa mở";
 
             int o = SachPhep.ONaoGiu(i);
-            if (capKy > 0 && o >= 0) chuGoc += "  ·  ô " + (o + 1);
+            if (daMo && o >= 0) chuGoc += "  ·  ô " + (o + 1);
             GUI.Label(new Rect(hang.x, hang.yMax - 24f * s, hang.width - 8f * s, 20f * s), chuGoc, kGoc);
 
-            // Con khoa thi ca hang xam di - liec mot cai la biet cai nao dung duoc
-            if (capKy == 0) GiaoDien.To(hang, new Color(0.02f, 0.02f, 0.03f, 0.45f));
+            // Vien sang quanh hang dang chon - hai lop: net sang trong, quang mo ngoai
+            if (chon)
+            {
+                VienChuNhat(hang, new Color(1f, 0.62f, 0.32f, 1f), Mathf.Max(1f, 2f * s));
+                VienChuNhat(new Rect(hang.x - 2f * s, hang.y - 2f * s, hang.width + 4f * s, hang.height + 4f * s),
+                            new Color(1f, 0.35f, 0.15f, 0.35f + 0.25f * nhip), Mathf.Max(1f, 2f * s));
+            }
         }
         GUI.EndGroup();
     }
@@ -574,15 +638,38 @@ public static class CuaSoSachPhep
 
         int n = SachPhep.SoODangDung;
         var bo = SachPhep.BoDangDung;
+        float nhip = 0.5f + 0.5f * Mathf.Sin(Time.unscaledTime * 4f);
+
+        // O DANG CHON (nguoi dung 13/09/2026: cham vao o nao thi phai thay la
+        // dang chon o do). O co ky nang thi sang theo KY NANG dang xem - chon o
+        // cot trai cung sang luon o dang giu no, keo doi cho thi quang sang di
+        // theo. Cham vao o TRONG thi chinh o trong ay sang.
+        bool chonOTrong = oDangChon >= 0 && oDangChon < n && bo[oDangChon] == SachPhep.Trong;
+
         for (int i = 0; i < n; i++)
         {
             var r = OTaiVung(b.vungO, i, s);
             bool tron = CamUng.DangDung;
             int ky = bo[i];
+            bool chon = chonOTrong ? i == oDangChon : (ky != SachPhep.Trong && ky == dangXem);
+            var mauCu = GUI.color;
+
+            // Quang sang sau o dang chon - ve TRUOC nen o
+            if (chon)
+            {
+                float mo = 7f * s + 3f * s * nhip;
+                var rq = new Rect(r.x - mo, r.y - mo, r.width + mo * 2f, r.height + mo * 2f);
+                var mauQuang = new Color(1f, 0.52f, 0.18f, 0.40f + 0.22f * nhip);
+                if (tron)
+                {
+                    GUI.color = mauQuang;
+                    GUI.DrawTexture(rq, NenTron, ScaleMode.StretchToFill, true);
+                }
+                else GiaoDien.To(rq, mauQuang);
+            }
 
             // Nen o. O TRON thi nen cung phai TRON: truoc day dung GiaoDien.Trang
             // (mot anh vuong) nen sau moi o tron lo ra mot o vuong xam.
-            var mauCu = GUI.color;
             if (tron)
             {
                 GUI.color = new Color(0f, 0f, 0f, 0.55f);
@@ -595,15 +682,30 @@ public static class CuaSoSachPhep
             {
                 // O dang duoc nhac di thi ve mo, cho biet no dang o dau ngon tay
                 bool dangNhac = dangKeo && keoTuO == i;
+                bool daMo = CapDo.DaMo(ky);
+
+                // KY NANG CHUA MO: xam di va co O KHOA - DUNG mau va DUNG ti le voi
+                // cum nut / thanh o ngoai tran (GameHUD), nguoi dung xin "nhu o ngoai game"
                 var c = GUI.color;
-                GUI.color = new Color(1f, 1f, 1f, dangNhac ? 0.25f : 1f);
+                GUI.color = daMo ? new Color(1f, 1f, 1f, dangNhac ? 0.25f : 1f)
+                                 : new Color(0.38f, 0.36f, 0.40f, dangNhac ? 0.20f : 0.75f);
                 float co = tron ? r.width * 0.86f : r.width - 8f * s;
                 GUI.DrawTexture(new Rect(r.center.x - co * 0.5f, r.center.y - co * 0.5f, co, co),
                                 icon[ky], ScaleMode.StretchToFill, true);
                 GUI.color = c;
+                if (!daMo && !dangNhac)
+                    IconKhoa.Ve(r.center, tron ? r.width * 0.5f * GameHUD.RongKhoaTron
+                                               : r.width * GameHUD.RongKhoaVuong);
             }
 
-            VienO(r, tron, new Color(0.55f, 0.42f, 0.28f, 0.95f), s);
+            if (chon)
+            {
+                VienO(r, tron, new Color(1f, 0.86f, 0.46f, 1f), s, 3.5f);
+                if (!tron)
+                    VienChuNhat(new Rect(r.x - 3f * s, r.y - 3f * s, r.width + 6f * s, r.height + 6f * s),
+                                new Color(1f, 0.45f, 0.18f, 0.55f + 0.3f * nhip), Mathf.Max(1f, 2f * s));
+            }
+            else VienO(r, tron, new Color(0.55f, 0.42f, 0.28f, 0.95f), s, 2f);
 
             // So thu tu chi ve o BAN MAY TINH - o day no chinh la phim tat.
             // Ban cam ung khong co phim tat, ma cac o tron nam sat nhau nen con
@@ -613,28 +715,33 @@ public static class CuaSoSachPhep
                 var kSo = new GUIStyle(GiaoDien.KieuChuNho);
                 kSo.alignment = TextAnchor.MiddleCenter;
                 kSo.fontSize = Mathf.RoundToInt(13f * s);
-                kSo.normal.textColor = GiaoDien.MauVang;
-                GUI.Label(new Rect(r.x, r.yMax + 1f * s, r.width, 18f * s), (i + 1).ToString(), kSo);
+                kSo.normal.textColor = chon ? new Color(1f, 0.92f, 0.70f) : GiaoDien.MauVang;
+                GUI.Label(new Rect(r.x, r.yMax + 4f * s, r.width, 18f * s), (i + 1).ToString(), kSo);
             }
         }
     }
 
-    /// <summary>Vien quanh mot o - tron thi ve bang bon cung gia, vuong thi bon canh.</summary>
-    static void VienO(Rect r, bool tron, Color mau, float s)
+    static void VienChuNhat(Rect r, Color mau, float d)
     {
-        float d = Mathf.Max(1f, 2f * s);
+        GiaoDien.To(new Rect(r.x, r.y, r.width, d), mau);
+        GiaoDien.To(new Rect(r.x, r.yMax - d, r.width, d), mau);
+        GiaoDien.To(new Rect(r.x, r.y, d, r.height), mau);
+        GiaoDien.To(new Rect(r.xMax - d, r.y, d, r.height), mau);
+    }
+
+    /// <summary>Vien quanh mot o - tron thi ve bang bon cung gia, vuong thi bon canh.</summary>
+    static void VienO(Rect r, bool tron, Color mau, float s, float day)
+    {
+        float d = Mathf.Max(1f, day * s);
         if (!tron)
         {
-            GiaoDien.To(new Rect(r.x, r.y, r.width, d), mau);
-            GiaoDien.To(new Rect(r.x, r.yMax - d, r.width, d), mau);
-            GiaoDien.To(new Rect(r.x, r.y, d, r.height), mau);
-            GiaoDien.To(new Rect(r.xMax - d, r.y, d, r.height), mau);
+            VienChuNhat(r, mau, d);
             return;
         }
 
         // Vong tron: ve mot vanh bang cach chong hai hinh tron (Trang la anh
         // tron mo dan - dung no lam vanh thi vien nhoe, nen ve bang 28 doan nho)
-        const int SoDoan = 28;
+        int SoDoan = day > 2.5f ? 40 : 28;
         float bk = r.width * 0.5f;
         for (int i = 0; i < SoDoan; i++)
         {

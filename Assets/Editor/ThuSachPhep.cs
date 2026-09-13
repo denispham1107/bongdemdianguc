@@ -23,6 +23,8 @@ using UnityEngine;
 ///      khoang cach, khong so bang mat).
 ///   C. Kho ky nang: dat vao o thi doi cho chu khong nhan ban; bo khoi o; luu
 ///      roi nap lai van y nguyen.
+///   F. Cua so to bang khung xanh; hang dang chon sang han, da mo sang hon con
+///      khoa; o dang chon noi bat; o giu ky nang chua mo co o khoa (do tren anh chup).
 ///   D. Trong Play: nut con mat nam dung goc phai tren, cua so mo/dong duoc,
 ///      dang mo thi input tran dau bi khoa. Chup anh ca hai ban.
 ///   E. Nut Sach phep (13/09/2026, nguoi dung chup chu "Sach phep" bi cat nua
@@ -494,6 +496,205 @@ public static class ThuSachPhep
         Object.Destroy(tex);
     }
 
+    // ================================================================
+    //  F. CUA SO TO HON, HANG DANG CHON SANG, O DANG CHON, O KHOA TRONG O
+    // ================================================================
+    //
+    // Nguoi dung (13/09/2026, ve khung xanh tren anh chup 1560x572):
+    //   - cua so to bang khung xanh (~865 x 442 diem);
+    //   - hang ky nang dang chon phai sang han; ky nang da mo / nang cap sang
+    //     noi hon ky nang con khoa;
+    //   - cham o nao trong vung o thi o ay hien la dang chon; ky nang chua mo
+    //     trong o van co o khoa nhu ngoai tran.
+    // Do tren ANH CHUP man hinh (do sang diem anh), khong doc bien cua cua so.
+
+    static float DoSang(Texture2D tex, Rect r)
+    {
+        int x0 = Mathf.Max(0, (int)r.xMin), x1 = Mathf.Min(tex.width, (int)r.xMax);
+        int y0 = Mathf.Max(0, (int)r.yMin), y1 = Mathf.Min(tex.height, (int)r.yMax);
+        double tong = 0; int dem = 0;
+        for (int y = y0; y < y1; y++)
+            for (int x = x0; x < x1; x++)
+            {
+                var c = tex.GetPixel(x, tex.height - 1 - y);
+                tong += 0.2126 * c.r + 0.7152 * c.g + 0.0722 * c.b; dem++;
+            }
+        return dem > 0 ? (float)(tong / dem) : 0f;
+    }
+
+    /// <summary>Do sang cua VANH ngoai o (tu mep o ra them 2..9 diem) - noi co quang sang / vien.</summary>
+    static float DoSangVanh(Texture2D tex, Rect r, float s)
+    {
+        float a = 2f * s, b = 9f * s;
+        var tren = new Rect(r.x - b, r.y - b, r.width + 2f * b, b - a);
+        var duoi = new Rect(r.x - b, r.yMax + a, r.width + 2f * b, b - a);
+        var trai = new Rect(r.x - b, r.y, b - a, r.height);
+        var phai = new Rect(r.xMax + a, r.y, b - a, r.height);
+        return (DoSang(tex, tren) + DoSang(tex, duoi) + DoSang(tex, trai) + DoSang(tex, phai)) * 0.25f;
+    }
+
+    static float DoBaoHoa(Texture2D tex, Rect r)
+    {
+        int x0 = Mathf.Max(0, (int)r.xMin), x1 = Mathf.Min(tex.width, (int)r.xMax);
+        int y0 = Mathf.Max(0, (int)r.yMin), y1 = Mathf.Min(tex.height, (int)r.yMax);
+        double tong = 0; int dem = 0;
+        for (int y = y0; y < y1; y++)
+            for (int x = x0; x < x1; x++)
+            {
+                var c = tex.GetPixel(x, tex.height - 1 - y);
+                float mx = Mathf.Max(c.r, Mathf.Max(c.g, c.b)), mn = Mathf.Min(c.r, Mathf.Min(c.g, c.b));
+                tong += mx > 0.001f ? (mx - mn) / mx : 0f; dem++;
+            }
+        return dem > 0 ? (float)(tong / dem) : 0f;
+    }
+
+    static IEnumerator ChupTex(System.Action<Texture2D> nhan)
+    {
+        yield return null; yield return null;
+        yield return new WaitForEndOfFrame();
+        nhan(ScreenCapture.CaptureScreenshotAsTexture());
+    }
+
+    static Rect HangKho(CuaSoSachPhep.BoCuc b, int i, float s)
+    {
+        float le = 6f * s;
+        return new Rect(b.kho.x + le, b.kho.y + le + i * b.caoHang, b.kho.width - le * 2f, b.caoHang - 6f * s);
+    }
+
+    static IEnumerator DoSangCuaSo(string ban)
+    {
+        float s = Screen.height / 1080f;
+        Ghi("");
+        Ghi("F. sach phep - ban " + ban + " (man " + Screen.width + "x" + Screen.height + ")");
+
+        // ---- F0. kich thuoc: tren DUNG man anh chup cua nguoi dung ----
+        if (ban == "cam ung")
+        {
+            var b0 = CuaSoSachPhep.TinhBoCuc(1560f, 572f, 572f / 1080f);
+            Ghi("F0. man 1560x572: cua so " + b0.khung.width.ToString("F0") + " x " + b0.khung.height.ToString("F0")
+                + " (khung xanh nguoi dung ve ~865 x 442; ban cu 625 x 381)");
+            Kiem(Mathf.Abs(b0.khung.width - 865f) < 865f * 0.03f && Mathf.Abs(b0.khung.height - 442f) < 442f * 0.03f,
+                 "cua so khong to bang khung xanh");
+        }
+
+        // ---- Chuan bi: cap cao, mo khoa 1 va 3, nang 3 len cap 3. Ky nang 5 con khoa ----
+        CapDo.BatDauTranMoi();
+        CapDo.Them(100 + 135 + 180 + 245);          // cap 5 = 5 diem
+        CapDo.MoKhoa(1); CapDo.MoKhoa(3); CapDo.NangCap(3); CapDo.NangCap(3);
+        SachPhep.DatLai();
+        CuaSoSachPhep.Mo();
+        var b = CuaSoSachPhep.TinhBoCuc(Screen.width, Screen.height, s);
+
+        // ---- F1. hang dang chon sang nhat; da mo sang hon con khoa ----
+        foreach (int chon in new[] { 4, 1 })
+        {
+            CuaSoSachPhep.ChonKyNang(chon);
+            Texture2D tex = null;
+            yield return ChupTex(t => tex = t);
+            var sang = new float[SachPhep.SoKyNang];
+            var sb = new StringBuilder();
+            for (int i = 0; i < SachPhep.SoKyNang; i++)
+            {
+                sang[i] = DoSang(tex, HangKho(b, i, s));
+                sb.Append(i).Append(CapDo.DaMo(i) ? "(mo)" : "(khoa)").Append(i == chon ? "*" : "")
+                  .Append("=").Append(sang[i].ToString("F3")).Append(" ");
+            }
+            float moMin = 9f, khoaMax = 0f, khacMax = 0f;
+            for (int i = 0; i < SachPhep.SoKyNang; i++)
+            {
+                if (i == chon) continue;
+                khacMax = Mathf.Max(khacMax, sang[i]);
+                if (CapDo.DaMo(i)) moMin = Mathf.Min(moMin, sang[i]); else khoaMax = Mathf.Max(khoaMax, sang[i]);
+            }
+            Ghi("F1. chon ky nang " + chon + (CapDo.DaMo(chon) ? " (da mo)" : " (con khoa)") + " - do sang tung hang: " + sb.ToString().Trim());
+            Kiem(sang[chon] >= khacMax * 1.4f, "hang dang chon " + chon + " khong sang han cac hang khac: "
+                 + sang[chon].ToString("F3") + " / " + khacMax.ToString("F3"));
+            Kiem(moMin >= khoaMax * 1.15f, "hang da mo khong sang hon hang con khoa: " + moMin.ToString("F3") + " / " + khoaMax.ToString("F3"));
+            if (chon == 1)
+            {
+                // Hinh o hang con khoa (hang 0): diem sang > 0,5 chi co the la o khoa (hinh da nhan <= 0,40)
+                var h0 = HangKho(b, 0, s);
+                float kt = h0.height - 10f * s;
+                var rIcon = new Rect(h0.x + 10f * s, h0.y + 5f * s, kt, kt);
+                int sangKhoa = 0;
+                for (int y = (int)rIcon.yMin; y < (int)rIcon.yMax; y++)
+                    for (int x = (int)rIcon.xMin; x < (int)rIcon.xMax; x++)
+                    {
+                        var c = tex.GetPixel(x, tex.height - 1 - y);
+                        if (0.2126f * c.r + 0.7152f * c.g + 0.0722f * c.b > 0.5f) sangKhoa++;
+                    }
+                Ghi("F1b. hinh hang 0 (con khoa): diem sang cua o khoa " + sangKhoa);
+                Kiem(sangKhoa >= 3, "khong thay o khoa o hang ky nang con khoa ben cot trai");
+            }
+            if (ban == "cam ung") yield return Chup("sachphep_6_chon_" + chon + "_camung");
+            else yield return Chup("sachphep_7_chon_" + chon + "_maytinh");
+            Object.Destroy(tex);
+        }
+
+        // ---- F2. o dang chon: vanh quanh o sang hon moi o khac ----
+        {
+            int n = SachPhep.SoODangDung;
+            int oGiu1 = SachPhep.ONaoGiu(1);
+            CuaSoSachPhep.ChonO(oGiu1);
+            Texture2D tex = null;
+            yield return ChupTex(t => tex = t);
+            float vChon = DoSangVanh(tex, CuaSoSachPhep.OTaiVung(b.vungO, oGiu1, s), s), vKhacMax = 0f;
+            for (int o = 0; o < n; o++)
+                if (o != oGiu1) vKhacMax = Mathf.Max(vKhacMax, DoSangVanh(tex, CuaSoSachPhep.OTaiVung(b.vungO, o, s), s));
+            Ghi("F2. cham o " + (oGiu1 + 1) + " (giu ky nang 1): dang xem = " + CuaSoSachPhep.DangXem
+                + ", vanh o chon " + vChon.ToString("F3") + " / vanh o khac sang nhat " + vKhacMax.ToString("F3"));
+            Kiem(CuaSoSachPhep.DangXem == 1, "cham o ma khong chon ky nang trong o");
+            Kiem(vChon >= vKhacMax * 1.6f, "o dang chon khong noi bat hon cac o khac");
+            Object.Destroy(tex);
+
+            // O TRONG: bo ky nang o o 2 ra roi cham vao -> chinh o trong ay sang, o giu ky nang dang xem thi tat
+            SachPhep.BoKhoiO(2);
+            CuaSoSachPhep.ChonO(2);
+            yield return ChupTex(t => tex = t);
+            float vTrong = DoSangVanh(tex, CuaSoSachPhep.OTaiVung(b.vungO, 2, s), s);
+            float vCu = DoSangVanh(tex, CuaSoSachPhep.OTaiVung(b.vungO, oGiu1, s), s);
+            Ghi("F2b. cham o trong 3: vanh o trong " + vTrong.ToString("F3") + ", vanh o " + (oGiu1 + 1) + " (vua chon luc nay) " + vCu.ToString("F3"));
+            Kiem(vTrong >= vCu * 1.6f, "cham o trong ma o trong khong hien la dang chon");
+            Object.Destroy(tex);
+            SachPhep.DatLai();
+        }
+
+        // ---- F3. o khoa trong o: CUNG ky nang 5, chup luc khoa roi mo khoa ----
+        {
+            int o5 = SachPhep.ONaoGiu(5);
+            var r5 = CuaSoSachPhep.OTaiVung(b.vungO, o5, s);
+            var giua = new Rect(r5.center.x - r5.width * 0.3f, r5.center.y - r5.height * 0.3f, r5.width * 0.6f, r5.height * 0.6f);
+            CuaSoSachPhep.ChonKyNang(0);
+            Texture2D khoa = null, mo = null;
+            yield return ChupTex(t => khoa = t);
+            float sKhoa = DoSang(khoa, giua);
+            CapDo.MoKhoa(5);
+            yield return ChupTex(t => mo = t);
+            float sMo = DoSang(mo, giua);
+            // "XAM DI" o ngoai tran la NHAN mau (0,38; 0,36; 0,40) - lam TOI chu khong
+            // giam do bao hoa (lan do dau do bao hoa: 0,39 vs 0,40, bao nham "khong xam").
+            // Do DO SANG.
+            // O KHOA: hinh ky nang da bi nhan <= 0,40 nen KHONG diem nao cua no sang qua
+            // 0,40; diem sang > 0,5 o giua o chi co the la quai / dinh tan cua o khoa.
+            // (Lan do dau dem mau do cua lo khoa - lo qua nho, ban cam ung ra 0 diem.)
+            int diemSang = 0;
+            for (int y = (int)giua.yMin; y < (int)giua.yMax; y++)
+                for (int x = (int)giua.xMin; x < (int)giua.xMax; x++)
+                {
+                    var c = khoa.GetPixel(x, khoa.height - 1 - y);
+                    if (0.2126f * c.r + 0.7152f * c.g + 0.0722f * c.b > 0.5f) diemSang++;
+                }
+            Ghi("F3. o " + (o5 + 1) + " giu Khien: luc KHOA do sang " + sKhoa.ToString("F3") + ", diem sang cua o khoa " + diemSang
+                + " | sau MO KHOA do sang " + sMo.ToString("F3"));
+            Kiem(sKhoa < sMo * 0.6f, "ky nang chua mo trong o khong bi toi di nhu ngoai tran");
+            Kiem(diemSang >= 4, "khong thay o khoa tren o ky nang chua mo");
+            Object.Destroy(khoa); Object.Destroy(mo);
+        }
+
+        CuaSoSachPhep.Dong();
+        CapDo.BatDauTranMoi();
+    }
+
     static IEnumerator KichBan()
     {
         var dir = GameDirector.Instance;
@@ -575,6 +776,13 @@ public static class ThuSachPhep
 
         SachPhep.DatLai();
         CuaSoSachPhep.Dong();
+
+        // ---- F. cua so to, hang / o dang chon, o khoa - ca hai ban ----
+        yield return DoSangCuaSo("cam ung");
+        hud.epCamUng = false;
+        CamUng.EpBat = false;
+        yield return new WaitForSeconds(0.4f);
+        yield return DoSangCuaSo("may tinh");
 
         Ghi("");
         Ghi("so loi ghi nhan = " + loi);
