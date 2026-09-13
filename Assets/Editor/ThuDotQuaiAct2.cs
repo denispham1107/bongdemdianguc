@@ -91,13 +91,23 @@ public static class ThuDotQuaiAct2
         return d;
     }
 
+    /// <summary>
+    /// Khoa chan moi con quai NGAY khung hinh vua tha. O 20-25 m quai phat hien
+    /// nguoi choi tuc thi va chay toi - doi nua giay moi do thi do cho no DA CHAY
+    /// TOI, khong phai cho no duoc tha, va bao "sai khoang" oan.
+    /// </summary>
+    static void TatNaoQuai()
+    {
+        foreach (var ai in Object.FindObjectsByType<EnemyAI>(FindObjectsSortMode.None)) ai.enabled = false;
+    }
+
     static bool LaQuaiXa(GameDirector dir, NhanDangQuai n)
     {
         var d = n.GetComponent<Damageable>();
         return d != null && dir.QuaiXaDotNay.Contains(d);
     }
 
-    /// <summary>Dem theo loai CHI nhung con quanh nguoi (bo 10 con xa).</summary>
+    /// <summary>Dem theo loai CHI nhung con quanh nguoi (bo cac con vong ngoai).</summary>
     static Dictionary<MonsterType, int> DemQuanhNguoi(GameDirector dir)
     {
         var d = new Dictionary<MonsterType, int>();
@@ -153,10 +163,11 @@ public static class ThuDotQuaiAct2
                 }
         }
         Ghi(nhan + ". quai xa: " + so + " con, cach nguoi gan nhat " + ganMin.ToString("F1") + " - "
-            + ganMax.ToString("F1") + " m, dung khoang 55-65 m: " + dungKhoang + "/" + so
+            + ganMax.ToString("F1") + " m, dung khoang " + GameDirector.QuaiXaGanNhat + "-" + GameDirector.QuaiXaXaNhat
+            + " m: " + dungKhoang + "/" + so
             + " (code tu bao " + dir.SoQuaiXaDungKhoang + "), lo lung " + loLung + " (chenh voi dat lon nhat "
             + chenhMax.ToString("F2") + " m), duoi nuoc " + duoiNuoc);
-        Kiem(so == GameDirector.SoQuaiXaMoiDot, "moi dot phai co dung 10 con quai xa, dang co " + so);
+        Kiem(so == GameDirector.SoQuaiXaMoiDot, "moi dot phai co dung " + GameDirector.SoQuaiXaMoiDot + " con quai vong ngoai, dang co " + so);
         Kiem(loLung == 0, "co quai xa khong dung tren mat dat");
         Kiem(duoiNuoc == 0, "co quai xa nam duoi nuoc");
         Kiem(dungKhoang == dir.SoQuaiXaDungKhoang, "code bao so con dung khoang KHAC voi do that");
@@ -298,15 +309,17 @@ public static class ThuDotQuaiAct2
         // Xoa sach roi goi dot dau cho gon (Start co the da sinh mot dot)
         GietSach();
         yield return new WaitForSeconds(0.4f);
-        dir.SinhDotQuanhNguoi();
+        dir.SinhDotQuanhNguoi(); TatNaoQuai();
         yield return new WaitForSeconds(0.5f);
 
         int tong1;
         DemTheoLoai(out tong1);
         var dem1 = DemQuanhNguoi(dir);
-        Ghi("B2. dot " + dir.Wave + ": tong " + tong1 + " con (phai 18 = 2 nguoi x 4 loai + 10 con xa)"
+        int mong1 = 8 + GameDirector.SoQuaiXaMoiDot;
+        Ghi("B2. dot " + dir.Wave + ": tong " + tong1 + " con (phai " + mong1 + " = 2 nguoi x 4 loai + "
+            + GameDirector.SoQuaiXaMoiDot + " con vong ngoai)"
             + " | quanh nguoi: " + ViDem(dem1));
-        Kiem(tong1 == 18, "dot dau phai la 18 con, dang co " + tong1);
+        Kiem(tong1 == mong1, "dot dau phai la " + mong1 + " con, dang co " + tong1);
         foreach (var loai in new[] { MonsterType.Skeleton, MonsterType.Witch, MonsterType.QuyCay, MonsterType.QuyDu })
             Kiem(dem1.TryGetValue(loai, out int c) && c == 2, "thieu " + loai + " - moi nguoi phai co mot con");
 
@@ -337,12 +350,13 @@ public static class ThuDotQuaiAct2
         Ghi("");
         Ghi("C. cac dot sau");
 
-        int[] mongDoi = { 19, 21, 24 };           // 8 + 1, + 3, + 6 (cong don), cong 10 con xa moi dot
+        // 8 + 1, + 3, + 6 (cong don), cong SoQuaiXaMoiDot con vong ngoai moi dot
+        int[] mongDoi = { 9 + GameDirector.SoQuaiXaMoiDot, 11 + GameDirector.SoQuaiXaMoiDot, 14 + GameDirector.SoQuaiXaMoiDot };
         for (int dot = 2; dot <= 4; dot++)
         {
             GietSach();
             yield return new WaitForSeconds(0.4f);
-            dir.SinhDotQuanhNguoi();
+            dir.SinhDotQuanhNguoi(); TatNaoQuai();
             yield return new WaitForSeconds(0.5f);
 
             int tong;

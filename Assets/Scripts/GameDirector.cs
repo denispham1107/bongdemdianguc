@@ -302,18 +302,19 @@ public class GameDirector : MonoBehaviour
     public const float GiayChoDotDau = 30f;
 
     /// <summary>
-    /// Moi dot con tha them CO DINH 10 con quai loai ngau nhien o XA nguoi choi:
-    /// cach nguoi choi GAN NHAT tu 55 den 65 m. Khong cong don, nhung van manh
+    /// Moi dot con tha them CO DINH 20 con quai loai ngau nhien o vong ngoai:
+    /// cach nguoi choi GAN NHAT tu 20 den 25 m (nguoi dung doi 13/09/2026 - truoc
+    /// do 10 con o 55-65 m). Khong cong don, nhung van manh
     /// len 5% moi dot nhu moi con khac, va van tinh vao "giet het moi sang dot".
     /// </summary>
-    public const int SoQuaiXaMoiDot = 10;
-    public const float QuaiXaGanNhat = 55f;
-    public const float QuaiXaXaNhat = 65f;
+    public const int SoQuaiXaMoiDot = 20;
+    public const float QuaiXaGanNhat = 20f;
+    public const float QuaiXaXaNhat = 25f;
 
     /// <summary>Nhung con quai xa cua dot gan nhat - phep thu (menu 56) doc.</summary>
     public readonly List<Damageable> QuaiXaDotNay = new List<Damageable>();
 
-    /// <summary>Trong dot gan nhat, bao nhieu con quai xa dat DUNG khoang 55-65 m.</summary>
+    /// <summary>Trong dot gan nhat, bao nhieu con quai xa dat DUNG khoang QuaiXaGanNhat-QuaiXaXaNhat.</summary>
     public int SoQuaiXaDungKhoang { get; private set; }
 
     /// <summary>Moi dot quai manh hon dot truoc bao nhieu (0,05 = 5%).</summary>
@@ -432,12 +433,12 @@ public class GameDirector : MonoBehaviour
             SinhQuanhNguoi(BonLoaiMoiNguoi[Random.Range(0, BonLoaiMoiNguoi.Length)], t, heSo);
         }
 
-        // 10 con o XA, loai ngau nhien
+        // SoQuaiXaMoiDot con o vong ngoai, loai ngau nhien
         SinhQuaiXa(heSo);
 
         Debug.Log("[GameDirector] Dot " + Wave + ": " + soNguoi + " nguoi x 4 con + "
                   + soThemCongDon + " con bat ki + " + QuaiXaDotNay.Count + " con xa ("
-                  + SoQuaiXaDungKhoang + " dung 55-65 m), manh x" + heSo.ToString("F2"));
+                  + SoQuaiXaDungKhoang + " dung " + QuaiXaGanNhat + "-" + QuaiXaXaNhat + " m), manh x" + heSo.ToString("F2"));
     }
 
     static Bounds banDo;
@@ -462,18 +463,18 @@ public class GameDirector : MonoBehaviour
     }
 
     /// <summary>
-    /// Tha 10 con quai o cach nguoi choi GAN NHAT tu 55 den 65 m.
+    /// Tha SoQuaiXaMoiDot con quai o cach nguoi choi GAN NHAT tu QuaiXaGanNhat den
+    /// QuaiXaXaNhat met (hien 20 con, 20-25 m).
     ///
     /// Tinh theo nguoi GAN NHAT chu khong theo mot nguoi bat ki: tha cach nguoi A
-    /// 60 m ma lai ngay canh nguoi B thi voi B do la quai "sat ben", khong con la
-    /// quai o xa.
+    /// 22 m ma lai ngay canh nguoi B thi voi B do la quai "sat ben", khong con la
+    /// quai vong ngoai.
     ///
-    /// BAN DO ACT2 CHI 109 x 109 m (do 13/09/2026). Nguoi choi dung gan tam thi
-    /// vanh 55-65 m chi con o bon GOC ban do; bon nguoi rai khap noi thi co khi
-    /// khong con cho nao cach TAT CA ho du 55 m. Luc ay van tha du 10 con, o cho
-    /// HOP LE (tren dat, ngoai nuoc, khong vuong vat can) GAN KHOANG 55-65 m NHAT
-    /// co the - va dem so con dat dung khoang vao SoQuaiXaDungKhoang cho phep
-    /// thu doc, khong im lang gia vo la dat.
+    /// Ban do Act2 chi 109 x 109 m. Vanh 20-25 m quanh mot nguoi thuong con rong
+    /// cho, nhung nguoi dung sat bo ban do hay bon nguoi dung gan nhau thi co khi
+    /// khong du. Luc ay van tha du so con, o cho HOP LE (tren dat, ngoai nuoc,
+    /// khong vuong vat can) GAN KHOANG NHAT co the - va dem so con dat dung khoang
+    /// vao SoQuaiXaDungKhoang cho phep thu doc, khong im lang gia vo la dat.
     /// </summary>
     void SinhQuaiXa(float heSo)
     {
@@ -504,7 +505,7 @@ public class GameDirector : MonoBehaviour
                 Vector3 p;
                 if (lan % 2 == 0)
                 {
-                    // Nua so lan: nhieu ngay vanh 55-65 m quanh mot nguoi bat ky
+                    // Nua so lan: nhieu ngay vanh QuaiXaGanNhat-QuaiXaXaNhat quanh mot nguoi bat ky
                     var t = nguoi[Random.Range(0, nguoi.Count)];
                     float g = Random.Range(0f, Mathf.PI * 2f);
                     float r = Random.Range(QuaiXaGanNhat, QuaiXaXaNhat);

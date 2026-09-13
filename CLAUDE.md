@@ -123,8 +123,9 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
 - **Act2 dùng LUẬT ĐỢT QUÁI RIÊNG** (`GameDirector.CheDoDotQuanhNguoi`, bật theo tên scene): mỗi đợt sinh quanh **từng**
   người chơi bốn con (bộ xương · phù thủy · quỷ cây · quỷ dữ), giết hết → 30 giây → đợt sau cộng dồn thêm quái bất kì
   (+1, +3, +6…) và mạnh thêm 5% máu · sát thương mỗi đợt. **Vào trận chờ đúng 30 giây** mới ra đợt đầu (`GiayChoDotDau`).
-  **Mỗi đợt thêm cố định 10 con xa** (`SinhQuaiXa`), loại ngẫu nhiên, cách người chơi GẦN NHẤT 55–65 m — bản đồ Act2
-  chỉ 109×109 m nên vành ấy thường chỉ còn ở góc; không đủ chỗ thì thả gần khoảng nhất có thể và đếm vào `SoQuaiXaDungKhoang`. Act2 KHÔNG còn rải quái sẵn, không dòng quỷ dữ/quỷ cây riêng,
+  **Mỗi đợt thêm cố định 20 con vòng ngoài** (`SinhQuaiXa`, `SoQuaiXaMoiDot`), loại ngẫu nhiên, cách người chơi GẦN NHẤT
+  **20–25 m** (13/09/2026 đổi từ 10 con ở 55–65 m); không đủ chỗ thì thả gần khoảng nhất có thể và đếm vào `SoQuaiXaDungKhoang`.
+  20 con này cho cả phòng — chơi một mình lên cấp 10 sau ~5 đợt (`kinhnghiem.md`). Act2 KHÔNG còn rải quái sẵn, không dòng quỷ dữ/quỷ cây riêng,
   không chế độ bốn bộ xương. Menu 56 kiểm. Chỗ xuất phát của mỗi người: ngẫu nhiên theo **mã phòng** (`ChoXuatPhat.cs`),
   cách nhau ≥ 22 m — mọi máy tính ra cùng một danh sách nên không cần gói tin nào.
 - ⚠️ **Chế độ chạy thử "bốn bộ xương" (chỉ còn Act1) đang BẬT** (`GameDirector.CheDoBonBoXuong = true`, hằng số

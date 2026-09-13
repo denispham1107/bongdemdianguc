@@ -52,11 +52,32 @@ Giết một con quái to đúng lúc sắp lên cấp thì **nhảy được ha
 
 ### Nhịp lên cấp trong thực tế (Act2)
 
-Mỗi đợt ở Act2 sinh quanh **từng người chơi** bốn con: bộ xương + phù thủy + quỷ cây + quỷ dữ
-= **120 kinh nghiệm** một đợt, và từ đợt hai trở đi mỗi đợt cộng dồn thêm quái.
+Mỗi đợt ở Act2 gồm (luật 13/09/2026):
 
-| Sau đợt | Kinh nghiệm gom được (tự giết hết phần của mình) | Cấp đạt |
-|---|---:|---|
+- quanh **từng người chơi** bốn con: bộ xương + phù thủy + quỷ cây + quỷ dữ = **120 kinh nghiệm**;
+- từ đợt hai trở đi cộng dồn thêm quái bất kì (+1, +3, +6, +10…);
+- **cố định 20 con** loại ngẫu nhiên ở vòng ngoài, cách người chơi gần nhất 20–25 m — trung bình ~30 kinh nghiệm
+  một con, tức **~600 kinh nghiệm** nếu giết hết. 20 con này là của **cả phòng**, không nhân theo số người.
+
+Chơi **một mình**, giết hết cả đợt:
+
+| Sau đợt | Kinh nghiệm đợt ấy | Cộng dồn | Cấp đạt |
+|---|---:|---:|---|
+| 1 | 120 + 600 = 720 | 720 | 5 |
+| 2 | 120 + 30 + 600 = 750 | 1 470 | 7 |
+| 3 | 120 + 90 + 600 = 810 | 2 280 | 8 |
+| 4 | 120 + 180 + 600 = 900 | 3 180 | 9 |
+| 5 | 120 + 300 + 600 = 1 020 | 4 200 | **10** |
+
+Nghĩa là: chơi một mình, giết hết thì khoảng **5 đợt** là chạm cấp 10 (trước khi có 20 con vòng ngoài là ~12 đợt).
+Chơi **bốn người** thì 20 con vòng ngoài chia nhau — mỗi người chỉ còn khoảng 5 con (~150 kinh nghiệm) cộng phần 120
+quanh mình, nên lên cấp chậm hơn hẳn. Hạ được một người chơi khác (250) vẫn đáng giá hơn cả phần quái quanh mình
+trong một đợt.
+
+⚠️ Nếu thấy lên cấp **quá nhanh** khi chơi một mình, chỗ chỉnh là bảng kinh nghiệm ở mục 2 hoặc giá từng loại quái
+ở trên — số quái mỗi đợt là luật anh đã chốt nên tôi không đụng vào.
+
+---|---:|---|
 | 1 | ~120 | 2 |
 | 2 | ~270 | 3 |
 | 3 | ~480 | 4 |

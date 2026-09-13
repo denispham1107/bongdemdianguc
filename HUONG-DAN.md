@@ -8334,6 +8334,22 @@ sát thương hiện ra** (2,1 m) để số không đè lên chữ. Bỏ chữ 
 **Số đo** (menu 62, 0 lỗi): tung thật 10 lần → trúng 10, ngã 7; dấu hiệu hiện **376/383 khung hình đang ngã (98%)**;
 chuỗi ảnh mới thấy chữ NGÃ rõ ở cả 5 thời điểm, đè lên lửa.
 
+### Quái vòng ngoài: 20 con ở 20–25 m (13/09/2026)
+
+Anh đổi luật: số quái thêm mỗi đợt thành **20 con** (thay vì 10), ở **20–25 m** (thay vì 55–65 m); quái sát bên người
+chơi giữ nguyên. Chỉ đổi ba hằng số trong `GameDirector` (`SoQuaiXaMoiDot`, `QuaiXaGanNhat`, `QuaiXaXaNhat`) — cách
+chọn chỗ vẫn như cũ: tính theo người chơi **gần nhất**, trên mặt đất, ngoài nước, không vướng vật cản.
+
+Phép thử (menu 56) phải sửa một chỗ trước khi đo: ở 20–25 m quái **phát hiện người chơi tức thì** và chạy tới; phép thử
+đợi nửa giây mới đo nên đo nhầm chỗ quái *đã chạy tới* chứ không phải chỗ nó được thả. Nay khoá chân quái ngay khung
+hình vừa thả.
+
+**Số đo** (menu 56, 0 lỗi, hai người chơi): đợt 1 **28 con** = 2 × 4 + 20; đợt 2 · 3 · 4 = 29 · 31 · 34 con; cả 4 đợt
+**20/20 con vòng ngoài đúng 20–25 m** (đo 20,0–25,0 m từ vị trí thật), 0 dưới nước, chênh mặt đất tối đa 0,15 m; quái
+quanh người vẫn 7–13 m; chờ đợt đầu vẫn 30,0 giây; Act1 không đổi.
+
+⚠️ Nhịp lên cấp đổi nhiều: chơi một mình giết hết thì **~5 đợt** chạm cấp 10 (trước ~12). Bảng mới trong `kinhnghiem.md`.
+
 ### "Bạn chưa thử với nhân vật khác, mới chỉ thử với quái" — và đó đúng là chỗ hỏng (13/09/2026)
 
 Anh chỉ ra đúng lỗ hổng: menu 62 thử người chơi bằng cách **gọi thẳng** hiệu ứng ngã và hàm vẽ lại trên bản sao —
