@@ -25,6 +25,13 @@ public static class CapDo
 {
     public const int CapToiDa = 20;
     public const int CapKyNangToiDa = 5;
+
+    /// <summary>
+    /// Toc do chi tang toi cap nay, sau do dung (nguoi dung chot 13/09/2026). Tang
+    /// deu toi cap 20 thi toc do x1,92 (~10 m/giay) - chay vuot moi loai quai (nhanh
+    /// nhat 5,98 m/giay). Dung o cap 10: x1,363 (~7,1 m/giay).
+    /// </summary>
+    public const int CapTangTocToiDa = 10;
     public const int SoKyNang = 7;
 
     /// <summary>Giet mot nguoi choi khac duoc bao nhieu kinh nghiem.</summary>
@@ -152,7 +159,7 @@ public static class CapDo
 
     public static float HeSoMauTheoCap(int cap) { return Mathf.Pow(1.15f, Mathf.Max(0, cap - 1)); }
     public static float HeSoManaTheoCap(int cap) { return Mathf.Pow(1.10f, Mathf.Max(0, cap - 1)); }
-    public static float HeSoTocTheoCap(int cap) { return Mathf.Pow(1.035f, Mathf.Max(0, cap - 1)); }
+    public static float HeSoTocTheoCap(int cap) { return Mathf.Pow(1.035f, Mathf.Clamp(cap - 1, 0, CapTangTocToiDa - 1)); }
 
     public static float HeSoMau { get { BaoDamCoSan(); return HeSoMauTheoCap(Cap); } }
     public static float HeSoMana { get { BaoDamCoSan(); return HeSoManaTheoCap(Cap); } }

@@ -158,6 +158,10 @@ public static class ThuCapDo
             + ", nang luong x" + CapDo.HeSoManaTheoCap(CapDo.CapToiDa).ToString("0.000")
             + ", toc do x" + CapDo.HeSoTocTheoCap(CapDo.CapToiDa).ToString("0.000"));
         Kiem(Mathf.Abs(CapDo.HeSoMauTheoCap(20) - Mathf.Pow(1.15f, 19)) < 0.01f, "he so mau cap 20 sai");
+        // Toc do dung o cap 10 (nguoi dung chot 13/09/2026); viet thang so 1,035^9, khong lay tu CapDo
+        Kiem(Mathf.Abs(CapDo.HeSoTocTheoCap(10) - Mathf.Pow(1.035f, 9)) < 0.001f, "he so toc do cap 10 sai");
+        Kiem(Mathf.Abs(CapDo.HeSoTocTheoCap(20) - Mathf.Pow(1.035f, 9)) < 0.001f, "toc do van tang sau cap 10");
+        Kiem(Mathf.Abs(CapDo.HeSoTocTheoCap(9) - Mathf.Pow(1.035f, 8)) < 0.001f, "toc do cap 9 sai (chan som qua)");
         Kiem(Mathf.Abs(CapDo.HeSoMauTheoCap(10) - Mathf.Pow(1.15f, 9)) < 0.001f, "he so mau sai");
         Kiem(Mathf.Abs(CapDo.HeSoMauTheoCap(1) - 1f) < 0.0001f, "cap 1 da duoc cong chi so");
 
@@ -317,6 +321,14 @@ public static class ThuCapDo
         CapDo.Them(999999);                     // len thang cap toi da de co du diem
         while (CapDo.NangCapDuoc(1)) CapDo.NangCap(1);
         yield return null;
+
+        // ---- D4b. CAP TOI DA TREN NHAN VAT THAT: toc do dung o cap 10, mau van tang du ----
+        // So voi chi so luc CAP 1 (truoc D4). Viet thang so mu, khong goi CapDo.
+        Ghi("D4b. len cap " + CapDo.Cap + ": toc do " + tocTruoc.ToString("F2") + " -> " + pc.moveSpeed.ToString("F2")
+            + " (x" + (pc.moveSpeed / tocTruoc).ToString("0.000") + ", mong x" + Mathf.Pow(1.035f, 9).ToString("0.000") + " = dung o cap 10)"
+            + ", mau x" + (mau.maxHealth / mauTruoc).ToString("0.00") + " (mong x" + Mathf.Pow(1.15f, CapDo.Cap - 1).ToString("0.00") + ")");
+        Kiem(Mathf.Abs(pc.moveSpeed / tocTruoc - Mathf.Pow(1.035f, 9)) < 0.005f, "toc do nhan vat that khong dung o cap 10");
+        Kiem(Mathf.Abs(mau.maxHealth / mauTruoc / Mathf.Pow(1.15f, CapDo.Cap - 1) - 1f) < 0.005f, "mau khong tang du toi cap toi da");
 
         // PHAI DOI HET HOI CHIEU: Mua bang hoi 6 giay. Lan do dau tien toi tung
         // lai sau 0,9 giay - phep bi tu choi, khong co con bao nao trong canh,

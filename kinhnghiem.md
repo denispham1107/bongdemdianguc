@@ -116,14 +116,14 @@ Mỗi cấp, chỉ số **nhân thêm** (không phải cộng tuyến tính):
 |---|---|---:|
 | Máu | +15% | ×3,52 (600 → 2 113) |
 | Năng lượng | +10% | ×2,36 (250 → 590) |
-| Tốc độ di chuyển | +3,5% | ×1,36 |
+| Tốc độ di chuyển | +3,5% **(chỉ tới cấp 10)** | ×1,36 |
 
-Cấp 20 so với cấp 1 (cùng công thức nhân dồn, không đổi gì): **máu ×14,2** (600 → 8 539), **năng lượng ×6,1**
-(250 → 1 529), **tốc độ di chuyển ×1,92**.
+Cấp 20 so với cấp 1: **máu ×14,2** (600 → 8 539), **năng lượng ×6,1** (250 → 1 529), **tốc độ di chuyển ×1,36**
+(5,2 → 7,1 m/giây).
 
-⚠️ Tốc độ ×1,92 là gần gấp đôi: nhân vật cấp 20 chạy khoảng 10 m/giây, trong khi quái nhanh nhất chưa tới 6 m/giây —
-đuổi không kịp. Anh chỉ xin nâng trần cấp nên tôi **giữ nguyên** +3,5% mỗi cấp; nếu thấy quá nhanh thì có thể giới
-hạn tốc độ (ví dụ chỉ tăng tới cấp 10) — chỗ sửa là `CapDo.HeSoTocTheoCap`.
+**Tốc độ chỉ tăng tới cấp 10** (anh chốt 13/09/2026). Tăng đều tới cấp 20 thì tốc độ ×1,92, tức ~10 m/giây — chạy vượt
+mọi loại quái (nhanh nhất 5,98 m/giây). Từ cấp 11 trở đi máu và năng lượng vẫn tăng, tốc độ giữ nguyên. Chỗ sửa:
+`CapDo.CapTangTocToiDa` (công thức `HeSoTocTheoCap` và `PlayerController.LenCap` đều đọc hằng này).
 
 Máu và năng lượng **đang có** cũng được cộng đúng phần vừa tăng thêm — không hồi đầy (lên cấp
 thành một bình máu miễn phí), nhưng cũng không để người chơi tụt tỉ lệ: đang 50% máu mà chỉ kéo

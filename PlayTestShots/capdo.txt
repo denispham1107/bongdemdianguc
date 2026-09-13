@@ -10,7 +10,7 @@ A6. quai: bo xuong 18, phu thuy 32, quy cay 30, quy du 40, quy khong lo 70 | ngu
     mot dot Act2 (4 con quanh minh) = 120 kinh nghiem -> du len cap 2 ngay dot dau: True
 
 B. he so theo cap
-B1. nhan vat cap 10: mau x3.518, nang luong x2.358, toc do x1.363 | cap 20: mau x14.232, nang luong x6.116, toc do x1.923
+B1. nhan vat cap 10: mau x3.518, nang luong x2.358, toc do x1.363 | cap 20: mau x14.232, nang luong x6.116, toc do x1.363
 B2. ky nang cap 5: sat thuong x2.074, nang luong x1.464, hieu ung +0.60 giay, mau khien x1.749
 
 C. diem ky nang: mo khoa va nang cap
@@ -27,6 +27,7 @@ D1. vao tran: cap 1, mau toi da 600, nang luong toi da 250, toc do 5.20, ky nang
 D2. bam Mua bang khi chua mo -> phep bay ra 0, loi nhac: MƯA BĂNG chưa mở khoá — vào SÁCH PHÉP để mở
 D3. mo khoa Mua bang -> phep bay ra 1
 D4. len cap 2: mau 600 -> 690 (x1.150), nang luong 250 -> 275 (x1.100), toc do 5.20 -> 5.38 (x1.035)
+D4b. len cap 20: toc do 5.20 -> 7.09 (x1.363, mong x1.363 = dung o cap 10), mau x14.23 (mong x14.23)
     (nhan vat con song: True)
 D5. Mua bang cap 5: sat thuong moi tang 29.04 -> 60.22 (x2.074, mong doi x2.074) | dong cung 1.50s -> 2.10s
 D6. khong co quai nao dang song de thu - bo qua

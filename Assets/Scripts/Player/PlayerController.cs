@@ -235,7 +235,8 @@ public class PlayerController : MonoBehaviour
     void OnDisable() { CapDo.KhiLenCap -= LenCap; }
 
     /// <summary>
-    /// Vua len mot cap: mau +15%, nang luong +10%, toc do +3,5%.
+    /// Vua len mot cap: mau +15%, nang luong +10%, toc do +3,5% (toc do CHI toi
+    /// cap CapDo.CapTangTocToiDa - qua cap 10 thi giu nguyen).
     ///
     /// Mau va nang luong ĐANG CO cung duoc cong dung phan chenh - khong hoi day
     /// (len cap thanh mot binh mau mien phi) ma cung khong de nguoi choi tut
@@ -260,7 +261,7 @@ public class PlayerController : MonoBehaviour
         maxMana += themMana;
         mana = Mathf.Min(maxMana, mana + themMana);
 
-        moveSpeed *= 1.035f;
+        if (capMoi <= CapDo.CapTangTocToiDa) moveSpeed *= 1.035f;
 
         Say("LÊN CẤP " + capMoi + "! Bạn có 1 điểm kỹ năng — mở SÁCH PHÉP");
     }

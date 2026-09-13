@@ -8379,6 +8379,11 @@ Chỉ số mỗi cấp giữ nguyên nên cấp 20: máu ×14,2, năng lượng 
 đã ghi cảnh báo trong `kinhnghiem.md`. **Số đo** (menu 60, **0 lỗi**): bảng đủ 19 bậc tăng dần, cộng 999 999 → cấp 20 và 20
 điểm, hệ số máu cấp 20 = 1,15¹⁹.
 
+**Tốc độ chỉ tăng tới cấp 10** (anh chốt sau khi đọc cảnh báo trên). Tốc độ được nhân ở **hai** chỗ — công thức
+`CapDo.HeSoTocTheoCap` và `PlayerController.LenCap` (nhân thẳng `moveSpeed` mỗi lần lên cấp) — nên chặn cả hai bằng một
+hằng `CapDo.CapTangTocToiDa = 10`; chặn một chỗ thì chỗ kia vẫn tăng tiếp mà phép thử công thức vẫn xanh. **Số đo** (menu 60,
+**0 lỗi**) trên nhân vật THẬT lên thẳng cấp 20: tốc độ 5,20 → **7,09** m/giây (×1,363 = 1,035⁹), máu vẫn ×14,23 (= 1,15¹⁹).
+
 ### Người chơi mới khởi động ở mức đồ hoạ "Yếu" (13/09/2026)
 
 Anh xin: vào game thì mặc định ở **Cài đặt › Giao diện: Yếu**. Tôi hỏi lại vì có hai cách hiểu, anh chọn
