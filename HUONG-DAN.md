@@ -8314,6 +8314,26 @@ Inter, chữ thành "CHOÁNG!", "BỊ CUỐN!", "NGÃ!".
 | Người chơi bị ngã | đẩy cần 0,6 giây đi **0,00 m**, bấm phép ra **0**, báo "BẠN ĐANG BỊ HẤT NGÃ!" |
 | Qua mạng | bit "đang ngã" được gửi; bản sao không tự gieo; gói tới thì ngã, gói ngừng thì tự đứng dậy |
 
+### "Đánh rất nhiều lần mà không thấy đánh ngã" (13/09/2026)
+
+**Anh báo:** tự thử Thiên thạch vào quái và người chơi khác rất nhiều lần, không lần nào thấy hiệu ứng đánh ngã.
+
+**Phép thử lần trước có lỗ hổng:** nó gọi thẳng hiệu ứng ngã và chỉ đọc tham số của quả thiên thạch — chưa lần
+nào cho **một quả thật rơi trúng một con quái thật** rồi đếm. Phần F mới làm đúng việc anh làm: nhân vật tung
+Thiên thạch 10 lần vào một con quái. Kết quả: **10/10 trúng, 8/10 bị ngã** — đúng mức ~78% (mỗi lần 3 quả, mỗi quả
+gieo riêng 40%). Hiệu ứng **có xảy ra**.
+
+**Nguyên nhân thật — không nhìn thấy:** chụp 5 ảnh trong suốt 1,5 giây nằm (0,25 · 0,60 · 0,95 · 1,20 · 1,40 s):
+**ba quả thiên thạch nổ nối nhau** phủ lửa kín chỗ con quái ở mọi thời điểm, còn chữ "NGÃ!" trôi lên mất sau nửa
+giây giữa cả chục con số sát thương. Anh không thấy là đúng.
+
+**Sửa** (giữ nguyên 40% và 1,5 giây anh chốt): suốt lúc bị ngã, trên đầu kẻ bị ngã có **chữ NGÃ viền đen và vòng
+sao vàng xoay**, vẽ ở **lớp giao diện** (OnGUI) nên lửa 3D không che được, đặt ở độ cao 2,7 m — **cao hơn chỗ số
+sát thương hiện ra** (2,1 m) để số không đè lên chữ. Bỏ chữ "NGÃ!" trôi cũ.
+
+**Số đo** (menu 62, 0 lỗi): tung thật 10 lần → trúng 10, ngã 7; dấu hiệu hiện **376/383 khung hình đang ngã (98%)**;
+chuỗi ảnh mới thấy chữ NGÃ rõ ở cả 5 thời điểm, đè lên lửa.
+
 ### Luật đợt quái Act2: chờ 30 giây, và thêm 10 con ở xa
 
 - **Vào trận chờ đúng 30 giây** mới ra đợt đầu (trước đây 1,5 giây chơi một mình / 6 giây chơi mạng).

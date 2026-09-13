@@ -288,6 +288,85 @@ public static class ThuDanhNga
         yield return new WaitForSeconds(1.2f);
 
         // ================================================================
+        // F. DUONG THAT: NHAN VAT TUNG THIEN THACH, QUA ROI TRUNG QUAI THAT
+        // ================================================================
+        //
+        // Nguoi dung bao (13/09/2026): danh rat nhieu lan ma khong lan nao thay
+        // nga. Cac phan tren goi THANG BiDanhNga.Apply va chi DOC tham so qua
+        // thien thach - chua lan nao cho mot qua that roi trung mot con quai
+        // that roi dem. Phan nay lam dung viec nguoi choi lam.
+        Ghi("");
+        Ghi("F. tung thien thach that 10 lan vao mot con quai that");
+        {
+            var qf = quai[3];
+            int soTrungF = 0, soNgaF = 0, soTungF = 0;
+            int khungNga = 0, khungCoDau = 0;
+            bool daChupF = false;
+            for (int lan = 0; lan < 10; lan++)
+            {
+                var cuF = qf.GetComponent<BiDanhNga>(); if (cuF != null) Object.DestroyImmediate(cuF);
+                var chayF = qf.GetComponent<BurningEffect>(); if (chayF != null) Object.DestroyImmediate(chayF);
+                foreach (var v in Object.FindObjectsByType<VungLua>(FindObjectsSortMode.None)) Object.Destroy(v.gameObject);
+
+                Vector3 hf = pc.transform.forward; hf.y = 0f; hf.Normalize();
+                Vector3 cf = pc.transform.position + hf * 8f;
+                qf.transform.position = new Vector3(cf.x, VfxFactory.GroundY(cf), cf.z);
+                qf.maxHealth = 1e7f; qf.health = 1e7f;
+                Physics.SyncTransforms();
+                yield return new WaitForSeconds(2.2f);            // het hoi chieu 2 giay
+
+                float mauTruocF = qf.health;
+                pc.mana = pc.maxMana;
+                int truocPhep = 0;
+                System.Action<int, Vector3> demF = (a, b) => truocPhep++;
+                pc.DaTungPhep += demF;
+                pc.CastAt(4, qf.transform.position);
+                pc.DaTungPhep -= demF;
+                if (truocPhep > 0) soTungF++;
+
+                bool ngaLanNay = false;
+                float hanF = Time.time + 3.5f;
+                while (Time.time < hanF)
+                {
+                    var bnF = qf.GetComponent<BiDanhNga>();
+                    if (bnF != null)
+                    {
+                        ngaLanNay = true;
+                        khungNga++;
+                        if (BiDanhNga.SoDauVeLanCuoi > 0) khungCoDau++;
+                        // Chuoi anh trong suot luc nam - de biet lua no che toi giay thu may
+                        if (!daChupF)
+                        {
+                            daChupF = true;
+                            float[] moc = { 0.25f, 0.6f, 0.95f, 1.2f, 1.4f };
+                            for (int m = 0; m < moc.Length; m++)
+                            {
+                                while (bnF != null && bnF.daTroi < moc[m]) yield return null;
+                                yield return Chup("danhnga_3_chuoi_" + m + "_" + moc[m].ToString("0.00"));
+                            }
+                        }
+                    }
+                    yield return null;
+                }
+                if (qf.health < mauTruocF - 1f) soTrungF++;
+                if (ngaLanNay) soNgaF++;
+                Ghi("    lan " + (lan + 1) + ": tung " + (truocPhep > 0) + ", trung " + (qf.health < mauTruocF - 1f)
+                    + " (mat " + (mauTruocF - qf.health).ToString("F0") + " mau), bi nga " + ngaLanNay);
+            }
+            Ghi("F1. tung " + soTungF + "/10, trung " + soTrungF + "/10, bi nga " + soNgaF + "/10"
+                + " (moi lan 3 qua x 40% -> mong doi ~78% so lan co it nhat mot lan nga)");
+            Kiem(soTungF == 10, "nhan vat khong tung du 10 lan - phep do hong");
+            Kiem(soTrungF >= 8, "thien thach khong trung quai - phep do hong");
+            Kiem(soNgaF >= 4, "thien thach THAT roi trung quai that ma gan nhu khong bao gio danh nga");
+
+            // Dau hieu tren dau phai hien SUOT luc nga (lua 3D che kin con quai)
+            float tiLeDau = khungNga > 0 ? 100f * khungCoDau / khungNga : 0f;
+            Ghi("F2. dau hieu vong sao + chu NGA tren dau: hien " + khungCoDau + "/" + khungNga
+                + " khung hinh dang nga (" + tiLeDau.ToString("F0") + "%)");
+            Kiem(tiLeDau > 90f, "dang nga ma khong ve dau hieu tren dau - nguoi choi khong nhin thay");
+        }
+
+        // ================================================================
         // E. QUA MANG
         // ================================================================
         Ghi("");

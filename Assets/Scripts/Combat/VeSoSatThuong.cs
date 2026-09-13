@@ -53,5 +53,8 @@ public class VeSoSatThuong : MonoBehaviour
         // HUD dung do sau 0.
         GUI.depth = 10;
         DamagePopup.VeTatCa(cam, kieu);
+
+        // Dau hieu BI DANH NGA ve SAU con so - nam tren cung, khong bi so che
+        BiDanhNga.VeTatCa(cam, kieu);
     }
 }
