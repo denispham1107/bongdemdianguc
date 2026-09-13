@@ -1034,6 +1034,10 @@ public class GameDirector : MonoBehaviour
         // chia, vi chi no biet con nay chet vi tay ai.
         if (LaTrongTaiCuaQuai && d != null) ChiaKinhNghiem(d);
 
+        // BINH MAU / BINH MANA (10% moi loai) - cung chi may trong tai quai gieo,
+        // roi bao ca phong (QuanLyBinhRoi)
+        if (LaTrongTaiCuaQuai && d != null) QuanLyBinhRoi.GieoKhiQuaiChet(d.transform.position);
+
         alive.Remove(d);
         quyDu.Remove(d);
         quyCay.Remove(d);

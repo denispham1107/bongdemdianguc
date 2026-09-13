@@ -135,11 +135,15 @@ Ngoài ra **mỗi lần lên cấp được 1 điểm kỹ năng**.
 
 ## 5. Điểm kỹ năng và Sách phép
 
-- Vào trận ở cấp 1: **cả bảy kỹ năng đều khoá**, và anh có sẵn **1 điểm** để mở một cái mình muốn.
+- Vào trận ở cấp 1: **cả chín kỹ năng đều khoá** (7 phép + Bình máu + Bình mana), và anh có sẵn **1 điểm** để mở một cái mình muốn.
 - Mỗi lần lên cấp: **+1 điểm**. Dùng để **mở khoá** một kỹ năng mới, hoặc **nâng cấp** kỹ năng
   đang dùng — anh tự chọn.
-- Cả trận có **20 điểm** (1 lúc đầu + 19 lần lên cấp). Mở cả bảy và nâng hết lên cấp 5 cần 35 điểm — vẫn
-  không đủ: mở hết bảy kỹ năng thì còn 13 điểm để nâng (khoảng ba kỹ năng lên cấp 5).
+- Cả trận có **20 điểm** (1 lúc đầu + 19 lần lên cấp). Mở cả bảy phép và nâng hết lên cấp 5 cần 35 điểm, cộng
+  2 điểm mở hai bình là 37 — vẫn không đủ: mở hết chín kỹ năng thì còn 11 điểm để nâng.
+- **Bình máu / Bình mana** (13/09/2026): mở khoá 1 điểm, **cấp tối đa 1** (không nâng cấp). Chỉ dùng được khi đã
+  **nhặt** bình: mỗi con quái bị hạ rơi bình máu 10%, bình mana 10% (độc lập); tới gần 3,5 m là bình tự bay vào
+  người. Một bình hồi **tối đa 100 máu / 50 năng lượng**, hồi chiêu 0,5 giây; đầy thì không uống (không mất bình).
+  Số bình tính theo trận, như cấp. Chơi nhiều người thì bình rơi là **của chung cả phòng** — ai tới trước người ấy được.
   Đó chính là chỗ để anh chọn lối chơi.
 - Chỗ mở khoá và nâng cấp nằm trong cửa sổ **Sách phép** (nút hình cuốn sách, hoặc phím **P**).
   Kỹ năng chưa mở hiện ra xám cả trên bảng lẫn trên nút ngoài trận, có hình ổ khoá, và bấm vào
@@ -169,6 +173,7 @@ Kỹ năng có **cấp tối đa 5**. Mỗi cấp:
 | Thiên thạch | vũng lửa cháy trên mặt đất |
 | Khiên | *(thay bằng +15% máu khiên)* |
 | Giựt sét | *(không có hiệu ứng kéo dài)* |
+| Bình máu / Bình mana | *(không nâng cấp được — cấp tối đa 1)* |
 
 Sát thương tăng **nhân dồn** chứ không cộng tuyến tính, giống cách máu nhân vật tăng — cộng
 tuyến tính thì những cấp cuối gần như không thấy khác gì.

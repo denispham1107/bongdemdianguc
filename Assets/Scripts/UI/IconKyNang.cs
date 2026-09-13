@@ -34,6 +34,9 @@ public static class IconKyNang
     // Nen XANH LAM chu khong tim nhu Sam set: hai ky nang cung he set, phai
     // liec mot cai la phan biet duoc nut nao la nut nao.
     public static Texture2D GiatSet()    { return Ve("Icons/GiatSet",    new Color(0.04f, 0.11f, 0.28f)); }
+    // Hai binh ve bang CongCu/Icon/sinh_binh.py (khong phai Blender) - cung nen den, cung cach cong
+    public static Texture2D BinhMau()    { return Ve("Icons/BinhMau",    new Color(0.22f, 0.03f, 0.03f)); }
+    public static Texture2D BinhMana()   { return Ve("Icons/BinhMana",   new Color(0.03f, 0.06f, 0.24f)); }
 
     /// <summary>
     /// Dat anh Blender vao mot cai dia nut.

@@ -492,6 +492,24 @@ public class DongBoTran : MonoBehaviour
     /// <summary>Gui mot goi bat ky cua may nay di (KetTran dung de bao chet, bao ket tran).</summary>
     public void GuiGoi(byte[] b) { if (b != null) GuiMotGoi(b); }
 
+    /// <summary>
+    /// Gui ngay mot lan roi GUI LAP them (soLan - 1) lan cach nhau CachNhauGuiLai -
+    /// dung cho goi khong duoc phep mat (binh roi). Kenh hanh xu nhu UDP; ben nhan
+    /// tu bo ban lap theo so hieu trong goi.
+    /// </summary>
+    public void GuiNhieuLan(byte[] b, int soLan)
+    {
+        if (b == null) return;
+        GuiMotGoi(b);
+        if (soLan <= 1) return;
+        phepChoGui.Add(new PhepChoGui
+        {
+            goi = b,
+            conLai = soLan - 1,
+            guiLanSau = Time.unscaledTime + CachNhauGuiLai
+        });
+    }
+
     public void BoNguoi(byte chiSo)
     {
         daRoiTran.Add(chiSo);
@@ -600,6 +618,31 @@ public class DongBoTran : MonoBehaviour
                 byte gheNhan; int diem;
                 if (!GoiTin.DocKinhNghiem(b, out gheNhan, out diem)) { SoGoiHong++; return; }
                 if (KhiNgheKinhNghiem != null) KhiNgheKinhNghiem(gheNhan, diem);
+                return;
+            }
+            // ---- BINH ROI: chu phong gieo va chia, khach xin (QuanLyBinhRoi) ----
+            if (loai == GoiTin.LoaiBinhRoi)
+            {
+                if (LaChuPhong) return;          // chu phong la nguoi gieo
+                int soHieu, ky; Vector3 viTri;
+                if (!GoiTin.DocBinhRoi(b, out soHieu, out ky, out viTri)) { SoGoiHong++; return; }
+                QuanLyBinhRoi.NhanRoi(soHieu, ky, viTri);
+                return;
+            }
+            if (loai == GoiTin.LoaiXinBinh)
+            {
+                if (!LaChuPhong) return;         // chi chu phong quyet dinh
+                int soHieu; byte ghe;
+                if (!GoiTin.DocSoHieuGhe(b, GoiTin.LoaiXinBinh, out soHieu, out ghe)) { SoGoiHong++; return; }
+                QuanLyBinhRoi.NhanXin(soHieu, ghe);
+                return;
+            }
+            if (loai == GoiTin.LoaiBinhThuoc)
+            {
+                if (LaChuPhong) return;
+                int soHieu; byte ghe;
+                if (!GoiTin.DocSoHieuGhe(b, GoiTin.LoaiBinhThuoc, out soHieu, out ghe)) { SoGoiHong++; return; }
+                QuanLyBinhRoi.NhanThuoc(soHieu, ghe);
                 return;
             }
             if (loai == GoiTin.LoaiKetTran)

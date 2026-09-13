@@ -8334,6 +8334,65 @@ sát thương hiện ra** (2,1 m) để số không đè lên chữ. Bỏ chữ 
 **Số đo** (menu 62, 0 lỗi): tung thật 10 lần → trúng 10, ngã 7; dấu hiệu hiện **376/383 khung hình đang ngã (98%)**;
 chuỗi ảnh mới thấy chữ NGÃ rõ ở cả 5 thời điểm, đè lên lửa.
 
+### Bình máu, bình mana, bình rơi chung cả phòng; Sách phép chữ to và cuộn (13/09/2026)
+
+**Anh xin:** chữ cột trái Sách phép to thêm 15%, chữ phần chi tiết to thêm 20%, hai vùng cuộn được (sau này nhiều kỹ năng,
+lời kể dài). Thêm hai kỹ năng **Bình máu** và **Bình mana** (vẽ bình hợp phong cách kinh dị): mở khoá 1 điểm, cấp tối đa 1;
+chỉ dùng khi đã nhặt bình; giết quái 10% ra bình máu, 10% ra bình mana; tới gần là bình tự bay vào người; số bình hiện trên
+ô kỹ năng; một bình hồi tối đa 100 máu / 50 năng lượng; chờ 0,5 giây. Hai câu tôi hỏi lại: **giữ 7 ô** (bình phải kéo vào
+ô mới dùng) và **bình của chung cả phòng**.
+
+**Hình vẽ:** `python CongCu/Icon/sinh_binh.py` — bình giả kim bụng tròn, nút bịt là một chiếc sọ nhỏ (hốc mắt cháy đỏ / xanh),
+đai sắt gỉ đinh tán; bình máu máu đỏ phát sáng có bọt và máu rỉ ngoài thân; bình mana nước xanh xoáy, khắc ngôi sao ngược.
+Hai loại ảnh: `Resources/Icons/BinhMau.png`, `BinhMana.png` (nền đen, cộng lên đĩa nút như các icon khác) và `Resources/VatPham/BinhMau.png`, `BinhMana.png`
+(nền trong — tấm phẳng quay theo camera, nhấp nhô, quầng sáng, trên mặt đất).
+
+**Chia bình khi chơi nhiều người** (`QuanLyBinhRoi`): máy trọng tài quái gieo khi quái chết → gói `LoaiBinhRoi` (10 byte, số
+hiệu + loại + vị trí) → máy nào có nhân vật tới gần 3,5 m thì xin (`LoaiXinBinh`) → **chủ phòng giao cho người xin TRƯỚC** và
+bỏ mọi lời xin sau (`LoaiBinhThuoc`) → mọi máy thấy bình bay vào đúng người, chỉ máy người ấy cộng. Không để mỗi máy tự thấy
+mình gần là tự nhặt: hai người đứng hai bên một bình sẽ cùng nhặt — một bình thành hai. Kênh chạy như UDP nên cả ba gói gửi
+lặp 3 lần; gói "thuộc về" đến trước gói "rơi ra" thì ghi nhớ, bình hiện ra là giao ngay.
+
+**Uống** (`PlayerController.UongBinh`): không niệm, không ngắm, không đi qua gói kỹ năng (máu của mình do máy mình quyết, gói
+trạng thái mang sang); uống được cả khi đang niệm phép khác. Chưa mở / hết bình / máu đầy / đang hồi chiêu / bị đóng băng,
+choáng, ngã → không uống và nói rõ vì sao — uống mất bình mà không hồi được gì thì người chơi mất trắng. Số bình vẽ thành huy
+hiệu góc phải dưới ô (nút tròn, ô vuông, ô trong Sách phép), hết bình thì ô tối đi.
+
+**Sách phép:** hệ số `HeSoChuKho = 1,15` (hàng cao theo), `HeSoChuThan = 1,20`. Chi tiết tách **đầu mục đứng yên** (hình, tên,
+thông số) và **thân cuộn** (dòng cấp + lời kể) — cuộn bằng con lăn chuột và vuốt dọc ngón tay; hai vùng có thanh cuộn cam khi
+nội dung dài hơn vùng. Trước đây cả khung chi tiết cuộn chung (tên cũng trôi đi) và chỉ bằng con lăn — điện thoại không cuộn được.
+
+**Số đo** (menu 65, **0 lỗi**; menu 59, 60, 61 chạy lại vẫn 0 lỗi):
+
+| | Kết quả |
+|---|---|
+| 3000 con quái chết | 282 bình máu (9,4%), 290 bình mana (9,7%) |
+| Giết thật 24 con qua `GameDirector` | rơi 6 bình, 6/6 nằm đúng chỗ quái chết (≤ 1 m) |
+| Bình cách 6 m / đưa vào 2,5 m | nằm yên / bay vào người sau 0,33 giây, số bình +1 |
+| Chưa mở khoá, có bình | không uống được |
+| Mở khoá | cấp 1/1, không nâng cấp được |
+| Thiếu 250 máu / thiếu 30 / đầy | hồi 100 / hồi 30 / không uống, không mất bình |
+| Uống liền / sau 0,3 s / sau 0,6 s | từ chối / từ chối / uống được |
+| `CastAt(bình mana)` thiếu 120 · thiếu 20 · hết bình | +50 · +20 · từ chối |
+| Số bình trên ô (3 → 12), ô bình / ô đối chứng | máy tính 0,051 / 0,000; cảm ứng 0,043 / 0,000 |
+| Chữ cột trái (bề ngang nét) | 65 điểm = chữ đối chứng cỡ mới 65 (cỡ cũ 54) |
+| Chữ thân chi tiết | 184 điểm ≈ đối chứng cỡ mới 185 (cỡ cũ 167) |
+| Cuộn thân chi tiết (cảm ứng) | nội dung 128 / vùng 112 → kẹp 20; ảnh thân đổi 0,104, đầu mục 0,000 |
+| Mạng — máy khách | gói rơi lặp 3 lần → 1 bình; tới gần gửi xin, **chưa bay** tới khi chủ phòng giao; giao cho mình +1 |
+| Mạng — bình giao cho người khác | bay vào họ (cách 0,31 m lúc biến mất), mình không cộng |
+| Mạng — gói "thuộc về" đến trước "rơi ra" | vẫn nhận đúng bình |
+| Mạng — chủ phòng | gửi 3 gói rơi; ghế 1 xin trước, ghế 2 xin sau → giao ghế 1 (3 gói), ghế khác 0 |
+| Mạng — chủ phòng tự tới gần | tự nhặt +1, báo cả phòng, không gửi lời xin |
+
+**Những lần phép thử sai trước khi đúng:** giữ trần máu từ *trước* khi lên cấp (600 thay vì 793,5) nên "thiếu 30" thật ra
+thiếu 223; hộp chữ đối chứng đè lên viền giọt máu của cửa sổ; đặt bình vào ô ngay khung hình vừa bật chế độ cảm ứng (vào nhầm
+bộ ô vuông); số bình đã là 12 từ lượt trước nên hai ảnh giống hệt; huy hiệu số dùng kiểu chữ có lề → "12" tràn khung (sửa ở
+game). Menu 59 phần F2 (vành ô đang chọn) nay lấy **trung bình 4 khung** — quầng sáng đập nhịp, chụp một khung thì ra 1,65 lần
+rồi 1,44 lần tuỳ pha.
+
+⚠️ Còn thiếu: màn Editor cao, cột trái 9 hàng vẫn vừa (cả màn 640×300) nên **thanh cuộn cột trái chưa được đo bằng ảnh** — mã
+cuộn của nó có từ trước và dùng chung hàm thanh cuộn với thân chi tiết (đã đo). Mạng mới thử trên kênh giả lập.
+
 ### Sách phép: cửa sổ to hơn, dòng / ô đang chọn sáng lên, ổ khoá trong ô (13/09/2026)
 
 Anh vẽ một khung xanh trên ảnh chụp (màn 1560×572) và xin: cửa sổ to bằng khung ấy; cột trái — dòng đang chọn phải
@@ -8640,6 +8699,7 @@ Lần chạy đầu phép thử báo cả 10 con "lơ lửng": tia chiếu từ 
 | **62. Chay thu THIEN THACH DANH NGA** | Xác suất đánh ngã trên 1000 lần gieo; thiên thạch của Quỷ dữ không đánh ngã; quả nhân vật tung mang đúng 40%·1,5 giây; trên quái thật đo độ cao bị hất, vị trí xương đầu lúc nằm (ngửa, sát đất), đứng im, đứng dậy; người chơi bị ngã không đi / không tung phép; bit "đang ngã" qua mạng. Số đo `danhnga.txt`. |
 | **63. Chay thu DANH NGA NGUOI CHOI KHAC (qua mang)** | Bộ đồng bộ thật + kênh giả lập: người kia tung Thiên thạch bằng gói kỹ năng thật vào mình (đếm ngã, đo hình nằm ngửa từ xương đầu, dấu hiệu); máy người kia báo "đang ngã" bằng gói trạng thái thật → bản sao phải nằm, có dấu hiệu, đứng dậy; bit ngã qua được gói người chơi và gói quái. Số đo `danhnga_nguoichoi.txt`. |
 | **64. Chay thu QUAI VONG NGOAI TRUY LUNG (60 giay)** | Dùng đợt quái thật: hẹn giờ 60 giây từng con; trước 60 giây quái chưa gặp không tiến lại (trung bình); sau 60 giây đếm con vào 14 m và con ra đòn thật; đối chứng hai con quái thường; dựng ca kẹt sau vật cản thật và ca nhốt trong bốn bức tường (phải vòng / đổi chỗ). Số đo `quai_truylung.txt`. |
+| **65. Chay thu BINH MAU - BINH MANA (roi, nhat, uong, mang)** | Tỉ lệ rơi (3000 lần + giết quái thật), nhặt trong / ngoài bán kính, uống (khoá, hết, đầy, hồi chiêu, 100 / 50), số bình trên ô (so ảnh với ô đối chứng), chữ Sách phép to (so bề ngang nét với chữ đối chứng cỡ cũ / mới), cuộn thân chi tiết, 5 ca mạng qua bộ đồng bộ thật + kênh giả lập. Số đo `binh_mau_mana.txt`. |
 | **56. Chay thu DOT QUAI Act2 + cho xuat phat** | *(13/09/2026: thêm đo chờ 30 giây và 10 con xa 55–65 m)*  Kiểm chỗ xuất phát ngẫu nhiên (hai máy cùng mã phòng ra cùng danh sách, cách nhau ≥ 22 m, trên đất, ngoài nước, không vướng vật cản) và luật đợt quái Act2 (đợt 1 bốn con quanh mỗi người; đợt sau cộng dồn quái và mạnh thêm 5% máu · sát thương); kiểm Act1 không bị đổi. Số đo `dotquai_act2.txt`. |
 | **55. Chay thu KET TRAN (nguoi song sot cuoi cung)** | Mở kênh giả lập như menu 45: kiểm gói tin kết trận/chết, máy chủ phòng phán quyết đúng lúc còn một người, bảng điểm cộng đúng người, máy khách không tự kết luận và hiện đúng kết quả nghe được, chết rồi camera chuyển sang người còn sống, chụp màn kết trận. Số đo `kettran.txt`, ảnh `kettran_*.png`. |
 | **54c. Chay thu LOC XOAY cuon lo lua** | Vào Play Act2, thả một cơn lốc đi thẳng vào lò: đo mốc thời gian lửa tắt / lò nhấc lên / lò biến mất / lò mọc lại, kiểm than trong chậu tắt bằng độ sáng trên ảnh, và kiểm vật có hệ hạt khác vẫn không bị cuốn. Ảnh `locxoay_*.png`, số đo `locxoay_lolua.txt`. |

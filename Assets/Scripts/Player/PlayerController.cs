@@ -117,9 +117,14 @@ public class PlayerController : MonoBehaviour
             case 4: return Mathf.Max(0f, meteorTimer);
             case 5: return Mathf.Max(0f, khiengTimer);
             case 6: return Mathf.Max(0f, giatSetTimer);
+            case CapDo.KyBinhMau: return Mathf.Max(0f, binhMauTimer);
+            case CapDo.KyBinhMana: return Mathf.Max(0f, binhManaTimer);
         }
         return 0f;
     }
+
+    public float BinhMauCooldown01 { get { return Mathf.Clamp01(binhMauTimer / HoiChieuBinh); } }
+    public float BinhManaCooldown01 { get { return Mathf.Clamp01(binhManaTimer / HoiChieuBinh); } }
 
     /// <summary>Khieng con bao nhieu mau, 0..1. Bang 0 la khong co khieng.</summary>
     public float KhiengMau01 { get { return khiengHienTai != null ? khiengHienTai.Mau01 : 0f; } }
@@ -176,6 +181,17 @@ public class PlayerController : MonoBehaviour
 
     float fireballTimer, iceTimer, boltTimer, tornadoTimer;
     float castTimer, castTotal, meteorTimer, khiengTimer, giatSetTimer;
+
+    // ---- Binh mau / binh mana (ky nang 7, 8 - them 13/09/2026) ----
+    // HANG SO chu khong phai truong public: truong public se bi prefab va hai
+    // canh luu de len (da vap voi tornadoCooldown), sua so trong code khong an.
+    /// <summary>Mot binh mau hoi TOI DA bay nhieu mau.</summary>
+    public const float MauMoiBinh = 100f;
+    /// <summary>Mot binh mana hoi TOI DA bay nhieu nang luong.</summary>
+    public const float ManaMoiBinh = 50f;
+    /// <summary>Uong xong mot binh phai cho bay nhieu giay moi uong tiep duoc.</summary>
+    public const float HoiChieuBinh = 0.5f;
+    float binhMauTimer, binhManaTimer;
     Khieng khiengHienTai;
     int castingSkill = -1;
     Vector3 castAim;
@@ -324,6 +340,8 @@ public class PlayerController : MonoBehaviour
         if (meteorTimer > 0f) meteorTimer -= dt;
         if (khiengTimer > 0f) khiengTimer -= dt;
         if (giatSetTimer > 0f) giatSetTimer -= dt;
+        if (binhMauTimer > 0f) binhMauTimer -= dt;
+        if (binhManaTimer > 0f) binhManaTimer -= dt;
 
         HandleSkillSelect();
         HandleCasting(dt);
@@ -731,6 +749,11 @@ public class PlayerController : MonoBehaviour
 
     public void CastAt(int skill, Vector3 aim)
     {
+        // Binh mau / binh mana KHONG niem chu, khong ngam, khong di qua mang: uong
+        // ngay ca khi dang niem mot phep khac (dang niem ma sap chet thi phai uong
+        // duoc). Mau cua minh do chinh may nay quyet, goi trang thai tu mang sang.
+        if (CapDo.LaKyBinh(skill)) { UongBinh(skill); return; }
+
         // Bam hut thi phai bao cho nguoi choi biet vi sao, khong duoc im lang.
         if (castTimer > 0f) { Say("Đang niệm chú, chờ một chút!"); return; }
 
@@ -826,6 +849,50 @@ public class PlayerController : MonoBehaviour
             // vi sao khieng tu nhien hien ra.
             Debug.LogWarning("[PlayerController] So hieu ky nang la: " + skill);
         }
+    }
+
+    /// <summary>
+    /// UONG MOT BINH MAU / BINH MANA.
+    ///
+    /// Nguoi dung (13/09/2026): mo khoa bang 1 diem ky nang, chi dung duoc khi da
+    /// NHAT duoc binh (roi 10% moi loai khi giet quai), mot binh hoi TOI DA 100 mau
+    /// / 50 nang luong, cho 0,5 giay moi uong tiep.
+    ///
+    /// Day hoac het binh thi KHONG uong va noi ro vi sao - uong mat mot binh ma
+    /// khong hoi duoc gi la nguoi choi mat trang ma khong biet.
+    /// Bi dong cung / choang / nga thi cung khong uong duoc (luat chung: khong
+    /// dung ky nang nao).
+    /// </summary>
+    /// <returns>Luong da hoi that (0 neu khong uong).</returns>
+    public float UongBinh(int ky)
+    {
+        string ten = SachPhep.Ten(ky);
+        string caidangkhoa = LyDoKhongTungDuoc();
+        if (caidangkhoa != null) { Say(caidangkhoa); return 0f; }
+        if (!CapDo.DaMo(ky)) { Say(ten + " chưa mở khoá — vào SÁCH PHÉP để mở"); return 0f; }
+        if (CapDo.SoBinh(ky) <= 0)
+        {
+            Say("Hết " + (ky == CapDo.KyBinhMau ? "bình máu" : "bình mana") + " — giết quái để nhặt thêm");
+            return 0f;
+        }
+
+        bool laMau = ky == CapDo.KyBinhMau;
+        if ((laMau ? binhMauTimer : binhManaTimer) > 0f) { Say(ten + " đang hồi chiêu"); return 0f; }
+
+        float thieu = laMau
+            ? (health != null ? health.maxHealth - health.health : 0f)
+            : maxMana - mana;
+        if (laMau && health != null && health.IsDead) return 0f;
+        if (thieu <= 0.5f) { Say(laMau ? "Máu đang đầy" : "Năng lượng đang đầy"); return 0f; }
+
+        float hoi = Mathf.Min(laMau ? MauMoiBinh : ManaMoiBinh, thieu);
+        if (!CapDo.BotBinh(ky)) return 0f;
+        if (laMau) { health.Heal(hoi); binhMauTimer = HoiChieuBinh; }
+        else { mana = Mathf.Min(maxMana, mana + hoi); binhManaTimer = HoiChieuBinh; }
+
+        DamagePopup.SpawnText(transform.position + Vector3.up * 2.3f, "+" + Mathf.RoundToInt(hoi),
+                              laMau ? new Color(1f, 0.30f, 0.25f) : new Color(0.45f, 0.72f, 1f));
+        return hoi;
     }
 
     /// <summary>

@@ -21,6 +21,8 @@ public partial class GameHUD : MonoBehaviour
     const float Ref = 1080f;             // thiet ke theo man hinh cao 1080
 
     Texture2D iconFire, iconIce, iconBolt, iconWind, iconMeteor, iconKhieng, iconGiatSet;
+    Texture2D iconBinhMau, iconBinhMana;
+    GUIStyle kieuSoBinh;
     Texture2D gradMau, gradMana, gradKhieng, gradKhiengYeu, gradKinhNghiem;
     Texture2D vongNen, vongNum, vanhNut;
     // Anh quyen sach phep ve san (CongCu/Icon/sinh_sach_phep.py)
@@ -136,8 +138,9 @@ public partial class GameHUD : MonoBehaviour
     /// </summary>
     void CapNhatChiBao()
     {
+        // Binh mau / mana khong ngam gi ca - keo ra roi tha van chi la uong binh
         bool ve = CamUng.DangDung && player != null
-                  && mayNgam.DangNgam && mayNgam.DaRaKhoiNut;
+                  && mayNgam.DangNgam && mayNgam.DaRaKhoiNut && !CapDo.LaKyBinh(mayNgam.KyNang);
 
         if (!ve)
         {
@@ -200,6 +203,8 @@ public partial class GameHUD : MonoBehaviour
         iconMeteor = IconKyNang.ThienThach();
         iconKhieng = IconKyNang.Khieng();
         iconGiatSet = IconKyNang.GiatSet();
+        iconBinhMau = IconKyNang.BinhMau();
+        iconBinhMana = IconKyNang.BinhMana();
         vongNen = VongTron(96, new Color(1f, 1f, 1f, 1f), 0.86f, 0.10f);
         anhSachPhep = Resources.Load<Texture2D>("GiaoDien/SachPhep");
 
@@ -1149,7 +1154,7 @@ public partial class GameHUD : MonoBehaviour
     public Texture2D[] BoIcon()
     {
         return new Texture2D[] { iconFire, iconIce, iconBolt, iconWind,
-                                 iconMeteor, iconKhieng, iconGiatSet };
+                                 iconMeteor, iconKhieng, iconGiatSet, iconBinhMau, iconBinhMana };
     }
 
     void VeNutKyNangTron(float s)
@@ -1198,6 +1203,7 @@ public partial class GameHUD : MonoBehaviour
                 // Rong phan co hinh = 0,416 ban kinh nut: ban o khoa ghep tu
                 // hinh chu nhat truoc day rong 0,52r, nguoi dung xin nho di 20%.
                 IconKhoa.Ve(rect.center, r * RongKhoaTron);
+                VeSoBinh(rect, i, s, true);
                 GUI.color = Color.white;
                 continue;      // khong ve vanh sang, khong ve hoi chieu
             }
@@ -1227,6 +1233,7 @@ public partial class GameHUD : MonoBehaviour
                 VeCungHoiChieu(t, r * 1.00f, 1f - hoi, s);
                 VeSoGiay(rect, player.HoiChieuGiay(i), s);
             }
+            VeSoBinh(rect, i, s, true);
         }
         GUI.color = cu;
 
@@ -1245,6 +1252,8 @@ public partial class GameHUD : MonoBehaviour
             case 4: return player.MeteorCooldown01;
             case 5: return player.KhiengCooldown01;
             case 6: return player.GiatSetCooldown01;
+            case CapDo.KyBinhMau: return player.BinhMauCooldown01;
+            case CapDo.KyBinhMana: return player.BinhManaCooldown01;
             // Khong de "default" tra ve Khieng: them ky nang moi ma quen sua
             // cho nay thi nut moi lay nham vong hoi chieu cua Khieng, va loi ay
             // nhin vao khong doc ra duoc.
@@ -1279,11 +1288,12 @@ public partial class GameHUD : MonoBehaviour
             string ten = o < phim.Length ? phim[o] : (o + 1).ToString();
 
             if (ky == SachPhep.Trong) { DrawSkillSlotTrong(r, ten, s); continue; }
-            if (!CapDo.DaMo(ky)) { DrawSkillSlotKhoa(r, icon[ky], ten, s); continue; }
+            if (!CapDo.DaMo(ky)) { DrawSkillSlotKhoa(r, icon[ky], ten, s); VeSoBinh(r, ky, s, false); continue; }
 
             DrawSkillSlot(r, icon[ky], ten, ky,
                           player != null ? HoiChieu01(ky) : 0f,
                           player != null && player.SelectedSkill == ky, s);
+            VeSoBinh(r, ky, s, false);
         }
 
         // Mau khieng KHONG ve o day nua - no da co dai rieng tren bang trang
@@ -1382,6 +1392,52 @@ public partial class GameHUD : MonoBehaviour
     ///
     /// <paramref name="tam"/> tinh tu DUOI len giong toa do cham.
     /// </summary>
+    /// <summary>
+    /// SO BINH CON LAI tren o ky nang binh mau / binh mana (nguoi dung xin hien
+    /// "so luong bao nhieu binh con lai trong o ky nang"). Ve ca khi con khoa: binh
+    /// van nhat duoc truoc khi mo khoa. Het binh thi o toi di va so chuyen xam do.
+    /// Ky nang khac thi khong ve gi.
+    /// </summary>
+    public void VeSoBinh(Rect o, int ky, float s, bool tron)
+    {
+        if (!CapDo.LaKyBinh(ky)) return;
+        int n = CapDo.SoBinh(ky);
+        var cu = GUI.color;
+
+        if (n <= 0 && CapDo.DaMo(ky))
+        {
+            GUI.color = new Color(0f, 0f, 0f, 0.55f);
+            GUI.DrawTexture(o, tron ? vongNum : barTex, ScaleMode.StretchToFill, true);
+        }
+
+        if (kieuSoBinh == null)
+        {
+            kieuSoBinh = new GUIStyle(GUI.skin.label);
+            kieuSoBinh.alignment = TextAnchor.MiddleCenter;
+            kieuSoBinh.padding = new RectOffset(0, 0, 0, 0);
+            kieuSoBinh.margin = new RectOffset(0, 0, 0, 0);
+            kieuSoBinh.clipping = TextClipping.Overflow;
+            kieuSoBinh.wordWrap = false;
+        }
+        kieuSoBinh.font = GiaoDien.ChuDam;
+        float kt = Mathf.Max(18f * s, o.height * 0.40f);
+        kieuSoBinh.fontSize = Mathf.Max(9, Mathf.RoundToInt(kt * 0.62f));
+        kieuSoBinh.normal.textColor = n > 0 ? new Color(1f, 0.95f, 0.82f) : new Color(0.75f, 0.45f, 0.40f);
+
+        string chu = n.ToString();
+        float rong = Mathf.Max(kt, kieuSoBinh.CalcSize(new GUIContent(chu)).x + kt * 0.45f);
+        // Goc phai duoi; nut tron thi keo vao trong mot chut cho khoi loi ra ngoai vanh
+        float lui = tron ? o.width * 0.06f : 0f;
+        var nen = new Rect(o.xMax - rong - lui + 2f * s, o.yMax - kt - lui + 2f * s, rong, kt);
+        GUI.color = new Color(0.05f, 0.02f, 0.02f, 0.92f);
+        GUI.DrawTexture(nen, vongNum, ScaleMode.StretchToFill, true);
+        GUI.color = n > 0 ? new Color(0.85f, 0.62f, 0.30f, 0.95f) : new Color(0.40f, 0.30f, 0.28f, 0.9f);
+        GUI.DrawTexture(nen, vanhNut, ScaleMode.StretchToFill, true);
+        GUI.color = Color.white;
+        GUI.Label(nen, chu, kieuSoBinh);
+        GUI.color = cu;
+    }
+
     void VeSoGiay(Rect o, float giay, float s)
     {
         if (giay <= 0.05f) return;

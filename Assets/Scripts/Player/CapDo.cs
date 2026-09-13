@@ -26,13 +26,23 @@ public static class CapDo
     public const int CapToiDa = 20;
     public const int CapKyNangToiDa = 5;
 
+    /// <summary>So hieu hai ky nang DUNG BINH (them 13/09/2026). Chung chi can mo
+    /// khoa (1 diem), khong nang cap duoc - cap toi da 1.</summary>
+    public const int KyBinhMau = 7;
+    public const int KyBinhMana = 8;
+
+    /// <summary>Cap toi da cua TUNG ky nang: binh mau / binh mana la 1, con lai 5.</summary>
+    public static int CapToiDaCua(int ky) { return LaKyBinh(ky) ? 1 : CapKyNangToiDa; }
+
+    public static bool LaKyBinh(int ky) { return ky == KyBinhMau || ky == KyBinhMana; }
+
     /// <summary>
     /// Toc do chi tang toi cap nay, sau do dung (nguoi dung chot 13/09/2026). Tang
     /// deu toi cap 20 thi toc do x1,92 (~10 m/giay) - chay vuot moi loai quai (nhanh
     /// nhat 5,98 m/giay). Dung o cap 10: x1,363 (~7,1 m/giay).
     /// </summary>
     public const int CapTangTocToiDa = 10;
-    public const int SoKyNang = 7;
+    public const int SoKyNang = 9;       // 7 phep + binh mau + binh mana
 
     /// <summary>Giet mot nguoi choi khac duoc bao nhieu kinh nghiem.</summary>
     public const int KnGietNguoi = 250;
@@ -44,6 +54,33 @@ public static class CapDo
     public static int Cap { get; private set; }
     public static int KinhNghiem { get; private set; }        // tich luy trong CAP hien tai
     public static int DiemKyNang { get; private set; }
+
+    /// <summary>So binh mau / binh mana dang mang - nhat duoc khi giet quai, tinh theo tran.</summary>
+    public static int SoBinhMau { get; private set; }
+    public static int SoBinhMana { get; private set; }
+
+    public static int SoBinh(int ky) { return ky == KyBinhMau ? SoBinhMau : ky == KyBinhMana ? SoBinhMana : 0; }
+
+    /// <summary>Cong mot binh vua nhat duoc.</summary>
+    public static void ThemBinh(int ky)
+    {
+        BaoDamCoSan();
+        if (ky == KyBinhMau) SoBinhMau++;
+        else if (ky == KyBinhMana) SoBinhMana++;
+        else return;
+        if (KhiDoi != null) KhiDoi();
+    }
+
+    /// <summary>Bot mot binh. Tra false neu het binh.</summary>
+    public static bool BotBinh(int ky)
+    {
+        BaoDamCoSan();
+        if (ky == KyBinhMau && SoBinhMau > 0) SoBinhMau--;
+        else if (ky == KyBinhMana && SoBinhMana > 0) SoBinhMana--;
+        else return false;
+        if (KhiDoi != null) KhiDoi();
+        return true;
+    }
 
     /// <summary>Cap cua tung ky nang, 0 = con khoa.</summary>
     static readonly int[] capKyNang = new int[SoKyNang];
@@ -65,6 +102,8 @@ public static class CapDo
         Cap = 1;
         KinhNghiem = 0;
         DiemKyNang = 1;
+        SoBinhMau = 0;
+        SoBinhMana = 0;
         for (int i = 0; i < SoKyNang; i++) capKyNang[i] = 0;
         if (KhiDoi != null) KhiDoi();
     }
@@ -186,7 +225,7 @@ public static class CapDo
     public static bool NangCapDuoc(int ky)
     {
         return ky >= 0 && ky < SoKyNang && DaMo(ky)
-               && capKyNang[ky] < CapKyNangToiDa && DiemKyNang > 0;
+               && capKyNang[ky] < CapToiDaCua(ky) && DiemKyNang > 0;
     }
 
     /// <summary>Mo khoa mot ky nang (thanh cap 1). Tra ve false neu khong du dieu kien.</summary>

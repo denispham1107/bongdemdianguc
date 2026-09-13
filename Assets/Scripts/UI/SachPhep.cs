@@ -25,7 +25,7 @@ using UnityEngine;
 public static class SachPhep
 {
     /// <summary>So ky nang dang co trong kho.</summary>
-    public const int SoKyNang = 7;
+    public const int SoKyNang = CapDo.SoKyNang;     // 7 phep + binh mau + binh mana
 
     /// <summary>So o tren ban cam ung - bang so nut tron dang ve.</summary>
     public const int SoOTron = 7;
@@ -194,6 +194,8 @@ public static class SachPhep
             case 4: return "THIÊN THẠCH";
             case 5: return "KHIÊN";
             case 6: return "GIỰT SÉT";
+            case CapDo.KyBinhMau: return "BÌNH MÁU";
+            case CapDo.KyBinhMana: return "BÌNH MANA";
             default: return "";
         }
     }
@@ -210,6 +212,8 @@ public static class SachPhep
             case 4: return "Ba khối đá lửa rơi xuống";
             case 5: return "Vòm chắn quanh mình";
             case 6: return "Tia sét nối liền kẻ địch";
+            case CapDo.KyBinhMau: return "Uống một bình, hồi tối đa 100 máu";
+            case CapDo.KyBinhMana: return "Uống một bình, hồi tối đa 50 năng lượng";
             default: return "";
         }
     }
@@ -268,6 +272,26 @@ public static class SachPhep
                      + "tiếp sang những kẻ đứng gần đó.\n\n"
                      + "Mỗi lần nhảy sát thương giảm bớt, nhưng một tia có thể quét hết "
                      + "cả một đám đang xúm lại. Đòn rẻ, hồi nhanh, hợp lúc bị vây.";
+            case CapDo.KyBinhMau:
+                return "Uống cạn một bình máu đặc sánh, hồi ngay tối đa 100 máu. Máu đang đầy "
+                     + "thì không uống — không phí bình.\n\n"
+                     + "Không có sẵn: bình máu chỉ có khi NHẶT được. Mỗi con quái bị hạ có "
+                     + "10% khả năng rơi ra một bình máu. Tới gần là bình tự bay vào người, và "
+                     + "số bình đang có hiện ngay trên ô kỹ năng.\n\n"
+                     + "Chơi nhiều người thì bình rơi là của CHUNG cả phòng — ai tới trước người "
+                     + "ấy được.\n\n"
+                     + "Chỉ cần mở khoá bằng 1 điểm kỹ năng, không nâng cấp được. Uống xong "
+                     + "phải chờ 0,5 giây mới uống bình tiếp theo.";
+            case CapDo.KyBinhMana:
+                return "Uống một bình nước phép xanh lạnh buốt, hồi ngay tối đa 50 năng lượng. "
+                     + "Năng lượng đang đầy thì không uống.\n\n"
+                     + "Bình mana chỉ có khi NHẶT được: mỗi con quái bị hạ có 10% khả năng rơi "
+                     + "ra một bình. Tới gần là bình tự bay vào người, số bình còn lại hiện "
+                     + "trên ô kỹ năng.\n\n"
+                     + "Chơi nhiều người thì bình rơi là của CHUNG cả phòng — ai tới trước người "
+                     + "ấy được.\n\n"
+                     + "Mở khoá bằng 1 điểm kỹ năng, không nâng cấp được. Uống xong phải chờ "
+                     + "0,5 giây mới uống bình tiếp theo.";
             default: return "";
         }
     }
@@ -287,6 +311,8 @@ public static class SachPhep
             case 4: nangLuong = pc.meteorCost; hoiChieu = pc.meteorCooldown; niemChu = pc.meteorCastTime; break;
             case 5: nangLuong = pc.khiengCost; hoiChieu = pc.khiengCooldown; niemChu = pc.khiengCastTime; break;
             case 6: nangLuong = pc.giatSetCost; hoiChieu = pc.giatSetCooldown; niemChu = pc.giatSetCastTime; break;
+            case CapDo.KyBinhMau:
+            case CapDo.KyBinhMana: nangLuong = 0f; hoiChieu = PlayerController.HoiChieuBinh; niemChu = 0f; break;
         }
     }
 }

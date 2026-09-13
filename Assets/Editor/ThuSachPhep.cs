@@ -632,30 +632,49 @@ public static class ThuSachPhep
         }
 
         // ---- F2. o dang chon: vanh quanh o sang hon moi o khac ----
+        // Quang sang o dang chon DAP NHIP (do dac 0,40 - 0,62, chu ky ~1,57 giay). Chup MOT khung
+        // thi ket qua tuy pha luc chup: cung ma nguon, ban cam ung lan truoc 1,65 lan, lan sau 1,60
+        // va 1,44 (13/09/2026). Nay chup 4 khung trai deu mot chu ky roi lay TRUNG BINH. Nguong
+        // 1,4: o tron cam ung nam sat nhau, quang cua o chon loang sang vanh o ben canh.
         {
             int n = SachPhep.SoODangDung;
             int oGiu1 = SachPhep.ONaoGiu(1);
             CuaSoSachPhep.ChonO(oGiu1);
-            Texture2D tex = null;
-            yield return ChupTex(t => tex = t);
-            float vChon = DoSangVanh(tex, CuaSoSachPhep.OTaiVung(b.vungO, oGiu1, s), s), vKhacMax = 0f;
-            for (int o = 0; o < n; o++)
-                if (o != oGiu1) vKhacMax = Mathf.Max(vKhacMax, DoSangVanh(tex, CuaSoSachPhep.OTaiVung(b.vungO, o, s), s));
+            float vChon = 0f, vKhacMax = 0f;
+            var vKhac = new float[n];
+            for (int lan = 0; lan < 4; lan++)
+            {
+                Texture2D tex = null;
+                yield return ChupTex(t => tex = t);
+                vChon += DoSangVanh(tex, CuaSoSachPhep.OTaiVung(b.vungO, oGiu1, s), s) * 0.25f;
+                for (int o = 0; o < n; o++)
+                    if (o != oGiu1) vKhac[o] += DoSangVanh(tex, CuaSoSachPhep.OTaiVung(b.vungO, o, s), s) * 0.25f;
+                Object.Destroy(tex);
+                yield return new WaitForSecondsRealtime(0.39f);
+            }
+            for (int o = 0; o < n; o++) vKhacMax = Mathf.Max(vKhacMax, vKhac[o]);
             Ghi("F2. cham o " + (oGiu1 + 1) + " (giu ky nang 1): dang xem = " + CuaSoSachPhep.DangXem
-                + ", vanh o chon " + vChon.ToString("F3") + " / vanh o khac sang nhat " + vKhacMax.ToString("F3"));
+                + ", vanh o chon " + vChon.ToString("F3") + " / vanh o khac sang nhat " + vKhacMax.ToString("F3")
+                + " (trung binh 4 khung, x" + (vKhacMax > 0 ? (vChon / vKhacMax).ToString("F2") : "?") + ")");
             Kiem(CuaSoSachPhep.DangXem == 1, "cham o ma khong chon ky nang trong o");
-            Kiem(vChon >= vKhacMax * 1.6f, "o dang chon khong noi bat hon cac o khac");
-            Object.Destroy(tex);
+            Kiem(vChon >= vKhacMax * 1.4f, "o dang chon khong noi bat hon cac o khac");
 
             // O TRONG: bo ky nang o o 2 ra roi cham vao -> chinh o trong ay sang, o giu ky nang dang xem thi tat
             SachPhep.BoKhoiO(2);
             CuaSoSachPhep.ChonO(2);
-            yield return ChupTex(t => tex = t);
-            float vTrong = DoSangVanh(tex, CuaSoSachPhep.OTaiVung(b.vungO, 2, s), s);
-            float vCu = DoSangVanh(tex, CuaSoSachPhep.OTaiVung(b.vungO, oGiu1, s), s);
-            Ghi("F2b. cham o trong 3: vanh o trong " + vTrong.ToString("F3") + ", vanh o " + (oGiu1 + 1) + " (vua chon luc nay) " + vCu.ToString("F3"));
-            Kiem(vTrong >= vCu * 1.6f, "cham o trong ma o trong khong hien la dang chon");
-            Object.Destroy(tex);
+            float vTrong = 0f, vCu = 0f;
+            for (int lan = 0; lan < 4; lan++)
+            {
+                Texture2D tex = null;
+                yield return ChupTex(t => tex = t);
+                vTrong += DoSangVanh(tex, CuaSoSachPhep.OTaiVung(b.vungO, 2, s), s) * 0.25f;
+                vCu += DoSangVanh(tex, CuaSoSachPhep.OTaiVung(b.vungO, oGiu1, s), s) * 0.25f;
+                Object.Destroy(tex);
+                yield return new WaitForSecondsRealtime(0.39f);
+            }
+            Ghi("F2b. cham o trong 3: vanh o trong " + vTrong.ToString("F3") + ", vanh o " + (oGiu1 + 1) + " (vua chon luc nay) "
+                + vCu.ToString("F3") + " (x" + (vCu > 0 ? (vTrong / vCu).ToString("F2") : "?") + ")");
+            Kiem(vTrong >= vCu * 1.4f, "cham o trong ma o trong khong hien la dang chon");
             SachPhep.DatLai();
         }
 

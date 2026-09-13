@@ -171,6 +171,69 @@ public static class GoiTin
         return true;
     }
 
+    // ================================================================
+    //  BINH ROI (binh mau / binh mana roi ra khi giet quai) - 13/09/2026
+    // ================================================================
+    // Chu phong la TRONG TAI (xem QuanLyBinhRoi):
+    //   LoaiBinhRoi   chu phong -> ca phong : binh so hieu nay, loai nay, nam o day   (10 byte)
+    //   LoaiXinBinh   khach -> chu phong    : nhan vat ghe nay toi gan, xin nhat      (4 byte)
+    //   LoaiBinhThuoc chu phong -> ca phong : binh nay giao cho ghe nay (xin truoc)   (4 byte)
+    public const byte LoaiBinhRoi = 12;
+    public const byte LoaiXinBinh = 13;
+    public const byte LoaiBinhThuoc = 14;
+
+    static void VietShort(byte[] b, int i, short v)
+    {
+        b[i] = (byte)(v & 0xFF);
+        b[i + 1] = (byte)((v >> 8) & 0xFF);
+    }
+
+    static short DocShort(byte[] b, int i) { return (short)(b[i] | (b[i + 1] << 8)); }
+
+    public static byte[] VietBinhRoi(int soHieu, int ky, Vector3 p)
+    {
+        var b = new byte[10];
+        b[0] = LoaiBinhRoi;
+        VietUShort(b, 1, soHieu);
+        b[3] = (byte)Mathf.Clamp(ky, 0, 255);
+        VietShort(b, 4, NenToaDo(p.x));
+        VietShort(b, 6, NenToaDo(p.y));
+        VietShort(b, 8, NenToaDo(p.z));
+        return b;
+    }
+
+    public static bool DocBinhRoi(byte[] b, out int soHieu, out int ky, out Vector3 p)
+    {
+        soHieu = 0; ky = -1; p = Vector3.zero;
+        if (b == null || b.Length < 10 || b[0] != LoaiBinhRoi) return false;
+        soHieu = DocUShort(b, 1);
+        ky = b[3];
+        p = new Vector3(MoToaDo(DocShort(b, 4)), MoToaDo(DocShort(b, 6)), MoToaDo(DocShort(b, 8)));
+        return true;
+    }
+
+    public static byte[] VietXinBinh(int soHieu, byte ghe) { return VietSoHieuGhe(LoaiXinBinh, soHieu, ghe); }
+    public static byte[] VietBinhThuoc(int soHieu, byte ghe) { return VietSoHieuGhe(LoaiBinhThuoc, soHieu, ghe); }
+
+    static byte[] VietSoHieuGhe(byte loai, int soHieu, byte ghe)
+    {
+        var b = new byte[4];
+        b[0] = loai;
+        VietUShort(b, 1, soHieu);
+        b[3] = ghe;
+        return b;
+    }
+
+    /// <summary>Doc goi LoaiXinBinh hoac LoaiBinhThuoc (cung khuon).</summary>
+    public static bool DocSoHieuGhe(byte[] b, byte loai, out int soHieu, out byte ghe)
+    {
+        soHieu = 0; ghe = 255;
+        if (b == null || b.Length < 4 || b[0] != loai) return false;
+        soHieu = DocUShort(b, 1);
+        ghe = b[3];
+        return true;
+    }
+
     /// <summary>So ghe nhieu nhat trong mot tran - bang so kenh cua KenhTrucTiep.</summary>
     public const int SoGheToiDa = 4;
 
