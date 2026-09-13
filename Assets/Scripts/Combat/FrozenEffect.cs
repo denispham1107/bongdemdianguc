@@ -61,6 +61,23 @@ public class FrozenEffect : MonoBehaviour
     GameObject breathVfx;
     float fadeIn;
 
+    /// <summary>Mau chu "ĐÓNG BĂNG!" bay len - xanh bang, khac mau xanh trang cua "CHOÁNG!".</summary>
+    public static readonly Color MauChuDongBang = new Color(0.55f, 0.88f, 1f);
+
+    /// <summary>
+    /// Chu "ĐÓNG BĂNG!" bay len dau - LUC BAT DAU dong cung (khong lap lai khi dang dong cung).
+    ///
+    /// Nguoi dung 14/09/2026: "khong thay xuat hien chu Dong bang giong nhu Choang, Nga".
+    /// Truoc day khong co dong code nao sinh chu cho dong bang - ca quai lan nguoi choi.
+    /// Goi o HAI noi, dung nhu "CHOÁNG!": may tu tinh (Apply) va may nhan tu goi tin
+    /// (HieuUngQuaMang.ApCo) - ban sao khong di qua Apply nen khong bao gio in hai lan.
+    /// </summary>
+    public static void BaoChuDongBang(Transform t)
+    {
+        if (t == null) return;
+        DamagePopup.SpawnText(t.position + Vector3.up * 2.1f, "ĐÓNG BĂNG!", MauChuDongBang);
+    }
+
     public static void Apply(Damageable d, float seconds)
     {
         if (d == null || d.IsDead) return;
@@ -69,6 +86,7 @@ public class FrozenEffect : MonoBehaviour
         // hai ket qua khac nhau. Hieu ung cua ban sao den tu goi tin - xem
         // HieuUngQuaMang.ApCo.
         if (d.mauDoMayKhacQuyet) return;
+        if (seconds <= 0f) return;
 
         var f = d.GetComponent<FrozenEffect>();
         if (f == null)
@@ -76,6 +94,7 @@ public class FrozenEffect : MonoBehaviour
             f = d.gameObject.AddComponent<FrozenEffect>();
             f.remaining = seconds;
         }
+        if (!f.IsFullyFrozen) BaoChuDongBang(d.transform);
         f.dongCungConLai = Mathf.Max(f.dongCungConLai, seconds);
         f.remaining = Mathf.Max(f.remaining, seconds);
     }
@@ -85,14 +104,26 @@ public class FrozenEffect : MonoBehaviour
         shellMat = Mats.FrozenShell();
         shellMat.SetFloat("_Amount", 0f);
 
-        // Phu them mot lop vat lieu "vo bang" len tren moi mieng hinh
-        var rends = GetComponentsInChildren<MeshRenderer>();
+        // Phu them mot lop vat lieu "vo bang" len tren moi mieng hinh.
+        //
+        // CA SkinnedMeshRenderer (14/09/2026). Truoc day chi lay MeshRenderer - hop voi quai
+        // dung bang code thoi dau, nhung nhan vat nguoi choi va quai hien nay deu la model co
+        // xuong (SkinnedMeshRenderer): menu 67 do ra vo bang phu len 0 renderer, nguoi bi dong
+        // cung trong y het binh thuong, chi dung im.
+        // Bo qua renderer TRONG SUOT (hang doi >= 3000): vom khieng, hieu ung hat, tia set con
+        // gan vao nhan vat - boc bang len chung chi ra mot dam mo.
+        var rends = GetComponentsInChildren<Renderer>();
         for (int i = 0; i < rends.Length; i++)
         {
             var r = rends[i];
-            if (r == null) continue;
+            if (r == null || !r.enabled) continue;
+            if (!(r is MeshRenderer) && !(r is SkinnedMeshRenderer)) continue;
             var mats = r.sharedMaterials;
             if (mats == null || mats.Length == 0) continue;
+            bool trongSuot = false;
+            for (int k = 0; k < mats.Length; k++)
+                if (mats[k] == null || mats[k].renderQueue >= 3000 || mats[k].shader == Mats.FrozenShader) trongSuot = true;
+            if (trongSuot) continue;
 
             touched.Add(r);
             originals.Add(mats);
@@ -114,8 +145,12 @@ public class FrozenEffect : MonoBehaviour
         remaining -= dt;
         if (dongCungConLai > 0f) dongCungConLai -= dt;
 
-        // Dong bang cung dan trong 0.25 giay dau cho muot mat
-        fadeIn = Mathf.MoveTowards(fadeIn, remaining > 0.4f ? 1f : 0f, Time.deltaTime * 4f);
+        // Dong bang cung dan cho muot mat. DAY DAC khi dong cung, MONG (0,5) khi chi bi cham -
+        // nhin vao la phan biet duoc "dung im" voi "di cham".
+        // Nguong 0,2 giay (truoc 0,4): ban sao qua mang chi duoc giu song 0,35 giay moi goi
+        // (HieuUngQuaMang.GiuSongGiay) - nguong 0,4 thi vo bang tren ban sao KHONG BAO GIO hien.
+        float dich = remaining > 0.2f ? (IsFullyFrozen ? 1f : 0.5f) : 0f;
+        fadeIn = Mathf.MoveTowards(fadeIn, dich, Time.deltaTime * 5f);
         if (shellMat != null) shellMat.SetFloat("_Amount", fadeIn);
 
         if (remaining <= 0f) Thaw();

@@ -363,6 +363,16 @@ public static class ThuBangSet
         Ghi("");
         Ghi("D. nguoi choi bi dong cung / choang (day can 0,6 giay moi lan)");
 
+        // MO KHOA SAN ky nang 1..4 (14/09/2026). Tu khi co he cap do (13/09/2026) moi ky nang
+        // KHOA luc vao tran: mau doi chung D1 tung phep ra 0 lan, va D2/D4 "dong cung / choang
+        // thi khong tung duoc phep" ra 0 chi vi ky nang con khoa - phep kiem khong con do gi.
+        CapDo.BatDauTranMoi();
+        for (int lan = 0; lan < 20 && CapDo.DiemKyNang < 4; lan++) CapDo.Them(CapDo.CanDeLenCap(CapDo.Cap));
+        for (int ky = 1; ky <= 4; ky++) CapDo.MoKhoa(ky);
+        Ghi("   mo khoa san ky nang 1..4: " + CapDo.DaMo(1) + "/" + CapDo.DaMo(2) + "/" + CapDo.DaMo(3) + "/" + CapDo.DaMo(4)
+            + " (nhan vat cap " + CapDo.Cap + ")");
+        Kiem(CapDo.DaMo(1) && CapDo.DaMo(2) && CapDo.DaMo(3) && CapDo.DaMo(4), "khong mo khoa duoc ky nang cho phan D");
+
         int soPhepBayRa = 0;
         System.Action<int, Vector3> demPhep = (s, a) => soPhepBayRa++;
         pc.DaTungPhep += demPhep;

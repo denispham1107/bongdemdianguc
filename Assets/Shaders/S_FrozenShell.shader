@@ -56,13 +56,17 @@ Shader "Diablo25D/FrozenShell"
             v2f vert (appdata v)
             {
                 v2f o;
+                // Phong ra theo phap tuyen tinh bang MET THE GIOI (14/09/2026). Truoc day cong
+                // trong khong gian vat - dung voi quai dung bang code (ti le 1), nhung model co
+                // xuong nhap tu Meshy mang ti le rieng nen do day vo bang lech theo tung model.
+                float3 wp = mul(unity_ObjectToWorld, v.vertex).xyz;
+                float3 wn = UnityObjectToWorldNormal(v.normal);
+                // Vet gon lay theo toa do VAT (dung yen tren nguoi khi di chuyen)
                 float bump = (0.6 + 0.8 * vnoise(v.vertex.xyz * 9.0)) * _Grow * _Amount;
-                float4 p = v.vertex;
-                p.xyz += normalize(v.normal) * bump;
-                o.pos  = UnityObjectToClipPos(p);
+                wp += wn * bump;
+                o.pos  = mul(UNITY_MATRIX_VP, float4(wp, 1.0));
                 o.opos = v.vertex.xyz;
-                o.nrm  = UnityObjectToWorldNormal(v.normal);
-                float3 wp = mul(unity_ObjectToWorld, p).xyz;
+                o.nrm  = wn;
                 o.vdir = normalize(UnityWorldSpaceViewDir(wp));
                 return o;
             }

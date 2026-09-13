@@ -8334,6 +8334,39 @@ sát thương hiện ra** (2,1 m) để số không đè lên chữ. Bỏ chữ 
 **Số đo** (menu 62, 0 lỗi): tung thật 10 lần → trúng 10, ngã 7; dấu hiệu hiện **376/383 khung hình đang ngã (98%)**;
 chuỗi ảnh mới thấy chữ NGÃ rõ ở cả 5 thời điểm, đè lên lửa.
 
+### Mưa băng lên người chơi khác: có tác dụng, nhưng không chữ và không thấy vỏ băng (14/09/2026)
+
+Anh hỏi: Mưa băng đã thật sự đóng băng người chơi khác chưa, mà không thấy chữ "Đóng băng" như "Choáng", "Ngã".
+
+**Kiểm tra trước** (menu **67** mới — bộ đồng bộ thật + kênh giả lập, người kia tung Mưa băng bằng **gói kỹ năng thật**):
+- Có tác dụng thật: trúng **6/6** cơn bão, chậm 6/6, **đóng cứng 6/6**, chân và phép bị khoá (tốc độ ×0,00), gói trạng thái gửi đi
+  mang bit đóng cứng 6/6; phía người xem, bản sao đứng im và tan khi gói hết.
+- **Chữ nổi: 0.** Không có dòng code nào sinh chữ cho đóng băng — kể cả với quái. Đối chứng: gói "choáng" trên cùng bản sao ra
+  "CHOÁNG!" (bộ đếm chạy đúng).
+- **Vỏ băng phủ lên 0 renderer** — cả nhân vật mình, bản sao người kia lẫn con bộ xương đối chứng. `FrozenEffect` chỉ lấy
+  `MeshRenderer` (hợp với quái dựng bằng code thời đầu); nhân vật và quái bây giờ là model có xương (`SkinnedMeshRenderer`).
+  Người bị đóng cứng trông y hệt bình thường, chỉ đứng im.
+- Lỗi phụ: đường **máy tự tính** của choáng in "CHOANG!" không dấu (chỉ đường qua mạng có dấu).
+
+**Sửa:**
+- `FrozenEffect.BaoChuDongBang`: chữ **"ĐÓNG BĂNG!"** xanh băng bay lên **lúc bắt đầu** đóng cứng — gọi ở `FrozenEffect.Apply` (máy tự
+  tính) và `HieuUngQuaMang.ApCo` (bản sao, khi bit đóng cứng vừa bật). Bản sao không đi qua `Apply` nên không in hai lần; gói đến 60
+  lần/giây cũng không lặp chữ.
+- Vỏ băng phủ cả `SkinnedMeshRenderer`, bỏ qua renderer trong suốt (vòm khiên, hiệu ứng). **Dày khi đóng cứng, mỏng (0,5) khi chỉ bị
+  chậm** — nhìn là phân biệt được. Ngưỡng hiện vỏ hạ 0,4 → 0,2 giây: bản sao chỉ được giữ sống 0,35 giây mỗi gói, ngưỡng cũ thì vỏ
+  trên bản sao không bao giờ hiện.
+- Shader `S_FrozenShell` phồng theo **mét thế giới** (trước: toạ độ vật — model Meshy mang tỉ lệ riêng).
+- `StunnedEffect.Apply`: "CHOÁNG!" có dấu.
+
+**Số đo sau khi sửa** (menu 67, **0 lỗi**): chữ "ĐÓNG BĂNG!" trên máy nạn nhân **7** = số lần bắt đầu đóng cứng đếm từng khung **7**;
+trên bản sao **đúng 1** trong 1,5 giây nhận gói; vỏ băng phủ 1/1 renderer (mình, bản sao, quái); độ xanh (b − r) vùng thân bản sao trên
+ảnh chụp: trước **0,014** → đang đóng cứng **0,123** → sau khi tan **0,009**; choáng máy tự tính ra "CHOÁNG!". Lần đo ảnh đầu chỉ đợi 1
+giây sau cơn bão: vùng băng dưới đất (vật riêng, tắt chậm hơn cơn bão) nhuộm ảnh "trước" thành 0,129 — đợi 6 giây thì sạch.
+
+**Menu 58 hoá ra đang đo rỗng**: lần chạy cuối là 12/09, trước hệ cấp độ. Từ 13/09 kỹ năng khoá lúc vào trận nên mẫu đối chứng tung
+phép ra 0 lần, và "đóng cứng / choáng thì không tung được phép" ra 0 **chỉ vì kỹ năng khoá**. Nay phần D tự lên cấp 4 và mở khoá kỹ năng
+1–4 trước khi đo: đối chứng tung 1 lần, đóng cứng 0, choáng 0 — **0 lỗi**. Menu 46 chạy lại **0 lỗi**.
+
 ### Sảnh: nút CÀI ĐẶT lên đầu trang, nút KỸ NĂNG mở Sách phép xem trước; con mắt khoá góc nhìn vẽ lại (14/09/2026)
 
 Anh gửi ảnh sảnh (khung xanh bên trái ĐĂNG XUẤT) và ảnh nút con mắt, xin ba việc:
@@ -8775,6 +8808,7 @@ Lần chạy đầu phép thử báo cả 10 con "lơ lửng": tia chiếu từ 
 | **64. Chay thu QUAI VONG NGOAI TRUY LUNG (60 giay)** | Dùng đợt quái thật: hẹn giờ 60 giây từng con; trước 60 giây quái chưa gặp không tiến lại (trung bình); sau 60 giây đếm con vào 14 m và con ra đòn thật; đối chứng hai con quái thường; dựng ca kẹt sau vật cản thật và ca nhốt trong bốn bức tường (phải vòng / đổi chỗ). Số đo `quai_truylung.txt`. |
 | **65. Chay thu BINH MAU - BINH MANA (roi, nhat, uong, mang)** | Tỉ lệ rơi (3000 lần + giết quái thật), nhặt trong / ngoài bán kính, uống (khoá, hết, đầy, hồi chiêu, 100 / 50), số bình trên ô (so ảnh với ô đối chứng), chữ Sách phép to (so bề ngang nét với chữ đối chứng cỡ cũ / mới), cuộn thân chi tiết, 5 ca mạng qua bộ đồng bộ thật + kênh giả lập. Số đo `binh_mau_mana.txt`. |
 | **66. Chay thu NUT KY NANG o sanh (sach phep xem truoc) + con mat** | Ngoài Play: quét chữ có dấu 3 file, chạy thật cầu nối localStorage bằng node. Trong Play: đăng nhập, mở Sách phép xem trước (9/9 kỹ năng mở, so độ sáng hình với đối chứng khoá), thông số đọc từ nhân vật trưng bày = prefab, xếp ô → kho lưu, vào Act2 lúc sách mở (sách đóng, thanh kỹ năng đúng thứ tự), đo con mắt quỷ hai trạng thái; thoát Play nạp lại từ kho. Số đo `sachphep_sanh.txt`. |
+| **67. Chay thu MUA BANG dong bang NGUOI CHOI KHAC (qua mang)** | Bộ đồng bộ thật + kênh giả lập: người kia tung Mưa băng vào mình bằng gói kỹ năng thật (6 cơn) — trúng, chậm, đóng cứng, khoá chân/phép, gói trạng thái mang bit đóng cứng; bản sao nhận gói đóng cứng thì đứng im và tan đúng lúc; đếm chữ nổi "ĐÓNG BĂNG!" (khớp số lần bắt đầu đóng cứng, bản sao đúng 1 lần) có đối chứng "CHOÁNG!"; vỏ băng phủ lên model có xương và làm vùng thân xanh lên trên ảnh chụp. Số đo `bang_nguoichoi.txt`. |
 | **56. Chay thu DOT QUAI Act2 + cho xuat phat** | *(13/09/2026: thêm đo chờ 30 giây và 10 con xa 55–65 m)*  Kiểm chỗ xuất phát ngẫu nhiên (hai máy cùng mã phòng ra cùng danh sách, cách nhau ≥ 22 m, trên đất, ngoài nước, không vướng vật cản) và luật đợt quái Act2 (đợt 1 bốn con quanh mỗi người; đợt sau cộng dồn quái và mạnh thêm 5% máu · sát thương); kiểm Act1 không bị đổi. Số đo `dotquai_act2.txt`. |
 | **55. Chay thu KET TRAN (nguoi song sot cuoi cung)** | Mở kênh giả lập như menu 45: kiểm gói tin kết trận/chết, máy chủ phòng phán quyết đúng lúc còn một người, bảng điểm cộng đúng người, máy khách không tự kết luận và hiện đúng kết quả nghe được, chết rồi camera chuyển sang người còn sống, chụp màn kết trận. Số đo `kettran.txt`, ảnh `kettran_*.png`. |
 | **54c. Chay thu LOC XOAY cuon lo lua** | Vào Play Act2, thả một cơn lốc đi thẳng vào lò: đo mốc thời gian lửa tắt / lò nhấc lên / lò biến mất / lò mọc lại, kiểm than trong chậu tắt bằng độ sáng trên ảnh, và kiểm vật có hệ hạt khác vẫn không bị cuốn. Ảnh `locxoay_*.png`, số đo `locxoay_lolua.txt`. |

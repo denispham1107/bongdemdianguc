@@ -1,0 +1,28 @@
+[ban 1] Mua bang dong bang NGUOI CHOI KHAC, qua duong mang that
+
+Hinh nhan vat nguoi choi: 1 SkinnedMeshRenderer (hinh nguoi), 0 MeshRenderer
+
+B1. nguoi kia tung MUA BANG vao cho minh bang GOI KY NANG that (6 con bao, moi con 5 giay)
+    bao 1: trung True (mat 888 mau), bi cham True, dong cung True, chan bi khoa True, toc thap nhat x0.00; goi gui di: co bang True, co dong cung True
+    bao 2: trung True (mat 925 mau), bi cham True, dong cung True, chan bi khoa True, toc thap nhat x0.00; goi gui di: co bang True, co dong cung True
+    bao 3: trung True (mat 941 mau), bi cham True, dong cung True, chan bi khoa True, toc thap nhat x0.00; goi gui di: co bang True, co dong cung True
+    bao 4: trung True (mat 944 mau), bi cham True, dong cung True, chan bi khoa True, toc thap nhat x0.00; goi gui di: co bang True, co dong cung True
+    bao 5: trung True (mat 933 mau), bi cham True, dong cung True, chan bi khoa True, toc thap nhat x0.00; goi gui di: co bang True, co dong cung True
+    bao 6: trung True (mat 903 mau), bi cham True, dong cung True, chan bi khoa True, toc thap nhat x0.00; goi gui di: co bang True, co dong cung True
+B1. trung 6/6, bi cham 6/6, dong cung 6/6, chan bi khoa 6/6; goi trang thai gui di mang bit bang 6/6, bit dong cung 6/6
+    chu noi xuat hien tren may minh trong B1: ĐÓNG BĂNG! | ĐÓNG BĂNG! | ĐÓNG BĂNG! | ĐÓNG BĂNG! | ĐÓNG BĂNG! | ĐÓNG BĂNG! | ĐÓNG BĂNG!
+    so lan BAT DAU dong cung (dem tung khung) 7, so chu "ĐÓNG BĂNG!" 7
+
+B2. may nguoi kia bao 'toi dang dong cung' bang GOI TRANG THAI that (1,5 giay)
+B2. ban sao nguoi kia: co lop bang True, dong cung True, he so toc x0.00, goi het bang -> tan True
+    chu noi tren may minh trong B2: ĐÓNG BĂNG!
+    chu "ĐÓNG BĂNG!" tren ban sao: 1 (mong dung 1 - goi den 60 lan/giay ma khong duoc lap chu)
+    do XANH (b - r) vung hinh ban sao tren anh: truoc 0.014, dang dong cung 0.123, sau khi tan 0.009
+B3b. choang tren MAY TU TINH (nhan vat minh): chu noi CHOÁNG!
+
+B3. doi chung - goi CHOANG tren cung ban sao: chu noi CHOÁNG! -> bo dem chu chay dung
+    co chu nao ve DONG BANG (B1 + B2): CO
+
+B4. lop VO BANG phu len so renderer: nhan vat minh (B1) 1, ban sao nguoi kia (B2) 1 | doi chung quai bo xuong 1 (1 SkinnedMeshRenderer (hinh nguoi), 0 MeshRenderer)
+
+so loi ghi nhan = 0

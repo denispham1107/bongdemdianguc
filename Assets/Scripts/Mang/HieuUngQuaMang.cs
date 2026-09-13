@@ -92,7 +92,11 @@ public static class HieuUngQuaMang
             // va HA XUONG 0 khi ben kia bao da het dong cung - neu khong ban sao
             // cu dung im mai du ben kia da cua quay duoc tu lau.
             if ((co & CoBangHoanToan) != 0)
+            {
+                // Vua chuyen sang dong cung -> chu "ĐÓNG BĂNG!" (giong "CHOÁNG!" ben duoi)
+                if (!f.IsFullyFrozen) FrozenEffect.BaoChuDongBang(go.transform);
                 f.dongCungConLai = Mathf.Max(f.dongCungConLai, GiuSongGiay);
+            }
             else
                 f.dongCungConLai = 0f;
 
