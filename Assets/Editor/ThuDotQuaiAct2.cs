@@ -91,6 +91,77 @@ public static class ThuDotQuaiAct2
         return d;
     }
 
+    static bool LaQuaiXa(GameDirector dir, NhanDangQuai n)
+    {
+        var d = n.GetComponent<Damageable>();
+        return d != null && dir.QuaiXaDotNay.Contains(d);
+    }
+
+    /// <summary>Dem theo loai CHI nhung con quanh nguoi (bo 10 con xa).</summary>
+    static Dictionary<MonsterType, int> DemQuanhNguoi(GameDirector dir)
+    {
+        var d = new Dictionary<MonsterType, int>();
+        foreach (var n in Object.FindObjectsByType<NhanDangQuai>(FindObjectsSortMode.None))
+        {
+            var mau = n.GetComponent<Damageable>();
+            if (mau == null || mau.IsDead || LaQuaiXa(dir, n)) continue;
+            d[n.loai] = (d.TryGetValue(n.loai, out int c) ? c : 0) + 1;
+        }
+        return d;
+    }
+
+    /// <summary>
+    /// Do 10 con quai xa bang VI TRI THAT cua chung - khong tin bien dem
+    /// SoQuaiXaDungKhoang trong code (phep kiem phai doc lap voi code dang kiem).
+    /// </summary>
+    static void DoQuaiXa(GameDirector dir, string nhan)
+    {
+        int so = 0, dungKhoang = 0, loLung = 0, duoiNuoc = 0;
+        float ganMin = float.MaxValue, ganMax = 0f, chenhMax = 0f;
+        var nuoc = GameObject.Find("MatNuoc");
+        foreach (var q in dir.QuaiXaDotNay)
+        {
+            if (q == null) continue;
+            so++;
+            Vector3 p = q.transform.position;
+            float gan = float.MaxValue;
+            foreach (var t in dir.moiNguoi)
+                if (t != null)
+                    gan = Mathf.Min(gan, new Vector2(p.x - t.position.x, p.z - t.position.z).magnitude);
+            ganMin = Mathf.Min(ganMin, gan); ganMax = Mathf.Max(ganMax, gan);
+            if (gan >= GameDirector.QuaiXaGanNhat - 0.5f && gan <= GameDirector.QuaiXaXaNhat + 0.5f) dungKhoang++;
+
+            // Tia chieu tu tren xuong phai BO QUA CHINH CON QUAI: lan do dau tien
+            // tia cham dinh dau no truoc (con nhong CharacterController) va bao ca
+            // 10 con "lo lung" trong khi chung dung tren dat.
+            float yDat = float.NaN;
+            var hits = Physics.RaycastAll(p + Vector3.up * 60f, Vector3.down, 120f, ~0, QueryTriggerInteraction.Ignore);
+            System.Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
+            foreach (var h in hits)
+            {
+                if (h.collider.GetComponentInParent<Damageable>() == q) continue;
+                yDat = h.point.y; break;
+            }
+            float chenh = float.IsNaN(yDat) ? 999f : p.y - yDat;
+            chenhMax = Mathf.Max(chenhMax, Mathf.Abs(chenh));
+            if (Mathf.Abs(chenh) > 1.2f) loLung++;
+            if (nuoc != null)
+                foreach (var r in nuoc.GetComponentsInChildren<Renderer>())
+                {
+                    var b = r.bounds;
+                    if (p.x > b.min.x && p.x < b.max.x && p.z > b.min.z && p.z < b.max.z && p.y < b.max.y) { duoiNuoc++; break; }
+                }
+        }
+        Ghi(nhan + ". quai xa: " + so + " con, cach nguoi gan nhat " + ganMin.ToString("F1") + " - "
+            + ganMax.ToString("F1") + " m, dung khoang 55-65 m: " + dungKhoang + "/" + so
+            + " (code tu bao " + dir.SoQuaiXaDungKhoang + "), lo lung " + loLung + " (chenh voi dat lon nhat "
+            + chenhMax.ToString("F2") + " m), duoi nuoc " + duoiNuoc);
+        Kiem(so == GameDirector.SoQuaiXaMoiDot, "moi dot phai co dung 10 con quai xa, dang co " + so);
+        Kiem(loLung == 0, "co quai xa khong dung tren mat dat");
+        Kiem(duoiNuoc == 0, "co quai xa nam duoi nuoc");
+        Kiem(dungKhoang == dir.SoQuaiXaDungKhoang, "code bao so con dung khoang KHAC voi do that");
+    }
+
     static string ViDem(Dictionary<MonsterType, int> d)
     {
         var sb = new StringBuilder();
@@ -200,6 +271,17 @@ public static class ThuDotQuaiAct2
         // ================================================================
         Ghi("");
         Ghi("B. Act2 - dot dau");
+
+        // B0. VAO TRAN PHAI DOI DUNG 30 GIAY. Do bang hai con so doc lap: dong
+        // ho dem nguoc cua director CONG thoi gian da troi tu luc nap canh phai
+        // ra 30, va luc nay CHUA co dot nao.
+        float tongCho = dir.NextWaveIn + Time.timeSinceLevelLoad;
+        Ghi("B0. vao tran " + Time.timeSinceLevelLoad.ToString("F1") + " giay: dot hien tai " + dir.Wave
+            + ", con " + dir.NextWaveIn.ToString("F1") + " giay nua -> tong cho " + tongCho.ToString("F1")
+            + " giay (phai 30)");
+        Kiem(dir.Wave == 0, "vao tran chua toi 30 giay ma da ra dot quai");
+        Kiem(Mathf.Abs(tongCho - GameDirector.GiayChoDotDau) < 1.0f, "dot dau khong doi dung 30 giay");
+
         Ghi("che do dot quanh nguoi choi: " + dir.CheDoDotQuanhNguoi);
         Kiem(dir.CheDoDotQuanhNguoi, "Act2 khong bat luat dot moi");
 
@@ -220,9 +302,11 @@ public static class ThuDotQuaiAct2
         yield return new WaitForSeconds(0.5f);
 
         int tong1;
-        var dem1 = DemTheoLoai(out tong1);
-        Ghi("B2. dot " + dir.Wave + ": tong " + tong1 + " con - " + ViDem(dem1));
-        Kiem(tong1 == 8, "dot dau phai la 8 con (2 nguoi x 4 loai), dang co " + tong1);
+        DemTheoLoai(out tong1);
+        var dem1 = DemQuanhNguoi(dir);
+        Ghi("B2. dot " + dir.Wave + ": tong " + tong1 + " con (phai 18 = 2 nguoi x 4 loai + 10 con xa)"
+            + " | quanh nguoi: " + ViDem(dem1));
+        Kiem(tong1 == 18, "dot dau phai la 18 con, dang co " + tong1);
         foreach (var loai in new[] { MonsterType.Skeleton, MonsterType.Witch, MonsterType.QuyCay, MonsterType.QuyDu })
             Kiem(dem1.TryGetValue(loai, out int c) && c == 2, "thieu " + loai + " - moi nguoi phai co mot con");
 
@@ -230,6 +314,7 @@ public static class ThuDotQuaiAct2
         float xaNhat = 0f; int xaQua = 0;
         foreach (var n in Object.FindObjectsByType<NhanDangQuai>(FindObjectsSortMode.None))
         {
+            if (LaQuaiXa(dir, n)) continue;
             float gan = float.MaxValue;
             foreach (var t in dir.moiNguoi)
                 if (t != null) gan = Mathf.Min(gan, Vector3.Distance(n.transform.position, t.position));
@@ -239,6 +324,8 @@ public static class ThuDotQuaiAct2
         Ghi("B3. con quai xa nguoi choi nhat: " + xaNhat.ToString("F1") + " m (dat trong "
             + GameDirector.GanNhatQuanhNguoi + "-" + GameDirector.XaNhatQuanhNguoi + " m), so con xa qua: " + xaQua);
         Kiem(xaQua == 0, "co quai sinh xa nguoi choi - khong dung 'quanh nguoi choi'");
+
+        DoQuaiXa(dir, "B5");
 
         float mauGoc, satGoc;
         DoBoXuongDangSong(out mauGoc, out satGoc);
@@ -250,7 +337,7 @@ public static class ThuDotQuaiAct2
         Ghi("");
         Ghi("C. cac dot sau");
 
-        int[] mongDoi = { 9, 11, 14 };            // 8 + 1, + 3, + 6 (cong don)
+        int[] mongDoi = { 19, 21, 24 };           // 8 + 1, + 3, + 6 (cong don), cong 10 con xa moi dot
         for (int dot = 2; dot <= 4; dot++)
         {
             GietSach();
@@ -270,6 +357,7 @@ public static class ThuDotQuaiAct2
                 + "), sat thuong " + sat.ToString("F1") + " (x" + (satGoc > 0f ? sat / satGoc : 0f).ToString("F3")
                 + "), mong doi x" + heSoMongDoi.ToString("F3"));
             Kiem(tong == mongDoi[dot - 2], "so quai dot " + dir.Wave + " khong dung");
+            DoQuaiXa(dir, "     C" + dot + "x");
             if (mauGoc > 0f) Kiem(Mathf.Abs(mau / mauGoc - heSoMongDoi) < 0.01f, "mau khong tang 5% moi dot");
             if (satGoc > 0f) Kiem(Mathf.Abs(sat / satGoc - heSoMongDoi) < 0.01f, "sat thuong khong tang 5% moi dot");
         }

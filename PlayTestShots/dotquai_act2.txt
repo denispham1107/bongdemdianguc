@@ -8,19 +8,24 @@ A3. bon cho: (27.0, -0.4, -6.3) (-30.5, -0.1, -27.1) (23.2, -0.5, -28.2) (-31.6,
 A4. bon cho: lo lung 0, duoi nuoc 0, vuong vat can 0
 
 B. Act2 - dot dau
+B0. vao tran 1.0 giay: dot hien tai 0, con 28.9 giay nua -> tong cho 30.0 giay (phai 30)
 che do dot quanh nguoi choi: True
 B1. so nguoi choi trong canh: 2
-B2. dot 1: tong 8 con - Skeleton=2 QuyCay=2 Witch=2 QuyDu=2
-B3. con quai xa nguoi choi nhat: 11.9 m (dat trong 7-13 m), so con xa qua: 0
+B2. dot 1: tong 18 con (phai 18 = 2 nguoi x 4 loai + 10 con xa) | quanh nguoi: QuyDu=2 Skeleton=2 QuyCay=2 Witch=2
+B3. con quai xa nguoi choi nhat: 10.6 m (dat trong 7-13 m), so con xa qua: 0
+B5. quai xa: 10 con, cach nguoi gan nhat 55.8 - 62.1 m, dung khoang 55-65 m: 10/10 (code tu bao 10), lo lung 0 (chenh voi dat lon nhat 0.09 m), duoi nuoc 0
 B4. bo xuong dot 1: mau 70.0, sat thuong 12.0
 
 C. cac dot sau
-C2. dot 2: tong 9 con (mong doi 9) - Skeleton=3 QuyCay=2 Witch=2 QuyDu=2
+C2. dot 2: tong 19 con (mong doi 19) - Skeleton=5 QuyDu=4 Witch=5 QuyCay=5
      bo xuong: mau 73.5 (x1.050), sat thuong 12.6 (x1.050), mong doi x1.050
-C3. dot 3: tong 11 con (mong doi 11) - QuyDu=3 QuyCay=4 Witch=2 Skeleton=2
+     C2x. quai xa: 10 con, cach nguoi gan nhat 55.5 - 64.0 m, dung khoang 55-65 m: 10/10 (code tu bao 10), lo lung 0 (chenh voi dat lon nhat 0.09 m), duoi nuoc 0
+C3. dot 3: tong 21 con (mong doi 21) - Skeleton=6 Witch=6 QuyDu=7 QuyCay=2
      bo xuong: mau 77.2 (x1.103), sat thuong 13.2 (x1.103), mong doi x1.103
-C4. dot 4: tong 14 con (mong doi 14) - QuyDu=4 Witch=3 QuyCay=3 Skeleton=4
+     C3x. quai xa: 10 con, cach nguoi gan nhat 54.7 - 64.1 m, dung khoang 55-65 m: 10/10 (code tu bao 10), lo lung 0 (chenh voi dat lon nhat 0.18 m), duoi nuoc 0
+C4. dot 4: tong 24 con (mong doi 24) - Witch=6 QuyDu=8 Skeleton=5 QuyCay=5
      bo xuong: mau 81.0 (x1.158), sat thuong 13.9 (x1.158), mong doi x1.158
+     C4x. quai xa: 10 con, cach nguoi gan nhat 55.3 - 64.8 m, dung khoang 55-65 m: 10/10 (code tu bao 10), lo lung 0 (chenh voi dat lon nhat 0.08 m), duoi nuoc 0
 
 D. Act1 giu nguyen luat cu
 D1. Act1: che do dot quanh nguoi = False (phai la False), quai dang co: 4 - Skeleton=4

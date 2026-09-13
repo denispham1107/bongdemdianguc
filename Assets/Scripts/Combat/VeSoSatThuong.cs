@@ -39,7 +39,11 @@ public class VeSoSatThuong : MonoBehaviour
         if (kieu == null)
         {
             kieu = new GUIStyle(GUI.skin.label);
-            kieu.fontStyle = FontStyle.Bold;
+            // FONT INTER, khong de font mac dinh: chu noi co dau (CHOÁNG!, NGÃ!,
+            // BỊ CUỐN!) - font mac dinh thieu chu Viet, Editor van hien dung vi
+            // Windows ve bu nhung len web thi mat dau.
+            kieu.font = GiaoDien.ChuDam;
+            kieu.fontStyle = FontStyle.Normal;
             kieu.alignment = TextAnchor.MiddleCenter;
             kieu.wordWrap = false;
             kieu.clipping = TextClipping.Overflow;

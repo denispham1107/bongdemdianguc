@@ -8273,6 +8273,75 @@ còn sống: True" để lần sau đọc số đo là biết ngay.
 
 ---
 
+## Thiên thạch đánh ngã, và luật đợt quái mới của Act2
+
+### Thiên thạch: 40% đánh ngã kẻ địch 1,5 giây
+
+Anh xin: quả thiên thạch rơi xuống có 40% đánh ngã kẻ địch; kẻ bị ngã bị **hất nhẹ lên khỏi mặt đất rồi rơi
+xuống nằm ngửa**, không đi được, không đánh được kỹ năng.
+
+`BiDanhNga.cs` là một trạng thái mới, đứng cạnh đóng băng và choáng. Chỗ khó là cái hình:
+
+- **Lật hình, không lật nhân vật.** Mọi nhân vật có con nhộng va chạm (`CharacterController`) ở gốc và model
+  ở con đầu tiên. Xoay gốc thì va chạm xoay theo, lại bị trí tuệ quái / điều khiển ghi đè hướng mỗi khung
+  hình. Xoay **model con** thì va chạm vẫn đứng yên dưới đất, chỉ hình là nằm xuống — và hoạt hình của quái
+  chỉ ghi các khớp xương bên trong, không đụng tới transform này.
+- Xoay quanh **trục của gốc nhân vật** chứ không quanh trục riêng của model: model Meshy nhập vào hay xoay sẵn
+  180 độ, xoay theo trục riêng là nhân vật ngã **úp mặt**.
+- Nhịp: 0,38 giây đầu bị hất lên theo đường parabol (cao 0,9 m) và lật ngửa dần → nằm → 0,28 giây cuối chống
+  đứng dậy. Khoá di chuyển và kỹ năng trong suốt 1,5 giây. Chết trong lúc nằm thì giữ nguyên tư thế nằm.
+- Chỉ **thiên thạch của người chơi** đánh ngã. Quỷ dữ cũng ném thiên thạch bằng cùng mã, nhưng anh chỉ xin cho
+  kỹ năng — nên mặc định là 0%, người chơi tung thì mới đặt 40%. Cấp kỹ năng cao kéo dài thêm 0,15 giây mỗi cấp
+  như mọi hiệu ứng khác. Người đang bật Khiên thì không bị ngã (khiên đỡ trọn đòn thì đỡ luôn hiệu ứng).
+- **Qua mạng**: thêm một bit "đang ngã" vào byte hiệu ứng có sẵn (không thêm byte nào). Máy của ai quyết người
+  đó có bị ngã không; các máy khác chỉ vẽ lại, gói ngừng đến thì bản sao tự đứng dậy.
+
+**Chữ nổi trên đầu mất dấu** — tìm thấy khi làm chữ "NGÃ!": hệ vẽ chữ nổi dùng font mặc định, và hai chữ cũ viết
+không dấu ("CHOANG!", "BI CUON!"). Editor vẫn hiện đúng vì Windows vẽ bù, lên web thì mất dấu. Nay dùng font
+Inter, chữ thành "CHOÁNG!", "BỊ CUỐN!", "NGÃ!".
+
+**Số đo** (`PlayTestShots/danhnga.txt`, menu 62, 0 lỗi):
+
+| Đo | Kết quả |
+|---|---|
+| 1000 lần gieo | đánh ngã **38,7%** (lần chạy trước 41,9%) — mong đợi 40% |
+| Thiên thạch của Quỷ dữ | 0% |
+| Quả thiên thạch nhân vật tung thật | mang đúng **40% · 1,5 giây** |
+| Bị hất lên | hình lên cao tối đa **0,98 m** |
+| Lúc nằm (đo **vị trí xương đầu thật**, không đọc lại góc vừa đặt) | đầu cách đất **0,21 m** (đứng thẳng 1,36 m), đầu nằm **1,42 m về phía sau lưng** → nằm ngửa |
+| Trong 1,35 giây | vẫn đang ngã, quái di chuyển **0,00 m** |
+| Hết 1,5 giây | hết ngã, đầu về lại **1,42 m** — đã đứng dậy |
+| Người chơi bị ngã | đẩy cần 0,6 giây đi **0,00 m**, bấm phép ra **0**, báo "BẠN ĐANG BỊ HẤT NGÃ!" |
+| Qua mạng | bit "đang ngã" được gửi; bản sao không tự gieo; gói tới thì ngã, gói ngừng thì tự đứng dậy |
+
+### Luật đợt quái Act2: chờ 30 giây, và thêm 10 con ở xa
+
+- **Vào trận chờ đúng 30 giây** mới ra đợt đầu (trước đây 1,5 giây chơi một mình / 6 giây chơi mạng).
+- **Mỗi đợt thêm cố định 10 con**, loại ngẫu nhiên, cách **người chơi gần nhất** 55–65 m. Tính theo người
+  gần nhất: thả cách người A 60 m mà ngay cạnh người B thì với B đó là quái sát bên. 10 con này vẫn mạnh thêm
+  5% mỗi đợt, vẫn tính vào "giết hết mới sang đợt sau", và nhận người gần nhất làm mục tiêu nên tự chạy tới.
+- Chỉ Act2. Act1 giữ nguyên như anh dặn lần trước.
+
+⚠️ **Bản đồ Act2 chỉ rộng 109 × 109 m** (đo từ va chạm mặt đất). Người đứng gần tâm thì vành 55–65 m chỉ còn
+ở bốn góc bản đồ; bốn người tản khắp nơi thì có khi không còn chỗ nào cách **tất cả** họ đủ 55 m. Lúc ấy vẫn thả
+đủ 10 con, ở chỗ hợp lệ **gần khoảng 55–65 m nhất có thể**, và đếm số con đạt đúng khoảng để phép thử đọc — không
+im lặng giả vờ là đạt. Chỗ thả luôn trên mặt đất, ngoài nước, không vướng vật cản.
+
+**Số đo** (`PlayTestShots/dotquai_act2.txt`, menu 56, 0 lỗi, hai người chơi):
+
+| Đo | Kết quả |
+|---|---|
+| Chờ đợt đầu | đồng hồ đếm ngược + thời gian đã trôi = **30,0 giây**, lúc ấy chưa có đợt nào |
+| Đợt 1 | **18 con** = 2 người × 4 loại + 10 con xa |
+| Đợt 2 · 3 · 4 | 19 · 21 · 24 con (cộng dồn +1, +3, +6, cộng 10 con xa) — quái mạnh ×1,050 · ×1,103 · ×1,158 |
+| 10 con xa, cả 4 đợt | **10/10 đúng khoảng 55–65 m** (54,7–64,8 m đo từ vị trí thật), 0 dưới nước, chênh với mặt đất tối đa 0,18 m |
+| Act1 | vẫn luật cũ (4 bộ xương) |
+
+Lần chạy đầu phép thử báo cả 10 con "lơ lửng": tia chiếu từ trên xuống chạm **đỉnh đầu con quái** trước khi chạm
+đất. Nay tia bỏ qua chính con quái.
+
+---
+
 ## Phần 4 — Menu công cụ "Diablo 2.5D"
 
 | Mục | Tác dụng |
@@ -8335,7 +8404,8 @@ còn sống: True" để lần sau đọc số đo là biết ngay.
 | **59. Chay thu SACH PHEP (keo tha o ky nang)** | Đo bố cục bảng trên 8 cỡ màn hình × 2 bản, kiểm ô tròn trong bảng xếp đúng hình cụm nút thật, kho kỹ năng (đổi chỗ · bỏ khỏi ô · lưu/nạp · hai bản riêng), và trong trận: nút con mắt ở góc phải trên, mở bảng thì input trận đấu bị khoá. Chụp 4 ảnh. Số đo `sachphep.txt`. |
 | **60. Chay thu CAP DO (kinh nghiem, diem ky nang)** | Đo bảng kinh nghiệm và cách cộng dồn, hệ số chỉ số và hệ số kỹ năng, điểm kỹ năng (mở khoá · nâng cấp · hết điểm), gói mạng mang cấp kỹ năng; trong Play đo chỉ số **thật** trước/sau khi lên cấp, kỹ năng chưa mở không tung được, nâng cấp xong phép mạnh lên thật, giết quái được đúng số điểm. Số đo `capdo.txt`. |
 | **61. Chay thu KINH NGHIEM theo tung ky nang** | Tung từng kỹ năng thật vào một con quái máu 1: phải chết, "kẻ đánh cuối" phải là người tung, kinh nghiệm phải cộng đúng giá. Tách riêng các đường chết chậm (cháy, bị lốc cuốn, vũng lửa Thiên thạch, cây cháy) và trường hợp nạn nhân là người chơi. Số đo `kinhnghiem_kynang.txt`. |
-| **56. Chay thu DOT QUAI Act2 + cho xuat phat** | Kiểm chỗ xuất phát ngẫu nhiên (hai máy cùng mã phòng ra cùng danh sách, cách nhau ≥ 22 m, trên đất, ngoài nước, không vướng vật cản) và luật đợt quái Act2 (đợt 1 bốn con quanh mỗi người; đợt sau cộng dồn quái và mạnh thêm 5% máu · sát thương); kiểm Act1 không bị đổi. Số đo `dotquai_act2.txt`. |
+| **62. Chay thu THIEN THACH DANH NGA** | Xác suất đánh ngã trên 1000 lần gieo; thiên thạch của Quỷ dữ không đánh ngã; quả nhân vật tung mang đúng 40%·1,5 giây; trên quái thật đo độ cao bị hất, vị trí xương đầu lúc nằm (ngửa, sát đất), đứng im, đứng dậy; người chơi bị ngã không đi / không tung phép; bit "đang ngã" qua mạng. Số đo `danhnga.txt`. |
+| **56. Chay thu DOT QUAI Act2 + cho xuat phat** | *(13/09/2026: thêm đo chờ 30 giây và 10 con xa 55–65 m)*  Kiểm chỗ xuất phát ngẫu nhiên (hai máy cùng mã phòng ra cùng danh sách, cách nhau ≥ 22 m, trên đất, ngoài nước, không vướng vật cản) và luật đợt quái Act2 (đợt 1 bốn con quanh mỗi người; đợt sau cộng dồn quái và mạnh thêm 5% máu · sát thương); kiểm Act1 không bị đổi. Số đo `dotquai_act2.txt`. |
 | **55. Chay thu KET TRAN (nguoi song sot cuoi cung)** | Mở kênh giả lập như menu 45: kiểm gói tin kết trận/chết, máy chủ phòng phán quyết đúng lúc còn một người, bảng điểm cộng đúng người, máy khách không tự kết luận và hiện đúng kết quả nghe được, chết rồi camera chuyển sang người còn sống, chụp màn kết trận. Số đo `kettran.txt`, ảnh `kettran_*.png`. |
 | **54c. Chay thu LOC XOAY cuon lo lua** | Vào Play Act2, thả một cơn lốc đi thẳng vào lò: đo mốc thời gian lửa tắt / lò nhấc lên / lò biến mất / lò mọc lại, kiểm than trong chậu tắt bằng độ sáng trên ảnh, và kiểm vật có hệ hạt khác vẫn không bị cuốn. Ảnh `locxoay_*.png`, số đo `locxoay_lolua.txt`. |
 | **54b. Chay thu lo lua Act2** | Kiểm 10 lò bằng cách khác lúc đặt (va chạm tạm cho lưới nước, tia chiếu lên tìm mái nhà, hộp bao bia, độ cao địa hình quanh chân); trong Play: lửa + đèn bật, nhân vật đi thẳng vào lò bị chặn; chụp `lolua_*.png` + bản đồ. Số đo `lolua_act2.txt`. |

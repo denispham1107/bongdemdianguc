@@ -32,6 +32,7 @@ public static class HieuUngQuaMang
     public const byte CoBang = 1 << 0;           // co lop bang (cham hoac dung im)
     public const byte CoBangHoanToan = 1 << 1;   // dong cung hoan toan
     public const byte CoChoang = 1 << 2;         // dang choang
+    public const byte CoNga = 1 << 3;            // dang bi thien thach danh nga
 
     /// <summary>Doc trang thai hieu ung that tren mot vat - de gui di.</summary>
     public static byte DocCo(GameObject go)
@@ -48,6 +49,9 @@ public static class HieuUngQuaMang
 
         var st = go.GetComponent<StunnedEffect>();
         if (st != null && st.IsStunned) co |= CoChoang;
+
+        var ng = go.GetComponent<BiDanhNga>();
+        if (ng != null && ng.DangNga) co |= CoNga;
 
         return co;
     }
@@ -102,6 +106,16 @@ public static class HieuUngQuaMang
             f.dongCungConLai = 0f;
         }
 
+        // ---- Bi danh nga ----
+        //
+        // Giu song bang khoang ngan nhu cac hieu ung khac: moi goi "dang nga"
+        // day moc ket thuc ra them GiuSongGiay. Goi ngung den thi 0,28 giay cuoi
+        // cua khoang ay chinh la luc ban sao chong dung day - tu nhien.
+        var ng = go.GetComponent<BiDanhNga>();
+        if ((co & CoNga) != 0) BiDanhNga.GanHoacKeoDai(d, GiuSongGiay);
+        else if (ng != null && ng.thoiGian - ng.daTroi > BiDanhNga.TgDay)
+            ng.thoiGian = ng.daTroi + BiDanhNga.TgDay;     // ben kia da dung day - dung theo
+
         // ---- Choang ----
         var st = go.GetComponent<StunnedEffect>();
         if ((co & CoChoang) != 0)
@@ -110,7 +124,7 @@ public static class HieuUngQuaMang
             {
                 st = go.AddComponent<StunnedEffect>();
                 st.remaining = GiuSongGiay;       // mac dinh 2 giay - xem ghi chu dong bang
-                DamagePopup.SpawnText(go.transform.position + Vector3.up * 2.1f, "CHOANG!",
+                DamagePopup.SpawnText(go.transform.position + Vector3.up * 2.1f, "CHOÁNG!",
                                       new Color(0.75f, 0.90f, 1f));
             }
             st.remaining = Mathf.Max(st.remaining, GiuSongGiay);

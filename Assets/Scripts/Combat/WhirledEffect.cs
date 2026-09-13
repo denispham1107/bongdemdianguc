@@ -59,7 +59,7 @@ public class WhirledEffect : MonoBehaviour
         w.height = Mathf.Max(0f, d.transform.position.y - tornado.transform.position.y);
         w.targetHeight = Random.Range(tornado.liftHeight * 0.45f, tornado.liftHeight);
 
-        DamagePopup.SpawnText(d.transform.position + Vector3.up * 2.1f, "BI CUON!",
+        DamagePopup.SpawnText(d.transform.position + Vector3.up * 2.1f, "BỊ CUỐN!",
                               new Color(0.85f, 0.82f, 0.70f));
         return w;
     }

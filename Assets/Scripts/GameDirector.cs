@@ -294,6 +294,28 @@ public class GameDirector : MonoBehaviour
 
     public const float GiayChoDotQuanhNguoi = 30f;
 
+    /// <summary>
+    /// Vao tran thi doi DUNG 30 giay moi ra dot quai dau (nguoi dung chot
+    /// 13/09/2026). Truoc do chi cho 1,5 giay (choi mot minh) / 6 giay (choi
+    /// mang, doi ban sao nguoi khac hien ra).
+    /// </summary>
+    public const float GiayChoDotDau = 30f;
+
+    /// <summary>
+    /// Moi dot con tha them CO DINH 10 con quai loai ngau nhien o XA nguoi choi:
+    /// cach nguoi choi GAN NHAT tu 55 den 65 m. Khong cong don, nhung van manh
+    /// len 5% moi dot nhu moi con khac, va van tinh vao "giet het moi sang dot".
+    /// </summary>
+    public const int SoQuaiXaMoiDot = 10;
+    public const float QuaiXaGanNhat = 55f;
+    public const float QuaiXaXaNhat = 65f;
+
+    /// <summary>Nhung con quai xa cua dot gan nhat - phep thu (menu 56) doc.</summary>
+    public readonly List<Damageable> QuaiXaDotNay = new List<Damageable>();
+
+    /// <summary>Trong dot gan nhat, bao nhieu con quai xa dat DUNG khoang 55-65 m.</summary>
+    public int SoQuaiXaDungKhoang { get; private set; }
+
     /// <summary>Moi dot quai manh hon dot truoc bao nhieu (0,05 = 5%).</summary>
     public const float ManhThemMoiDot = 0.05f;
 
@@ -347,7 +369,11 @@ public class GameDirector : MonoBehaviour
             // Cho mot nhip truoc dot dau: choi mang thi ban sao cua nhung nguoi
             // kia chi hien ra sau khi bat tay xong (1-2 giay). Sinh ngay thi
             // quanh ho khong co con nao ca.
-            waveTimer = TranHienTai.DangChoiMang ? 6f : 1.5f;
+            // 30 giay chu khong 1,5 / 6 giay nhu truoc: nguoi dung muon nguoi
+            // choi co thoi gian lam quen, mo ky nang dau tien trong Sach phep
+            // va chay ra cho minh muon truoc khi quai toi. Du dai de ban sao
+            // nguoi choi khac (bat tay mat 1-2 giay) da hien ra het.
+            waveTimer = GiayChoDotDau;
             waiting = true;
             return;
         }
@@ -406,8 +432,138 @@ public class GameDirector : MonoBehaviour
             SinhQuanhNguoi(BonLoaiMoiNguoi[Random.Range(0, BonLoaiMoiNguoi.Length)], t, heSo);
         }
 
+        // 10 con o XA, loai ngau nhien
+        SinhQuaiXa(heSo);
+
         Debug.Log("[GameDirector] Dot " + Wave + ": " + soNguoi + " nguoi x 4 con + "
-                  + soThemCongDon + " con bat ki, manh x" + heSo.ToString("F2"));
+                  + soThemCongDon + " con bat ki + " + QuaiXaDotNay.Count + " con xa ("
+                  + SoQuaiXaDungKhoang + " dung 55-65 m), manh x" + heSo.ToString("F2"));
+    }
+
+    static Bounds banDo;
+    static bool daDoBanDo;
+    static string canhDaDo;
+
+    /// <summary>Hop bao cua MAT DAT (Terrain / lop Ground) - noi duoc phep tha quai.</summary>
+    static Bounds BanDo()
+    {
+        string canh = SceneManager.GetActiveScene().name;
+        if (daDoBanDo && canhDaDo == canh) return banDo;
+        daDoBanDo = true; canhDaDo = canh;
+        int lopDat = LayerMask.NameToLayer("Ground");
+        bool co = false;
+        foreach (var c in Object.FindObjectsByType<Collider>(FindObjectsSortMode.None))
+        {
+            if (!(c is TerrainCollider) && c.gameObject.layer != lopDat) continue;
+            if (!co) { banDo = c.bounds; co = true; } else banDo.Encapsulate(c.bounds);
+        }
+        if (!co) banDo = new Bounds(Vector3.zero, new Vector3(100f, 10f, 100f));
+        return banDo;
+    }
+
+    /// <summary>
+    /// Tha 10 con quai o cach nguoi choi GAN NHAT tu 55 den 65 m.
+    ///
+    /// Tinh theo nguoi GAN NHAT chu khong theo mot nguoi bat ki: tha cach nguoi A
+    /// 60 m ma lai ngay canh nguoi B thi voi B do la quai "sat ben", khong con la
+    /// quai o xa.
+    ///
+    /// BAN DO ACT2 CHI 109 x 109 m (do 13/09/2026). Nguoi choi dung gan tam thi
+    /// vanh 55-65 m chi con o bon GOC ban do; bon nguoi rai khap noi thi co khi
+    /// khong con cho nao cach TAT CA ho du 55 m. Luc ay van tha du 10 con, o cho
+    /// HOP LE (tren dat, ngoai nuoc, khong vuong vat can) GAN KHOANG 55-65 m NHAT
+    /// co the - va dem so con dat dung khoang vao SoQuaiXaDungKhoang cho phep
+    /// thu doc, khong im lang gia vo la dat.
+    /// </summary>
+    void SinhQuaiXa(float heSo)
+    {
+        QuaiXaDotNay.Clear();
+        SoQuaiXaDungKhoang = 0;
+
+        var nguoi = new List<Transform>();
+        foreach (var t in moiNguoi)
+        {
+            if (t == null) continue;
+            var m = t.GetComponent<Damageable>();
+            if (m != null && m.IsDead) continue;
+            nguoi.Add(t);
+        }
+        if (nguoi.Count == 0) return;
+
+        var ban = BanDo();
+        int lopCan = LayerMask.GetMask("Default", "Enemy");
+
+        for (int k = 0; k < SoQuaiXaMoiDot; k++)
+        {
+            Vector3 chon = Vector3.zero;
+            float lechTot = float.MaxValue;
+            bool co = false, dung = false;
+
+            for (int lan = 0; lan < 160 && !dung; lan++)
+            {
+                Vector3 p;
+                if (lan % 2 == 0)
+                {
+                    // Nua so lan: nhieu ngay vanh 55-65 m quanh mot nguoi bat ky
+                    var t = nguoi[Random.Range(0, nguoi.Count)];
+                    float g = Random.Range(0f, Mathf.PI * 2f);
+                    float r = Random.Range(QuaiXaGanNhat, QuaiXaXaNhat);
+                    p = t.position + new Vector3(Mathf.Cos(g) * r, 0f, Mathf.Sin(g) * r);
+                }
+                else
+                {
+                    // Nua con lai: rai deu ca ban do - bat duoc cac goc ma vanh tron bo lo
+                    p = new Vector3(Random.Range(ban.min.x + 2f, ban.max.x - 2f), 0f,
+                                    Random.Range(ban.min.z + 2f, ban.max.z - 2f));
+                }
+                if (p.x < ban.min.x + 1f || p.x > ban.max.x - 1f || p.z < ban.min.z + 1f || p.z > ban.max.z - 1f)
+                    continue;
+
+                // Do khoang cach TRUOC (re) - khong hon cho tot nhat thi khoi ban tia
+                float gan = float.MaxValue;
+                foreach (var t in nguoi)
+                {
+                    var d2 = new Vector2(p.x - t.position.x, p.z - t.position.z);
+                    gan = Mathf.Min(gan, d2.magnitude);
+                }
+                float lech = gan < QuaiXaGanNhat ? QuaiXaGanNhat - gan
+                           : gan > QuaiXaXaNhat ? gan - QuaiXaXaNhat : 0f;
+                if (lech > 0f && lech >= lechTot) continue;
+
+                float y;
+                if (!ChoXuatPhat.DungTrenDat(p, out y)) continue;
+                p.y = y;
+                if (ChoXuatPhat.DuoiNuoc(p) || ChoXuatPhat.VuongVatCan(p)) continue;
+                if (Physics.CheckSphere(p + Vector3.up * 1f, 0.6f, lopCan, QueryTriggerInteraction.Ignore)) continue;
+
+                chon = p; lechTot = lech; co = true;
+                if (lech <= 0f) dung = true;
+            }
+
+            if (!co) continue;
+
+            // Muc tieu = nguoi gan nhat: no se tu chay toi, khong dung im o goc ban do
+            Transform ganNhat = nguoi[0];
+            float dMin = float.MaxValue;
+            foreach (var t in nguoi)
+            {
+                float dd = Vector3.Distance(chon, t.position);
+                if (dd < dMin) { dMin = dd; ganNhat = t; }
+            }
+
+            var loai = BonLoaiMoiNguoi[Random.Range(0, BonLoaiMoiNguoi.Length)];
+            var go = EnemyFactory.Spawn(loai, chon + Vector3.up * 0.15f, enemyRoot, ganNhat);
+            if (go == null) continue;
+            DanhSo(go, loai);
+            LamManhTheoDot(go, heSo);
+
+            var d = go.GetComponent<Damageable>();
+            if (d != null) { d.onDeath += OnEnemyDeath; alive.Add(d); QuaiXaDotNay.Add(d); }
+            if (dung) SoQuaiXaDungKhoang++;
+
+            // Cho con sau khong chon trung cho con nay (CheckSphere doc vat ly)
+            Physics.SyncTransforms();
+        }
     }
 
     Transform NguoiBatKy()

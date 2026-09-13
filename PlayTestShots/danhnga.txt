@@ -1,0 +1,25 @@
+[ban 1] thien thach danh nga ke dich
+quai dung de thu: 14
+
+A. xac suat danh nga
+A1. 1000 lan gieo -> danh nga 38.7% (mong doi 40%)
+A2. thien thach mac dinh (cua Quy du): xac suat nga 0 (phai 0)
+
+B. tung thien thach that
+B1. qua thien thach cua nguoi choi: danh nga 40% trong 1.5 giay
+
+C. con quai bi danh nga (hinh that)
+    xuong dau tim duoc: Head
+C1. hat len: hinh cao toi da 1.01 m (phai ~0,5-0,9)
+C2. luc nam: dau cach dat 0.29 m (dung thang: 1.34 m), dau nam ve sau lung 1.35 m (phai > 0 = NGUA)
+C3. trong 1,35 giay: van dang nga True, di chuyen 0.00 m, mau nguoi choi mat 0
+C4. sau 1,95 giay: het nga True, dau cao 1.30 m (dung thang 1.34)
+
+D. nguoi choi bi nga
+D1. DangBiKhoaCung True, day can 0,6 giay di 0.00 m, bam phep -> bay ra 0, loi nhac: BẠN ĐANG BỊ HẤT NGÃ!
+
+E. qua mang
+E1. may chu so huu doc co: dang nga = True
+E2. ban sao: tu gieo False (phai False), goi toi -> nga True, goi ngung 1 giay -> da dung day True
+
+so loi ghi nhan = 0

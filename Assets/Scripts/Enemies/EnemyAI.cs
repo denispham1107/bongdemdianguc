@@ -153,9 +153,11 @@ public class EnemyAI : MonoBehaviour
             return;
         }
 
-        // Bi set danh choang: dung ngay tai cho, don danh dang giua chung cung bo luon
+        // Bi set danh choang HOAC bi thien thach danh nga: dung ngay tai cho,
+        // don danh dang giua chung cung bo luon
         var stunned = GetComponent<StunnedEffect>();
-        if (stunned != null && stunned.IsStunned)
+        var nga = GetComponent<BiDanhNga>();
+        if ((stunned != null && stunned.IsStunned) || (nga != null && nga.DangNga))
         {
             speedMul = 0f;
             attackTimer = -1f;

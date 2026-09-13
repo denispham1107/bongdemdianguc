@@ -34,6 +34,16 @@ public class ThienThach : MonoBehaviour
 
     [Header("Vu no")]
     public float impactDamage = 85f;
+
+    [Header("Danh nga")]
+    // Mac dinh TAT: thien thach cua Quy du cung di duong nay, va nguoi dung chi
+    // xin cho ky nang cua nguoi choi. PlayerController dat 40% qua SpawnLoat.
+    [Range(0f, 1f)] public float ngaXacSuat = 0f;
+    public float ngaGiay = 1.5f;
+
+    /// <summary>Thien thach cua NGUOI CHOI: 40% danh nga, nam 1,5 giay (13/09/2026).</summary>
+    public const float NgaXacSuatNguoiChoi = 0.40f;
+    public const float NgaGiayNguoiChoi = 1.5f;
     public float blastRadius = 4.2f;
 
     [Header("Vung lua de lai")]
@@ -109,7 +119,8 @@ public class ThienThach : MonoBehaviour
     public static void SpawnLoat(Vector3 diemNgam, LayerMask hitMask, LayerMask damageMask,
                                  Damageable boQua = null,
                                  int soQua = 3, float cachNhau = 0.7f, float tanRong = 2.8f,
-                                 float heSoSatThuong = 1f, float themGiayChay = 0f)
+                                 float heSoSatThuong = 1f, float themGiayChay = 0f,
+                                 float ngaXacSuat = 0f, float ngaGiay = 1.5f)
     {
         for (int i = 0; i < soQua; i++)
         {
@@ -127,6 +138,8 @@ public class ThienThach : MonoBehaviour
             tt.impactDamage *= heSoSatThuong;
             tt.chaySatThuongMoiGiay *= heSoSatThuong;
             tt.chayThoiGian += themGiayChay;
+            tt.ngaXacSuat = ngaXacSuat;
+            tt.ngaGiay = ngaGiay;
         }
     }
 
@@ -175,6 +188,35 @@ public class ThienThach : MonoBehaviour
         if (age >= SongToiDa) No();
     }
 
+    /// <summary>
+    /// Gieo danh nga cho tung muc tieu trong vung no. Bo qua nguoi tung, ke da
+    /// chet, va ke CON KHIEN (khien do tron don thi do luon hieu ung - giong
+    /// lua va bang trong CombatUtil.AreaDamage).
+    /// </summary>
+    void DanhNgaQuanh(Vector3 tam)
+    {
+        GieoDanhNga(tam, blastRadius, damageMask, boQua, ngaXacSuat, ngaGiay);
+    }
+
+    /// <summary>Loi gieo danh nga - public de phep thu (menu 62) gieo nghin lan.</summary>
+    /// <returns>So muc tieu bi danh nga.</returns>
+    public static int GieoDanhNga(Vector3 tam, float banKinh, LayerMask mask, Damageable boQua,
+                                  float xacSuat, float giay)
+    {
+        var cols = Physics.OverlapSphere(tam, banKinh, mask, QueryTriggerInteraction.Collide);
+        var daXet = new System.Collections.Generic.HashSet<Damageable>();
+        int so = 0;
+        for (int i = 0; i < cols.Length; i++)
+        {
+            var d = cols[i].GetComponentInParent<Damageable>();
+            if (d == null || d.IsDead || !daXet.Add(d)) continue;
+            if (boQua != null && d == boQua) continue;
+            if (d.khieng != null && d.khieng.DangBat) continue;
+            if (Random.value < xacSuat) { BiDanhNga.Apply(d, giay); so++; }
+        }
+        return so;
+    }
+
     void No()
     {
         if (daNo) return;
@@ -186,6 +228,9 @@ public class ThienThach : MonoBehaviour
         // 1. Sat thuong tuc thi ca vung
         CombatUtil.AreaDamage(tam, blastRadius, impactDamage, damageMask,
                               DamageType.Fire, 2.2f, boQua);
+
+        // 1b. Danh nga - gieo RIENG tung muc tieu, giong choang cua Sam set
+        if (ngaXacSuat > 0f) DanhNgaQuanh(tam);
 
         // 2. Vu no nhin thay duoc
         VfxFactory.BuildFireExplosion(tam, blastRadius * 0.95f);

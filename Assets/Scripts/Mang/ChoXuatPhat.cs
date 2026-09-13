@@ -96,7 +96,7 @@ public static class ChoXuatPhat
     }
 
     /// <summary>Tia chieu tu tren xuong phai cham DAT truoc tien (khong phai mai nha, bia).</summary>
-    static bool DungTrenDat(Vector3 p, out float y)
+    public static bool DungTrenDat(Vector3 p, out float y)
     {
         y = 0f;
         RaycastHit hit;
@@ -115,7 +115,7 @@ public static class ChoXuatPhat
     /// luoi nuoc co the khong doc duoc, va hop bao thi chi rong hon mot chut -
     /// nguoi choi hien ra cach bo them mot met khong ai phan nan.
     /// </summary>
-    static bool DuoiNuoc(Vector3 p)
+    public static bool DuoiNuoc(Vector3 p)
     {
         var nuoc = GameObject.Find("MatNuoc");
         if (nuoc == null) return false;
@@ -129,7 +129,7 @@ public static class ChoXuatPhat
         return false;
     }
 
-    static bool VuongVatCan(Vector3 p)
+    public static bool VuongVatCan(Vector3 p)
     {
         return Physics.CheckCapsule(p + Vector3.up * (BanKinhNguoi + 0.1f),
                                     p + Vector3.up * 1.9f, BanKinhNguoi,

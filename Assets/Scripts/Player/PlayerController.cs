@@ -709,6 +709,8 @@ public class PlayerController : MonoBehaviour
         {
             var f = GetComponent<FrozenEffect>();
             if (f != null && f.IsFullyFrozen) return true;
+            var ng = GetComponent<BiDanhNga>();
+            if (ng != null && ng.DangNga) return true;
             var st = GetComponent<StunnedEffect>();
             return st != null && st.IsStunned;
         }
@@ -719,6 +721,8 @@ public class PlayerController : MonoBehaviour
     {
         var f = GetComponent<FrozenEffect>();
         if (f != null && f.IsFullyFrozen) return "BẠN ĐANG BỊ ĐÓNG BĂNG!";
+        var ng = GetComponent<BiDanhNga>();
+        if (ng != null && ng.DangNga) return "BẠN ĐANG BỊ HẤT NGÃ!";
         var st = GetComponent<StunnedEffect>();
         if (st != null && st.IsStunned) return "BẠN ĐANG BỊ CHOÁNG!";
         return null;
@@ -1032,8 +1036,10 @@ public class PlayerController : MonoBehaviour
             // Goi CA LOAT ba qua noi duoi nhau, cach nhau 0,5 giay. Xem
             // ThienThach.SpawnLoat - hai qua sau lech ra chung quanh chu khong
             // roi trung mot cho.
+            // 40% danh nga 1,5 giay; cap ky nang cao keo dai them nhu moi hieu ung khac
             ThienThach.SpawnLoat(castAim, obstacleMask, enemyMask, health,
-                                 3, 0.7f, 2.8f, manhHon, themGiay);
+                                 3, 0.7f, 2.8f, manhHon, themGiay,
+                                 ThienThach.NgaXacSuatNguoiChoi, ThienThach.NgaGiayNguoiChoi + themGiay);
         }
         else if (castingSkill == 5)
         {

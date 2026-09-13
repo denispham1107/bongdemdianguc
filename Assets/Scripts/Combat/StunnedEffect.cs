@@ -35,7 +35,7 @@ public class StunnedEffect : MonoBehaviour
 
         s.remaining = Mathf.Max(s.remaining, seconds);
 
-        // Chi bao "CHOANG!" o lan dau bi dinh, khoi roi mat
+        // Chi bao "CHOÁNG!" o lan dau bi dinh, khoi roi mat
         if (isNew)
             DamagePopup.SpawnText(d.transform.position + Vector3.up * 2.1f, "CHOANG!",
                                   new Color(0.75f, 0.90f, 1f));

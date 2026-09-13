@@ -90,10 +90,10 @@ thì lệnh MCP hết giờ.
 > `EditorSceneManager.OpenScene("Assets/Scenes/Act2.unity", Single)` trả lại ngay — không thì
 > người dùng quay lại Unity thấy màn của mình biến mất.
 
-**Menu `Diablo 2.5D`** trong Unity (61 mục): 1 nướng asset + dựng màn, 3 tự kiểm tra,
+**Menu `Diablo 2.5D`** trong Unity (62 mục): 1 nướng asset + dựng màn, 3 tự kiểm tra,
 4 chạy thử & chụp hình, 14 chống ô vuông đen, 15–17 ảnh vỏ cây / đá mộ / sứt mẻ bia,
 18–18d chạy thử cây cháy, 19 hồi sinh sau lốc, 20 nướng điểm mồi lửa, 21 nút khoá góc nhìn,
-22 thanh kỹ năng bản PC, **26 chạy thử mạng (sảnh phòng), 27 chạy thử khoá tài khoản, 28 chụp màn đăng nhập·sảnh, 29 xuất bản WebGL, 30/30b bơm input Act2·Act1 (bước 1), 31 dự đoán & hiệu chỉnh (bước 2), 32 nhiều người một cảnh (bước 3), 33 nội suy (bước 4), 34 PvP (bước 5), 35 ghép phòng cùng màn, 36 tự gắn bộ nối mạng, 37 kỹ năng qua mạng, 38 quái chung & bù trễ, 39 đòn của quái qua mạng, 40 máu khởi đầu, 41 nhịp bước qua mạng, 42 chế độ điều khiển, 43 kiểm toán bước 5, 44 sửa bước 5, 45 bốn người, 46 hiệu ứng qua mạng, 47 chế độ bốn bộ xương, 48 cài đặt đồ hoạ, 49 cầu lửa trúng người·khiên, 50 giao diện đăng nhập·sảnh·phòng, 51/51b/51c màn chính từ Act2 (dựng · chọn góc · chụp lò lửa), 52 tên trên đầu nhân vật, 53 HUD kinh dị trong trận, 54/54b/54c mười lò lửa Act2 (đặt · chạy thử · lốc xoáy cuốn lò), 55 kết trận (người sống sót cuối cùng), 56 đợt quái Act2 · chỗ xuất phát, 57 bàn phím ảo che ô nhập, 58 mưa băng·sấm sét (đóng băng, choáng), 59 sách phép (kéo thả ô kỹ năng), 60 cấp độ·kinh nghiệm·điểm kỹ năng, 61 kinh nghiệm theo từng kỹ năng**.
+22 thanh kỹ năng bản PC, **26 chạy thử mạng (sảnh phòng), 27 chạy thử khoá tài khoản, 28 chụp màn đăng nhập·sảnh, 29 xuất bản WebGL, 30/30b bơm input Act2·Act1 (bước 1), 31 dự đoán & hiệu chỉnh (bước 2), 32 nhiều người một cảnh (bước 3), 33 nội suy (bước 4), 34 PvP (bước 5), 35 ghép phòng cùng màn, 36 tự gắn bộ nối mạng, 37 kỹ năng qua mạng, 38 quái chung & bù trễ, 39 đòn của quái qua mạng, 40 máu khởi đầu, 41 nhịp bước qua mạng, 42 chế độ điều khiển, 43 kiểm toán bước 5, 44 sửa bước 5, 45 bốn người, 46 hiệu ứng qua mạng, 47 chế độ bốn bộ xương, 48 cài đặt đồ hoạ, 49 cầu lửa trúng người·khiên, 50 giao diện đăng nhập·sảnh·phòng, 51/51b/51c màn chính từ Act2 (dựng · chọn góc · chụp lò lửa), 52 tên trên đầu nhân vật, 53 HUD kinh dị trong trận, 54/54b/54c mười lò lửa Act2 (đặt · chạy thử · lốc xoáy cuốn lò), 55 kết trận (người sống sót cuối cùng), 56 đợt quái Act2 · chỗ xuất phát, 57 bàn phím ảo che ô nhập, 58 mưa băng·sấm sét (đóng băng, choáng), 59 sách phép (kéo thả ô kỹ năng), 60 cấp độ·kinh nghiệm·điểm kỹ năng, 61 kinh nghiệm theo từng kỹ năng, 62 thiên thạch đánh ngã**.
 Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
 
 ## Quy tắc làm việc (rút ra từ những lần đã sai)
@@ -122,7 +122,9 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
   người chơi khác, vì nó lấy máu thẳng từ prefab).
 - **Act2 dùng LUẬT ĐỢT QUÁI RIÊNG** (`GameDirector.CheDoDotQuanhNguoi`, bật theo tên scene): mỗi đợt sinh quanh **từng**
   người chơi bốn con (bộ xương · phù thủy · quỷ cây · quỷ dữ), giết hết → 30 giây → đợt sau cộng dồn thêm quái bất kì
-  (+1, +3, +6…) và mạnh thêm 5% máu · sát thương mỗi đợt. Act2 KHÔNG còn rải quái sẵn, không dòng quỷ dữ/quỷ cây riêng,
+  (+1, +3, +6…) và mạnh thêm 5% máu · sát thương mỗi đợt. **Vào trận chờ đúng 30 giây** mới ra đợt đầu (`GiayChoDotDau`).
+  **Mỗi đợt thêm cố định 10 con xa** (`SinhQuaiXa`), loại ngẫu nhiên, cách người chơi GẦN NHẤT 55–65 m — bản đồ Act2
+  chỉ 109×109 m nên vành ấy thường chỉ còn ở góc; không đủ chỗ thì thả gần khoảng nhất có thể và đếm vào `SoQuaiXaDungKhoang`. Act2 KHÔNG còn rải quái sẵn, không dòng quỷ dữ/quỷ cây riêng,
   không chế độ bốn bộ xương. Menu 56 kiểm. Chỗ xuất phát của mỗi người: ngẫu nhiên theo **mã phòng** (`ChoXuatPhat.cs`),
   cách nhau ≥ 22 m — mọi máy tính ra cùng một danh sách nên không cần gói tin nào.
 - ⚠️ **Chế độ chạy thử "bốn bộ xương" (chỉ còn Act1) đang BẬT** (`GameDirector.CheDoBonBoXuong = true`, hằng số
@@ -157,6 +159,9 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
   hình, người bên trong vẫn chạy và vẫn bấm đủ bảy kỹ năng. Nay có `PlayerController.HeSoTocBang` và
   `DangBiKhoaCung`; chặn ở `CastAt` (lúc BẮT ĐẦU niệm) chứ không ngắt phép đang niệm — gói "tôi vừa tung phép"
   đã gửi đi rồi, ngắt giữa chừng là hai máy kể hai chuyện khác nhau.
+- **Thiên thạch của người chơi đánh ngã 40% · 1,5 s** (`BiDanhNga.cs`): lật **model con** (va chạm ở gốc vẫn đứng), xoay
+  quanh trục của GỐC (model Meshy xoay sẵn 180° — xoay trục riêng là ngã úp). Thiên thạch Quỷ dữ mặc định 0%. Bit
+  `CoNga` trong byte hiệu ứng mạng. Chữ nổi trên đầu dùng font Inter (`VeSoSatThuong`) — trước đây font mặc định, mất dấu trên web.
 - **`FrozenEffect` có HAI đồng hồ**: `remaining` (vỏ băng + lớp chậm `slow`) và `dongCungConLai` (đóng cứng
   hoàn toàn). Mưa băng trúng là chắc chắn chậm 50% trong 2 s, và 35% số lần đóng cứng 1,5 s. Sấm sét: 35% choáng.
   Đừng suy "đóng cứng" từ `slow > 0,85` như bản cũ — hai tầng chồng nhau thì công thức ấy sai.
