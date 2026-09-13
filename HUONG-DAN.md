@@ -8334,6 +8334,22 @@ sát thương hiện ra** (2,1 m) để số không đè lên chữ. Bỏ chữ 
 **Số đo** (menu 62, 0 lỗi): tung thật 10 lần → trúng 10, ngã 7; dấu hiệu hiện **376/383 khung hình đang ngã (98%)**;
 chuỗi ảnh mới thấy chữ NGÃ rõ ở cả 5 thời điểm, đè lên lửa.
 
+### Người chơi mới khởi động ở mức đồ hoạ "Yếu" (13/09/2026)
+
+Anh xin: vào game thì mặc định ở **Cài đặt › Giao diện: Yếu**. Tôi hỏi lại vì có hai cách hiểu, anh chọn
+**chỉ người chưa từng chọn**: ai chưa bao giờ bấm OK trong Cài đặt thì khởi động ở Yếu (cảnh 62%, bóng cứng gần,
+giảm chi tiết xa); ai đã tự chọn mức khác thì lần sau vào vẫn giữ mức đó. (Cách còn lại — lần mở game nào cũng về
+Yếu — sẽ phá chính nút Cài đặt, vì bấm OK là tải lại trang.)
+
+Sửa một dòng trong `CaiDatDoHoa.DocTuKho`: không có khoá mới lẫn khoá cũ thì trả `MacDinh = Yeu` thay vì Cao. Mức mặc
+định **không** ghi xuống kho — "chưa chọn" vẫn là chưa chọn. Người có khoá cũ ba mức vẫn chuyển như trước.
+
+Menu 48 cũng phải sửa: trước đây nó **đặt khoá = Cao rồi gọi đó là "người chơi mới"**, tức không hề đi qua nhánh
+"chưa từng chọn". Nay nó xoá cả hai khoá thật. **Số đo** (menu 48, **0 lỗi**): kho trống → vào sảnh ở **Yếu**, mức
+Unity **Low**, bóng HardOnly, chi tiết xa 0,55, kho vẫn không có khoá; khoá cũ 0 / 1 / 2 → Cao / Trung bình / Rất yếu
+như cũ; bốn lần chọn Trung bình → Yếu → Rất yếu → Cao vẫn tải lại và áp đúng từng mức. Ảnh `caidat_2_bang.png`
+hiện "Yếu (hiện giờ)".
+
 ### Nút Sách phép: chữ bị cắt, và quyển sách vẽ lại (13/09/2026)
 
 Anh gửi hai ảnh: chữ **"Sách phép"** dưới nút bị cụt mất nửa dưới (chữ "p" chỉ còn phần trên), và quyển sách

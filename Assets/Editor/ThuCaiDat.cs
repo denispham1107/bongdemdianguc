@@ -84,9 +84,10 @@ public static class ThuCaiDat
         phienGoc = PlayerPrefs.GetString(KhoaPhien, "");
         chatLuongGoc = QualitySettings.GetQualityLevel();
 
-        // Bat dau tu muc Cao nhu nguoi choi moi. Bo phien cu de man dang nhap
-        // khong tu dang nhap chen ngang (xem ChupManMang).
-        PlayerPrefs.SetInt(CaiDatDoHoa.Khoa, 0);
+        // Bat dau NHU NGUOI CHOI MOI THAT: xoa ca hai khoa (truoc day dat khoa = 0
+        // roi goi la "nguoi choi moi" - khong he di qua nhanh chua tung chon).
+        // Bo phien cu de man dang nhap khong tu dang nhap chen ngang (xem ChupManMang).
+        PlayerPrefs.DeleteKey(CaiDatDoHoa.Khoa);
         PlayerPrefs.DeleteKey(CaiDatDoHoa.KhoaCu);
         PlayerPrefs.DeleteKey(KhoaPhien);
         PlayerPrefs.Save();
@@ -268,7 +269,8 @@ public static class ThuCaiDat
         bool coMoi = PlayerPrefs.HasKey(CaiDatDoHoa.Khoa), coCu = PlayerPrefs.HasKey(CaiDatDoHoa.KhoaCu);
         int giuMoi = PlayerPrefs.GetInt(CaiDatDoHoa.Khoa, 0), giuCu = PlayerPrefs.GetInt(CaiDatDoHoa.KhoaCu, 0);
         int[] cu = { -1, 0, 1, 2 };
-        MucDoHoa[] mong = { MucDoHoa.Cao, MucDoHoa.Cao, MucDoHoa.TrungBinh, MucDoHoa.RatYeu };
+        // chua tung chon -> Yeu (nguoi dung chot 13/09/2026); co khoa cu thi giu lua chon cu
+        MucDoHoa[] mong = { MucDoHoa.Yeu, MucDoHoa.Cao, MucDoHoa.TrungBinh, MucDoHoa.RatYeu };
         var sb = new StringBuilder();
         for (int i = 0; i < cu.Length; i++)
         {
@@ -325,9 +327,12 @@ public static class ThuCaiDat
         Ghi("4. vao sanh: muc dang dung = " + CaiDatDoHoa.Ten[(int)CaiDatDoHoa.Muc]
             + ", muc Unity = " + QualitySettings.names[QualitySettings.GetQualityLevel()]
             + ", man hinh Game " + Screen.width + "x" + Screen.height);
-        Kiem(CaiDatDoHoa.Muc == MucDoHoa.Cao, "nguoi choi moi khong o muc Cao");
-        Kiem(QualitySettings.names[QualitySettings.GetQualityLevel()] == "High",
-             "muc Cao khong chay muc Unity High (muc WebGL mac dinh)");
+        Kiem(CaiDatDoHoa.Muc == MucDoHoa.Yeu, "nguoi choi moi (chua tung chon) khong o muc Yeu");
+        Kiem(QualitySettings.names[QualitySettings.GetQualityLevel()] == "Low",
+             "nguoi choi moi khong chay muc Unity Low cua muc Yeu");
+        Kiem(QualitySettings.shadows == ShadowQuality.HardOnly && Mathf.Abs(QualitySettings.lodBias - 0.55f) < 0.001f,
+             "nguoi choi moi chua ap dung bong / chi tiet xa cua muc Yeu");
+        Kiem(!PlayerPrefs.HasKey(CaiDatDoHoa.Khoa), "muc mac dinh bi ghi xuong kho - 'chua chon' phai van la chua chon");
         yield return Chup("caidat_1_sanh");
 
         var sanh = Object.FindAnyObjectByType<ManSanh>();

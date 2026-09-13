@@ -34,6 +34,10 @@ public enum MucDoHoa { Cao = 0, TrungBinh = 1, Yeu = 2, RatYeu = 3 }
 /// luu 0/1/2 voi 2 = Yeu cu (50%) - doc bang nghia moi thi nguoi dang chon
 /// 50% bi day len 62%. Lan dau doc thi chuyen: 0 -> Cao, 1 -> Trung binh,
 /// 2 -> Rat yeu.
+///
+/// NGUOI CHUA TUNG CHON (ca hai khoa deu trong) khoi dong o muc YEU - nguoi dung
+/// chot 13/09/2026 (truoc do la Cao). Ai da tu chon muc khac thi lan sau vao van
+/// giu muc do. Khong ghi muc mac dinh xuong kho: "chua chon" van la chua chon.
 /// </summary>
 public static class CaiDatDoHoa
 {
@@ -42,6 +46,9 @@ public static class CaiDatDoHoa
     public const string KhoaCu = "diablo25d.mucDoHoa";
 
     public const int SoMuc = 4;
+
+    /// <summary>Muc cho nguoi CHUA TUNG CHON (khong co khoa nao trong kho).</summary>
+    public const MucDoHoa MacDinh = MucDoHoa.Yeu;
 
     /// <summary>Ten hien len giao dien, dung thu tu MucDoHoa.</summary>
     public static readonly string[] Ten = { "Cao", "Trung bình", "Yếu", "Rất yếu" };
@@ -111,7 +118,7 @@ public static class CaiDatDoHoa
         int moi = DocSo(Khoa, -1);
         if (moi >= 0) return moi;
         int cu = DocSo(KhoaCu, -1);
-        if (cu < 0) return 0;
+        if (cu < 0) return (int)MacDinh;
         int m = ChuyenMucCu(cu);
         Luu((MucDoHoa)m);                       // lan sau doc thang khoa moi
         return m;
