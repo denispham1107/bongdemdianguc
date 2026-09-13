@@ -348,12 +348,18 @@ public static class GoiTin
 
             b[i++] = (byte)Mathf.RoundToInt(Mathf.Clamp01(p.mau01) * 255f);
 
-            // Byte co: bit 0-1 cho di/chet, bit 2-4 cho hieu ung (dong bang,
-            // dong cung, choang) - dich sang 2 bit de khong dam vao hai bit cu.
+            // Byte co: bit 0-1 cho di/chet, bit 2-5 cho hieu ung (dong bang,
+            // dong cung, choang, BI DANH NGA) - dich sang 2 bit de khong dam vao
+            // hai bit cu.
+            //
+            // BON bit (0x0F) chu khong con ba (0x07). Them co "dang nga" la bit
+            // thu tu ma quen noi mat na nay (13/09/2026): nguoi bi nga tren may
+            // minh nhung may kia KHONG BAO GIO biet - dung hien tuong nguoi dung
+            // gap "danh vao nguoi choi khac khong thay nga". Menu 63 kiem.
             byte co = 0;
             if (p.dangChay) co |= 1;
             if (p.daChet) co |= 2;
-            co |= (byte)((p.coHieuUng & 0x07) << 2);
+            co |= (byte)((p.coHieuUng & 0x0F) << 2);
             b[i++] = co;
 
             // Byte thu 12 moi nguoi: mau khieng. Truoc day byte nay de trong -
@@ -406,7 +412,7 @@ public static class GoiTin
             byte co = b[i++];
             p.dangChay = (co & 1) != 0;
             p.daChet = (co & 2) != 0;
-            p.coHieuUng = (byte)((co >> 2) & 0x07);
+            p.coHieuUng = (byte)((co >> 2) & 0x0F);
 
             p.khieng01 = b[i++] / 255f;
 
@@ -622,8 +628,9 @@ public static class GoiTin
 
             b[i++] = (byte)Mathf.RoundToInt(Mathf.Clamp01(q.mau01) * 255f);
             // Byte cuoi truoc day chi mang "da chet" (0/1). Gio bit 0 van la
-            // da chet, bit 1-3 la hieu ung - khong phai doi co goi.
-            b[i++] = (byte)((q.daChet ? 1 : 0) | ((q.coHieuUng & 0x07) << 1));
+            // da chet, bit 1-4 la hieu ung (ke ca bi danh nga) - khong phai doi
+            // co goi. Xem ghi chu 0x0F o goi trang thai nguoi choi.
+            b[i++] = (byte)((q.daChet ? 1 : 0) | ((q.coHieuUng & 0x0F) << 1));
         }
         return b;
     }
@@ -661,7 +668,7 @@ public static class GoiTin
             q.mau01 = b[i++] / 255f;
             byte coQ = b[i++];
             q.daChet = (coQ & 1) != 0;
-            q.coHieuUng = (byte)((coQ >> 1) & 0x07);
+            q.coHieuUng = (byte)((coQ >> 1) & 0x0F);
 
             ra[n] = q;
         }

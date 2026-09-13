@@ -8334,6 +8334,31 @@ sát thương hiện ra** (2,1 m) để số không đè lên chữ. Bỏ chữ 
 **Số đo** (menu 62, 0 lỗi): tung thật 10 lần → trúng 10, ngã 7; dấu hiệu hiện **376/383 khung hình đang ngã (98%)**;
 chuỗi ảnh mới thấy chữ NGÃ rõ ở cả 5 thời điểm, đè lên lửa.
 
+### "Bạn chưa thử với nhân vật khác, mới chỉ thử với quái" — và đó đúng là chỗ hỏng (13/09/2026)
+
+Anh chỉ ra đúng lỗ hổng: menu 62 thử người chơi bằng cách **gọi thẳng** hiệu ứng ngã và hàm vẽ lại trên bản sao —
+bỏ qua đúng hai bước dễ hỏng nhất khi chơi mạng: quả thiên thạch đi qua **gói kỹ năng**, và cờ "đang ngã" đi qua
+**gói trạng thái** (đóng gói → mở gói).
+
+**Menu 63** dùng bộ đồng bộ thật (`DongBoTran`) và kênh giả lập như menu 37, chạy trên code chưa sửa trước:
+
+| | Kết quả trên code cũ |
+|---|---|
+| **Mình là nạn nhân** — người kia tung Thiên thạch bằng gói kỹ năng thật | ✔ trúng 10/10, nhân vật mình ngã 8/10, hình nằm ngửa thật (đo xương đầu), có dấu hiệu |
+| **Mình là người xem** — máy người kia báo "tôi đang ngã" bằng gói trạng thái thật | ✘ **bản sao không hề nhận được** — không nằm, không dấu hiệu |
+| Đóng gói rồi mở gói | ✘ bit "đang ngã" **mất** ở cả gói người chơi lẫn gói quái |
+
+**Nguyên nhân:** byte cờ trong gói tin chỉ dành **3 bit** cho hiệu ứng (`coHieuUng & 0x07`) — đóng băng, đóng cứng,
+choáng. Cờ "đang ngã" tôi thêm là **bit thứ tư**, và mặt nạ 0x07 cắt bỏ nó mỗi lần đóng gói. Người bị ngã nằm trên
+máy *của họ*, còn máy của những người khác không bao giờ biết. Gói quái cũng vậy: chơi với tư cách **khách** (chủ phòng
+quyết định quái) thì đánh ngã quái cũng không thấy — giải thích vì sao phép thử một máy của tôi thấy ngã mà anh thì không.
+
+**Sửa:** nới mặt nạ lên **4 bit** (0x0F) ở cả hai loại gói. Các bit ấy vốn còn trống nên **gói không to thêm** (vẫn 18 byte).
+
+**Số đo** (menu 63, **6 lỗi → 0**): bit ngã qua được cả hai gói, đủ 4 hiệu ứng cùng lúc (15/15) mà "đang chạy / đã
+chết" vẫn nguyên; mình là nạn nhân ngã 9/10, nằm ngửa thật 9/9, có dấu hiệu 9/9; **bản sao người kia nhận ngã, nằm ngửa
+thật, có dấu hiệu, và đứng dậy khi gói ngừng**. Menu 46 chạy lại vẫn 0 lỗi.
+
 ### Luật đợt quái Act2: chờ 30 giây, và thêm 10 con ở xa
 
 - **Vào trận chờ đúng 30 giây** mới ra đợt đầu (trước đây 1,5 giây chơi một mình / 6 giây chơi mạng).
@@ -8425,6 +8450,7 @@ Lần chạy đầu phép thử báo cả 10 con "lơ lửng": tia chiếu từ 
 | **60. Chay thu CAP DO (kinh nghiem, diem ky nang)** | Đo bảng kinh nghiệm và cách cộng dồn, hệ số chỉ số và hệ số kỹ năng, điểm kỹ năng (mở khoá · nâng cấp · hết điểm), gói mạng mang cấp kỹ năng; trong Play đo chỉ số **thật** trước/sau khi lên cấp, kỹ năng chưa mở không tung được, nâng cấp xong phép mạnh lên thật, giết quái được đúng số điểm. Số đo `capdo.txt`. |
 | **61. Chay thu KINH NGHIEM theo tung ky nang** | Tung từng kỹ năng thật vào một con quái máu 1: phải chết, "kẻ đánh cuối" phải là người tung, kinh nghiệm phải cộng đúng giá. Tách riêng các đường chết chậm (cháy, bị lốc cuốn, vũng lửa Thiên thạch, cây cháy) và trường hợp nạn nhân là người chơi. Số đo `kinhnghiem_kynang.txt`. |
 | **62. Chay thu THIEN THACH DANH NGA** | Xác suất đánh ngã trên 1000 lần gieo; thiên thạch của Quỷ dữ không đánh ngã; quả nhân vật tung mang đúng 40%·1,5 giây; trên quái thật đo độ cao bị hất, vị trí xương đầu lúc nằm (ngửa, sát đất), đứng im, đứng dậy; người chơi bị ngã không đi / không tung phép; bit "đang ngã" qua mạng. Số đo `danhnga.txt`. |
+| **63. Chay thu DANH NGA NGUOI CHOI KHAC (qua mang)** | Bộ đồng bộ thật + kênh giả lập: người kia tung Thiên thạch bằng gói kỹ năng thật vào mình (đếm ngã, đo hình nằm ngửa từ xương đầu, dấu hiệu); máy người kia báo "đang ngã" bằng gói trạng thái thật → bản sao phải nằm, có dấu hiệu, đứng dậy; bit ngã qua được gói người chơi và gói quái. Số đo `danhnga_nguoichoi.txt`. |
 | **56. Chay thu DOT QUAI Act2 + cho xuat phat** | *(13/09/2026: thêm đo chờ 30 giây và 10 con xa 55–65 m)*  Kiểm chỗ xuất phát ngẫu nhiên (hai máy cùng mã phòng ra cùng danh sách, cách nhau ≥ 22 m, trên đất, ngoài nước, không vướng vật cản) và luật đợt quái Act2 (đợt 1 bốn con quanh mỗi người; đợt sau cộng dồn quái và mạnh thêm 5% máu · sát thương); kiểm Act1 không bị đổi. Số đo `dotquai_act2.txt`. |
 | **55. Chay thu KET TRAN (nguoi song sot cuoi cung)** | Mở kênh giả lập như menu 45: kiểm gói tin kết trận/chết, máy chủ phòng phán quyết đúng lúc còn một người, bảng điểm cộng đúng người, máy khách không tự kết luận và hiện đúng kết quả nghe được, chết rồi camera chuyển sang người còn sống, chụp màn kết trận. Số đo `kettran.txt`, ảnh `kettran_*.png`. |
 | **54c. Chay thu LOC XOAY cuon lo lua** | Vào Play Act2, thả một cơn lốc đi thẳng vào lò: đo mốc thời gian lửa tắt / lò nhấc lên / lò biến mất / lò mọc lại, kiểm than trong chậu tắt bằng độ sáng trên ảnh, và kiểm vật có hệ hạt khác vẫn không bị cuốn. Ảnh `locxoay_*.png`, số đo `locxoay_lolua.txt`. |
