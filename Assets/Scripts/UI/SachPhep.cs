@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices;
 using UnityEngine;
 
 /// <summary>
@@ -20,7 +21,10 @@ using UnityEngine;
 /// duoc thay bang so thu tu o, khong thi hai may sap xep khac nhau se ban ra
 /// hai phep khac nhau.
 ///
-/// Cat vao PlayerPrefs (tren WebGL chinh la localStorage cua trinh duyet).
+/// CAT LAI: tren WebGL ghi THANG vao localStorage (cau noi CauNoiCaiDat.jslib),
+/// giong CaiDatDoHoa - PlayerPrefs tren WebGL ghi xuong IndexedDB KHONG DONG BO,
+/// nguoi choi sap o xong o sanh roi dong tab ngay thi thu tu mat. Ngoai WebGL
+/// dung PlayerPrefs. Ban ghi cu chi nam trong PlayerPrefs van doc duoc.
 /// </summary>
 public static class SachPhep
 {
@@ -78,9 +82,35 @@ public static class SachPhep
         return a;
     }
 
+#if UNITY_WEBGL && !UNITY_EDITOR
+    [DllImport("__Internal")] static extern string CD_DocChuoi(string khoa);
+    [DllImport("__Internal")] static extern int CD_GhiChuoi(string khoa, string giaTri);
+#endif
+
+    static string DocChuoi(string khoa)
+    {
+#if UNITY_WEBGL && !UNITY_EDITOR
+        try
+        {
+            string v = CD_DocChuoi(khoa);
+            if (!string.IsNullOrEmpty(v)) return v;
+        }
+        catch { }
+#endif
+        return PlayerPrefs.GetString(khoa, "");
+    }
+
+    static void GhiChuoi(string khoa, string giaTri)
+    {
+#if UNITY_WEBGL && !UNITY_EDITOR
+        try { CD_GhiChuoi(khoa, giaTri); } catch { }
+#endif
+        PlayerPrefs.SetString(khoa, giaTri);
+    }
+
     static int[] Doc(string khoa, int soO)
     {
-        string s = PlayerPrefs.GetString(khoa, "");
+        string s = DocChuoi(khoa);
         if (string.IsNullOrEmpty(s)) return MacDinh(soO);
 
         var phan = s.Split(',');
@@ -108,8 +138,8 @@ public static class SachPhep
     public static void Luu()
     {
         Nap();
-        PlayerPrefs.SetString(KhoaTron, string.Join(",", System.Array.ConvertAll(oTron, x => x.ToString())));
-        PlayerPrefs.SetString(KhoaVuong, string.Join(",", System.Array.ConvertAll(oVuong, x => x.ToString())));
+        GhiChuoi(KhoaTron, string.Join(",", System.Array.ConvertAll(oTron, x => x.ToString())));
+        GhiChuoi(KhoaVuong, string.Join(",", System.Array.ConvertAll(oVuong, x => x.ToString())));
         PlayerPrefs.Save();
     }
 

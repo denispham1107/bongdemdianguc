@@ -34,6 +34,32 @@ var CauNoiCaiDat = {
     }
   },
 
+  // Doc mot chuoi (thu tu o ky nang cua Sach phep). Khong co thi tra chuoi rong.
+  // Chuoi tra ve phai cap phat bang _malloc - Unity tu giai phong sau khi chep.
+  CD_DocChuoi: function (khoa) {
+    var v = "";
+    try {
+      var x = window.localStorage.getItem(UTF8ToString(khoa));
+      if (x !== null) v = x;
+    } catch (e) {
+      v = "";
+    }
+    var n = lengthBytesUTF8(v) + 1;
+    var buf = _malloc(n);
+    stringToUTF8(v, buf, n);
+    return buf;
+  },
+
+  // Ghi mot chuoi. Tra 1 neu ghi duoc, 0 neu trinh duyet cam luu.
+  CD_GhiChuoi: function (khoa, giaTri) {
+    try {
+      window.localStorage.setItem(UTF8ToString(khoa), UTF8ToString(giaTri));
+      return 1;
+    } catch (e) {
+      return 0;
+    }
+  },
+
   // Tai lai ca trang - Unity khoi dong lai tu dau voi cai dat moi
   CD_NapLai: function () {
     window.location.reload();

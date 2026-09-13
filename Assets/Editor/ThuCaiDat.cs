@@ -211,7 +211,12 @@ public static class ThuCaiDat
             { 1568, 581 },   // cua so Game trong Editor - cho menu 50 bat duoc chu bi cat
         };
 
-        Ghi("2. vi tri nut CAI DAT o hang \"PHONG DANG CHO\" (co chu that cua Inter):");
+        var thuong = AssetDatabase.LoadAssetAtPath<Font>("Assets/Resources/Fonts/Inter-Regular.ttf");
+        var kChuMo = new GUIStyle { font = thuong != null ? thuong : dam };
+
+        // 14/09/2026 nguoi dung: CAI DAT len dau trang ngay ben trai DANG XUAT; cho cu o hang
+        // "PHONG DANG CHO" thanh nut KY NANG (mo Sach phep xem truoc).
+        Ghi("2. vi tri nut: hang \"PHONG DANG CHO\" (KY NANG) va dau trang (CAI DAT | DANG XUAT), co chu that cua Inter:");
         for (int i = 0; i < manHinh.GetLength(0); i++)
         {
             float W = manHinh[i, 0], H = manHinh[i, 1];
@@ -224,23 +229,51 @@ public static class ThuCaiDat
             kNutMau.fontSize = Mathf.Max(10, Mathf.RoundToInt(23f * s));
             float dem = 2f * Mathf.RoundToInt(14f * s) + 4f;
 
+            // ---- Hang PHONG DANG CHO ----
             float rongTieuDe = kTieuDe.CalcSize(new GUIContent("PHÒNG ĐANG CHỜ")).x;
-            float rongCaiDat = kNutDa.CalcSize(new GUIContent("CÀI ĐẶT")).x + dem;
+            float rongKyNang = kNutDa.CalcSize(new GUIContent("KỸ NĂNG")).x + dem;
             float rongNhanh = kNutMau.CalcSize(new GUIContent("VÀO PHÒNG NHANH")).x + dem;
 
-            var cd = b.nutCaiDat; var vn = b.nutVaoNhanh; var td = b.tieuDePhongCho;
-            bool deNhau = cd.Overlaps(vn);
-            bool deTieuDe = td.x + rongTieuDe > cd.x;
-            bool trongKhung = cd.x >= b.khungDanhSach.x && vn.xMax <= b.khungDanhSach.xMax
+            var kn = b.nutKyNang; var vn = b.nutVaoNhanh; var td = b.tieuDePhongCho;
+            bool deNhau = kn.Overlaps(vn);
+            bool deTieuDe = td.x + rongTieuDe > kn.x;
+            bool trongKhung = kn.x >= b.khungDanhSach.x && vn.xMax <= b.khungDanhSach.xMax
                               && b.khungDanhSach.x >= 0f && b.khungDanhSach.xMax <= W;
-            bool vuaChu = rongCaiDat <= cd.width && rongNhanh <= vn.width;
+            bool vuaChu = rongKyNang <= kn.width && rongNhanh <= vn.width;
+            bool hangOn = !deNhau && !deTieuDe && trongKhung && vuaChu;
 
-            Ghi(string.Format("   {0}x{1}: ti le {2:F2}, tieu de het o {3:F0}, CAI DAT {4:F0}..{5:F0} (chu {6:F0}/{7:F0}), VAO NHANH {8:F0}..{9:F0} (chu {10:F0}/{11:F0}) -> {12}",
-                W, H, s, td.x + rongTieuDe, cd.x, cd.xMax, rongCaiDat, cd.width, vn.x, vn.xMax, rongNhanh, vn.width,
-                (!deNhau && !deTieuDe && trongKhung && vuaChu) ? "on"
+            // ---- Dau trang: ten + thanh tich | CAI DAT | DANG XUAT ----
+            var cd = b.nutCaiDat; var dx = b.nutDangXuat; var d = b.dauTrang;
+            float rongCaiDat = kNutDa.CalcSize(new GUIContent("CÀI ĐẶT")).x + dem;
+            float rongXuat = kNutDa.CalcSize(new GUIContent("ĐĂNG XUẤT")).x + dem;
+            // Ten dai nhat cho phep 16 ky tu (o nhap ManDangNhap); chu tieu de 34
+            var kTen = new GUIStyle { font = dam, fontSize = Mathf.Max(10, Mathf.RoundToInt(34f * s)) };
+            kChuMo.fontSize = Mathf.Max(10, Mathf.RoundToInt(20f * s));
+            float rongTen = kTen.CalcSize(new GUIContent("Nguyễn Thị Huyền")).x;
+            float rongThanhTich = kChuMo.CalcSize(new GUIContent("999 trận thắng  ·  999 trận đã chơi")).x;
+            float choTen = cd.x - 20f * s - d.x;
+            bool dauDeNhau = cd.Overlaps(dx);
+            bool dauTrongMan = cd.x >= d.x && dx.xMax <= d.xMax && d.x >= 0f && d.xMax <= W && dx.xMax <= W;
+            bool dauVuaChu = rongCaiDat <= cd.width && rongXuat <= dx.width;
+            bool cungHang = Mathf.Abs(cd.y - dx.y) < 0.5f && Mathf.Abs(cd.height - dx.height) < 0.5f;
+            bool tenVua = rongTen <= choTen && rongThanhTich <= choTen;
+            // Khong con nut nao o dau trang de len duong ke / khung tao phong ben duoi
+            bool trenKhungTao = cd.yMax <= b.khungTao.y && dx.yMax <= b.khungTao.y;
+            bool dauOn = !dauDeNhau && dauTrongMan && dauVuaChu && cungHang && tenVua && trenKhungTao;
+
+            Ghi(string.Format("   {0}x{1}: ti le {2:F2} | hang: tieu de het o {3:F0}, KY NANG {4:F0}..{5:F0} (chu {6:F0}/{7:F0}), VAO NHANH {8:F0}..{9:F0} (chu {10:F0}/{11:F0}) -> {12}",
+                W, H, s, td.x + rongTieuDe, kn.x, kn.xMax, rongKyNang, kn.width, vn.x, vn.xMax, rongNhanh, vn.width,
+                hangOn ? "on"
                 : (deNhau ? "DE NHAU " : "") + (deTieuDe ? "DE TIEU DE " : "")
                   + (!trongKhung ? "RA NGOAI " : "") + (!vuaChu ? "CHU TRAN" : "")));
-            Kiem(!deNhau && !deTieuDe && trongKhung && vuaChu, "hang PHONG DANG CHO sai o man hinh " + W + "x" + H);
+            Ghi(string.Format("      dau trang: cho ten {0:F0} (ten 16 chu {1:F0}, thanh tich {2:F0}), CAI DAT {3:F0}..{4:F0} (chu {5:F0}/{6:F0}), DANG XUAT {7:F0}..{8:F0} (chu {9:F0}/{10:F0}), day nut {11:F0} / khung tao {12:F0} -> {13}",
+                choTen, rongTen, rongThanhTich, cd.x, cd.xMax, rongCaiDat, cd.width, dx.x, dx.xMax, rongXuat, dx.width,
+                Mathf.Max(cd.yMax, dx.yMax), b.khungTao.y,
+                dauOn ? "on"
+                : (dauDeNhau ? "DE NHAU " : "") + (!dauTrongMan ? "RA NGOAI " : "") + (!dauVuaChu ? "CHU TRAN " : "")
+                  + (!cungHang ? "LECH HANG " : "") + (!tenVua ? "TEN BI CAT " : "") + (!trenKhungTao ? "DE KHUNG TAO" : "")));
+            Kiem(hangOn, "hang PHONG DANG CHO sai o man hinh " + W + "x" + H);
+            Kiem(dauOn, "dau trang (CAI DAT | DANG XUAT) sai o man hinh " + W + "x" + H);
         }
     }
 

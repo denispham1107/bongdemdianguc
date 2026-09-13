@@ -46,6 +46,24 @@ public class ManSanh : MonoBehaviour
 
     void Update()
     {
+        if (!FirebaseMang.DaDangNhap || dangO != Cho.Sanh)
+        {
+            // Sach phep xem truoc chi thuoc ve SANH: dang xuat, vao phong, dem nguoc
+            // thi dong - CuaSoSachPhep la static, de mo thi vao tran no van phu kin man hinh
+            if (CuaSoSachPhep.XemTruoc) CuaSoSachPhep.Dong();
+        }
+        else if (CuaSoSachPhep.XemTruoc)
+        {
+            if (Input.GetKeyDown(KeyCode.Escape)) CuaSoSachPhep.Dong();
+            else CuaSoSachPhep.CapNhat(TiLeSachPhep);
+        }
+
+        // Cham ra NGOAI cua so thi sach dong ngay luc ngon tay DAT XUONG - con nut cua
+        // sanh nam duoi cho ay lai nhan cu THA ra sau do (vd. VAO PHONG NHANH). Giu sanh
+        // khoa toi khi nhac ngon tay.
+        if (CuaSoSachPhep.XemTruoc) khoaSauSach = true;
+        else if (khoaSauSach && Input.touchCount == 0 && !Input.GetMouseButton(0)) khoaSauSach = false;
+
         if (!FirebaseMang.DaDangNhap) return;
 
         // Dem nguoc xong thi vao tran - hoac host da vao truoc mot nhip
@@ -142,6 +160,7 @@ public class ManSanh : MonoBehaviour
         }
 
         if (dangO != Cho.Sanh) moCaiDat = false;
+        bool moSach = dangO == Cho.Sanh && CuaSoSachPhep.XemTruoc;
 
         // Khong con phu toi bon goc + suong do: canh nghia dia phia sau de nguyen
         if (dangO == Cho.Sanh) VeSanh(s);
@@ -152,6 +171,60 @@ public class ManSanh : MonoBehaviour
         // TRUOC, nen khong khoa thi bam vao bang lai trung nut cua sanh nam
         // ngay ben duoi.
         if (moCaiDat) VeCaiDat(s);
+
+        // Sach phep xem truoc (nut KY NANG): cung ly do - ve sau cung, sanh da khoa
+        if (moSach) CuaSoSachPhep.Ve(TiLeSachPhep, NhanVatMau(), IconXemTruoc());
+    }
+
+    void OnDestroy()
+    {
+        if (CuaSoSachPhep.XemTruoc) CuaSoSachPhep.Dong();
+    }
+
+    // ---------------- SACH PHEP XEM TRUOC ----------------
+    //
+    // Nguoi dung 14/09/2026: cho cu cua nut CAI DAT thanh nut KY NANG - mo NGUYEN cua
+    // so Sach phep trong tran, hien du moi ky nang khong o khoa, keo tha san vao o.
+    // Thu tu o luu cung cho voi trong tran (SachPhep -> localStorage) nen tat game mo
+    // lai van con.
+
+    /// <summary>Ti le cua Sach phep - DUNG cong thuc cua GameHUD (cao 1080), de o sanh
+    /// va trong tran cua so to y het nhau.</summary>
+    static float TiLeSachPhep { get { return Screen.height / 1080f; } }
+
+    static Texture2D[] iconXemTruoc;
+
+    static Texture2D[] IconXemTruoc()
+    {
+        if (iconXemTruoc == null || iconXemTruoc[0] == null)
+            iconXemTruoc = new Texture2D[] {
+                IconKyNang.Lua(), IconKyNang.Bang(), IconKyNang.Set(), IconKyNang.Loc(),
+                IconKyNang.ThienThach(), IconKyNang.Khieng(), IconKyNang.GiatSet(),
+                IconKyNang.BinhMau(), IconKyNang.BinhMana() };
+        return iconXemTruoc;
+    }
+
+    PlayerController nhanVatMau;
+    bool khoaSauSach;
+
+    /// <summary>
+    /// Nhan vat de doc nang luong / hoi chieu / niem that (SachPhep.ThongSo). Man chinh
+    /// co san mot Player_Sorceress dung lam canh (cung prefab voi trong tran, mot so
+    /// component bi tat) - doc thong so tu no, khong chep tay con so vao day.
+    /// </summary>
+    PlayerController NhanVatMau()
+    {
+        if (nhanVatMau == null)
+            nhanVatMau = Object.FindAnyObjectByType<PlayerController>(FindObjectsInactive.Include);
+        return nhanVatMau;
+    }
+
+    /// <summary>Mo Sach phep xem truoc - nut KY NANG goi, phep thu (menu 59) cung goi.</summary>
+    public void MoSachPhep()
+    {
+        moCaiDat = false;
+        GUIUtility.keyboardControl = 0;
+        CuaSoSachPhep.MoXemTruoc();
     }
 
     // ---------------- BO CUC ----------------
@@ -164,7 +237,8 @@ public class ManSanh : MonoBehaviour
     {
         public float s, x, rong;
         public Rect dauTrang, khungTao, khungDanhSach;
-        public Rect tieuDePhongCho, nutCaiDat, nutVaoNhanh;
+        public Rect tieuDePhongCho, nutKyNang, nutVaoNhanh;
+        public Rect nutDangXuat, nutCaiDat;     // dau trang, CAI DAT ngay ben trai DANG XUAT
     }
 
     public static BoCucSanh TinhBoCucSanh(float W, float H, float s)
@@ -176,6 +250,9 @@ public class ManSanh : MonoBehaviour
 
         float y = 22f * s;
         b.dauTrang = new Rect(b.x, y, b.rong, 70f * s);
+        // Nguoi dung 14/09/2026: nut CAI DAT len dau trang, ngay ben trai DANG XUAT
+        b.nutDangXuat = new Rect(b.dauTrang.xMax - 215f * s, b.dauTrang.y + 10f * s, 215f * s, 50f * s);
+        b.nutCaiDat = new Rect(b.nutDangXuat.x - 14f * s - 170f * s, b.nutDangXuat.y, 170f * s, 50f * s);
         y += 70f * s + 42f * s;
 
         b.khungTao = new Rect(b.x, y, b.rong, 150f * s);
@@ -188,16 +265,20 @@ public class ManSanh : MonoBehaviour
         // Rong du cho "VAO PHONG NHANH" o co chu nho nhat (man hinh thap, ti le
         // 0,54): 270 don vi thi bi cat thanh "VAO PHONG NHA…" - anh menu 50.
         b.nutVaoNhanh = new Rect(b.khungDanhSach.xMax - le - 310f * s, yt, 310f * s, 52f * s);
-        b.nutCaiDat = new Rect(b.nutVaoNhanh.x - 14f * s - 170f * s, yt, 170f * s, 52f * s);
-        b.tieuDePhongCho = new Rect(b.khungDanhSach.x + le, yt, b.nutCaiDat.x - 14f * s - (b.khungDanhSach.x + le), 52f * s);
+        // Cho cu cua CAI DAT: nut KY NANG (mo Sach phep xem truoc)
+        b.nutKyNang = new Rect(b.nutVaoNhanh.x - 14f * s - 170f * s, yt, 170f * s, 52f * s);
+        b.tieuDePhongCho = new Rect(b.khungDanhSach.x + le, yt, b.nutKyNang.x - 14f * s - (b.khungDanhSach.x + le), 52f * s);
         return b;
     }
 
     /// <summary>Vi tri nut VAO PHONG NHANH tren man hinh hien tai.</summary>
     public static Rect ViTriNutVaoNhanh() { return TinhBoCucSanh(Screen.width, Screen.height, GiaoDien.TiLe).nutVaoNhanh; }
 
-    /// <summary>Vi tri nut CAI DAT - ngay ben trai VAO PHONG NHANH, cung hang "Phong dang cho".</summary>
+    /// <summary>Vi tri nut CAI DAT - dau trang, ngay ben trai DANG XUAT.</summary>
     public static Rect ViTriNutCaiDat() { return TinhBoCucSanh(Screen.width, Screen.height, GiaoDien.TiLe).nutCaiDat; }
+
+    /// <summary>Vi tri nut KY NANG - ngay ben trai VAO PHONG NHANH, cung hang "Phong dang cho".</summary>
+    public static Rect ViTriNutKyNang() { return TinhBoCucSanh(Screen.width, Screen.height, GiaoDien.TiLe).nutKyNang; }
 
     // ---------------- NGOAI SANH ----------------
 
@@ -206,20 +287,22 @@ public class ManSanh : MonoBehaviour
         var b = TinhBoCucSanh(Screen.width, Screen.height, s);
 
         // Bang cai dat dang mo thi ca sanh bi khoa - xem OnGUI
-        bool khoa = moCaiDat;
+        bool khoa = moCaiDat || CuaSoSachPhep.XemTruoc || khoaSauSach;
         GUI.enabled = !khoa;
 
         // ---- Dau trang: ten nguoi choi, thanh tich, dang xuat ----
         var d = b.dauTrang;
-        float rongNutXuat = 215f * s;
-        GiaoDien.Chu(new Rect(d.x, d.y, d.width - rongNutXuat - 20f * s, 42f * s),
+        float rongTen = b.nutCaiDat.x - 20f * s - d.x;     // chua cho CAI DAT + DANG XUAT
+        GiaoDien.Chu(new Rect(d.x, d.y, rongTen, 42f * s),
                      FirebaseMang.TenHienThi, GiaoDien.KieuTieuDe);
-        GiaoDien.Chu(new Rect(d.x, d.y + 42f * s, d.width - rongNutXuat - 20f * s, 28f * s),
+        GiaoDien.Chu(new Rect(d.x, d.y + 42f * s, rongTen, 28f * s),
                      HoSoMang.CuaToi.soTranThang + " trận thắng  ·  " + HoSoMang.CuaToi.soTranChoi + " trận đã chơi",
                      GiaoDien.KieuChuMo);
 
-        if (GiaoDien.Nut(new Rect(d.xMax - rongNutXuat, d.y + 10f * s, rongNutXuat, 50f * s),
-                         "ĐĂNG XUẤT", GiaoDien.KieuNutDa))
+        if (GiaoDien.Nut(b.nutCaiDat, "CÀI ĐẶT", GiaoDien.KieuNutDa))
+            MoCaiDat();
+
+        if (GiaoDien.Nut(b.nutDangXuat, "ĐĂNG XUẤT", GiaoDien.KieuNutDa))
         {
             FirebaseMang.Quen();
             danhSach.Clear();
@@ -265,9 +348,9 @@ public class ManSanh : MonoBehaviour
         GiaoDien.Khung(kd, s);
         GiaoDien.Chu(b.tieuDePhongCho, "PHÒNG ĐANG CHỜ", GiaoDien.KieuTieuDeNho);
 
-        // Nut CAI DAT nam ngay ben trai VAO PHONG NHANH, cung hang
-        if (GiaoDien.Nut(b.nutCaiDat, "CÀI ĐẶT", GiaoDien.KieuNutDa))
-            MoCaiDat();
+        // Nut KY NANG nam ngay ben trai VAO PHONG NHANH, cung hang (cho cu cua CAI DAT)
+        if (GiaoDien.Nut(b.nutKyNang, "KỸ NĂNG", GiaoDien.KieuNutDa))
+            MoSachPhep();
 
         GUI.enabled = !dangCho && !khoa;
         if (GiaoDien.Nut(b.nutVaoNhanh, "VÀO PHÒNG NHANH", GiaoDien.KieuNutMau))

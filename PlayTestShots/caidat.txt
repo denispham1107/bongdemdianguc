@@ -1,59 +1,69 @@
 [ban 2] nut CAI DAT va bon muc do hoa
 1. font Inter (doc thang bang ky tu trong file): Regular 2519 ky tu, SemiBold 2519 ky tu; 134 chu co dau tieng Viet thieu: khong
    doi chung - Lato cua Unity: thieu 102/134 chu (phai > 0)
-   139 chuoi co dau trong 8 file giao dien, 81 ky tu khac nhau, font thieu: khong
-2. vi tri nut CAI DAT o hang "PHONG DANG CHO" (co chu that cua Inter):
-   1920x1080: ti le 1.00, tieu de het o 723, CAI DAT 936..1106 (chu 112/170), VAO NHANH 1120..1430 (chu 263/310) -> on
-   1366x768: ti le 0.71, tieu de het o 514, CAI DAT 666..787 (chu 82/121), VAO NHANH 797..1017 (chu 183/220) -> on
-   1280x720: ti le 0.67, tieu de het o 484, CAI DAT 624..737 (chu 73/113), VAO NHANH 747..953 (chu 173/207) -> on
-   1024x768: ti le 0.71, tieu de het o 343, CAI DAT 495..616 (chu 82/121), VAO NHANH 626..846 (chu 183/220) -> on
-   2532x1170: ti le 1.08, tieu de het o 1012, CAI DAT 1240..1424 (chu 124/184), VAO NHANH 1439..1775 (chu 281/336) -> on
-   2400x1080: ti le 1.00, tieu de het o 963, CAI DAT 1176..1346 (chu 112/170), VAO NHANH 1360..1670 (chu 263/310) -> on
-   2732x2048: ti le 1.90, tieu de het o 918, CAI DAT 1320..1643 (chu 212/322), VAO NHANH 1669..2257 (chu 496/588) -> on
-   1080x1920: ti le 0.92, tieu de het o 328, CAI DAT 518..674 (chu 101/156), VAO NHANH 686..970 (chu 237/284) -> on
-   1170x2532: ti le 0.99, tieu de het o 352, CAI DAT 561..730 (chu 112/169), VAO NHANH 744..1051 (chu 263/307) -> on
-   1568x581: ti le 0.54, tieu de het o 651, CAI DAT 771..863 (chu 65/91), VAO NHANH 870..1037 (chu 139/167) -> on
+   140 chuoi co dau trong 8 file giao dien, 82 ky tu khac nhau, font thieu: khong
+2. vi tri nut: hang "PHONG DANG CHO" (KY NANG) va dau trang (CAI DAT | DANG XUAT), co chu that cua Inter:
+   1920x1080: ti le 1.00 | hang: tieu de het o 723, KY NANG 936..1106 (chu 124/170), VAO NHANH 1120..1430 (chu 263/310) -> on
+      dau trang: cho ten 581 (ten 16 chu 298, thanh tich 324), CAI DAT 1061..1231 (chu 112/170), DANG XUAT 1245..1460 (chu 150/215), day nut 82 / khung tao 134 -> on
+   1366x768: ti le 0.71 | hang: tieu de het o 514, KY NANG 666..787 (chu 90/121), VAO NHANH 797..1017 (chu 183/220) -> on
+      dau trang: cho ten 413 (ten 16 chu 213, thanh tich 233), CAI DAT 755..876 (chu 82/121), DANG XUAT 886..1039 (chu 109/153), day nut 58 / khung tao 95 -> on
+   1280x720: ti le 0.67 | hang: tieu de het o 484, KY NANG 624..737 (chu 81/113), VAO NHANH 747..953 (chu 173/207) -> on
+      dau trang: cho ten 387 (ten 16 chu 206, thanh tich 208), CAI DAT 707..821 (chu 73/113), DANG XUAT 830..973 (chu 98/143), day nut 55 / khung tao 89 -> on
+   1024x768: ti le 0.71 | hang: tieu de het o 343, KY NANG 495..616 (chu 90/121), VAO NHANH 626..846 (chu 183/220) -> on
+      dau trang: cho ten 413 (ten 16 chu 213, thanh tich 233), CAI DAT 584..705 (chu 82/121), DANG XUAT 715..868 (chu 109/153), day nut 58 / khung tao 95 -> on
+   2532x1170: ti le 1.08 | hang: tieu de het o 1012, KY NANG 1240..1424 (chu 137/184), VAO NHANH 1439..1775 (chu 281/336) -> on
+      dau trang: cho ten 629 (ten 16 chu 327, thanh tich 363), CAI DAT 1375..1560 (chu 124/184), DANG XUAT 1575..1808 (chu 166/233), day nut 89 / khung tao 145 -> on
+   2400x1080: ti le 1.00 | hang: tieu de het o 963, KY NANG 1176..1346 (chu 124/170), VAO NHANH 1360..1670 (chu 263/310) -> on
+      dau trang: cho ten 581 (ten 16 chu 298, thanh tich 324), CAI DAT 1301..1471 (chu 112/170), DANG XUAT 1485..1700 (chu 150/215), day nut 82 / khung tao 134 -> on
+   2732x2048: ti le 1.90 | hang: tieu de het o 918, KY NANG 1320..1643 (chu 234/322), VAO NHANH 1669..2257 (chu 496/588) -> on
+      dau trang: cho ten 1102 (ten 16 chu 568, thanh tich 623), CAI DAT 1558..1880 (chu 212/322), DANG XUAT 1906..2314 (chu 285/408), day nut 155 / khung tao 254 -> on
+   1080x1920: ti le 0.92 | hang: tieu de het o 328, KY NANG 518..674 (chu 111/156), VAO NHANH 686..970 (chu 237/284) -> on
+      dau trang: cho ten 532 (ten 16 chu 277, thanh tich 285), CAI DAT 632..788 (chu 101/156), DANG XUAT 801..998 (chu 134/197), day nut 75 / khung tao 123 -> on
+   1170x2532: ti le 0.99 | hang: tieu de het o 352, KY NANG 561..730 (chu 124/169), VAO NHANH 744..1051 (chu 263/307) -> on
+      dau trang: cho ten 576 (ten 16 chu 298, thanh tich 324), CAI DAT 685..854 (chu 112/169), DANG XUAT 868..1081 (chu 150/213), day nut 81 / khung tao 133 -> on
+   1568x581: ti le 0.54 | hang: tieu de het o 651, KY NANG 771..863 (chu 71/91), VAO NHANH 870..1037 (chu 139/167) -> on
+      dau trang: cho ten 313 (ten 16 chu 156, thanh tich 182), CAI DAT 838..930 (chu 65/91), DANG XUAT 937..1053 (chu 86/116), day nut 44 / khung tao 72 -> on
 3. trang web: dat devicePixelRatio khong, doc khoa cai dat khong (ca hai phai 'khong': khung game luon du net, chi canh 3D thu nho trong game)
 3b. chuyen khoa cu sang khoa moi: [cu khong co -> Yếu, khoa moi -1] [cu 0 -> Cao, khoa moi 0] [cu 1 -> Trung bình, khoa moi 1] [cu 2 -> Rất yếu, khoa moi 3]
 
-4. vao sanh: muc dang dung = Yếu, muc Unity = Low, man hinh Game 1566x574
+4. vao sanh: muc dang dung = Yếu, muc Unity = Low, man hinh Game 1568x581
    mo bang: mo - anh caidat_2_bang.png
 5. OK khi khong doi gi: bang dong, game khong tai lai
 
 6. chon Trung bình roi bam OK:
-   game tai lai: co (sau 1.0 giay), kho luu = 1, muc Unity = Medium
+   game tai lai: co (sau 0.9 giay), kho luu = 1, muc Unity = Medium
    bong = HardOnly, phan giai bong = Low, khu rang cua = 0x, den tinh tung diem anh = 1, vSync = 1
    chi tiet xa (lodBias) = 0.7 (mong 0.7), kieu bong = HardOnly (mong HardOnly)
    con dang nhap: co; sanh hien ngay sau khi nap lai: co
-   Act2: khoang bong = 40 m (mong 40), vat do bong = 215, tam giac = 5032k
-   canh 3D 75%: anh dem 1174x430 (mong 1174x430), phong len man hinh 25 khung / 0,5 s; ngoai luc ve: targetTexture trong, pixelWidth 1566 (man hinh 1566); thu tu bloom 1 < ket xuat 2
-   anh chup caidat_act2_trungbinh: do sang trung binh 0.161
+   Act2: khoang bong = 40 m (mong 40), vat do bong = 213, tam giac = 4971k
+   canh 3D 75%: anh dem 1176x436 (mong 1176x436), phong len man hinh 22 khung / 0,5 s; ngoai luc ve: targetTexture trong, pixelWidth 1568 (man hinh 1568); thu tu bloom 1 < ket xuat 2
+   anh chup caidat_act2_trungbinh: do sang trung binh 0.162
 
 6. chon Yếu roi bam OK:
-   game tai lai: co (sau 1.1 giay), kho luu = 2, muc Unity = Low
+   game tai lai: co (sau 0.9 giay), kho luu = 2, muc Unity = Low
    bong = HardOnly, phan giai bong = Low, khu rang cua = 0x, den tinh tung diem anh = 0, vSync = 1
    chi tiet xa (lodBias) = 0.55 (mong 0.55), kieu bong = HardOnly (mong HardOnly)
    con dang nhap: co; sanh hien ngay sau khi nap lai: co
-   Act2: khoang bong = 25 m (mong 25), vat do bong = 80, tam giac = 3799k
-   canh 3D 62%: anh dem 971x356 (mong 971x356), phong len man hinh 34 khung / 0,5 s; ngoai luc ve: targetTexture trong, pixelWidth 1566 (man hinh 1566); thu tu bloom 1 < ket xuat 2
-   anh chup caidat_act2_yeu: do sang trung binh 0.160
+   Act2: khoang bong = 25 m (mong 25), vat do bong = 80, tam giac = 3797k
+   canh 3D 62%: anh dem 972x360 (mong 972x360), phong len man hinh 30 khung / 0,5 s; ngoai luc ve: targetTexture trong, pixelWidth 1568 (man hinh 1568); thu tu bloom 1 < ket xuat 2
+   anh chup caidat_act2_yeu: do sang trung binh 0.161
 
 6. chon Rất yếu roi bam OK:
-   game tai lai: co (sau 1.0 giay), kho luu = 3, muc Unity = Low
+   game tai lai: co (sau 0.9 giay), kho luu = 3, muc Unity = Low
    bong = Disable, phan giai bong = Low, khu rang cua = 0x, den tinh tung diem anh = 0, vSync = 1
    chi tiet xa (lodBias) = 0.4 (mong 0.4), kieu bong = Disable (mong Disable)
    con dang nhap: co; sanh hien ngay sau khi nap lai: co
-   Act2: khoang bong = 20 m (mong 20), vat do bong = 0, tam giac = 1585k
-   canh 3D 50%: anh dem 783x287 (mong 783x287), phong len man hinh 55 khung / 0,5 s; ngoai luc ve: targetTexture trong, pixelWidth 1566 (man hinh 1566); thu tu bloom 1 < ket xuat 2
-   anh chup caidat_act2_ratyeu: do sang trung binh 0.162
+   Act2: khoang bong = 20 m (mong 20), vat do bong = 0, tam giac = 1584k
+   canh 3D 50%: anh dem 784x290 (mong 784x290), phong len man hinh 50 khung / 0,5 s; ngoai luc ve: targetTexture trong, pixelWidth 1568 (man hinh 1568); thu tu bloom 1 < ket xuat 2
+   anh chup caidat_act2_ratyeu: do sang trung binh 0.163
 
 6. chon Cao roi bam OK:
-   game tai lai: co (sau 1.0 giay), kho luu = 0, muc Unity = High
+   game tai lai: co (sau 0.9 giay), kho luu = 0, muc Unity = High
    bong = All, phan giai bong = Medium, khu rang cua = 8x, den tinh tung diem anh = 2, vSync = 1
    chi tiet xa (lodBias) = 1 (mong 1), kieu bong = All (mong All)
    con dang nhap: co; sanh hien ngay sau khi nap lai: co
-   Act2: khoang bong = 60 m (mong 60), vat do bong = 431, tam giac = 6277k
+   Act2: khoang bong = 60 m (mong 60), vat do bong = 431, tam giac = 6266k
    canh 3D 100%: KetXuatThuNho khong gan
-   anh chup caidat_act2_cao: do sang trung binh 0.166
+   anh chup caidat_act2_cao: do sang trung binh 0.167
 
 so loi ghi nhan = 0

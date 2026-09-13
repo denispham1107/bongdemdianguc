@@ -85,8 +85,30 @@ public static class CuaSoSachPhep
     /// <summary>Nguong (diem anh) phai di qua thi moi tinh la keo, khong phai cham.</summary>
     const float NguongKeo = 12f;
 
-    public static void Mo() { DangMo = true; HuyKeo(); }
-    public static void Dong() { DangMo = false; HuyKeo(); }
+    public static void Mo() { DangMo = true; xemTruoc = false; HuyKeo(); }
+    public static void Dong() { DangMo = false; xemTruoc = false; HuyKeo(); }
+
+    // ---- CHE DO XEM TRUOC (mo tu SANH, nut KY NANG) ----
+    // Nguoi dung 14/09/2026: truoc khi vao tran phai doc duoc TAT CA ky nang va keo
+    // tha san vao o, vao tran khong phai chinh lai. O sanh chua co cap do nen:
+    //   - moi ky nang hien du mau, KHONG o khoa, keo tha duoc het;
+    //   - khong co nut mo khoa / nang cap (chi co ghi chu cach mo trong tran);
+    //   - khong hien so binh dang co.
+    // Thu tu o van ghi vao cung cho voi trong tran (SachPhep) nen giu qua moi lan mo game.
+    static bool xemTruoc;
+
+    /// <summary>Dang mo o che do xem truoc (tu sanh).</summary>
+    public static bool XemTruoc { get { return DangMo && xemTruoc; } }
+
+    public static void MoXemTruoc()
+    {
+        DangMo = true; xemTruoc = true; HuyKeo();
+        cuonKho = 0f; cuonChiTiet = 0f; oDangChon = -1;
+    }
+
+    /// <summary>Ky nang hien nhu DA MO (khong o khoa, keo tha duoc): that su da mo, hoac
+    /// dang xem truoc o sanh. Public cho menu 66 hoi.</summary>
+    public static bool HienDaMo(int ky) { return xemTruoc || CapDo.DaMo(ky); }
     public static void DaoTrangThai() { if (DangMo) Dong(); else Mo(); }
 
     static void HuyKeo() { keoTuKho = -1; keoTuO = -1; dangKeo = false; dangCuon = false; }
@@ -268,7 +290,7 @@ public static class CuaSoSachPhep
             if (b.nutDong.Contains(tro)) { Dong(); return; }
 
             // Nut MO KHOA / NANG CAP
-            if (b.nutHoc.Contains(tro))
+            if (b.nutHoc.Contains(tro) && !xemTruoc)
             {
                 if (CapDo.MoKhoaDuoc(dangXem)) CapDo.MoKhoa(dangXem);
                 else if (CapDo.NangCapDuoc(dangXem)) CapDo.NangCap(dangXem);
@@ -281,7 +303,7 @@ public static class CuaSoSachPhep
                 ChonKyNang(hang);
                 // KY NANG CON KHOA THI KHONG KEO DUOC: keo duoc thi no nam tren
                 // thanh ky nang nhu mot nut that, bam vao chi hien ra loi tu choi.
-                keoTuKho = CapDo.DaMo(hang) ? hang : -1;
+                keoTuKho = HienDaMo(hang) ? hang : -1;
             }
             else
             {
@@ -406,10 +428,12 @@ public static class CuaSoSachPhep
         var kPhuDe = new GUIStyle(GiaoDien.KieuChuNho);
         kPhuDe.alignment = TextAnchor.MiddleCenter;
         kPhuDe.fontSize = Mathf.RoundToInt(15f * s);
-        kPhuDe.normal.textColor = CapDo.DiemKyNang > 0 ? GiaoDien.MauVang : GiaoDien.MauMo;
+        kPhuDe.normal.textColor = xemTruoc || CapDo.DiemKyNang > 0 ? GiaoDien.MauVang : GiaoDien.MauMo;
         GUI.Label(new Rect(b.tieuDe.x, b.tieuDe.yMax - 6f * s, b.tieuDe.width, 20f * s),
-                  "Nhân vật cấp " + CapDo.Cap + " / " + CapDo.CapToiDa
-                  + "   ·   điểm kỹ năng chưa dùng: " + CapDo.DiemKyNang, kPhuDe);
+                  xemTruoc
+                    ? "Xem trước mọi kỹ năng   ·   kéo vào ô để sắp sẵn, vào trận không phải chỉnh lại"
+                    : "Nhân vật cấp " + CapDo.Cap + " / " + CapDo.CapToiDa
+                      + "   ·   điểm kỹ năng chưa dùng: " + CapDo.DiemKyNang, kPhuDe);
 
         VeNutDong(b.nutDong, s);
         VeKho(b, s, icon);
@@ -451,7 +475,7 @@ public static class CuaSoSachPhep
             var hang = new Rect(le, y, b.kho.width - le * 2f, b.caoHang - 6f * s);
             bool chon = dangXem == i;
             int capKy = CapDo.CapCuaKyNang(i);
-            bool daMo = capKy > 0;
+            bool daMo = xemTruoc || capKy > 0;
 
             // BA MUC SANG (nguoi dung 13/09/2026: hang dang chon phai "sang han
             // len", ky nang da mo / nang cap phai noi bat hon ky nang con khoa):
@@ -500,7 +524,8 @@ public static class CuaSoSachPhep
             kGoc.alignment = TextAnchor.MiddleRight;
             kGoc.normal.textColor = daMo ? (chon ? new Color(0.72f, 1f, 0.62f) : GiaoDien.MauXanh)
                                          : (chon ? GiaoDien.MauLoi : new Color(0.40f, 0.37f, 0.35f));
-            string chuGoc = !daMo ? "chưa mở"
+            string chuGoc = xemTruoc ? ("tối đa cấp " + CapDo.CapToiDaCua(i))
+                          : !daMo ? "chưa mở"
                           : CapDo.LaKyBinh(i) ? ("còn " + CapDo.SoBinh(i) + " bình")
                           : ("Cấp " + capKy + "/" + CapDo.CapToiDaCua(i));
 
@@ -569,7 +594,8 @@ public static class CuaSoSachPhep
                                 ? Mathf.RoundToInt(PlayerController.MauMoiBinh) + " máu"
                                 : Mathf.RoundToInt(PlayerController.ManaMoiBinh) + " năng lượng")
               + "   ·   Hồi chiêu " + hc.ToString("0.##") + " giây"
-              + "   ·   Đang có " + CapDo.SoBinh(dangXem) + " bình"
+              + (xemTruoc ? "" : "   ·   Đang có " + CapDo.SoBinh(dangXem) + " bình")
+            : pc == null ? "Tối đa cấp " + CapDo.CapToiDaCua(dangXem)
             : "Năng lượng " + Mathf.RoundToInt(nl)
               + "   ·   Hồi chiêu " + hc.ToString("0.##") + " giây"
               + "   ·   Niệm " + nc.ToString("0.##") + " giây";
@@ -594,9 +620,22 @@ public static class CuaSoSachPhep
         kChu.alignment = TextAnchor.UpperLeft;
 
         int capKy = CapDo.CapCuaKyNang(dangXem);
-        kCap.normal.textColor = capKy > 0 ? GiaoDien.MauXanh : GiaoDien.MauLoi;
+        kCap.normal.textColor = xemTruoc || capKy > 0 ? GiaoDien.MauXanh : GiaoDien.MauLoi;
         string dongCap;
-        if (capKy <= 0) dongCap = "CHƯA MỞ KHOÁ — cần 1 điểm kỹ năng";
+        if (xemTruoc)
+        {
+            // O sanh chua co cap: ke cach mo va SUC MANH O CAP TOI DA de nguoi choi so sanh
+            int toiDa = CapDo.CapToiDaCua(dangXem);
+            if (laBinh) dongCap = "Mở khoá bằng 1 điểm kỹ năng   ·   không nâng cấp được";
+            else
+                dongCap = "Mở khoá bằng 1 điểm kỹ năng   ·   tối đa cấp " + toiDa
+                        + "   ·   ở cấp " + toiDa + ": sát thương ×" + CapDo.SatThuongTheoCap(toiDa).ToString("0.00")
+                        + "   ·   năng lượng ×" + CapDo.ManaTheoCap(toiDa).ToString("0.00")
+                        + (dangXem == 5
+                           ? "   ·   máu khiên ×" + CapDo.MauKhiengTheoCap(toiDa).ToString("0.00")
+                           : "   ·   hiệu ứng +" + CapDo.ThemGiayHieuUngTheoCap(toiDa).ToString("0.00") + " giây");
+        }
+        else if (capKy <= 0) dongCap = "CHƯA MỞ KHOÁ — cần 1 điểm kỹ năng";
         else if (laBinh) dongCap = "ĐÃ MỞ KHOÁ   ·   đang có " + CapDo.SoBinh(dangXem) + " bình";
         else
             dongCap = "Kỹ năng cấp " + capKy + " / " + CapDo.CapToiDaCua(dangXem)
@@ -640,7 +679,12 @@ public static class CuaSoSachPhep
         bool bamDuoc = moDuoc || nangDuoc;
 
         string chu;
-        if (capKy == 0)
+        if (xemTruoc)
+        {
+            bamDuoc = false;
+            chu = "Mở khoá và nâng cấp trong trận — mỗi lần lên cấp được 1 điểm kỹ năng";
+        }
+        else if (capKy == 0)
             chu = CapDo.DiemKyNang > 0 ? "MỞ KHOÁ  (1 điểm)" : "Hết điểm kỹ năng — lên cấp để có thêm";
         else if (CapDo.LaKyBinh(dangXem))
             chu = "ĐÃ MỞ KHOÁ — nhặt bình khi giết quái để dùng";
@@ -758,7 +802,7 @@ public static class CuaSoSachPhep
             {
                 // O dang duoc nhac di thi ve mo, cho biet no dang o dau ngon tay
                 bool dangNhac = dangKeo && keoTuO == i;
-                bool daMo = CapDo.DaMo(ky);
+                bool daMo = HienDaMo(ky);
 
                 // KY NANG CHUA MO: xam di va co O KHOA - DUNG mau va DUNG ti le voi
                 // cum nut / thanh o ngoai tran (GameHUD), nguoi dung xin "nhu o ngoai game"
@@ -774,7 +818,7 @@ public static class CuaSoSachPhep
                                                : r.width * GameHUD.RongKhoaVuong);
             }
 
-            if (CapDo.LaKyBinh(ky)) VeSoBinhO(r, ky, s);
+            if (CapDo.LaKyBinh(ky) && !xemTruoc) VeSoBinhO(r, ky, s);
 
             if (chon)
             {

@@ -8334,6 +8334,56 @@ sát thương hiện ra** (2,1 m) để số không đè lên chữ. Bỏ chữ 
 **Số đo** (menu 62, 0 lỗi): tung thật 10 lần → trúng 10, ngã 7; dấu hiệu hiện **376/383 khung hình đang ngã (98%)**;
 chuỗi ảnh mới thấy chữ NGÃ rõ ở cả 5 thời điểm, đè lên lửa.
 
+### Sảnh: nút CÀI ĐẶT lên đầu trang, nút KỸ NĂNG mở Sách phép xem trước; con mắt khoá góc nhìn vẽ lại (14/09/2026)
+
+Anh gửi ảnh sảnh (khung xanh bên trái ĐĂNG XUẤT) và ảnh nút con mắt, xin ba việc:
+1. Nút **CÀI ĐẶT** lên đầu trang, ngay bên trái **ĐĂNG XUẤT**.
+2. Chỗ cũ thành nút **KỸ NĂNG**: mở **nguyên cửa sổ Sách phép** trong trận, hiện đủ mọi kỹ năng **không ổ khoá**, để người
+   chơi đọc hết và kéo thả sẵn vào ô trước khi vào trận; **tắt game mở lại vẫn giữ** thứ tự ô.
+3. Con mắt khoá góc nhìn "quá sơ sài và còn bị bể hình" → vẽ lại kiểu kinh dị.
+
+**Bố cục** (`ManSanh.TinhBoCucSanh`): thêm `nutDangXuat`, `nutCaiDat` (đầu trang, cách 14s), `nutKyNang` (chỗ cũ). Tên người
+chơi + thành tích chừa chỗ cho hai nút (`nutCaiDat.x − 20s`).
+
+**Sách phép xem trước** (`CuaSoSachPhep.MoXemTruoc`, `XemTruoc`, `HienDaMo`): cùng một cửa sổ, cùng hàm vẽ với trong trận,
+chỉ khác: mọi kỹ năng hiện đủ màu và **kéo thả được** (trong trận kỹ năng còn khoá không kéo được); không có nút mở khoá /
+nâng cấp (thay bằng dòng "Mở khoá và nâng cấp trong trận…"); không hiện số bình; dòng cấp kể **sức mạnh ở cấp tối đa**
+(sát thương ×2,07, năng lượng ×1,46, hiệu ứng +0,60 giây). Năng lượng / hồi chiêu / niệm đọc thẳng từ nhân vật trưng bày
+`PhuThuy_TrungBay` của màn chính (cùng prefab với trong trận). Sảnh gọi `CapNhat` trong `Update` và `Ve` cuối `OnGUI`;
+sảnh bị khoá (`GUI.enabled`) khi sách mở **và tới lúc nhấc ngón tay** sau khi sách đóng — chạm ra ngoài cửa sổ đóng sách
+lúc ngón tay đặt xuống, không khoá thì nút sảnh nằm dưới (VÀO PHÒNG NHANH) ăn cú thả tay. Esc đóng. Sách phép là `static`:
+đăng xuất, vào phòng hay rời màn (`OnDestroy`) đều đóng, không thì vào trận nó vẫn phủ kín màn hình.
+
+**Giữ thứ tự khi tắt game**: `SachPhep` trước ghi PlayerPrefs — trên WebGL PlayerPrefs xuống IndexedDB **không đồng bộ**, xếp ô
+xong đóng tab ngay là mất. Nay ghi **thẳng localStorage** như cài đặt đồ hoạ: thêm `CD_DocChuoi` / `CD_GhiChuoi` vào
+`CauNoiCaiDat.jslib` (chuỗi trả về cấp phát bằng `_malloc`, Unity tự giải phóng); đọc localStorage trước, không có thì đọc
+PlayerPrefs (bản ghi cũ vẫn dùng được). Hai bộ ô (cảm ứng / máy tính) vẫn riêng.
+
+**Con mắt quỷ** (`python CongCu/Icon/sinh_mat_quy.py` → `Resources/GiaoDien/MatQuy.png`, `MatQuyKhoa.png`, 256², có mipmap):
+mi mắt bằng thịt nhăn màu huyết dụ, lòng trắng ngả vàng đầy gân máu, tròng lửa cam vân tia, con ngươi **khe dọc**, máu nhỏ
+giọt từ mi dưới. **Đang khoá**: tròng tắt lửa đỏ sẫm, khe ngươi hẹp lại và một **vết chém máu chéo** trên-trái → dưới-phải
+(giữ nghĩa "gạch chéo" của bản cũ). Hai ảnh cắt cùng khung nên đổi trạng thái con mắt không nhảy. Bản cũ ghép 17 dải dọc —
+ở nút ~43 điểm các dải lệch nửa điểm ảnh nên mép răng cưa; không nạp được ảnh thì vẫn vẽ kiểu cũ.
+
+**Số đo** (menu **66** mới, **0 lỗi**; màn Game 1568×581):
+
+| Đo | Kết quả |
+|---|---|
+| Chữ có dấu (ManSanh, CuaSoSachPhep, SachPhep — 245 chuỗi) | đủ trong cmap Inter |
+| Cầu nối localStorage **chạy thật bằng node** (localStorage giả) | khoá chưa có → rỗng; ghi → 1, đọc lại đúng; chữ có dấu đúng; trình duyệt cấm lưu → đọc rỗng, ghi 0 |
+| Kỹ năng hiện đã mở / kéo được | xem trước **9/9**; đối chứng trong trận lúc mới vào **0/9** |
+| Độ sáng vành hình (né ổ khoá giữa hình), xem trước ÷ đối chứng khoá | cột trái thấp nhất **×2,66**, ô thấp nhất **×1,94** |
+| Thông số ở sảnh | cầu lửa 10 năng lượng / 0,55 giây, thiên thạch 60 = đọc thẳng prefab |
+| Xếp ô ở sảnh → kho lưu | máy tính `8,7,3,2,4,5,6`, cảm ứng `0,1,2,3,4,5,8` = tính tay |
+| Sách đang mở mà vào Act2 | sách đóng; thanh kỹ năng trong trận `8,7,3,2,4,5,6` |
+| Thoát Play, nạp lại từ kho (như mở game lần sau) | vẫn đúng hai bộ ô |
+| Con mắt (nút bán kính 21,5 điểm) | mở: tròng cam **59%** (ngoài nút 0%); đường chéo đỏ mở 0% → khoá **42%** |
+
+Lần đo đầu độ sáng hình đo **giữa** hình: ổ khoá sáng của bản đối chứng làm hình tối (Sấm sét, Bình máu) ra ×1,04 dù ảnh
+chụp cho thấy rõ bản xem trước đủ màu — đổi sang đo vành 62–92%. Menu 48 cập nhật kiểm vị trí **cả đầu trang** (10 cỡ màn
+hình: không đè nhau, chữ vừa nút, tên 16 chữ + thành tích không bị cắt, nút không đè khung tạo phòng) — **0 lỗi**; menu 59
+và 21 chạy lại **0 lỗi**. Ảnh `sachphep_sanh_*.png`.
+
 ### Màn đếm ngược vào trận: con số kinh dị, bỏ tên màn, dòng chữ lên trên (13/09/2026)
 
 Anh gửi ảnh màn đếm ngược: con số "quá đơn giản" (chữ đỏ phẳng có bóng), không cần tên màn "NGHĨA ĐỊA", và dòng
@@ -8724,6 +8774,7 @@ Lần chạy đầu phép thử báo cả 10 con "lơ lửng": tia chiếu từ 
 | **63. Chay thu DANH NGA NGUOI CHOI KHAC (qua mang)** | Bộ đồng bộ thật + kênh giả lập: người kia tung Thiên thạch bằng gói kỹ năng thật vào mình (đếm ngã, đo hình nằm ngửa từ xương đầu, dấu hiệu); máy người kia báo "đang ngã" bằng gói trạng thái thật → bản sao phải nằm, có dấu hiệu, đứng dậy; bit ngã qua được gói người chơi và gói quái. Số đo `danhnga_nguoichoi.txt`. |
 | **64. Chay thu QUAI VONG NGOAI TRUY LUNG (60 giay)** | Dùng đợt quái thật: hẹn giờ 60 giây từng con; trước 60 giây quái chưa gặp không tiến lại (trung bình); sau 60 giây đếm con vào 14 m và con ra đòn thật; đối chứng hai con quái thường; dựng ca kẹt sau vật cản thật và ca nhốt trong bốn bức tường (phải vòng / đổi chỗ). Số đo `quai_truylung.txt`. |
 | **65. Chay thu BINH MAU - BINH MANA (roi, nhat, uong, mang)** | Tỉ lệ rơi (3000 lần + giết quái thật), nhặt trong / ngoài bán kính, uống (khoá, hết, đầy, hồi chiêu, 100 / 50), số bình trên ô (so ảnh với ô đối chứng), chữ Sách phép to (so bề ngang nét với chữ đối chứng cỡ cũ / mới), cuộn thân chi tiết, 5 ca mạng qua bộ đồng bộ thật + kênh giả lập. Số đo `binh_mau_mana.txt`. |
+| **66. Chay thu NUT KY NANG o sanh (sach phep xem truoc) + con mat** | Ngoài Play: quét chữ có dấu 3 file, chạy thật cầu nối localStorage bằng node. Trong Play: đăng nhập, mở Sách phép xem trước (9/9 kỹ năng mở, so độ sáng hình với đối chứng khoá), thông số đọc từ nhân vật trưng bày = prefab, xếp ô → kho lưu, vào Act2 lúc sách mở (sách đóng, thanh kỹ năng đúng thứ tự), đo con mắt quỷ hai trạng thái; thoát Play nạp lại từ kho. Số đo `sachphep_sanh.txt`. |
 | **56. Chay thu DOT QUAI Act2 + cho xuat phat** | *(13/09/2026: thêm đo chờ 30 giây và 10 con xa 55–65 m)*  Kiểm chỗ xuất phát ngẫu nhiên (hai máy cùng mã phòng ra cùng danh sách, cách nhau ≥ 22 m, trên đất, ngoài nước, không vướng vật cản) và luật đợt quái Act2 (đợt 1 bốn con quanh mỗi người; đợt sau cộng dồn quái và mạnh thêm 5% máu · sát thương); kiểm Act1 không bị đổi. Số đo `dotquai_act2.txt`. |
 | **55. Chay thu KET TRAN (nguoi song sot cuoi cung)** | Mở kênh giả lập như menu 45: kiểm gói tin kết trận/chết, máy chủ phòng phán quyết đúng lúc còn một người, bảng điểm cộng đúng người, máy khách không tự kết luận và hiện đúng kết quả nghe được, chết rồi camera chuyển sang người còn sống, chụp màn kết trận. Số đo `kettran.txt`, ảnh `kettran_*.png`. |
 | **54c. Chay thu LOC XOAY cuon lo lua** | Vào Play Act2, thả một cơn lốc đi thẳng vào lò: đo mốc thời gian lửa tắt / lò nhấc lên / lò biến mất / lò mọc lại, kiểm than trong chậu tắt bằng độ sáng trên ảnh, và kiểm vật có hệ hạt khác vẫn không bị cuốn. Ảnh `locxoay_*.png`, số đo `locxoay_lolua.txt`. |

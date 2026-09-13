@@ -27,6 +27,7 @@ public partial class GameHUD : MonoBehaviour
     Texture2D vongNen, vongNum, vanhNut;
     // Anh quyen sach phep ve san (CongCu/Icon/sinh_sach_phep.py)
     Texture2D anhSachPhep;
+    Texture2D anhMatQuy, anhMatQuyKhoa;      // nut khoa goc nhin - anh con mat quy
     GUIStyle kieuChuSachPhep, kieuBongChuSachPhep;
 
     [Header("Cam ung (web / iOS / Android)")]
@@ -207,6 +208,8 @@ public partial class GameHUD : MonoBehaviour
         iconBinhMana = IconKyNang.BinhMana();
         vongNen = VongTron(96, new Color(1f, 1f, 1f, 1f), 0.86f, 0.10f);
         anhSachPhep = Resources.Load<Texture2D>("GiaoDien/SachPhep");
+        anhMatQuy = Resources.Load<Texture2D>("GiaoDien/MatQuy");
+        anhMatQuyKhoa = Resources.Load<Texture2D>("GiaoDien/MatQuyKhoa");
 
         // VANH mong, khong phai dia. vongNen o tren long trong chi 0,10 - gan
         // nhu dac - nen to mau len no la phu mot lop kem len KIN mat nut, lam
@@ -801,6 +804,24 @@ public partial class GameHUD : MonoBehaviour
         GUI.DrawTexture(new Rect(gx - r, gy - r, r * 2f, r * 2f),
                         vongNen, ScaleMode.StretchToFill, true);
 
+        // ---- ANH CON MAT QUY (14/09/2026) ----
+        // Nguoi dung: con mat ghep bang dai "qua so sai va con bi be hinh" - o nut
+        // nho tren dien thoai cac dai lech nua diem anh nen mep rang cua. Nay la anh
+        // ve san (CongCu/Icon/sinh_mat_quy.py, co mipmap): mi thit, long trang do
+        // ngau, trong lua khe doc; dang khoa thi trong tat lua + vet chem mau cheo.
+        // Hai anh cung khung nen doi trang thai con mat khong nhay.
+        var anhMat = khoa ? anhMatQuyKhoa : anhMatQuy;
+        if (anhMat != null)
+        {
+            float kt = r * 1.9f;
+            GUI.color = Color.white;
+            GUI.DrawTexture(new Rect(gx - kt * 0.5f, gy - kt * 0.5f, kt, kt),
+                            anhMat, ScaleMode.ScaleToFit, true);
+            GUI.color = cu;
+            return;
+        }
+
+        // Khong nap duoc anh thi ve kieu cu bang cac dai doc - nut van phai co hinh
         // ---- Trong mat: hinh qua hanh ----
         float W = r * 1.34f, H = r * 0.66f;
         const int SoCot = 17;
