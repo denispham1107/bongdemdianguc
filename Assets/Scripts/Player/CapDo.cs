@@ -4,7 +4,8 @@ using UnityEngine;
 /// CAP DO, KINH NGHIEM VA DIEM KY NANG CUA NHAN VAT.
 ///
 /// Nguoi dung chot (13/09/2026): vao tran ai cung CAP 1, giet quai va giet
-/// nguoi choi khac thi duoc kinh nghiem, du thi len cap, toi da CAP 10.
+/// nguoi choi khac thi duoc kinh nghiem, du thi len cap, toi da CAP 20
+/// (13/09/2026 nguoi dung nang tu cap 10 len cap 20).
 /// Moi cap: mau +15%, nang luong +10%, toc do +3,5%.
 /// Bay ky nang lucdau deu KHOA; cap 1 co san MOT diem ky nang de mo mot cai,
 /// va moi lan len cap duoc them mot diem - dung de mo them hoac nang cap.
@@ -13,7 +14,7 @@ using UnityEngine;
 ///
 /// TINH THEO TRAN, KHONG CAT LAI. Moi tran la mot van dau rieng (nguoi song
 /// sot cuoi cung thang) - giu cap giua cac tran thi nguoi choi lau nam vao
-/// tran voi cap 10 con nguoi moi cap 1, khong con la mot van dau nua. Vao tran
+/// tran voi cap 20 con nguoi moi cap 1, khong con la mot van dau nua. Vao tran
 /// la <see cref="BatDauTranMoi"/> xoa sach.
 ///
 /// TAT CA DEU LA CUA NHAN VAT TREN MAY NAY. Cap ky nang cua NGUOI KHAC di kem
@@ -22,7 +23,7 @@ using UnityEngine;
 /// </summary>
 public static class CapDo
 {
-    public const int CapToiDa = 10;
+    public const int CapToiDa = 20;
     public const int CapKyNangToiDa = 5;
     public const int SoKyNang = 7;
 
@@ -65,13 +66,18 @@ public static class CapDo
     //  BANG KINH NGHIEM
     // ================================================================
     //
-    // Cang len cao cang lau: moi bac nhan 1,35 lan bac truoc, lam tron cho de
-    // nhin. Con so cu the va ly do nam trong kinhnghiem.md.
+    // Cang len cao cang lau. Cap 1-10: moi bac nhan 1,35 lan bac truoc. Cap
+    // 10-20 (them 13/09/2026): moi bac chi nhan 1,15 lan - giu 1,35 thi bac
+    // 19->20 can 16 000 va tong len cap 20 la 62 000 kinh nghiem, choi mot minh
+    // phai qua ~22 dot, mot tran khong ai cham noi. Lam tron cho de nhin. Con so
+    // cu the va ly do nam trong kinhnghiem.md.
 
     static readonly int[] canDeLen =
     {
         //  1->2  2->3  3->4  4->5  5->6  6->7  7->8  8->9  9->10
-            100,  135,  180,  245,  330,  445,  600,  810,  1090
+            100,  135,  180,  245,  330,  445,  600,  810,  1090,
+        // 10->11 11->12 12->13 13->14 14->15 15->16 16->17 17->18 18->19 19->20
+            1250,  1440,  1660,  1910,  2200,  2530,  2910,  3350,  3850,  4430
     };
 
     /// <summary>Kinh nghiem can de tu <paramref name="cap"/> len cap ke tiep. 0 neu da toi da.</summary>
@@ -141,7 +147,7 @@ public static class CapDo
     //
     // NHAN DON chu khong cong don: "moi cap tang them 15%" nghia la 15% cua
     // cai dang co. Cong tuyen tinh thi cap 10 chi hon cap 1 co 2,35 lan trong
-    // khi nhan don ra 3,52 lan - va cong tuyen tinh lam nhung cap cuoi gan nhu
+    // khi nhan don ra 3,52 lan (cap 20: mau x14,2, nang luong x6,1, toc do x1,92) - va cong tuyen tinh lam nhung cap cuoi gan nhu
     // khong thay khac gi.
 
     public static float HeSoMauTheoCap(int cap) { return Mathf.Pow(1.15f, Mathf.Max(0, cap - 1)); }

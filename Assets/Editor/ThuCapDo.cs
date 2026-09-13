@@ -9,7 +9,7 @@ using UnityEngine;
 /// CHAY THU: CAP DO, KINH NGHIEM, DIEM KY NANG.
 ///
 /// Nguoi dung chot (13/09/2026): vao tran ai cung cap 1, giet quai va giet
-/// nguoi choi khac thi duoc kinh nghiem, toi da cap 10. Moi cap mau +15%,
+/// nguoi choi khac thi duoc kinh nghiem, toi da cap 20 (truoc 13/09/2026 la 10). Moi cap mau +15%,
 /// nang luong +10%, toc do +3,5%. Bay ky nang deu khoa, cap 1 co mot diem de
 /// mo mot cai, moi lan len cap them mot diem. Ky nang toi da cap 5: moi cap
 /// +20% sat thuong, +10% nang luong, hieu ung +0,15 giay; rieng Khien +15%
@@ -96,6 +96,13 @@ public static class ThuCapDo
         }
         Ghi("A1. " + sb.ToString().Trim());
         Ghi("A2. tong de tu cap 1 len cap " + CapDo.CapToiDa + ": " + tong + " kinh nghiem");
+        // Bang phai du CapToiDa - 1 bac, bac nao cung duong va khong nho hon bac truoc
+        // (bang thieu mot bac thi CanDeLenCap nem IndexOutOfRange ngay giua tran)
+        bool bangTot = true;
+        for (int c = 1; c < CapDo.CapToiDa; c++)
+            if (CapDo.CanDeLenCap(c) <= 0 || (c > 1 && CapDo.CanDeLenCap(c) < CapDo.CanDeLenCap(c - 1))) bangTot = false;
+        Kiem(CapDo.CapToiDa == 20, "cap toi da phai la 20, dang la " + CapDo.CapToiDa);
+        Kiem(bangTot, "bang kinh nghiem thieu bac, co bac <= 0 hoac bac sau nho hon bac truoc");
         Kiem(CapDo.CanDeLenCap(CapDo.CapToiDa) == 0, "cap toi da van con doi kinh nghiem");
 
         // Cong dung mot bac
@@ -146,7 +153,11 @@ public static class ThuCapDo
 
         Ghi("B1. nhan vat cap 10: mau x" + CapDo.HeSoMauTheoCap(10).ToString("0.000")
             + ", nang luong x" + CapDo.HeSoManaTheoCap(10).ToString("0.000")
-            + ", toc do x" + CapDo.HeSoTocTheoCap(10).ToString("0.000"));
+            + ", toc do x" + CapDo.HeSoTocTheoCap(10).ToString("0.000")
+            + " | cap " + CapDo.CapToiDa + ": mau x" + CapDo.HeSoMauTheoCap(CapDo.CapToiDa).ToString("0.000")
+            + ", nang luong x" + CapDo.HeSoManaTheoCap(CapDo.CapToiDa).ToString("0.000")
+            + ", toc do x" + CapDo.HeSoTocTheoCap(CapDo.CapToiDa).ToString("0.000"));
+        Kiem(Mathf.Abs(CapDo.HeSoMauTheoCap(20) - Mathf.Pow(1.15f, 19)) < 0.01f, "he so mau cap 20 sai");
         Kiem(Mathf.Abs(CapDo.HeSoMauTheoCap(10) - Mathf.Pow(1.15f, 9)) < 0.001f, "he so mau sai");
         Kiem(Mathf.Abs(CapDo.HeSoMauTheoCap(1) - 1f) < 0.0001f, "cap 1 da duoc cong chi so");
 
@@ -185,7 +196,7 @@ public static class ThuCapDo
         int truoc = CapDo.DiemKyNang;
         int lanNang = 0;
         while (CapDo.NangCap(2)) lanNang++;
-        Ghi("C3. sau khi len cap 10 con " + truoc + " diem; nang ky nang 2 duoc " + lanNang
+        Ghi("C3. sau khi len cap " + CapDo.Cap + " con " + truoc + " diem; nang ky nang 2 duoc " + lanNang
             + " lan -> cap " + CapDo.CapCuaKyNang(2) + " (toi da " + CapDo.CapKyNangToiDa + ")");
         Kiem(CapDo.CapCuaKyNang(2) == CapDo.CapKyNangToiDa, "khong nang duoc toi cap toi da");
         Kiem(!CapDo.NangCapDuoc(2), "da toi da ma van nang duoc nua");
@@ -303,7 +314,7 @@ public static class ThuCapDo
         Kiem(CapDo.DiemKyNang >= 1, "len cap ma khong duoc them diem ky nang");
 
         // ---- D5. NANG CAP KY NANG: PHEP MANH LEN THAT ----
-        CapDo.Them(999999);                     // len thang cap 10 de co du diem
+        CapDo.Them(999999);                     // len thang cap toi da de co du diem
         while (CapDo.NangCapDuoc(1)) CapDo.NangCap(1);
         yield return null;
 

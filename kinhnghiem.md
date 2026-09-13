@@ -1,16 +1,17 @@
 # Cấp độ, kinh nghiệm và điểm kỹ năng
 
-Tài liệu này ghi lại **những con số** của hệ thống cấp độ, đúng như anh yêu cầu ngày 13/09/2026.
+Tài liệu này ghi lại **những con số** của hệ thống cấp độ, đúng như anh yêu cầu ngày 13/09/2026
+(cùng ngày anh nâng cấp tối đa từ **10 lên 20**).
 Mọi con số ở đây đều nằm trong một chỗ duy nhất trong mã nguồn: `Assets/Scripts/Player/CapDo.cs`.
 
 ---
 
 ## 1. Nguyên tắc chung
 
-- Vào trận, **ai cũng cấp 1**. Cấp tối đa là **cấp 10**.
+- Vào trận, **ai cũng cấp 1**. Cấp tối đa là **cấp 20**.
 - Cấp **tính theo từng trận**, không cất lại giữa các trận. Mỗi trận là một ván đấu riêng
   (người sống sót cuối cùng thắng) — giữ cấp giữa các trận thì người chơi lâu năm vào trận với
-  cấp 10 trong khi người mới cấp 1, và không còn là một ván đấu nữa.
+  cấp 20 trong khi người mới cấp 1, và không còn là một ván đấu nữa.
 - Cấp hiện ra **ngay sau tên** trên bảng góc trái: `PHÙ THỦY · Cấp 3`, kèm một thanh kinh nghiệm
   mảnh dưới thanh năng lượng.
 
@@ -18,7 +19,8 @@ Mọi con số ở đây đều nằm trong một chỗ duy nhất trong mã ngu
 
 ## 2. Cần bao nhiêu kinh nghiệm để lên cấp
 
-Mỗi bậc nặng hơn bậc trước khoảng **1,35 lần** (làm tròn cho dễ nhìn).
+Cấp 1 → 10: mỗi bậc nặng hơn bậc trước khoảng **1,35 lần**. Cấp 10 → 20: mỗi bậc chỉ nặng hơn khoảng
+**1,15 lần** (làm tròn cho dễ nhìn).
 
 | Từ cấp → cấp | Cần | Cộng dồn từ đầu |
 |---|---:|---:|
@@ -30,10 +32,24 @@ Mỗi bậc nặng hơn bậc trước khoảng **1,35 lần** (làm tròn cho d
 | 6 → 7 | 445 | 1 435 |
 | 7 → 8 | 600 | 2 035 |
 | 8 → 9 | 810 | 2 845 |
-| 9 → 10 | 1 090 | **3 935** |
+| 9 → 10 | 1 090 | 3 935 |
+| 10 → 11 | 1 250 | 5 185 |
+| 11 → 12 | 1 440 | 6 625 |
+| 12 → 13 | 1 660 | 8 285 |
+| 13 → 14 | 1 910 | 10 195 |
+| 14 → 15 | 2 200 | 12 395 |
+| 15 → 16 | 2 530 | 14 925 |
+| 16 → 17 | 2 910 | 17 835 |
+| 17 → 18 | 3 350 | 21 185 |
+| 18 → 19 | 3 850 | 25 035 |
+| 19 → 20 | 4 430 | **29 465** |
+
+**Vì sao sau cấp 10 lại tăng chậm hơn:** giữ nguyên 1,35 lần thì riêng bậc 19 → 20 đã cần 16 000, tổng lên cấp 20 là
+~62 000 kinh nghiệm — chơi một mình phải qua ~22 đợt, một trận gần như không ai chạm nổi cấp 20. Với 1,15 lần thì
+khoảng **16 đợt** (xem bảng ở mục 3). Muốn lên cấp nhanh hay chậm hơn thì sửa đúng bảng này.
 
 Giết một con quái to đúng lúc sắp lên cấp thì **nhảy được hai bậc** — phần kinh nghiệm thừa
-được giữ lại, không bỏ phí. Đến cấp 10 thì thôi đếm.
+được giữ lại, không bỏ phí. Đến cấp 20 thì thôi đếm.
 
 ---
 
@@ -65,11 +81,24 @@ Chơi **một mình**, giết hết cả đợt:
 |---|---:|---:|---|
 | 1 | 120 + 600 = 720 | 720 | 5 |
 | 2 | 120 + 30 + 600 = 750 | 1 470 | 7 |
-| 3 | 120 + 90 + 600 = 810 | 2 280 | 8 |
-| 4 | 120 + 180 + 600 = 900 | 3 180 | 9 |
-| 5 | 120 + 300 + 600 = 1 020 | 4 200 | **10** |
+| 3 | 810 | 2 280 | 8 |
+| 4 | 900 | 3 180 | 9 |
+| 5 | 1 020 | 4 200 | 10 |
+| 6 | 1 170 | 5 370 | 11 |
+| 7 | 1 350 | 6 720 | 12 |
+| 8 | 1 560 | 8 280 | 12 (thiếu 5 điểm) |
+| 9 | 1 800 | 10 080 | 13 |
+| 10 | 2 070 | 12 150 | 14 |
+| 11 | 2 370 | 14 520 | 15 |
+| 12 | 2 700 | 17 220 | 16 |
+| 13 | 3 060 | 20 280 | 17 |
+| 14 | 3 450 | 23 730 | 18 |
+| 15 | 3 870 | 27 600 | 19 |
+| 16 | 4 320 | 31 920 | **20** |
 
-Nghĩa là: chơi một mình, giết hết thì khoảng **5 đợt** là chạm cấp 10 (trước khi có 20 con vòng ngoài là ~12 đợt).
+(Mỗi đợt = 120 quanh mình + 30 × số quái cộng dồn + 600 của 20 con vòng ngoài.)
+
+Nghĩa là: chơi một mình, giết hết thì khoảng **5 đợt** chạm cấp 10 và khoảng **16 đợt** chạm cấp 20.
 Chơi **bốn người** thì 20 con vòng ngoài chia nhau — mỗi người chỉ còn khoảng 5 con (~150 kinh nghiệm) cộng phần 120
 quanh mình, nên lên cấp chậm hơn hẳn. Hạ được một người chơi khác (250) vẫn đáng giá hơn cả phần quái quanh mình
 trong một đợt.
@@ -89,6 +118,13 @@ Mỗi cấp, chỉ số **nhân thêm** (không phải cộng tuyến tính):
 | Năng lượng | +10% | ×2,36 (250 → 590) |
 | Tốc độ di chuyển | +3,5% | ×1,36 |
 
+Cấp 20 so với cấp 1 (cùng công thức nhân dồn, không đổi gì): **máu ×14,2** (600 → 8 539), **năng lượng ×6,1**
+(250 → 1 529), **tốc độ di chuyển ×1,92**.
+
+⚠️ Tốc độ ×1,92 là gần gấp đôi: nhân vật cấp 20 chạy khoảng 10 m/giây, trong khi quái nhanh nhất chưa tới 6 m/giây —
+đuổi không kịp. Anh chỉ xin nâng trần cấp nên tôi **giữ nguyên** +3,5% mỗi cấp; nếu thấy quá nhanh thì có thể giới
+hạn tốc độ (ví dụ chỉ tăng tới cấp 10) — chỗ sửa là `CapDo.HeSoTocTheoCap`.
+
 Máu và năng lượng **đang có** cũng được cộng đúng phần vừa tăng thêm — không hồi đầy (lên cấp
 thành một bình máu miễn phí), nhưng cũng không để người chơi tụt tỉ lệ: đang 50% máu mà chỉ kéo
 trần lên thì tự nhiên còn 43%.
@@ -102,8 +138,8 @@ Ngoài ra **mỗi lần lên cấp được 1 điểm kỹ năng**.
 - Vào trận ở cấp 1: **cả bảy kỹ năng đều khoá**, và anh có sẵn **1 điểm** để mở một cái mình muốn.
 - Mỗi lần lên cấp: **+1 điểm**. Dùng để **mở khoá** một kỹ năng mới, hoặc **nâng cấp** kỹ năng
   đang dùng — anh tự chọn.
-- Cả trận có **10 điểm** (1 lúc đầu + 9 lần lên cấp). Không đủ để vừa mở cả bảy vừa nâng hết:
-  mở hết bảy kỹ năng thì chỉ còn 3 điểm để nâng; dồn vào ba kỹ năng thì có thể đưa chúng lên rất cao.
+- Cả trận có **20 điểm** (1 lúc đầu + 19 lần lên cấp). Mở cả bảy và nâng hết lên cấp 5 cần 35 điểm — vẫn
+  không đủ: mở hết bảy kỹ năng thì còn 13 điểm để nâng (khoảng ba kỹ năng lên cấp 5).
   Đó chính là chỗ để anh chọn lối chơi.
 - Chỗ mở khoá và nâng cấp nằm trong cửa sổ **Sách phép** (nút hình cuốn sách, hoặc phím **P**).
   Kỹ năng chưa mở hiện ra xám cả trên bảng lẫn trên nút ngoài trận, có hình ổ khoá, và bấm vào

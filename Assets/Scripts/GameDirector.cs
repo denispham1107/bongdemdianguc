@@ -558,6 +558,10 @@ public class GameDirector : MonoBehaviour
             DanhSo(go, loai);
             LamManhTheoDot(go, heSo);
 
+            // 60 giay chua ai tim thay thi no tu di tim nguoi gan nhat (EnemyAI.GiayTruyLung)
+            var ai = go.GetComponent<EnemyAI>();
+            if (ai != null) ai.HenTruyLung(EnemyAI.GiayTruyLung);
+
             var d = go.GetComponent<Damageable>();
             if (d != null) { d.onDeath += OnEnemyDeath; alive.Add(d); QuaiXaDotNay.Add(d); }
             if (dung) SoQuaiXaDungKhoang++;

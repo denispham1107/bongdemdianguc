@@ -89,6 +89,172 @@ public class EnemyAI : MonoBehaviour
     //  CHON MUC TIEU
     // ================================================================
 
+    // ================================================================
+    //  TRUY LUNG - quai vong ngoai Act2
+    // ================================================================
+    //
+    // Nguoi dung (13/09/2026): 20 con quai vong ngoai ma sau 60 giay van chua
+    // tim thay nguoi choi thi tu biet nguoi gan nhat dang o dau va chay toi danh
+    // - tranh canh con vai con lac o goc ban do, nguoi choi di tim mai khong thay.
+    //
+    // Binh thuong quai chi duoi khi nguoi choi vao trong aggroRange (14 m), ma
+    // quai vong ngoai lai duoc tha o 20-25 m nen dung lang thang mai. Het gio thi
+    // bo han aggroRange: muc tieu van la nguoi GAN NHAT con song (ChonMucTieu).
+    // Ap cho MOI con vong ngoai con song khi het gio, ke ca con da gap nguoi choi
+    // roi bi bo lai xa - no cung la con "tim mai khong thay".
+    //
+    // Chi may TRONG TAI quai chay EnemyAI; may khach nhan vi tri qua mang nen
+    // khong can goi tin nao.
+
+    /// <summary>Quai vong ngoai sinh ra bao lau thi tu truy lung.</summary>
+    public const float GiayTruyLung = 60f;
+
+    /// <summary>Moc Time.time bat dau truy lung. Am = con nay khong truy lung (quai thuong).</summary>
+    [System.NonSerialized] public float truyLungTuLuc = -1f;
+
+    /// <summary>Hen <paramref name="giay"/> giay nua thi truy lung nguoi gan nhat.</summary>
+    public void HenTruyLung(float giay) { truyLungTuLuc = Time.time + giay; }
+
+    public bool DangTruyLung { get { return truyLungTuLuc >= 0f && Time.time >= truyLungTuLuc; } }
+
+    // ---- Truy lung ma bi KET ----
+    //
+    // Quai di DUONG THANG toi muc tieu (khong co NavMesh). Trong tam 14 m thi it
+    // khi vuong; con con truy lung di tu 20-25 m qua bia mo, lo lua, bo doc thi
+    // ket cung - menu 64 lan chay thu hai: 4/20 con dung im 0,0 m suot 5 giay cuoi,
+    // cach nguoi choi 8-17 m (mot con o do cao 0,2 duoi bo, nguoi choi o 3,2).
+    // Chinh la cai loi nguoi dung muon tranh: con vai con ma khong toi duoc.
+    //
+    // Hai tang cuu, CHI cho con dang truy lung:
+    //   1. Moi giay so quang THAT da di voi quang MUON di. Di chua toi 35% la ket:
+    //      quet 7 huong, lay huong thong 2,5 m (con dat, khong hut do cao) gan
+    //      huong muc tieu nhat, di theo 1,5 giay.
+    //   2. Ket 4 lan ma khoang cach toi muc tieu KHONG giam duoc 1 m nao -> dua
+    //      sang cho trong cach muc tieu 10-14 m, cung do cao, nhin thang thay muc
+    //      tieu. Nguoi choi chay tron thi quai van di duoc (khong tinh ket) nen
+    //      khong bi dich cho theo.
+    // Sat muc tieu ma dung lai la bi dam dong chen, khong tinh ket. Rieng quai
+    // DANH XA ket ma da o trong 1,5 lan tam danh thi BAN LUON tu cho do - lan chay
+    // thu ba co quy cay 10,6 m va phu thuy 13,8 m dung sau dam dong 0,0 m, khong
+    // ban phat nao (bo qua kiem ket vi "sat muc tieu" tinh +3 m ca cho quai ban xa).
+
+    const float NhipKiemKet = 1f;
+    const float GiayVong = 1.5f;
+    const int SoLanKetThiDoiCho = 4;
+
+    Vector3 mocKiemKet;
+    float quangMuonDi, lucKiemKet = -1f, vongConLai, kcTotNhat;
+    Vector3 huongVong;
+    int soLanKet;
+    Transform mucTieuKiemKet;
+    float banTaiChoConLai;          // > 0: quai danh xa dang ket, ban tu cho dang dung
+
+    /// <summary>So lan phai vong vat can / phai doi cho vi ket - phep thu menu 64 doc.</summary>
+    [System.NonSerialized] public int soLanVong, soLanDoiChoViKet;
+
+    static int matNaVatCan = -1, matNaNhinThay = -1;
+    static int MatNaVatCan { get { if (matNaVatCan < 0) matNaVatCan = 1 << 0; return matNaVatCan; } }
+    static int MatNaNhinThay
+    {
+        get
+        {
+            if (matNaNhinThay < 0) matNaNhinThay = ~LayerMask.GetMask("Enemy", "Player", "Ignore Raycast");
+            return matNaNhinThay;
+        }
+    }
+
+    Vector3 HuongTruyLung(Vector3 dirToiMucTieu, float dt)
+    {
+        if (vongConLai > 0f) { vongConLai -= dt; return huongVong; }
+        return dirToiMucTieu;
+    }
+
+    void KiemKetKhiTruyLung(Vector3 move, float dt, float dist)
+    {
+        if (target != mucTieuKiemKet) { mucTieuKiemKet = target; kcTotNhat = dist; soLanKet = 0; }
+        if (dist < kcTotNhat - 1f) { kcTotNhat = dist; soLanKet = 0; }
+
+        if (lucKiemKet < 0f) { lucKiemKet = Time.time + NhipKiemKet; mocKiemKet = transform.position; quangMuonDi = 0f; }
+        quangMuonDi += new Vector2(move.x, move.z).magnitude * dt;
+        if (Time.time < lucKiemKet) return;
+
+        float daDi = Vector3.Distance(FlatPos(transform.position), FlatPos(mocKiemKet));
+        bool satMucTieu = danhTuXa ? dist <= TamDanhHieuDung() : dist < TamDanhHieuDung() + 3f;
+        if (satMucTieu) soLanKet = 0;
+        else if (quangMuonDi > 0.8f && daDi < quangMuonDi * 0.35f)
+        {
+            if (danhTuXa && dist <= attackRange * 1.5f) { banTaiChoConLai = 3f; soLanKet = 0; }
+            else
+            {
+                soLanKet++;
+                if (soLanKet >= SoLanKetThiDoiCho && DoiChoGanMucTieu()) soLanKet = 0;
+                else ChonHuongVong();
+            }
+        }
+        lucKiemKet = Time.time + NhipKiemKet;
+        mocKiemKet = transform.position;
+        quangMuonDi = 0f;
+    }
+
+    void ChonHuongVong()
+    {
+        if (target == null) return;
+        Vector3 toi = FlatPos(target.position) - FlatPos(transform.position);
+        if (toi.sqrMagnitude < 0.01f) return;
+        toi.Normalize();
+
+        float r = cc != null ? cc.radius : 0.4f;
+        float cao = cc != null ? cc.height : 1.8f;
+        Vector3 chan = transform.position + Vector3.up * (r + 0.25f);
+        Vector3 dau = transform.position + Vector3.up * Mathf.Max(r + 0.3f, cao - r);
+
+        soLanVong++;
+        float ben = (soLanVong % 2 == 0) ? 1f : -1f;   // doi ben moi lan, khong vong mai mot phia
+        float tot = -2f;
+        Vector3 chon = Vector3.zero;
+        foreach (float g in new[] { 45f, -45f, 90f, -90f, 135f, -135f, 180f })
+        {
+            Vector3 h = Quaternion.Euler(0f, g * ben, 0f) * toi;
+            if (Physics.CapsuleCast(chan, dau, r * 0.9f, h, 2.5f, MatNaVatCan, QueryTriggerInteraction.Ignore)) continue;
+            float y;
+            if (!ChoXuatPhat.DungTrenDat(transform.position + h * 2.5f, out y)) continue;
+            if (Mathf.Abs(y - transform.position.y) > 1.2f) continue;
+            float diem = Vector3.Dot(h, toi);
+            if (diem > tot) { tot = diem; chon = h; }
+        }
+        if (tot > -2f) { huongVong = chon; vongConLai = GiayVong; }
+    }
+
+    bool DoiChoGanMucTieu()
+    {
+        if (target == null) return false;
+        Vector3 tam = target.position;
+        int lopQuai = LayerMask.GetMask("Enemy");
+        for (int lan = 0; lan < 40; lan++)
+        {
+            float g = Random.Range(0f, Mathf.PI * 2f), r = Random.Range(10f, 14f);
+            Vector3 p = tam + new Vector3(Mathf.Cos(g) * r, 0f, Mathf.Sin(g) * r);
+            float y;
+            if (!ChoXuatPhat.DungTrenDat(p, out y)) continue;
+            p.y = y;
+            if (Mathf.Abs(y - tam.y) > 1.5f) continue;
+            if (ChoXuatPhat.DuoiNuoc(p) || ChoXuatPhat.VuongVatCan(p)) continue;
+            if (Physics.CheckSphere(p + Vector3.up, 0.6f, lopQuai, QueryTriggerInteraction.Ignore)) continue;
+            // Nhin thang thay muc tieu: tu cho moi di duong thang la toi
+            if (Physics.Linecast(p + Vector3.up, tam + Vector3.up, MatNaNhinThay, QueryTriggerInteraction.Ignore)) continue;
+
+            if (cc != null) cc.enabled = false;
+            transform.position = p + Vector3.up * 0.1f;
+            if (cc != null) cc.enabled = true;
+            velocity = Vector3.zero;
+            vongConLai = 0f;
+            kcTotNhat = r;
+            soLanDoiChoViKet++;
+            return true;
+        }
+        return false;
+    }
+
     /// <summary>Bao lau thi ngo lai xem ai dang gan minh nhat.</summary>
     const float NhipChonLaiGiay = 0.7f;
 
@@ -196,7 +362,7 @@ public class EnemyAI : MonoBehaviour
             if (td != null && td.IsDead) targetAlive = false;
         }
 
-        if (targetAlive && dist <= aggroRange && speedMul > 0.02f)
+        if (targetAlive && (dist <= aggroRange || DangTruyLung) && speedMul > 0.02f)
         {
             // Ke danh tu xa bi ap sat thi LUI RA cho du tam nem, vua lui vua
             // quay mat ve phia nguoi choi. Khong co doan nay thi mu phu thuy
@@ -222,10 +388,13 @@ public class EnemyAI : MonoBehaviour
                 return;
             }
 
-            if (dist > TamDanhHieuDung())
+            if (banTaiChoConLai > 0f) banTaiChoConLai -= dt;
+            bool banTaiCho = danhTuXa && banTaiChoConLai > 0f && dist <= attackRange * 1.5f;
+            if (dist > TamDanhHieuDung() && !banTaiCho)
             {
                 Vector3 dir = FlatPos(target.position) - FlatPos(transform.position);
                 dir.Normalize();
+                if (DangTruyLung) dir = HuongTruyLung(dir, dt);
 
                 // Tach nhau ra mot chut de khong chong len nhau
                 dir += Separation() * 0.6f;
@@ -253,6 +422,8 @@ public class EnemyAI : MonoBehaviour
             }
             move = wanderDir * moveSpeed * 0.28f * speedMul;
         }
+
+        if (DangTruyLung && targetAlive) KiemKetKhiTruyLung(move, dt, dist);
 
         velocity.x = move.x;
         velocity.z = move.z;

@@ -178,7 +178,7 @@ public static class ThuKinhNghiemKyNang
         toi.maxHealth = 10000000f; toi.health = 10000000f;
 
         // Cap 7 = 7 diem ky nang, du mo sau ky nang gay sat thuong, va con xa
-        // cap 10 (cap toi da thi kinh nghiem ngung dem - phep do se ra 0 oan).
+        // cap toi da (cap toi da thi kinh nghiem ngung dem - phep do se ra 0 oan).
         CapDo.BatDauTranMoi();
         CapDo.Them(100 + 135 + 180 + 245 + 330 + 445);
         foreach (int k in new[] { 0, 1, 2, 3, 4, 6 }) CapDo.MoKhoa(k);

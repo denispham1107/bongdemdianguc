@@ -8334,6 +8334,51 @@ sát thương hiện ra** (2,1 m) để số không đè lên chữ. Bỏ chữ 
 **Số đo** (menu 62, 0 lỗi): tung thật 10 lần → trúng 10, ngã 7; dấu hiệu hiện **376/383 khung hình đang ngã (98%)**;
 chuỗi ảnh mới thấy chữ NGÃ rõ ở cả 5 thời điểm, đè lên lửa.
 
+### Quái vòng ngoài tự truy lùng sau 60 giây, và cấp tối đa 20 (13/09/2026)
+
+**Anh xin:** 20 con quái vòng ngoài của mỗi đợt, nếu sau 60 giây vẫn chưa tìm thấy người chơi, thì tự biết người chơi
+gần nhất ở đâu và chạy tới đánh — tránh cảnh còn vài con trên bản đồ mà tìm mãi không thấy. Và nâng cấp tối đa lên 20.
+
+**Vì sao trước đây chúng không tới:** quái chỉ đuổi khi người chơi vào trong `aggroRange` = **14 m**, mà quái vòng ngoài
+được thả ở **20–25 m** — nên đứng lang thang mãi. Sửa: lúc thả, `GameDirector.SinhQuaiXa` hẹn giờ cho từng con
+(`EnemyAI.HenTruyLung(60)`); hết giờ con đó bỏ giới hạn 14 m và đuổi người **gần nhất còn sống**. Áp cho mọi con vòng
+ngoài còn sống, kể cả con đã gặp người chơi rồi bị bỏ lại xa — nó cũng là con "tìm mãi không thấy". Chỉ máy trọng tài
+quái chạy AI nên không cần gói tin mới.
+
+**Chỗ tôi suýt báo xong quá sớm.** Lần chạy thử đầu 20/20 con tới được. Lần thứ hai, với vị trí thả ngẫu nhiên khác,
+**4/20 con đứng kẹt 0,0 m suốt 5 giây** cách người chơi 8–17 m: quái đi **đường thẳng** (không có NavMesh), vướng cây,
+nhà mồ, hoặc bị chính đám quái khác chắn. Chính là cái lỗi anh muốn tránh. Nên thêm hai tầng cứu, **chỉ cho con đang
+truy lùng**:
+
+1. Mỗi giây so quãng **thật** đã đi với quãng **muốn** đi; đi chưa tới 35% là kẹt → quét 7 hướng, lấy hướng thông 2,5 m
+   (còn đất, không hụt độ cao) gần hướng người chơi nhất, đi theo 1,5 giây.
+2. Kẹt 4 lần mà khoảng cách không giảm được 1 m nào → **đổi chỗ** sang chỗ trống cách người chơi 10–14 m, cùng độ cao,
+   nhìn thẳng thấy người chơi. Người chơi chạy trốn thì quái vẫn đi được (không tính kẹt) nên không bị dịch chỗ theo.
+
+Lần chạy thứ ba lộ thêm một chỗ: **quỷ cây 10,6 m và phù thủy 13,8 m** đứng sau đám đông, không bắn phát nào — điều
+kiện "sát người chơi thì không tính kẹt" cộng thêm 3 m cho cả quái đánh xa. Sửa: quái đánh xa kẹt mà đã trong 1,5 lần
+tầm đánh thì **bắn tại chỗ**.
+
+**Số đo** (menu 64, **0 lỗi**, dùng đợt quái THẬT director tự thả ở giây 30):
+
+| Phần | Kết quả |
+|---|---|
+| Hẹn giờ | 20/20 con hẹn đúng 60,000 giây từ lúc sinh |
+| Trước 60 giây | các con chưa gặp người chơi: trung bình tiến lại **−1,1 m** (tức là không đuổi) |
+| Sau 60 giây | **20/20** con vào tầm 14 m (chậm nhất 6,1 giây, trung vị 1,6 giây); **20/20 con ra đòn thật** (sự kiện `DaRaDon`) |
+| Đối chứng | 2 bộ xương thường đặt 41–43 m: 90 giây vẫn cách 32–41 m, không ra đòn |
+| Kẹt sau cây / nhà mồ (tia thẳng bị chặn) | vòng 1 lần, tới sát 2,4 m |
+| Nhốt trong 4 bức tường tạm | vòng 6 lần không thoát → **đổi chỗ 1 lần** → tới sát 2,4 m |
+
+Menu 56 chạy lại vẫn 0 lỗi (28 con đợt đầu, 20/20 con vòng ngoài đúng 20–25 m).
+
+**Cấp tối đa 20.** `CapDo.CapToiDa = 20`, bảng kinh nghiệm thêm 10 bậc. Giữ 1,35 lần mỗi bậc thì lên cấp 20 cần ~62 000
+kinh nghiệm (chơi một mình ~22 đợt); tôi cho cấp 10–20 chỉ nặng thêm **1,15 lần** mỗi bậc → tổng **29 465**, chơi một mình
+khoảng **16 đợt**. Cả trận có **20 điểm kỹ năng** (mở hết 7 kỹ năng và nâng hết lên cấp 5 cần 35 — vẫn phải chọn).
+Chỉ số mỗi cấp giữ nguyên nên cấp 20: máu ×14,2, năng lượng ×6,1, **tốc độ ×1,92** (~10 m/giây, quái nhanh nhất 5,98) —
+đã ghi cảnh báo trong `kinhnghiem.md`. **Số đo** (menu 60, **0 lỗi**): bảng đủ 19 bậc tăng dần, cộng 999 999 → cấp 20 và 20
+điểm, hệ số máu cấp 20 = 1,15¹⁹.
+
 ### Người chơi mới khởi động ở mức đồ hoạ "Yếu" (13/09/2026)
 
 Anh xin: vào game thì mặc định ở **Cài đặt › Giao diện: Yếu**. Tôi hỏi lại vì có hai cách hiểu, anh chọn
@@ -8517,6 +8562,7 @@ Lần chạy đầu phép thử báo cả 10 con "lơ lửng": tia chiếu từ 
 | **61. Chay thu KINH NGHIEM theo tung ky nang** | Tung từng kỹ năng thật vào một con quái máu 1: phải chết, "kẻ đánh cuối" phải là người tung, kinh nghiệm phải cộng đúng giá. Tách riêng các đường chết chậm (cháy, bị lốc cuốn, vũng lửa Thiên thạch, cây cháy) và trường hợp nạn nhân là người chơi. Số đo `kinhnghiem_kynang.txt`. |
 | **62. Chay thu THIEN THACH DANH NGA** | Xác suất đánh ngã trên 1000 lần gieo; thiên thạch của Quỷ dữ không đánh ngã; quả nhân vật tung mang đúng 40%·1,5 giây; trên quái thật đo độ cao bị hất, vị trí xương đầu lúc nằm (ngửa, sát đất), đứng im, đứng dậy; người chơi bị ngã không đi / không tung phép; bit "đang ngã" qua mạng. Số đo `danhnga.txt`. |
 | **63. Chay thu DANH NGA NGUOI CHOI KHAC (qua mang)** | Bộ đồng bộ thật + kênh giả lập: người kia tung Thiên thạch bằng gói kỹ năng thật vào mình (đếm ngã, đo hình nằm ngửa từ xương đầu, dấu hiệu); máy người kia báo "đang ngã" bằng gói trạng thái thật → bản sao phải nằm, có dấu hiệu, đứng dậy; bit ngã qua được gói người chơi và gói quái. Số đo `danhnga_nguoichoi.txt`. |
+| **64. Chay thu QUAI VONG NGOAI TRUY LUNG (60 giay)** | Dùng đợt quái thật: hẹn giờ 60 giây từng con; trước 60 giây quái chưa gặp không tiến lại (trung bình); sau 60 giây đếm con vào 14 m và con ra đòn thật; đối chứng hai con quái thường; dựng ca kẹt sau vật cản thật và ca nhốt trong bốn bức tường (phải vòng / đổi chỗ). Số đo `quai_truylung.txt`. |
 | **56. Chay thu DOT QUAI Act2 + cho xuat phat** | *(13/09/2026: thêm đo chờ 30 giây và 10 con xa 55–65 m)*  Kiểm chỗ xuất phát ngẫu nhiên (hai máy cùng mã phòng ra cùng danh sách, cách nhau ≥ 22 m, trên đất, ngoài nước, không vướng vật cản) và luật đợt quái Act2 (đợt 1 bốn con quanh mỗi người; đợt sau cộng dồn quái và mạnh thêm 5% máu · sát thương); kiểm Act1 không bị đổi. Số đo `dotquai_act2.txt`. |
 | **55. Chay thu KET TRAN (nguoi song sot cuoi cung)** | Mở kênh giả lập như menu 45: kiểm gói tin kết trận/chết, máy chủ phòng phán quyết đúng lúc còn một người, bảng điểm cộng đúng người, máy khách không tự kết luận và hiện đúng kết quả nghe được, chết rồi camera chuyển sang người còn sống, chụp màn kết trận. Số đo `kettran.txt`, ảnh `kettran_*.png`. |
 | **54c. Chay thu LOC XOAY cuon lo lua** | Vào Play Act2, thả một cơn lốc đi thẳng vào lò: đo mốc thời gian lửa tắt / lò nhấc lên / lò biến mất / lò mọc lại, kiểm than trong chậu tắt bằng độ sáng trên ảnh, và kiểm vật có hệ hạt khác vẫn không bị cuốn. Ảnh `locxoay_*.png`, số đo `locxoay_lolua.txt`. |
