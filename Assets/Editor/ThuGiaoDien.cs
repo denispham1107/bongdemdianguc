@@ -253,6 +253,34 @@ public static class ThuGiaoDien
                 Kiem(soNv > 0, "khong tim thay nhan vat trong canh de do");
                 Kiem(gach.yMax < dinhNv, "dong chu / gach do dem nguoc van de len nhan vat");
             }
+
+            // 7c. Con so + vong phu chu nho bot 15% (nguoi dung 13/09/2026). Do be ngang VUNG DO RUC
+            // cua vong tren ANH CHUP (vong dap nhip to them toi da 7%): phai khop 400s, khong phai 470s cu.
+            {
+                float sGd = GiaoDien.TiLe;
+                yield return new WaitForEndOfFrame();
+                var tex = ScreenCapture.CaptureScreenshotAsTexture();
+                int trai = int.MaxValue, phai = -1;
+                int cx = tex.width / 2, nua = Mathf.RoundToInt(300f * sGd);
+                // Quet 5 hang quanh DUONG NGANG GIUA (vong tron doi xung, xoay khong doi be ngang):
+                // diem "do troi" = do hon ca xanh la lan xanh lam 0,12. Lan dau dung nguong "do ruc"
+                // (r > 0,55) thi vong bi ve mo theo nhip khong qua duoc - chi do trung con so (72 diem).
+                for (int y = tex.height / 2 - 2; y <= tex.height / 2 + 2; y++)
+                    for (int x = Mathf.Max(0, cx - nua); x < Mathf.Min(tex.width, cx + nua); x++)
+                    {
+                        var c = tex.GetPixel(x, y);
+                        if (c.r - Mathf.Max(c.g, c.b) > 0.12f) { if (x < trai) trai = x; if (x > phai) phai = x; }
+                    }
+                Object.Destroy(tex);
+                float rongVong = phai >= 0 ? phai - trai + 1 : 0f;
+                float moi = ManSanh.CoVongDemNguoc * sGd, cuVong = 470f * sGd;
+                Ghi("7c. vong phu chu tren anh: rong " + rongVong.ToString("F0") + " diem; co moi " + moi.ToString("F0")
+                    + "-" + (moi * 1.07f).ToString("F0") + " (dap nhip), co cu 470s = " + cuVong.ToString("F0")
+                    + "; chu so cao " + (ManSanh.CaoSoDemNguoc * sGd).ToString("F0") + " (cu " + (360f * sGd).ToString("F0") + ")");
+                // Phan co hinh cua anh vong chiem 94% canh anh, dap nhip to them toi da 7% -> 0,94-1,0 lan
+                // co moi; co cu (470s) se ra 1,11-1,19 lan co moi
+                Kiem(rongVong >= moi * 0.85f && rongVong <= moi * 1.04f, "vong phu chu khong nho bot 15%");
+            }
             p.trangThai = cu; p.batDauLuc = cuLuc;
 
             string ma = p.ma;

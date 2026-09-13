@@ -8353,6 +8353,11 @@ Anh gửi ảnh màn đếm ngược: con số "quá đơn giản" (chữ đỏ 
 (SkinnedMeshRenderer chiếu lên màn hình — khung bao rộng hơn đỉnh đầu thật nên phép so là khắt khe) y 74 → không đè. Trước
 đây dòng chữ ở `giữa − 230s` = ngang đầu nhân vật. Ảnh `gd_7_demnguoc.png`.
 
+**Nhỏ bớt 15%** (anh xin sau khi xem bản web): chữ số `CaoSoDemNguoc` 360s → **306s**, vòng phù chú `CoVongDemNguoc`
+470s → **400s**. Menu 50 mục 7c đo bề ngang vòng **trên ảnh chụp** (quét 5 hàng giữa, điểm đỏ trội): **204 điểm** trên màn
+581 cao — khớp cỡ mới (phần có hình 94% × 215 = 202–216 điểm), cỡ cũ sẽ ra ~238. Lần đo đầu dùng ngưỡng "đỏ rực" thì vòng
+vẽ mờ theo nhịp không qua được, chỉ đo trúng con số (72 điểm).
+
 ### Bình máu, bình mana, bình rơi chung cả phòng; Sách phép chữ to và cuộn (13/09/2026)
 
 **Anh xin:** chữ cột trái Sách phép to thêm 15%, chữ phần chi tiết to thêm 20%, hai vùng cuộn được (sau này nhiều kỹ năng,

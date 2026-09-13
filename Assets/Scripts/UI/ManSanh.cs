@@ -566,8 +566,12 @@ public class ManSanh : MonoBehaviour
         return new Rect(Screen.width * 0.5f - 260f * s, t.yMax + 8f * s, 520f * s, Mathf.Max(1f, 2f * s));
     }
 
-    /// <summary>Chieu cao anh chu so luc dung yen (chua dap nhip).</summary>
-    public const float CaoSoDemNguoc = 360f;
+    /// <summary>Chieu cao anh chu so luc dung yen (chua dap nhip). 306 = 360 x 0,85: nguoi dung xin
+    /// con so va vong phu chu nho bot 15% (13/09/2026).</summary>
+    public const float CaoSoDemNguoc = 306f;
+
+    /// <summary>Canh vong phu chu luc dung yen. 400 = 470 x 0,85.</summary>
+    public const float CoVongDemNguoc = 400f;
 
     void VeDemNguoc(float s)
     {
@@ -601,7 +605,7 @@ public class ManSanh : MonoBehaviour
         // ---- 3. Vong phu chu xoay cham phia sau con so ----
         if (anhVongPhuChu != null)
         {
-            float coVong = 470f * s * (1f + 0.07f * nhip);
+            float coVong = CoVongDemNguoc * s * (1f + 0.07f * nhip);
             GUIUtility.RotateAroundPivot(Time.unscaledTime * 14f, tam);
             GUI.color = new Color(1f, 1f, 1f, 0.45f + 0.40f * nhip);
             GUI.DrawTexture(new Rect(tam.x - coVong * 0.5f, tam.y - coVong * 0.5f, coVong, coVong),
