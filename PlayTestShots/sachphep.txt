@@ -22,14 +22,26 @@ C5. doi sang ban may tinh -> 0 1 2 3 4 5 6 (phai con 0..6)
 
 D. trong tran dau
 D1. ban cam ung: dung cam ung = True, goc phai tren o (1533, 541)
-    anh sachphep_1_hud_camung: 896 KB
+    anh sachphep_1_hud_camung: 827 KB
+E0. doi chung nen den, s = 0.36: kieu CU (co 5) net 3 / chuan 5  |  kieu MOI (co 8) net 9 / chuan 9
+E0. doi chung nen den, s = 0.53: kieu CU (co 8) net 7 / chuan 9  |  kieu MOI (co 8) net 9 / chuan 9
+E0. doi chung nen den, s = 1.00: kieu CU (co 15) net 16 / chuan 16  |  kieu MOI (co 15) net 16 / chuan 16
+E0. doi chung nen den, s = 2.00: kieu CU (co 30) net 31 / chuan 31  |  kieu MOI (co 30) net 31 / chuan 31
+E. nut sach phep - ban cam ung (man 1566x574, co chu 8)
+E1. chu "Sách phép": net that cao 9 diem, bang glyph 11 diem -> 82%
+    so voi nhan chuan khong cat cung co chu: 9 / 9
+E2. long nut (15x15 diem): 59 mau khac nhau
 D2. mo sach phep: DangMo = True
-    anh sachphep_2_bang_camung: 542 KB
+    anh sachphep_2_bang_camung: 419 KB
 D3. dang mo sach: goi input = huongDi (0.00, 0.00, 0.00), kyNang -1, muonDiToi False
-    anh sachphep_5_hud_maytinh_khoa: 793 KB
+    anh sachphep_5_hud_maytinh_khoa: 811 KB
+E. nut sach phep - ban may tinh (man 1566x574, co chu 8)
+E1. chu "Sách phép": net that cao 9 diem, bang glyph 11 diem -> 82%
+    so voi nhan chuan khong cat cung co chu: 9 / 9
+E2. long nut (15x15 diem): 59 mau khac nhau
 D4. ban may tinh: dung cam ung = False, so o = 7
-    anh sachphep_3_bang_maytinh: 431 KB
+    anh sachphep_3_bang_maytinh: 416 KB
 D5. keo Thien thach (4) vao o 1 -> 4 1 2 3 0 5 6
-    anh sachphep_4_hud_da_doi_cho: 814 KB
+    anh sachphep_4_hud_da_doi_cho: 827 KB
 
 so loi ghi nhan = 0

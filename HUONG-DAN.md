@@ -8334,6 +8334,40 @@ sát thương hiện ra** (2,1 m) để số không đè lên chữ. Bỏ chữ 
 **Số đo** (menu 62, 0 lỗi): tung thật 10 lần → trúng 10, ngã 7; dấu hiệu hiện **376/383 khung hình đang ngã (98%)**;
 chuỗi ảnh mới thấy chữ NGÃ rõ ở cả 5 thời điểm, đè lên lửa.
 
+### Nút Sách phép: chữ bị cắt, và quyển sách vẽ lại (13/09/2026)
+
+Anh gửi hai ảnh: chữ **"Sách phép"** dưới nút bị cụt mất nửa dưới (chữ "p" chỉ còn phần trên), và quyển sách
+"vẽ rất sơ sài" — bản cũ chỉ là 4 hình chữ nhật (bìa, gáy, mép giấy, một hình thoi đỏ).
+
+**Chữ bị cắt — nguyên nhân thật:** khung chữ cao `22s` cho chữ cỡ `15s`, dùng kiểu `GUI.skin.label`. Kiểu này có
+**lề trên/dưới tính bằng điểm ảnh cố định**, không co theo màn hình. Màn 1080 thì lề nhỏ so với khung, chữ vừa đủ;
+màn càng thấp thì lề ăn càng nhiều phần khung. Điện thoại nằm ngang chơi trên web chỉ cao khoảng **390 điểm ảnh**
+(trang không đặt `devicePixelRatio`), đúng trường hợp của anh. **Sửa:** bỏ lề, khung cao 1,9 lần cỡ chữ,
+`TextClipping.Overflow`, chữ tối thiểu 8 điểm, thêm bóng đen để đọc được trên nền đất sáng.
+
+**Quyển sách:** ảnh vẽ sẵn `Assets/Resources/GiaoDien/SachPhep.png` (256×256, không nén, có mipmap), sinh bằng
+`python CongCu/Icon/sinh_sach_phep.py`: bìa da thuộc màu huyết dụ nứt nẻ, gáy có đai nổi, bọc góc đồng đen đinh tán
+gỉ xanh, vòng phù chú khắc chữ rune bao ngôi sao năm cánh ngược phát sáng đỏ, đầu lâu ở giữa với hai hốc mắt
+cháy đỏ, dây da khoá bên phải, mép giấy ngả vàng và vệt máu rỉ từ mép trên. Không nạp được ảnh thì nút vẫn vẽ
+bản hình chữ nhật cũ, không biến mất.
+
+**Phép đo** (menu 59 thêm phần E, **0 lỗi**). Đo trên **ảnh chụp màn hình**, không tin khung của HUD:
+
+| Cỡ màn (hệ số s) | Chữ kiểu CŨ: nét thật / nhãn chuẩn cùng cỡ | Chữ kiểu MỚI: nét thật / nhãn chuẩn |
+|---|---|---|
+| 0,36 — điện thoại ngang trên web | **3 / 5** — mất gần nửa | 9 / 9 |
+| 0,53 — màn Game của Editor | **7 / 9** | 9 / 9 |
+| 1,00 | 16 / 16 | 16 / 16 |
+| 2,00 | 31 / 31 | 31 / 31 |
+
+"Nhãn chuẩn" là cùng chữ, cùng cỡ, vẽ trong khung cao gấp 10 lần — không thể bị cắt. Lần chạy đầu tôi so với
+chiều cao tính từ **bảng glyph** của font và phép thử báo nhầm kiểu mới "bị cắt": bảng glyph lệch nét render thật
+khoảng 2 điểm ảnh (làm tròn + khử răng cưa). Nó cũng cho thấy vì sao lỗi không lộ khi thử trên màn to: ở s = 1 kiểu
+cũ vẫn đủ nét.
+
+Trong trận (cả bản cảm ứng lẫn máy tính): chữ dưới nút **9 / 9** điểm, lòng nút có **59 màu** khác nhau trong ô
+15×15 điểm (quyển sách có chi tiết thật, không còn là khối màu trơn). Ảnh cận cảnh: `PlayTestShots/sachphep_nut_moi.png`.
+
 ### Quái vòng ngoài: 20 con ở 20–25 m (13/09/2026)
 
 Anh đổi luật: số quái thêm mỗi đợt thành **20 con** (thay vì 10), ở **20–25 m** (thay vì 55–65 m); quái sát bên người
@@ -8462,7 +8496,7 @@ Lần chạy đầu phép thử báo cả 10 con "lơ lửng": tia chiếu từ 
 | **54. Dat 10 lo lua vao Act2** | Đặt 10 lò đá (prefab `Assets/Models/LoLuaDa`) vào Act2: lò giữa = chỗ đất khô gần tâm bản đồ nhất, 9 lò rải đều; không dưới nước, trong nhà mồ, trên/sát bia, chỉ trên mặt đất. Xoá lò cũ trước, chạy lại ra y hệt. Lưu Act2. Số đo `lolua_act2_dat.txt`. |
 | **57. Chay thu BAN PHIM AO (o nhap khong bi che)** | Chạy thẳng trên hàm bố cục màn đăng nhập với 8 cỡ màn hình × 3 mức bàn phím che (35/45/55%) × 2 trang: khung và ô nhập cuối phải nằm trên mép bàn phím, ô nhập đầu không tràn lên khỏi mép trên. Số đo `banphimao.txt`. |
 | **58. Chay thu MUA BANG + SAM SET (dong bang, choang)** | Đo kích thước tảng băng và cụm băng (đối chiếu mốc lấy từ git), xác suất đóng cứng/choáng trên 1000 lần gieo, người chơi bị đóng băng·choáng có thực sự đứng yên và không tung được phép (có mẫu đối chứng), mưa băng không nhắm vào chính người tung, và phép của người khác rơi trúng mình thì mình có dính. Số đo `bang_set.txt`. |
-| **59. Chay thu SACH PHEP (keo tha o ky nang)** | Đo bố cục bảng trên 8 cỡ màn hình × 2 bản, kiểm ô tròn trong bảng xếp đúng hình cụm nút thật, kho kỹ năng (đổi chỗ · bỏ khỏi ô · lưu/nạp · hai bản riêng), và trong trận: nút con mắt ở góc phải trên, mở bảng thì input trận đấu bị khoá. Chụp 4 ảnh. Số đo `sachphep.txt`. |
+| **59. Chay thu SACH PHEP (keo tha o ky nang)** | Đo bố cục bảng trên 8 cỡ màn hình × 2 bản, kiểm ô tròn trong bảng xếp đúng hình cụm nút thật, kho kỹ năng (đổi chỗ · bỏ khỏi ô · lưu/nạp · hai bản riêng), và trong trận: nút con mắt ở góc phải trên, mở bảng thì input trận đấu bị khoá. Phần E: chữ "Sách phép" dưới nút không bị cắt — đo nét chữ trên ảnh chụp so với nhãn chuẩn không cắt, có mẫu đối chứng kiểu chữ cũ ở 4 cỡ màn (phải cắt ở màn điện thoại) — và quyển sách vẽ bằng ảnh có chi tiết. Chụp 4 ảnh. Số đo `sachphep.txt`. |
 | **60. Chay thu CAP DO (kinh nghiem, diem ky nang)** | Đo bảng kinh nghiệm và cách cộng dồn, hệ số chỉ số và hệ số kỹ năng, điểm kỹ năng (mở khoá · nâng cấp · hết điểm), gói mạng mang cấp kỹ năng; trong Play đo chỉ số **thật** trước/sau khi lên cấp, kỹ năng chưa mở không tung được, nâng cấp xong phép mạnh lên thật, giết quái được đúng số điểm. Số đo `capdo.txt`. |
 | **61. Chay thu KINH NGHIEM theo tung ky nang** | Tung từng kỹ năng thật vào một con quái máu 1: phải chết, "kẻ đánh cuối" phải là người tung, kinh nghiệm phải cộng đúng giá. Tách riêng các đường chết chậm (cháy, bị lốc cuốn, vũng lửa Thiên thạch, cây cháy) và trường hợp nạn nhân là người chơi. Số đo `kinhnghiem_kynang.txt`. |
 | **62. Chay thu THIEN THACH DANH NGA** | Xác suất đánh ngã trên 1000 lần gieo; thiên thạch của Quỷ dữ không đánh ngã; quả nhân vật tung mang đúng 40%·1,5 giây; trên quái thật đo độ cao bị hất, vị trí xương đầu lúc nằm (ngửa, sát đất), đứng im, đứng dậy; người chơi bị ngã không đi / không tung phép; bit "đang ngã" qua mạng. Số đo `danhnga.txt`. |

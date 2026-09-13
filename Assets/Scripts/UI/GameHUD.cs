@@ -23,6 +23,9 @@ public partial class GameHUD : MonoBehaviour
     Texture2D iconFire, iconIce, iconBolt, iconWind, iconMeteor, iconKhieng, iconGiatSet;
     Texture2D gradMau, gradMana, gradKhieng, gradKhiengYeu, gradKinhNghiem;
     Texture2D vongNen, vongNum, vanhNut;
+    // Anh quyen sach phep ve san (CongCu/Icon/sinh_sach_phep.py)
+    Texture2D anhSachPhep;
+    GUIStyle kieuChuSachPhep, kieuBongChuSachPhep;
 
     [Header("Cam ung (web / iOS / Android)")]
     [Tooltip("Bat tay de THU giao dien cam ung ngay tren PC")]
@@ -198,6 +201,7 @@ public partial class GameHUD : MonoBehaviour
         iconKhieng = IconKyNang.Khieng();
         iconGiatSet = IconKyNang.GiatSet();
         vongNen = VongTron(96, new Color(1f, 1f, 1f, 1f), 0.86f, 0.10f);
+        anhSachPhep = Resources.Load<Texture2D>("GiaoDien/SachPhep");
 
         // VANH mong, khong phai dia. vongNen o tren long trong chi 0,10 - gan
         // nhu dac - nen to mau len no la phu mot lop kem len KIN mat nut, lam
@@ -862,9 +866,10 @@ public partial class GameHUD : MonoBehaviour
     // may tinh khong ve con mat (camera dieu khien bang chuot), nen sach phep
     // don len dung goc.
 
-    float BanKinhNutSachPhep(float s) { return 40f * s; }
+    public float BanKinhNutSachPhep(float s) { return 40f * s; }
 
-    Vector2 TamNutSachPhep(float s)
+    /// <summary>Tam nut theo toa do CHAM (y tu duoi len). Public cho menu 59 do.</summary>
+    public Vector2 TamNutSachPhep(float s)
     {
         if (CamUng.DangDung)
         {
@@ -882,11 +887,11 @@ public partial class GameHUD : MonoBehaviour
     }
 
     /// <summary>
-    /// Ve nut sach phep: mot cuon sach dong bia da, gay sach ben trai, mep giay
-    /// ben phai va mot hinh thoi do giua bia.
+    /// Ve nut sach phep: anh quyen sach cua phu thuy ve san (bia da huyet du,
+    /// boc goc dong, dau lau mat do giua vong phu chu - CongCu/Icon/sinh_sach_phep.py).
     ///
-    /// Ve bang hinh chu nhat chu khong dung anh - giong nut con mat ngay tren
-    /// no, de hai nut cung mot ngon ngu hinh.
+    /// Ban cu ve bang 4 hinh chu nhat; nguoi dung che "so sai" (13/09/2026).
+    /// Khong nap duoc anh thi van ve ban hinh chu nhat cu de nut khong bien mat.
     /// </summary>
     void VeNutSachPhep(float s)
     {
@@ -904,6 +909,67 @@ public partial class GameHUD : MonoBehaviour
         GUI.DrawTexture(new Rect(gx - r, gy - r, r * 2f, r * 2f),
                         vongNen, ScaleMode.StretchToFill, true);
 
+        if (anhSachPhep != null)
+        {
+            // Anh vuong co vien bong mo quanh sach; 1,9r cho quyen sach chiem
+            // gan het long nut ma bong khong tran qua vanh nen
+            float kt = r * 1.9f;
+            GUI.color = Color.white;
+            GUI.DrawTexture(new Rect(gx - kt * 0.5f, gy - kt * 0.5f, kt, kt),
+                            anhSachPhep, ScaleMode.ScaleToFit, true);
+        }
+        else VeSachHinhChuNhat(gx, gy, r, dangMo);
+
+        VeChuSachPhep(gx, gy, r, s);
+        GUI.color = cu;
+
+        // BAN MAY TINH bat cu bam ngay tai day. Ban cam ung thi KHONG - no da
+        // co duong doc ngon tay rieng (BamNutSachPhep); them nut o day nua thi
+        // mot cu cham vao WebGL (vua sinh cham, vua sinh chuot) mo roi dong
+        // ngay sach phep.
+        // Dang mo thi KHONG bat cu bam nua: nut nay ve TRUOC cua so, ma IMGUI
+        // cho cai ve truoc gianh su kien - bam vao bang (ngay cho nut nay nam
+        // duoi) se dong sach phep giua chung.
+        if (!CamUng.DangDung && !CuaSoSachPhep.DangMo
+            && GUI.Button(new Rect(gx - r, gy - r, r * 2f, r * 2f), GUIContent.none, GUIStyle.none))
+            CuaSoSachPhep.Mo();
+    }
+
+    /// <summary>
+    /// Chu "Sach phep" duoi nut. Khung cu cao 22s cho co chu 15s: Inter cao dong
+    /// ~1,21 em cong le tren/duoi cua GUI.skin.label la vuot khung, IMGUI cat mat
+    /// phan duoi (chu "p" chi con nua tren - nguoi dung chup 13/09/2026). Nay bo le,
+    /// khung cao 1,9 lan co chu va TextClipping.Overflow, kem bong den de doc duoc
+    /// tren nen dat sang.
+    /// </summary>
+    void VeChuSachPhep(float gx, float gy, float r, float s)
+    {
+        int co = Mathf.Max(8, Mathf.RoundToInt(15f * s));
+        if (kieuChuSachPhep == null)
+        {
+            kieuChuSachPhep = new GUIStyle(GUI.skin.label);
+            kieuChuSachPhep.alignment = TextAnchor.UpperCenter;
+            kieuChuSachPhep.padding = new RectOffset(0, 0, 0, 0);
+            kieuChuSachPhep.margin = new RectOffset(0, 0, 0, 0);
+            kieuChuSachPhep.clipping = TextClipping.Overflow;
+            kieuChuSachPhep.wordWrap = false;
+            kieuBongChuSachPhep = new GUIStyle(kieuChuSachPhep);
+        }
+        kieuChuSachPhep.font = kieuBongChuSachPhep.font = GiaoDien.ChuDam;
+        kieuChuSachPhep.fontSize = kieuBongChuSachPhep.fontSize = co;
+        kieuChuSachPhep.normal.textColor = new Color(0.93f, 0.86f, 0.74f, 0.95f);
+        kieuBongChuSachPhep.normal.textColor = new Color(0f, 0f, 0f, 0.85f);
+
+        GUI.color = Color.white;
+        var khung = new Rect(gx - r * 1.8f, gy + r * 0.92f, r * 3.6f, co * 1.9f);
+        float b = Mathf.Max(1f, 1.5f * s);
+        GUI.Label(new Rect(khung.x + b, khung.y + b, khung.width, khung.height), "Sách phép", kieuBongChuSachPhep);
+        GUI.Label(khung, "Sách phép", kieuChuSachPhep);
+    }
+
+    /// <summary>Ban ve cu bang hinh chu nhat - chi dung khi khong nap duoc anh.</summary>
+    void VeSachHinhChuNhat(float gx, float gy, float r, bool dangMo)
+    {
         float w = r * 0.92f, h = r * 1.08f;
         float x0 = gx - w * 0.5f, y0 = gy - h * 0.5f;
 
@@ -929,28 +995,6 @@ public partial class GameHUD : MonoBehaviour
         GUI.DrawTexture(new Rect(gx + w * 0.08f - kt * 0.5f, gy - kt * 0.5f, kt, kt),
                         Texture2D.whiteTexture, ScaleMode.StretchToFill, false);
         GUI.matrix = mCu;
-
-        // Ten nut - chu co dau, font Inter (GiaoDien), khong de font mac dinh
-        var k = new GUIStyle(GUI.skin.label);
-        k.font = GiaoDien.ChuDam;
-        k.alignment = TextAnchor.UpperCenter;
-        k.fontSize = Mathf.RoundToInt(15f * s);
-        k.normal.textColor = new Color(0.93f, 0.86f, 0.74f, 0.92f);
-        GUI.color = Color.white;
-        GUI.Label(new Rect(gx - r * 1.6f, gy + r * 0.92f, r * 3.2f, 22f * s), "Sách phép", k);
-
-        GUI.color = cu;
-
-        // BAN MAY TINH bat cu bam ngay tai day. Ban cam ung thi KHONG - no da
-        // co duong doc ngon tay rieng (BamNutSachPhep); them nut o day nua thi
-        // mot cu cham vao WebGL (vua sinh cham, vua sinh chuot) mo roi dong
-        // ngay sach phep.
-        // Dang mo thi KHONG bat cu bam nua: nut nay ve TRUOC cua so, ma IMGUI
-        // cho cai ve truoc gianh su kien - bam vao bang (ngay cho nut nay nam
-        // duoi) se dong sach phep giua chung.
-        if (!CamUng.DangDung && !CuaSoSachPhep.DangMo
-            && GUI.Button(new Rect(gx - r, gy - r, r * 2f, r * 2f), GUIContent.none, GUIStyle.none))
-            CuaSoSachPhep.Mo();
     }
 
     // Nut phai DU TO cho ngon cai (dau ngon cai nguoi lon khoang 45-57 diem anh

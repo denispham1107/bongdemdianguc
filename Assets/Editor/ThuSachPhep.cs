@@ -25,6 +25,12 @@ using UnityEngine;
 ///      roi nap lai van y nguyen.
 ///   D. Trong Play: nut con mat nam dung goc phai tren, cua so mo/dong duoc,
 ///      dang mo thi input tran dau bi khoa. Chup anh ca hai ban.
+///   E. Nut Sach phep (13/09/2026, nguoi dung chup chu "Sach phep" bi cat nua
+///      duoi va che hinh cuon sach so sai): tren ANH CHUP man hinh, do chieu cao
+///      net chu that roi so voi chieu cao net tinh tu bang glyph cua font Inter
+///      (doc lap voi cach HUD dat khung). Mau doi chung ve lai dung kieu chu CU
+///      phai bi cat - khong thi phep do khong bat duoc loi. Hinh sach: dem so mau
+///      khac nhau o long nut (ban cu 4 hinh chu nhat mau tron chi vai mau).
 ///
 /// Ket qua ghi ra <c>PlayTestShots/sachphep.txt</c>.
 /// </summary>
@@ -312,6 +318,182 @@ public static class ThuSachPhep
         Ghi("    anh " + ten + ": " + (co > 0 ? co / 1024 + " KB" : "KHONG CHUP DUOC"));
     }
 
+    // ================================================================
+    //  E. NUT SACH PHEP: CHU KHONG BI CAT, HINH SACH CO CHI TIET
+    // ================================================================
+    const string ChuNut = "Sách phép";
+
+    /// <summary>Chieu cao net chu (diem anh) tinh tu bang glyph - khong dung khung cua HUD.</summary>
+    static float NetChuLyThuyet(int co)
+    {
+        var f = GiaoDien.ChuDam;
+        f.RequestCharactersInTexture(ChuNut, co);
+        int tren = int.MinValue, duoi = int.MaxValue;
+        foreach (char c in ChuNut)
+        {
+            if (c == ' ') continue;
+            CharacterInfo ci;
+            if (!f.GetCharacterInfo(c, out ci, co)) continue;
+            tren = Mathf.Max(tren, ci.maxY);
+            duoi = Mathf.Min(duoi, ci.minY);
+        }
+        return tren - duoi;
+    }
+
+    // Chu mau kem (do > lam) tren nen dat Act2 nga xanh xam (lam >= do). Nguong
+    // thap vi chu 8 diem anh khu rang cua thanh nhieu diem mo - nguong 0,6 lan
+    // truoc bo sot dau va chan chu "p" nen do ra 6/11 du anh chup thay du chu.
+    static bool LaMauChu(Color c)
+    {
+        return c.r > 0.28f && c.r - c.b > 0.035f;
+    }
+
+    static bool LaDiemSang(Color c)
+    {
+        return (c.r + c.g + c.b) / 3f > 0.10f;
+    }
+
+    /// <summary>Hang tren cung / duoi cung (toa do GUI) co diem mau chu trong hop.</summary>
+    static void QuetChu(Texture2D tex, float xa, float xb, float ya, float yb, out int tren, out int duoi)
+    {
+        QuetChu(tex, xa, xb, ya, yb, LaMauChu, out tren, out duoi);
+    }
+
+    static void QuetChu(Texture2D tex, float xa, float xb, float ya, float yb,
+                        System.Func<Color, bool> la, out int tren, out int duoi)
+    {
+        tren = -1; duoi = -1;
+        int H = tex.height;
+        for (int gy = Mathf.Max(0, (int)ya); gy < Mathf.Min(H, (int)yb); gy++)
+        {
+            int ty = H - 1 - gy;
+            for (int x = Mathf.Max(0, (int)xa); x < Mathf.Min(tex.width, (int)xb); x++)
+                if (la(tex.GetPixel(x, ty))) { if (tren < 0) tren = gy; duoi = gy; break; }
+        }
+    }
+
+    static IEnumerator DoNutSach(GameHUD hud, string ban)
+    {
+        yield return new WaitForEndOfFrame();
+        var tex = ScreenCapture.CaptureScreenshotAsTexture();
+        float s = Screen.height / 1080f;
+        Vector2 t = hud.TamNutSachPhep(s);
+        float r = hud.BanKinhNutSachPhep(s);
+        float gx = t.x, gy = Screen.height - t.y;
+        int co = Mathf.Max(8, Mathf.RoundToInt(15f * s));
+        float lyThuyet = NetChuLyThuyet(co);
+
+        // Quet tu duoi mep hinh sach xuong 3 lan co chu
+        int tren, duoi;
+        QuetChu(tex, gx - r * 1.8f, gx + r * 1.8f, gy + r * 0.97f, gy + r * 0.92f + co * 3f, out tren, out duoi);
+        float thucTe = tren < 0 ? 0f : duoi - tren + 1;
+        Ghi("E. nut sach phep - ban " + ban + " (man " + Screen.width + "x" + Screen.height + ", co chu " + co + ")");
+        Ghi("E1. chu \"" + ChuNut + "\": net that cao " + thucTe.ToString("F0") + " diem, bang glyph "
+            + lyThuyet.ToString("F0") + " diem -> " + (lyThuyet > 0 ? (thucTe / lyThuyet * 100f).ToString("F0") : "?") + "%");
+        // mep tren cua quet bo mat phan dau chu (dau sac) nam trong 0,05r - cho sai 20%
+        Kiem(tren >= 0, "khong thay chu Sach phep duoi nut (" + ban + ")");
+        float chuan;
+        if (netChuan.TryGetValue(co, out chuan))
+        {
+            Ghi("    so voi nhan chuan khong cat cung co chu: " + thucTe + " / " + chuan);
+            // tren nen dat, nguong mau chu khat hon nen den - cho hut 1 diem
+            Kiem(thucTe >= chuan - 1f, "chu Sach phep bi cat (" + ban + "): " + thucTe + " / " + chuan);
+        }
+        else Loi("chua co nhan chuan cho co chu " + co + " - phai chay DoiChungChuCu truoc");
+
+        // Hinh sach: so mau khac nhau (luong tu 4 bit/kenh) trong o vuong giua nut
+        var mau = new System.Collections.Generic.HashSet<int>();
+        int nua = Mathf.RoundToInt(r * 0.35f);
+        for (int y = (int)gy - nua; y <= (int)gy + nua; y++)
+            for (int x = (int)gx - nua; x <= (int)gx + nua; x++)
+            {
+                if (x < 0 || y < 0 || x >= tex.width || y >= tex.height) continue;
+                Color c = tex.GetPixel(x, tex.height - 1 - y);
+                mau.Add(((int)(c.r * 15.99f) << 8) | ((int)(c.g * 15.99f) << 4) | (int)(c.b * 15.99f));
+            }
+        Ghi("E2. long nut (" + (nua * 2 + 1) + "x" + (nua * 2 + 1) + " diem): " + mau.Count + " mau khac nhau");
+        Kiem(mau.Count >= 40, "hinh sach van la hinh khoi mau tron (" + ban + "): " + mau.Count + " mau");
+        Object.Destroy(tex);
+    }
+
+    /// <summary>
+    /// Mau doi chung tren nen den, bon nhan canh nhau:
+    ///   CU    - dung kieu cu (GUI.skin.label, khung cao 22s, co RoundToInt(15s));
+    ///   CHUAN CU - cung co chu voi CU nhung khung cao 10 lan, khong the cat;
+    ///   MOI   - kieu cua HUD bay gio;
+    ///   CHUAN - cung co chu voi MOI, khung khong the cat.
+    /// So net chu voi nhan chuan cung co, KHONG so voi bang glyph cua font: bang
+    /// glyph lech net render ~2 diem (lam tron + khu rang cua), lan chay dau vi no
+    /// ma bao nham kieu moi "bi cat".
+    ///
+    /// Kieu cu CHI bi cat khi man THAP: le cua GUI.skin.label tinh bang diem anh co
+    /// dinh, khong co theo s, nen man cang thap le cang an nhieu phan khung 22s. Do
+    /// o man 1080 kieu cu van du net - dien thoai ngang tren web (index.html khong
+    /// dat devicePixelRatio) chi cao ~390 diem, dung truong hop nguoi dung chup.
+    /// </summary>
+    static readonly System.Collections.Generic.Dictionary<int, float> netChuan =
+        new System.Collections.Generic.Dictionary<int, float>();
+
+    static IEnumerator DoiChungChuCu()
+    {
+        yield return DoiChungMotCo(390f / 1080f);          // dien thoai ngang tren web
+        yield return DoiChungMotCo(Screen.height / 1080f); // man Game dang mo
+        yield return DoiChungMotCo(1f);
+        yield return DoiChungMotCo(2f);
+    }
+
+    static IEnumerator DoiChungMotCo(float s)
+    {
+        var tam = GameObject.Find("TAM_SachPhep").GetComponent<ChayThuMang>();
+        int co = Mathf.Max(8, Mathf.RoundToInt(15f * s));
+        int coCu = Mathf.RoundToInt(15f * s);
+        float r = 40f * s;
+        float hop = Mathf.Max(r * 3.6f, 70f);
+        float buoc = hop + 50f;
+        float[] xs = new float[4];
+        for (int k = 0; k < 4; k++) xs[k] = 30f + k * buoc;
+        float y0 = Screen.height * 0.22f;
+        float cao0 = Mathf.Max(co, coCu) * 5f + 40f;
+        tam.veGUI = () =>
+        {
+            GUI.color = Color.black;
+            // hop den PHU KIN vung quet (quet toi y0 + 3,5 co) - hop ngan hon thi dem ca canh phia sau
+            foreach (float x in xs)
+                GUI.DrawTexture(new Rect(x - 20, y0 - 20, hop + 40, cao0), Texture2D.whiteTexture);
+            GUI.color = Color.white;
+            var cu = new GUIStyle(GUI.skin.label);
+            cu.font = GiaoDien.ChuDam; cu.alignment = TextAnchor.UpperCenter; cu.fontSize = coCu;
+            cu.normal.textColor = new Color(0.93f, 0.86f, 0.74f, 0.92f);
+            GUI.Label(new Rect(xs[0], y0, hop, 22f * s), ChuNut, cu);
+            var chuanCu = new GUIStyle(cu);
+            chuanCu.clipping = TextClipping.Overflow;
+            GUI.Label(new Rect(xs[1], y0, hop, coCu * 10f), ChuNut, chuanCu);
+            var moi = new GUIStyle(cu);
+            moi.padding = new RectOffset(0, 0, 0, 0); moi.margin = new RectOffset(0, 0, 0, 0);
+            moi.clipping = TextClipping.Overflow; moi.fontSize = co;
+            GUI.Label(new Rect(xs[2], y0, hop, co * 1.9f), ChuNut, moi);
+            GUI.Label(new Rect(xs[3], y0, hop, co * 10f), ChuNut, moi);
+        };
+        yield return null; yield return null;
+        yield return new WaitForEndOfFrame();
+        var tex = ScreenCapture.CaptureScreenshotAsTexture();
+        tam.veGUI = null;
+        var cao = new float[4];
+        for (int k = 0; k < 4; k++)
+        {
+            int tren, duoi;
+            QuetChu(tex, xs[k] - 8, xs[k] + hop + 8, y0 - 12, y0 - 20 + cao0 - 4, LaDiemSang, out tren, out duoi);
+            cao[k] = tren < 0 ? 0 : duoi - tren + 1;
+        }
+        netChuan[co] = cao[3];
+        Ghi("E0. doi chung nen den, s = " + s.ToString("F2") + ": kieu CU (co " + coCu + ") net " + cao[0] + " / chuan " + cao[1]
+            + "  |  kieu MOI (co " + co + ") net " + cao[2] + " / chuan " + cao[3]);
+        Kiem(cao[1] > 0 && cao[3] > 0, "khong do duoc nhan chuan o s = " + s);
+        if (s < 0.6f) Kiem(cao[0] < cao[1], "kieu cu KHONG bi cat o man thap s = " + s.ToString("F2") + " - phep do khong bat duoc loi nay");
+        Kiem(cao[2] >= cao[3], "kieu chu moi van bi cat o s = " + s.ToString("F2") + ": " + cao[2] + " / " + cao[3]);
+        Object.Destroy(tex);
+    }
+
     static IEnumerator KichBan()
     {
         var dir = GameDirector.Instance;
@@ -338,6 +520,8 @@ public static class ThuSachPhep
             + gocPhaiTren.y.ToString("F0") + ")");
         Kiem(CamUng.DangDung, "ep cam ung khong an");
         yield return Chup("sachphep_1_hud_camung");
+        yield return DoiChungChuCu();
+        yield return DoNutSach(hud, "cam ung");
 
         // ---- D2. MO SACH PHEP ----
         CuaSoSachPhep.Mo();
@@ -367,6 +551,7 @@ public static class ThuSachPhep
         CapDo.BatDauTranMoi();                      // moi ky nang deu khoa
         yield return new WaitForSeconds(0.2f);
         yield return Chup("sachphep_5_hud_maytinh_khoa");
+        yield return DoNutSach(hud, "may tinh");
         CuaSoSachPhep.Mo();
         yield return new WaitForSeconds(0.5f);
         Ghi("D4. ban may tinh: dung cam ung = " + CamUng.DangDung

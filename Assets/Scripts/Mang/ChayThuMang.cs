@@ -15,8 +15,18 @@ public class ChayThuMang : MonoBehaviour
 {
     public IEnumerator batDau;
 
+    /// <summary>Phep thu can ve them len man hinh (vd mau doi chung) thi gan vao day.</summary>
+    public System.Action veGUI;
+
     void Start()
     {
         if (batDau != null) StartCoroutine(batDau);
+    }
+
+    void OnGUI()
+    {
+        if (veGUI == null) return;
+        GUI.depth = -1000;
+        veGUI();
     }
 }
