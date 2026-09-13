@@ -518,51 +518,124 @@ public class ManSanh : MonoBehaviour
 
     // ---------------- DEM NGUOC ----------------
 
+    // Nguoi dung 13/09/2026 (anh chup man dem nguoc):
+    //   - con so "qua don gian" -> ve lai cho rung ron: anh chu so ve san (CongCu/DemNguoc/
+    //     sinh_so_dem_nguoc.py) CUNG ngon ngu hinh voi anh ten game - chu Gothic do mau, nut ne,
+    //     mau nho giot; phia sau la vong phu chu xoay cham; moi giay con so DAP va RUNG, bon goc
+    //     man hinh toi do lai theo nhip nhu tim dap;
+    //   - KHONG hien ten man ("NGHIA DIA") nua;
+    //   - dong "TRAN DAU BAT DAU SAU" va gach do dang de len nhan vat -> dua len sat mep tren.
+
+    static Texture2D[] anhSo;
+    static Texture2D anhVongPhuChu, anhToiGoc;
+
+    static void NapAnhDemNguoc()
+    {
+        if (anhSo != null) return;
+        anhSo = new Texture2D[10];
+        for (int i = 0; i < 10; i++) anhSo[i] = Resources.Load<Texture2D>("GiaoDien/DemNguoc/So" + i);
+        anhVongPhuChu = Resources.Load<Texture2D>("GiaoDien/DemNguoc/VongPhuChu");
+
+        // Toi dan ra bon goc (giua trong suot) - to mau do sam luc ve
+        const int n = 64;
+        anhToiGoc = new Texture2D(n, n, TextureFormat.RGBA32, false);
+        anhToiGoc.wrapMode = TextureWrapMode.Clamp;
+        var px = new Color[n * n];
+        for (int y = 0; y < n; y++)
+            for (int x = 0; x < n; x++)
+            {
+                float dx = (x + 0.5f) / n * 2f - 1f, dy = (y + 0.5f) / n * 2f - 1f;
+                float d = Mathf.Sqrt(dx * dx + dy * dy) / 1.4142f;
+                float t = Mathf.Clamp01((d - 0.32f) / 0.68f);
+                px[y * n + x] = new Color(1f, 1f, 1f, t * t * (3f - 2f * t));
+            }
+        anhToiGoc.SetPixels(px);
+        anhToiGoc.Apply(false, false);
+    }
+
+    /// <summary>Khung dong chu "TRAN DAU BAT DAU SAU" - sat mep tren, tren dau nhan vat.</summary>
+    public static Rect KhungTieuDeDemNguoc(float s)
+    {
+        return new Rect(0f, Mathf.Max(10f * s, Screen.height * 0.045f), Screen.width, 40f * s);
+    }
+
+    /// <summary>Gach do ngay duoi dong chu dem nguoc.</summary>
+    public static Rect KhungGachDemNguoc(float s)
+    {
+        var t = KhungTieuDeDemNguoc(s);
+        return new Rect(Screen.width * 0.5f - 260f * s, t.yMax + 8f * s, 520f * s, Mathf.Max(1f, 2f * s));
+    }
+
+    /// <summary>Chieu cao anh chu so luc dung yen (chua dap nhip).</summary>
+    public const float CaoSoDemNguoc = 360f;
+
     void VeDemNguoc(float s)
     {
-        // Khong phu toi / suong len canh phia sau (nguoi dung 12/09/2026) - con
-        // so dem nguoc da co bong den va quang do rieng
+        // Khong phu toi / suong len canh phia sau (nguoi dung 12/09/2026) - chi toi DO o
+        // bon goc theo nhip, giua man hinh van thay ro nhan vat va lo lua
+        NapAnhDemNguoc();
         double conLai = PhongMang.ConLaiGiay();
-        int con = Mathf.Max(0, Mathf.CeilToInt((float)conLai));
+        int con = Mathf.Clamp(Mathf.CeilToInt((float)conLai), 0, 99);
 
-        // Moi giay con so dap mot nhip: phong to roi co lai
+        // phan: vua sang giay moi = gan 1, cuoi giay = 0 -> nhip manh ngay luc doi so roi tat dan
         float phan = Mathf.Repeat((float)conLai, 1f);
-        float phong = 1f + 0.22f * phan * phan;
+        float nhip = phan * phan * phan;
+        var mauCu = GUI.color;
 
-        float giua = Screen.height * 0.5f;
+        // ---- 1. Bon goc toi do dap theo nhip tim ----
+        GUI.color = new Color(0.30f, 0f, 0f, 0.35f + 0.40f * nhip);
+        GUI.DrawTexture(new Rect(0f, 0f, Screen.width, Screen.height), anhToiGoc, ScaleMode.StretchToFill, true);
+
+        // ---- 2. Dong chu + gach do: sat mep tren ----
+        GUI.color = Color.white;
         var k = GiaoDien.KieuTieuDeNho;
         var canh = k.alignment;
         k.alignment = TextAnchor.MiddleCenter;
-        GiaoDien.Chu(new Rect(0, giua - 230f * s, Screen.width, 40f * s), "TRẬN ĐẤU BẮT ĐẦU SAU", k);
+        GiaoDien.Chu(KhungTieuDeDemNguoc(s), "TRẬN ĐẤU BẮT ĐẦU SAU", k);
         k.alignment = canh;
+        GiaoDien.DuongKe(KhungGachDemNguoc(s), new Color(0.8f, 0.1f, 0.06f, 0.9f));
 
-        GiaoDien.DuongKe(new Rect(Screen.width * 0.5f - 260f * s, giua - 178f * s, 520f * s, Mathf.Max(1f, 2f * s)),
-                         new Color(0.8f, 0.1f, 0.06f, 0.9f));
-
-        var tam = new Vector2(Screen.width * 0.5f, giua);
+        var tam = new Vector2(Screen.width * 0.5f, Screen.height * 0.5f);
         Matrix4x4 cu = GUI.matrix;
-        GUIUtility.ScaleAroundPivot(new Vector2(phong, phong), tam);
-        var ks = GiaoDien.KieuSoLon;
-        var mau = ks.normal.textColor;
-        ks.normal.textColor = new Color(0f, 0f, 0f, 0.8f);
-        GUI.Label(new Rect(0 + 6f * s, giua - 140f * s + 8f * s, Screen.width, 280f * s), con.ToString(), ks);
-        ks.normal.textColor = new Color(0.95f, 0.10f, 0.05f, 0.12f);
-        for (int i = 0; i < 8; i++)
-        {
-            float g = i * Mathf.PI / 4f;
-            GUI.Label(new Rect(Mathf.Cos(g) * 7f * s, giua - 140f * s + Mathf.Sin(g) * 7f * s, Screen.width, 280f * s),
-                      con.ToString(), ks);
-        }
-        ks.normal.textColor = mau;
-        GUI.Label(new Rect(0, giua - 140f * s, Screen.width, 280f * s), con.ToString(), ks);
-        GUI.matrix = cu;
 
-        var km = GiaoDien.KieuTieuDe;
-        var cm = km.alignment;
-        km.alignment = TextAnchor.MiddleCenter;
-        GiaoDien.Chu(new Rect(0, giua + 160f * s, Screen.width, 46f * s),
-                     TenMan(PhongMang.PhongHienTai.manChoi).ToUpperInvariant(), km);
-        km.alignment = cm;
+        // ---- 3. Vong phu chu xoay cham phia sau con so ----
+        if (anhVongPhuChu != null)
+        {
+            float coVong = 470f * s * (1f + 0.07f * nhip);
+            GUIUtility.RotateAroundPivot(Time.unscaledTime * 14f, tam);
+            GUI.color = new Color(1f, 1f, 1f, 0.45f + 0.40f * nhip);
+            GUI.DrawTexture(new Rect(tam.x - coVong * 0.5f, tam.y - coVong * 0.5f, coVong, coVong),
+                            anhVongPhuChu, ScaleMode.StretchToFill, true);
+            GUI.matrix = cu;
+        }
+
+        // ---- 4. Con so: dap to roi co lai, rung manh luc vua doi so ----
+        string chu = con.ToString();
+        var anh0 = anhSo[0];
+        if (anh0 != null)
+        {
+            float cao = CaoSoDemNguoc * s * (1f + 0.25f * nhip);
+            float rongMot = cao * anh0.width / (float)anh0.height;
+            float buoc = rongMot * 0.58f;                         // chu so ghep sat nhau ("10")
+            float tong = rongMot + buoc * (chu.Length - 1);
+            float rung = 7f * s * nhip;
+            float lx = Mathf.Sin(Time.unscaledTime * 71f) * rung, ly = Mathf.Cos(Time.unscaledTime * 53f) * rung;
+            float x = tam.x - tong * 0.5f + lx;
+            float y = tam.y - cao * 0.5f + ly;
+            GUI.color = Color.white;
+            for (int i = 0; i < chu.Length; i++)
+            {
+                var a = anhSo[chu[i] - '0'];
+                if (a != null) GUI.DrawTexture(new Rect(x + i * buoc, y, rongMot, cao), a, ScaleMode.StretchToFill, true);
+            }
+        }
+        else
+        {
+            // Khong nap duoc anh thi van phai co con so - ve bang chu nhu ban cu
+            var ks = GiaoDien.KieuSoLon;
+            GUI.Label(new Rect(0, tam.y - 140f * s, Screen.width, 280f * s), chu, ks);
+        }
+        GUI.color = mauCu;
     }
 
     // ---------------- HANH DONG ----------------

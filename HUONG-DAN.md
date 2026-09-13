@@ -8334,6 +8334,25 @@ sát thương hiện ra** (2,1 m) để số không đè lên chữ. Bỏ chữ 
 **Số đo** (menu 62, 0 lỗi): tung thật 10 lần → trúng 10, ngã 7; dấu hiệu hiện **376/383 khung hình đang ngã (98%)**;
 chuỗi ảnh mới thấy chữ NGÃ rõ ở cả 5 thời điểm, đè lên lửa.
 
+### Màn đếm ngược vào trận: con số kinh dị, bỏ tên màn, dòng chữ lên trên (13/09/2026)
+
+Anh gửi ảnh màn đếm ngược: con số "quá đơn giản" (chữ đỏ phẳng có bóng), không cần tên màn "NGHĨA ĐỊA", và dòng
+"TRẬN ĐẤU BẮT ĐẦU SAU" cùng gạch đỏ đè xuống che mất nhân vật.
+
+**Sửa** (`ManSanh.VeDemNguoc`):
+- **Con số là ảnh vẽ sẵn** `Resources/GiaoDien/DemNguoc/So0..So9.png` (`python CongCu/DemNguoc/sinh_so_dem_nguoc.py`), cùng
+  ngôn ngữ hình với ảnh tên game: font Grenze Gotisch Black, lòng đỏ máu có vân chảy dọc và vết nứt, máu nhỏ giọt từ điểm
+  thấp nhất của nét, cạnh trên sáng như lưỡi dao, viền đen, quầng đỏ. Mọi chữ số cùng khung và cùng đường chân nên "10"
+  ghép từ "1" và "0" vẫn thẳng hàng. Không nạp được ảnh thì vẫn vẽ số bằng chữ như bản cũ.
+- Phía sau số: **vòng phù chú** đỏ (chữ rune + ngôi sao ngược) xoay chậm. Mỗi giây số **đập to rồi co lại và rung**, bốn góc
+  màn hình **tối đỏ lại theo nhịp** như tim đập — giữa màn hình vẫn trong, không phủ tối lên cảnh (luật 12/09/2026).
+- **Bỏ tên màn.**
+- Dòng chữ + gạch đỏ lên **sát mép trên** (`KhungTieuDeDemNguoc`: 4,5% chiều cao màn hình).
+
+**Số đo** (menu 50 thêm mục 7b, **0 lỗi**; màn Game 1568×581): dòng chữ y 26–48, gạch đỏ y 53; đỉnh khung bao nhân vật
+(SkinnedMeshRenderer chiếu lên màn hình — khung bao rộng hơn đỉnh đầu thật nên phép so là khắt khe) y 74 → không đè. Trước
+đây dòng chữ ở `giữa − 230s` = ngang đầu nhân vật. Ảnh `gd_7_demnguoc.png`.
+
 ### Bình máu, bình mana, bình rơi chung cả phòng; Sách phép chữ to và cuộn (13/09/2026)
 
 **Anh xin:** chữ cột trái Sách phép to thêm 15%, chữ phần chi tiết to thêm 20%, hai vùng cuộn được (sau này nhiều kỹ năng,

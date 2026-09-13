@@ -221,6 +221,38 @@ public static class ThuGiaoDien
             p.trangThai = "demNguoc";
             p.batDauLuc = PhongMang.GioMayChu() + 7400.0;
             yield return DoMan("7. dem nguoc", "gd_7_demnguoc");
+
+            // 7b. Dong chu dem nguoc + gach do KHONG de len nhan vat (nguoi dung 13/09/2026: "dang bi
+            // lan xuong che mat nhan vat"). Dinh nhan vat do bang KHUNG BAO cac SkinnedMeshRenderer
+            // dang hien trong canh chieu len man hinh - khong dua vao con so bo cuc cua ManSanh.
+            {
+                float sGd = GiaoDien.TiLe;
+                var cam = Camera.main;
+                float dinhNv = float.MaxValue;
+                int soNv = 0;
+                if (cam != null)
+                    foreach (var sk in Object.FindObjectsByType<SkinnedMeshRenderer>(FindObjectsSortMode.None))
+                    {
+                        if (!sk.enabled || !sk.gameObject.activeInHierarchy) continue;
+                        var bb = sk.bounds;
+                        var tamMh = cam.WorldToScreenPoint(bb.center);
+                        if (tamMh.z <= 0f || tamMh.x < 0f || tamMh.x > Screen.width) continue;
+                        soNv++;
+                        for (int gc = 0; gc < 8; gc++)
+                        {
+                            var g = bb.center + Vector3.Scale(bb.extents, new Vector3((gc & 1) == 0 ? -1 : 1, (gc & 2) == 0 ? -1 : 1, (gc & 4) == 0 ? -1 : 1));
+                            var mh = cam.WorldToScreenPoint(g);
+                            dinhNv = Mathf.Min(dinhNv, Screen.height - mh.y);
+                        }
+                    }
+                var tieuDe = ManSanh.KhungTieuDeDemNguoc(sGd);
+                var gach = ManSanh.KhungGachDemNguoc(sGd);
+                Ghi("7b. dem nguoc: dong chu y " + tieuDe.yMin.ToString("F0") + "-" + tieuDe.yMax.ToString("F0") + ", gach do y "
+                    + gach.yMax.ToString("F0") + "; dinh khung bao nhan vat y " + (soNv > 0 ? dinhNv.ToString("F0") : "?")
+                    + " (" + soNv + " mesh, man " + Screen.height + " cao)");
+                Kiem(soNv > 0, "khong tim thay nhan vat trong canh de do");
+                Kiem(gach.yMax < dinhNv, "dong chu / gach do dem nguoc van de len nhan vat");
+            }
             p.trangThai = cu; p.batDauLuc = cuLuc;
 
             string ma = p.ma;
