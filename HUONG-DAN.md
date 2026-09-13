@@ -8334,6 +8334,40 @@ sát thương hiện ra** (2,1 m) để số không đè lên chữ. Bỏ chữ 
 **Số đo** (menu 62, 0 lỗi): tung thật 10 lần → trúng 10, ngã 7; dấu hiệu hiện **376/383 khung hình đang ngã (98%)**;
 chuỗi ảnh mới thấy chữ NGÃ rõ ở cả 5 thời điểm, đè lên lửa.
 
+### Android: ứng dụng đã cài vẫn không kín màn hình (13/09/2026)
+
+Anh chụp ba ảnh trên điện thoại Android (đã cài game thành ứng dụng web): còn **dải đỏ có đồng hồ** (thanh trạng thái),
+**dải trắng** (thanh điều hướng) và **dải đen** ở chỗ camera — trong khi iPhone và iPad kín màn hình.
+
+**Nguyên nhân:** `web/manifest.webmanifest` xin `"display": "standalone"`, và `display_override` cũng xếp `standalone`
+lên đầu. Ở chế độ standalone Android **luôn giữ** hai thanh hệ thống. iOS kín màn hình là nhờ thẻ riêng của Apple
+(`apple-mobile-web-app-status-bar-style = black-translucent` + `viewport-fit=cover`) — Android không đọc thẻ đó, nên
+thử trên iPhone thì không bao giờ thấy lỗi này.
+
+**Sửa hai lớp:**
+
+1. Manifest: `"display": "fullscreen"`, `display_override: ["fullscreen", "standalone", "minimal-ui"]` — đường chính thức,
+   Android ẩn cả hai thanh và dùng luôn chỗ camera (trang đã có `viewport-fit=cover`).
+2. Dự phòng trong trang bao game (`WebGLTemplates/Diablo25D/index.html`): **Android + đang chạy như ứng dụng đã cài +
+   chưa toàn màn hình** → cú chạm đầu tiên gọi Fullscreen API với `navigationUI: "hide"`. Cần lớp này vì ứng dụng
+   **đã cài** chỉ nhận manifest mới khi Chrome tự kiểm lại (thường tới một ngày). Tab trình duyệt thường và iOS không bị
+   đụng tới. Nhận biết "đã cài" nay tính cả `display-mode: fullscreen` (trước chỉ `standalone` → sau khi đổi manifest,
+   nút "CÀI ĐẶT ỨNG DỤNG" sẽ hiện nhầm trong chính ứng dụng đã cài).
+
+**Số đo** (bản build chạy trên máy, không có máy Android để thử thật):
+
+| | Kết quả |
+|---|---|
+| Hàm quyết định, 6 tổ hợp (Android đã cài / chưa cài / đã toàn màn hình / không có API, iPhone, máy tính) | 6/6 đúng |
+| Chạm thật khi **chưa cài** | gọi Fullscreen API **0** lần |
+| Giả lập Android đã cài, chạm thật | gọi **1** lần, tuỳ chọn `{"navigationUI":"hide"}` |
+| Một cú chạm điện thoại (`pointerup` + `touchend` liền nhau) | 1 lần (khoá 1 giây — không có khoá thì 2 lần) |
+| Game vẫn vào màn đăng nhập | có |
+
+Khung trình duyệt dùng để thử không cho vào toàn màn hình thật, và chặn bộ chạy nền trên địa chỉ cục bộ (3–4 dòng lỗi
+"fetching the script" kể cả khi đã chép `sw.js` vào — máy chủ không nhận yêu cầu nào); trên trang thật https cùng mã
+đăng ký ấy vẫn 0 lỗi. **Phải thử lại trên chính điện thoại Android của anh.**
+
 ### Quái vòng ngoài tự truy lùng sau 60 giây, và cấp tối đa 20 (13/09/2026)
 
 **Anh xin:** 20 con quái vòng ngoài của mỗi đợt, nếu sau 60 giây vẫn chưa tìm thấy người chơi, thì tự biết người chơi

@@ -286,13 +286,18 @@
   //     Chia se -> Them vao Man hinh chinh. Nen chi hien loi nhac khi dung
   //     Safari tren iOS va CHUA cai (navigator.standalone).
   //
-  //   Da cai roi (mo tu bieu tuong): khong hien gi ca - display-mode: standalone.
+  //   Da cai roi (mo tu bieu tuong): khong hien gi ca - display-mode: standalone
+  //     HOAC fullscreen (manifest xin "fullscreen" tu 13/09/2026, xem duoi).
   var nutCai = document.querySelector("#cai-dat");
   var nhacIos = document.querySelector("#nhac-ios");
   var loiMoiCai = null;
 
+  function cheDo(ten) {
+    return !!(window.matchMedia && window.matchMedia("(display-mode: " + ten + ")").matches);
+  }
+
   function daCaiRoi() {
-    return (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches)
+    return cheDo("standalone") || cheDo("fullscreen") || cheDo("minimal-ui")
         || window.navigator.standalone === true;
   }
 
@@ -323,6 +328,54 @@
   });
 
   if (laIos() && !daCaiRoi()) nhacIos.style.display = "block";
+
+  // ================================================================
+  //  ANDROID: UNG DUNG DA CAI PHAI CHOI TOAN MAN HINH
+  // ================================================================
+  //
+  // Nguoi dung 13/09/2026 (anh chup Android): mo tu bieu tuong van con thanh
+  // trang thai (dai do co dong ho), thanh dieu huong (dai trang) va dai den o
+  // cho camera - trong khi iPhone / iPad kin man hinh.
+  //
+  // Nguyen nhan: manifest xin "display": "standalone". Android giu nguyen hai
+  // thanh he thong o che do standalone. iOS kin man hinh la nho the rieng cua
+  // Apple (apple-mobile-web-app-status-bar-style = black-translucent +
+  // viewport-fit=cover), Android khong doc the do.
+  //
+  // Sua hai lop:
+  //   1. manifest.webmanifest: "display": "fullscreen" (dung duong chinh thuc).
+  //      NHUNG ung dung DA CAI chi nhan manifest moi khi Chrome tu kiem lai
+  //      (thuong toi mot ngay) - go ra cai lai thi an ngay.
+  //   2. Du phong o day: Android + dang chay nhu ung dung da cai + chua toan man
+  //      hinh -> cu cham dau tien goi Fullscreen API (navigationUI "hide" an ca
+  //      thanh dieu huong). Trinh duyet chi cho goi trong mot cu cham/bam cua
+  //      nguoi dung nen phai doi cham. Thoat ra (vuot canh man hinh) roi cham
+  //      lai thi vao lai.
+  // Tab trinh duyet thuong KHONG dung toi - chi ung dung da cai. iOS khong dung
+  // toi (iPhone khong co Fullscreen API cho trang, va da kin man hinh san).
+  function nenGoiToanManHinh(ua, daCai, dangToanManHinh, coApi) {
+    return /Android/i.test(ua) && daCai && !dangToanManHinh && coApi;
+  }
+
+  // Mot cu cham tren dien thoai ban CA pointerup lan touchend - khoa 1 giay de
+  // khong goi hai lan lien nhau (lan hai trung vao luc lan mot dang cho).
+  var lucGoiCuoi = 0;
+
+  function goiToanManHinh() {
+    if (Date.now() - lucGoiCuoi < 1000) return;
+    var goc = document.documentElement;
+    var api = goc.requestFullscreen || goc.webkitRequestFullscreen;
+    var dangToan = !!(document.fullscreenElement || document.webkitFullscreenElement) || cheDo("fullscreen");
+    if (!nenGoiToanManHinh(navigator.userAgent || "", daCaiRoi(), dangToan, !!api)) return;
+    lucGoiCuoi = Date.now();
+    try {
+      var hua = api.call(goc, { navigationUI: "hide" });
+      if (hua && hua.catch) hua.catch(function () {});
+    } catch (e) {}
+  }
+
+  document.addEventListener("pointerup", goiToanManHinh, true);
+  document.addEventListener("touchend", goiToanManHinh, true);
 
   // Bo chay nen: dieu kien bat buoc de Chrome / Edge / Android cho cai dat.
   // No KHONG luu cache gi (xem sw.js) - Unity da tu quan ly cache ban build.

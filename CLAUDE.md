@@ -197,6 +197,9 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
 - **Cài được như ứng dụng (PWA)**: `web/manifest.webmanifest` + `web/sw.js` (bộ chạy nền **không cache gì** — Unity đã tự
   quản lý cache bản build; giữ index.html cũ là ghép mã cũ với dữ liệu mới) + thẻ `apple-*` trong template. Nút "CÀI ĐẶT
   ỨNG DỤNG" và dòng nhắc iOS nằm **trong màn chờ tải**, không nổi trên khung game (cạnh phải/dưới là chỗ cần điều khiển).
+  ⚠️ **Manifest xin `"display": "fullscreen"`** (13/09/2026 — `standalone` làm Android giữ thanh trạng thái + thanh điều hướng;
+  iOS kín màn hình nhờ thẻ `apple-*`, không nhờ manifest). Dự phòng trong trang: Android + đã cài + chưa toàn màn hình → cú chạm
+  đầu gọi Fullscreen API (`nenGoiToanManHinh`). Ứng dụng Android đã cài chỉ nhận manifest mới khi Chrome tự kiểm lại (≤1 ngày) hoặc cài lại.
   Icon sinh từ ảnh người dùng gửi bằng `python CongCu/Icon/sinh_icon.py` → `web/icons/` (thường 92%, **maskable 68%** vì
   Android cắt icon, apple-touch 180). Số đo: `PlayTestShots/pwa.txt`.
 - **Bàn phím điện thoại**: Unity không biết bàn phím ảo che bao nhiêu (canvas không đổi kích thước). `index.html` đo bằng
