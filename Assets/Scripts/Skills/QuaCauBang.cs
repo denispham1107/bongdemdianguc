@@ -26,6 +26,10 @@ public class QuaCauBang : MonoBehaviour
     public const float GiayCham = 2f;
     /// <summary>Ban kinh vu no - bang Qua cau lua (prefab Skill_QuaCauLua: 3,4 m).</summary>
     public const float BanKinhNo = 3.4f;
+    /// <summary>Ban kinh HINH cum gai bang tu dat khi no (IceImpact) - chi la hinh, khong phai vung sat thuong.
+    /// Mua bang dung CHUNG con so nay cho cum bang duoi dat (nguoi dung 16/09/2026: "cho bang tao ra tren mat
+    /// dat cung to nhu bang cua Qua cau bang").</summary>
+    public const float BanKinhHinhBang = BanKinhNo * 0.75f;
 
     public float speed = 17f;
     public float lifetime = 4f;

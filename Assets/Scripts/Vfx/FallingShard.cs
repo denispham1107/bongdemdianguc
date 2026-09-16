@@ -44,7 +44,9 @@ public class FallingShard : MonoBehaviour
 
         if (k >= 1f)
         {
-            VfxFactory.IceImpact(target, impactRadius);
+            // HINH cum bang to bang cua Qua cau bang (2,55 m, prefab nuong o 1,7 -> x1,5). Nguoi dung
+            // 16/09/2026 xin. CHI hinh to ra: vung sat thuong / dong bang ben duoi van la impactRadius.
+            VfxFactory.IceImpact(target, Mathf.Max(impactRadius, QuaCauBang.BanKinhHinhBang));
             if (damage > 0f)
             {
                 // AreaFreeze chu khong AreaDamage: AreaDamage ap statusSeconds cho

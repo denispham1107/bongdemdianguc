@@ -142,6 +142,8 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
   (`FrozenEffect.ApCham`, không đóng cứng). Hình **dựng bằng Blender MCP** (`CongCu/Blender/qua_cau_bang.blend`) → `Resources/KyNang/QuaCauBang/`
   (lõi pha lê FBX, ảnh sương lạnh, mảnh băng) + icon `Resources/Icons/CauBang.png`; dựng bằng code, **không** có prefab trong GameAssets
   (thêm trường prefab là phải sửa hai scene). Lưới FBX xoay 180° (đuôi gai −Y Blender → +Z Unity). Menu 68 kiểm.
+  Cụm gai băng trên đất của **Mưa băng** dùng chung cỡ hình `QuaCauBang.BanKinhHinhBang` (2,55 m, người dùng xin 16/09/2026) —
+  chỉ hình, vùng sát thương mỗi tảng vẫn 1,7 m (menu 68 mục J đo kích thước thật).
 - ⚠️ **Bình máu / mana** (`CapDo.KyBinhMau/KyBinhMana`, `PlayerController.UongBinh`, hằng `MauMoiBinh 100`, `ManaMoiBinh 50`,
   `HoiChieuBinh 0.5` — HẰNG chứ không phải trường public để prefab không đè): mở 1 điểm, `CapToiDaCua` = 1; không niệm, không
   đi qua gói kỹ năng. **Bình rơi CHUNG cả phòng** (`QuanLyBinhRoi` + `BinhRoi`): máy trọng tài quái gieo 10%/10% khi quái chết và

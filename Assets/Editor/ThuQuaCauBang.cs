@@ -30,6 +30,10 @@ using UnityEngine;
 ///   H. Qua mang: nguoi kia tung Qua cau bang bang GOI KY NANG that (kyNang = 9) -> may minh
 ///      phat lai ra 3 qua; minh tung thi goi gui di mang kyNang = 9.
 ///   I. HUD / Sach phep: BoIcon co 10 hinh, hinh so 9 la icon Blender; ten, tom tat co dau.
+///   J. (16/09/2026, nguoi dung: "Mua bang - cho bang tao ra tren mat dat cung to nhu bang cua Qua cau
+///      bang") DO KICH THUOC THAT cum gai bang: bat vat hieu ung moi sinh ra, lay hop bao cac gai (bo
+///      vong phang tren dat) lon nhat trong 0,8 giay. Mua bang THAT (tang bang roi) vs Qua cau bang THAT
+///      (vu no) vs doi chung co cu (IceImpact 1,7 m).
 ///
 /// Ket qua: PlayTestShots/quacaubang.txt, anh quacaubang_*.png.
 /// </summary>
@@ -382,6 +386,73 @@ public static class ThuQuaCauBang
             KenhTrucTiep.Dong();
             Object.DestroyImmediate(goDb);
             NguoiChoiKhac.Bo(kia);
+        }
+
+        // ================= J. CO CUM BANG DUOI DAT =================
+        Ghi("");
+        {
+            foreach (var st in Object.FindObjectsByType<IceStorm>(FindObjectsInactive.Exclude)) Object.Destroy(st.gameObject);
+            yield return new WaitForSeconds(2.5f);          // hieu ung cu tan het
+            Vector3 cho = goc + huong * 6f;
+            cho.y = VfxFactory.GroundY(cho);
+
+            float[] rong = new float[3], cao = new float[3];
+            bool daChupMua = false;
+            string[] ten = { "Mua bang (tang bang that)", "Qua cau bang (vu no that)", "doi chung co cu IceImpact 1,7 m" };
+            for (int ca = 0; ca < 3; ca++)
+            {
+                var truoc = new HashSet<GameObject>(UnityEngine.SceneManagement.SceneManager.GetActiveScene().GetRootGameObjects());
+                IceStorm bao = null;
+                if (ca == 0) bao = IceStorm.Spawn(cho, maskEnemy);
+                else if (ca == 1) VfxFactory.NoQuaCauBang(cho, QuaCauBang.BanKinhNo);
+                else VfxFactory.IceImpact(cho, 1.7f);
+
+                GameObject cum = null;
+                float hanJ = Time.time + 4f;
+                float tBat = -1f;
+                while (Time.time < hanJ)
+                {
+                    if (cum == null)
+                    {
+                        foreach (var g in UnityEngine.SceneManagement.SceneManager.GetActiveScene().GetRootGameObjects())
+                        {
+                            if (truoc.Contains(g) || g == null) continue;
+                            if (g.name.Contains("NoQuaCauBang") || g.GetComponentInChildren<IceStorm>() != null) continue;
+                            if (!(g.name.Contains("NoBang") || g.name.Contains("IceImpact"))) continue;
+                            cum = g; tBat = Time.time; break;
+                        }
+                    }
+                    else
+                    {
+                        if (Time.time - tBat > 0.8f) break;
+                        if (ca == 0 && !daChupMua && Time.time - tBat > 0.35f) { daChupMua = true; yield return Chup("quacaubang_4_muabang"); }
+                        // Hop bao cac GAI (bo vong phang va hat): renderer luoi co chieu cao that
+                        Bounds hop = new Bounds(cum.transform.position, Vector3.zero);
+                        bool co = false;
+                        foreach (var r in cum.GetComponentsInChildren<MeshRenderer>())
+                        {
+                            if (r.bounds.size.y < 0.15f) continue;
+                            if (!co) { hop = r.bounds; co = true; } else hop.Encapsulate(r.bounds);
+                        }
+                        if (co)
+                        {
+                            rong[ca] = Mathf.Max(rong[ca], Mathf.Max(hop.size.x, hop.size.z));
+                            cao[ca] = Mathf.Max(cao[ca], hop.max.y - cum.transform.position.y);
+                        }
+                    }
+                    yield return null;
+                }
+                if (bao != null) Object.Destroy(bao.gameObject);
+                yield return new WaitForSeconds(2.5f);
+            }
+            Ghi(string.Format("J. cum gai bang duoi dat (lon nhat trong 0,8 giay): {0}: rong {1:F2} m, cao {2:F2} m | {3}: rong {4:F2} m, cao {5:F2} m | {6}: rong {7:F2} m, cao {8:F2} m",
+                ten[0], rong[0], cao[0], ten[1], rong[1], cao[1], ten[2], rong[2], cao[2]));
+            float tiRong = rong[1] > 0 ? rong[0] / rong[1] : 0f, tiCao = cao[1] > 0 ? cao[0] / cao[1] : 0f;
+            float doiChung = rong[1] > 0 ? rong[2] / rong[1] : 0f;
+            Ghi(string.Format("    Mua bang / Qua cau bang: rong x{0:F2}, cao x{1:F2}; doi chung co cu / Qua cau bang: rong x{2:F2}", tiRong, tiCao, doiChung));
+            Kiem(rong[0] > 0f && rong[1] > 0f && rong[2] > 0f, "khong bat duoc cum bang de do");
+            Kiem(Mathf.Abs(tiRong - 1f) < 0.15f && Mathf.Abs(tiCao - 1f) < 0.15f, "cum bang cua Mua bang khong to bang cua Qua cau bang");
+            Kiem(doiChung < 0.85f, "doi chung hong: co cu 1,7 m khong nho hon - phep do khong phan biet duoc");
         }
 
         // ================= I. HUD / SACH PHEP =================

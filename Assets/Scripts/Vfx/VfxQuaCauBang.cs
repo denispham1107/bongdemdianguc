@@ -230,7 +230,7 @@ public static partial class VfxFactory
     /// <summary>Vu no bang cua qua cau: gai bang tu dat + vong lanh (IceImpact) + bung suong va manh bang.</summary>
     public static void NoQuaCauBang(Vector3 pos, float radius)
     {
-        IceImpact(pos, radius * 0.75f);
+        IceImpact(pos, QuaCauBang.BanKinhHinhBang * radius / QuaCauBang.BanKinhNo);
 
         var root = new GameObject("NoQuaCauBang");
         root.transform.position = pos;
