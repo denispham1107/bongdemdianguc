@@ -8344,10 +8344,11 @@ một quả, mỗi quả rơi 0,96 giây, tức 7–8 quả cùng lúc trên kh�
 Phần rơi / sát thương / làm chậm / đóng cứng vẫn là `FallingShard` cũ, không đổi; chạm đất thì **thả** luồng khí lạnh + vệt băng
 ra tan dần. Bán kính quả 0,36–0,50 m.
 
-**Rơi chéo ngang theo màn hình**: lần chụp đầu dùng gió ngẫu nhiên — trùng hướng nhìn của camera thì quả rơi dọc theo tia nhìn,
-vệt băng thành những **cột sáng đứng**, không nhận ra quả cầu và đuôi. Nay gió thổi sang trái hoặc phải của camera
-(`HuongGioNgangManHinh`), quả xuất phát lệch ngang 0,6 × độ cao. Chỉ là hình (điểm rơi không đổi) nên mỗi máy tự tính theo camera
-của mình cũng không lệch gì qua mạng.
+**Hướng rơi**: tôi tự cho rơi **chéo ngang theo màn hình** (gió ngẫu nhiên trùng hướng nhìn làm vệt băng thành cột sáng đứng) —
+anh **không muốn nghiêng**, xin rơi **thẳng đứng** từ trên cao. Đã bỏ phần gió: quả sinh ngay trên điểm rơi 20 m, trục bay chỉ thẳng
+xuống (`LookRotation(xuống, trước)` — dùng `up` mặc định thì hai vector song song, hướng quay không xác định). Menu 68 mục K đo thêm:
+**34/34** quả rơi thẳng đứng, lệch ngang lớn nhất **0,000 m**, vẫn đủ lưới Blender / luồng khí lạnh / vệt băng / đuôi gai phía sau,
+bia vẫn mất 806 máu và bị làm chậm — **0 lỗi**.
 
 **Số đo** (menu 68 mục **K** mới, Mưa băng **thật**, **0 lỗi**): tối đa **8** quả rơi cùng lúc; xét **33** quả: 33 dùng lưới Blender,
 33 có luồng khí lạnh đang phát, 33 có vệt băng, 33 có đuôi gai phía **sau** hướng rơi, **0** gắn đèn riêng; **0** tảng băng cũ;

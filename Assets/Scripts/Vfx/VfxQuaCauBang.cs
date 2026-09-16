@@ -219,19 +219,18 @@ public static partial class VfxFactory
     /// QUA CAU BANG ROI TU TROI (thay tang bang cua MUA BANG - nguoi dung 16/09/2026: "thay vi roi cac tang bang
     /// thi cho roi cac qua cau bang, co luong khong khi lanh phia sau giong y chang Qua cau bang").
     ///
-    /// Roi CHEO theo <paramref name="gio"/> chu khong thang dung: camera nhin tu tren xuong, qua roi thang
-    /// thi luong khi lanh va vet bang chong khit sau lung qua cau, nguoi choi khong thay duoi dau. FallingShard
-    /// lay vi tri sinh lam diem xuat phat nen chi can sinh lech ngang.
+    /// Roi THANG DUNG tu do cao <paramref name="height"/> (nguoi dung 16/09/2026). Ban dau toi cho roi cheo ngang man
+    /// hinh de duoi hien ro hon - nguoi dung khong muon nghieng, bo.
     /// </summary>
-    public static GameObject QuaCauBangRoi(Vector3 target, float height, float fallTime, Vector3 gio)
+    public static GameObject QuaCauBangRoi(Vector3 target, float height, float fallTime)
     {
-        Vector3 ngang = new Vector3(gio.x, 0f, gio.z);
-        if (ngang.sqrMagnitude < 0.0001f) ngang = Vector3.forward;
-        Vector3 tu = target + Vector3.up * height - ngang.normalized * height * 0.6f;
+        Vector3 tu = target + Vector3.up * height;
 
         var go = new GameObject("QuaCauBangRoi");
         go.transform.position = tu;
-        go.transform.rotation = Quaternion.LookRotation(target - tu);
+        // Huong bay thang xuong: truc +Z cua qua cau chi xuong dat (duoi gai huong len troi). Can vector 'len' khac
+        // phuong voi huong nhin - LookRotation(xuong, len) la hai vector song song, ket qua khong xac dinh.
+        go.transform.rotation = Quaternion.LookRotation(Vector3.down, Vector3.forward);
         BuildQuaCauBangVisual(go.transform, Random.Range(0.36f, 0.50f), true);
 
         var mover = go.AddComponent<FallingShard>();

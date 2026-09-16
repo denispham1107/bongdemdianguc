@@ -487,6 +487,7 @@ public static class ThuQuaCauBang
             float mauMua0 = biaMua.health;
             var bao = IceStorm.Spawn(cho, maskEnemy);
             int soRoiMax = 0, soTangCu = 0, soDungLuoi = 0, soCoSuong = 0, soCoVet = 0, soDuoiSau = 0, soCoDen = 0, soXet = 0;
+            int soThangDung = 0; float lechNgangMax = 0f;
             int hatMax = 0; bool biCham = false, daChup = false;
             var daXet = new HashSet<FallingShard>();
             float hanK = Time.time + 5.5f;
@@ -504,6 +505,10 @@ public static class ThuQuaCauBang
                     // bo qua khung CHAM DAT: vet vua duoc tha ra va vi tri trung dich (lan do dau dem nham 1/34)
                     if (conCach < 0.6f) continue;
                     daXet.Add(f); soXet++;
+                    // Nguoi dung 16/09/2026: roi THANG DUNG. Do lech ngang giua vi tri hien tai va diem roi.
+                    float lechNgang = new Vector2(f.transform.position.x - f.target.x, f.transform.position.z - f.target.z).magnitude;
+                    lechNgangMax = Mathf.Max(lechNgangMax, lechNgang);
+                    if (lechNgang < 0.01f && Vector3.Angle(f.transform.forward, Vector3.down) < 0.5f) soThangDung++;
                     var loi = f.transform.Find("LoiBang");
                     var mf = loi != null ? loi.GetComponent<MeshFilter>() : null;
                     if (mf != null && mf.sharedMesh == luoi) soDungLuoi++;
@@ -540,6 +545,8 @@ public static class ThuQuaCauBang
             Ghi(string.Format("K. Mua bang that: vat dang roi cung luc toi da {0}; da xet {1} qua: dung luoi Blender {2}, luong khi lanh dang phat {3}, vet bang {4}, duoi gai phia sau huong roi {5}, co den rieng {6}; tang bang cu (con \"Tang\") {7}",
                 soRoiMax, soXet, soDungLuoi, soCoSuong, soCoVet, soDuoiSau, soCoDen, soTangCu));
             Ghi(string.Format("    bia giua vung mat {0:F0} mau, bi cham/dong cung {1}; tong so hat cung luc toi da {2}", matMua, biCham, hatMax));
+            Ghi(string.Format("    roi THANG DUNG: {0}/{1} qua (lech ngang lon nhat so voi diem roi {2:F3} m, truc bay chi thang xuong)", soThangDung, soXet, lechNgangMax));
+            Kiem(soThangDung == soXet, "qua cau bang cua Mua bang khong roi thang dung");
             Kiem(soXet >= 10, "Mua bang khong roi du qua de xet");
             Kiem(soDungLuoi == soXet && soCoSuong == soXet && soCoVet == soXet && soDuoiSau == soXet, "vat roi cua Mua bang chua phai qua cau bang day du");
             Kiem(soCoDen == 0, "qua cau roi van gan den rieng (nang cho dien thoai)");
