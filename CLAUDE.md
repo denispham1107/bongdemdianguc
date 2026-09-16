@@ -147,6 +147,10 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
   **Mưa băng rơi QUẢ CẦU BĂNG** thay tảng băng (16/09/2026): `VfxFactory.QuaCauBangRoi` (cùng hình/luồng khí lạnh/vệt băng, bản nhẹ:
   nửa lượng hạt, không đèn riêng), rơi **THẲNG ĐỨNG** (người dùng chốt 16/09/2026 — tôi từng cho rơi chéo, người dùng không muốn);
   `FallingShard` giữ nguyên rơi/sát thương/đóng băng, chạm đất thì `ThaDuoiQuaCauBang`. Menu 68 mục K.
+  **Cụm gai băng chỉ mọc khi trúng đồ vật / kẻ địch** (người dùng chọn 16/09/2026): trong 1,7 m có va chạm lớp `Default` (bia, đá,
+  cây, nhà mồ, hàng rào, lò lửa — mặt đất là lớp `Ground`) hoặc kẻ địch còn sống → nổ đủ + gai; chỉ trúng đất → `IceImpact(..., coGai:false)`
+  tắt `CumGai*` + `HaoQuang*`, giữ chớp, vòng lạnh, sương, giọt nước, mảnh băng, vết sương giá. Mưa băng nhắm kẻ địch 100%
+  (`aimAtEnemyChance = 1`) nên có kẻ địch là gần như quả nào cũng có gai. Menu 68 mục L.
 - **Giựt sét** (16/09/2026, hằng trong `GiatSet`: `TamNguoiChoi` 20 m, `SatThuongNguoiChoi` 75, `SoTiaNguoiChoi` 4, `XacSuatChoangNguoiChoi` 0,15,
   `GiayChoangNguoiChoi` 1,5 + 0,15 s/cấp): tối đa 4 tia cùng lúc (mỗi tia một kẻ địch phía trước), mỗi tia vẫn lan 5 lần; **mỗi cú trúng kể cả
   tia lan** gieo 15% choáng (`StunnedEffect.Apply` — bản sao mạng tự bỏ qua). Giựt sét của **quái** (`PhongCuaQuai`) không choáng. Menu 69 kiểm.

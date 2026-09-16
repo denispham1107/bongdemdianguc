@@ -1354,16 +1354,32 @@ public static partial class VfxFactory
     /// <summary>NO BANG: manh bang vo tung, hoi lanh phut ra, gai bang moc len.</summary>
     public static void IceImpact(Vector3 pos, float radius)
     {
+        IceImpact(pos, radius, true);
+    }
+
+    /// <param name="coGai">false = no KHONG co cum gai bang (tat CumGai* va quang chan HaoQuang* cua chung),
+    /// giu chop sang, vong lanh, suong, giot nuoc, manh bang, vet suong gia. Mua bang dung khi qua cau chi trung
+    /// mat dat (nguoi dung 16/09/2026).</param>
+    public static void IceImpact(Vector3 pos, float radius, bool coGai)
+    {
         var pf = GameAssets.I != null ? GameAssets.I.iceImpactPrefab : null;
+        GameObject go;
         if (pf != null)
         {
-            var go = GameAssets.Make(pf, pos);
+            go = GameAssets.Make(pf, pos);
             float k = radius / 1.7f;                 // prefab duoc nuong o ban kinh 1.7
             if (Mathf.Abs(k - 1f) > 0.05f) go.transform.localScale = Vector3.one * k;
         }
         else
         {
-            BuildIceImpact(pos, radius);
+            go = BuildIceImpact(pos, radius);
+        }
+
+        if (!coGai && go != null)
+        {
+            foreach (Transform con in go.transform)
+                if (con.name.StartsWith("CumGai") || con.name.StartsWith("HaoQuang"))
+                    con.gameObject.SetActive(false);
         }
 
         // Chi mot phan nho de lai vet bang cho do roi mat

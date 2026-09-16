@@ -8,16 +8,23 @@ D. bia tren duong bay (8 m) mat 96.0 mau; bia lech 7 m khoi duong bay mat 0.0
 G. luc bay: dung luoi Blender True, tam hop bao lech theo huong bay -0.451 m -> duoi gai phia SAU True; luong khi lanh dang phat True, vet bang True, anh sang True; sau khi no: 3 luong khi lanh con o lai tan dan
 
 E. no tai tam bia: trung 3 muc tieu; mat mau: tam 65.00 (mong 65), 1 m 56.00, 2,5 m 43.00, 5 m 0.00 (ngoai ban kinh 3,4)
-F. 1000 lan no: bi cham 40.9% (mong 40%), dong cung 0; slow 0.5..0.5 (mong 0,5), thoi gian cham 2.00..2.00 giay (mong 2); qua cau cap 3 cham 2.30 giay (mong 2,30)
+F. 1000 lan no: bi cham 40.0% (mong 40%), dong cung 0; slow 0.5..0.5 (mong 0,5), thoi gian cham 2.00..2.00 giay (mong 2); qua cau cap 3 cham 2.30 giay (mong 2,30)
 
 H. goi ky nang so 9 tu nguoi kia -> may minh phat lai 3 qua (mong 3); minh tung -> goi gui di mang kyNang = 9: True
 
-J. cum gai bang duoi dat (lon nhat trong 0,8 giay): Mua bang (tang bang that): rong 5.56 m, cao 2.78 m | Qua cau bang (vu no that): rong 5.61 m, cao 2.81 m | doi chung co cu IceImpact 1,7 m: rong 3.74 m, cao 1.87 m
-    Mua bang / Qua cau bang: rong x0.99, cao x0.99; doi chung co cu / Qua cau bang: rong x0.67
+J. cum gai bang duoi dat (lon nhat trong 0,8 giay): Mua bang (tang bang that): rong 5.60 m, cao 2.80 m | Qua cau bang (vu no that): rong 5.61 m, cao 2.81 m | doi chung co cu IceImpact 1,7 m: rong 3.74 m, cao 1.87 m
+    Mua bang / Qua cau bang: rong x1.00, cao x1.00; doi chung co cu / Qua cau bang: rong x0.67
 
-K. Mua bang that: vat dang roi cung luc toi da 8; da xet 34 qua: dung luoi Blender 34, luong khi lanh dang phat 34, vet bang 34, duoi gai phia sau huong roi 34, co den rieng 0; tang bang cu (con "Tang") 0
-    bia giua vung mat 806 mau, bi cham/dong cung True; tong so hat cung luc toi da 1938
-    roi THANG DUNG: 34/34 qua (lech ngang lon nhat so voi diem roi 0.000 m, truc bay chi thang xuong)
+K. Mua bang that: vat dang roi cung luc toi da 8; da xet 32 qua: dung luoi Blender 32, luong khi lanh dang phat 32, vet bang 32, duoi gai phia sau huong roi 32, co den rieng 0; tang bang cu (con "Tang") 0
+    bia giua vung mat 808 mau, bi cham/dong cung True; tong so hat cung luc toi da 1918
+    roi THANG DUNG: 32/32 qua (lech ngang lon nhat so voi diem roi 0.000 m, truc bay chi thang xuong)
+
+L. dat trong (khong vat, khong ke dich): cum gai dang bat 0, cac phan no khac dang bat 8, bo dem co gai +0
+L. bia mo TS_foot_155 cach 1,0 m: cum gai dang bat 8, cac phan no khac dang bat 8, bo dem co gai +1
+L. ke dich (bia do don) cach 1,0 m: cum gai dang bat 8, cac phan no khac dang bat 8, bo dem co gai +1
+L. DOI CHUNG bia mo cach 2,6 m (ngoai 1,7 m): cum gai dang bat 0, cac phan no khac dang bat 8, bo dem co gai +0
+L. Mua bang that o cho trong (bia do don giua vung): 36 qua cham dat, 36 qua co cum gai (trung bia do don), 0 qua khong gai
+L. Mua bang that KHONG co ke dich: 34 qua cham dat, 10 qua co cum gai, 24 qua khong gai; dem doc lap theo diem roi: 10/34 qua co do vat trong 1,7 m
 I. BoIcon 10 hinh, hinh so 9 co; ten "QUẢ CẦU BĂNG", tom tat "Ba quả băng, 40% làm chậm"; mo ta 511 ky tu
 
 so loi ghi nhan = 0

@@ -38,6 +38,10 @@ using UnityEngine;
 ///      khong khi lanh phia sau giong y chang Qua cau bang") Mua bang THAT: moi vat dang roi la qua cau bang
 ///      (luoi Blender, luong khi lanh dang phat, vet bang, duoi gai phia SAU huong roi, khong den rieng),
 ///      khong con tang bang cu; bia trong vung van mat mau + bi cham/dong cung; dem tong so hat; chup anh.
+///   L. (16/09/2026, nguoi dung: qua cau cua Mua bang "chi trung mat dat thi no binh thuong khong tao khoi bang;
+///      trung do vat / nguoi choi khac / quai thi vua no vua tao bang") - roi THAT tung ca, dem CumGai dang bat
+///      trong hieu ung no: dat trong -> 0; bia mo trong 1,7 m -> co; ke dich trong 1,7 m -> co; DOI CHUNG bia mo
+///      ngoai 1,7 m -> 0; cac phan con lai cua vu no (chop, vong, suong...) van co. Them thong ke mot con Mua bang that.
 ///
 /// Ket qua: PlayTestShots/quacaubang.txt, anh quacaubang_*.png.
 /// </summary>
@@ -554,6 +558,113 @@ public static class ThuQuaCauBang
             Kiem(matMua > 1f && biCham, "Mua bang doi hinh xong khong con gay sat thuong / lam cham");
             Object.Destroy(biaMua.gameObject);
             if (bao != null) Object.Destroy(bao.gameObject);
+        }
+
+        // ================= L. CUM GAI CHI KHI TRUNG DO VAT / KE DICH =================
+        Ghi("");
+        {
+            yield return new WaitForSeconds(2.5f);
+            int lopVat = LayerMask.GetMask("Default");
+            // Tim mot bia mo (BoxCollider lop Default ten TS_) co mot huong trong: diem 1,0 m ngoai mat bia chi
+            // cham DUNG bia nay, diem 2,6 m ngoai mat bia khong cham vat nao trong 1,7 m.
+            Vector3 gan = Vector3.zero, xa = Vector3.zero, trong = Vector3.zero; string tenBia = "";
+            bool timDuoc = false;
+            foreach (var c in Object.FindObjectsByType<BoxCollider>(FindObjectsInactive.Exclude))
+            {
+                if (c.gameObject.layer != 0 || !c.name.StartsWith("TS_")) continue;
+                for (int h = 0; h < 8 && !timDuoc; h++)
+                {
+                    Vector3 huongBia = Quaternion.AngleAxis(h * 45f, Vector3.up) * Vector3.forward;
+                    Vector3 mat = c.ClosestPoint(c.bounds.center + huongBia * 10f);
+                    Vector3 g1 = mat + huongBia * 1.0f; g1.y = VfxFactory.GroundY(g1);
+                    Vector3 g2 = mat + huongBia * 2.6f; g2.y = VfxFactory.GroundY(g2);
+                    Vector3 g3 = mat + huongBia * 7.0f; g3.y = VfxFactory.GroundY(g3);
+                    var o1 = Physics.OverlapSphere(g1, 1.7f, lopVat, QueryTriggerInteraction.Ignore);
+                    bool chiBiaNay = o1.Length == 1 && o1[0] == c;
+                    bool xaTrong = !Physics.CheckSphere(g2, 1.7f, lopVat, QueryTriggerInteraction.Ignore);
+                    bool datTrong = !Physics.CheckSphere(g3, 3.5f, lopVat, QueryTriggerInteraction.Ignore);
+                    if (chiBiaNay && xaTrong && datTrong) { gan = g1; xa = g2; trong = g3; tenBia = c.name; timDuoc = true; }
+                }
+                if (timDuoc) break;
+            }
+            if (!timDuoc) { Ghi("[LOI] khong tim duoc bia mo co cho trong de thu"); loi++; }
+            else
+            {
+                string[] tenCa = { "dat trong (khong vat, khong ke dich)", "bia mo " + tenBia + " cach 1,0 m", "ke dich (bia do don) cach 1,0 m", "DOI CHUNG bia mo cach 2,6 m (ngoai 1,7 m)" };
+                Vector3[] choCa = { trong, gan, trong, xa };
+                var gaiBat = new int[4]; var phanKhac = new int[4]; var coGaiDem = new int[4];
+                for (int ca = 0; ca < 4; ca++)
+                {
+                    Damageable keDich = null;
+                    if (ca == 2) { keDich = TaoBia("TAM_KeDichL", choCa[ca] + Vector3.right * 1.0f); yield return new WaitForFixedUpdate(); }
+                    var truoc = new HashSet<GameObject>(UnityEngine.SceneManagement.SceneManager.GetActiveScene().GetRootGameObjects());
+                    int coGai0 = FallingShard.SoLanCoGai;
+                    var qua = VfxFactory.QuaCauBangRoi(choCa[ca], 3f, 0.12f);
+                    var fs = qua.GetComponent<FallingShard>();
+                    fs.damage = 1f; fs.impactRadius = 1.7f; fs.damageMask = maskEnemy;
+                    GameObject no = null;
+                    float hanL = Time.time + 1.5f;
+                    while (no == null && Time.time < hanL)
+                    {
+                        foreach (var g in UnityEngine.SceneManagement.SceneManager.GetActiveScene().GetRootGameObjects())
+                            if (!truoc.Contains(g) && (g.name.Contains("NoBang") || g.name.Contains("IceImpact"))) { no = g; break; }
+                        yield return null;
+                    }
+                    if (no != null)
+                        foreach (Transform con in no.transform)
+                        {
+                            if (con.name.StartsWith("CumGai")) { if (con.gameObject.activeSelf) gaiBat[ca]++; }
+                            else if (!con.name.StartsWith("HaoQuang") && con.gameObject.activeSelf) phanKhac[ca]++;
+                        }
+                    coGaiDem[ca] = FallingShard.SoLanCoGai - coGai0;
+                    if (ca == 0) { yield return new WaitForSeconds(0.35f); yield return Chup("quacaubang_6_trung_dat_khong_gai"); }
+                    if (ca == 1) { yield return new WaitForSeconds(0.35f); yield return Chup("quacaubang_7_trung_bia_co_gai"); }
+                    if (keDich != null) Object.Destroy(keDich.gameObject);
+                    yield return new WaitForSeconds(1.2f);
+                }
+                for (int ca = 0; ca < 4; ca++)
+                    Ghi(string.Format("L. {0}: cum gai dang bat {1}, cac phan no khac dang bat {2}, bo dem co gai +{3}", tenCa[ca], gaiBat[ca], phanKhac[ca], coGaiDem[ca]));
+                Kiem(gaiBat[0] == 0 && gaiBat[3] == 0, "chi trung mat dat ma van moc cum gai bang");
+                Kiem(gaiBat[1] > 0 && gaiBat[2] > 0, "trung do vat / ke dich ma khong co cum gai bang");
+                Kiem(phanKhac[0] > 0 && phanKhac[0] == phanKhac[1], "no khong co gai ma mat luon cac phan no khac");
+            }
+
+            // Thong ke mot con Mua bang that o cho trong, co bia do don giua vung
+            if (timDuoc)
+            {
+                var biaL = TaoBia("TAM_BiaL", trong);
+                yield return new WaitForFixedUpdate();
+                int c0 = FallingShard.SoLanCham, g0 = FallingShard.SoLanCoGai;
+                var baoL = IceStorm.Spawn(trong, maskEnemy);
+                yield return new WaitForSeconds(6.8f);
+                Ghi(string.Format("L. Mua bang that o cho trong (bia do don giua vung): {0} qua cham dat, {1} qua co cum gai (trung bia do don), {2} qua khong gai",
+                    FallingShard.SoLanCham - c0, FallingShard.SoLanCoGai - g0, (FallingShard.SoLanCham - c0) - (FallingShard.SoLanCoGai - g0)));
+                Kiem(FallingShard.SoLanCham - c0 > 20, "con Mua bang that roi qua it qua");
+                Object.Destroy(biaL.gameObject);
+                if (baoL != null) Object.Destroy(baoL.gameObject);
+                yield return new WaitForSeconds(2f);
+
+                // Con thu hai KHONG co ke dich: aimAtEnemyChance = 1 nen con dau qua nao cung nham vao bia (35/35 co gai).
+                // Khong co ai thi qua roi NGAU NHIEN trong ban kinh - chi qua roi gan do vat moi co gai. Dem doc lap:
+                // qua nao co vat lop Default trong 1,7 m quanh diem roi.
+                int c1 = FallingShard.SoLanCham, g1b = FallingShard.SoLanCoGai;
+                int ganVatDocLap = 0;
+                var daDem = new HashSet<FallingShard>();
+                var baoL2 = IceStorm.Spawn(trong, maskEnemy);
+                float hanL2 = Time.time + 6.8f;
+                while (Time.time < hanL2)
+                {
+                    foreach (var f in Object.FindObjectsByType<FallingShard>(FindObjectsInactive.Exclude))
+                        if (daDem.Add(f) && Physics.CheckSphere(f.target, 1.7f, lopVat, QueryTriggerInteraction.Ignore)) ganVatDocLap++;
+                    yield return null;
+                }
+                int cham2 = FallingShard.SoLanCham - c1, gai2 = FallingShard.SoLanCoGai - g1b;
+                Ghi(string.Format("L. Mua bang that KHONG co ke dich: {0} qua cham dat, {1} qua co cum gai, {2} qua khong gai; dem doc lap theo diem roi: {3}/{4} qua co do vat trong 1,7 m",
+                    cham2, gai2, cham2 - gai2, ganVatDocLap, daDem.Count));
+                Kiem(gai2 == ganVatDocLap, "so qua co gai khong khop so qua roi gan do vat");
+                Kiem(cham2 - gai2 > 0, "khong co ke dich ma qua nao cung co gai");
+                if (baoL2 != null) Object.Destroy(baoL2.gameObject);
+            }
         }
 
         // ================= I. HUD / SACH PHEP =================

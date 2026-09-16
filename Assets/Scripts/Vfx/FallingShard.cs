@@ -28,6 +28,33 @@ public class FallingShard : MonoBehaviour
     Vector3 start;
     float t;
 
+    /// <summary>Dem cho phep thu: so lan cham dat / so lan co cum gai bang.</summary>
+    public static int SoLanCham, SoLanCoGai;
+
+    static readonly Collider[] boDem = new Collider[32];
+
+    /// <summary>Lop DO VAT: moi va cham lop Default (bia, da, cay, nha mo, hang rao, lo lua - do o Act2).
+    /// Mat dat nam o lop Ground (terrain Act2, WorldFactory Act1) nen khong tinh.</summary>
+    static int lopDoVat = -1;
+
+    /// <summary>
+    /// Trong ban kinh sat thuong (impactRadius, 1,7 m) co DO VAT (va cham lop Default) hoac KE DICH con song
+    /// (Damageable tren damageMask, tru nguoi tung) khong. Nguoi dung chon: "trung" = nam trong vung sat thuong.
+    /// </summary>
+    bool TrungDoVatHoacKeDich()
+    {
+        if (lopDoVat < 0) lopDoVat = LayerMask.GetMask("Default");
+        if (Physics.CheckSphere(target, impactRadius, lopDoVat, QueryTriggerInteraction.Ignore)) return true;
+
+        int n = Physics.OverlapSphereNonAlloc(target, impactRadius, boDem, damageMask, QueryTriggerInteraction.Collide);
+        for (int i = 0; i < n; i++)
+        {
+            var d = boDem[i].GetComponentInParent<Damageable>();
+            if (d != null && !d.IsDead && d != boQua) return true;
+        }
+        return false;
+    }
+
     void Start()
     {
         start = transform.position;
@@ -44,9 +71,14 @@ public class FallingShard : MonoBehaviour
 
         if (k >= 1f)
         {
+            // CUM GAI BANG CHI MOC KHI TRUNG DO VAT HOAC KE DICH (nguoi dung 16/09/2026): chi trung mat dat
+            // thi no binh thuong, khong co gai. Hoi TRUOC khi gay sat thuong - con nao chet vi cu nay van tinh.
+            bool coGai = TrungDoVatHoacKeDich();
             // HINH cum bang to bang cua Qua cau bang (2,55 m, prefab nuong o 1,7 -> x1,5). Nguoi dung
             // 16/09/2026 xin. CHI hinh to ra: vung sat thuong / dong bang ben duoi van la impactRadius.
-            VfxFactory.IceImpact(target, Mathf.Max(impactRadius, QuaCauBang.BanKinhHinhBang));
+            VfxFactory.IceImpact(target, Mathf.Max(impactRadius, QuaCauBang.BanKinhHinhBang), coGai);
+            SoLanCham++;
+            if (coGai) SoLanCoGai++;
             // Qua cau bang roi (Mua bang): tha luong khi lanh + vet bang ra tan dan nhu qua cau cua ky nang
             VfxFactory.ThaDuoiQuaCauBang(transform);
             if (damage > 0f)
