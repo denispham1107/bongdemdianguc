@@ -153,8 +153,8 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
   (`aimAtEnemyChance = 1`) nên có kẻ địch là gần như quả nào cũng có gai. Menu 68 mục L.
 - **Gió lốc** (`Skills/GioLoc.cs`, hình `Vfx/VfxGioLoc.cs`, hiệu ứng `Combat/BiHatTung.cs`, 16/09/2026): **1 lốc** mỗi lần tung (17/09/2026, trước là 3). **Hình dựng bằng
   Blender MCP** (17/09/2026, `CongCu/Blender/gio_loc.blend` → `Resources/KyNang/GioLoc/`: `LocNho.fbx` 3 vỏ + dải gió cao 5 m, ảnh gió liền mạch
-  `GioDai`/`GioSoi`, flipbook `BuiDenCuon`; chân to thêm 40% so với gốc, nhỏ dần về 0 ở 2,3 m), xám trắng như Lốc xoáy, **xoáy MỘT chiều đi lên** (mọi lớp quay âm quanh +Y + UV trượt âm — chiều
-  chọn bằng số đo trên lưới, `VfxFactory.ChieuQuayGioLoc`), khói bụi đen cuộn quanh thân + vệt phía sau, **không tia sét**. Bay **8 m/s**
+  `GioDai`/`GioSoi`, flipbook `BuiDenCuon`; chân ×1,68 so với gốc, nhỏ dần về 0 ở 2,3 m), xám trắng như Lốc xoáy, **xoáy MỘT chiều đi lên** (mọi lớp quay âm quanh +Y + UV trượt âm — chiều
+  chọn bằng số đo trên lưới, `VfxFactory.ChieuQuayGioLoc`), khói bụi đen cuộn quanh thân + vệt phía sau, tia sét **chỉ khi trúng đối thủ** (`VfxFactory.GioLocGiatSet`: từ thân lốc sang mỗi đối thủ + chớp Sấm sét tắt cột sáng đứng + cháy sém khói, **không sát thương**). Bay **8 m/s**
   (người dùng chốt 17/09/2026) **xuyên mọi vật cản / người** — bám mặt đất bằng `GioLoc.MatDatY` (CHỈ lớp Ground; `GroundY` gồm cả Default làm lốc trèo lên mái nhà), tan sau 4,5 s; mỗi lốc trúng mỗi mục tiêu **một lần** 75, vùng 2,2 m, **55% hất tung** 0,5 s cao 1,5 m (mỗi lốc gieo riêng, khiên chặn); 20 năng lượng · hồi chiêu 0,4 · niệm 0,38.
   Bị hất = khoá như ngã + **ngắt chiêu** (`PlayerController.NgatChieu`, `EnemyAI.NgatDon`). Bit mạng **`CoHatTung` = bit thứ 5**, mặt nạ gói
   người chơi và gói quái đã nới **0x1F** (còn trống bit 7 gói người chơi, bit 6–7 gói quái). Lướt qua lò lửa thì `DapTatRoiChayLai(30)`.

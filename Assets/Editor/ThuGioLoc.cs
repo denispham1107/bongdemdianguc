@@ -41,7 +41,11 @@ using UnityEngine;
 ///   K. (17/09/2026, nguoi dung: "loc xoay danh trung 1 can nha nho, loc xoay tu treo len mai nha") loc bay XUYEN mot nha mo
 ///      that: moi khung do do cao loc tru mat dat (tia chi lop Ground, tu viet o day) - phai ~0; DOI CHUNG: tia cu (Ground +
 ///      Default) tren cung duong phai cham mai (> 1 m) de chac duong thu co mai nha. Do rieng Loc xoay lon (chi bao, khong kiem).
-///   Cung ngay: MOT loc moi lan tung (khong con 3), tan sau 4,5 giay, chan to 40% so ban goc (noi toi 2,3 m).
+///   Cung ngay: MOT loc moi lan tung (khong con 3), tan sau 4,5 giay, chan to 40% so ban goc (noi toi 2,3 m), roi them 20%
+///   tren ban ay (x1,68 so goc).
+///   L. (17/09/2026) Trung doi thu -> tia set CHI HIEU UNG tu than loc sang tung doi thu + chop sang + chay sem boc khoi nhu Sam
+///      set: 5 bia tren duong -> dung 5 tia (dau tia o than loc, cuoi tia o bia), 5 cho chay sem, moi bia mat DUNG 75 (tia khong
+///      sat thuong); loc khong trung ai thi 0 tia (muc C).
 ///
 /// Ket qua: PlayTestShots/gioloc.txt, anh gioloc_*.png.
 /// </summary>
@@ -249,11 +253,12 @@ public static class ThuGioLoc
         float rChanGoc = 0.30f, rGiuaGoc = 0.30f + 1.95f * Mathf.Pow(0.5f, 1.9f);
         Ghi(string.Format("A. luoi Vo1: ban kinh chan {0:F3} m (goc {1:F3}, x{2:F3}); o 2,5 m {3:F3} m (goc {4:F3}, x{5:F3})",
             rChanVo1, rChanGoc, rChanVo1 / rChanGoc, rGiuaVo1, rGiuaGoc, rGiuaVo1 / rGiuaGoc));
-        Kiem(Mathf.Abs(rChanVo1 / rChanGoc - 1.4f) < 0.01f, "chan loc khong to them 40% so ban goc");
+        Kiem(Mathf.Abs(rChanVo1 / rChanGoc - 1.68f) < 0.01f, "chan loc khong to x1,68 so ban goc (40% roi them 20%)");
         Kiem(GioLoc.SoLocMoiLan == 1 && Mathf.Approximately(GioLoc.ThoiGianSong, 4.5f), "khong phai 1 loc / 4,5 giay");
         Kiem(Mathf.Abs(rGiuaVo1 / rGiuaGoc - 1f) < 0.01f, "phan than tren bi doi kich thuoc");
         Kiem(Mathf.Abs(GioLoc.TocDo - 8f) < 0.001f, "toc do loc khong phai 8 m/s");
-        Kiem(!SachPhep.MoTa(K).Contains("sét"), "mo ta Sach phep van nhac tia set");
+        // 17/09/2026: tia set quay lai nhung CHI HIEU UNG - mo ta phai noi ro, va khong con con so 15 cu
+        Kiem(SachPhep.MoTa(K).Contains("tia sét") && SachPhep.MoTa(K).Contains("không gây thêm sát thương") && !SachPhep.MoTa(K).Contains("15"), "mo ta Sach phep khong noi dung ve tia set hieu ung");
         Kiem(bo != null && bo.Length == CapDo.SoKyNang && bo[K] != null && tIcon != null, "thieu icon Gio loc");
         Kiem(SachPhep.Ten(K) == "GIÓ LỐC" && SachPhep.MoTa(K).Length > 100, "Sach phep thieu chu Gio loc");
 
@@ -543,6 +548,62 @@ public static class ThuGioLoc
                 Kiem(khungTrongNha > 5, "loc khong di xuyen qua nha");
                 Kiem(lechMax < 0.05f, "Gio loc van treo len mai nha / vat");
             }
+            yield return new WaitForSeconds(0.5f);
+        }
+
+        // ================= L. TIA SET HIEU UNG KHI TRUNG =================
+        Ghi("");
+        {
+            var vuongL = Vector3.Cross(Vector3.up, huong).normalized;
+            var cac = new List<Damageable>();
+            for (int i = 0; i < 5; i++)
+                cac.Add(TaoBia("TAM_L" + i, goc + huong * (5f + i * 3f) + vuongL * ((i % 2 == 0 ? 1f : -1f) * 1.0f)));
+            yield return new WaitForFixedUpdate();
+            var mauTruocL = new float[5];
+            for (int i = 0; i < 5; i++) mauTruocL[i] = cac[i].health;
+            var arcCu = new HashSet<LightningArc>(Object.FindObjectsByType<LightningArc>(FindObjectsInactive.Exclude));
+            var gocCu = new HashSet<GameObject>(UnityEngine.SceneManagement.SceneManager.GetActiveScene().GetRootGameObjects());
+            int tia0 = VfxFactory.SoTiaSetGioLoc;
+            var locL = GioLoc.Spawn(goc + huong * 1.2f, huong, maskEnemy);
+            locL.xacSuatHatTung = 0f;
+            int soArc = 0, dauODLoc = 0, cuoiOBia = 0, soChaySem = 0, soChop = 0, cotBat = 0;
+            float hanL = Time.time + 3.0f;
+            bool daChupL = false;
+            while (Time.time < hanL && locL != null)
+            {
+                foreach (var a in Object.FindObjectsByType<LightningArc>(FindObjectsInactive.Exclude))
+                {
+                    if (!arcCu.Add(a)) continue;
+                    soArc++;
+                    Vector3 thanLoc = locL.transform.position + Vector3.up * 2.2f;
+                    if ((a.start - thanLoc).magnitude < 1.0f) dauODLoc++;
+                    foreach (var b in cac)
+                        if (new Vector2(a.end.x - b.transform.position.x, a.end.z - b.transform.position.z).magnitude < 0.3f) { cuoiOBia++; break; }
+                    if (!daChupL) { daChupL = true; }
+                }
+                foreach (var g in UnityEngine.SceneManagement.SceneManager.GetActiveScene().GetRootGameObjects())
+                {
+                    if (!gocCu.Add(g)) continue;
+                    if (g.name == "SetChayDen") soChaySem++;
+                    if (g.name.StartsWith("Vfx_SetChamDat") || g.name.StartsWith("LightningImpact"))
+                    {
+                        soChop++;
+                        foreach (Transform con in g.transform) if (con.name.StartsWith("Column") && con.gameObject.activeSelf) cotBat++;
+                    }
+                }
+                if (soArc == 2 && daChupL) { daChupL = false; yield return Chup("gioloc_3_tia_set"); }
+                yield return null;
+            }
+            int matDung75 = 0;
+            for (int i = 0; i < 5; i++) if (Mathf.Abs((mauTruocL[i] - cac[i].health) - 75f) < 0.5f) matDung75++;
+            Ghi(string.Format("L. 5 bia tren duong: tia set moi {0} (bo dem code +{1}), dau tia o than loc {2}, cuoi tia o bia {3}; cho chay sem boc khoi moi {4}; chop sang Sam set moi {6}, cot sang dung (set tu troi) con bat {7}; bia mat dung 75 (tia khong sat thuong) {5}/5",
+                soArc, VfxFactory.SoTiaSetGioLoc - tia0, dauODLoc, cuoiOBia, soChaySem, matDung75, soChop, cotBat));
+            Kiem(soChop == 5 && cotBat == 0, "chop sang khong du 5 hoac con cot sang dung nhu set tu troi");
+            Kiem(soArc == 5 && dauODLoc == 5 && cuoiOBia == 5, "so tia set khong bang so doi thu / tia khong di tu than loc toi doi thu");
+            Kiem(soChaySem == 5, "khong co chay sem boc khoi cho doi thu");
+            Kiem(matDung75 == 5, "tia set gay them sat thuong");
+            foreach (var b in cac) Object.Destroy(b.gameObject);
+            if (locL != null) Object.Destroy(locL.gameObject);
             yield return new WaitForSeconds(0.5f);
         }
 

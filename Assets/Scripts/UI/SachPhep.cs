@@ -343,7 +343,7 @@ public static class SachPhep
                 return "Một cơn lốc xoáy phóng thẳng về phía trước. Gió cuộn một chiều từ "
                      + "chân lên miệng lốc, kéo theo khói bụi đen xoáy bốc lên và để lại vệt bụi phía sau. Lốc đi "
                      + "XUYÊN QUA mọi vật cản và người chơi, rồi tự tan sau 4,5 giây.\n\n"
-                     + "Lốc lướt qua một kẻ địch thì gây 75 sát thương — mỗi kẻ chỉ bị đánh một lần.\n\n"
+                     + "Lốc lướt qua một kẻ địch thì gây 75 sát thương — mỗi kẻ chỉ bị đánh một lần — và một tia sét từ thân lốc giật sang (chỉ là hiệu ứng, không gây thêm sát thương), chỗ kẻ ấy đứng cháy sém bốc khói.\n\n"
                      + "Mỗi lần trúng có 55% khả năng HẤT TUNG kẻ địch lên khỏi mặt đất trong 0,5 giây: không "
                      + "đi, không đánh được, và chiêu đang niệm dở bị NGẮT NGAY.\n\n"
                      + "Lốc lướt qua lò lửa thì dập tắt lửa, 30 giây sau lò cháy lại.";

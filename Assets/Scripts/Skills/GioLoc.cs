@@ -21,6 +21,7 @@ using UnityEngine;
 /// len, mau xam trang nhu Loc xoay, cao ~5 m), BO TIA SET (ca hinh lan sat thuong 15 - nguoi dung chon chi con 75),
 /// toc do bay GIAM 25% (17 -> 12,75 m/s). Cung ngay nguoi dung chot lai: 10 m/s roi 8 m/s; than duoi loc to them 20% roi 30%, 40% (so ban goc).
 /// Roi: tung ky nang chi ra MOT loc (khong con 3), loc tan sau 4,5 giay; va sua loi LOC TREO LEN MAI NHA (xem MatDatY).
+/// Roi: trung doi thu nao thi mot tia set CHI HIEU UNG giat tu than loc sang no + chop / chay sem boc khoi nhu Sam set.
 ///
 /// Khong co prefab trong GameAssets (them truong prefab la phai sua hai scene) - hinh dung bang code tu tai nguyen
 /// Blender: <see cref="VfxFactory.BuildGioLoc"/>.
@@ -171,6 +172,9 @@ public class GioLoc : MonoBehaviour
 
         // Khieng do tron don thi khong hat tung (luat chung cua CombatUtil.AreaDamage)
         bool khiengDo = d.khieng != null && d.khieng.DangBat;
+
+        // Tia set tu giua than loc (2,2 m) giat sang - chi hieu ung, khong sat thuong
+        VfxFactory.GioLocGiatSet(transform.position + Vector3.up * 2.2f, d);
 
         d.GhiKeDanh(boQua);
         d.TakeDamage(damage, DamageType.Physical, nguc);

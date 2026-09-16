@@ -9,7 +9,7 @@ using UnityEngine;
 ///
 /// Tai nguyen dung trong Blender (CongCu/Blender/gio_loc.blend), nam o Resources/KyNang/GioLoc:
 ///   - LocNho.fbx   : Vo0, Vo1, Vo2 (ba vo phieu cao 5 m, loe mieng 2,6 m, UV quan quanh than, mau dinh xam trang;
-///                    CHAN TO THEM 40% (so ban goc) nho dan ve 0 o 2,3 m - nguoi dung khoanh do phan than duoi 17/09/2026
+///                    CHAN TO THEM 40% (so ban goc) roi THEM 20% nua tren ban ay (x1,68 so goc), nho dan ve 0 o 2,3 m - nguoi dung khoanh do phan than duoi 17/09/2026
 ///                    mo o chan va mieng) + DaiGio (5 dai gio xoan 1,6 vong, hai mieng bat cheo).
 ///   - GioDai.png   : dai gio mem nghieng, LIEN MACH ca u va v (nhieu 4D quan tren mat xuyen) - vo trong.
 ///   - GioSoi.png   : soi gio manh, thua - vo ngoai va dai gio.
@@ -124,6 +124,33 @@ public static partial class VfxFactory
         var gv = grit.velocityOverLifetime;
         gv.orbitalY = new ParticleSystem.MinMaxCurve(ChieuQuyDaoGioLoc * 7f, ChieuQuyDaoGioLoc * 11f);
         return root;
+    }
+
+    /// <summary>So lan tia set hieu ung da phong (phep thu menu 71 doc).</summary>
+    public static int SoTiaSetGioLoc;
+
+    /// <summary>
+    /// LOC TRUNG MOT DOI THU: tia set GIAT TU THAN LOC sang muc tieu + cho muc tieu dung CHOP SANG va CHAY SEM BOC KHOI
+    /// dung nhu Sam set danh trung (LightningStrike.Strike: LightningImpact + SetChayDen luong khoi 0,45). CHI HIEU UNG,
+    /// khong gay sat thuong (nguoi dung 17/09/2026). Moi doi thu bi trung mot tia - so tia bang so doi thu.
+    /// </summary>
+    public static void GioLocGiatSet(Vector3 thanLoc, Damageable d)
+    {
+        if (d == null) return;
+        SoTiaSetGioLoc++;
+        Vector3 chan = d.transform.position;
+        var arc = LightningArc.Create(thanLoc, chan + Vector3.up * 1.0f, 0.9f, 0.28f);
+        arc.segments = 16;
+        arc.branches = Random.Range(1, 3);
+        // Chop cua Sam set (prefab Vfx_SetChamDat, ban kinh 2,1 cua Skill_SamSet) NHUNG TAT hai COT SANG DUNG Column0/1: chung
+        // boc quanh tia set tu TROI danh xuong - tia cua Gio loc giat NGANG tu than loc (nguoi dung chon), de cot lai la nhin
+        // nhu set tu troi (anh gioloc_3_tia_set 17/09/2026). Giu vung sang, loi, vong xung kich, tia lua, bui.
+        var pf = GameAssets.I != null ? GameAssets.I.lightningImpactPrefab : null;
+        var chop = pf != null ? GameAssets.Make(pf, chan) : BuildLightningImpact(chan, 2.1f);
+        if (chop != null)
+            foreach (Transform con in chop.transform)
+                if (con.name.StartsWith("Column")) con.gameObject.SetActive(false);
+        SetChayDen(chan, 2.1f * 0.72f, 0.45f);
     }
 
     /// <summary>
