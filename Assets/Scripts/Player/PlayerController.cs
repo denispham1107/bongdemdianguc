@@ -541,7 +541,7 @@ public class PlayerController : MonoBehaviour
     /// no duoc dung thang bang code trong GiatSet.Phong. Sua GiatSet.range thi
     /// phai sua ca con so nay.
     /// </summary>
-    float TamGiatSet() { return 19.5f; }
+    float TamGiatSet() { return GiatSet.TamNguoiChoi; }
 
     /// <summary>
     /// Diem ma ky nang se roi vao, tinh tu huong ngam va do dai da keo.
@@ -1179,6 +1179,7 @@ public class PlayerController : MonoBehaviour
             {
                 set.boQua = health;
                 set.damage *= manhHon;
+                set.giayChoang += themGiay;     // cap ky nang keo dai choang nhu moi hieu ung
             }
         }
         else

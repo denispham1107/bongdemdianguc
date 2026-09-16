@@ -19,13 +19,29 @@ using UnityEngine;
 ///      len mach dien di chuyen.
 ///   3. SAT THUONG GIAM DAN theo tung nhip, nen con cuoi mach chiu it hon con
 ///      dau. Khong giam thi ky nang nay manh hon moi ky nang khac trong game.
+///
+/// Nguoi dung 16/09/2026: tam 20 m (truoc 19,5), sat thuong ban dau 75 (truoc 30), phong CUNG LUC
+/// toi da 4 tia neu co 4 ke dich phia truoc trong tam (truoc 3), moi tia van lan nhu cu; MOI CU
+/// TRUNG (ca tia lan) 15% gay choang.
 /// </summary>
 public class GiatSet : MonoBehaviour
 {
     [Header("Tam va muc tieu")]
     [Tooltip("Tam ban cua tia dau tien, met")]
-    // 19,5 = 13 x 1,5. Tang 50% theo yeu cau.
-    public float range = 19.5f;
+    // 20 m - nguoi dung chot 16/09/2026 (truoc 19,5 = 13 x 1,5). Khong co prefab: sua o day la an.
+    // Sua thi sua ca PlayerController.TamGiatSet (vach ngam ve theo con so ay).
+    public float range = TamNguoiChoi;
+
+    /// <summary>Tam cua Giut set nguoi choi, met.</summary>
+    public const float TamNguoiChoi = 20f;
+    /// <summary>Sat thuong ban dau (cap 1, nhip dau) cua Giut set nguoi choi.</summary>
+    public const float SatThuongNguoiChoi = 75f;
+    /// <summary>So tia phong cung luc toi da.</summary>
+    public const int SoTiaNguoiChoi = 4;
+    /// <summary>Xac suat choang moi cu trung (ca tia lan).</summary>
+    public const float XacSuatChoangNguoiChoi = 0.15f;
+    /// <summary>Choang bao lau (cap ky nang cao cong them 0,15 giay moi cap).</summary>
+    public const float GiayChoangNguoiChoi = 1.5f;
 
     [Tooltip("Ban kinh tim con tiep theo quanh con vua trung, met")]
     public float chainRadius = 5.5f;
@@ -34,10 +50,18 @@ public class GiatSet : MonoBehaviour
     public int maxChains = 5;
 
     [Tooltip("So MACH phong thang tu tay, moi mach di mot muc tieu rieng")]
-    public int soTiaDau = 3;
+    public int soTiaDau = SoTiaNguoiChoi;
 
     [Header("Sat thuong")]
-    public float damage = 30f;
+    public float damage = SatThuongNguoiChoi;
+
+    [Tooltip("Xac suat choang MOI CU TRUNG, ke ca tia lan")]
+    [Range(0f, 1f)]
+    public float xacSuatChoang = XacSuatChoangNguoiChoi;
+    public float giayChoang = GiayChoangNguoiChoi;
+
+    /// <summary>Dem cho phep thu: so cu trung / so cu gay choang, tach nhip dau va nhip lan.</summary>
+    public static int SoTrungDau, SoChoangDau, SoTrungLan, SoChoangLan;
 
     [Tooltip("Moi nhip lan, sat thuong con lai bao nhieu phan")]
     [Range(0.3f, 1f)]
@@ -102,6 +126,8 @@ public class GiatSet : MonoBehaviour
         // Quai chi danh MOT nguoi choi, khong co gi de lan sang
         gs.maxChains = 0;
         gs.soTiaDau = 1;
+        // Choang 15% la cua KY NANG nguoi choi - don cua quai giu nguyen nhu cu
+        gs.xacSuatChoang = 0f;
         return gs;
     }
 
@@ -159,9 +185,23 @@ public class GiatSet : MonoBehaviour
             VfxFactory.SetChayDen(den, 1.25f);
             VfxFactory.NamChuongNgai(den, 2.2f, VfxFactory.LopChuongNgai);
 
+            // Khieng do tron don thi khong dinh choang (luat chung cua CombatUtil.AreaDamage)
+            bool khiengDo = muc.khieng != null && muc.khieng.DangBat;
             muc.GhiKeDanh(boQua);
             muc.TakeDamage(sat, DamageType.Lightning, den);
             daTrung.Add(muc);
+
+            // 15% CHOANG moi cu trung, gieo RIENG tung cu - ca tia dau lan tia lan.
+            // Ban sao mang: StunnedEffect.Apply tu bo qua (may chu so huu gieo, bao qua bit CoChoang).
+            if (xacSuatChoang > 0f && !muc.IsDead && !khiengDo)
+            {
+                if (nhip == 0) SoTrungDau++; else SoTrungLan++;
+                if (Random.value < xacSuatChoang)
+                {
+                    if (nhip == 0) SoChoangDau++; else SoChoangLan++;
+                    StunnedEffect.Apply(muc, giayChoang);
+                }
+            }
 
             tu = den;
             sat *= damageFalloff;

@@ -8334,6 +8334,33 @@ sát thương hiện ra** (2,1 m) để số không đè lên chữ. Bỏ chữ 
 **Số đo** (menu 62, 0 lỗi): tung thật 10 lần → trúng 10, ngã 7; dấu hiệu hiện **376/383 khung hình đang ngã (98%)**;
 chuỗi ảnh mới thấy chữ NGÃ rõ ở cả 5 thời điểm, đè lên lửa.
 
+### Giựt sét: tầm 20 m, sát thương 75, 4 tia cùng lúc, 15% choáng (16/09/2026)
+
+Anh xin: tầm bằng Sấm sét, sát thương ban đầu 75, đánh cùng lúc 4 tia nếu trước mặt có 4 kẻ địch trong tầm (mỗi tia vẫn lan như
+cũ), mỗi tia trúng — kể cả tia lan — 15% choáng. Về tầm: trong code Giựt sét **đã** xa 19,5 m, còn Sấm sét tới 18 m (thả giông xa
+12 m + bán kính 6 m), "bằng Sấm sét" sẽ là ngắn đi — tôi hỏi lại, anh chốt **20 m**.
+
+**Sửa** (`GiatSet.cs`, không có prefab nên hằng số trong code có hiệu lực): tầm 19,5 → **20** (vạch ngắm `TamGiatSet` đọc cùng hằng),
+sát thương 30 → **75**, số tia 3 → **4** (chọn kẻ địch theo cách chấm điểm cũ: đúng hướng + gần), lan 5 lần giảm ×0,85 như cũ.
+Choáng: mỗi cú trúng gieo **riêng** 15% → `StunnedEffect.Apply` **1,5 giây** (+0,15 giây mỗi cấp kỹ năng như mọi hiệu ứng). Thời
+gian choáng anh không nói — tôi chọn 1,5 giây (Sấm sét 2,2 giây): Giựt sét hồi chiêu 0,4 giây, 4 tia × 6 cú mỗi lần, choáng dài
+thì gần như khoá chết cả đám. Khiên đỡ trọn đòn thì không dính choáng. Giựt sét của **quái** giữ nguyên, không choáng.
+Mô tả trong Sách phép viết lại (bản cũ còn nói "một tia").
+
+**Số đo** (menu **69** mới, **0 lỗi**):
+
+| Đo | Kết quả |
+|---|---|
+| Thông số | tầm 20, sát thương 75, 4 tia, choáng 15% / 1,5 giây; vạch ngắm 20; Giựt sét của quái choáng 0% |
+| Tung thật vào 5 bia (vòng cung 15 m, cách nhau 6,5 m > bán kính lan) | **4** bia mất đúng **75**, 1 bia không mất; cả 4 trúng **trong cùng một khung hình** |
+| Tầm | mặt bia 19,9 m → trúng; 20,4 m → không (tầm cũ 19,5 không trúng cả hai) |
+| Lan | bia 18 m mất 75; bia 22 m ngoài tầm, cách bia trước 4 m, mất 64 (= 75 × 0,85 làm tròn) |
+| 160 lần phóng (4 tia đầu + 4 tia lan mỗi lần) | tia đầu choáng **18,3%** (lần chạy trước 14,4%), tia lan **15,5%** (trước 13,4%) — gộp hai lần: 16,3% / 14,5% |
+| Cấp kỹ năng 3 | choáng 1,80 giây, sát thương 108 (= 75 × 1,44) |
+
+Hai lỗi đo lần đầu: máu bị làm tròn khi trừ (63,75 → 64); và phép đo cấp 3 bắt nhầm Giựt sét của con phù thủy trong đợt quái vừa ra
+(sát thương 14) — nay lọc đúng vật do người chơi tung. Menu 61: giết quái bằng Giựt sét vẫn được đủ kinh nghiệm. Ảnh `giatset_1_bon_tia.png`.
+
 ### Mưa băng: cụm băng trên mặt đất to bằng của Quả cầu băng (16/09/2026)
 
 Anh gửi ảnh vụ nổ Quả cầu băng, xin cụm băng Mưa băng tạo trên mặt đất cũng to như vậy. Cả hai dùng **chung** hiệu ứng
@@ -8862,6 +8889,7 @@ Lần chạy đầu phép thử báo cả 10 con "lơ lửng": tia chiếu từ 
 | **66. Chay thu NUT KY NANG o sanh (sach phep xem truoc) + con mat** | Ngoài Play: quét chữ có dấu 3 file, chạy thật cầu nối localStorage bằng node. Trong Play: đăng nhập, mở Sách phép xem trước (9/9 kỹ năng mở, so độ sáng hình với đối chứng khoá), thông số đọc từ nhân vật trưng bày = prefab, xếp ô → kho lưu, vào Act2 lúc sách mở (sách đóng, thanh kỹ năng đúng thứ tự), đo con mắt quỷ hai trạng thái; thoát Play nạp lại từ kho. Số đo `sachphep_sanh.txt`. |
 | **67. Chay thu MUA BANG dong bang NGUOI CHOI KHAC (qua mang)** | Bộ đồng bộ thật + kênh giả lập: người kia tung Mưa băng vào mình bằng gói kỹ năng thật (6 cơn) — trúng, chậm, đóng cứng, khoá chân/phép, gói trạng thái mang bit đóng cứng; bản sao nhận gói đóng cứng thì đứng im và tan đúng lúc; đếm chữ nổi "ĐÓNG BĂNG!" (khớp số lần bắt đầu đóng cứng, bản sao đúng 1 lần) có đối chứng "CHOÁNG!"; vỏ băng phủ lên model có xương và làm vùng thân xanh lên trên ảnh chụp. Số đo `bang_nguoichoi.txt`. |
 | **68. Chay thu QUA CAU BANG (ky nang moi)** | Tài nguyên Blender nạp được; thông số thật trên nhân vật (hồi chiêu 0,55); tung thật `CastAt(9)` (khoá, 3 quả, năng lượng, hồi chiêu); bia trên / lệch đường bay; sát thương 65 ở tâm và vùng nổ 3,4 m; 1000 lần gieo làm chậm (40%, 50%, 2 giây, cấp kéo dài); hình lúc bay (lưới, đuôi gai phía sau, luồng khí lạnh, vệt băng) và sau khi nổ; gói kỹ năng số 9 qua mạng; icon HUD, chữ Sách phép; kích thước thật cụm băng Mưa băng = Quả cầu băng (đối chứng cỡ cũ). Số đo `quacaubang.txt`. |
+| **69. Chay thu GIUT SET (20 m, 75, 4 tia, 15% choang)** | Thông số; tung thật `CastAt(6)` vào 5 bia (đúng 4 bia mất 75 cùng một khung hình); tầm 20 m bằng bia 19,9 / 20,4 m; tia lan ra ngoài tầm vẫn trúng ×0,85; 160 lần phóng đếm tỉ lệ choáng tia đầu và tia lan riêng (bằng StunnedEffect trên bia); cấp kỹ năng kéo dài choáng. Số đo `giatset.txt`. |
 | **56. Chay thu DOT QUAI Act2 + cho xuat phat** | *(13/09/2026: thêm đo chờ 30 giây và 10 con xa 55–65 m)*  Kiểm chỗ xuất phát ngẫu nhiên (hai máy cùng mã phòng ra cùng danh sách, cách nhau ≥ 22 m, trên đất, ngoài nước, không vướng vật cản) và luật đợt quái Act2 (đợt 1 bốn con quanh mỗi người; đợt sau cộng dồn quái và mạnh thêm 5% máu · sát thương); kiểm Act1 không bị đổi. Số đo `dotquai_act2.txt`. |
 | **55. Chay thu KET TRAN (nguoi song sot cuoi cung)** | Mở kênh giả lập như menu 45: kiểm gói tin kết trận/chết, máy chủ phòng phán quyết đúng lúc còn một người, bảng điểm cộng đúng người, máy khách không tự kết luận và hiện đúng kết quả nghe được, chết rồi camera chuyển sang người còn sống, chụp màn kết trận. Số đo `kettran.txt`, ảnh `kettran_*.png`. |
 | **54c. Chay thu LOC XOAY cuon lo lua** | Vào Play Act2, thả một cơn lốc đi thẳng vào lò: đo mốc thời gian lửa tắt / lò nhấc lên / lò biến mất / lò mọc lại, kiểm than trong chậu tắt bằng độ sáng trên ảnh, và kiểm vật có hệ hạt khác vẫn không bị cuốn. Ảnh `locxoay_*.png`, số đo `locxoay_lolua.txt`. |

@@ -242,7 +242,7 @@ public static class SachPhep
             case 3: return "Cuốn mọi thứ lên trời";
             case 4: return "Ba khối đá lửa rơi xuống";
             case 5: return "Vòm chắn quanh mình";
-            case 6: return "Tia sét nối liền kẻ địch";
+            case 6: return "4 tia sét lan, 15% choáng";
             case CapDo.KyBinhMau: return "Uống một bình, hồi tối đa 100 máu";
             case CapDo.KyBinhMana: return "Uống một bình, hồi tối đa 50 năng lượng";
             case CapDo.KyQuaCauBang: return "Ba quả băng, 40% làm chậm";
@@ -300,10 +300,12 @@ public static class SachPhep
                      + "cháy thì nhìn như lửa đã lọt qua khiên.\n\n"
                      + "Khiên vỡ khi hết máu, và mờ dần theo lượng máu còn lại.";
             case 6:
-                return "Một tia sét phóng thẳng từ tay, chạm kẻ địch đầu tiên rồi NHẢY "
-                     + "tiếp sang những kẻ đứng gần đó.\n\n"
-                     + "Mỗi lần nhảy sát thương giảm bớt, nhưng một tia có thể quét hết "
-                     + "cả một đám đang xúm lại. Đòn rẻ, hồi nhanh, hợp lúc bị vây.";
+                return "Tia sét phóng thẳng từ tay tới kẻ địch phía trước trong tầm 20 mét. Có "
+                     + "tới 4 kẻ địch thì 4 tia cùng phóng ra một lúc, mỗi tia một kẻ. Chạm "
+                     + "kẻ địch rồi mỗi tia lại NHẢY tiếp sang những kẻ đứng gần đó.\n\n"
+                     + "Sát thương ban đầu 75, mỗi lần nhảy giảm bớt một ít. Mỗi cú đánh "
+                     + "trúng — kể cả tia nhảy — có 15% khả năng làm kẻ địch BỊ CHOÁNG.\n\n"
+                     + "Đòn rẻ, hồi nhanh, hợp lúc bị vây.";
             case CapDo.KyBinhMau:
                 return "Uống cạn một bình máu đặc sánh, hồi ngay tối đa 100 máu. Máu đang đầy "
                      + "thì không uống — không phí bình.\n\n"

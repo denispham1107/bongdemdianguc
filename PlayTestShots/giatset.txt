@@ -1,0 +1,10 @@
+[ban 1] Giut set: tam 20, sat thuong 75, 4 tia, 15% choang
+A. Giut set nguoi choi: tam 20, sat thuong 75, so tia 4, choang 15 % trong 1.5 giay; vach ngam TamNgam(6) = 20; Giut set cua quai: choang 0 %
+
+B. tung that vao 5 bia (vong cung 15 m, cach nhau 6,5 m): mat mau -50do:0.00 -25do:75.00 0do:75.00 25do:75.00 50do:75.00 -> mat dung 75: 4, khong mat: 1; so bia trung ngay khung dau tien: 4
+C. tam: bia tam 20,3 m (mat bia 19,9 m) trung True; bia tam 20,8 m (mat bia 20,4 m) trung False (tam cu 19,5 thi ca hai deu khong trung)
+D. lan: bia A (18 m) mat 75.00, bia B (22 m, ngoai tam, cach A 4 m) mat 64.00 (mong 75 va 63,75)
+E. 160 lan phong: tia dau trung 640, choang 117 = 18.3%; tia lan trung 640, choang 99 = 15.5% (mong 15%); bo dem trong GiatSet: dau 117/640, lan 99/640
+F. cap ky nang 3: choang 1.80 giay (mong 1,80), sat thuong 108.0 (mong 75 x 1,44 = 108)
+
+so loi ghi nhan = 0

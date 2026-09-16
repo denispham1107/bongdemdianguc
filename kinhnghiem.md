@@ -172,7 +172,7 @@ Kỹ năng có **cấp tối đa 5**. Mỗi cấp:
 | Lốc xoáy | cơn lốc sống lâu hơn (cuốn được lâu hơn) |
 | Thiên thạch | vũng lửa cháy trên mặt đất |
 | Khiên | *(thay bằng +15% máu khiên)* |
-| Giựt sét | *(không có hiệu ứng kéo dài)* |
+| Giựt sét | choáng (1,5 giây → cấp 5: 2,10 giây) — từ 16/09/2026 |
 | Quả cầu băng | làm chậm (2 giây → cấp 5: 2,60 giây) |
 | Bình máu / Bình mana | *(không nâng cấp được — cấp tối đa 1)* |
 
