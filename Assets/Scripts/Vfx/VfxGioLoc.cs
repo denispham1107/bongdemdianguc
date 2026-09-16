@@ -9,7 +9,7 @@ using UnityEngine;
 ///
 /// Tai nguyen dung trong Blender (CongCu/Blender/gio_loc.blend), nam o Resources/KyNang/GioLoc:
 ///   - LocNho.fbx   : Vo0, Vo1, Vo2 (ba vo phieu cao 5 m, loe mieng 2,6 m, UV quan quanh than, mau dinh xam trang;
-///                    CHAN TO THEM 20% nho dan ve 0 o 2 m - nguoi dung khoanh do phan than duoi 17/09/2026
+///                    CHAN TO THEM 30% (so ban goc) nho dan ve 0 o 2 m - nguoi dung khoanh do phan than duoi 17/09/2026
 ///                    mo o chan va mieng) + DaiGio (5 dai gio xoan 1,6 vong, hai mieng bat cheo).
 ///   - GioDai.png   : dai gio mem nghieng, LIEN MACH ca u va v (nhieu 4D quan tren mat xuyen) - vo trong.
 ///   - GioSoi.png   : soi gio manh, thua - vo ngoai va dai gio.

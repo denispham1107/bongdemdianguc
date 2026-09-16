@@ -245,9 +245,9 @@ public static class ThuGioLoc
         float rChanGoc = 0.30f, rGiuaGoc = 0.30f + 1.95f * Mathf.Pow(0.5f, 1.9f);
         Ghi(string.Format("A. luoi Vo1: ban kinh chan {0:F3} m (goc {1:F3}, x{2:F3}); o 2,5 m {3:F3} m (goc {4:F3}, x{5:F3})",
             rChanVo1, rChanGoc, rChanVo1 / rChanGoc, rGiuaVo1, rGiuaGoc, rGiuaVo1 / rGiuaGoc));
-        Kiem(Mathf.Abs(rChanVo1 / rChanGoc - 1.2f) < 0.01f, "chan loc khong to them 20%");
+        Kiem(Mathf.Abs(rChanVo1 / rChanGoc - 1.3f) < 0.01f, "chan loc khong to them 30% so ban goc");
         Kiem(Mathf.Abs(rGiuaVo1 / rGiuaGoc - 1f) < 0.01f, "phan than tren bi doi kich thuoc");
-        Kiem(Mathf.Abs(GioLoc.TocDo - 10f) < 0.001f, "toc do loc khong phai 10 m/s");
+        Kiem(Mathf.Abs(GioLoc.TocDo - 8f) < 0.001f, "toc do loc khong phai 8 m/s");
         Kiem(!SachPhep.MoTa(K).Contains("sét"), "mo ta Sach phep van nhac tia set");
         Kiem(bo != null && bo.Length == CapDo.SoKyNang && bo[K] != null && tIcon != null, "thieu icon Gio loc");
         Kiem(SachPhep.Ten(K) == "GIÓ LỐC" && SachPhep.MoTa(K).Length > 100, "Sach phep thieu chu Gio loc");
@@ -440,7 +440,7 @@ public static class ThuGioLoc
             Kiem(hatCungChieu > (hatCungChieu + hatNguoc) * 0.9f, "khoi bui khong cuon cung chieu than loc");
             Kiem(soSinhMoi >= 150 && yMaxLucSinh < 0.02f && rMaxLucSinh > 0.3f, "vong phun khoi bui khong nam ngang tren dat");
             Kiem(psVet.main.simulationSpace == ParticleSystemSimulationSpace.World, "khong co vet bui o lai phia sau");
-            Kiem(Mathf.Abs(toc - 10f) < 0.4f, "toc do loc khong phai 10 m/s");
+            Kiem(Mathf.Abs(toc - 8f) < 0.35f, "toc do loc khong phai 8 m/s");
             Kiem(Mathf.Abs(song - 3.5f) < 0.12f, "loc khong tan sau 3,5 giay");
             float hanX = Time.time + 7f;
             while (loc != null && Time.time < hanX) yield return null;
@@ -463,7 +463,7 @@ public static class ThuGioLoc
             {
                 var loc = GioLoc.Spawn(tu, huongE, maskEnemy);
                 float xaNhat = 0f;
-                float hanE = Time.time + 1.3f;
+                float hanE = Time.time + 1.9f;
                 while (Time.time < hanE && loc != null)
                 {
                     Vector3 v = loc.transform.position - tu; v.y = 0f;
@@ -472,7 +472,7 @@ public static class ThuGioLoc
                 }
                 // Doi chung: tia thang doc duong ay co cham bia that khong
                 bool coCham = Physics.Raycast(tu, huongE, 12f, 1 << 0, QueryTriggerInteraction.Ignore);
-                Ghi(string.Format("E. bia {0} nam giua duong (tia doi chung cham vat can: {1}); loc di duoc {2:F1} m doc huong trong 1,3 s (bia o 6 m)", bia.name, coCham, xaNhat));
+                Ghi(string.Format("E. bia {0} nam giua duong (tia doi chung cham vat can: {1}); loc di duoc {2:F1} m doc huong trong 1,9 s (bia o 6 m)", bia.name, coCham, xaNhat));
                 Kiem(coCham, "doi chung: duong thu khong co vat can - phep do vo nghia");
                 Kiem(xaNhat > 12f, "loc bi vat can chan lai");
                 if (loc != null) Object.Destroy(loc.gameObject);
@@ -491,7 +491,7 @@ public static class ThuGioLoc
             float m1 = bGiua.health, m25 = b25.health, m27 = b27.health;
             var loc = GioLoc.Spawn(tu, huong, maskEnemy);
             float xaSauTrung = 0f;
-            float hanF = Time.time + 3.2f;
+            float hanF = Time.time + 3.8f;
             while (Time.time < hanF && loc != null)
             {
                 Vector3 v = loc.transform.position - tu; v.y = 0f;
@@ -523,8 +523,8 @@ public static class ThuGioLoc
             var hang = new List<Damageable>();
             var bay = new Dictionary<Damageable, float>();
             var tu = goc + huong * 1.2f;
-            // 10 m/s x 3,5 s = 35 m: 19 bia cach 1,7 m tu 4 m toi 34,6 m
-            for (int i = 0; i < 19; i++) hang.Add(TaoBia("TAM_G" + i, tu + huong * (4f + i * 1.7f)));
+            // 8 m/s x 3,5 s = 28 m: 19 bia cach 1,3 m tu 4 m toi 27,4 m
+            for (int i = 0; i < 19; i++) hang.Add(TaoBia("TAM_G" + i, tu + huong * (4f + i * 1.3f)));
             yield return new WaitForFixedUpdate();
             int soTrung = 0, soHat = 0; float caoMax = 0f; float tongGiay = 0f; int soDoGiay = 0;
             int hat0 = GioLoc.SoLanHat, trung0 = GioLoc.SoLanTrung;
