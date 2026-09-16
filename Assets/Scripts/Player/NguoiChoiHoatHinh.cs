@@ -139,6 +139,8 @@ public class NguoiChoiHoatHinh : MonoBehaviour
         // bang tu the chi co SAU o. De nguyen thi Clamp keo 6 ve 5 - tuc phu
         // thuy lam dong tac bat KHIENG trong khi tia set bay ra tu tay.
         if (phep == 6) phep = 2;
+        // 9 = Qua cau bang: cung dong tac DAM THANG ra truoc nhu Qua cau lua
+        if (phep == CapDo.KyQuaCauBang) phep = 0;
         phepDangNiem = Mathf.Clamp(phep, 0, 5);
         thoiGianNiem = Mathf.Max(0.2f, thoiGian);
         niemTimer = 0f;

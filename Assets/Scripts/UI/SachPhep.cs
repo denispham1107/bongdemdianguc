@@ -226,6 +226,7 @@ public static class SachPhep
             case 6: return "GIỰT SÉT";
             case CapDo.KyBinhMau: return "BÌNH MÁU";
             case CapDo.KyBinhMana: return "BÌNH MANA";
+            case CapDo.KyQuaCauBang: return "QUẢ CẦU BĂNG";
             default: return "";
         }
     }
@@ -244,6 +245,7 @@ public static class SachPhep
             case 6: return "Tia sét nối liền kẻ địch";
             case CapDo.KyBinhMau: return "Uống một bình, hồi tối đa 100 máu";
             case CapDo.KyBinhMana: return "Uống một bình, hồi tối đa 50 năng lượng";
+            case CapDo.KyQuaCauBang: return "Ba quả băng, 40% làm chậm";
             default: return "";
         }
     }
@@ -322,6 +324,17 @@ public static class SachPhep
                      + "ấy được.\n\n"
                      + "Mở khoá bằng 1 điểm kỹ năng, không nâng cấp được. Uống xong phải chờ "
                      + "0,5 giây mới uống bình tiếp theo.";
+            case CapDo.KyQuaCauBang:
+                return "Ba quả cầu băng pha lê cùng phóng ra, toè thành hình quạt về phía trước. "
+                     + "Phía sau mỗi quả kéo theo một luồng không khí lạnh buốt và một vệt băng "
+                     + "lấp lánh rơi rớt dọc đường bay.\n\n"
+                     + "Quả nào chạm vật cản hay kẻ địch thì vỡ tung thành một vụ nổ băng: mọi "
+                     + "kẻ địch trong vùng nổ đều mất máu, đứng càng gần tâm càng đau. Sát thương "
+                     + "ban đầu 65 mỗi quả.\n\n"
+                     + "Mỗi kẻ bị trúng có 40% khả năng bị LÀM CHẬM một nửa tốc độ di chuyển "
+                     + "trong 2 giây.\n\n"
+                     + "Hồi chiêu nhanh như Quả cầu lửa — đổi sức thiêu đốt lấy khả năng ghìm "
+                     + "chân kẻ địch.";
             default: return "";
         }
     }
@@ -343,6 +356,7 @@ public static class SachPhep
             case 6: nangLuong = pc.giatSetCost; hoiChieu = pc.giatSetCooldown; niemChu = pc.giatSetCastTime; break;
             case CapDo.KyBinhMau:
             case CapDo.KyBinhMana: nangLuong = 0f; hoiChieu = PlayerController.HoiChieuBinh; niemChu = 0f; break;
+            case CapDo.KyQuaCauBang: nangLuong = pc.quaCauBangCost; hoiChieu = pc.quaCauBangCooldown; niemChu = pc.quaCauBangCastTime; break;
         }
     }
 }

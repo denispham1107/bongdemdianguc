@@ -348,13 +348,13 @@ console.log(out.join('|'));
             sbO.AppendFormat("o{0}:x{1:F2} ", o + 1, a / Mathf.Max(0.001f, k));
         }
         Object.Destroy(texXem); Object.Destroy(texKhoa);
-        Ghi("B1. xem truoc: XemTruoc = " + xemTruoc + ", ky nang hien da mo / keo duoc " + soMoXemTruoc + "/9; doi chung trong tran (con khoa) "
-            + soMoDoiChung + "/9");
+        Ghi("B1. xem truoc: XemTruoc = " + xemTruoc + ", ky nang hien da mo / keo duoc " + soMoXemTruoc + "/" + SachPhep.SoKyNang + "; doi chung trong tran (con khoa) "
+            + soMoDoiChung + "/" + SachPhep.SoKyNang);
         Ghi("    do sang VANH hinh cot trai (xem truoc / doi chung khoa; ne o khoa giua hinh): " + sb.ToString().Trim() + " -> thap nhat x" + tiLeMin.ToString("F2")
             + " tren " + soHangThay + " hang");
         Ghi("    do sang hinh trong o: " + sbO.ToString().Trim() + " -> thap nhat x" + oMin.ToString("F2"));
         Kiem(xemTruoc, "nut KY NANG khong mo che do xem truoc");
-        Kiem(soMoXemTruoc == 9, "xem truoc van con ky nang bi khoa");
+        Kiem(soMoXemTruoc == SachPhep.SoKyNang, "xem truoc van con ky nang bi khoa");
         Kiem(soMoDoiChung == 0, "doi chung hong: trong tran luc moi vao van co ky nang da mo");
         Kiem(soHangThay >= 6 && tiLeMin >= 1.5f, "hinh ky nang o sanh chua sang du mau (van xam / co o khoa?)");
         Kiem(oMin >= 1.5f, "hinh trong o o sanh chua sang du mau (van xam / co o khoa?)");

@@ -320,7 +320,7 @@ public static class GoiTin
     public struct MotPhep
     {
         public byte chiSo;      // ai tung
-        public byte kyNang;     // 0..6
+        public byte kyNang;     // 0..6, 9 (qua cau bang)
 
         /// <summary>
         /// CAP cua ky nang ay (1..5) o may NGUOI TUNG.

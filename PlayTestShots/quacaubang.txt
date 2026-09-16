@@ -1,0 +1,16 @@
+[ban 1] Qua cau bang
+
+A. luoi Blender: 236 tam giac; SuongLanh 256x256 (alpha True); ManhBang 128x128 (alpha True); icon 256x256
+B. tren nhan vat: nang luong 12, hoi chieu 0.55 giay, niem 0.38; Sach phep doc ra 12/0.55/0.38; sat thuong goc 65, cham 40 % x0.5 trong 2 giay, ban kinh no 3.4 m
+
+C. con khoa: tu choi True ("QUẢ CẦU BĂNG chưa mở khoá — vào SÁCH PHÉP để mở"); mo khoa roi tung: DaTungPhep True, so qua bay ra 3, ton nang luong 12.0; bam lai sau 0,45 giay: tu choi True ("QUẢ CẦU BĂNG đang hồi chiêu"); sau 0,6+ giay: tung duoc True
+D. bia tren duong bay (8 m) mat 96.0 mau; bia lech 7 m khoi duong bay mat 0.0
+G. luc bay: dung luoi Blender True, tam hop bao lech theo huong bay -0.451 m -> duoi gai phia SAU True; luong khi lanh dang phat True, vet bang True, anh sang True; sau khi no: 3 luong khi lanh con o lai tan dan
+
+E. no tai tam bia: trung 3 muc tieu; mat mau: tam 65.00 (mong 65), 1 m 56.00, 2,5 m 43.00, 5 m 0.00 (ngoai ban kinh 3,4)
+F. 1000 lan no: bi cham 39.6% (mong 40%), dong cung 0; slow 0.5..0.5 (mong 0,5), thoi gian cham 2.00..2.00 giay (mong 2); qua cau cap 3 cham 2.30 giay (mong 2,30)
+
+H. goi ky nang so 9 tu nguoi kia -> may minh phat lai 3 qua (mong 3); minh tung -> goi gui di mang kyNang = 9: True
+I. BoIcon 10 hinh, hinh so 9 co; ten "QUẢ CẦU BĂNG", tom tat "Ba quả băng, 40% làm chậm"; mo ta 511 ky tu
+
+so loi ghi nhan = 0

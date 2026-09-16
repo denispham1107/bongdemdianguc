@@ -31,6 +31,11 @@ public static class CapDo
     public const int KyBinhMau = 7;
     public const int KyBinhMana = 8;
 
+    /// <summary>Qua cau bang (them 16/09/2026). So 9 chu KHONG chen vao sau Giut set: so hieu
+    /// ky nang di qua mang va nam trong thu tu o da luu cua nguoi choi - doi so cu la ho
+    /// bam nut binh ra phep khac.</summary>
+    public const int KyQuaCauBang = 9;
+
     /// <summary>Cap toi da cua TUNG ky nang: binh mau / binh mana la 1, con lai 5.</summary>
     public static int CapToiDaCua(int ky) { return LaKyBinh(ky) ? 1 : CapKyNangToiDa; }
 
@@ -42,7 +47,7 @@ public static class CapDo
     /// nhat 5,98 m/giay). Dung o cap 10: x1,363 (~7,1 m/giay).
     /// </summary>
     public const int CapTangTocToiDa = 10;
-    public const int SoKyNang = 9;       // 7 phep + binh mau + binh mana
+    public const int SoKyNang = 10;      // 7 phep + binh mau + binh mana + qua cau bang
 
     /// <summary>Giet mot nguoi choi khac duoc bao nhieu kinh nghiem.</summary>
     public const int KnGietNguoi = 250;

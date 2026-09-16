@@ -144,6 +144,7 @@ public static class ThuKinhNghiemKyNang
         foreach (var x in Object.FindObjectsByType<LightningStrike>(FindObjectsSortMode.None)) Object.Destroy(x.gameObject);
         foreach (var x in Object.FindObjectsByType<ThienThach>(FindObjectsSortMode.None)) Object.Destroy(x.gameObject);
         foreach (var x in Object.FindObjectsByType<Fireball>(FindObjectsSortMode.None)) Object.Destroy(x.gameObject);
+        foreach (var x in Object.FindObjectsByType<QuaCauBang>(FindObjectsSortMode.None)) Object.Destroy(x.gameObject);
     }
 
     static float TenKn(Damageable q)
@@ -162,7 +163,8 @@ public static class ThuKinhNghiemKyNang
     //  KICH BAN
     // ================================================================
 
-    static readonly string[] TenKyNang = { "Qua cau lua", "Mua bang", "Sam set", "Loc xoay", "Thien thach", "Khien", "Giut set" };
+    static readonly string[] TenKyNang = { "Qua cau lua", "Mua bang", "Sam set", "Loc xoay", "Thien thach", "Khien", "Giut set",
+                                            "Binh mau", "Binh mana", "Qua cau bang" };
 
     static IEnumerator KichBan()
     {
@@ -181,9 +183,10 @@ public static class ThuKinhNghiemKyNang
         // cap toi da (cap toi da thi kinh nghiem ngung dem - phep do se ra 0 oan).
         CapDo.BatDauTranMoi();
         CapDo.Them(100 + 135 + 180 + 245 + 330 + 445);
-        foreach (int k in new[] { 0, 1, 2, 3, 4, 6 }) CapDo.MoKhoa(k);
+        // 9 = Qua cau bang (16/09/2026) - dung diem thu bay
+        foreach (int k in new[] { 0, 1, 2, 3, 4, 6, 9 }) CapDo.MoKhoa(k);
         Ghi("chuan bi: cap " + CapDo.Cap + ", mo khoa " + CapDo.DaMo(0) + CapDo.DaMo(1) + CapDo.DaMo(2)
-            + CapDo.DaMo(3) + CapDo.DaMo(4) + CapDo.DaMo(6));
+            + CapDo.DaMo(3) + CapDo.DaMo(4) + CapDo.DaMo(6) + CapDo.DaMo(9));
 
         // Moi con quai dang co: tat nao, don ra xa - khong de chung chen vao phep do
         if (QuaiSong().Count < 8) { dir.SinhDotQuanhNguoi(); yield return new WaitForSeconds(1f); }
@@ -201,7 +204,7 @@ public static class ThuKinhNghiemKyNang
         Ghi("A. tung tung ky nang that vao mot con quai mau 1");
 
         int dung = 0;
-        foreach (int k in new[] { 0, 1, 2, 3, 4, 6 })
+        foreach (int k in new[] { 0, 1, 2, 3, 4, 6, 9 })
         {
             if (dung >= kho.Count) { Loi("het quai de thu"); break; }
             var q = kho[dung++];

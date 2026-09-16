@@ -223,6 +223,7 @@ public class ChiBaoNgam : MonoBehaviour
             case 4: return new Color(1.00f, 0.42f, 0.12f);   // thien thach
             case 5: return new Color(0.85f, 0.62f, 1.00f);   // khieng
             case 6: return new Color(0.55f, 1.00f, 0.60f);   // giut set
+            case CapDo.KyQuaCauBang: return new Color(0.62f, 0.90f, 1.00f);   // qua cau bang
             default: return new Color(0.40f, 0.95f, 1.00f);
         }
     }

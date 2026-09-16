@@ -1,11 +1,11 @@
 [menu 66] nut KY NANG o sanh, cat thu tu o, con mat quy
-A1. 245 chuoi trong 3 file; ky tu Inter thieu: ""; co chu "KỸ NĂNG" (co dau): co
+A1. 257 chuoi trong 3 file; ky tu Inter thieu: ""; co chu "KỸ NĂNG" (co dau): co
 A2. cau noi chay bang node: rong=[]|ghi=1|doc=[8,7,3,2,4,5,6]|kho=[8,7,3,2,4,5,6]|dau=[Kỹ năng]|camdoc=[]|camghi=0|so=7
 A3. SachPhep.cs: khai bao + goi CD_DocChuoi co, CD_GhiChuoi co, chi tren WebGL co
 
 B. man Game 1568x581, ti le sach 0.538; nut CAI DAT (x:838.33, y:17.21, width:91.45, height:26.90), KY NANG (x:771.09, y:183.98, width:91.45, height:27.97)
-B1. xem truoc: XemTruoc = True, ky nang hien da mo / keo duoc 9/9; doi chung trong tran (con khoa) 0/9
-    do sang VANH hinh cot trai (xem truoc / doi chung khoa; ne o khoa giua hinh): 0:0.424/0.125(x3.40) 1:0.317/0.084(x3.77) 2:0.178/0.066(x2.70) 3:0.248/0.072(x3.46) 5:0.342/0.101(x3.37) 6:0.192/0.060(x3.22) 7:0.165/0.062(x2.66) 8:0.155/0.049(x3.14) -> thap nhat x2.66 tren 8 hang
+B1. xem truoc: XemTruoc = True, ky nang hien da mo / keo duoc 10/10; doi chung trong tran (con khoa) 0/10
+    do sang VANH hinh cot trai (xem truoc / doi chung khoa; ne o khoa giua hinh): 0:0.424/0.125(x3.40) 1:0.317/0.084(x3.77) 2:0.178/0.066(x2.70) 3:0.248/0.072(x3.46) 5:0.342/0.101(x3.37) 6:0.192/0.060(x3.22) 7:0.165/0.062(x2.66) 8:0.155/0.049(x3.14) 9:0.216/0.032(x6.86) -> thap nhat x2.66 tren 9 hang
     do sang hinh trong o: o1:x2.65 o2:x2.35 o3:x1.94 o4:x2.24 o6:x2.37 o7:x1.99 -> thap nhat x1.94
 B2. nhan vat mau o man chinh: PhuThuy_TrungBay; cau lua nang luong 10 / hoi 0.55 (prefab 10 / 0.55); thien thach nang luong 60 (prefab 60)
 B3. kho luu sau khi sap o sanh: vuong [8,7,3,2,4,5,6] (mong [8,7,3,2,4,5,6]), tron [0,1,2,3,4,5,8] (mong [0,1,2,3,4,5,8], cam ung bat True)

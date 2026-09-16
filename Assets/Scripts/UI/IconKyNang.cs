@@ -37,6 +37,9 @@ public static class IconKyNang
     // Hai binh ve bang CongCu/Icon/sinh_binh.py (khong phai Blender) - cung nen den, cung cach cong
     public static Texture2D BinhMau()    { return Ve("Icons/BinhMau",    new Color(0.22f, 0.03f, 0.03f)); }
     public static Texture2D BinhMana()   { return Ve("Icons/BinhMana",   new Color(0.03f, 0.06f, 0.24f)); }
+    // Qua cau bang: dung trong Blender qua MCP (CongCu/Blender/qua_cau_bang.blend, 16/09/2026).
+    // Nen xanh bang SANG hon Mua bang mot chut de hai nut bang khong lan vao nhau.
+    public static Texture2D CauBang()    { return Ve("Icons/CauBang",    new Color(0.04f, 0.17f, 0.34f)); }
 
     /// <summary>
     /// Dat anh Blender vao mot cai dia nut.
