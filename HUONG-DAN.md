@@ -8334,6 +8334,29 @@ sát thương hiện ra** (2,1 m) để số không đè lên chữ. Bỏ chữ 
 **Số đo** (menu 62, 0 lỗi): tung thật 10 lần → trúng 10, ngã 7; dấu hiệu hiện **376/383 khung hình đang ngã (98%)**;
 chuỗi ảnh mới thấy chữ NGÃ rõ ở cả 5 thời điểm, đè lên lửa.
 
+### Mưa băng rơi quả cầu băng thay tảng băng (16/09/2026)
+
+Anh xin: thay vì rơi các tảng băng thì rơi các **quả cầu băng**, có luồng không khí lạnh phía sau giống y hệt kỹ năng Quả cầu băng.
+
+**Sửa:** `IceStorm` gọi `VfxFactory.QuaCauBangRoi` thay `IceShardFalling`. Quả rơi dùng **chung** `BuildQuaCauBangVisual` (lõi pha lê
+Blender, hào quang, luồng khí lạnh, vệt băng, mảnh băng lấp lánh) ở **bản nhẹ**: nửa lượng hạt, **không đèn riêng** — cứ 0,128 giây
+một quả, mỗi quả rơi 0,96 giây, tức 7–8 quả cùng lúc trên không; 7–8 đèn điểm quá nặng cho điện thoại (vùng bão tuyết đã có ánh sáng).
+Phần rơi / sát thương / làm chậm / đóng cứng vẫn là `FallingShard` cũ, không đổi; chạm đất thì **thả** luồng khí lạnh + vệt băng
+ra tan dần. Bán kính quả 0,36–0,50 m.
+
+**Rơi chéo ngang theo màn hình**: lần chụp đầu dùng gió ngẫu nhiên — trùng hướng nhìn của camera thì quả rơi dọc theo tia nhìn,
+vệt băng thành những **cột sáng đứng**, không nhận ra quả cầu và đuôi. Nay gió thổi sang trái hoặc phải của camera
+(`HuongGioNgangManHinh`), quả xuất phát lệch ngang 0,6 × độ cao. Chỉ là hình (điểm rơi không đổi) nên mỗi máy tự tính theo camera
+của mình cũng không lệch gì qua mạng.
+
+**Số đo** (menu 68 mục **K** mới, Mưa băng **thật**, **0 lỗi**): tối đa **8** quả rơi cùng lúc; xét **33** quả: 33 dùng lưới Blender,
+33 có luồng khí lạnh đang phát, 33 có vệt băng, 33 có đuôi gai phía **sau** hướng rơi, **0** gắn đèn riêng; **0** tảng băng cũ;
+bia giữa vùng mất 815 máu và bị làm chậm/đóng cứng; tổng số hạt cùng lúc tối đa **1 922** (cả vùng bão tuyết + cụm băng nổ).
+Lần đo đầu 33/34: phép đo bắt trúng đúng khung chạm đất (vệt vừa thả ra, vị trí trùng đích) — nay bỏ qua quả còn cách đích < 0,6 m.
+Ảnh cận cảnh: ở góc camera 2.5D quả cầu chỉ lọt khung ở 3–4 m cuối trước khi chạm đất (`quacaubang_5b_muabang_roi_can.png`).
+Chạy lại: menu 58 **0 lỗi** (E1: 2/42 quả rơi trong 1,2 m quanh người tung — là quả thả ngẫu nhiên khi không nhắm được kẻ địch,
+`ChonDiemRoi` không đổi, ngưỡng ≤ 10%); menu 67 **0 lỗi** (Mưa băng qua mạng vẫn đóng cứng người chơi khác 6/6).
+
 ### Quả cầu lửa: sát thương 85, vệt lửa vẽ lại bằng Blender (16/09/2026)
 
 Anh xin: sát thương ban đầu **85**; vẽ lại vệt lửa phía sau quả cầu khi bay bằng Blender MCP — vệt cũ "dạng hình tam giác không thật".
@@ -8916,7 +8939,7 @@ Lần chạy đầu phép thử báo cả 10 con "lơ lửng": tia chiếu từ 
 | **65. Chay thu BINH MAU - BINH MANA (roi, nhat, uong, mang)** | Tỉ lệ rơi (3000 lần + giết quái thật), nhặt trong / ngoài bán kính, uống (khoá, hết, đầy, hồi chiêu, 100 / 50), số bình trên ô (so ảnh với ô đối chứng), chữ Sách phép to (so bề ngang nét với chữ đối chứng cỡ cũ / mới), cuộn thân chi tiết, 5 ca mạng qua bộ đồng bộ thật + kênh giả lập. Số đo `binh_mau_mana.txt`. |
 | **66. Chay thu NUT KY NANG o sanh (sach phep xem truoc) + con mat** | Ngoài Play: quét chữ có dấu 3 file, chạy thật cầu nối localStorage bằng node. Trong Play: đăng nhập, mở Sách phép xem trước (9/9 kỹ năng mở, so độ sáng hình với đối chứng khoá), thông số đọc từ nhân vật trưng bày = prefab, xếp ô → kho lưu, vào Act2 lúc sách mở (sách đóng, thanh kỹ năng đúng thứ tự), đo con mắt quỷ hai trạng thái; thoát Play nạp lại từ kho. Số đo `sachphep_sanh.txt`. |
 | **67. Chay thu MUA BANG dong bang NGUOI CHOI KHAC (qua mang)** | Bộ đồng bộ thật + kênh giả lập: người kia tung Mưa băng vào mình bằng gói kỹ năng thật (6 cơn) — trúng, chậm, đóng cứng, khoá chân/phép, gói trạng thái mang bit đóng cứng; bản sao nhận gói đóng cứng thì đứng im và tan đúng lúc; đếm chữ nổi "ĐÓNG BĂNG!" (khớp số lần bắt đầu đóng cứng, bản sao đúng 1 lần) có đối chứng "CHOÁNG!"; vỏ băng phủ lên model có xương và làm vùng thân xanh lên trên ảnh chụp. Số đo `bang_nguoichoi.txt`. |
-| **68. Chay thu QUA CAU BANG (ky nang moi)** | Tài nguyên Blender nạp được; thông số thật trên nhân vật (hồi chiêu 0,55); tung thật `CastAt(9)` (khoá, 3 quả, năng lượng, hồi chiêu); bia trên / lệch đường bay; sát thương 65 ở tâm và vùng nổ 3,4 m; 1000 lần gieo làm chậm (40%, 50%, 2 giây, cấp kéo dài); hình lúc bay (lưới, đuôi gai phía sau, luồng khí lạnh, vệt băng) và sau khi nổ; gói kỹ năng số 9 qua mạng; icon HUD, chữ Sách phép; kích thước thật cụm băng Mưa băng = Quả cầu băng (đối chứng cỡ cũ). Số đo `quacaubang.txt`. |
+| **68. Chay thu QUA CAU BANG (ky nang moi)** | Tài nguyên Blender nạp được; thông số thật trên nhân vật (hồi chiêu 0,55); tung thật `CastAt(9)` (khoá, 3 quả, năng lượng, hồi chiêu); bia trên / lệch đường bay; sát thương 65 ở tâm và vùng nổ 3,4 m; 1000 lần gieo làm chậm (40%, 50%, 2 giây, cấp kéo dài); hình lúc bay (lưới, đuôi gai phía sau, luồng khí lạnh, vệt băng) và sau khi nổ; gói kỹ năng số 9 qua mạng; icon HUD, chữ Sách phép; kích thước thật cụm băng Mưa băng = Quả cầu băng (đối chứng cỡ cũ); Mưa băng thật rơi quả cầu băng (lưới, luồng khí lạnh, vệt, đuôi phía sau, không đèn, không còn tảng cũ, vẫn gây sát thương). Số đo `quacaubang.txt`. |
 | **69. Chay thu GIUT SET (20 m, 75, 4 tia, 15% choang)** | Thông số; tung thật `CastAt(6)` vào 5 bia (đúng 4 bia mất 75 cùng một khung hình); tầm 20 m bằng bia 19,9 / 20,4 m; tia lan ra ngoài tầm vẫn trúng ×0,85; 160 lần phóng đếm tỉ lệ choáng tia đầu và tia lan riêng (bằng StunnedEffect trên bia); cấp kỹ năng kéo dài choáng. Số đo `giatset.txt`. |
 | **70. Chay thu QUA CAU LUA (85 sat thuong, vet lua moi)** | Sát thương đọc thẳng prefab và trên quả cầu thật khi tung; quả cầu sinh từ prefab bay vào bia (mất 85 × giảm theo khoảng cách); hạt `Flames` không còn ảnh tam giác mà là flipbook Blender, có vệt lửa dài `TrailRenderer`; nổ xong vệt được thả ra; chụp cận cảnh lúc bay. Chạy trên bản cũ ra 7 lỗi (đối chứng). Số đo `quacaulua.txt`. |
 | **56. Chay thu DOT QUAI Act2 + cho xuat phat** | *(13/09/2026: thêm đo chờ 30 giây và 10 con xa 55–65 m)*  Kiểm chỗ xuất phát ngẫu nhiên (hai máy cùng mã phòng ra cùng danh sách, cách nhau ≥ 22 m, trên đất, ngoài nước, không vướng vật cản) và luật đợt quái Act2 (đợt 1 bốn con quanh mỗi người; đợt sau cộng dồn quái và mạnh thêm 5% máu · sát thương); kiểm Act1 không bị đổi. Số đo `dotquai_act2.txt`. |

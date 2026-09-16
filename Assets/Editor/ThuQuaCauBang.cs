@@ -34,6 +34,10 @@ using UnityEngine;
 ///      bang") DO KICH THUOC THAT cum gai bang: bat vat hieu ung moi sinh ra, lay hop bao cac gai (bo
 ///      vong phang tren dat) lon nhat trong 0,8 giay. Mua bang THAT (tang bang roi) vs Qua cau bang THAT
 ///      (vu no) vs doi chung co cu (IceImpact 1,7 m).
+///   K. (16/09/2026, nguoi dung: "Mua bang - thay vi roi cac tang bang thi roi cac qua cau bang, co luong
+///      khong khi lanh phia sau giong y chang Qua cau bang") Mua bang THAT: moi vat dang roi la qua cau bang
+///      (luoi Blender, luong khi lanh dang phat, vet bang, duoi gai phia SAU huong roi, khong den rieng),
+///      khong con tang bang cu; bia trong vung van mat mau + bi cham/dong cung; dem tong so hat; chup anh.
 ///
 /// Ket qua: PlayTestShots/quacaubang.txt, anh quacaubang_*.png.
 /// </summary>
@@ -147,6 +151,22 @@ public static class ThuQuaCauBang
         Vector3 w = q.transform.position - q.transform.forward * 0.8f;
         yield return new WaitForEndOfFrame();
         if (q == null) yield break;
+        var cam = Camera.main;
+        var tex = ScreenCapture.CaptureScreenshotAsTexture();
+        var sp = cam.WorldToScreenPoint(w);
+        int co = Mathf.RoundToInt(Screen.height * 0.30f);
+        int x0 = Mathf.Clamp((int)sp.x - co / 2, 0, tex.width - co), y0 = Mathf.Clamp((int)sp.y - co / 2, 0, tex.height - co);
+        var cat = new Texture2D(co * 3, co * 3, TextureFormat.RGB24, false);
+        for (int y = 0; y < co * 3; y++)
+            for (int x = 0; x < co * 3; x++)
+                cat.SetPixel(x, y, tex.GetPixelBilinear((x0 + x / 3f) / tex.width, (y0 + y / 3f) / tex.height));
+        File.WriteAllBytes("PlayTestShots/" + ten + ".png", cat.EncodeToPNG());
+        Object.Destroy(tex); Object.Destroy(cat);
+    }
+
+    static IEnumerator ChupCanDiem(Vector3 w, string ten)
+    {
+        yield return new WaitForEndOfFrame();
         var cam = Camera.main;
         var tex = ScreenCapture.CaptureScreenshotAsTexture();
         var sp = cam.WorldToScreenPoint(w);
@@ -453,6 +473,80 @@ public static class ThuQuaCauBang
             Kiem(rong[0] > 0f && rong[1] > 0f && rong[2] > 0f, "khong bat duoc cum bang de do");
             Kiem(Mathf.Abs(tiRong - 1f) < 0.15f && Mathf.Abs(tiCao - 1f) < 0.15f, "cum bang cua Mua bang khong to bang cua Qua cau bang");
             Kiem(doiChung < 0.85f, "doi chung hong: co cu 1,7 m khong nho hon - phep do khong phan biet duoc");
+        }
+
+        // ================= K. MUA BANG ROI QUA CAU BANG =================
+        Ghi("");
+        {
+            foreach (var st in Object.FindObjectsByType<IceStorm>(FindObjectsInactive.Exclude)) Object.Destroy(st.gameObject);
+            yield return new WaitForSeconds(2.5f);
+            Vector3 cho = goc + huong * 8f;
+            cho.y = VfxFactory.GroundY(cho);
+            var biaMua = TaoBia("TAM_BiaMua", cho);
+            yield return new WaitForFixedUpdate();
+            float mauMua0 = biaMua.health;
+            var bao = IceStorm.Spawn(cho, maskEnemy);
+            int soRoiMax = 0, soTangCu = 0, soDungLuoi = 0, soCoSuong = 0, soCoVet = 0, soDuoiSau = 0, soCoDen = 0, soXet = 0;
+            int hatMax = 0; bool biCham = false, daChup = false;
+            var daXet = new HashSet<FallingShard>();
+            float hanK = Time.time + 5.5f;
+            while (Time.time < hanK)
+            {
+                var roi = Object.FindObjectsByType<FallingShard>(FindObjectsInactive.Exclude);
+                soRoiMax = Mathf.Max(soRoiMax, roi.Length);
+                foreach (var f in roi)
+                {
+                    if (f.transform.Find("Tang") != null) soTangCu++;
+                    if (daXet.Contains(f)) continue;
+                    // xet moi qua khi no da roi duoc mot doan (luong khi lanh da kip phat)
+                    float conCach = Vector3.Distance(f.transform.position, f.target);
+                    if (conCach > 12f) continue;
+                    // bo qua khung CHAM DAT: vet vua duoc tha ra va vi tri trung dich (lan do dau dem nham 1/34)
+                    if (conCach < 0.6f) continue;
+                    daXet.Add(f); soXet++;
+                    var loi = f.transform.Find("LoiBang");
+                    var mf = loi != null ? loi.GetComponent<MeshFilter>() : null;
+                    if (mf != null && mf.sharedMesh == luoi) soDungLuoi++;
+                    var ps = f.transform.Find("LuongKhiLanh");
+                    if (ps != null && ps.GetComponent<ParticleSystem>().particleCount > 0) soCoSuong++;
+                    if (f.GetComponentInChildren<TrailRenderer>() != null) soCoVet++;
+                    if (f.GetComponentInChildren<Light>() != null) soCoDen++;
+                    var mr = loi != null ? loi.GetComponent<MeshRenderer>() : null;
+                    Vector3 huongRoi = (f.target - f.transform.position).normalized;
+                    if (mr != null && Vector3.Dot(mr.bounds.center - f.transform.position, huongRoi) < -0.02f) soDuoiSau++;
+                }
+                int hat = 0;
+                foreach (var p in Object.FindObjectsByType<ParticleSystem>(FindObjectsInactive.Exclude)) hat += p.particleCount;
+                hatMax = Mathf.Max(hatMax, hat);
+                if (biaMua.GetComponent<FrozenEffect>() != null) biCham = true;
+                // Chup khi co qua da xuong THAP: o do cao 20 m qua cau nam ngoai khung hinh
+                FallingShard thap = null;
+                foreach (var f in roi)
+                {
+                    float c = Vector3.Distance(f.transform.position, f.target);
+                    // o tam camera 2.5D qua cau chi lot vao khung hinh o 3-4 m cuoi truoc khi cham dat
+                    if (c > 1.2f && c < 4f) { thap = f; break; }
+                }
+                if (!daChup && thap != null && Time.time > hanK - 3.5f)
+                {
+                    daChup = true;
+                    Vector3 wThap = thap.transform.position;
+                    yield return ChupCanDiem(wThap, "quacaubang_5b_muabang_roi_can");
+                    yield return Chup("quacaubang_5_muabang_roi");
+                }
+                yield return null;
+            }
+            float matMua = mauMua0 - biaMua.health;
+            Ghi(string.Format("K. Mua bang that: vat dang roi cung luc toi da {0}; da xet {1} qua: dung luoi Blender {2}, luong khi lanh dang phat {3}, vet bang {4}, duoi gai phia sau huong roi {5}, co den rieng {6}; tang bang cu (con \"Tang\") {7}",
+                soRoiMax, soXet, soDungLuoi, soCoSuong, soCoVet, soDuoiSau, soCoDen, soTangCu));
+            Ghi(string.Format("    bia giua vung mat {0:F0} mau, bi cham/dong cung {1}; tong so hat cung luc toi da {2}", matMua, biCham, hatMax));
+            Kiem(soXet >= 10, "Mua bang khong roi du qua de xet");
+            Kiem(soDungLuoi == soXet && soCoSuong == soXet && soCoVet == soXet && soDuoiSau == soXet, "vat roi cua Mua bang chua phai qua cau bang day du");
+            Kiem(soCoDen == 0, "qua cau roi van gan den rieng (nang cho dien thoai)");
+            Kiem(soTangCu == 0, "van con tang bang cu roi xuong");
+            Kiem(matMua > 1f && biCham, "Mua bang doi hinh xong khong con gay sat thuong / lam cham");
+            Object.Destroy(biaMua.gameObject);
+            if (bao != null) Object.Destroy(bao.gameObject);
         }
 
         // ================= I. HUD / SACH PHEP =================

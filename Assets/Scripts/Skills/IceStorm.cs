@@ -35,6 +35,25 @@ public class IceStorm : MonoBehaviour
     // khung hinh - tang gan may quay nhat do duoc la 9,75 m.
     public float fallHeight = 20f;
 
+    /// <summary>Huong gio cua con bao - cac qua cau bang roi cheo theo huong nay.</summary>
+    Vector3 huongGio;
+
+    /// <summary>
+    /// Gio thoi NGANG theo man hinh (trai hoac phai cua camera), chu khong ngau nhien moi huong: lan chup dau
+    /// gio ngau nhien trung huong nhin cua camera, qua cau roi doc theo tia nhin -> vet bang thanh cot sang
+    /// dung, khong nhan ra qua cau va duoi. Chi la HINH (diem roi, sat thuong khong doi) nen moi may tu tinh
+    /// theo camera cua minh cung khong lech gi qua mang.
+    /// </summary>
+    static Vector3 HuongGioNgangManHinh()
+    {
+        var cam = Camera.main;
+        Vector3 phai = cam != null ? cam.transform.right : Vector3.right;
+        phai.y = 0f;
+        if (phai.sqrMagnitude < 0.0001f) phai = Vector3.right;
+        phai.Normalize();
+        return Random.value < 0.5f ? phai : -phai;
+    }
+
     // 0,96 giay chu khong 0,336.
     //
     // GIU NGUYEN TOC DO ROI da chinh o lan truoc: 7 m / 0,336 s = 20,8 m/s, nen
@@ -123,7 +142,10 @@ public class IceStorm : MonoBehaviour
 
             Vector3 target = ChonDiemRoi();
 
-            var shard = VfxFactory.IceShardFalling(target, fallHeight, fallTime);
+            // QUA CAU BANG roi thay tang bang (16/09/2026) - cung hinh, luong khi lanh, vet bang voi ky nang
+            // Qua cau bang. Moi con bao mot huong gio: cac qua roi song song, khong cheo loan xa.
+            if (huongGio == Vector3.zero) huongGio = HuongGioNgangManHinh();
+            var shard = VfxFactory.QuaCauBangRoi(target, fallHeight, fallTime, huongGio);
             var fall = shard.GetComponent<FallingShard>();
             if (fall != null)
             {

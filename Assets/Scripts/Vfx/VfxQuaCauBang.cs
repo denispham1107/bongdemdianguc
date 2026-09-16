@@ -113,6 +113,13 @@ public static partial class VfxFactory
     /// <summary>Toan bo phan nhin thay duoc cua MOT qua cau bang dang bay (truc bay = +Z cua parent).</summary>
     public static void BuildQuaCauBangVisual(Transform parent, float radius)
     {
+        BuildQuaCauBangVisual(parent, radius, false);
+    }
+
+    /// <param name="banRoi">Ban cho MUA BANG (nhieu qua cung luc tren khong): nua luong hat, khong den rieng.</param>
+    public static void BuildQuaCauBangVisual(Transform parent, float radius, bool banRoi)
+    {
+        float heSoHat = banRoi ? 0.5f : 1f;
         // 1) LOI PHA LE tu Blender. Luoi dung o ban kinh loi 0,5 -> phong theo radius.
         var luoi = LuoiQuaCauBang;
         float k = radius / 0.5f;
@@ -136,7 +143,7 @@ public static partial class VfxFactory
         // Nho va mo (lan dau 4-5 lan ban kinh, do 1,25: ba qua + bloom nhoe thanh mot dom trang, mat ca hinh pha le)
         hm.startSize = new ParticleSystem.MinMaxCurve(radius * 2.2f, radius * 2.8f);
         hm.simulationSpace = ParticleSystemSimulationSpace.Local; hm.maxParticles = 8;
-        var hem = hq.emission; hem.rateOverTime = 16f;
+        var hem = hq.emission; hem.rateOverTime = 16f * heSoHat;
         var hsh = hq.shape; hsh.enabled = false;
 
         // 3) LUONG KHONG KHI LANH phia sau: dam suong troi cham, to dan, hoi chim xuong
@@ -150,7 +157,7 @@ public static partial class VfxFactory
         sm.simulationSpace = ParticleSystemSimulationSpace.World;
         sm.gravityModifier = 0.06f;
         sm.maxParticles = 160;
-        var sem = suong.emission; sem.rateOverTime = 70f;
+        var sem = suong.emission; sem.rateOverTime = 70f * heSoHat;
         var ssh = suong.shape; ssh.shapeType = ParticleSystemShapeType.Sphere; ssh.radius = radius * 0.6f;
         var scol = suong.colorOverLifetime; scol.enabled = true;
         scol.color = new ParticleSystem.MinMaxGradient(Grad(
@@ -188,14 +195,16 @@ public static partial class VfxFactory
         mm.simulationSpace = ParticleSystemSimulationSpace.World;
         mm.gravityModifier = 0.55f;
         mm.maxParticles = 120;
-        var mem = manh.emission; mem.rateOverTime = 36f;
+        var mem = manh.emission; mem.rateOverTime = 36f * heSoHat;
         var msh = manh.shape; msh.shapeType = ParticleSystemShapeType.Sphere; msh.radius = radius * 0.8f;
         var mcol = manh.colorOverLifetime; mcol.enabled = true;
         mcol.color = new ParticleSystem.MinMaxGradient(Grad(Color.white, 0f, Color.white, 0.5f, Color.white, 1f, 1f, 1f, 0.7f, 0f));
         var mrot = manh.rotationOverLifetime; mrot.enabled = true;
         mrot.z = new ParticleSystem.MinMaxCurve(-6f, 6f);
 
-        // 6) Anh sang lanh hat xuong mat dat
+        // 6) Anh sang lanh hat xuong mat dat - ban roi cua Mua bang KHONG co: 7-8 qua cung luc tren
+        //    khong la 7-8 den diem, qua nang cho dien thoai; vung bao tuyet da co anh sang rieng
+        if (banRoi) return;
         var lightGo = new GameObject("AnhSangLanh");
         lightGo.transform.SetParent(parent, false);
         var lt = lightGo.AddComponent<Light>();
@@ -204,6 +213,31 @@ public static partial class VfxFactory
         lt.intensity = 2.4f;
         lt.range = 7f;
         lt.shadows = LightShadows.None;
+    }
+
+    /// <summary>
+    /// QUA CAU BANG ROI TU TROI (thay tang bang cua MUA BANG - nguoi dung 16/09/2026: "thay vi roi cac tang bang
+    /// thi cho roi cac qua cau bang, co luong khong khi lanh phia sau giong y chang Qua cau bang").
+    ///
+    /// Roi CHEO theo <paramref name="gio"/> chu khong thang dung: camera nhin tu tren xuong, qua roi thang
+    /// thi luong khi lanh va vet bang chong khit sau lung qua cau, nguoi choi khong thay duoi dau. FallingShard
+    /// lay vi tri sinh lam diem xuat phat nen chi can sinh lech ngang.
+    /// </summary>
+    public static GameObject QuaCauBangRoi(Vector3 target, float height, float fallTime, Vector3 gio)
+    {
+        Vector3 ngang = new Vector3(gio.x, 0f, gio.z);
+        if (ngang.sqrMagnitude < 0.0001f) ngang = Vector3.forward;
+        Vector3 tu = target + Vector3.up * height - ngang.normalized * height * 0.6f;
+
+        var go = new GameObject("QuaCauBangRoi");
+        go.transform.position = tu;
+        go.transform.rotation = Quaternion.LookRotation(target - tu);
+        BuildQuaCauBangVisual(go.transform, Random.Range(0.36f, 0.50f), true);
+
+        var mover = go.AddComponent<FallingShard>();
+        mover.target = target;
+        mover.travelTime = fallTime;
+        return go;
     }
 
     /// <summary>
