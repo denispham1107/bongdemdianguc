@@ -1,0 +1,8 @@
+[ban 1] Qua cau lua: sat thuong 85, vet lua moi
+A. sat thuong trong prefab 85; qua cau that khi tung (cap 1) 85; so qua 3
+
+C. he hat Flames: anh "LuaDuoi" 1024x1024, flipbook True (4x4); vet lua dai TrailRenderer: True, anh "VetLuaDai"
+B. qua cau (sinh tu prefab) bay vao bia 8 m: bia mat 80.00; no cach tam bia ~0.40 m -> mong 85 x giam theo khoang cach ~ 80 (sai so vi tri no 1 khung)
+C2. no xong: 3 vet lua duoc tha ra tan dan tai cho
+
+so loi ghi nhan = 0

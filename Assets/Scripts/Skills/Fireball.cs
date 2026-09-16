@@ -13,7 +13,9 @@ public class Fireball : MonoBehaviour
     public float bodyRadius = 0.30f;
 
     [Header("Sat thuong")]
-    public float impactDamage = 55f;
+    // 85 - nguoi dung chot 16/09/2026 (truoc 55). PREFAB Skill_QuaCauLua luu san gia tri va DE LEN so nay:
+    // sua o day phai sua ca prefab (menu 70 doc thang prefab).
+    public float impactDamage = 85f;
     public float blastRadius = 3.4f;
     public float burnSeconds = 3.5f;
     public LayerMask hitMask;
@@ -49,6 +51,9 @@ public class Fireball : MonoBehaviour
             fb = go.AddComponent<Fireball>();
             VfxFactory.BuildFireballVisual(go.transform, fb.bodyRadius);
         }
+
+        // Vet lua moi (flipbook lua cuon + vet lua dai dung trong Blender) - thay anh tam giac cu
+        VfxFactory.NangCapDuoiLua(go.transform, fb.bodyRadius);
 
         fb.dir = direction.normalized;
         fb.hitMask = hitMask;
@@ -195,6 +200,7 @@ public class Fireball : MonoBehaviour
         if (exploded) return;
         exploded = true;
 
+        VfxFactory.ThaDuoiLua(transform);
         VfxFactory.FireExplosion(transform.position, blastRadius);
         CombatUtil.AreaDamage(transform.position, blastRadius, impactDamage, damageMask,
                               DamageType.Fire, burnSeconds, boQua);

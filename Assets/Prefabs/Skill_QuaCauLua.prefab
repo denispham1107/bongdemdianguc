@@ -377,7 +377,7 @@ MonoBehaviour:
   speed: 17
   lifetime: 4
   bodyRadius: 0.3
-  impactDamage: 55
+  impactDamage: 85
   blastRadius: 3.4
   burnSeconds: 3.5
   hitMask:

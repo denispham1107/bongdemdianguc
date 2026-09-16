@@ -334,6 +334,10 @@ public static class ThuCauLuaPvP
         var ban = NguoiChoiKhac.Sinh("uid-ban", "Minh ban", P);
         var mauBan = ban.GetComponent<Damageable>();
         mauBan.mauDoMayKhacQuyet = false;
+        // MO KHOA Qua cau lua (16/09/2026): tu he cap do (13/09) moi ky nang khoa luc vao tran - CastAt(0)
+        // bi tu choi va B1/B3 bao "khong co cu no nao" (lan chay cuoi truoc do la 12/09, chua co cap do).
+        CapDo.BatDauTranMoi();
+        CapDo.MoKhoa(0);
         yield return new WaitForSeconds(0.3f);
 
         Ghi("");

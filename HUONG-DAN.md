@@ -8334,6 +8334,34 @@ sát thương hiện ra** (2,1 m) để số không đè lên chữ. Bỏ chữ 
 **Số đo** (menu 62, 0 lỗi): tung thật 10 lần → trúng 10, ngã 7; dấu hiệu hiện **376/383 khung hình đang ngã (98%)**;
 chuỗi ảnh mới thấy chữ NGÃ rõ ở cả 5 thời điểm, đè lên lửa.
 
+### Quả cầu lửa: sát thương 85, vệt lửa vẽ lại bằng Blender (16/09/2026)
+
+Anh xin: sát thương ban đầu **85**; vẽ lại vệt lửa phía sau quả cầu khi bay bằng Blender MCP — vệt cũ "dạng hình tam giác không thật".
+
+**Nguyên nhân vệt tam giác** (đo được): hạt `Flames` của prefab `Skill_QuaCauLua` dùng `Tex_flame.png` — bản thân ảnh là **một hình
+tam giác mờ**; mỗi hạt là một tam giác đứng quay mặt về máy quay, nối nhau thành vệt răng cưa.
+
+**Dựng trong Blender** (qua MCP; `CongCu/Blender/vet_lua_qua_cau_lua.blend`; trong lúc làm Blender mất kết nối một lần, gọi lại thì nối được):
+- **Flipbook `Flipbooks/LuaDuoi.png`** (4×4, 256² mỗi ô): một **đám lửa cuộn** từ lúc bùng sáng đến lúc vỡ vụn thành than đỏ — nhiễu 4D
+  chạy theo pha (bên trong từng hạt lửa cũng cuộn), bóp méo toạ độ thành lưỡi lửa, mép mềm. Bản thử đầu tròn đặc như quả bóng → tăng
+  biên độ méo, nâng ngưỡng màu cho vùng mờ thủng thành lỗ, mép mũ 1,7.
+- **`KyNang/QuaCauLua/VetLuaDai.png`** (512×128): vệt lửa dài liền mạch — đầu trắng vàng, thân cam có vân lửa chạy dọc, mép xé bởi nhiễu,
+  đuôi thon đỏ thẫm; dùng cho `TrailRenderer` nối các hạt thành đuôi sao chổi.
+
+**Trong Unity** (`VfxDuoiLua.cs`, sửa lúc chạy trên bản sinh từ prefab — không đụng prefab/scene): `Flames` → flipbook cộng sáng, xoay
+ngẫu nhiên, to dần; thêm `VetLua`; nổ thì **thả** hạt và vệt ra tan dần tại chỗ (trước đây xoá quả cầu là cả đuôi lửa biến mất trong một
+khung). Ảnh đầu tiên cả chùm ba quả + bloom nhoè thành một khối trắng → hạ độ sáng flipbook 1,35 → 0,75, vệt 1,25 → 0,8, hạt và vệt nhỏ lại.
+Quả cầu lửa của **quái Phù thuỷ** đi cùng `Fireball.Spawn` nên cũng có vệt mới (sát thương riêng của quái giữ nguyên).
+
+**Sát thương**: `impactDamage` 55 → **85** ở **prefab** (prefab đè code) và mặc định trong code.
+
+**Số đo** (menu **70** mới; chạy **trước khi sửa làm đối chứng: 7 lỗi** — prefab 55, ảnh `Tex_flame`, không flipbook, không vệt dài, bia
+mất 52, không thả vệt; **sau khi sửa: 0 lỗi**): prefab 85, quả cầu thật khi tung 85 (3 quả); bia 8 m mất **80** (nổ cách tâm 0,40 m →
+85 × 0,947); `Flames` dùng `LuaDuoi` 1024² flipbook 4×4; có `TrailRenderer` `VetLuaDai`; nổ xong 2 vệt được thả ra tan dần.
+
+**Menu 49 hoá ra đo rỗng một nửa** (như menu 58 hôm trước): lần chạy cuối 12/09, trước hệ cấp độ — phần B `CastAt(0)` bị từ chối vì
+kỹ năng khoá, "không có cú nổ nào". Nay mở khoá trước khi tung: **0 lỗi**; khiên đỡ ba quả 85 mất 142/150 máu, không vỡ.
+
 ### Giựt sét: tầm 20 m, sát thương 75, 4 tia cùng lúc, 15% choáng (16/09/2026)
 
 Anh xin: tầm bằng Sấm sét, sát thương ban đầu 75, đánh cùng lúc 4 tia nếu trước mặt có 4 kẻ địch trong tầm (mỗi tia vẫn lan như
@@ -8890,6 +8918,7 @@ Lần chạy đầu phép thử báo cả 10 con "lơ lửng": tia chiếu từ 
 | **67. Chay thu MUA BANG dong bang NGUOI CHOI KHAC (qua mang)** | Bộ đồng bộ thật + kênh giả lập: người kia tung Mưa băng vào mình bằng gói kỹ năng thật (6 cơn) — trúng, chậm, đóng cứng, khoá chân/phép, gói trạng thái mang bit đóng cứng; bản sao nhận gói đóng cứng thì đứng im và tan đúng lúc; đếm chữ nổi "ĐÓNG BĂNG!" (khớp số lần bắt đầu đóng cứng, bản sao đúng 1 lần) có đối chứng "CHOÁNG!"; vỏ băng phủ lên model có xương và làm vùng thân xanh lên trên ảnh chụp. Số đo `bang_nguoichoi.txt`. |
 | **68. Chay thu QUA CAU BANG (ky nang moi)** | Tài nguyên Blender nạp được; thông số thật trên nhân vật (hồi chiêu 0,55); tung thật `CastAt(9)` (khoá, 3 quả, năng lượng, hồi chiêu); bia trên / lệch đường bay; sát thương 65 ở tâm và vùng nổ 3,4 m; 1000 lần gieo làm chậm (40%, 50%, 2 giây, cấp kéo dài); hình lúc bay (lưới, đuôi gai phía sau, luồng khí lạnh, vệt băng) và sau khi nổ; gói kỹ năng số 9 qua mạng; icon HUD, chữ Sách phép; kích thước thật cụm băng Mưa băng = Quả cầu băng (đối chứng cỡ cũ). Số đo `quacaubang.txt`. |
 | **69. Chay thu GIUT SET (20 m, 75, 4 tia, 15% choang)** | Thông số; tung thật `CastAt(6)` vào 5 bia (đúng 4 bia mất 75 cùng một khung hình); tầm 20 m bằng bia 19,9 / 20,4 m; tia lan ra ngoài tầm vẫn trúng ×0,85; 160 lần phóng đếm tỉ lệ choáng tia đầu và tia lan riêng (bằng StunnedEffect trên bia); cấp kỹ năng kéo dài choáng. Số đo `giatset.txt`. |
+| **70. Chay thu QUA CAU LUA (85 sat thuong, vet lua moi)** | Sát thương đọc thẳng prefab và trên quả cầu thật khi tung; quả cầu sinh từ prefab bay vào bia (mất 85 × giảm theo khoảng cách); hạt `Flames` không còn ảnh tam giác mà là flipbook Blender, có vệt lửa dài `TrailRenderer`; nổ xong vệt được thả ra; chụp cận cảnh lúc bay. Chạy trên bản cũ ra 7 lỗi (đối chứng). Số đo `quacaulua.txt`. |
 | **56. Chay thu DOT QUAI Act2 + cho xuat phat** | *(13/09/2026: thêm đo chờ 30 giây và 10 con xa 55–65 m)*  Kiểm chỗ xuất phát ngẫu nhiên (hai máy cùng mã phòng ra cùng danh sách, cách nhau ≥ 22 m, trên đất, ngoài nước, không vướng vật cản) và luật đợt quái Act2 (đợt 1 bốn con quanh mỗi người; đợt sau cộng dồn quái và mạnh thêm 5% máu · sát thương); kiểm Act1 không bị đổi. Số đo `dotquai_act2.txt`. |
 | **55. Chay thu KET TRAN (nguoi song sot cuoi cung)** | Mở kênh giả lập như menu 45: kiểm gói tin kết trận/chết, máy chủ phòng phán quyết đúng lúc còn một người, bảng điểm cộng đúng người, máy khách không tự kết luận và hiện đúng kết quả nghe được, chết rồi camera chuyển sang người còn sống, chụp màn kết trận. Số đo `kettran.txt`, ảnh `kettran_*.png`. |
 | **54c. Chay thu LOC XOAY cuon lo lua** | Vào Play Act2, thả một cơn lốc đi thẳng vào lò: đo mốc thời gian lửa tắt / lò nhấc lên / lò biến mất / lò mọc lại, kiểm than trong chậu tắt bằng độ sáng trên ảnh, và kiểm vật có hệ hạt khác vẫn không bị cuốn. Ảnh `locxoay_*.png`, số đo `locxoay_lolua.txt`. |
