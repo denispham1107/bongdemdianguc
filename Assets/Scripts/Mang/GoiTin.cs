@@ -320,7 +320,7 @@ public static class GoiTin
     public struct MotPhep
     {
         public byte chiSo;      // ai tung
-        public byte kyNang;     // 0..6, 9 (qua cau bang)
+        public byte kyNang;     // 0..6, 9 (qua cau bang), 10 (gio loc)
 
         /// <summary>
         /// CAP cua ky nang ay (1..5) o may NGUOI TUNG.
@@ -411,9 +411,11 @@ public static class GoiTin
 
             b[i++] = (byte)Mathf.RoundToInt(Mathf.Clamp01(p.mau01) * 255f);
 
-            // Byte co: bit 0-1 cho di/chet, bit 2-5 cho hieu ung (dong bang,
-            // dong cung, choang, BI DANH NGA) - dich sang 2 bit de khong dam vao
-            // hai bit cu.
+            // Byte co: bit 0-1 cho di/chet, bit 2-6 cho hieu ung (dong bang,
+            // dong cung, choang, BI DANH NGA, BI HAT TUNG) - dich sang 2 bit de khong
+            // dam vao hai bit cu.
+            //
+            // NAM bit (0x1F) tu 16/09/2026: Gio loc them co "bi hat tung" la bit thu nam.
             //
             // BON bit (0x0F) chu khong con ba (0x07). Them co "dang nga" la bit
             // thu tu ma quen noi mat na nay (13/09/2026): nguoi bi nga tren may
@@ -422,7 +424,7 @@ public static class GoiTin
             byte co = 0;
             if (p.dangChay) co |= 1;
             if (p.daChet) co |= 2;
-            co |= (byte)((p.coHieuUng & 0x0F) << 2);
+            co |= (byte)((p.coHieuUng & 0x1F) << 2);
             b[i++] = co;
 
             // Byte thu 12 moi nguoi: mau khieng. Truoc day byte nay de trong -
@@ -475,7 +477,7 @@ public static class GoiTin
             byte co = b[i++];
             p.dangChay = (co & 1) != 0;
             p.daChet = (co & 2) != 0;
-            p.coHieuUng = (byte)((co >> 2) & 0x0F);
+            p.coHieuUng = (byte)((co >> 2) & 0x1F);
 
             p.khieng01 = b[i++] / 255f;
 
@@ -691,9 +693,9 @@ public static class GoiTin
 
             b[i++] = (byte)Mathf.RoundToInt(Mathf.Clamp01(q.mau01) * 255f);
             // Byte cuoi truoc day chi mang "da chet" (0/1). Gio bit 0 van la
-            // da chet, bit 1-4 la hieu ung (ke ca bi danh nga) - khong phai doi
-            // co goi. Xem ghi chu 0x0F o goi trang thai nguoi choi.
-            b[i++] = (byte)((q.daChet ? 1 : 0) | ((q.coHieuUng & 0x0F) << 1));
+            // da chet, bit 1-5 la hieu ung (ke ca bi danh nga, bi hat tung) - khong
+            // phai doi co goi. Xem ghi chu 0x1F o goi trang thai nguoi choi.
+            b[i++] = (byte)((q.daChet ? 1 : 0) | ((q.coHieuUng & 0x1F) << 1));
         }
         return b;
     }
@@ -731,7 +733,7 @@ public static class GoiTin
             q.mau01 = b[i++] / 255f;
             byte coQ = b[i++];
             q.daChet = (coQ & 1) != 0;
-            q.coHieuUng = (byte)((coQ >> 1) & 0x0F);
+            q.coHieuUng = (byte)((coQ >> 1) & 0x1F);
 
             ra[n] = q;
         }

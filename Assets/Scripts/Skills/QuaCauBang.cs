@@ -31,7 +31,10 @@ public class QuaCauBang : MonoBehaviour
     /// dat cung to nhu bang cua Qua cau bang").</summary>
     public const float BanKinhHinhBang = BanKinhNo * 0.75f;
 
-    public float speed = 17f;
+    /// <summary>Toc do bay - Gio loc dung chung (nguoi dung 16/09/2026: loc nho bay nhanh bang qua cau bang).</summary>
+    public const float TocDoBay = 17f;
+
+    public float speed = TocDoBay;
     public float lifetime = 4f;
     public float bodyRadius = 0.30f;
 

@@ -33,6 +33,7 @@ public static class HieuUngQuaMang
     public const byte CoBangHoanToan = 1 << 1;   // dong cung hoan toan
     public const byte CoChoang = 1 << 2;         // dang choang
     public const byte CoNga = 1 << 3;            // dang bi thien thach danh nga
+    public const byte CoHatTung = 1 << 4;        // dang bi Gio loc hat tung (16/09/2026) - bit THU NAM, mat na 0x1F
 
     /// <summary>Doc trang thai hieu ung that tren mot vat - de gui di.</summary>
     public static byte DocCo(GameObject go)
@@ -52,6 +53,9 @@ public static class HieuUngQuaMang
 
         var ng = go.GetComponent<BiDanhNga>();
         if (ng != null && ng.DangNga) co |= CoNga;
+
+        var ht = go.GetComponent<BiHatTung>();
+        if (ht != null && ht.DangBay) co |= CoHatTung;
 
         return co;
     }
@@ -119,6 +123,11 @@ public static class HieuUngQuaMang
         if ((co & CoNga) != 0) BiDanhNga.GanHoacKeoDai(d, GiuSongGiay);
         else if (ng != null && ng.thoiGian - ng.daTroi > BiDanhNga.TgDay)
             ng.thoiGian = ng.daTroi + BiDanhNga.TgDay;     // ben kia da dung day - dung theo
+
+        // ---- Bi hat tung ----
+        // Mot cu hat tron 0,5 giay tren ban sao; goi tiep tuc "dang bay" chi keo dai rat it. Kem NGAT CHIEU
+        // ban sao dang niem (xem PlayerController.NgatChieu).
+        if ((co & CoHatTung) != 0) BiHatTung.ApTuMang(d);
 
         // ---- Choang ----
         var st = go.GetComponent<StunnedEffect>();

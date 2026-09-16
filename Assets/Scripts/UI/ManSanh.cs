@@ -200,7 +200,8 @@ public class ManSanh : MonoBehaviour
             iconXemTruoc = new Texture2D[] {
                 IconKyNang.Lua(), IconKyNang.Bang(), IconKyNang.Set(), IconKyNang.Loc(),
                 IconKyNang.ThienThach(), IconKyNang.Khieng(), IconKyNang.GiatSet(),
-                IconKyNang.BinhMau(), IconKyNang.BinhMana(), IconKyNang.CauBang() };
+                IconKyNang.BinhMau(), IconKyNang.BinhMana(), IconKyNang.CauBang(),
+                IconKyNang.GioLoc() };
         return iconXemTruoc;
     }
 

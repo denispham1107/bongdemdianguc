@@ -141,9 +141,20 @@ public class NguoiChoiHoatHinh : MonoBehaviour
         if (phep == 6) phep = 2;
         // 9 = Qua cau bang: cung dong tac DAM THANG ra truoc nhu Qua cau lua
         if (phep == CapDo.KyQuaCauBang) phep = 0;
+        // 10 = Gio loc: dong tac cua Loc xoay
+        if (phep == CapDo.KyGioLoc) phep = 3;
         phepDangNiem = Mathf.Clamp(phep, 0, 5);
         thoiGianNiem = Mathf.Max(0.2f, thoiGian);
         niemTimer = 0f;
+    }
+
+    /// <summary>Bi ngat chieu: bo tu the niem, hoa ve tu the dung.</summary>
+    public void HuyNiem()
+    {
+        if (niemTimer < 0f) return;
+        niemTimer = -1f;
+        phepDangNiem = -1;
+        BatDauHoaVe();
     }
 
     void Update()

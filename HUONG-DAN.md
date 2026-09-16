@@ -8334,6 +8334,81 @@ sát thương hiện ra** (2,1 m) để số không đè lên chữ. Bỏ chữ 
 **Số đo** (menu 62, 0 lỗi): tung thật 10 lần → trúng 10, ngã 7; dấu hiệu hiện **376/383 khung hình đang ngã (98%)**;
 chuỗi ảnh mới thấy chữ NGÃ rõ ở cả 5 thời điểm, đè lên lửa.
 
+### Kỹ năng mới: Gió lốc — ba cơn lốc nhỏ màu nâu, hất tung và ngắt chiêu (16/09/2026)
+
+Anh xin: phóng ra **3 cơn lốc nhỏ** có hiệu ứng như Lốc xoáy nhưng **thấp hơn nửa chiều cao**, **màu nâu**, vẫn có tia sét
+bên trong; bay nhanh bằng quả cầu băng, **tự tan sau 3,5 giây**; sát thương 75, hồi chiêu 0,4 giây; **55% hất tung** đối thủ
+và người chơi khác 0,5 giây (không cuốn lên như Lốc xoáy), đang dùng kỹ năng mà bị hất thì **bị ngắt chiêu ngay**; lốc
+**đi xuyên** mọi vật cản và người chơi.
+
+Những chỗ anh chưa nói, tôi **hỏi trước khi làm** (ba lượt câu hỏi), anh chọn:
+
+| Hỏi | Anh chọn |
+|---|---|
+| 75 tính thế nào | **một lần mỗi mục tiêu** cho mỗi cơn lốc (ba cơn cùng trúng = 225) |
+| Tia sét có gây sát thương không | **có**: mỗi lần lốc trúng, **một tia 15** giật vào mục tiêu |
+| 55% gieo thế nào | **mỗi cơn lốc gieo riêng** |
+| Năng lượng | **20** |
+| Hình phóng ra | **toả quạt 11°** như Quả cầu băng |
+| Ngắt chiêu áp cho ai | **cả người chơi và quái** |
+| Hình ảnh / icon | **dùng hình Lốc xoáy nhuộm nâu**, không Blender |
+| Vùng trúng | **bán kính 2,2 m** |
+| Bị hất cao bao nhiêu | **1,5 m** |
+| Cảnh vật | **dập tắt lò lửa** khi lướt qua, 30 giây sau cháy lại (không cuốn cây / bia) |
+| Thời gian niệm | **0,38 s** như Quả cầu băng |
+
+Tôi tự theo **luật sẵn có** của dự án (không hỏi): số hiệu **10** thêm ở cuối; cấp kỹ năng +20% sát thương (cả tia sét) và
++0,15 s thời gian hất mỗi cấp; **khiên đang bật thì không bị hất** (luật chung như choáng / đóng băng / ngã); chữ nổi
+**"HẤT TUNG!"** như "CHOÁNG!".
+
+**Làm:**
+- `Skills/GioLoc.cs`: lốc bám mặt đất, bay thẳng **17 m/s** (`QuaCauBang.TocDoBay` — hằng dùng chung, không chép số), **không hỏi va
+  chạm gì** nên xuyên hết; mỗi khung quét **cả đoạn vừa đi** bằng `OverlapCapsule` (máy yếu 10 khung/giây là 1,7 m một khung — quét
+  điểm cuối thì lọt người); mỗi mục tiêu ghi vào danh sách đã trúng → đúng một lần. Gọi `GhiKeDanh` trước cả hai cú sát thương.
+- `Vfx/VfxGioLoc.cs`: **chính** `BuildTornado` (prefab `Skill_LocXoay` có cùng bộ con) ở tỉ lệ 0,45 → cao 6,9 m so với 15,4 m.
+  Nhuộm nâu vỏ lốc / dải xoắn (vật liệu riêng từng cái) và **màu hạt** (vật liệu hạt **dùng chung** với Lốc xoáy — sửa vật liệu là
+  Lốc xoáy cũng nâu theo). **Bản nhẹ**: bỏ đèn điểm (ba lốc = ba đèn), nửa lượng hạt. Tia sét: `TornadoBolt` cùng tỉ lệ.
+- `Combat/BiHatTung.cs`: nhấc **model con** theo parabol 1,5 m trong 0,5 giây (va chạm ở gốc đứng yên — cùng cách `BiDanhNga`),
+  khoá đi / đánh / tung phép, gọi **`PlayerController.NgatChieu`** (phép chưa phóng thì không bao giờ phóng, tắt hiệu ứng tích tụ,
+  bỏ tư thế niệm) và **`EnemyAI.NgatDon`**. Đang bay mà bị hất tiếp thì tính lại 0,5 giây từ **độ cao đang có**.
+- **Qua mạng**: bit hiệu ứng thứ **năm** `CoHatTung` → nới mặt nạ **0x0F → 0x1F** ở **cả** gói người chơi lẫn gói quái (bài học
+  menu 63). Máy chủ sở hữu gieo 55%; bản sao nhận bit thì bay một cú 0,5 giây **và ngắt chiêu bản sao** — bản sao bắt đầu niệm trễ
+  đúng bằng độ trễ gói tin, bit hất tung đi cùng đường nên luôn tới **trước** lúc bản sao phóng phép. Gói "đang bay" cuối cùng tới
+  trễ sau khi hình đã rơi xuống **không** hất lần hai (nhớ lúc kết thúc từng mục tiêu, bỏ qua trong 0,35 s).
+- `LoLuaDa.DapTatRoiChayLai(30)`: Gió lốc không cuốn lò nên không có `VatTheBiCuon` nào nhóm lửa lại — lò tự hẹn giờ; nếu Lốc xoáy
+  lớn đang cuốn lò lúc hết giờ thì nhường cho `VatTheBiCuon.MocLai`.
+- Nối vào `CapDo` (`KyGioLoc = 10`, `SoKyNang = 11`), `PlayerController` (20 · 0,4 · 0,38, hồi chiêu vào trạng thái dự đoán),
+  Sách phép (tên, tóm tắt, mô tả có dấu), HUD / sảnh (icon thứ 11), màu chỉ báo ngắm nâu, tư thế niệm của Lốc xoáy.
+  Icon: `python CongCu/Icon/sinh_gio_loc.py` — ba bản thu nhỏ icon Lốc xoáy nhuộm nâu.
+
+**Số đo** (menu **71** mới, `gioloc.txt`, **0 lỗi**):
+
+| Đo | Kết quả |
+|---|---|
+| Thông số nhân vật / Sách phép | 20 năng lượng · hồi chiêu 0,4 s · niệm 0,38 s; HUD 11 icon |
+| Tung thật `CastAt(10)` | khoá thì từ chối; mở khoá → **3 lốc**, tốn **20**; bấm lại mỗi khung → được nhận sau **0,418 s** (thấy "GIÓ LỐC đang hồi chiêu" trước đó); kẻ đánh cuối = người tung |
+| Chiều cao hình | lốc nhỏ **6,92 m**, Lốc xoáy thật **15,37 m** → **0,45** |
+| Màu vỏ lốc | (0,75; 0,53; 0,31) — nâu; **0** đèn; **12–15** tia sét xuất hiện khi bay không có mục tiêu nào |
+| Tốc độ / thời gian sống | **17,00 m/s** (quả cầu băng thật: 17); ngừng đi sau **3,50–3,51 s**, rồi vật thể bị xoá |
+| Xuyên vật cản | đi thẳng qua bia mộ (tia đối chứng cùng đường **chạm** bia) tới 16,4 m trong 1 giây |
+| Sát thương | một lốc qua bia đứng yên: **90** (75 + 15) đúng một lần; ba lốc cùng qua: **270**; bia lệch 2,5 m (mép thân 2,1 m) mất 90, lệch 2,7 m (mép 2,3 m) **0**; lốc đi tiếp **33,8 m** sau khi trúng |
+| Hất tung (19 bia × 10 lốc) | 190 lần trúng → **57,9% · 51,6% · 50,0%** ở ba lần chạy (gộp 570 lần: **53,2%**, mong 55%); đếm độc lập bằng component = bộ đếm trong code; cao nhất **1,50 m**; bay **0,51 s** |
+| Khiên | 20 lốc với tỉ lệ 100%: hất **0**, máu mất 0 |
+| Ngắt chiêu người chơi | đang niệm Quả cầu lửa bị hất: **3/3** lần không quả nào (đối chứng không hất: 3/3 ra đủ 3 quả); lốc thật trúng người đang niệm: 0 quả; bấm kỹ năng lúc đang bay → "BẠN ĐANG BỊ HẤT TUNG!" |
+| Ngắt đòn quái | bộ xương đang vung tay bị hất: **0/5** đòn trúng; đối chứng: **5/5** trúng |
+| Qua mạng | gói kỹ năng số 10 → máy mình phát lại 3 lốc; gói trạng thái mang bit hất tung; mặt nạ 0x1F qua được cả hai gói; bản sao nhận bit bay cao **1,50 m**, gói trễ **không** hất lần hai; bản sao đang niệm nhận bit: **3/3** không phóng (đối chứng 3/3 phóng đủ) |
+| Lò lửa | lốc lướt qua → tắt, lò đối chứng ở xa vẫn cháy; **25 s** vẫn tắt, **31 s** cháy lại |
+
+Lần chạy đầu ra 4 lỗi, **cả bốn ở phép thử**: ba lốc đo sau bay đúng đường các bia trước (trúng thêm); cấp 1 chỉ có **1 điểm kỹ
+năng** nên Quả cầu lửa (để có phép "đang niệm") vẫn khoá — đối chứng ra 0/3 mới lộ; kiểm bản sao ngay khung đầu, trước khi gói
+tin được xử lý. Lần hai: hồi chiêu đo bằng `WaitForSeconds(0.3)` trượt quá 0,4 s vì Editor giật khung → đổi sang bấm mỗi khung đo
+lúc được nhận; bia thấp làm tia đối chứng ở độ cao 1 m bay qua đầu → bắn ngang tâm bia.
+Chạy lại menu **61** (thêm Gió lốc: giết quỷ dữ được đủ 40 kinh nghiệm), **63** (mặt nạ 5 bit không phá bit ngã), **66**
+(xem trước 11/11 kỹ năng), **59**: đều **0 lỗi**.
+
+Ảnh `gioloc_can_*.png` (menu 71b, cạnh `gioloc_locxoay_*.png`): lốc nâu xoắn, tia sét lách tách bên trong — độ sáng tia **bằng**
+Lốc xoáy lớn vì dùng chung hàm; ở một số khung tia sét trắng xanh át phần nâu.
+
 ### Mưa băng: cụm gai băng chỉ mọc khi trúng đồ vật hoặc kẻ địch (16/09/2026)
 
 Anh xin: quả cầu băng chỉ trúng mặt đất thì nổ bình thường, **không tạo khối băng**; trúng đồ vật / người chơi khác / quái thì vừa
@@ -8967,10 +9042,12 @@ Lần chạy đầu phép thử báo cả 10 con "lơ lửng": tia chiếu từ 
 | **63. Chay thu DANH NGA NGUOI CHOI KHAC (qua mang)** | Bộ đồng bộ thật + kênh giả lập: người kia tung Thiên thạch bằng gói kỹ năng thật vào mình (đếm ngã, đo hình nằm ngửa từ xương đầu, dấu hiệu); máy người kia báo "đang ngã" bằng gói trạng thái thật → bản sao phải nằm, có dấu hiệu, đứng dậy; bit ngã qua được gói người chơi và gói quái. Số đo `danhnga_nguoichoi.txt`. |
 | **64. Chay thu QUAI VONG NGOAI TRUY LUNG (60 giay)** | Dùng đợt quái thật: hẹn giờ 60 giây từng con; trước 60 giây quái chưa gặp không tiến lại (trung bình); sau 60 giây đếm con vào 14 m và con ra đòn thật; đối chứng hai con quái thường; dựng ca kẹt sau vật cản thật và ca nhốt trong bốn bức tường (phải vòng / đổi chỗ). Số đo `quai_truylung.txt`. |
 | **65. Chay thu BINH MAU - BINH MANA (roi, nhat, uong, mang)** | Tỉ lệ rơi (3000 lần + giết quái thật), nhặt trong / ngoài bán kính, uống (khoá, hết, đầy, hồi chiêu, 100 / 50), số bình trên ô (so ảnh với ô đối chứng), chữ Sách phép to (so bề ngang nét với chữ đối chứng cỡ cũ / mới), cuộn thân chi tiết, 5 ca mạng qua bộ đồng bộ thật + kênh giả lập. Số đo `binh_mau_mana.txt`. |
-| **66. Chay thu NUT KY NANG o sanh (sach phep xem truoc) + con mat** | Ngoài Play: quét chữ có dấu 3 file, chạy thật cầu nối localStorage bằng node. Trong Play: đăng nhập, mở Sách phép xem trước (9/9 kỹ năng mở, so độ sáng hình với đối chứng khoá), thông số đọc từ nhân vật trưng bày = prefab, xếp ô → kho lưu, vào Act2 lúc sách mở (sách đóng, thanh kỹ năng đúng thứ tự), đo con mắt quỷ hai trạng thái; thoát Play nạp lại từ kho. Số đo `sachphep_sanh.txt`. |
+| **66. Chay thu NUT KY NANG o sanh (sach phep xem truoc) + con mat** | Ngoài Play: quét chữ có dấu 3 file, chạy thật cầu nối localStorage bằng node. Trong Play: đăng nhập, mở Sách phép xem trước (tất cả kỹ năng mở — nay 11/11, so độ sáng hình với đối chứng khoá), thông số đọc từ nhân vật trưng bày = prefab, xếp ô → kho lưu, vào Act2 lúc sách mở (sách đóng, thanh kỹ năng đúng thứ tự), đo con mắt quỷ hai trạng thái; thoát Play nạp lại từ kho. Số đo `sachphep_sanh.txt`. |
 | **67. Chay thu MUA BANG dong bang NGUOI CHOI KHAC (qua mang)** | Bộ đồng bộ thật + kênh giả lập: người kia tung Mưa băng vào mình bằng gói kỹ năng thật (6 cơn) — trúng, chậm, đóng cứng, khoá chân/phép, gói trạng thái mang bit đóng cứng; bản sao nhận gói đóng cứng thì đứng im và tan đúng lúc; đếm chữ nổi "ĐÓNG BĂNG!" (khớp số lần bắt đầu đóng cứng, bản sao đúng 1 lần) có đối chứng "CHOÁNG!"; vỏ băng phủ lên model có xương và làm vùng thân xanh lên trên ảnh chụp. Số đo `bang_nguoichoi.txt`. |
 | **68. Chay thu QUA CAU BANG (ky nang moi)** | Tài nguyên Blender nạp được; thông số thật trên nhân vật (hồi chiêu 0,55); tung thật `CastAt(9)` (khoá, 3 quả, năng lượng, hồi chiêu); bia trên / lệch đường bay; sát thương 65 ở tâm và vùng nổ 3,4 m; 1000 lần gieo làm chậm (40%, 50%, 2 giây, cấp kéo dài); hình lúc bay (lưới, đuôi gai phía sau, luồng khí lạnh, vệt băng) và sau khi nổ; gói kỹ năng số 9 qua mạng; icon HUD, chữ Sách phép; kích thước thật cụm băng Mưa băng = Quả cầu băng (đối chứng cỡ cũ); Mưa băng thật rơi quả cầu băng (lưới, luồng khí lạnh, vệt, đuôi phía sau, không đèn, không còn tảng cũ, vẫn gây sát thương, rơi thẳng đứng); cụm gai chỉ khi trúng đồ vật / kẻ địch (4 trường hợp + đối chứng + 2 cơn thật). Số đo `quacaubang.txt`. |
 | **69. Chay thu GIUT SET (20 m, 75, 4 tia, 15% choang)** | Thông số; tung thật `CastAt(6)` vào 5 bia (đúng 4 bia mất 75 cùng một khung hình); tầm 20 m bằng bia 19,9 / 20,4 m; tia lan ra ngoài tầm vẫn trúng ×0,85; 160 lần phóng đếm tỉ lệ choáng tia đầu và tia lan riêng (bằng StunnedEffect trên bia); cấp kỹ năng kéo dài choáng. Số đo `giatset.txt`. |
+| **71. Chay thu GIO LOC (ky nang moi)** | Thông số; tung thật `CastAt(10)` (khoá, 3 lốc, 20 năng lượng, hồi chiêu đo bằng bấm mỗi khung); chiều cao hình so Lốc xoáy thật, màu nâu, không đèn, có tia sét; tốc độ và thời gian sống; xuyên bia mộ (tia đối chứng); 90 một lần, 270 ba lốc, vùng 2,2 m (2,5 / 2,7 m); 190 lần trúng đếm hất tung độc lập, độ cao, thời gian bay; khiên chặn hất; ngắt chiêu người chơi (đối chứng) và đòn quái (đối chứng); qua mạng: gói số 10, bit hất tung, mặt nạ 5 bit, bản sao bay / ngắt chiêu / không hất lần hai; lò lửa tắt rồi cháy lại sau 30 s. Số đo `gioloc.txt`. |
+| **71b. Chup anh GIO LOC (so voi Loc xoay)** | Chỉ chụp: hai lốc bay ngang màn hình 5 khung liên tiếp + Lốc xoáy lớn để so màu và tia sét. Ảnh `gioloc_can_*.png`, `gioloc_locxoay_*.png`. |
 | **70. Chay thu QUA CAU LUA (85 sat thuong, vet lua moi)** | Sát thương đọc thẳng prefab và trên quả cầu thật khi tung; quả cầu sinh từ prefab bay vào bia (mất 85 × giảm theo khoảng cách); hạt `Flames` không còn ảnh tam giác mà là flipbook Blender, có vệt lửa dài `TrailRenderer`; nổ xong vệt được thả ra; chụp cận cảnh lúc bay. Chạy trên bản cũ ra 7 lỗi (đối chứng). Số đo `quacaulua.txt`. |
 | **56. Chay thu DOT QUAI Act2 + cho xuat phat** | *(13/09/2026: thêm đo chờ 30 giây và 10 con xa 55–65 m)*  Kiểm chỗ xuất phát ngẫu nhiên (hai máy cùng mã phòng ra cùng danh sách, cách nhau ≥ 22 m, trên đất, ngoài nước, không vướng vật cản) và luật đợt quái Act2 (đợt 1 bốn con quanh mỗi người; đợt sau cộng dồn quái và mạnh thêm 5% máu · sát thương); kiểm Act1 không bị đổi. Số đo `dotquai_act2.txt`. |
 | **55. Chay thu KET TRAN (nguoi song sot cuoi cung)** | Mở kênh giả lập như menu 45: kiểm gói tin kết trận/chết, máy chủ phòng phán quyết đúng lúc còn một người, bảng điểm cộng đúng người, máy khách không tự kết luận và hiện đúng kết quả nghe được, chết rồi camera chuyển sang người còn sống, chụp màn kết trận. Số đo `kettran.txt`, ảnh `kettran_*.png`. |

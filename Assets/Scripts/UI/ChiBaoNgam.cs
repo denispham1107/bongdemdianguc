@@ -224,6 +224,7 @@ public class ChiBaoNgam : MonoBehaviour
             case 5: return new Color(0.85f, 0.62f, 1.00f);   // khieng
             case 6: return new Color(0.55f, 1.00f, 0.60f);   // giut set
             case CapDo.KyQuaCauBang: return new Color(0.62f, 0.90f, 1.00f);   // qua cau bang
+            case CapDo.KyGioLoc: return new Color(0.92f, 0.68f, 0.40f);       // gio loc - nau
             default: return new Color(0.40f, 0.95f, 1.00f);
         }
     }

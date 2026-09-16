@@ -8,14 +8,14 @@ G1. nguoi kia tung thien thach vao cho minh bang GOI KY NANG that (10 lan)
     lan 1: trung True, bi nga True, hinh nam ngua True, dau hieu tren dau True
     lan 2: trung True, bi nga True, hinh nam ngua True, dau hieu tren dau True
     lan 3: trung True, bi nga True, hinh nam ngua True, dau hieu tren dau True
-    lan 4: trung True, bi nga True, hinh nam ngua True, dau hieu tren dau True
+    lan 4: trung True, bi nga False, hinh nam ngua False, dau hieu tren dau False
     lan 5: trung True, bi nga True, hinh nam ngua True, dau hieu tren dau True
-    lan 6: trung True, bi nga True, hinh nam ngua True, dau hieu tren dau True
+    lan 6: trung True, bi nga False, hinh nam ngua False, dau hieu tren dau False
     lan 7: trung True, bi nga True, hinh nam ngua True, dau hieu tren dau True
-    lan 8: trung True, bi nga False, hinh nam ngua False, dau hieu tren dau False
+    lan 8: trung True, bi nga True, hinh nam ngua True, dau hieu tren dau True
     lan 9: trung True, bi nga True, hinh nam ngua True, dau hieu tren dau True
     lan 10: trung True, bi nga True, hinh nam ngua True, dau hieu tren dau True
-G1. trung 10/10, nhan vat minh bi nga 9/10, nam ngua that 9, co dau hieu 9 (mong doi ~78% so lan co nga)
+G1. trung 10/10, nhan vat minh bi nga 8/10, nam ngua that 8, co dau hieu 8 (mong doi ~78% so lan co nga)
 
 G2. may nguoi kia bao 'toi dang nga' bang GOI TRANG THAI that
 G2. ban sao nguoi kia: nhan duoc nga True, hinh nam ngua True, dau hieu tren dau True, goi het nga -> dung day True

@@ -323,7 +323,9 @@ public class EnemyAI : MonoBehaviour
         // don danh dang giua chung cung bo luon
         var stunned = GetComponent<StunnedEffect>();
         var nga = GetComponent<BiDanhNga>();
-        if ((stunned != null && stunned.IsStunned) || (nga != null && nga.DangNga))
+        var hatTung = GetComponent<BiHatTung>();
+        if ((stunned != null && stunned.IsStunned) || (nga != null && nga.DangNga)
+            || (hatTung != null && hatTung.DangBay))
         {
             speedMul = 0f;
             attackTimer = -1f;
@@ -458,6 +460,21 @@ public class EnemyAI : MonoBehaviour
         if (dir.sqrMagnitude < 0.01f) return;
         Quaternion want = Quaternion.LookRotation(dir);
         transform.rotation = Quaternion.Slerp(transform.rotation, want, turnSpeed * 0.6f * dt);
+    }
+
+    /// <summary>Dang vung tay ra don va CHUA toi nhip gay sat thuong.</summary>
+    public bool DangRaDonChuaTrung { get { return attackTimer >= 0f && !hitApplied; } }
+
+    /// <summary>So lan bi ngat don dang ra (chua toi nhip trung) - phep thu doc.</summary>
+    public static int SoLanNgatDon;
+
+    /// <summary>Bi Gio loc hat tung: bo don dang ra ngay (nguoi dung chon: ngat ca quai).</summary>
+    public void NgatDon()
+    {
+        if (attackTimer < 0f) return;
+        if (!hitApplied) SoLanNgatDon++;
+        attackTimer = -1f;
+        hitApplied = false;
     }
 
     void StartAttack()

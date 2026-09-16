@@ -104,6 +104,12 @@ public class ProceduralAnimator : MonoBehaviour
         castTimer = castDuration;
     }
 
+    /// <summary>Bo dang niem chu giua chung (bi ngat chieu).</summary>
+    public void DungNiem()
+    {
+        castTimer = 0f;
+    }
+
     public void PlayAttack(float duration)
     {
         attackDuration = Mathf.Max(0.2f, duration);

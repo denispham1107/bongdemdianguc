@@ -27,6 +27,9 @@ public class LoLuaDa : MonoBehaviour
 
     public bool DangChay { get { return lua != null; } }
 
+    /// <summary>Moc Time.time se tu nhom lua lai (Gio loc dap tat). 0 = khong hen.</summary>
+    float henChayLai;
+
     /// <summary>Bao nhieu giay tinh tu luc lua tat.</summary>
     public float GiayTuLucTat { get { return Time.time - tatLuc; } }
 
@@ -42,6 +45,7 @@ public class LoLuaDa : MonoBehaviour
     /// <summary>Nhom lua trong chau. Goi lai khi da chay roi thi khong lam gi.</summary>
     public void Chay()
     {
+        henChayLai = 0f;
         if (lua != null) return;
         lua = VfxFactory.LuaLoDa(transform, new Vector3(0f, doCaoMieng, 0f), banKinhChau);
         DatMauThan(false);
@@ -63,6 +67,26 @@ public class LoLuaDa : MonoBehaviour
         tatLuc = Time.time;
         DatMauThan(true);
         VfxFactory.KhoiTatLua(transform.position + Vector3.up * doCaoMieng, banKinhChau);
+    }
+
+    /// <summary>
+    /// GIO LOC luot qua: dap tat lua va HEN chay lai sau <paramref name="giay"/> giay (nguoi dung chon
+    /// 16/09/2026). Gio loc khong cuon lo nen khong co VatTheBiCuon nao nhom lai ho.
+    /// </summary>
+    public void DapTatRoiChayLai(float giay)
+    {
+        if (lua == null) return;
+        DapTat();
+        henChayLai = Time.time + giay;
+    }
+
+    void Update()
+    {
+        if (henChayLai <= 0f || lua != null || Time.time < henChayLai) return;
+        // Loc xoay lon dang cuon cai lo nay di: de VatTheBiCuon.MocLai nhom lua khi lo moc lai,
+        // nhom bay gio la lua chay giua troi / lo dang vo hinh.
+        if (GetComponent<VatTheBiCuon>() != null) return;
+        Chay();
     }
 
     /// <summary>Than nguoi (xam den, khong phat sang) hay than do dang chay.</summary>
