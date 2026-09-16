@@ -14,16 +14,20 @@ using UnityEngine;
 /// bi ngat; xuyen moi vat can va nguoi choi. Nguoi dung chon them: 75 mot lan moi muc tieu moi loc, tia set 15,
 /// 55% moi loc, 20 nang luong, toa quat 11 do, ngat ca quai, niem 0,38, vung trung 2,2 m, cao 1,5 m, dap tat lo lua
 /// (chay lai sau 30 giay), icon Loc xoay nhuom nau.
+/// 17/09/2026 nguoi dung doi: hinh dung lai bang Blender (xam trang nhu Loc xoay, cao ~5 m, xoay MOT CHIEU tu duoi len,
+/// khoi bui den cuon len + vet phia sau), BO tia set (chi con 75), toc do giam 25% (12,75 m/s).
 ///
 ///   A. Thong so that: hang so, nhan vat (nang luong / hoi chieu / niem), Sach phep, HUD 11 icon, icon nap duoc,
 ///      toc do = truong speed cua mot Qua cau bang THAT.
 ///   B. Tung that CastAt(10): khoa thi tu choi; mo khoa -> dung 3 loc, tru 20 nang luong, bam lai bi hoi chieu,
 ///      doi 0,45 s thi tung duoc. Trung bia -> keDanhCuoi = nguoi tung.
-///   C. Hinh: chieu cao hinh loc nho / Loc xoay THAT (doi chung) < 0,5; vo loc nau (r > g > b); khong den; co tia
-///      set xuat hien khi bay (khong co muc tieu nao); chup anh.
+///   C. Hinh: luoi Blender (Vo0-2, DaiGio); cao ~5 m (doi chung Loc xoay that); xam trang; khong den; KHONG tia set;
+///      XOAY MOT CHIEU TU DUOI LEN: doc xoan cua dai gio doc tu luoi + chieu quay do bang goc that cua vo theo thoi gian
+///      + chieu truot anh, moi lop deu cung chieu; khoi bui den cuon quanh than: hat bay LEN va quay CUNG chieu (do tung
+///      hat theo randomSeed), vet bui con lai phia sau (hat khong gian the gioi); chup anh.
 ///   D. Toc do do bang vi tri (m/s) va thoi gian song (luc ngung di).
 ///   E. Xuyen vat can: bay thang qua mot bia mo; xuyen nguoi choi / ke dich: di tiep sau khi trung.
-///   F. Sat thuong: mot loc qua bia dung yen = 90 (75 + set 15) dung mot lan; ba loc cung trung = 270;
+///   F. Sat thuong: mot loc qua bia dung yen = 75 dung mot lan; ba loc cung trung = 225;
 ///      vung trung: bia lech 2,5 m trung, 2,7 m truot (tinh toi mat than bia ban kinh 0,4).
 ///   G. Hat tung: 19 bia x 10 loc -> ti le (dem doc lap bang component xuat hien), do cao hinh lon nhat,
 ///      thoi gian bay; bia co khieng -> 0 lan.
@@ -58,6 +62,7 @@ public static class ThuGioLoc
         Directory.CreateDirectory("PlayTestShots");
         bao.Length = 0; loi = 0; daBatDau = false;
         Ghi("[ban 1] Gio loc");
+        DoDocXoanNgoaiPlay();
         canhCu = EditorSceneManager.GetActiveScene().path;
         if (canhCu != "Assets/Scenes/Act2.unity") EditorSceneManager.OpenScene("Assets/Scenes/Act2.unity");
         truocBat = EditorSettings.enterPlayModeOptionsEnabled; truocOpt = EditorSettings.enterPlayModeOptions;
@@ -66,6 +71,40 @@ public static class ThuGioLoc
         EditorApplication.update -= Nhip;
         EditorApplication.update += Nhip;
         EditorApplication.EnterPlaymode();
+    }
+
+    static int docTangEditor, docGiamEditor;
+
+    /// <summary>
+    /// DOC XOAN cua dai gio doc thang tu luoi FBX - LAM NGOAI PLAY: trong Play luoi khong bat Read/Write tra ve mang rong.
+    /// Dinh ke tiep doc dai (uv.x lon hon mot buoc) len cao thi goc atan2(z,x) tang hay giam.
+    /// </summary>
+    static void DoDocXoanNgoaiPlay()
+    {
+        docTangEditor = 0; docGiamEditor = 0;
+        foreach (var o in AssetDatabase.LoadAllAssetsAtPath("Assets/Resources/KyNang/GioLoc/LocNho.fbx"))
+        {
+            var m = o as Mesh;
+            if (m == null || m.name != "DaiGio") continue;
+            var v = m.vertices; var uv = m.uv;
+            for (int i = 0; i < v.Length; i += 5)
+            {
+                // Bo chan loc (< 1,5 m): ban kinh 0,3 m, nam dai cach nhau ~0,37 m - tim dinh ke tiep de bat nham sang dai ben
+                if (v[i].y < 1.5f) continue;
+                // Dinh ke tiep = dinh GAN NHAT thoa uv (lay ung vien dau tien thi co luc bat nham dai ben canh)
+                int tot = -1; float ganNhat = 0.6f;
+                for (int j = 0; j < v.Length; j++)
+                {
+                    float du = uv[j].x - uv[i].x;
+                    if (du < 0.02f || du > 0.04f || Mathf.Abs(uv[j].y - uv[i].y) > 0.01f || v[j].y <= v[i].y) continue;
+                    float kc = (v[j] - v[i]).magnitude;
+                    if (kc < ganNhat) { ganNhat = kc; tot = j; }
+                }
+                if (tot < 0) continue;
+                float dg = Mathf.DeltaAngle(Mathf.Atan2(v[i].z, v[i].x) * Mathf.Rad2Deg, Mathf.Atan2(v[tot].z, v[tot].x) * Mathf.Rad2Deg);
+                if (dg > 0.01f) docTangEditor++; else if (dg < -0.01f) docGiamEditor++;
+            }
+        }
     }
 
     static void Nhip()
@@ -184,16 +223,17 @@ public static class ThuGioLoc
         var hud = GameHUD.Ban;
         var bo = hud != null ? hud.BoIcon() : null;
         var tIcon = Resources.Load<Texture2D>("Icons/GioLoc");
-        Ghi(string.Format("A. nhan vat: nang luong {0}, hoi chieu {1} s, niem {2} s; Sach phep doc {3}/{4}/{5}; sat thuong {6} + set {7}, hat tung {8:P0} x {9} s cao {10} m, vung trung {11} m, song {12} s, cao hinh ti le {13}",
-            toi.gioLocCost, toi.gioLocCooldown, toi.gioLocCastTime, nl, hc, nc, GioLoc.SatThuongGoc, GioLoc.SatThuongSet,
-            GioLoc.XacSuatHatTung, BiHatTung.GiayMacDinh, BiHatTung.CaoBay, GioLoc.BanKinhTrung, GioLoc.ThoiGianSong, GioLoc.TiLe));
+        Ghi(string.Format("A. nhan vat: nang luong {0}, hoi chieu {1} s, niem {2} s; Sach phep doc {3}/{4}/{5}; sat thuong {6}, hat tung {7:P0} x {8} s cao {9} m, vung trung {10} m, song {11} s, cao hinh {12} m",
+            toi.gioLocCost, toi.gioLocCooldown, toi.gioLocCastTime, nl, hc, nc, GioLoc.SatThuongGoc,
+            GioLoc.XacSuatHatTung, BiHatTung.GiayMacDinh, BiHatTung.CaoBay, GioLoc.BanKinhTrung, GioLoc.ThoiGianSong, GioLoc.ChieuCao));
         Ghi(string.Format("A. toc do loc {0} m/s, toc do mot Qua cau bang that {1} m/s; HUD {2} icon, icon so 10 {3}; icon file {4}; ten \"{5}\", tom tat \"{6}\", mo ta {7} ky tu",
             GioLoc.TocDo, tocQuaCau, bo != null ? bo.Length : -1, bo != null && bo.Length > K && bo[K] != null ? "co" : "KHONG",
             tIcon != null ? tIcon.width + "x" + tIcon.height : "KHONG", SachPhep.Ten(K), SachPhep.TomTat(K), SachPhep.MoTa(K).Length));
         Kiem(Mathf.Approximately(toi.gioLocCost, 20f) && Mathf.Approximately(nl, 20f), "nang luong khong phai 20");
         Kiem(Mathf.Approximately(toi.gioLocCooldown, 0.4f) && Mathf.Approximately(hc, 0.4f), "hoi chieu khong phai 0,4");
         Kiem(Mathf.Approximately(toi.gioLocCastTime, 0.38f), "niem khong phai 0,38");
-        Kiem(Mathf.Approximately(GioLoc.TocDo, tocQuaCau), "toc do loc khac toc do Qua cau bang");
+        Kiem(Mathf.Abs(GioLoc.TocDo - tocQuaCau * 0.75f) < 0.001f, "toc do loc khong bang Qua cau bang giam 25%");
+        Kiem(!SachPhep.MoTa(K).Contains("sét"), "mo ta Sach phep van nhac tia set");
         Kiem(bo != null && bo.Length == CapDo.SoKyNang && bo[K] != null && tIcon != null, "thieu icon Gio loc");
         Kiem(SachPhep.Ten(K) == "GIÓ LỐC" && SachPhep.MoTa(K).Length > 100, "Sach phep thieu chu Gio loc");
 
@@ -252,7 +292,7 @@ public static class ThuGioLoc
         // ================= C + D. HINH, TOC DO, THOI GIAN SONG =================
         Ghi("");
         {
-            var locXoay = Tornado.Spawn(goc + huong * 40f + Vector3.up * 0f, huong, 0);
+            var locXoay = Tornado.Spawn(goc + huong * 40f, huong, 0);
             yield return null; yield return null;
             float caoLon = CaoHinh(locXoay.gameObject);
             Object.Destroy(locXoay.gameObject);
@@ -263,45 +303,131 @@ public static class ThuGioLoc
             yield return null; yield return null;
             float caoNho = CaoHinh(loc.gameObject);
             int soDen = loc.GetComponentsInChildren<Light>(true).Length;
+
+            // Luoi Blender + mau vo
+            var tenLuoi = new List<string>();
             Color tb = Color.black; int soVo = 0;
-            foreach (var r in loc.GetComponentsInChildren<MeshRenderer>())
+            Transform vo0 = null, dai = null;
+            foreach (var mf in loc.GetComponentsInChildren<MeshFilter>())
             {
-                if (!r.sharedMaterial.HasProperty("_TintColor")) continue;
-                tb += r.sharedMaterial.GetColor("_TintColor"); soVo++;
+                tenLuoi.Add(mf.name + "(" + (mf.sharedMesh != null ? mf.sharedMesh.name : "null") + ")");
+                if (mf.name == "Vo0") vo0 = mf.transform;
+                if (mf.name == "DaiGio") dai = mf.transform;
+                var mat = mf.GetComponent<MeshRenderer>().sharedMaterial;
+                if (mf.name.StartsWith("Vo") && mat.HasProperty("_TintColor")) { tb += mat.GetColor("_TintColor"); soVo++; }
             }
             if (soVo > 0) tb /= soVo;
-            yield return new WaitForSeconds(0.2f);
+
+            // DOC XOAN cua dai gio: do ngoai Play (DoDocXoanNgoaiPlay)
+            int docTang = docTangEditor, docGiam = docGiamEditor;
+
+            // CHIEU QUAY THAT cua tung lop: goc cua truc x cuc bo sau 0,1 s; CHIEU TRUOT anh
+            var gocTruoc = new Dictionary<Transform, float>();
+            var sps = loc.GetComponentsInChildren<Spin>();
+            foreach (var sp in sps) { var x = sp.transform.right; gocTruoc[sp.transform] = Mathf.Atan2(x.z, x.x) * Mathf.Rad2Deg; }
+
+            // Hat khoi bui cuon: chup vi tri cuc bo theo randomSeed
+            var psBui = loc.transform.Find("GioLocHinh/BuiCuon").GetComponent<ParticleSystem>();
+            yield return new WaitForSeconds(0.5f);
+            var hat0 = new ParticleSystem.Particle[psBui.main.maxParticles];
+            int n0 = psBui.GetParticles(hat0);
+            var cuHat = new Dictionary<uint, Vector3>();
+            // VONG PHUN: nhan ban he hat, tat moi van toc, phun 200 hat mot luc roi doc ngay - lech doc va ban kinh luc sinh
+            var ban = Object.Instantiate(psBui.gameObject, psBui.transform.parent);
+            var psBan = ban.GetComponent<ParticleSystem>();
+            psBan.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+            var vBan = psBan.velocityOverLifetime; vBan.enabled = false;
+            var mBan = psBan.main; mBan.startSpeed = 0f; mBan.maxParticles = 300;
+            var eBan = psBan.emission; eBan.enabled = false;
+            psBan.Emit(200);
+            var hBan = new ParticleSystem.Particle[300];
+            int nBan = psBan.GetParticles(hBan);
+            float yMaxLucSinh = 0f, rMaxLucSinh = 0f; int soSinhMoi = nBan;
+            for (int i = 0; i < nBan; i++)
+            {
+                yMaxLucSinh = Mathf.Max(yMaxLucSinh, Mathf.Abs(hBan[i].position.y));
+                rMaxLucSinh = Mathf.Max(rMaxLucSinh, new Vector2(hBan[i].position.x, hBan[i].position.z).magnitude);
+            }
+            Object.Destroy(ban);
+            for (int i = 0; i < n0; i++)
+            {
+                cuHat[hat0[i].randomSeed] = hat0[i].position;
+            }
+            foreach (var sp in sps) { var x = sp.transform.right; gocTruoc[sp.transform] = Mathf.Atan2(x.z, x.x) * Mathf.Rad2Deg; }
+            yield return new WaitForSeconds(0.1f);
+            int quayTang = 0, quayGiam = 0;
+            foreach (var sp in sps)
+            {
+                var x = sp.transform.right;
+                float dg = Mathf.DeltaAngle(gocTruoc[sp.transform], Mathf.Atan2(x.z, x.x) * Mathf.Rad2Deg);
+                if (dg > 0f) quayTang++; else quayGiam++;
+            }
+            int truotLen = 0, truotSai = 0;
+            foreach (var su in loc.GetComponentsInChildren<ScrollUV>())
+            {
+                bool dung = su.name == "DaiGio" ? su.speed.x < 0f : su.speed.y < 0f;
+                if (dung) truotLen++; else truotSai++;
+            }
+            var hat1 = new ParticleSystem.Particle[psBui.main.maxParticles];
+            int n1 = psBui.GetParticles(hat1);
+            int hatLen = 0, hatXuong = 0, hatCungChieu = 0, hatNguoc = 0;
+            for (int i = 0; i < n1; i++)
+            {
+                Vector3 p0;
+                if (!cuHat.TryGetValue(hat1[i].randomSeed, out p0)) continue;
+                Vector3 p1 = hat1[i].position;
+                if (p1.y > p0.y) hatLen++; else hatXuong++;
+                float dg = Mathf.DeltaAngle(Mathf.Atan2(p0.z, p0.x) * Mathf.Rad2Deg, Mathf.Atan2(p1.z, p1.x) * Mathf.Rad2Deg);
+                if (dg > 0f) hatCungChieu++; else hatNguoc++;
+            }
+            // Vet bui phia sau: he hat khong gian the gioi
+            var psVet = loc.transform.Find("GioLocHinh/KhoiBui").GetComponent<ParticleSystem>();
+            int tongHat = 0;
+            foreach (var ps in loc.GetComponentsInChildren<ParticleSystem>()) tongHat += ps.particleCount;
+
             yield return Chup("gioloc_1_bay");
 
-            // Toc do: vi tri ngang trong 1 giay
-            Vector3 p0 = loc.transform.position; float t0 = Time.time;
+            Vector3 p0v = loc.transform.position; float t0 = Time.time;
             yield return new WaitForSeconds(1f);
-            Vector3 p1 = loc.transform.position; float t1 = Time.time;
-            float toc = new Vector2(p1.x - p0.x, p1.z - p0.z).magnitude / (t1 - t0);
+            Vector3 p1v = loc.transform.position; float t1 = Time.time;
+            float toc = new Vector2(p1v.x - p0v.x, p1v.z - p0v.z).magnitude / (t1 - t0);
 
-            // Thoi gian song: luc cuoi cung vi tri con doi
             float batDau = lucSinh;
             Vector3 cu = loc.transform.position; float lucDiCuoi = Time.time;
             int soArc = 0;
-            float hanS = Time.time + 3.5f;
+            foreach (var aNew in Object.FindObjectsByType<LightningArc>(FindObjectsInactive.Exclude)) if (arcTruoc.Add(aNew)) soArc++;
+            float hanS = Time.time + 2.6f;
             while (Time.time < hanS && loc != null)
             {
-                foreach (var a in Object.FindObjectsByType<LightningArc>(FindObjectsInactive.Exclude))
-                    if (arcTruoc.Add(a)) soArc++;
+                foreach (var aNew in Object.FindObjectsByType<LightningArc>(FindObjectsInactive.Exclude))
+                    if (arcTruoc.Add(aNew)) soArc++;
                 if ((loc.transform.position - cu).sqrMagnitude > 1e-6f) { lucDiCuoi = Time.time; cu = loc.transform.position; }
                 yield return null;
             }
             float song = lucDiCuoi - batDau;
-            Ghi(string.Format("C. cao hinh loc nho {0:F2} m, Loc xoay that {1:F2} m, ti le {2:F2}; mau vo trung binh ({3:F2}, {4:F2}, {5:F2}); den {6}; tia set xuat hien khi bay (khong muc tieu) {7}",
-                caoNho, caoLon, caoNho / caoLon, tb.r, tb.g, tb.b, soDen, soArc));
+            Ghi(string.Format("C. luoi: {0}; cao hinh loc nho {1:F2} m, Loc xoay that {2:F2} m, ti le {3:F2}; mau vo trung binh ({4:F2}, {5:F2}, {6:F2}); den {7}; tia set {8}",
+                string.Join(", ", tenLuoi.ToArray()), caoNho, caoLon, caoNho / caoLon, tb.r, tb.g, tb.b, soDen, soArc));
+            Ghi(string.Format("C. xoan: dai gio len cao goc tang {0} / giam {1}; quay that sau 0,1 s: goc tang {2} lop / giam {3} lop; truot anh len {4} lop / sai {5}",
+                docTang, docGiam, quayTang, quayGiam, truotLen, truotSai));
+            Ghi(string.Format("C. khoi bui cuon: {0} hat so sanh duoc - bay len {1} / xuong {2}, quay goc tang {3} / giam {4}; vong phun ({6} hat phun thu, tat van toc) lech doc toi da {5:F3} m, ban kinh toi da {9:F2} m; vet phia sau khong gian {7}; tong hat mot loc {8}",
+                hatLen + hatXuong, hatLen, hatXuong, hatCungChieu, hatNguoc, yMaxLucSinh, soSinhMoi, psVet.main.simulationSpace, tongHat, rMaxLucSinh));
             Ghi(string.Format("D. toc do do {0:F2} m/s; ngung di sau {1:F2} s", toc, song));
-            Kiem(caoNho / caoLon < 0.5f && caoNho > 2f, "loc nho khong thap hon nua Loc xoay");
-            Kiem(tb.r > tb.g && tb.g > tb.b && tb.r - tb.b > 0.2f, "vo loc khong co mau nau");
+            Kiem(tenLuoi.Count == 4 && vo0 != null && dai != null, "khong dung luoi Blender (Vo0-2, DaiGio)");
+            Kiem(Mathf.Abs(caoNho - 5f) < 0.35f && caoNho / caoLon < 0.5f, "loc nho khong cao ~5 m");
+            Kiem(Mathf.Abs(tb.r - tb.b) < 0.12f && tb.r > 0.75f, "vo loc khong xam trang nhu Loc xoay");
             Kiem(soDen == 0, "loc nho con den diem");
-            Kiem(soArc > 3, "loc nho khong co tia set ben trong");
-            Kiem(Mathf.Abs(toc - 17f) < 0.6f, "toc do loc khong bang Qua cau bang");
+            Kiem(soArc == 0, "loc nho van con tia set");
+            // Vet gio "goc giam khi len cao" + quay lam goc TANG = vet chay LEN
+            bool xoanGiam = docGiam > 50 && docTang == 0;
+            Kiem(xoanGiam && quayTang == sps.Length && quayGiam == 0, "cac lop khong xoay cung mot chieu di len");
+            Kiem(truotSai == 0 && truotLen == sps.Length, "anh gio truot khong cung chieu di len");
+            Kiem(hatLen + hatXuong > 10 && hatXuong == 0, "khoi bui khong bay len");
+            Kiem(hatCungChieu > (hatCungChieu + hatNguoc) * 0.9f, "khoi bui khong cuon cung chieu than loc");
+            Kiem(soSinhMoi >= 150 && yMaxLucSinh < 0.02f && rMaxLucSinh > 0.3f, "vong phun khoi bui khong nam ngang tren dat");
+            Kiem(psVet.main.simulationSpace == ParticleSystemSimulationSpace.World, "khong co vet bui o lai phia sau");
+            Kiem(Mathf.Abs(toc - 12.75f) < 0.5f, "toc do loc khong phai 12,75 m/s");
             Kiem(Mathf.Abs(song - 3.5f) < 0.12f, "loc khong tan sau 3,5 giay");
-            float hanX = Time.time + 6f;
+            float hanX = Time.time + 7f;
             while (loc != null && Time.time < hanX) yield return null;
             Kiem(loc == null, "loc tan roi ma vat the khong bi xoa");
         }
@@ -322,7 +448,7 @@ public static class ThuGioLoc
             {
                 var loc = GioLoc.Spawn(tu, huongE, maskEnemy);
                 float xaNhat = 0f;
-                float hanE = Time.time + 1.0f;
+                float hanE = Time.time + 1.3f;
                 while (Time.time < hanE && loc != null)
                 {
                     Vector3 v = loc.transform.position - tu; v.y = 0f;
@@ -331,7 +457,7 @@ public static class ThuGioLoc
                 }
                 // Doi chung: tia thang doc duong ay co cham bia that khong
                 bool coCham = Physics.Raycast(tu, huongE, 12f, 1 << 0, QueryTriggerInteraction.Ignore);
-                Ghi(string.Format("E. bia {0} nam giua duong (tia doi chung cham vat can: {1}); loc di duoc {2:F1} m doc huong (bia o 6 m)", bia.name, coCham, xaNhat));
+                Ghi(string.Format("E. bia {0} nam giua duong (tia doi chung cham vat can: {1}); loc di duoc {2:F1} m doc huong trong 1,3 s (bia o 6 m)", bia.name, coCham, xaNhat));
                 Kiem(coCham, "doi chung: duong thu khong co vat can - phep do vo nghia");
                 Kiem(xaNhat > 12f, "loc bi vat can chan lai");
                 if (loc != null) Object.Destroy(loc.gameObject);
@@ -350,7 +476,7 @@ public static class ThuGioLoc
             float m1 = bGiua.health, m25 = b25.health, m27 = b27.health;
             var loc = GioLoc.Spawn(tu, huong, maskEnemy);
             float xaSauTrung = 0f;
-            float hanF = Time.time + 2f;
+            float hanF = Time.time + 2.6f;
             while (Time.time < hanF && loc != null)
             {
                 Vector3 v = loc.transform.position - tu; v.y = 0f;
@@ -367,10 +493,10 @@ public static class ThuGioLoc
             yield return new WaitForSeconds(1f);
             Ghi(string.Format("F. mot loc qua bia dung yen mat {0:F0}; bia lech 2,5 m mat {1:F0}; bia lech 2,7 m mat {2:F0}; loc di tiep sau khi trung toi {3:F1} m; ba loc cung qua mot bia mat {4:F0}",
                 matGiua, mat25, mat27, xaSauTrung, mBa - bBa.health));
-            Kiem(Mathf.Abs(matGiua - 90f) < 0.5f, "mot loc khong gay dung 75 + 15 mot lan");
-            Kiem(Mathf.Abs(mat25 - 90f) < 0.5f && mat27 < 0.5f, "vung trung 2,2 m khong dung");
+            Kiem(Mathf.Abs(matGiua - 75f) < 0.5f, "mot loc khong gay dung 75 mot lan");
+            Kiem(Mathf.Abs(mat25 - 75f) < 0.5f && mat27 < 0.5f, "vung trung 2,2 m khong dung");
             Kiem(xaSauTrung > 25f, "loc dung lai sau khi trung ke dich");
-            Kiem(Mathf.Abs((mBa - bBa.health) - 270f) < 0.5f, "ba loc cung trung khong ra 270");
+            Kiem(Mathf.Abs((mBa - bBa.health) - 225f) < 0.5f, "ba loc cung trung khong ra 225");
             foreach (var b in new[] { bGiua, b25, b27, bBa }) Object.Destroy(b.gameObject);
             XoaLoc();
             yield return new WaitForSeconds(0.3f);
@@ -382,7 +508,8 @@ public static class ThuGioLoc
             var hang = new List<Damageable>();
             var bay = new Dictionary<Damageable, float>();
             var tu = goc + huong * 1.2f;
-            for (int i = 0; i < 19; i++) hang.Add(TaoBia("TAM_G" + i, tu + huong * (4f + i * 3f)));
+            // 12,75 m/s x 3,5 s = 44,6 m: 19 bia cach 2,2 m tu 4 m toi 43,6 m
+            for (int i = 0; i < 19; i++) hang.Add(TaoBia("TAM_G" + i, tu + huong * (4f + i * 2.2f)));
             yield return new WaitForFixedUpdate();
             int soTrung = 0, soHat = 0; float caoMax = 0f; float tongGiay = 0f; int soDoGiay = 0;
             int hat0 = GioLoc.SoLanHat, trung0 = GioLoc.SoLanTrung;

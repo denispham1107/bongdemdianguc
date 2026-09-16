@@ -11,35 +11,36 @@ using UnityEngine;
 ///
 /// Nhung cho nguoi dung chon khi toi hoi lai (16/09/2026):
 ///   - 75 MOT LAN moi muc tieu cho moi con loc (ba loc cung trung mot nguoi = toi da 225).
-///   - Tia set CO gay sat thuong: moi lan loc trung mot muc tieu thi kem MOT tia set 15 giat vao no.
 ///   - 55% gieo RIENG moi con loc.
 ///   - Ton 20 nang luong; niem 0,38 s nhu Qua cau bang; toa quat 11 do nhu Qua cau bang.
 ///   - Vung trung ban kinh 2,2 m; bi hat cao 1,5 m.
 ///   - Ngat chieu ca nguoi choi lan quai.
 ///   - Loc nho DAP TAT LO LUA khi luot qua, lo chay lai sau 30 giay (khong cuon lo, khong cuon canh vat).
 ///
-/// Khong co prefab trong GameAssets (them truong prefab la phai sua hai scene) - hinh dung bang code:
-/// <see cref="VfxFactory.BuildGioLoc"/>.
+/// 17/09/2026 nguoi dung doi: loc cu "qua xau" -> DUNG LAI BANG BLENDER MCP (xoay mot chieu tu duoi len, khoi bui den cuon
+/// len, mau xam trang nhu Loc xoay, cao ~5 m), BO TIA SET (ca hinh lan sat thuong 15 - nguoi dung chon chi con 75),
+/// toc do bay GIAM 25% (17 -> 12,75 m/s).
+///
+/// Khong co prefab trong GameAssets (them truong prefab la phai sua hai scene) - hinh dung bang code tu tai nguyen
+/// Blender: <see cref="VfxFactory.BuildGioLoc"/>.
 /// </summary>
 public class GioLoc : MonoBehaviour
 {
     public const float SatThuongGoc = 75f;
-    public const float SatThuongSet = 15f;
     public const float XacSuatHatTung = 0.55f;
     public const float BanKinhTrung = 2.2f;
     public const float ThoiGianSong = 3.5f;
 
-    /// <summary>Chieu cao / chieu ngang so voi Loc xoay: 0,45 -> cao 5,67 m (Loc xoay 12,6 m), thap hon mot nua.</summary>
-    public const float TiLe = 0.45f;
+    /// <summary>Chieu cao hinh loc (luoi Blender) - nguoi dung chon ~5 m.</summary>
+    public const float ChieuCao = 5f;
 
-    /// <summary>Toc do bay = Qua cau bang (nguoi dung xin).</summary>
-    public const float TocDo = QuaCauBang.TocDoBay;
+    /// <summary>Toc do bay = Qua cau bang GIAM 25% (nguoi dung 17/09/2026): 17 x 0,75 = 12,75 m/s.</summary>
+    public const float TocDo = QuaCauBang.TocDoBay * 0.75f;
 
     /// <summary>Lo lua bi dap tat bao lau thi chay lai.</summary>
     public const float GiayLoChayLai = 30f;
 
     public float damage = SatThuongGoc;
-    public float damageSet = SatThuongSet;
     public float xacSuatHatTung = XacSuatHatTung;
     public float giayHatTung = BiHatTung.GiayMacDinh;
     public float banKinh = BanKinhTrung;
@@ -51,7 +52,7 @@ public class GioLoc : MonoBehaviour
     /// <summary>Bu tre mang: tua nhanh cho kip cho nguoi tung nhin thay (nhu QuaCauBang).</summary>
     public float tuaTruoc;
 
-    float age, setTimer, loTimer;
+    float age, loTimer;
     bool daTan;
     GameObject visual;
     readonly HashSet<Damageable> daTrung = new HashSet<Damageable>();
@@ -59,7 +60,7 @@ public class GioLoc : MonoBehaviour
     static readonly Collider[] boDem = new Collider[64];
 
     // ---- Dem cho phep thu (menu 71) ----
-    public static int SoLanTrung, SoLanHat, SoLanSet, SoLoDapTat;
+    public static int SoLanTrung, SoLanHat, SoLoDapTat;
 
     public static GioLoc Spawn(Vector3 pos, Vector3 huong, LayerMask damageMask)
     {
@@ -73,7 +74,7 @@ public class GioLoc : MonoBehaviour
         var g = go.AddComponent<GioLoc>();
         g.dir = huong;
         g.damageMask = damageMask;
-        g.visual = VfxFactory.BuildGioLoc(TiLe);
+        g.visual = VfxFactory.BuildGioLoc();
         g.visual.transform.SetParent(go.transform, false);
         return g;
     }
@@ -94,7 +95,6 @@ public class GioLoc : MonoBehaviour
             loc.boQua = boQua;
             loc.tuaTruoc = BuTre.TuaTruocGiay;
             loc.damage *= heSoSatThuong;
-            loc.damageSet *= heSoSatThuong;
             loc.giayHatTung += themGiay;     // luat chung: hieu ung +0,15 s moi cap ky nang
         }
         CameraShake.Shake(0.14f, 0.05f);
@@ -124,18 +124,10 @@ public class GioLoc : MonoBehaviour
         loTimer -= dt;
         if (loTimer <= 0f) { loTimer = 0.1f; DapTatLo(); }
 
-        // Tia set lach tach trong than loc (chi hinh) - tia gay sat thuong ban trong QuetTrung
-        setTimer -= dt;
-        if (setTimer <= 0f)
-        {
-            setTimer = Random.Range(0.22f, 0.38f);
-            VfxFactory.TornadoBolt(transform.position, TiLe);
-        }
-
         if (age >= ThoiGianSong) Tan();
     }
 
-    /// <summary>Quet ca doan vua di (17 m/s, may yeu 10 khung/giay = 1,7 m moi khung) chu khong chi diem cuoi.</summary>
+    /// <summary>Quet ca doan vua di (12,75 m/s, may yeu 10 khung/giay = 1,3 m moi khung) chu khong chi diem cuoi.</summary>
     void QuetTrung(Vector3 tu, Vector3 den)
     {
         Vector3 a = tu + Vector3.up * 1.0f, b = den + Vector3.up * 1.0f;
@@ -159,18 +151,6 @@ public class GioLoc : MonoBehaviour
 
         d.GhiKeDanh(boQua);
         d.TakeDamage(damage, DamageType.Physical, nguc);
-
-        // Mot tia set tu than loc giat vao muc tieu
-        if (!d.IsDead)
-        {
-            var dinh = transform.position + Vector3.up * 3.4f;
-            var arc = LightningArc.Create(dinh, d.transform.position + Vector3.up * 0.9f, 0.55f, 0.20f);
-            arc.segments = 12;
-            arc.branches = 1;
-            d.GhiKeDanh(boQua);
-            d.TakeDamage(damageSet, DamageType.Lightning, nguc);
-            SoLanSet++;
-        }
 
         if (!d.IsDead && !khiengDo && Random.value < xacSuatHatTung)
         {

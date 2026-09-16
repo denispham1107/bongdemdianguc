@@ -8334,7 +8334,55 @@ sát thương hiện ra** (2,1 m) để số không đè lên chữ. Bỏ chữ 
 **Số đo** (menu 62, 0 lỗi): tung thật 10 lần → trúng 10, ngã 7; dấu hiệu hiện **376/383 khung hình đang ngã (98%)**;
 chuỗi ảnh mới thấy chữ NGÃ rõ ở cả 5 thời điểm, đè lên lửa.
 
+### Gió lốc dựng lại bằng Blender: xoáy một chiều từ dưới lên, khói bụi đen, bỏ tia sét, chậm 25% (17/09/2026)
+
+Anh báo: 3 cơn lốc nhỏ **quá xấu** — xin dựng lại bằng Blender MCP cho thấy gió lốc xoáy thật chi tiết, **xoáy một chiều từ dưới
+lên**, kèm **khói bụi đen cuộn bay lên**, màu như Lốc xoáy; **bỏ tia sét**; tốc độ bay **giảm 25%**.
+Tôi hỏi trước, anh chọn: **xám trắng như Lốc xoáy** (bỏ nâu); bỏ tia sét **cả hình lẫn sát thương 15** (còn 75); khói bụi **vừa cuộn
+quanh thân vừa để lại vệt phía sau**; cao **~5 m**.
+
+⚠️ **Sự cố**: lệnh Blender đầu tiên của tôi có `read_factory_settings` (để có cảnh trống) — nó gỡ luôn addon MCP, anh phải **tắt hẳn
+Blender và mở lại**. Đã ghi vào bộ nhớ thành quy tắc: không dùng lệnh nào làm tắt Blender MCP; cảnh sạch thì tạo scene mới.
+
+**Dựng trong Blender** (`CongCu/Blender/gio_loc.blend`, scene `GioLoc`; ảnh gốc ở `CongCu/Blender/gio_loc_render/`):
+- **Ảnh gió** `GioDai.png` (dải mềm) và `GioSoi.png` (sợi mảnh thưa): nhiễu 4D quấn trên **mặt xuyến** (cos/sin của cả u và v) nên
+  **liền mạch cả hai chiều** — trượt mãi không thấy đường nối; vệt nghiêng quấn đúng một vòng (`u + v = hằng số`). Thử 6 lần ngưỡng: dày
+  kín mặt → mảnh như mưa → dải mềm có khoảng hở.
+- **Flipbook** `BuiDenCuon.png` 6×6: đám bụi méo, mép rách, có lỗ, nở dần (lần đầu tròn như cục bông → tăng méo + ngưỡng).
+- **Lưới** `LocNho.fbx`: 3 vỏ phễu cao 5 m, loe miệng ~2,6 m (cùng tỉ lệ Lốc xoáy), UV quấn quanh thân, màu đỉnh xám trắng mờ ở chân và
+  miệng; 5 **dải gió** xoắn 1,6 vòng, hai miếng bắt chéo.
+- Render thử lần đầu thấy **dải gió xoắn ngược tay với vệt trên ảnh** (dải: góc tăng theo độ cao; ảnh: giảm) — quay lên thì một cái đi
+  lên, một cái đi xuống. Đảo dải cho cùng tay.
+
+**Unity** (`Vfx/VfxGioLoc.cs` viết lại): 4 lớp lưới Blender, **cùng một chiều quay**, ảnh trượt cùng chiều; khói bụi đen `BuiCuon` phun
+vòng ngang ở chân, bay lên 2,6–3,6 m/s, quỹ đạo cùng chiều thân, nở to; vệt `KhoiBui` không gian thế giới ở lại phía sau (hàm của Lốc xoáy,
+đổi sang flipbook mới); hạt đất `Grit` cùng chiều. Không đèn, không tia sét. `GioLoc.TocDo = QuaCauBang.TocDoBay × 0,75`.
+**Chiều quay chọn bằng số đo, không đoán**: đo trên lưới đã nhập — dải gió 930/930 cặp đỉnh "góc atan2(z,x) giảm khi lên cao", vỏ 545/545
+"góc tăng theo uv.x" (tức vệt ảnh cũng giảm khi lên cao) → quay làm góc **tăng** thì vệt chạy lên → `Transform.Rotate` quanh +Y góc
+**âm** (góc dương làm atan2(z,x) giảm), UV trượt v âm.
+Ảnh đầu trong game: ba vỏ chồng nhau thành màn sương trắng đều, bụi đen chỉ còn vệt xám → giảm độ đục hai vỏ ngoài (0,55/0,42 → 0,34/0,26),
+dải gió 0,9, bụi đen đậm và to hơn (`gioloc_can_zoom.png`).
+
+**Số đo** (menu 71, `gioloc.txt`, **0 lỗi**):
+
+| Đo | Kết quả |
+|---|---|
+| Lưới | Vo0, Vo1, Vo2, DaiGio từ FBX Blender; cao **5,00 m** (Lốc xoáy 15,37 m) |
+| Màu / đèn / sét | vỏ (0,89; 0,91; 0,94) xám trắng; **0** đèn; **0** tia sét suốt 3,5 giây |
+| Xoáy một chiều từ dưới lên | độ xoắn dải gió đo ngoài Play: **382 giảm / 0 tăng**; quay thật sau 0,1 s: **4/4 lớp** làm góc tăng; ảnh trượt lên **4/4** |
+| Khói bụi đen cuộn | 23 hạt theo dõi: **23 bay lên / 0 xuống**, **23 cùng chiều / 0 ngược**; vòng phun 200 hạt thử: lệch dọc **0,000 m**, bán kính 0,45 m; vệt phía sau không gian World |
+| Tốc độ / sống | **12,75 m/s** (quả cầu băng 17); ngừng đi sau **3,50 s** |
+| Sát thương | một lốc **75**; ba lốc cùng qua **225**; vùng 2,2 m (2,5 m trúng / 2,7 m trượt) |
+| Hất tung, ngắt chiêu, mạng, lò lửa | như trước: 56,8% (190 lần), cao 1,50 m, 0,51 s; khiên 0; ngắt chiêu 3/3 (đối chứng 3/3); quái 0/5 (đối chứng 5/5); bản sao 3/3; lò tắt, 31 s cháy lại |
+
+Phép thử phải sửa 3 lần, đều do chính nó: trong Play lưới FBX **không đọc được đỉnh** (đếm độ xoắn ra 0/0 — bài học cũ) → đo ngoài Play;
+ở chân lốc năm dải chỉ cách nhau ~0,37 m nên "đỉnh kế tiếp" bắt nhầm dải bên (51, rồi 7 cặp "tăng") → bỏ đoạn < 1,5 m và lấy đỉnh **gần
+nhất**; kiểm vòng phun bằng 1–2 hạt vừa sinh lẫn vận tốc bay lên (0,05–0,06 m quanh ngưỡng) → nhân bản hệ hạt, tắt vận tốc, phun 200 hạt.
+
 ### Kỹ năng mới: Gió lốc — ba cơn lốc nhỏ màu nâu, hất tung và ngắt chiêu (16/09/2026)
+
+> ⚠️ **Hình, tia sét và tốc độ trong mục này đã đổi ngày 17/09/2026** (mục ngay trên): lốc dựng lại bằng Blender, xám trắng, cao 5 m,
+> không còn tia sét 15, bay 12,75 m/s. Phần hất tung / ngắt chiêu / mạng / lò lửa bên dưới vẫn đúng.
 
 Anh xin: phóng ra **3 cơn lốc nhỏ** có hiệu ứng như Lốc xoáy nhưng **thấp hơn nửa chiều cao**, **màu nâu**, vẫn có tia sét
 bên trong; bay nhanh bằng quả cầu băng, **tự tan sau 3,5 giây**; sát thương 75, hồi chiêu 0,4 giây; **55% hất tung** đối thủ
@@ -9046,8 +9094,8 @@ Lần chạy đầu phép thử báo cả 10 con "lơ lửng": tia chiếu từ 
 | **67. Chay thu MUA BANG dong bang NGUOI CHOI KHAC (qua mang)** | Bộ đồng bộ thật + kênh giả lập: người kia tung Mưa băng vào mình bằng gói kỹ năng thật (6 cơn) — trúng, chậm, đóng cứng, khoá chân/phép, gói trạng thái mang bit đóng cứng; bản sao nhận gói đóng cứng thì đứng im và tan đúng lúc; đếm chữ nổi "ĐÓNG BĂNG!" (khớp số lần bắt đầu đóng cứng, bản sao đúng 1 lần) có đối chứng "CHOÁNG!"; vỏ băng phủ lên model có xương và làm vùng thân xanh lên trên ảnh chụp. Số đo `bang_nguoichoi.txt`. |
 | **68. Chay thu QUA CAU BANG (ky nang moi)** | Tài nguyên Blender nạp được; thông số thật trên nhân vật (hồi chiêu 0,55); tung thật `CastAt(9)` (khoá, 3 quả, năng lượng, hồi chiêu); bia trên / lệch đường bay; sát thương 65 ở tâm và vùng nổ 3,4 m; 1000 lần gieo làm chậm (40%, 50%, 2 giây, cấp kéo dài); hình lúc bay (lưới, đuôi gai phía sau, luồng khí lạnh, vệt băng) và sau khi nổ; gói kỹ năng số 9 qua mạng; icon HUD, chữ Sách phép; kích thước thật cụm băng Mưa băng = Quả cầu băng (đối chứng cỡ cũ); Mưa băng thật rơi quả cầu băng (lưới, luồng khí lạnh, vệt, đuôi phía sau, không đèn, không còn tảng cũ, vẫn gây sát thương, rơi thẳng đứng); cụm gai chỉ khi trúng đồ vật / kẻ địch (4 trường hợp + đối chứng + 2 cơn thật). Số đo `quacaubang.txt`. |
 | **69. Chay thu GIUT SET (20 m, 75, 4 tia, 15% choang)** | Thông số; tung thật `CastAt(6)` vào 5 bia (đúng 4 bia mất 75 cùng một khung hình); tầm 20 m bằng bia 19,9 / 20,4 m; tia lan ra ngoài tầm vẫn trúng ×0,85; 160 lần phóng đếm tỉ lệ choáng tia đầu và tia lan riêng (bằng StunnedEffect trên bia); cấp kỹ năng kéo dài choáng. Số đo `giatset.txt`. |
-| **71. Chay thu GIO LOC (ky nang moi)** | Thông số; tung thật `CastAt(10)` (khoá, 3 lốc, 20 năng lượng, hồi chiêu đo bằng bấm mỗi khung); chiều cao hình so Lốc xoáy thật, màu nâu, không đèn, có tia sét; tốc độ và thời gian sống; xuyên bia mộ (tia đối chứng); 90 một lần, 270 ba lốc, vùng 2,2 m (2,5 / 2,7 m); 190 lần trúng đếm hất tung độc lập, độ cao, thời gian bay; khiên chặn hất; ngắt chiêu người chơi (đối chứng) và đòn quái (đối chứng); qua mạng: gói số 10, bit hất tung, mặt nạ 5 bit, bản sao bay / ngắt chiêu / không hất lần hai; lò lửa tắt rồi cháy lại sau 30 s. Số đo `gioloc.txt`. |
-| **71b. Chup anh GIO LOC (so voi Loc xoay)** | Chỉ chụp: hai lốc bay ngang màn hình 5 khung liên tiếp + Lốc xoáy lớn để so màu và tia sét. Ảnh `gioloc_can_*.png`, `gioloc_locxoay_*.png`. |
+| **71. Chay thu GIO LOC (ky nang moi)** | Thông số; tung thật `CastAt(10)` (khoá, 3 lốc, 20 năng lượng, hồi chiêu đo bằng bấm mỗi khung); lưới Blender, cao 5 m so Lốc xoáy thật, xám trắng, không đèn, không tia sét; **xoáy một chiều đi lên** (độ xoắn dải gió đo ngoài Play + chiều quay thật từng lớp + chiều trượt ảnh); khói bụi đen bay lên và cuộn cùng chiều (theo dõi từng hạt), vòng phun nằm ngang (phun thử 200 hạt), vệt phía sau; tốc độ 12,75 m/s và thời gian sống; xuyên bia mộ (tia đối chứng); 75 một lần, 225 ba lốc, vùng 2,2 m (2,5 / 2,7 m); 190 lần trúng đếm hất tung độc lập, độ cao, thời gian bay; khiên chặn hất; ngắt chiêu người chơi (đối chứng) và đòn quái (đối chứng); qua mạng: gói số 10, bit hất tung, mặt nạ 5 bit, bản sao bay / ngắt chiêu / không hất lần hai; lò lửa tắt rồi cháy lại sau 30 s. Số đo `gioloc.txt`. |
+| **71b. Chup anh GIO LOC (so voi Loc xoay)** | Chỉ chụp: hai lốc bay ngang màn hình 5 khung liên tiếp + Lốc xoáy lớn để so. Ảnh `gioloc_can_*.png`, `gioloc_locxoay_*.png`. |
 | **70. Chay thu QUA CAU LUA (85 sat thuong, vet lua moi)** | Sát thương đọc thẳng prefab và trên quả cầu thật khi tung; quả cầu sinh từ prefab bay vào bia (mất 85 × giảm theo khoảng cách); hạt `Flames` không còn ảnh tam giác mà là flipbook Blender, có vệt lửa dài `TrailRenderer`; nổ xong vệt được thả ra; chụp cận cảnh lúc bay. Chạy trên bản cũ ra 7 lỗi (đối chứng). Số đo `quacaulua.txt`. |
 | **56. Chay thu DOT QUAI Act2 + cho xuat phat** | *(13/09/2026: thêm đo chờ 30 giây và 10 con xa 55–65 m)*  Kiểm chỗ xuất phát ngẫu nhiên (hai máy cùng mã phòng ra cùng danh sách, cách nhau ≥ 22 m, trên đất, ngoài nước, không vướng vật cản) và luật đợt quái Act2 (đợt 1 bốn con quanh mỗi người; đợt sau cộng dồn quái và mạnh thêm 5% máu · sát thương); kiểm Act1 không bị đổi. Số đo `dotquai_act2.txt`. |
 | **55. Chay thu KET TRAN (nguoi song sot cuoi cung)** | Mở kênh giả lập như menu 45: kiểm gói tin kết trận/chết, máy chủ phòng phán quyết đúng lúc còn một người, bảng điểm cộng đúng người, máy khách không tự kết luận và hiện đúng kết quả nghe được, chết rồi camera chuyển sang người còn sống, chụp màn kết trận. Số đo `kettran.txt`, ảnh `kettran_*.png`. |

@@ -1,25 +1,27 @@
 [ban 1] Gio loc
 
-A. nhan vat: nang luong 20, hoi chieu 0.4 s, niem 0.38 s; Sach phep doc 20/0.4/0.38; sat thuong 75 + set 15, hat tung 55 % x 0.5 s cao 1.5 m, vung trung 2.2 m, song 3.5 s, cao hinh ti le 0.45
-A. toc do loc 17 m/s, toc do mot Qua cau bang that 17 m/s; HUD 11 icon, icon so 10 co; icon file 256x256; ten "GIÓ LỐC", tom tat "Ba lốc nhỏ, 55% hất tung", mo ta 578 ky tu
+A. nhan vat: nang luong 20, hoi chieu 0.4 s, niem 0.38 s; Sach phep doc 20/0.4/0.38; sat thuong 75, hat tung 55 % x 0.5 s cao 1.5 m, vung trung 2.2 m, song 3.5 s, cao hinh 5 m
+A. toc do loc 12.75 m/s, toc do mot Qua cau bang that 17 m/s; HUD 11 icon, icon so 10 co; icon file 256x256; ten "GIÓ LỐC", tom tat "Ba lốc nhỏ, 55% hất tung", mo ta 586 ky tu
 
-B. khoa -> tu choi True; mo khoa -> tung True, 3 loc bay, ton 20 nang luong; hoi chieu ngay sau khi tung 0.40 s; bam lai moi khung -> duoc nhan sau 0.418 s (thay nhac hoi chieu: True); bia truoc mat mat 540 mau, ke danh cuoi la nguoi tung True
+B. khoa -> tu choi True; mo khoa -> tung True, 3 loc bay, ton 20 nang luong; hoi chieu ngay sau khi tung 0.40 s; bam lai moi khung -> duoc nhan sau 0.404 s (thay nhac hoi chieu: True); bia truoc mat mat 450 mau, ke danh cuoi la nguoi tung True
 
-C. cao hinh loc nho 6.92 m, Loc xoay that 15.37 m, ti le 0.45; mau vo trung binh (0.75, 0.53, 0.31); den 0; tia set xuat hien khi bay (khong muc tieu) 15
-D. toc do do 17.00 m/s; ngung di sau 3.51 s
+C. luoi: DaiGio(DaiGio), Vo0(Vo0), Vo1(Vo1), Vo2(Vo2); cao hinh loc nho 5.00 m, Loc xoay that 15.37 m, ti le 0.33; mau vo trung binh (0.89, 0.91, 0.94); den 0; tia set 0
+C. xoan: dai gio len cao goc tang 0 / giam 382; quay that sau 0,1 s: goc tang 4 lop / giam 0 lop; truot anh len 4 lop / sai 0
+C. khoi bui cuon: 23 hat so sanh duoc - bay len 23 / xuong 0, quay goc tang 23 / giam 0; vong phun (200 hat phun thu, tat van toc) lech doc toi da 0.000 m, ban kinh toi da 0.45 m; vet phia sau khong gian World; tong hat mot loc 75
+D. toc do do 12.75 m/s; ngung di sau 3.50 s
 
-E. bia TS_foot_154 nam giua duong (tia doi chung cham vat can: True); loc di duoc 16.4 m doc huong (bia o 6 m)
+E. bia TS_round_31 nam giua duong (tia doi chung cham vat can: True); loc di duoc 16.3 m doc huong trong 1,3 s (bia o 6 m)
 
-F. mot loc qua bia dung yen mat 90; bia lech 2,5 m mat 90; bia lech 2,7 m mat 0; loc di tiep sau khi trung toi 33.8 m; ba loc cung qua mot bia mat 270
+F. mot loc qua bia dung yen mat 75; bia lech 2,5 m mat 75; bia lech 2,7 m mat 0; loc di tiep sau khi trung toi 33.0 m; ba loc cung qua mot bia mat 225
 
-G. 190 lan loc trung bia; dem doc lap 95 lan bia co BiHatTung (50.0 %), bo dem trong code 95; do cao hinh lon nhat 1.50 m; bay trung binh 0.51 s (95 lan do)
+G. 190 lan loc trung bia; dem doc lap 108 lan bia co BiHatTung (56.8 %), bo dem trong code 108; do cao hinh lon nhat 1.50 m; bay trung binh 0.51 s (108 lan do)
 G. bia co khieng, 20 loc (ti le hat 100%): hat tung 0 lan, mau mat 0
 
 H1. dang niem Qua cau lua bi hat tung: 3/3 lan khong qua nao bay ra (bo dem ngat 3); doi chung khong hat: 3/3 lan ra du 3 qua
 H2. loc that trung nguoi dang niem: bi hat True, qua cau lua bay ra 0; bam ky nang luc dang bay -> "BẠN ĐANG BỊ HẤT TUNG!"
 H3. bo xuong dang vung tay bi hat tung: 0/5 don van trung (bo dem ngat 5); doi chung khong hat: 5/5 don trung
 
-J. loc luot qua lo LoLua_GiuaMap: lua tat True; lo doi chung LoLua_08 van chay True
+J. loc luot qua lo LoLua_GiuaMap: lua tat True; lo doi chung LoLua_04 van chay True
 
 I1. goi ky nang so 10 tu nguoi kia -> may minh phat lai 3 loc (mong 3); minh tung -> goi mang kyNang = 10: True
 I2. minh bi hat -> goi trang thai gui di co bit hat tung: True; mat na: goi nguoi choi 0x1F -> 0x1F, goi quai 0x1F -> 0x1F (co chet quai False)
