@@ -8334,6 +8334,31 @@ sát thương hiện ra** (2,1 m) để số không đè lên chữ. Bỏ chữ 
 **Số đo** (menu 62, 0 lỗi): tung thật 10 lần → trúng 10, ngã 7; dấu hiệu hiện **376/383 khung hình đang ngã (98%)**;
 chuỗi ảnh mới thấy chữ NGÃ rõ ở cả 5 thời điểm, đè lên lửa.
 
+### Gió lốc: một lốc, tan sau 4,5 giây, chân to 40%, sửa lỗi lốc trèo lên mái nhà (17/09/2026)
+
+Anh xin: thân dưới **to thêm 40%**; tung kỹ năng chỉ ra **1 lốc** thay vì 3, **tan sau 4,5 giây**; và báo lỗi: lốc đánh trúng một **căn
+nhà nhỏ thì tự trèo lên mái nhà**. Tôi hỏi trước, anh chọn: 40% **so với bản gốc**; đoạn nới **theo khung đỏ mới, về 0 ở ~2,3 m**; giữ
+**20 năng lượng, 75 sát thương**; **chỉ sửa Gió lốc** (Lốc xoáy lớn tôi đo riêng rồi báo).
+
+**Nguyên nhân trèo mái**: lốc bám mặt đất bằng `VfxFactory.GroundY` — tia chiếu xuống **cả lớp `Default`** (nhà mồ, bia, đá, hàng rào).
+Lốc đi xuyên vật cản nên vào tới nhà là tia chạm mái trước, lốc "đứng" lên mái. **Sửa**: `GioLoc.MatDatY` chỉ chiếu lớp `Ground`
+(tia không chạm thì giữ độ cao cũ, không rơi về y = 0).
+
+**Làm**: Blender nhân bán kính `(1 + 0,4·s(z, 2,3 m)) / (1 + 0,3·s(z, 2,0 m))` (đổi từ bản +30% sang +40% so gốc), xuất lại FBX;
+`GioLoc.SoLocMoiLan = 1`, `ThoiGianSong = 4,5`; Sách phép đổi chữ ("Một cơn lốc, 55% hất tung").
+
+**Số đo** (menu 71, **0 lỗi**, mục **K** mới):
+
+| Đo | Kết quả |
+|---|---|
+| Chân lốc (so công thức gốc) | Vo1 **0,300 → 0,420 m (×1,400)**; ở 2,5 m **0,822 m (×1,000)** |
+| Số lốc / thời gian sống | tung thật ra **1** lốc; qua mạng phát lại **1**; ngừng đi sau **4,50 s**; bia trước mặt mất 75 |
+| Không trèo mái (nhà mồ `MAUS_A_001_682`) | **đối chứng**: tia cũ (Ground + Default) trên đường bay chạm mái cao **4,57 m**; Gió lốc đi 98 khung, **28 khung trong nhà**, lệch khỏi mặt đất **0,000 m** |
+| Lốc xoáy lớn cùng đường (chỉ báo) | 0,00 m — **nhưng không kết luận được**: nhà rộng 5,6 m < `VatTheBiCuon.RongToiDa` 6 m nên Lốc xoáy lớn **cuốn luôn căn nhà** (tắt va chạm) trước khi tới; vật > 6 m (hàng rào quanh map) chưa đo |
+| Còn lại | 8 m/s, xoáy một chiều 382/0 · 4/4, bụi 23/23, vùng 2,2 m, hất tung 58,4%, khiên, ngắt chiêu, mạng, lò lửa đều đạt |
+
+Ảnh `gioloc_can_*.png`; so Blender gốc / +40%: `CongCu/Blender/gio_loc_render/so_chan_goc_40.png`.
+
 ### Gió lốc: thân dưới to thêm 30% so với bản gốc, bay 8 m/s (17/09/2026)
 
 Anh khoanh lại phần thân dưới: vẫn còn nhỏ, **to thêm 30%**; tốc độ **8 m/s**. Tôi hỏi mốc 30%, anh chọn **30% so với bản gốc (thay
@@ -9119,7 +9144,7 @@ Lần chạy đầu phép thử báo cả 10 con "lơ lửng": tia chiếu từ 
 | **67. Chay thu MUA BANG dong bang NGUOI CHOI KHAC (qua mang)** | Bộ đồng bộ thật + kênh giả lập: người kia tung Mưa băng vào mình bằng gói kỹ năng thật (6 cơn) — trúng, chậm, đóng cứng, khoá chân/phép, gói trạng thái mang bit đóng cứng; bản sao nhận gói đóng cứng thì đứng im và tan đúng lúc; đếm chữ nổi "ĐÓNG BĂNG!" (khớp số lần bắt đầu đóng cứng, bản sao đúng 1 lần) có đối chứng "CHOÁNG!"; vỏ băng phủ lên model có xương và làm vùng thân xanh lên trên ảnh chụp. Số đo `bang_nguoichoi.txt`. |
 | **68. Chay thu QUA CAU BANG (ky nang moi)** | Tài nguyên Blender nạp được; thông số thật trên nhân vật (hồi chiêu 0,55); tung thật `CastAt(9)` (khoá, 3 quả, năng lượng, hồi chiêu); bia trên / lệch đường bay; sát thương 65 ở tâm và vùng nổ 3,4 m; 1000 lần gieo làm chậm (40%, 50%, 2 giây, cấp kéo dài); hình lúc bay (lưới, đuôi gai phía sau, luồng khí lạnh, vệt băng) và sau khi nổ; gói kỹ năng số 9 qua mạng; icon HUD, chữ Sách phép; kích thước thật cụm băng Mưa băng = Quả cầu băng (đối chứng cỡ cũ); Mưa băng thật rơi quả cầu băng (lưới, luồng khí lạnh, vệt, đuôi phía sau, không đèn, không còn tảng cũ, vẫn gây sát thương, rơi thẳng đứng); cụm gai chỉ khi trúng đồ vật / kẻ địch (4 trường hợp + đối chứng + 2 cơn thật). Số đo `quacaubang.txt`. |
 | **69. Chay thu GIUT SET (20 m, 75, 4 tia, 15% choang)** | Thông số; tung thật `CastAt(6)` vào 5 bia (đúng 4 bia mất 75 cùng một khung hình); tầm 20 m bằng bia 19,9 / 20,4 m; tia lan ra ngoài tầm vẫn trúng ×0,85; 160 lần phóng đếm tỉ lệ choáng tia đầu và tia lan riêng (bằng StunnedEffect trên bia); cấp kỹ năng kéo dài choáng. Số đo `giatset.txt`. |
-| **71. Chay thu GIO LOC (ky nang moi)** | Thông số; tung thật `CastAt(10)` (khoá, 3 lốc, 20 năng lượng, hồi chiêu đo bằng bấm mỗi khung); lưới Blender, cao 5 m so Lốc xoáy thật, xám trắng, không đèn, không tia sét; **xoáy một chiều đi lên** (độ xoắn dải gió đo ngoài Play + chiều quay thật từng lớp + chiều trượt ảnh); khói bụi đen bay lên và cuộn cùng chiều (theo dõi từng hạt), vòng phun nằm ngang (phun thử 200 hạt), vệt phía sau; bán kính chân ×1,3 / phần trên ×1,0 (so công thức gốc); tốc độ 8 m/s và thời gian sống; xuyên bia mộ (tia đối chứng); 75 một lần, 225 ba lốc, vùng 2,2 m (2,5 / 2,7 m); 190 lần trúng đếm hất tung độc lập, độ cao, thời gian bay; khiên chặn hất; ngắt chiêu người chơi (đối chứng) và đòn quái (đối chứng); qua mạng: gói số 10, bit hất tung, mặt nạ 5 bit, bản sao bay / ngắt chiêu / không hất lần hai; lò lửa tắt rồi cháy lại sau 30 s. Số đo `gioloc.txt`. |
+| **71. Chay thu GIO LOC (ky nang moi)** | Thông số; tung thật `CastAt(10)` (khoá, 3 lốc, 20 năng lượng, hồi chiêu đo bằng bấm mỗi khung); lưới Blender, cao 5 m so Lốc xoáy thật, xám trắng, không đèn, không tia sét; **xoáy một chiều đi lên** (độ xoắn dải gió đo ngoài Play + chiều quay thật từng lớp + chiều trượt ảnh); khói bụi đen bay lên và cuộn cùng chiều (theo dõi từng hạt), vòng phun nằm ngang (phun thử 200 hạt), vệt phía sau; bán kính chân ×1,4 / phần trên ×1,0 (so công thức gốc); 1 lốc, sống 4,5 s; không trèo mái nhà mồ (đối chứng tia cũ chạm mái); tốc độ 8 m/s và thời gian sống; xuyên bia mộ (tia đối chứng); 75 một lần, 225 ba lốc, vùng 2,2 m (2,5 / 2,7 m); 190 lần trúng đếm hất tung độc lập, độ cao, thời gian bay; khiên chặn hất; ngắt chiêu người chơi (đối chứng) và đòn quái (đối chứng); qua mạng: gói số 10, bit hất tung, mặt nạ 5 bit, bản sao bay / ngắt chiêu / không hất lần hai; lò lửa tắt rồi cháy lại sau 30 s. Số đo `gioloc.txt`. |
 | **71b. Chup anh GIO LOC (so voi Loc xoay)** | Chỉ chụp: hai lốc bay ngang màn hình 5 khung liên tiếp + Lốc xoáy lớn để so. Ảnh `gioloc_can_*.png`, `gioloc_locxoay_*.png`. |
 | **70. Chay thu QUA CAU LUA (85 sat thuong, vet lua moi)** | Sát thương đọc thẳng prefab và trên quả cầu thật khi tung; quả cầu sinh từ prefab bay vào bia (mất 85 × giảm theo khoảng cách); hạt `Flames` không còn ảnh tam giác mà là flipbook Blender, có vệt lửa dài `TrailRenderer`; nổ xong vệt được thả ra; chụp cận cảnh lúc bay. Chạy trên bản cũ ra 7 lỗi (đối chứng). Số đo `quacaulua.txt`. |
 | **56. Chay thu DOT QUAI Act2 + cho xuat phat** | *(13/09/2026: thêm đo chờ 30 giây và 10 con xa 55–65 m)*  Kiểm chỗ xuất phát ngẫu nhiên (hai máy cùng mã phòng ra cùng danh sách, cách nhau ≥ 22 m, trên đất, ngoài nước, không vướng vật cản) và luật đợt quái Act2 (đợt 1 bốn con quanh mỗi người; đợt sau cộng dồn quái và mạnh thêm 5% máu · sát thương); kiểm Act1 không bị đổi. Số đo `dotquai_act2.txt`. |

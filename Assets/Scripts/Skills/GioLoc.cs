@@ -19,7 +19,8 @@ using UnityEngine;
 ///
 /// 17/09/2026 nguoi dung doi: loc cu "qua xau" -> DUNG LAI BANG BLENDER MCP (xoay mot chieu tu duoi len, khoi bui den cuon
 /// len, mau xam trang nhu Loc xoay, cao ~5 m), BO TIA SET (ca hinh lan sat thuong 15 - nguoi dung chon chi con 75),
-/// toc do bay GIAM 25% (17 -> 12,75 m/s). Cung ngay nguoi dung chot lai: 10 m/s roi 8 m/s; than duoi loc to them 20% roi 30% (so ban goc).
+/// toc do bay GIAM 25% (17 -> 12,75 m/s). Cung ngay nguoi dung chot lai: 10 m/s roi 8 m/s; than duoi loc to them 20% roi 30%, 40% (so ban goc).
+/// Roi: tung ky nang chi ra MOT loc (khong con 3), loc tan sau 4,5 giay; va sua loi LOC TREO LEN MAI NHA (xem MatDatY).
 ///
 /// Khong co prefab trong GameAssets (them truong prefab la phai sua hai scene) - hinh dung bang code tu tai nguyen
 /// Blender: <see cref="VfxFactory.BuildGioLoc"/>.
@@ -29,7 +30,11 @@ public class GioLoc : MonoBehaviour
     public const float SatThuongGoc = 75f;
     public const float XacSuatHatTung = 0.55f;
     public const float BanKinhTrung = 2.2f;
-    public const float ThoiGianSong = 3.5f;
+    /// <summary>Loc tu tan sau 4,5 giay (nguoi dung 17/09/2026, truoc do 3,5).</summary>
+    public const float ThoiGianSong = 4.5f;
+
+    /// <summary>Tung ky nang ra bao nhieu loc: 1 (nguoi dung 17/09/2026, truoc do 3).</summary>
+    public const int SoLocMoiLan = 1;
 
     /// <summary>Chieu cao hinh loc (luoi Blender) - nguoi dung chon ~5 m.</summary>
     public const float ChieuCao = 5f;
@@ -69,7 +74,7 @@ public class GioLoc : MonoBehaviour
         huong.Normalize();
 
         var go = new GameObject("GioLoc");
-        pos.y = VfxFactory.GroundY(pos);
+        pos.y = MatDatY(pos, pos.y);
         go.transform.position = pos;
         var g = go.AddComponent<GioLoc>();
         g.dir = huong;
@@ -79,7 +84,7 @@ public class GioLoc : MonoBehaviour
         return g;
     }
 
-    /// <summary>Ba con loc toe hinh quat quanh truc DUNG - xem QuaCauBang.SpawnChum.</summary>
+    /// <summary>Mot chum loc toe hinh quat quanh truc DUNG - xem QuaCauBang.SpawnChum. Nguoi choi tung <see cref="SoLocMoiLan"/> loc.</summary>
     public static void SpawnChum(Vector3 chan, Vector3 huong, LayerMask damageMask, Damageable boQua,
                                  int soLoc = 3, float gocToe = 11f,
                                  float heSoSatThuong = 1f, float themGiay = 0f)
@@ -113,10 +118,10 @@ public class GioLoc : MonoBehaviour
         }
         age += dt;
 
-        // DI XUYEN moi vat can: khong hoi va cham gi, chi bam mat dat
+        // DI XUYEN moi vat can: khong hoi va cham gi, chi bam MAT DAT (lop Ground)
         Vector3 truoc = transform.position;
         Vector3 sau = truoc + dir * TocDo * dt;
-        sau.y = VfxFactory.GroundY(sau);
+        sau.y = MatDatY(sau, truoc.y);
         transform.position = sau;
 
         QuetTrung(truoc, sau);
@@ -125,6 +130,24 @@ public class GioLoc : MonoBehaviour
         if (loTimer <= 0f) { loTimer = 0.1f; DapTatLo(); }
 
         if (age >= ThoiGianSong) Tan();
+    }
+
+    static int lopMatDat = -1;
+
+    /// <summary>
+    /// Do cao MAT DAT duoi mot diem - CHI lop Ground (dia hinh Act2, dat WorldFactory Act1).
+    ///
+    /// LOI NGUOI DUNG BAO (17/09/2026): loc trung mot can nha nho thi "tu treo len mai nha". VfxFactory.GroundY chieu tia
+    /// xuong ca lop Default (nha mo, bia, da, hang rao) nen di vao nha la no dung len MAI. Loc xuyen vat can thi phai
+    /// bam dat ben duoi vat. Tia khong cham dat (ra ngoai ban do) thi giu do cao cu, khong roi ve y = 0.
+    /// </summary>
+    public static float MatDatY(Vector3 p, float neuKhongCo)
+    {
+        if (lopMatDat < 0) lopMatDat = LayerMask.GetMask("Ground");
+        RaycastHit hit;
+        if (Physics.Raycast(p + Vector3.up * 30f, Vector3.down, out hit, 80f, lopMatDat, QueryTriggerInteraction.Ignore))
+            return hit.point.y;
+        return neuKhongCo;
     }
 
     /// <summary>Quet ca doan vua di (8 m/s, may yeu 10 khung/giay = 0,8 m moi khung) chu khong chi diem cuoi.</summary>

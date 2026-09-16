@@ -1141,14 +1141,14 @@ public class PlayerController : MonoBehaviour
         }
         else if (castingSkill == CapDo.KyGioLoc)
         {
-            // Ba loc nho sinh o mat dat ngay truoc mat, toe quat 11 do nhu Qua cau bang, bay 17 m/s xuyen
-            // moi vat can. Cap ky nang tang sat thuong (ca tia set) va keo dai hat tung +0,15 s moi cap.
+            // MOT loc (nguoi dung 17/09/2026, truoc do ba loc toe quat) sinh o mat dat ngay truoc mat, bay thang huong ngam
+            // xuyen moi vat can. Cap ky nang tang sat thuong va keo dai hat tung +0,15 s moi cap.
             Vector3 dir = castAim - transform.position;
             dir.y = 0f;
             if (dir.sqrMagnitude < 0.01f) dir = transform.forward;
             dir.Normalize();
             Vector3 chan = transform.position + dir * 1.2f;
-            GioLoc.SpawnChum(chan, dir, enemyMask, health, 3, 11f, manhHon, themGiay);
+            GioLoc.SpawnChum(chan, dir, enemyMask, health, GioLoc.SoLocMoiLan, 11f, manhHon, themGiay);
         }
         else if (castingSkill == 1)
         {

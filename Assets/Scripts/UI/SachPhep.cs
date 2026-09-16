@@ -247,7 +247,7 @@ public static class SachPhep
             case CapDo.KyBinhMau: return "Uống một bình, hồi tối đa 100 máu";
             case CapDo.KyBinhMana: return "Uống một bình, hồi tối đa 50 năng lượng";
             case CapDo.KyQuaCauBang: return "Ba quả băng, 40% làm chậm";
-            case CapDo.KyGioLoc: return "Ba lốc nhỏ, 55% hất tung";
+            case CapDo.KyGioLoc: return "Một cơn lốc, 55% hất tung";
             default: return "";
         }
     }
@@ -340,12 +340,11 @@ public static class SachPhep
                      + "Hồi chiêu nhanh như Quả cầu lửa — đổi sức thiêu đốt lấy khả năng ghìm "
                      + "chân kẻ địch.";
             case CapDo.KyGioLoc:
-                return "Ba cơn lốc xoáy nhỏ cùng phóng ra, toè thành hình quạt về phía trước. Gió cuộn một chiều từ "
+                return "Một cơn lốc xoáy phóng thẳng về phía trước. Gió cuộn một chiều từ "
                      + "chân lên miệng lốc, kéo theo khói bụi đen xoáy bốc lên và để lại vệt bụi phía sau. Lốc đi "
-                     + "XUYÊN QUA mọi vật cản và người chơi, rồi tự tan sau 3,5 giây.\n\n"
-                     + "Mỗi cơn lốc lướt qua một kẻ địch thì gây 75 sát thương — mỗi kẻ chỉ bị một cơn lốc đánh "
-                     + "một lần, ba cơn cùng trúng thì đau gấp ba.\n\n"
-                     + "Mỗi cơn lốc trúng có 55% khả năng HẤT TUNG kẻ địch lên khỏi mặt đất trong 0,5 giây: không "
+                     + "XUYÊN QUA mọi vật cản và người chơi, rồi tự tan sau 4,5 giây.\n\n"
+                     + "Lốc lướt qua một kẻ địch thì gây 75 sát thương — mỗi kẻ chỉ bị đánh một lần.\n\n"
+                     + "Mỗi lần trúng có 55% khả năng HẤT TUNG kẻ địch lên khỏi mặt đất trong 0,5 giây: không "
                      + "đi, không đánh được, và chiêu đang niệm dở bị NGẮT NGAY.\n\n"
                      + "Lốc lướt qua lò lửa thì dập tắt lửa, 30 giây sau lò cháy lại.";
             default: return "";
