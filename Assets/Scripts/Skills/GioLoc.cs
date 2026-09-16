@@ -19,7 +19,7 @@ using UnityEngine;
 ///
 /// 17/09/2026 nguoi dung doi: loc cu "qua xau" -> DUNG LAI BANG BLENDER MCP (xoay mot chieu tu duoi len, khoi bui den cuon
 /// len, mau xam trang nhu Loc xoay, cao ~5 m), BO TIA SET (ca hinh lan sat thuong 15 - nguoi dung chon chi con 75),
-/// toc do bay GIAM 25% (17 -> 12,75 m/s).
+/// toc do bay GIAM 25% (17 -> 12,75 m/s). Cung ngay nguoi dung chot lai: 10 m/s; than duoi loc to them 20%.
 ///
 /// Khong co prefab trong GameAssets (them truong prefab la phai sua hai scene) - hinh dung bang code tu tai nguyen
 /// Blender: <see cref="VfxFactory.BuildGioLoc"/>.
@@ -34,8 +34,8 @@ public class GioLoc : MonoBehaviour
     /// <summary>Chieu cao hinh loc (luoi Blender) - nguoi dung chon ~5 m.</summary>
     public const float ChieuCao = 5f;
 
-    /// <summary>Toc do bay = Qua cau bang GIAM 25% (nguoi dung 17/09/2026): 17 x 0,75 = 12,75 m/s.</summary>
-    public const float TocDo = QuaCauBang.TocDoBay * 0.75f;
+    /// <summary>Toc do bay 10 m/s (nguoi dung 17/09/2026 - truoc do 12,75 = Qua cau bang giam 25%).</summary>
+    public const float TocDo = 10f;
 
     /// <summary>Lo lua bi dap tat bao lau thi chay lai.</summary>
     public const float GiayLoChayLai = 30f;
@@ -127,7 +127,7 @@ public class GioLoc : MonoBehaviour
         if (age >= ThoiGianSong) Tan();
     }
 
-    /// <summary>Quet ca doan vua di (12,75 m/s, may yeu 10 khung/giay = 1,3 m moi khung) chu khong chi diem cuoi.</summary>
+    /// <summary>Quet ca doan vua di (10 m/s, may yeu 10 khung/giay = 1 m moi khung) chu khong chi diem cuoi.</summary>
     void QuetTrung(Vector3 tu, Vector3 den)
     {
         Vector3 a = tu + Vector3.up * 1.0f, b = den + Vector3.up * 1.0f;

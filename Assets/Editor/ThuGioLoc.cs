@@ -74,6 +74,7 @@ public static class ThuGioLoc
     }
 
     static int docTangEditor, docGiamEditor;
+    static float rChanVo1, rGiuaVo1;
 
     /// <summary>
     /// DOC XOAN cua dai gio doc thang tu luoi FBX - LAM NGOAI PLAY: trong Play luoi khong bat Read/Write tra ve mang rong.
@@ -81,10 +82,18 @@ public static class ThuGioLoc
     /// </summary>
     static void DoDocXoanNgoaiPlay()
     {
-        docTangEditor = 0; docGiamEditor = 0;
+        docTangEditor = 0; docGiamEditor = 0; rChanVo1 = 0f; rGiuaVo1 = 0f;
         foreach (var o in AssetDatabase.LoadAllAssetsAtPath("Assets/Resources/KyNang/GioLoc/LocNho.fbx"))
         {
             var m = o as Mesh;
+            // Ban kinh vo Vo1 o chan va o 2,5 m (tren doan noi): nguoi dung xin chan to them 20%, phan tren giu nguyen
+            if (m != null && m.name == "Vo1")
+                foreach (var p in m.vertices)
+                {
+                    float r = new Vector2(p.x, p.z).magnitude;
+                    if (p.y < 0.05f) rChanVo1 = Mathf.Max(rChanVo1, r);
+                    if (Mathf.Abs(p.y - 2.5f) < 0.1f) rGiuaVo1 = Mathf.Max(rGiuaVo1, r);
+                }
             if (m == null || m.name != "DaiGio") continue;
             var v = m.vertices; var uv = m.uv;
             for (int i = 0; i < v.Length; i += 5)
@@ -232,7 +241,13 @@ public static class ThuGioLoc
         Kiem(Mathf.Approximately(toi.gioLocCost, 20f) && Mathf.Approximately(nl, 20f), "nang luong khong phai 20");
         Kiem(Mathf.Approximately(toi.gioLocCooldown, 0.4f) && Mathf.Approximately(hc, 0.4f), "hoi chieu khong phai 0,4");
         Kiem(Mathf.Approximately(toi.gioLocCastTime, 0.38f), "niem khong phai 0,38");
-        Kiem(Mathf.Abs(GioLoc.TocDo - tocQuaCau * 0.75f) < 0.001f, "toc do loc khong bang Qua cau bang giam 25%");
+        // Doi chung doc lap voi code: ban kinh goc = cong thuc Blender cu R(t) = 0,30 + 1,95 t^1,9 (Vo1 he so 1)
+        float rChanGoc = 0.30f, rGiuaGoc = 0.30f + 1.95f * Mathf.Pow(0.5f, 1.9f);
+        Ghi(string.Format("A. luoi Vo1: ban kinh chan {0:F3} m (goc {1:F3}, x{2:F3}); o 2,5 m {3:F3} m (goc {4:F3}, x{5:F3})",
+            rChanVo1, rChanGoc, rChanVo1 / rChanGoc, rGiuaVo1, rGiuaGoc, rGiuaVo1 / rGiuaGoc));
+        Kiem(Mathf.Abs(rChanVo1 / rChanGoc - 1.2f) < 0.01f, "chan loc khong to them 20%");
+        Kiem(Mathf.Abs(rGiuaVo1 / rGiuaGoc - 1f) < 0.01f, "phan than tren bi doi kich thuoc");
+        Kiem(Mathf.Abs(GioLoc.TocDo - 10f) < 0.001f, "toc do loc khong phai 10 m/s");
         Kiem(!SachPhep.MoTa(K).Contains("sét"), "mo ta Sach phep van nhac tia set");
         Kiem(bo != null && bo.Length == CapDo.SoKyNang && bo[K] != null && tIcon != null, "thieu icon Gio loc");
         Kiem(SachPhep.Ten(K) == "GIÓ LỐC" && SachPhep.MoTa(K).Length > 100, "Sach phep thieu chu Gio loc");
@@ -425,7 +440,7 @@ public static class ThuGioLoc
             Kiem(hatCungChieu > (hatCungChieu + hatNguoc) * 0.9f, "khoi bui khong cuon cung chieu than loc");
             Kiem(soSinhMoi >= 150 && yMaxLucSinh < 0.02f && rMaxLucSinh > 0.3f, "vong phun khoi bui khong nam ngang tren dat");
             Kiem(psVet.main.simulationSpace == ParticleSystemSimulationSpace.World, "khong co vet bui o lai phia sau");
-            Kiem(Mathf.Abs(toc - 12.75f) < 0.5f, "toc do loc khong phai 12,75 m/s");
+            Kiem(Mathf.Abs(toc - 10f) < 0.4f, "toc do loc khong phai 10 m/s");
             Kiem(Mathf.Abs(song - 3.5f) < 0.12f, "loc khong tan sau 3,5 giay");
             float hanX = Time.time + 7f;
             while (loc != null && Time.time < hanX) yield return null;
@@ -476,7 +491,7 @@ public static class ThuGioLoc
             float m1 = bGiua.health, m25 = b25.health, m27 = b27.health;
             var loc = GioLoc.Spawn(tu, huong, maskEnemy);
             float xaSauTrung = 0f;
-            float hanF = Time.time + 2.6f;
+            float hanF = Time.time + 3.2f;
             while (Time.time < hanF && loc != null)
             {
                 Vector3 v = loc.transform.position - tu; v.y = 0f;
@@ -508,8 +523,8 @@ public static class ThuGioLoc
             var hang = new List<Damageable>();
             var bay = new Dictionary<Damageable, float>();
             var tu = goc + huong * 1.2f;
-            // 12,75 m/s x 3,5 s = 44,6 m: 19 bia cach 2,2 m tu 4 m toi 43,6 m
-            for (int i = 0; i < 19; i++) hang.Add(TaoBia("TAM_G" + i, tu + huong * (4f + i * 2.2f)));
+            // 10 m/s x 3,5 s = 35 m: 19 bia cach 1,7 m tu 4 m toi 34,6 m
+            for (int i = 0; i < 19; i++) hang.Add(TaoBia("TAM_G" + i, tu + huong * (4f + i * 1.7f)));
             yield return new WaitForFixedUpdate();
             int soTrung = 0, soHat = 0; float caoMax = 0f; float tongGiay = 0f; int soDoGiay = 0;
             int hat0 = GioLoc.SoLanHat, trung0 = GioLoc.SoLanTrung;
