@@ -144,8 +144,9 @@ public static partial class VfxFactory
     /// nhanh 1-2 / 2-3) nhung: CA HAI tia deu tu dinh xuong va nam gan truc; BE DAY nhan ti le chieu cao 5 / 15,37 (do giat va
     /// nhanh la ti le theo do dai tia nen tu nho theo). CHI HINH, khong sat thuong. Goi moi 0,45 s nhu Loc xoay.
     /// </summary>
-    public static void GioLocSetTrongLoc(Vector3 chan)
+    public static void GioLocSetTrongLoc(Transform loc)
     {
+        Vector3 chan = loc.position;
         SoNhipSetTrongGioLoc++;
         float k = GioLoc.ChieuCao / ChieuCaoLocXoayDo;
         float goc = Random.Range(0f, Mathf.PI * 2f);
@@ -161,6 +162,8 @@ public static partial class VfxFactory
                 ? LightningArc.Create(dinh, duoi, 0.85f * k, Random.Range(0.16f, 0.28f))
                 : LightningArc.Create(dinh, duoi, 0.70f * k, Random.Range(0.13f, 0.22f));
             arc.name = "SetTrongGioLoc";
+            // Tia BAM THEO loc (nguoi dung 17/09/2026: tia "luon bi bo lai phia sau" - loc 9,5 m/s di mat 1,2-2,7 m trong doi tia)
+            arc.BamTheo(loc);
             arc.segments = i == 0 ? 16 : 22;
             arc.jitter = i == 0 ? 1.5f : 1.05f;
             arc.branches = i == 0 ? Random.Range(1, 3) : Random.Range(2, 4);

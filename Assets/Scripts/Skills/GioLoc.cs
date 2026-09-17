@@ -136,7 +136,7 @@ public class GioLoc : MonoBehaviour
 
         // Hai tia set tu dinh loc danh xuong trong long loc, lien tuc nhu Loc xoay - chi hinh
         setTimer -= dt;
-        if (setTimer <= 0f) { setTimer = NhipSetTrongLoc; VfxFactory.GioLocSetTrongLoc(transform.position); }
+        if (setTimer <= 0f) { setTimer = NhipSetTrongLoc; VfxFactory.GioLocSetTrongLoc(transform); }
 
         if (age >= ThoiGianSong) Tan();
     }

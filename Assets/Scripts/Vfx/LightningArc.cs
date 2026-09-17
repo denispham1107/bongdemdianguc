@@ -57,6 +57,33 @@ public class LightningArc : MonoBehaviour
     static readonly List<Color> cols = new List<Color>();
     static readonly List<int> tris = new List<int>();
 
+    // Bam theo mot vat dang di chuyen (tia set trong long Gio loc). Null = dung yen tai cho nhu moi tia khac.
+    Transform bamTheo;
+    Vector3 lechDau, lechCuoi;
+
+    /// <summary>
+    /// Cho tia DI THEO vat <paramref name="t"/> (chi vi tri): hai dau giu nguyen khoang lech so voi vat luc goi.
+    /// Nguoi dung 17/09/2026: tia trong Gio loc "luon bi bo lai phia sau" - loc bay 9,5 m/s, tia song 0,13-0,28 s dung yen
+    /// o toa do the gioi nen loc di mat 1,2-2,7 m truoc khi tia tat.
+    /// </summary>
+    public void BamTheo(Transform t)
+    {
+        bamTheo = t;
+        if (t == null) return;
+        lechDau = start - t.position;
+        lechCuoi = end - t.position;
+    }
+
+    void LateUpdate()
+    {
+        if (bamTheo == null) return;
+        // Luoi dung trong khong gian cuc bo cua transform nay (goc = start) nen doi transform la ca tia doi theo;
+        // start/end doi cung luc de lan giat hinh sau (Rebuild) van dung cho.
+        start = bamTheo.position + lechDau;
+        end = bamTheo.position + lechCuoi;
+        transform.position = start;
+    }
+
     /// <summary>Tao mot tia set noi hai diem.</summary>
     public static LightningArc Create(Vector3 start, Vector3 end, float widthScale, float life)
     {

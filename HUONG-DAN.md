@@ -8334,6 +8334,29 @@ sát thương hiện ra** (2,1 m) để số không đè lên chữ. Bỏ chữ 
 **Số đo** (menu 62, 0 lỗi): tung thật 10 lần → trúng 10, ngã 7; dấu hiệu hiện **376/383 khung hình đang ngã (98%)**;
 chuỗi ảnh mới thấy chữ NGÃ rõ ở cả 5 thời điểm, đè lên lửa.
 
+### Gió lốc: hai tia sét bị bỏ lại phía sau lốc — cho tia bám theo lốc (17/09/2026)
+
+Anh báo: 2 tia sét **luôn bị bỏ lại phía sau** cơn lốc.
+
+**Nguyên nhân:** `LightningArc` ghim hai đầu tia ở **toạ độ thế giới** lúc sinh. Tia sống 0,13–0,28 s, lốc bay 9,5 m/s → lốc đi mất
+**1,2–2,7 m** trước khi tia tắt. Phép thử hôm trước chỉ đo tia **lúc vừa sinh** (lệch trục ≤ 0,31 m) nên không thấy.
+
+**Sửa:** `LightningArc.BamTheo(Transform)` — nhớ khoảng lệch hai đầu so với vật, mỗi `LateUpdate` dời `start`/`end` và transform theo vật
+(lưới tia dựng trong không gian cục bộ của transform nên cả tia dời theo; lần giật hình sau vẫn đúng chỗ). `GioLocSetTrongLoc` nhận
+transform của lốc và gọi `BamTheo`. Các tia khác (Sấm sét, Lốc xoáy, Giựt sét…) không gọi nên không đổi.
+
+**Số đo** (menu 71, `gioloc.txt`, **0 lỗi**; ảnh `gioloc_can_1.png`): đo **mọi khung** suốt đời mỗi tia, ở **cuối khung** —
+
+| Đo | Kết quả |
+|---|---|
+| Tâm hình vẽ thật (bounds lưới lõi) cách trục lốc | lớn nhất **0,45 m** |
+| Hai đầu tia cách trục lốc | lớn nhất **0,35 m** (đúng bán kính đặt khi sinh) |
+| ĐỐI CHỨNG: tia cùng kiểu không bám theo, sinh cùng lúc | bị bỏ lại **2,38 m** |
+| Phần còn lại | 6 nhịp / 12 tia, cỡ tia ×0,325, bề ngang ×1,100, 9,50 m/s — như lần trước |
+
+Lần đo đầu ra lệch 0,68 m và báo lỗi — **do phép đo**: coroutine `yield return null` chạy **giữa Update và LateUpdate**, lúc lốc đã đi
+bước mới mà tia chưa kịp bám (9,5 m/s × dt ≈ 0,35–0,5 m). Đổi sang `WaitForEndOfFrame` (đo đúng lúc đã vẽ) thì ra 0,35 m.
+
 ### Gió lốc: rộng thêm 10%, bay 9,5 m/s, bỏ sét khi trúng, hai tia sét luôn đánh trong lòng lốc (17/09/2026)
 
 Anh báo: toàn bộ bán kính lốc **to thêm 10%**; **bỏ** hiệu ứng tia sét khi lốc trúng quái / người chơi khác; tốc độ **9,5**; **luôn có

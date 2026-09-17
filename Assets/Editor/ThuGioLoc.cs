@@ -54,6 +54,9 @@ using UnityEngine;
 ///      be day tia so voi tia THAT cua Loc xoay (do cung luc, DOI CHUNG doc lap voi hang so) ~ ti le chieu cao do duoc.
 ///   D. toc do 9,5. F. vung trung 2,42 m: bia lech 2,72 m trung, 2,92 m truot (ban kinh cu 2,2 thi 2,72 truot).
 ///   L. 5 bia tren duong: 0 tia tu than loc sang bia, 0 chop, 0 chay sem; moi bia van mat dung 75.
+///   Sua tiep (nguoi dung: "2 tia set luon bi bo lai phia sau con loc"): MOI KHUNG, moi tia trong loc con song: khoang cach
+///      ngang tu tam HINH VE THAT (bounds renderer Core) va tu hai dau tia toi truc loc - phai ~ trong long loc suot doi tia;
+///      DOI CHUNG: mot tia cung kieu KHONG bam theo, sinh cung luc - phai bi bo lai > 1 m (phep do bat duoc loi cu).
 ///
 /// Ket qua: PlayTestShots/gioloc.txt, anh gioloc_*.png.
 /// </summary>
@@ -478,15 +481,40 @@ public static class ThuGioLoc
             // Chup lai moc dem NGAY TRUOC vong: tia sinh trong luc cho o tren da tat (song 0,13-0,28 s), dem chung la lech nhip
             arcTruoc = new HashSet<LightningArc>(Object.FindObjectsByType<LightningArc>(FindObjectsInactive.Exclude));
             nhip0 = VfxFactory.SoNhipSetTrongGioLoc;
+            // DOI CHUNG bo lai phia sau: tia khong bam theo, song 0,28 s
+            var tiaDoiChung = LightningArc.Create(loc.transform.position + Vector3.up * 4.5f, loc.transform.position + Vector3.up * 1f, 0.28f, 0.28f);
+            tiaDoiChung.name = "TAM_TiaDoiChung";
+            arcTruoc.Add(tiaDoiChung);
+            float lechDoiChungMax = 0f, lechHinhMax = 0f, lechDauMax = 0f; int soKhungDoLech = 0;
+            System.Func<Transform, float> ngang = tr => loc == null ? 0f : new Vector2(tr.position.x - loc.transform.position.x, tr.position.z - loc.transform.position.z).magnitude;
             float hanS = Time.time + 3.6f;
             while (Time.time < hanS && loc != null)
             {
                 demTia();
+                Vector3 tl = loc.transform.position;
+                if (tiaDoiChung != null)
+                {
+                    var rc = tiaDoiChung.transform.Find("Core");
+                    if (rc != null) { var bc = rc.GetComponent<MeshRenderer>().bounds.center; lechDoiChungMax = Mathf.Max(lechDoiChungMax, new Vector2(bc.x - tl.x, bc.z - tl.z).magnitude); }
+                }
+                foreach (var a in Object.FindObjectsByType<LightningArc>(FindObjectsInactive.Exclude))
+                {
+                    if (a.name != "SetTrongGioLoc") continue;
+                    var rc = a.transform.Find("Core");
+                    if (rc == null) continue;
+                    var bc = rc.GetComponent<MeshRenderer>().bounds.center;
+                    lechHinhMax = Mathf.Max(lechHinhMax, new Vector2(bc.x - tl.x, bc.z - tl.z).magnitude);
+                    lechDauMax = Mathf.Max(lechDauMax, Mathf.Max(new Vector2(a.start.x - tl.x, a.start.z - tl.z).magnitude, new Vector2(a.end.x - tl.x, a.end.z - tl.z).magnitude));
+                    soKhungDoLech++;
+                }
                 if ((loc.transform.position - cu).sqrMagnitude > 1e-6f) { lucDiCuoi = Time.time; cu = loc.transform.position; }
-                yield return null;
+                // Cuoi khung (sau LateUpdate, dung luc da ve): coroutine 'yield null' chay GIUA Update va LateUpdate - luc do loc da
+                // di buoc moi con tia chua bam theo, do ra lech gia 9,5 m/s x dt (~0,35-0,5 m, lan chay dau 0,68 m)
+                yield return new WaitForEndOfFrame();
             }
             float song = lucDiCuoi - batDau;
             int soNhip = VfxFactory.SoNhipSetTrongGioLoc - nhip0;
+            if (tiaDoiChung != null) Object.Destroy(tiaDoiChung.gameObject);
             Ghi(string.Format("C. luoi: {0}; cao hinh loc nho {1:F2} m, Loc xoay that {2:F2} m, ti le {3:F2}; mau vo trung binh ({4:F2}, {5:F2}, {6:F2}); den {7}; tia set {8}",
                 string.Join(", ", tenLuoi.ToArray()), caoNho, caoLon, caoNho / caoLon, tb.r, tb.g, tb.b, soDen, soArc));
             Ghi(string.Format("C. xoan: dai gio len cao goc tang {0} / giam {1}; quay that sau 0,1 s: goc tang {2} lop / giam {3} lop; truot anh len {4} lop / sai {5}",
@@ -506,6 +534,10 @@ public static class ThuGioLoc
             Kiem(soDen == 0, "loc nho con den diem");
             Kiem(soNhip >= 5 && soArc == soNhip * 2 && soKhungDung2 == soKhungCoTia, "tia set trong loc khong phai moi nhip dung 2 tia");
             Kiem(dauCao == soArc && duoiThap == soArc && ganTruc == soArc, "tia set khong danh tu dinh loc xuong trong long loc");
+            Ghi(string.Format("C. tia bam theo loc (moi khung, {0} lan do): tam hinh ve that cach truc loc lon nhat {1:F2} m, hai dau tia cach truc lon nhat {2:F2} m; DOI CHUNG tia khong bam theo: bi bo lai {3:F2} m",
+                soKhungDoLech, lechHinhMax, lechDauMax, lechDoiChungMax));
+            Kiem(lechDoiChungMax > 1f, "doi chung: tia khong bam theo ma khong bi bo lai - phep do vo nghia");
+            Kiem(soKhungDoLech > 20 && lechDauMax < 0.45f && lechHinhMax < 0.6f, "tia set trong loc bi bo lai phia sau con loc");
             Kiem(soTiaLon > 0 && dayLonMax > 0f && Mathf.Abs((dayNhoMax / dayLonMax) / (caoNho / caoLon) - 1f) < 0.15f, "be day tia set khong thu nho theo co loc (so voi tia that cua Loc xoay)");
             Kiem(Mathf.Abs(tiNgang - 1.1f) < 0.02f && Mathf.Abs(tiDoc - 1f) < 0.02f, "hinh loc khong rong them 10% (hoac bi doi chieu cao)");
             Kiem(Mathf.Abs(rMaxLucSinh - 0.495f) < 0.03f, "vong bui chan loc khong rong them 10%");
