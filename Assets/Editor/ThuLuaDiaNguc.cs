@@ -14,16 +14,17 @@ using UnityEngine;
 /// trong 20 m (it hon thi qua du nham ke gan nhat, muc tieu chet thi doi); bam chac; 25 nang luong, niem 0,38; khong ai thi bay
 /// thang toa quat; lua do sam; icon Blender MCP; toa quat roi uon cong.
 ///
+///   Sua 17/09/2026 (nguoi dung): THEM MOT QUA (5 qua), nang luong 31; mau qua va vu no GIONG HET Qua cau lua (bo lop nhuom do sam).
 ///   A. Thong so: so hieu 11, 12 ky nang, nang luong / hoi chieu / niem that tren nhan vat + Sach phep, ten co dau, HUD 12 icon,
 ///      icon file; sat thuong goc = impactDamage PREFAB qua cau lua x 1,2^4.
-///   B. Tung that CastAt(11): khoa -> tu choi; mo -> dung 4 qua "LuaDiaNguc", tru 25; bam lai moi khung -> duoc nhan sau 0,5 s.
-///   C. Di muc tieu: 4 bia dat NGOAI hinh quat (hai ben, phia sau) trong 20 m + 1 bia 25 m. Moi qua gan mot bia khac nhau;
-///      ca 4 bia trung, bia 25 m khong. DOI CHUNG: chum Qua cau lua thuong cung cho cung huong -> 0 bia trung.
+///   B. Tung that CastAt(11): khoa -> tu choi; mo -> dung 5 qua "LuaDiaNguc", tru 31; bam lai moi khung -> duoc nhan sau 0,5 s.
+///   C. Di muc tieu: 5 bia dat NGOAI hinh quat (hai ben, phia sau) trong 20 m + 1 bia 25 m. Moi qua gan mot bia khac nhau;
+///      ca 5 bia trung, bia 25 m khong. DOI CHUNG: chum Qua cau lua thuong cung cho cung huong -> 0 bia trung.
 ///   D. Mot bia: ca 4 qua vao no. E. Bia CHAY NGANG 5 m/s: van trung. F. Muc tieu bi giet giua duong -> qua sang bia con lai.
 ///   G. Khong co ai: 4 qua bay thang (huong khong doi sau 0,4 s), lech nhau 18 do.
 ///   H. Sat thuong mot qua cap 1 so voi mot qua Qua cau lua CAP 5 that, cung khoang cach (ca hai co giam theo khoang cach) ~ 1;
 ///      bia bi thieu dot (BurningEffect); cap 3 impactDamage = goc x 1,44.
-///   I. Mau: hat lua cua qua dia nguc / qua cau lua thuong (kenh xanh la) ~ 0,28; vu no cung duoc nhuom.
+///   I. Mau: hat lua cua qua dia nguc GIONG HET qua cau lua thuong (ti le kenh xanh la / do = 1,000).
 ///   J. Qua mang: goi ky nang 11 tu nguoi kia -> may minh ra 4 qua; minh tung -> goi mang kyNang 11. Giet bia -> ke danh = nguoi tung.
 ///
 /// Ket qua: PlayTestShots/luadianguc.txt, anh luadianguc_*.png.
@@ -252,7 +253,7 @@ public static class ThuLuaDiaNguc
             LuaDiaNguc.SatThuongGoc, impactPrefab, impactPrefab * Mathf.Pow(1.2f, 4), SachPhep.Ten(K), SachPhep.TomTat(K), SachPhep.MoTa(K).Length,
             bo != null ? bo.Length : -1, bo != null && bo.Length > K && bo[K] != null ? "co" : "KHONG", tIcon != null ? tIcon.width + "x" + tIcon.height : "KHONG"));
         Kiem(K == 11 && CapDo.SoKyNang == 12, "so hieu / so ky nang sai");
-        Kiem(Mathf.Approximately(toi.luaDiaNgucCost, 25f) && Mathf.Approximately(nl, 25f), "nang luong khong phai 25");
+        Kiem(Mathf.Approximately(toi.luaDiaNgucCost, 31f) && Mathf.Approximately(nl, 31f), "nang luong khong phai 31");
         Kiem(Mathf.Approximately(toi.luaDiaNgucCooldown, 0.5f) && Mathf.Approximately(hc, 0.5f), "hoi chieu khong phai 0,5");
         Kiem(Mathf.Approximately(toi.luaDiaNgucCastTime, 0.38f), "niem khong phai 0,38");
         Kiem(impactPrefab > 0f && Mathf.Abs(LuaDiaNguc.SatThuongGoc - impactPrefab * Mathf.Pow(1.2f, 4)) < 0.01f, "sat thuong goc khong bang qua cau lua cap 5");
@@ -292,8 +293,8 @@ public static class ThuLuaDiaNguc
         Ghi(string.Format("B. khoa -> tu choi {0}; mo khoa -> tung {1}, {2} qua dia nguc bay, ton {3} nang luong; bam lai moi khung -> duoc nhan sau {4:F3} s",
             tuChoiKhoa, daTung, soQuaBay, manaTon, lucNhan));
         Kiem(tuChoiKhoa, "ky nang khoa ma van tung duoc");
-        Kiem(daTung && soQuaBay == 4, "tung khong ra dung 4 qua");
-        Kiem(Mathf.Abs(manaTon - 25f) < 0.01f, "khong ton dung 25 nang luong");
+        Kiem(daTung && soQuaBay == LuaDiaNguc.SoQua && LuaDiaNguc.SoQua == 5, "tung khong ra dung 5 qua");
+        Kiem(Mathf.Abs(manaTon - 31f) < 0.01f, "khong ton dung 31 nang luong");
         Kiem(lucNhan >= 0.5f - 0.001f && lucNhan < 0.6f, "hoi chieu 0,5 giay khong dung");
         XoaQua();
         yield return new WaitForSeconds(0.5f);
@@ -306,20 +307,20 @@ public static class ThuLuaDiaNguc
         {
             // Moi bia mot goc phan tu rieng, duong bay (vong cung) toi bia nay khong di ngang bia khac - qua cau lua cham AI tren
             // duong la no ngay (luat cu), lan dau dat -90/-140 do thi qua di bia 14 m no vao bia 10 m.
-            float[] lech = { 70f, -70f, 150f, -150f };
-            float[] kcs = { 9f, 9f, 12f, 12f };
+            float[] lech = { 60f, -60f, 120f, -120f, 180f };
+            float[] kcs = { 9f, 9f, 12f, 12f, 10f };
             var bia = new List<Damageable>();
             bool du = true;
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < lech.Length; i++)
             {
                 Vector3 cho;
                 if (!TimCho(toi, goc, huong, lech[i], kcs[i], datDat, out cho)) { du = false; break; }
                 datDat.Add(cho); bia.Add(TaoBia("TAM_C" + i, cho));
             }
             Vector3 choXa;
-            bool coXa = TimCho(toi, goc, huong, 180f, 25f, datDat, out choXa);
+            bool coXa = TimCho(toi, goc, huong, 100f, 25f, datDat, out choXa);
             Damageable biaXa = coXa ? TaoBia("TAM_CXa", choXa) : null;
-            if (!du) { Ghi("[LOI] khong tim du 4 cho trong de dat bia"); loi++; }
+            if (!du) { Ghi("[LOI] khong tim du 5 cho trong de dat bia"); loi++; }
             yield return new WaitForFixedUpdate();
             var mau0 = new float[bia.Count]; for (int i = 0; i < bia.Count; i++) mau0[i] = bia[i].health;
             float mauXa0 = biaXa != null ? biaXa.health : 0f;
@@ -327,7 +328,7 @@ public static class ThuLuaDiaNguc
             // DOI CHUNG: chum Qua cau lua thuong (4 qua, 18 do, khong di)
             var biaVaXa = new List<Damageable>(bia); if (biaXa != null) biaVaXa.Add(biaXa);
             var truocDC = new HashSet<Fireball>(Object.FindObjectsByType<Fireball>(FindObjectsInactive.Exclude));
-            Fireball.SpawnChum(tuQua, huong, toi.MatNaVatCan, maskEnemy, mauToi, 4, 18f);
+            Fireball.SpawnChum(tuQua, huong, toi.MatNaVatCan, maskEnemy, mauToi, LuaDiaNguc.SoQua, LuaDiaNguc.GocToe);
             var quaDC = new List<Fireball>();
             foreach (var f in Object.FindObjectsByType<Fireball>(FindObjectsInactive.Exclude)) if (!truocDC.Contains(f)) quaDC.Add(f);
             var trungDC = new int[biaVaXa.Count];
@@ -346,19 +347,19 @@ public static class ThuLuaDiaNguc
             // chup khi dang uon cong
             var chay = Object.FindAnyObjectByType<ChayThuMang>();
             yield return TheoDoiVaChup(qua, biaVaXa, trung, gan);
-            var ganKhac = new HashSet<Damageable>(); int soGanBia4 = 0;
-            foreach (var kv in gan) { if (kv.Value != null) ganKhac.Add(kv.Value); if (bia.Contains(kv.Value)) soGanBia4++; }
+            var ganKhac = new HashSet<Damageable>(); int soGanBiaGan = 0;
+            foreach (var kv in gan) { if (kv.Value != null) ganKhac.Add(kv.Value); if (bia.Contains(kv.Value)) soGanBiaGan++; }
             int soBiaTrung = 0; for (int i = 0; i < bia.Count; i++) if (trung[i] > 0) soBiaTrung++;
             yield return new WaitForSeconds(0.3f);
             int soBiaMatMau = 0; for (int i = 0; i < bia.Count; i++) if (mau0[i] - bia[i].health > 50f) soBiaMatMau++;
             float matXa = biaXa != null ? mauXa0 - biaXa.health : -1f;
-            Ghi(string.Format("C. 4 bia ngoai hinh quat (lech 70/-70/150/-150 do, 9-12 m) + bia 25 m phia sau ({0}). DOI CHUNG chum Qua cau lua thuong: so bia trung {1}",
+            Ghi(string.Format("C. 5 bia ngoai hinh quat (lech 60/-60/120/-120/180 do, 9-12 m) + bia 25 m ({0}). DOI CHUNG chum Qua cau lua thuong: so bia trung {1}",
                 coXa ? "co" : "KHONG dat duoc", soBiaDC));
-            Ghi(string.Format("C. Lua dia nguc: {0} qua; luc sinh gan {1} muc tieu khac nhau ({2} qua gan vao 4 bia gan); qua trung moi bia: {3}; bia mat mau {4}/4; bia 25 m mat {5:F0}",
-                qua.Count, ganKhac.Count, soGanBia4, string.Join(",", System.Array.ConvertAll(trung, x => x.ToString())), soBiaMatMau, matXa));
+            Ghi(string.Format("C. Lua dia nguc: {0} qua; luc sinh gan {1} muc tieu khac nhau ({2} qua gan vao 5 bia gan); qua trung moi bia: {3}; bia mat mau {4}/5; bia 25 m mat {5:F0}",
+                qua.Count, ganKhac.Count, soGanBiaGan, string.Join(",", System.Array.ConvertAll(trung, x => x.ToString())), soBiaMatMau, matXa));
             Kiem(soBiaDC == 0, "doi chung: qua cau lua thuong cung trung bia ngoai hinh quat - phep do vo nghia");
-            Kiem(qua.Count == 4 && ganKhac.Count == 4 && soGanBia4 == 4, "4 qua khong chia cho 4 ke gan nhat");
-            Kiem(soBiaTrung == 4 && soBiaMatMau == 4, "khong trung du 4 bia ngoai hinh quat");
+            Kiem(qua.Count == 5 && ganKhac.Count == 5 && soGanBiaGan == 5, "5 qua khong chia cho 5 ke gan nhat");
+            Kiem(soBiaTrung == 5 && soBiaMatMau == 5, "khong trung du 5 bia ngoai hinh quat");
             Kiem(biaXa == null || matXa < 0.5f, "bia ngoai 20 m van bi di trung");
             foreach (var cd in ChanDoan) Ghi("    (chan doan) " + cd);
             ChanDoan.Clear();
@@ -381,8 +382,8 @@ public static class ThuLuaDiaNguc
                 var gan = new Dictionary<Fireball, Damageable>();
                 yield return TheoDoi(qua, new List<Damageable> { b }, 4f, trung, gan);
                 int ganB = 0; foreach (var kv in gan) if (kv.Value == b) ganB++;
-                Ghi(string.Format("D. mot bia lech 100 do 10 m: {0}/4 qua gan vao no, {1}/4 qua trung no", ganB, trung[0]));
-                Kiem(ganB == 4 && trung[0] == 4, "it ke dich hon 4 ma qua du khong nham ke gan nhat");
+                Ghi(string.Format("D. mot bia lech 100 do 10 m: {0}/5 qua gan vao no, {1}/5 qua trung no", ganB, trung[0]));
+                Kiem(ganB == 5 && trung[0] == 5, "it ke dich hon 5 ma qua du khong nham ke gan nhat");
             foreach (var cd in ChanDoan) Ghi("    (chan doan) " + cd);
             ChanDoan.Clear();
                 Object.Destroy(b.gameObject);
@@ -414,8 +415,9 @@ public static class ThuLuaDiaNguc
                 }
                 yield return new WaitForSeconds(0.1f);
                 float mat = m0 - b.health;
-                Ghi(string.Format("E. bia chay ngang 5 m/s: mat {0:F0} mau (4 qua ~ {1:F0}-{2:F0}), con qua dang bay {3}", mat, 4 * LuaDiaNguc.SatThuongGoc * 0.55f, 4 * LuaDiaNguc.SatThuongGoc, conBay));
-                Kiem(mat > 3.5f * LuaDiaNguc.SatThuongGoc * 0.55f, "bia chay ngang khong bi trung du 4 qua");
+                Ghi(string.Format("E. bia chay ngang 5 m/s: mat {0:F0} mau ({3} qua ~ {1:F0}-{2:F0}), con qua dang bay {4}", mat,
+                    LuaDiaNguc.SoQua * LuaDiaNguc.SatThuongGoc * 0.55f, LuaDiaNguc.SoQua * LuaDiaNguc.SatThuongGoc, LuaDiaNguc.SoQua, conBay));
+                Kiem(mat > (LuaDiaNguc.SoQua - 0.5f) * LuaDiaNguc.SatThuongGoc * 0.55f, "bia chay ngang khong bi trung du 5 qua");
                 Object.Destroy(b.gameObject);
             }
             else { Ghi("[LOI] E khong tim duoc cho"); loi++; }
@@ -444,8 +446,8 @@ public static class ThuLuaDiaNguc
                 var trung = new int[2];
                 yield return TheoDoi(qua, new List<Damageable> { a, b }, 4f, trung, null);
                 yield return new WaitForSeconds(0.1f);
-                Ghi(string.Format("F. bia A (9 m) nhan {0} qua luc sinh, bi giet sau 0,15 s (chet {1}); qua trung B {2}/4, B mat {3:F0}", ganA, aChet, trung[1], mB0 - b.health));
-                Kiem(ganA >= 1 && aChet && trung[1] == 4, "muc tieu chet giua duong ma qua khong chuyen sang ke con song");
+                Ghi(string.Format("F. bia A (9 m) nhan {0} qua luc sinh, bi giet sau 0,15 s (chet {1}); qua trung B {2}/5, B mat {3:F0}", ganA, aChet, trung[1], mB0 - b.health));
+                Kiem(ganA >= 1 && aChet && trung[1] == LuaDiaNguc.SoQua, "muc tieu chet giua duong ma qua khong chuyen sang ke con song");
                 Object.Destroy(a.gameObject); Object.Destroy(b.gameObject);
             }
             else { Ghi("[LOI] F khong tim duoc cho"); loi++; }
@@ -470,8 +472,8 @@ public static class ThuLuaDiaNguc
             float lechMin = 999f, lechMax = 0f;
             for (int i = 1; i < gocs.Count; i++) { lechMin = Mathf.Min(lechMin, gocs[i] - gocs[i - 1]); lechMax = Mathf.Max(lechMax, gocs[i] - gocs[i - 1]); }
             Ghi(string.Format("G. khong ai: {0} qua, sau 0,4 s con {1}, huong doi lon nhat {2:F2} do; goc giua hai qua ke nhau {3:F1}-{4:F1} do", qua.Count, conSong, doiMax, lechMin, lechMax));
-            Kiem(qua.Count == 4 && conSong > 0 && doiMax < 0.5f, "khong co ai ma qua van doi huong");
-            Kiem(Mathf.Abs(lechMin - 18f) < 0.5f && Mathf.Abs(lechMax - 18f) < 0.5f, "4 qua khong toa quat 18 do");
+            Kiem(qua.Count == 5 && conSong > 0 && doiMax < 0.5f, "khong co ai ma qua van doi huong");
+            Kiem(Mathf.Abs(lechMin - 18f) < 0.5f && Mathf.Abs(lechMax - 18f) < 0.5f, "5 qua khong toa quat 18 do");
             XoaQua();
             yield return new WaitForSeconds(0.5f);
         }
@@ -523,10 +525,9 @@ public static class ThuLuaDiaNguc
             yield return new WaitForSeconds(0.5f);
         }
 
-        // ================= I. MAU DO SAM =================
+        // ================= I. MAU GIONG HET QUA CAU LUA =================
         Ghi("");
         {
-            int nhuom0 = VfxFactory.SoLanNhuomDiaNguc;
             var thuong = Fireball.Spawn(tuQua + Vector3.up * 40f, Vector3.up, 0, 0);
             LuaDiaNguc.SpawnChum(tuQua + Vector3.up * 60f, Vector3.up, goc + Vector3.up * 200f, 0, 0, mauToi);
             var qua = QuaDiaNguc();
@@ -543,15 +544,11 @@ public static class ThuLuaDiaNguc
                 return n > 0 ? tong / n : -1f;
             };
             float gThuong = xanhLa(thuong), gDN = qua.Count > 0 ? xanhLa(qua[0]) : -1f;
-            int nhuomQua = VfxFactory.SoLanNhuomDiaNguc - nhuom0;
-            // Cho no (lifetime 4 s) de dem vu no nhuom
-            yield return new WaitForSeconds(4.5f);
-            int nhuomNo = VfxFactory.SoLanNhuomDiaNguc - nhuom0 - nhuomQua;
-            Ghi(string.Format("I. ti le xanh la / do cua hat: qua cau lua thuong {0:F3}, lua dia nguc {1:F3} (x{2:F2}, mong 0,28); nhuom luc sinh {3} qua, vu no nhuom {4}",
-                gThuong, gDN, gThuong > 0 ? gDN / gThuong : 0f, nhuomQua, nhuomNo));
-            Kiem(gThuong > 0f && Mathf.Abs(gDN / gThuong - 0.28f) < 0.03f, "qua dia nguc khong do sam");
-            Kiem(nhuomQua == 4 && nhuomNo == 4, "khong nhuom du 4 qua va 4 vu no");
+            Ghi(string.Format("I. ti le xanh la / do cua hat: qua cau lua thuong {0:F3}, lua dia nguc {1:F3} -> x{2:F3} (mong 1,000 - nguoi dung 17/09/2026 xin mau giong het)",
+                gThuong, gDN, gThuong > 0 ? gDN / gThuong : 0f));
+            Kiem(gThuong > 0f && Mathf.Abs(gDN / gThuong - 1f) < 0.001f, "qua Lua dia nguc khong cung mau voi Qua cau lua");
             XoaQua();
+            yield return new WaitForSeconds(0.5f);
         }
 
         // ================= J. QUA MANG + KE DANH =================
@@ -596,9 +593,9 @@ public static class ThuLuaDiaNguc
             bool keDanh = biaK != null && biaK.IsDead && biaK.keDanhCuoi == mauToi;
             Ghi(string.Format("    (chan doan) bia J: {0}, chet {1}, mau con {2}, ke danh cuoi {3}", biaK != null ? "co" : "KHONG dat duoc",
                 biaK != null && biaK.IsDead, biaK != null ? biaK.health : -1f, biaK != null && biaK.keDanhCuoi != null ? biaK.keDanhCuoi.name : "null"));
-            Ghi(string.Format("J. goi ky nang 11 tu nguoi kia -> may minh ra {0} qua (mong 4); minh tung -> goi mang kyNang 11: {1}; bia 50 mau bi giet, ke danh cuoi = nguoi tung: {2}",
+            Ghi(string.Format("J. goi ky nang 11 tu nguoi kia -> may minh ra {0} qua (mong 5); minh tung -> goi mang kyNang 11: {1}; bia 50 mau bi giet, ke danh cuoi = nguoi tung: {2}",
                 maxQua, goi11, keDanh));
-            Kiem(maxQua == 4, "may minh khong phat lai 4 qua cua nguoi kia");
+            Kiem(maxQua == 5, "may minh khong phat lai 5 qua cua nguoi kia");
             Kiem(goi11, "goi ky nang khong mang so 11");
             Kiem(keDanh, "giet bang Lua dia nguc khong ghi ke danh");
             if (biaK != null) Object.Destroy(biaK.gameObject);

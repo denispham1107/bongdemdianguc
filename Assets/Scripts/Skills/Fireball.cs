@@ -30,7 +30,7 @@ public class Fireball : MonoBehaviour
     public float tamTim = 20f;
     public float giayBatDauDi = 0f;
     public Damageable mucTieu;
-    /// <summary>Lua dia nguc: vu no cung nhuom do sam.</summary>
+    /// <summary>Danh dau qua cua Lua dia nguc (phep thu dem theo co nay). Mau / vu no giong het Qua cau lua.</summary>
     public bool diaNguc;
 
     /// <summary>Huong bay hien tai (phep thu doc).</summary>
@@ -45,6 +45,15 @@ public class Fireball : MonoBehaviour
     /// Queo huong bay ve muc tieu (nguc ~1 m tren chan) toi da tocQueo do/giay; trong 4 m queo gap doi de khong quay vong quanh
     /// muc tieu (17 m/s va 360 do/giay la ban kinh queo 2,7 m). Muc tieu chet / mat thi tim ke con song gan qua nhat.
     /// </summary>
+    /// <summary>Do cao "an toan" tren mat dat tai mot cho: mat dat + 1,3 m (thap hon thi qua cham suon doc luc uon cong).</summary>
+    static float CaoAnToan(Vector3 cho, int lopDat)
+    {
+        RaycastHit h;
+        if (Physics.Raycast(cho + Vector3.up * 20f, Vector3.down, out h, 60f, lopDat, QueryTriggerInteraction.Ignore))
+            return h.point.y + 1.3f;
+        return float.MinValue;
+    }
+
     void DiMucTieu(float dt)
     {
         if (age < giayBatDauDi) return;
@@ -63,11 +72,12 @@ public class Fireball : MonoBehaviour
         float yMuon = dich.y;
         if (kcNgang > 2.5f)
         {
-            Vector3 truoc = p + (kcNgang > 0.01f ? ngang / kcNgang : dir) * 1.5f;
             if (lopDatDi < 0) lopDatDi = LayerMask.GetMask("Ground");
-            RaycastHit h;
-            if (Physics.Raycast(truoc + Vector3.up * 20f, Vector3.down, out h, 60f, lopDatDi, QueryTriggerInteraction.Ignore))
-                yMuon = Mathf.Max(yMuon, h.point.y + 1.2f);
+            // Do dat o BA cho: ngay duoi qua, 1,5 m theo huong BAY hien tai, va 1,5 m ve phia muc tieu. Luc queo gap (vong ra
+            // sau) hai huong ay khac han nhau - chi do mot cho thi qua van cham suon doc (menu 72 do 18/09/2026).
+            yMuon = Mathf.Max(yMuon, CaoAnToan(p, lopDatDi));
+            yMuon = Mathf.Max(yMuon, CaoAnToan(p + dir * 1.5f, lopDatDi));
+            yMuon = Mathf.Max(yMuon, CaoAnToan(p + (kcNgang > 0.01f ? ngang / kcNgang : dir) * 1.5f, lopDatDi));
         }
         Vector3 toi = new Vector3(ngang.x, yMuon - p.y, ngang.z);
         float kc = toi.magnitude;
@@ -251,8 +261,7 @@ public class Fireball : MonoBehaviour
         exploded = true;
 
         VfxFactory.ThaDuoiLua(transform);
-        var no = VfxFactory.FireExplosion(transform.position, blastRadius);
-        if (diaNguc) VfxFactory.NhuomLuaDiaNguc(no);
+        VfxFactory.FireExplosion(transform.position, blastRadius);
         CombatUtil.AreaDamage(transform.position, blastRadius, impactDamage, damageMask,
                               DamageType.Fire, burnSeconds, boQua);
 

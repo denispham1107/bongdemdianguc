@@ -872,6 +872,15 @@ MonoBehaviour:
   giatSetCost: 14
   giatSetCooldown: 0.4
   giatSetCastTime: 0.34
+  quaCauBangCost: 12
+  quaCauBangCooldown: 0.55
+  quaCauBangCastTime: 0.38
+  gioLocCost: 20
+  gioLocCooldown: 0.4
+  gioLocCastTime: 0.38
+  luaDiaNgucCost: 31
+  luaDiaNgucCooldown: 0.5
+  luaDiaNgucCastTime: 0.38
   rig: {fileID: 3732168720037933338}
   anim: {fileID: 0}
   hoatHinhRieng: {fileID: 4292490187337956294}

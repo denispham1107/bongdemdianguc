@@ -8334,7 +8334,40 @@ sát thương hiện ra** (2,1 m) để số không đè lên chữ. Bỏ chữ 
 **Số đo** (menu 62, 0 lỗi): tung thật 10 lần → trúng 10, ngã 7; dấu hiệu hiện **376/383 khung hình đang ngã (98%)**;
 chuỗi ảnh mới thấy chữ NGÃ rõ ở cả 5 thời điểm, đè lên lửa.
 
+### Lửa địa ngục năm quả màu như Quả cầu lửa; Quả cầu băng đóng băng 40%, cấp 5 năm quả (18/09/2026)
+
+Anh xin bốn việc: **Lửa địa ngục** thêm một quả (thành 5) và **màu quả + vụ nổ giống hệt Quả cầu lửa**; **Quả cầu băng** mỗi quả **40%
+đóng băng** đối thủ (không đi, không dùng kỹ năng) và **cấp 5 ra 5 quả**. Tôi hỏi trước, anh chọn: trúng vẫn **làm chậm như cũ** rồi cộng
+thêm 40% đóng băng; đóng băng **1,5 giây** (như Mưa băng, +0,15 s mỗi cấp kỹ năng); cấp 5 **không tốn thêm** năng lượng; Lửa địa ngục
+**31 năng lượng** (25 × 5/4) và chia cho tối đa 5 mục tiêu.
+
+**Sửa:**
+- `LuaDiaNguc.SoQua` 4 → 5, `PlayerController.luaDiaNgucCost` 25 → 31; bỏ hẳn lớp nhuộm đỏ sẫm (`VfxLuaDiaNguc.cs`, `XoaVatLieuRieng.cs`
+  xoá; `FireExplosion` vẫn trả về vật nổ). Icon vẫn nền đỏ sẫm để phân biệt nút.
+- `QuaCauBang`: `XacSuatCham` 0,40 → **1** (trúng là chậm), thêm `XacSuatDongBang` 0,40 và `GiayDongBang` 1,5 (cộng theo cấp như lớp chậm);
+  `NoBang` nhận thêm tham số thời gian đóng băng. Cấp 5: `SoQuaTheoCap` → 5 quả (cấp của **người tung**, đi kèm gói tin).
+- Đóng băng dùng đúng `FrozenEffect.Apply` của Mưa băng: bản sao mạng không tự gieo, trạng thái sang máy kia bằng bit `CoBangHoanToan`.
+
+**Bẫy cũ vấp lại:** menu 72 báo "năng lượng không phải 31" dù code ghi 31 — **prefab `Player_Sorceress` lưu sẵn 25** và đè lên code (đúng
+cái bẫy đã ghi trong bộ nhớ). Sửa giá trị trong prefab rồi mới đúng.
+
+**Lỗi thật thứ hai:** 1/5 quả Lửa địa ngục vẫn đâm đất khi vòng ra sau. Trước đó chỉ đo mặt đất **phía mục tiêu**; lúc quẹo gấp, hướng bay
+và hướng mục tiêu khác hẳn nhau. Nay đo **ba chỗ** (dưới quả, 1,5 m theo hướng bay, 1,5 m về phía mục tiêu) và giữ cao 1,3 m.
+
+**Số đo** (menu 72 và 68, **0 lỗi** cả hai):
+
+| Đo | Kết quả |
+|---|---|
+| Lửa địa ngục | 5 quả mỗi lần tung, tốn đúng 31; 5 bia quanh người (ngoài hình quạt) → mỗi quả một bia, **5/5 bia trúng**, bia 25 m không bị gì (đối chứng chùm Quả cầu lửa thường: 0 bia) |
+| Màu | tỉ lệ xanh lá/đỏ của hạt: Quả cầu lửa 1,000, Lửa địa ngục **1,000** (×1,000 — giống hệt) |
+| Còn lại của Lửa địa ngục | một bia → 5/5 quả; bia chạy ngang 5 m/s mất 758; mục tiêu chết giữa đường → 5/5 quả sang bia khác; không có ai → 5 quả thẳng, lệch 18°; sát thương một quả = Quả cầu lửa cấp 5 (×1,02); qua mạng 5 quả |
+| Quả cầu băng, 1000 lần nổ | làm chậm **100,0%**, đóng băng **40,7%** (mong 40%), chậm 0,5 trong 2,00 s, đóng cứng **1,50 s**; cấp 3: chậm 2,30 s, đóng băng 1,80 s |
+| Cấp 5 | cấp 4 (đối chứng) 3 quả, cấp 5 **5 quả** |
+| Người chơi bị đóng băng | hệ số tốc độ 1,00 → **0,00**, bị khoá cứng; bấm Quả cầu băng lúc đó ra **0** quả, hiện "BẠN ĐANG BỊ ĐÓNG BĂNG!" |
+
 ### Kỹ năng mới: Lửa địa ngục — bốn quả cầu lửa đỏ sẫm tự đuổi kẻ địch (17/09/2026)
+
+> ⚠️ **Đã đổi ngày 18/09/2026** (mục trên): 5 quả, 31 năng lượng, màu giống hệt Quả cầu lửa (bỏ lớp nhuộm đỏ sẫm).
 
 Anh xin: kỹ năng **"Lửa địa ngục"** — sát thương ban đầu bằng **Quả cầu lửa cấp 5**, hồi chiêu **0,5 s**; phóng **4 quả cầu lửa** giống Quả cầu
 lửa nhưng **tự dí đúng vào** người chơi / quái ở gần; vẫn **thiêu đốt**. Tôi hỏi trước, anh chọn:
@@ -9428,7 +9461,7 @@ Lần chạy đầu phép thử báo cả 10 con "lơ lửng": tia chiếu từ 
 | **69. Chay thu GIUT SET (20 m, 75, 4 tia, 15% choang)** | Thông số; tung thật `CastAt(6)` vào 5 bia (đúng 4 bia mất 75 cùng một khung hình); tầm 20 m bằng bia 19,9 / 20,4 m; tia lan ra ngoài tầm vẫn trúng ×0,85; 160 lần phóng đếm tỉ lệ choáng tia đầu và tia lan riêng (bằng StunnedEffect trên bia); cấp kỹ năng kéo dài choáng. Số đo `giatset.txt`. |
 | **71. Chay thu GIO LOC (ky nang moi)** | Thông số; tung thật `CastAt(10)` (khoá, 3 lốc, 20 năng lượng, hồi chiêu đo bằng bấm mỗi khung); lưới Blender, cao 5 m so Lốc xoáy thật, xám trắng, không đèn, không tia sét; **xoáy một chiều đi lên** (độ xoắn dải gió đo ngoài Play + chiều quay thật từng lớp + chiều trượt ảnh); khói bụi đen bay lên và cuộn cùng chiều (theo dõi từng hạt), vòng phun nằm ngang (phun thử 200 hạt), vệt phía sau; bán kính chân ×1,68 / phần trên ×1,0 (so công thức gốc); tia sét hiệu ứng khi trúng (5 bia → 5 tia từ thân lốc, 5 cháy sém, 0 cột sáng đứng, mất đúng 75); 1 lốc, sống 4,5 s; không trèo mái nhà mồ (đối chứng tia cũ chạm mái); tốc độ 8 m/s và thời gian sống; xuyên bia mộ (tia đối chứng); 75 một lần, 225 ba lốc, vùng 2,2 m (2,5 / 2,7 m); 190 lần trúng đếm hất tung độc lập, độ cao, thời gian bay; khiên chặn hất; ngắt chiêu người chơi (đối chứng) và đòn quái (đối chứng); qua mạng: gói số 10, bit hất tung, mặt nạ 5 bit, bản sao bay / ngắt chiêu / không hất lần hai; lò lửa tắt rồi cháy lại sau 30 s. Số đo `gioloc.txt`. |
 | **71b. Chup anh GIO LOC (so voi Loc xoay)** | Chỉ chụp: hai lốc bay ngang màn hình 5 khung liên tiếp + Lốc xoáy lớn để so. Ảnh `gioloc_can_*.png`, `gioloc_locxoay_*.png`. |
-| **72. Chay thu LUA DIA NGUC (ky nang moi)** | Thông số (số hiệu 11, năng lượng/hồi chiêu/niệm, sát thương gốc = prefab Quả cầu lửa × 1,2⁴, chữ Sách phép, icon); tung thật; tự dí 4 bia ngoài hình quạt (đối chứng Quả cầu lửa thường 0 bia), 1 bia, bia chạy ngang, mục tiêu chết giữa đường, không có ai bay thẳng 18°; sát thương so với Quả cầu lửa cấp 5 thật + thiêu đốt; màu đỏ sẫm; qua mạng + kẻ đánh. Tạm tắt va chạm đồ vật 26 m (Act2 không có chỗ trống). Số đo `luadianguc.txt`. |
+| **72. Chay thu LUA DIA NGUC (ky nang moi)** | Thông số (số hiệu 11, năng lượng 31/hồi chiêu/niệm, sát thương gốc = prefab Quả cầu lửa × 1,2⁴, chữ Sách phép, icon); tung thật 5 quả; tự dí 5 bia ngoài hình quạt (đối chứng Quả cầu lửa thường 0 bia), 1 bia, bia chạy ngang, mục tiêu chết giữa đường, không có ai bay thẳng 18°; sát thương so với Quả cầu lửa cấp 5 thật + thiêu đốt; màu giống hệt Quả cầu lửa; qua mạng + kẻ đánh. Tạm tắt va chạm đồ vật 26 m (Act2 không có chỗ trống). Số đo `luadianguc.txt`. |
 | **70. Chay thu QUA CAU LUA (85 sat thuong, vet lua moi)** | Sát thương đọc thẳng prefab và trên quả cầu thật khi tung; quả cầu sinh từ prefab bay vào bia (mất 85 × giảm theo khoảng cách); hạt `Flames` không còn ảnh tam giác mà là flipbook Blender, có vệt lửa dài `TrailRenderer`; nổ xong vệt được thả ra; chụp cận cảnh lúc bay. Chạy trên bản cũ ra 7 lỗi (đối chứng). Số đo `quacaulua.txt`. |
 | **56. Chay thu DOT QUAI Act2 + cho xuat phat** | *(13/09/2026: thêm đo chờ 30 giây và 10 con xa 55–65 m)*  Kiểm chỗ xuất phát ngẫu nhiên (hai máy cùng mã phòng ra cùng danh sách, cách nhau ≥ 22 m, trên đất, ngoài nước, không vướng vật cản) và luật đợt quái Act2 (đợt 1 bốn con quanh mỗi người; đợt sau cộng dồn quái và mạnh thêm 5% máu · sát thương); kiểm Act1 không bị đổi. Số đo `dotquai_act2.txt`. |
 | **55. Chay thu KET TRAN (nguoi song sot cuoi cung)** | Mở kênh giả lập như menu 45: kiểm gói tin kết trận/chết, máy chủ phòng phán quyết đúng lúc còn một người, bảng điểm cộng đúng người, máy khách không tự kết luận và hiện đúng kết quả nghe được, chết rồi camera chuyển sang người còn sống, chụp màn kết trận. Số đo `kettran.txt`, ảnh `kettran_*.png`. |

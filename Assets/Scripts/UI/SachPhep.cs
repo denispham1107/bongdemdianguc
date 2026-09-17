@@ -247,9 +247,9 @@ public static class SachPhep
             case 6: return "4 tia sét lan, 15% choáng";
             case CapDo.KyBinhMau: return "Uống một bình, hồi tối đa 100 máu";
             case CapDo.KyBinhMana: return "Uống một bình, hồi tối đa 50 năng lượng";
-            case CapDo.KyQuaCauBang: return "Ba quả băng, 40% làm chậm";
+            case CapDo.KyQuaCauBang: return "Ba quả băng, 40% đóng băng";
             case CapDo.KyGioLoc: return "Một cơn lốc, 55% hất tung";
-            case CapDo.KyLuaDiaNguc: return "Bốn quả lửa tự đuổi kẻ địch";
+            case CapDo.KyLuaDiaNguc: return "Năm quả lửa tự đuổi kẻ địch";
             default: return "";
         }
     }
@@ -337,8 +337,9 @@ public static class SachPhep
                      + "Quả nào chạm vật cản hay kẻ địch thì vỡ tung thành một vụ nổ băng: mọi "
                      + "kẻ địch trong vùng nổ đều mất máu, đứng càng gần tâm càng đau. Sát thương "
                      + "ban đầu 65 mỗi quả.\n\n"
-                     + "Mỗi kẻ bị trúng có 40% khả năng bị LÀM CHẬM một nửa tốc độ di chuyển "
-                     + "trong 2 giây.\n\n"
+                     + "Kẻ nào trúng đều bị LÀM CHẬM một nửa tốc độ trong 2 giây, và có 40% khả năng bị "
+                     + "ĐÓNG BĂNG 1,5 giây — đứng cứng tại chỗ, không đi và không dùng được kỹ năng nào.\n\n"
+                     + "CẤP 5: mỗi lần tung ra NĂM quả cầu băng thay vì ba.\n\n"
                      + "Hồi chiêu nhanh như Quả cầu lửa — đổi sức thiêu đốt lấy khả năng ghìm "
                      + "chân kẻ địch.";
             case CapDo.KyGioLoc:
@@ -353,11 +354,11 @@ public static class SachPhep
                      + "CẤP 5: phóng cùng lúc HAI cơn lốc song song, cách nhau 4 m — kẻ đứng giữa bị cả hai quét qua thì trúng hai lần — "
                      + "nhưng tốn GẤP ĐÔI năng lượng.";
             case CapDo.KyLuaDiaNguc:
-                return "Phóng ra BỐN quả cầu lửa đỏ sẫm của địa ngục. Bốn quả toả quạt rồi uốn cong, TỰ ĐUỔI theo tối đa "
-                     + "bốn kẻ địch (quái hoặc người chơi khác) gần bạn nhất trong 20 m — ít kẻ địch hơn thì quả dư lao vào kẻ gần nhất; "
+                return "Phóng ra NĂM quả cầu lửa. Năm quả toả quạt rồi uốn cong, TỰ ĐUỔI theo tối đa "
+                     + "năm kẻ địch (quái hoặc người chơi khác) gần bạn nhất trong 20 m — ít kẻ địch hơn thì quả dư lao vào kẻ gần nhất; "
                      + "mục tiêu gục giữa đường thì quả lửa chuyển sang kẻ còn sống gần nó nhất.\n\n"
                      + "Mỗi quả nổ gây 176 sát thương lửa (bằng Quả cầu lửa ở cấp 5) và THIÊU ĐỐT mọi kẻ trong vùng nổ như Quả cầu lửa. "
-                     + "Không có ai quanh bạn thì bốn quả bay thẳng. Đâm vào vật cản thì nổ tại đó.\n\n"
+                     + "Không có ai quanh bạn thì năm quả bay thẳng. Đâm vào vật cản thì nổ tại đó.\n\n"
                      + "Nâng cấp: +20% sát thương mỗi cấp, lửa cháy lâu hơn.";
             default: return "";
         }

@@ -19,7 +19,19 @@ public class QuaCauBang : MonoBehaviour
     /// <summary>Sat thuong ban dau MOI QUA (cap ky nang 1) - nguoi dung chot 65.</summary>
     public const float SatThuongGoc = 65f;
     /// <summary>Xac suat lam cham moi muc tieu trung don.</summary>
-    public const float XacSuatCham = 0.40f;
+    /// <summary>17/09/2026 nguoi dung: TRUNG LA CHAM (khong con gieo 40%), va them 40% DONG CUNG.</summary>
+    public const float XacSuatCham = 1f;
+
+    /// <summary>40% kha nang DONG BANG (khong di, khong tung phep) - nguoi dung 17/09/2026.</summary>
+    public const float XacSuatDongBang = 0.40f;
+
+    /// <summary>Dong bang 1,5 giay nhu Mua bang; cap ky nang cong them 0,15 giay moi cap (luat chung).</summary>
+    public const float GiayDongBang = 1.5f;
+
+    /// <summary>Cap 5: mot lan tung ra 5 qua (nguoi dung 17/09/2026), duoi cap 5 la 3 qua.</summary>
+    public const int CapNamQua = 5, SoQuaCap5 = 5, SoQuaThuong = 3;
+
+    public static int SoQuaTheoCap(int capKy) { return capKy >= CapNamQua ? SoQuaCap5 : SoQuaThuong; }
     /// <summary>Ti le giam toc do.</summary>
     public const float TiLeCham = 0.50f;
     /// <summary>Lam cham keo dai bao lau (cap ky nang cao cong them).</summary>
@@ -41,6 +53,7 @@ public class QuaCauBang : MonoBehaviour
     public float impactDamage = SatThuongGoc;
     public float blastRadius = BanKinhNo;
     public float giayCham = GiayCham;
+    public float giayDongBang = GiayDongBang;
     public LayerMask hitMask;
     public LayerMask damageMask;
     public Damageable boQua;
@@ -53,7 +66,7 @@ public class QuaCauBang : MonoBehaviour
     bool exploded;
 
     /// <summary>So lan no va so muc tieu bi lam cham tu khi vao Play - cho phep thu doc.</summary>
-    public static int SoLanNo, SoLanTrung, SoLanCham;
+    public static int SoLanNo, SoLanTrung, SoLanCham, SoLanDongBang;
 
     static readonly Collider[] buffer = new Collider[64];
 
@@ -85,6 +98,7 @@ public class QuaCauBang : MonoBehaviour
             qua.tuaTruoc = BuTre.TuaTruocGiay;
             qua.impactDamage *= heSoSatThuong;
             qua.giayCham += themGiayCham;
+            qua.giayDongBang += themGiayCham;
         }
     }
 
@@ -149,7 +163,7 @@ public class QuaCauBang : MonoBehaviour
 
         VfxFactory.ThaDuoiQuaCauBang(transform);
         VfxFactory.NoQuaCauBang(transform.position, blastRadius);
-        NoBang(transform.position, blastRadius, impactDamage, damageMask, giayCham, boQua);
+        NoBang(transform.position, blastRadius, impactDamage, damageMask, giayCham, giayDongBang, boQua);
         Khieng.NoTrungKhieng(transform.position, blastRadius, impactDamage, damageMask, boQua);
 
         CameraShake.Shake(0.2f, 0.12f);
@@ -162,7 +176,7 @@ public class QuaCauBang : MonoBehaviour
     /// khieng do tron don thi khong dinh cham (luat chung cua AreaDamage).
     /// </summary>
     public static int NoBang(Vector3 center, float radius, float damage, LayerMask mask,
-                             float giayCham, Damageable boQua)
+                             float giayCham, float giayDongBang, Damageable boQua)
     {
         int n = Physics.OverlapSphereNonAlloc(center, radius, buffer, mask, QueryTriggerInteraction.Collide);
         int hits = 0;
@@ -182,11 +196,15 @@ public class QuaCauBang : MonoBehaviour
             SoLanTrung++;
 
             if (d.IsDead || khiengDo) continue;
-            if (Random.value < XacSuatCham)
+            // TRUNG LA CHAM
+            if (!d.mauDoMayKhacQuyet) SoLanCham++;
+            FrozenEffect.ApCham(d, TiLeCham, giayCham);
+            // ... va 40% DONG CUNG han (khong di, khong tung phep). Ban sao mang tu bo qua trong Apply -
+            // ben kia gieo va bao sang bang bit CoBangHoanToan trong goi trang thai.
+            if (Random.value < XacSuatDongBang)
             {
-                // Ban sao mang: ApCham tu bo qua - ben kia gieo va bao qua goi trang thai
-                if (!d.mauDoMayKhacQuyet) SoLanCham++;
-                FrozenEffect.ApCham(d, TiLeCham, giayCham);
+                if (!d.mauDoMayKhacQuyet) SoLanDongBang++;
+                FrozenEffect.Apply(d, giayDongBang);
             }
         }
         return hits;

@@ -38,6 +38,11 @@ using UnityEngine;
 ///      khong khi lanh phia sau giong y chang Qua cau bang") Mua bang THAT: moi vat dang roi la qua cau bang
 ///      (luoi Blender, luong khi lanh dang phat, vet bang, duoi gai phia SAU huong roi, khong den rieng),
 ///      khong con tang bang cu; bia trong vung van mat mau + bi cham/dong cung; dem tong so hat; chup anh.
+///   F (sua 17/09/2026, nguoi dung: "moi qua cau bang co 40% kha nang Dong bang doi thu... khong the di chuyen va su dung skill";
+///      chon: TRUNG LA CHAM nhu cu + THEM 40% dong bang 1,5 giay): 1000 lan no - ti le cham 100%, ti le dong cung ~40%,
+///      dong cung 1,5 giay, cap 3 keo dai ca hai (+0,30).
+///   M. (cung ngay) CAP 5 ra 5 qua: tung that o cap 4 (DOI CHUNG) -> 3 qua, cap 5 -> 5 qua; goi ky nang cap 5 tu nguoi kia ->
+///      may minh cung ra 5 qua. NGUOI CHOI bi dong bang: khong di duoc (HeSoTocBang = 0) va CastAt bi tu choi.
 ///   L. (16/09/2026, nguoi dung: qua cau cua Mua bang "chi trung mat dat thi no binh thuong khong tao khoi bang;
 ///      trung do vat / nguoi choi khac / quai thi vua no vua tao bang") - roi THAT tung ca, dem CumGai dang bat
 ///      trong hieu ung no: dat trong -> 0; bia mo trong 1,7 m -> co; ke dich trong 1,7 m -> co; DOI CHUNG bia mo
@@ -341,7 +346,7 @@ public static class ThuQuaCauBang
         var b5 = TaoBia("TAM_Bia5", tam + vuong * 5f);
         yield return new WaitForFixedUpdate();
         float m0 = b0.health, m1 = b1.health, m25 = b25.health, m5 = b5.health;
-        int soTrung = QuaCauBang.NoBang(tam, QuaCauBang.BanKinhNo, QuaCauBang.SatThuongGoc, maskEnemy, QuaCauBang.GiayCham, null);
+        int soTrung = QuaCauBang.NoBang(tam, QuaCauBang.BanKinhNo, QuaCauBang.SatThuongGoc, maskEnemy, QuaCauBang.GiayCham, QuaCauBang.GiayDongBang, null);
         Ghi(string.Format("E. no tai tam bia: trung {0} muc tieu; mat mau: tam {1:F2} (mong 65), 1 m {2:F2}, 2,5 m {3:F2}, 5 m {4:F2} (ngoai ban kinh 3,4)",
             soTrung, m0 - b0.health, m1 - b1.health, m25 - b25.health, m5 - b5.health));
         Kiem(Mathf.Abs((m0 - b0.health) - 65f) < 0.01f, "no dung tam khong mat dung 65");
@@ -351,16 +356,16 @@ public static class ThuQuaCauBang
 
         // ================= F. LAM CHAM =================
         yield return new WaitForFixedUpdate();
-        int soCham = 0, soDongCung = 0; float slowMin = 1f, slowMax = 0f, conMin = 99f, conMax = 0f;
+        int soCham = 0, soDongCung = 0; float slowMin = 1f, slowMax = 0f, conMin = 99f, conMax = 0f, dongMin = 99f, dongMax = 0f;
         const int N = 1000;
         for (int i = 0; i < N; i++)
         {
             XoaHieuUng(b0); b0.health = b0.maxHealth;
-            QuaCauBang.NoBang(tam, QuaCauBang.BanKinhNo, QuaCauBang.SatThuongGoc, maskEnemy, QuaCauBang.GiayCham, null);
+            QuaCauBang.NoBang(tam, QuaCauBang.BanKinhNo, QuaCauBang.SatThuongGoc, maskEnemy, QuaCauBang.GiayCham, QuaCauBang.GiayDongBang, null);
             var f = b0.GetComponent<FrozenEffect>();
             if (f == null) continue;
             soCham++;
-            if (f.IsFullyFrozen) soDongCung++;
+            if (f.IsFullyFrozen) { soDongCung++; dongMin = Mathf.Min(dongMin, f.dongCungConLai); dongMax = Mathf.Max(dongMax, f.dongCungConLai); }
             slowMin = Mathf.Min(slowMin, f.slow); slowMax = Mathf.Max(slowMax, f.slow);
             conMin = Mathf.Min(conMin, f.remaining); conMax = Mathf.Max(conMax, f.remaining);
         }
@@ -371,13 +376,18 @@ public static class ThuQuaCauBang
         QuaCauBang.SpawnChum(tam + Vector3.up * 5f, Vector3.down, 0, maskEnemy, null, 1, 0f, 1f, them);
         var quaCap3 = Object.FindAnyObjectByType<QuaCauBang>();
         float giayCap3 = quaCap3 != null ? quaCap3.giayCham : -1f;
+        float dongCap3 = quaCap3 != null ? quaCap3.giayDongBang : -1f;
         if (quaCap3 != null) Object.Destroy(quaCap3.gameObject);
-        Ghi(string.Format("F. {0} lan no: bi cham {1:F1}% (mong 40%), dong cung {2}; slow {3}..{4} (mong 0,5), thoi gian cham {5:F2}..{6:F2} giay (mong 2); qua cau cap 3 cham {7:F2} giay (mong 2,30)",
-            N, tl, soDongCung, slowMin, slowMax, conMin, conMax, giayCap3));
-        Kiem(Mathf.Abs(tl - 40f) <= 5f, "ti le lam cham lech qua xa 40%");
-        Kiem(soDongCung == 0, "qua cau bang lai dong cung (chi duoc lam cham)");
+        float tlDong = 100f * soDongCung / N;
+        Ghi(string.Format("F. {0} lan no: bi cham {1:F1}% (mong 100%), DONG BANG {2:F1}% (mong 40%); slow {3}..{4} (mong 0,5), thoi gian cham {5:F2}..{6:F2} giay (mong 2); dong cung {7:F2}..{8:F2} giay (mong 1,50); qua cau cap 3: cham {9:F2} giay (mong 2,30), dong bang {10:F2} giay (mong 1,80)",
+            N, tl, tlDong, slowMin, slowMax, conMin, conMax, dongMin, dongMax, giayCap3, dongCap3));
+        Kiem(Mathf.Abs(tl - 100f) < 0.01f, "trung ma khong chac chan bi lam cham");
+        Kiem(Mathf.Abs(tlDong - 40f) <= 5f, "ti le dong bang lech qua xa 40%");
+        Kiem(soDongCung > 0 && Mathf.Abs(dongMin - 1.5f) < 0.01f && Mathf.Abs(dongMax - 1.5f) < 0.01f, "dong bang khong phai 1,5 giay");
+        Kiem(Mathf.Abs(dongCap3 - 1.80f) < 0.01f, "cap ky nang khong keo dai dong bang");
         Kiem(Mathf.Approximately(slowMin, 0.5f) && Mathf.Approximately(slowMax, 0.5f), "muc cham khong phai 50%");
         Kiem(Mathf.Abs(conMin - 2f) < 0.01f && Mathf.Abs(conMax - 2f) < 0.01f, "lam cham khong keo dai 2 giay");
+        Kiem(SachPhep.MoTa(K).Contains("ĐÓNG BĂNG") && SachPhep.MoTa(K).Contains("NĂM quả"), "mo ta Sach phep chua noi dong bang / cap 5 nam qua");
         Kiem(Mathf.Abs(giayCap3 - 2.30f) < 0.01f, "cap ky nang khong keo dai lop cham");
         Object.Destroy(b0.gameObject);
 
@@ -835,6 +845,68 @@ public static class ThuQuaCauBang
                 Kiem(ganVatDocLap > 0, "doi chung: khong qua nao roi gan do vat - chua thu duoc truong hop do vat");
                 if (baoL2 != null) Object.Destroy(baoL2.gameObject);
             }
+        }
+
+        // ================= M. CAP 5 RA 5 QUA + NGUOI CHOI BI DONG BANG =================
+        Ghi("");
+        {
+            foreach (var d0 in Object.FindObjectsByType<Damageable>(FindObjectsInactive.Exclude)) if (d0.name.StartsWith("TAM_")) Object.Destroy(d0.gameObject);
+            foreach (var q0 in Object.FindObjectsByType<QuaCauBang>(FindObjectsInactive.Exclude)) Object.Destroy(q0.gameObject);
+            yield return new WaitForSeconds(0.6f);
+            Vector3 hM = HuongTrong(toi);
+            toi.transform.rotation = Quaternion.LookRotation(hM);
+            // nang ky nang len cap 4 (doi chung) roi 5
+            int vong = 0;
+            while (CapDo.CapCuaKyNang(K) < 4 && vong++ < 20)
+            {
+                if (CapDo.DiemKyNang <= 0) CapDo.Them(CapDo.CanDeLenCap(CapDo.Cap));
+                CapDo.NangCap(K);
+            }
+            toi.mana = toi.maxMana;
+            int truoc4 = DemQua();
+            toi.CastAt(K, toi.transform.position + hM * 8f);
+            // Dem LON NHAT theo tung khung: qua bay 17 m/s, cho 0,6 s roi dem mot lan thi vai qua da no (lan dau ra 2/3)
+            int soQua4 = 0;
+            float hanM4 = Time.time + 0.8f;
+            while (Time.time < hanM4) { soQua4 = Mathf.Max(soQua4, DemQua() - truoc4); yield return null; }
+            foreach (var q0 in Object.FindObjectsByType<QuaCauBang>(FindObjectsInactive.Exclude)) Object.Destroy(q0.gameObject);
+            yield return new WaitForSeconds(0.4f);
+            if (CapDo.DiemKyNang <= 0) CapDo.Them(CapDo.CanDeLenCap(CapDo.Cap));
+            CapDo.NangCap(K);
+            int cap5 = CapDo.CapCuaKyNang(K);
+            toi.mana = toi.maxMana;
+            int truoc5 = DemQua();
+            toi.CastAt(K, toi.transform.position + hM * 8f);
+            int soQua5 = 0;
+            float hanM5 = Time.time + 0.8f;
+            while (Time.time < hanM5) { soQua5 = Mathf.Max(soQua5, DemQua() - truoc5); yield return null; }
+            foreach (var q0 in Object.FindObjectsByType<QuaCauBang>(FindObjectsInactive.Exclude)) Object.Destroy(q0.gameObject);
+            Ghi(string.Format("M. cap 4 (DOI CHUNG): {0} qua; cap {1}: {2} qua (mong 3 va 5)", soQua4, cap5, soQua5));
+            Kiem(soQua4 == 3, "doi chung cap 4 khong phai 3 qua");
+            Kiem(cap5 == 5 && soQua5 == 5, "cap 5 khong ra 5 qua");
+
+            // NGUOI CHOI bi dong bang: khong di, khong tung phep
+            yield return new WaitForSeconds(0.6f);
+            var mauToiM = toi.GetComponent<Damageable>();
+            float tocTruoc = toi.HeSoTocBang;
+            bool khoaTruoc = toi.DangBiKhoaCung;
+            FrozenEffect.Apply(mauToiM, 1.5f);
+            yield return null;
+            float tocSau = toi.HeSoTocBang;
+            bool khoaSau = toi.DangBiKhoaCung;
+            int truocBang = 0; int sauBang = 0;
+            toi.mana = toi.maxMana;
+            truocBang = DemQua();
+            toi.CastAt(K, toi.transform.position + hM * 8f);
+            yield return new WaitForSeconds(0.5f);
+            sauBang = DemQua() - truocBang;
+            string nhac = toi.LastMessage;
+            var fM = toi.GetComponent<FrozenEffect>(); if (fM != null) Object.DestroyImmediate(fM);
+            yield return new WaitForSeconds(0.5f);
+            Ghi(string.Format("M. nguoi choi bi dong bang 1,5 s: he so toc {0:F2} -> {1:F2}, bi khoa cung {2} -> {3}; tung Qua cau bang luc dang bang ra {4} qua (nhac \"{5}\")",
+                tocTruoc, tocSau, khoaTruoc, khoaSau, sauBang, nhac));
+            Kiem(Mathf.Approximately(tocTruoc, 1f) && Mathf.Approximately(tocSau, 0f) && !khoaTruoc && khoaSau, "nguoi choi bi dong bang ma van di duoc");
+            Kiem(sauBang == 0, "nguoi choi bi dong bang ma van tung duoc ky nang");
         }
 
         // ================= I. HUD / SACH PHEP =================

@@ -95,7 +95,7 @@ public class PlayerController : MonoBehaviour
     public float gioLocCastTime = 0.38f;
 
     [Header("Lua dia nguc (ky nang 11) - 4 qua cau lua tu di muc tieu")]
-    public float luaDiaNgucCost = 25f;
+    public float luaDiaNgucCost = 31f;      // 5 qua (nguoi dung 17/09/2026; 25 x 5/4)
     public float luaDiaNgucCooldown = 0.5f;
     public float luaDiaNgucCastTime = 0.38f;
 
@@ -1173,8 +1173,9 @@ public class PlayerController : MonoBehaviour
             Vector3 dir = aimAt - origin;
             dir.y = Mathf.Clamp(dir.y, -1.5f, 1.5f);
             if (dir.sqrMagnitude < 0.001f) dir = transform.forward;
+            // Cap 5 ra 5 qua (nguoi dung 17/09/2026) - cap cua NGUOI TUNG di kem goi tin
             QuaCauBang.SpawnChum(origin, dir.normalized, obstacleMask, enemyMask, health,
-                                 3, 11f, manhHon, themGiay);
+                                 QuaCauBang.SoQuaTheoCap(capPhep), 11f, manhHon, themGiay);
             CameraShake.Shake(0.12f, 0.05f);
         }
         else if (castingSkill == CapDo.KyGioLoc)

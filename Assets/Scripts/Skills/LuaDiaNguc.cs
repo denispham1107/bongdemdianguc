@@ -4,20 +4,21 @@ using UnityEngine;
 /// <summary>
 /// KY NANG "LUA DIA NGUC" (so hieu 11, them 17/09/2026).
 ///
-/// Nguoi dung: phong ra 4 qua cau lua giong Quả cầu lửa nhung TU DI dung vao muc tieu (nguoi choi / quai o gan), van thieu
+/// Nguoi dung: phong ra 5 qua cau lua giong Quả cầu lửa nhung TU DI dung vao muc tieu (nguoi choi / quai o gan), van thieu
 /// dot nhu Qua cau lua; sat thuong ban dau bang Qua cau lua CAP 5; hoi chieu 0,5 giay. Nguoi dung chon them:
 ///   - cap 1 = sat thuong Qua cau lua cap 5 (85 x 1,2^4 ~ 176), van +20% moi cap nhu moi ky nang;
 ///   - chia 4 qua cho toi da 4 ke dich GAN NGUOI TUNG nhat trong 20 m, it hon 4 thi qua du nham ke gan nhat; muc tieu chet
 ///     giua duong thi doi sang ke con song gan qua nhat;
 ///   - bam chac (queo ~360 do/giay, gan muc tieu queo gap doi), dam vat can van no nhu Qua cau lua;
 ///   - 25 nang luong, niem 0,38 s; khong co ai thi 4 qua toa quat bay thang;
-///   - hinh LUA DO SAM dia nguc (nhuom lai qua cau lua + vu no), toa quat roi uon cong; icon dung bang Blender MCP.
+///   - mau qua cau va vu no GIONG HET Qua cau lua (17/09/2026 - truoc do nhuom do sam), toa quat roi uon cong; icon Blender MCP.
 ///
 /// Duong bay / va cham / no / thieu dot la cua <see cref="Fireball"/> - chi them phan tu di (Fireball.tocQueo).
 /// </summary>
 public static class LuaDiaNguc
 {
-    public const int SoQua = 4;
+    /// <summary>5 qua (nguoi dung 17/09/2026, truoc do 4).</summary>
+    public const int SoQua = 5;
     public const float TamTim = 20f;
     public const float TocQueo = 360f;
     public const float GocToe = 18f;
@@ -80,7 +81,7 @@ public static class LuaDiaNguc
             qua.giayBatDauDi = GiayToaTruocKhiDi;
             qua.diaNguc = true;
             if (mucTieu.Count > 0) qua.mucTieu = i < mucTieu.Count ? mucTieu[i] : mucTieu[0];
-            VfxFactory.NhuomLuaDiaNguc(qua.gameObject);
+            // 17/09/2026 nguoi dung: mau va vu no GIONG HET Qua cau lua - bo lop nhuom do sam lam hom truoc.
         }
         CameraShake.Shake(0.14f, 0.06f);
     }
