@@ -347,7 +347,9 @@ public static class SachPhep
                      + "Lốc lướt qua một kẻ địch thì gây 75 sát thương — mỗi kẻ chỉ bị đánh một lần.\n\n"
                      + "Mỗi lần trúng có 55% khả năng HẤT TUNG kẻ địch lên khỏi mặt đất trong 0,5 giây: không "
                      + "đi, không đánh được, và chiêu đang niệm dở bị NGẮT NGAY.\n\n"
-                     + "Lốc lướt qua lò lửa thì dập tắt lửa, 30 giây sau lò cháy lại.";
+                     + "Lốc lướt qua lò lửa thì dập tắt lửa, 30 giây sau lò cháy lại.\n\n"
+                     + "CẤP 5: phóng cùng lúc HAI cơn lốc song song, cách nhau 4 m — kẻ đứng giữa bị cả hai quét qua thì trúng hai lần — "
+                     + "nhưng tốn GẤP ĐÔI năng lượng.";
             default: return "";
         }
     }

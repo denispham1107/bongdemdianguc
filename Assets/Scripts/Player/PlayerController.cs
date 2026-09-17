@@ -879,6 +879,8 @@ public class PlayerController : MonoBehaviour
         }
         else if (skill == CapDo.KyGioLoc)
         {
+            // Cap 5 ra 2 loc -> ton gap doi (nguoi dung 17/09/2026)
+            tonThem *= GioLoc.HeSoNangLuongTheoCap(CapDo.CapCuaKyNang(skill));
             if (gioLocTimer > 0f) { Say("GIÓ LỐC đang hồi chiêu"); return; }
             if (mana < gioLocCost * tonThem) { Say("Không đủ năng lượng!"); return; }
 
@@ -1148,7 +1150,8 @@ public class PlayerController : MonoBehaviour
             if (dir.sqrMagnitude < 0.01f) dir = transform.forward;
             dir.Normalize();
             Vector3 chan = transform.position + dir * 1.2f;
-            GioLoc.SpawnChum(chan, dir, enemyMask, health, GioLoc.SoLocMoiLan, 11f, manhHon, themGiay);
+            // Cap 5: 2 loc song song cach 4 m. capPhep la cap cua NGUOI TUNG (di qua goi tin) nen moi may ra cung so loc.
+            GioLoc.SpawnSongSong(chan, dir, enemyMask, health, GioLoc.SoLocTheoCap(capPhep), GioLoc.KhoangCachHaiLoc, manhHon, themGiay);
         }
         else if (castingSkill == 1)
         {

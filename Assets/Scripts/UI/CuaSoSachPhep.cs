@@ -630,7 +630,7 @@ public static class CuaSoSachPhep
             else
                 dongCap = "Mở khoá bằng 1 điểm kỹ năng   ·   tối đa cấp " + toiDa
                         + "   ·   ở cấp " + toiDa + ": sát thương ×" + CapDo.SatThuongTheoCap(toiDa).ToString("0.00")
-                        + "   ·   năng lượng ×" + CapDo.ManaTheoCap(toiDa).ToString("0.00")
+                        + "   ·   năng lượng ×" + (CapDo.ManaTheoCap(toiDa) * (dangXem == CapDo.KyGioLoc ? GioLoc.HeSoNangLuongTheoCap(toiDa) : 1f)).ToString("0.00")
                         + (dangXem == 5
                            ? "   ·   máu khiên ×" + CapDo.MauKhiengTheoCap(toiDa).ToString("0.00")
                            : "   ·   hiệu ứng +" + CapDo.ThemGiayHieuUngTheoCap(toiDa).ToString("0.00") + " giây");
@@ -640,7 +640,7 @@ public static class CuaSoSachPhep
         else
             dongCap = "Kỹ năng cấp " + capKy + " / " + CapDo.CapToiDaCua(dangXem)
                     + "   ·   sát thương ×" + CapDo.SatThuongTheoCap(capKy).ToString("0.00")
-                    + "   ·   năng lượng ×" + CapDo.ManaTheoCap(capKy).ToString("0.00")
+                    + "   ·   năng lượng ×" + (CapDo.ManaTheoCap(capKy) * (dangXem == CapDo.KyGioLoc ? GioLoc.HeSoNangLuongTheoCap(capKy) : 1f)).ToString("0.00")
                     + (dangXem == 5
                        ? "   ·   máu khiên ×" + CapDo.MauKhiengTheoCap(capKy).ToString("0.00")
                        : "   ·   hiệu ứng +" + CapDo.ThemGiayHieuUngTheoCap(capKy).ToString("0.00") + " giây");

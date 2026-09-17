@@ -8334,6 +8334,38 @@ sát thương hiện ra** (2,1 m) để số không đè lên chữ. Bỏ chữ 
 **Số đo** (menu 62, 0 lỗi): tung thật 10 lần → trúng 10, ngã 7; dấu hiệu hiện **376/383 khung hình đang ngã (98%)**;
 chuỗi ảnh mới thấy chữ NGÃ rõ ở cả 5 thời điểm, đè lên lửa.
 
+### Gió lốc: hai tia sét cách nhau 1,2 m; cấp 5 phóng hai lốc song song (17/09/2026)
+
+Anh báo: hai tia sét trong lốc **gần sát nhau quá** — cho xa ra một chút nhưng vẫn trong lốc và bám lốc; và **nâng lên cấp 5 thì đánh ra
+2 lốc cùng lúc, cách nhau một khoảng, song song**. Tôi hỏi trước, anh chọn: tia cách nhau **~1,2 m**; hai lốc cách **4 m**; kẻ đứng giữa
+bị cả hai quét **trúng hai lần**; cấp 5 **tốn gấp đôi năng lượng**.
+
+**Hai tia sét** (`VfxFactory.GioLocSetTrongLoc`): hai tia ở hai phía **đối diện** trục, cùng góc xoắn nên luôn đối diện. Mỗi đầu tia lệch trục
+`LechTiaSetGioLoc` = 0,6 m nhưng không quá 0,85 × bán kính **vỏ trong cùng** ở đúng độ cao đó (`BanKinhVoTrongGioLoc`: bảng bán kính Vo0 đo
+trên lưới mỗi 0,5 m × 1,1). Đo trên lưới: chân lốc vỏ trong chỉ 0,46 m, gần miệng 1,9 m — nên đỉnh hai tia cách 1,2 m, còn đoạn dưới tự thu
+vào (~0,85 m) để không lòi ra ngoài.
+
+**Cấp 5** (`GioLoc.SoLocTheoCap`, `SpawnSongSong`): ≥ `CapHaiLoc` (5) thì 2 lốc cùng hướng, xếp ngang (vuông góc hướng bay) cách
+`KhoangCachHaiLoc` 4 m; năng lượng nhân `HeSoNangLuongTheoCap` (×2) sau hệ số cấp chung — Sách phép hiển thị đúng hệ số ×2,93 ở cấp 5.
+Số lốc lấy theo cấp **của người tung** (`capPhep`, đi kèm gói kỹ năng) nên máy nào cũng ra 2 lốc. Mô tả Sách phép thêm câu cấp 5.
+
+**Số đo** (menu 71, `gioloc.txt`, **0 lỗi**; ảnh `gioloc_4_cap5_hai_loc.png`, `gioloc_can_1.png`):
+
+| Đo | Kết quả |
+|---|---|
+| Khoảng cách đỉnh hai tia (6 nhịp) | nhỏ nhất **1,20 m**, trung bình 1,20 m; đuôi 0,83–0,88 m |
+| Nằm trong lốc | 12/12 đầu tia nằm trong vỏ **trong cùng** — bán kính vỏ đọc thẳng từ lưới FBX ngoài Play, không dùng bảng trong code; sát vỏ nhất còn cách 0,06 m |
+| Bám lốc | độ trôi của tia so với lốc suốt đời **0,000 m** (12 tia, mọi khung); ĐỐI CHỨNG tia không bám: bị bỏ lại 2,74 m |
+| Cấp 4 (đối chứng) | 1 lốc, tốn **26,62** (20 × 1,1³) |
+| Cấp 5 | **2 lốc**, tốn **58,56** (20 × 1,1⁴ × 2); tâm cách nhau **4,00 m** lúc sinh và sau 1 s; lệch theo hướng bay 0,000 m; cùng hướng (cos 1,0000) |
+| Bia đứng giữa hai đường bay | mất 312 = trúng cả hai lốc (mỗi lốc 75 × 1,2⁴ = 155,52) |
+| Qua mạng | gói kỹ năng cấp 5 của người kia → máy mình ra **2** lốc (gói cấp 1 → 1) |
+
+Hai lần báo lỗi dọc đường, đều không phải lỗi game: (1) bia giữa mất 312 thay vì 311,04 — bia thử có **10 000 000 máu**, số thực `float`
+ở cỡ đó chỉ chính xác tới 1 đơn vị nên mỗi cú 155,52 thành 156; (2) một lần đo "đầu tia cách trục" ra 0,82 m (> 0,6 m đặt) — không lặp
+lại ở hai lần chạy sau; đổi sang đo **độ trôi** của từng tia so với chính chỗ của nó lúc sinh (kiểm thẳng "bám theo", không phụ thuộc bán kính
+đặt): 0,000 m cả hai lần. Nguyên nhân lần 0,82 m tôi chưa xác định được.
+
 ### Gió lốc: hai tia sét bị bỏ lại phía sau lốc — cho tia bám theo lốc (17/09/2026)
 
 Anh báo: 2 tia sét **luôn bị bỏ lại phía sau** cơn lốc.

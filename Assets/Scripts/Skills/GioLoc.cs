@@ -38,6 +38,38 @@ public class GioLoc : MonoBehaviour
     /// <summary>Tung ky nang ra bao nhieu loc: 1 (nguoi dung 17/09/2026, truoc do 3).</summary>
     public const int SoLocMoiLan = 1;
 
+    /// <summary>Ky nang CAP 5 (cap toi da): 2 loc SONG SONG, tam cach nhau 4 m, TON GAP DOI nang luong (nguoi dung 17/09/2026;
+    /// chon: moi loc tinh rieng - dung giua bi ca hai quet la trung hai lan).</summary>
+    public const int CapHaiLoc = 5;
+    public const float KhoangCachHaiLoc = 4f;
+
+    public static int SoLocTheoCap(int capKy) { return capKy >= CapHaiLoc ? 2 : SoLocMoiLan; }
+
+    /// <summary>Nhan them vao nang luong (sau he so cap chung): so loc tung ra.</summary>
+    public static float HeSoNangLuongTheoCap(int capKy) { return SoLocTheoCap(capKy); }
+
+    /// <summary>
+    /// soLoc loc SONG SONG cung huong, xep ngang (vuong goc huong bay) cach nhau <paramref name="khoangCach"/>, doi xung quanh chan.
+    /// </summary>
+    public static void SpawnSongSong(Vector3 chan, Vector3 huong, LayerMask damageMask, Damageable boQua,
+                                     int soLoc, float khoangCach, float heSoSatThuong = 1f, float themGiay = 0f)
+    {
+        huong.y = 0f;
+        if (huong.sqrMagnitude < 0.001f) huong = Vector3.forward;
+        huong.Normalize();
+        Vector3 ngang = Vector3.Cross(Vector3.up, huong).normalized;
+        float giua = (soLoc - 1) * 0.5f;
+        for (int i = 0; i < soLoc; i++)
+        {
+            var loc = Spawn(chan + ngang * ((i - giua) * khoangCach), huong, damageMask);
+            loc.boQua = boQua;
+            loc.tuaTruoc = BuTre.TuaTruocGiay;
+            loc.damage *= heSoSatThuong;
+            loc.giayHatTung += themGiay;
+        }
+        CameraShake.Shake(0.14f, 0.05f);
+    }
+
     /// <summary>Chieu cao hinh loc (luoi Blender) - nguoi dung chon ~5 m.</summary>
     public const float ChieuCao = 5f;
 

@@ -134,6 +134,23 @@ public static partial class VfxFactory
     /// <summary>So nhip set trong loc da phong (moi nhip 2 tia) - phep thu menu 71 doc.</summary>
     public static int SoNhipSetTrongGioLoc;
 
+    /// <summary>Moi dau tia set trong loc lech truc toi da 0,6 m -> hai tia doi dien cach nhau ~1,2 m.</summary>
+    public const float LechTiaSetGioLoc = 0.6f;
+
+    /// <summary>Dau tia khong qua ti le nay cua ban kinh vo trong cung o cung do cao (con nam trong long loc).</summary>
+    public const float TiLeTrongVoGioLoc = 0.85f;
+
+    // Ban kinh vo TRONG CUNG Vo0 cua LocNho.fbx moi 0,5 m do cao, DO tren luoi 17/09/2026 (chua nhan HeSoBanKinhGioLoc)
+    static readonly float[] banKinhVo0 = { 0.41f, 0.42f, 0.445f, 0.48f, 0.53f, 0.67f, 0.87f, 1.05f, 1.30f, 1.54f, 1.85f };
+
+    /// <summary>Ban kinh vo trong cung (da nhan 1,1) o do cao y tinh tu chan loc.</summary>
+    public static float BanKinhVoTrongGioLoc(float y)
+    {
+        float f = Mathf.Clamp(y / 0.5f, 0f, banKinhVo0.Length - 1.001f);
+        int i = Mathf.FloorToInt(f);
+        return Mathf.Lerp(banKinhVo0[i], banKinhVo0[i + 1], f - i) * HeSoBanKinhGioLoc;
+    }
+
     /// <summary>Chieu cao Loc xoay lon do duoc (menu 71, 17/09/2026: 15,37 m) - lay ti le thu nho tia set cho Gio loc cao 5 m.</summary>
     public const float ChieuCaoLocXoayDo = 15.37f;
 
@@ -150,13 +167,19 @@ public static partial class VfxFactory
         SoNhipSetTrongGioLoc++;
         float k = GioLoc.ChieuCao / ChieuCaoLocXoayDo;
         float goc = Random.Range(0f, Mathf.PI * 2f);
+        // Hai tia o HAI PHIA DOI DIEN truc, cung goc xoan khi di xuong -> luon doi dien nhau (nguoi dung 17/09/2026: hai tia "gan
+        // sat nhau qua", xin cach ~1,2 m nhung van trong long loc). Moi dau tia lech truc LechTiaSetGioLoc (0,6 m), nhung khong qua
+        // TiLeTrongVoGioLoc x ban kinh vo TRONG CUNG o do cao do - chan loc hep (0,46 m) nen doan duoi tu thu vao.
+        float xoan = Random.Range(0.8f, 1.8f);                 // xuong thap thi lech goc - tia nghieng theo chieu xoay
         for (int i = 0; i < 2; i++)
         {
-            float a1 = goc + i * Mathf.PI + Random.Range(-0.5f, 0.5f);
-            float a2 = a1 + Random.Range(0.8f, 1.8f);           // xuong thap thi lech goc - tia nghieng theo chieu xoay
-            float r1 = Random.Range(0.10f, 0.35f), r2 = Random.Range(0.05f, 0.25f);
-            Vector3 dinh = chan + new Vector3(Mathf.Cos(a1) * r1, GioLoc.ChieuCao * Random.Range(0.86f, 0.96f), Mathf.Sin(a1) * r1);
+            float a1 = goc + i * Mathf.PI;
+            float a2 = a1 + xoan;
+            float yDinh = GioLoc.ChieuCao * Random.Range(0.86f, 0.96f);
             float yDuoi = i == 0 ? Random.Range(0.3f, 1.2f) : Random.Range(1.0f, 2.2f);
+            float r1 = Mathf.Min(LechTiaSetGioLoc, TiLeTrongVoGioLoc * BanKinhVoTrongGioLoc(yDinh));
+            float r2 = Mathf.Min(LechTiaSetGioLoc, TiLeTrongVoGioLoc * BanKinhVoTrongGioLoc(yDuoi));
+            Vector3 dinh = chan + new Vector3(Mathf.Cos(a1) * r1, yDinh, Mathf.Sin(a1) * r1);
             Vector3 duoi = chan + new Vector3(Mathf.Cos(a2) * r2, yDuoi, Mathf.Sin(a2) * r2);
             var arc = i == 0
                 ? LightningArc.Create(dinh, duoi, 0.85f * k, Random.Range(0.16f, 0.28f))
