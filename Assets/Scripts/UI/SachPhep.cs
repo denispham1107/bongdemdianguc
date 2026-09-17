@@ -29,7 +29,7 @@ using UnityEngine;
 public static class SachPhep
 {
     /// <summary>So ky nang dang co trong kho.</summary>
-    public const int SoKyNang = CapDo.SoKyNang;     // 7 phep + binh mau + binh mana + qua cau bang + gio loc
+    public const int SoKyNang = CapDo.SoKyNang;     // 7 phep + binh mau + binh mana + qua cau bang + gio loc + lua dia nguc
 
     /// <summary>So o tren ban cam ung - bang so nut tron dang ve.</summary>
     public const int SoOTron = 7;
@@ -228,6 +228,7 @@ public static class SachPhep
             case CapDo.KyBinhMana: return "BÌNH MANA";
             case CapDo.KyQuaCauBang: return "QUẢ CẦU BĂNG";
             case CapDo.KyGioLoc: return "GIÓ LỐC";
+            case CapDo.KyLuaDiaNguc: return "LỬA ĐỊA NGỤC";
             default: return "";
         }
     }
@@ -248,6 +249,7 @@ public static class SachPhep
             case CapDo.KyBinhMana: return "Uống một bình, hồi tối đa 50 năng lượng";
             case CapDo.KyQuaCauBang: return "Ba quả băng, 40% làm chậm";
             case CapDo.KyGioLoc: return "Một cơn lốc, 55% hất tung";
+            case CapDo.KyLuaDiaNguc: return "Bốn quả lửa tự đuổi kẻ địch";
             default: return "";
         }
     }
@@ -350,6 +352,13 @@ public static class SachPhep
                      + "Lốc lướt qua lò lửa thì dập tắt lửa, 30 giây sau lò cháy lại.\n\n"
                      + "CẤP 5: phóng cùng lúc HAI cơn lốc song song, cách nhau 4 m — kẻ đứng giữa bị cả hai quét qua thì trúng hai lần — "
                      + "nhưng tốn GẤP ĐÔI năng lượng.";
+            case CapDo.KyLuaDiaNguc:
+                return "Phóng ra BỐN quả cầu lửa đỏ sẫm của địa ngục. Bốn quả toả quạt rồi uốn cong, TỰ ĐUỔI theo tối đa "
+                     + "bốn kẻ địch (quái hoặc người chơi khác) gần bạn nhất trong 20 m — ít kẻ địch hơn thì quả dư lao vào kẻ gần nhất; "
+                     + "mục tiêu gục giữa đường thì quả lửa chuyển sang kẻ còn sống gần nó nhất.\n\n"
+                     + "Mỗi quả nổ gây 176 sát thương lửa (bằng Quả cầu lửa ở cấp 5) và THIÊU ĐỐT mọi kẻ trong vùng nổ như Quả cầu lửa. "
+                     + "Không có ai quanh bạn thì bốn quả bay thẳng. Đâm vào vật cản thì nổ tại đó.\n\n"
+                     + "Nâng cấp: +20% sát thương mỗi cấp, lửa cháy lâu hơn.";
             default: return "";
         }
     }
@@ -373,6 +382,7 @@ public static class SachPhep
             case CapDo.KyBinhMana: nangLuong = 0f; hoiChieu = PlayerController.HoiChieuBinh; niemChu = 0f; break;
             case CapDo.KyQuaCauBang: nangLuong = pc.quaCauBangCost; hoiChieu = pc.quaCauBangCooldown; niemChu = pc.quaCauBangCastTime; break;
             case CapDo.KyGioLoc: nangLuong = pc.gioLocCost; hoiChieu = pc.gioLocCooldown; niemChu = pc.gioLocCastTime; break;
+            case CapDo.KyLuaDiaNguc: nangLuong = pc.luaDiaNgucCost; hoiChieu = pc.luaDiaNgucCooldown; niemChu = pc.luaDiaNgucCastTime; break;
         }
     }
 }

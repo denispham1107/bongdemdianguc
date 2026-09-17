@@ -1,0 +1,27 @@
+[ban 1] Lua dia nguc
+(chuan bi) tat tam 143 va cham lop Default trong 26 m quanh nhan vat (bat lai cuoi phep thu)
+
+A. so hieu 11, so ky nang 12; nhan vat: nang luong 25, hoi chieu 0.5 s, niem 0.38 s; Sach phep doc 25/0.5/0.38
+A. sat thuong goc 176.26 = qua cau lua PREFAB 85 x 1,2^4 (176.26); ten "LỬA ĐỊA NGỤC", tom tat "Bốn quả lửa tự đuổi kẻ địch", mo ta 525 ky tu; HUD 12 icon, icon so 11 co; icon file 256x256
+
+B. khoa -> tu choi True; mo khoa -> tung True, 4 qua dia nguc bay, ton 25 nang luong; bam lai moi khung -> duoc nhan sau 0.523 s
+
+C. 4 bia ngoai hinh quat (lech 70/-70/150/-150 do, 9-12 m) + bia 25 m phia sau (co). DOI CHUNG chum Qua cau lua thuong: so bia trung 0
+C. Lua dia nguc: 4 qua; luc sinh gan 4 muc tieu khac nhau (4 qua gan vao 4 bia gan); qua trung moi bia: 1,1,1,1,0; bia mat mau 4/4; bia 25 m mat 0
+
+D. mot bia lech 100 do 10 m: 4/4 qua gan vao no, 4/4 qua trung no
+
+E. bia chay ngang 5 m/s: mat 593 mau (4 qua ~ 388-705), con qua dang bay 0
+
+F. bia A (9 m) nhan 3 qua luc sinh, bi giet sau 0,15 s (chet True); qua trung B 4/4, B mat 612
+
+G. khong ai: 4 qua, sau 0,4 s con 4, huong doi lon nhat 0.00 do; goc giua hai qua ke nhau 18.0-18.0 do
+
+H. mot qua Qua cau lua CAP 5 that trung bia mat 137.09; mot qua Lua dia nguc CAP 1 (impactDamage 176.26) cung cho mat 142.35 -> ti le 1.038; bia dang bi thieu dot True; cap 3 se la 253.81 (x1,44)
+
+I. ti le xanh la / do cua hat: qua cau lua thuong 1.000, lua dia nguc 0.280 (x0.28, mong 0,28); nhuom luc sinh 4 qua, vu no nhuom 4
+
+    (chan doan) bia J: co, chet True, mau con 0, ke danh cuoi Player
+J. goi ky nang 11 tu nguoi kia -> may minh ra 4 qua (mong 4); minh tung -> goi mang kyNang 11: True; bia 50 mau bi giet, ke danh cuoi = nguoi tung: True
+
+so loi ghi nhan = 0

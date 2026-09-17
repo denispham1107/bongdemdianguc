@@ -561,23 +561,25 @@ public static partial class VfxFactory
     }
 
     /// <summary>VU NO LUA khi qua cau cham muc tieu (uu tien dung prefab).</summary>
-    public static void FireExplosion(Vector3 pos, float radius)
+    public static GameObject FireExplosion(Vector3 pos, float radius)
     {
         var pf = GameAssets.I != null ? GameAssets.I.fireExplosionPrefab : null;
+        GameObject go;
         if (pf != null)
         {
-            var go = GameAssets.Make(pf, pos);
+            go = GameAssets.Make(pf, pos);
             float k = radius / 3.4f;                 // prefab duoc nuong o ban kinh 3.4
             if (Mathf.Abs(k - 1f) > 0.05f) go.transform.localScale = Vector3.one * k;
         }
         else
         {
-            BuildFireExplosion(pos, radius);
+            go = BuildFireExplosion(pos, radius);
         }
 
         // Vet chay den in xuong dat
         GroundDecal.Spawn(new Vector3(pos.x, GroundY(pos), pos.z), radius * 1.1f,
                           new Material(ScorchMat), 14f, 8f);
+        return go;
     }
 
     /// <summary>Ngon lua bam tren nguoi quai dang chay (uu tien dung prefab).</summary>

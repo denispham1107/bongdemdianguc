@@ -8334,6 +8334,52 @@ sát thương hiện ra** (2,1 m) để số không đè lên chữ. Bỏ chữ 
 **Số đo** (menu 62, 0 lỗi): tung thật 10 lần → trúng 10, ngã 7; dấu hiệu hiện **376/383 khung hình đang ngã (98%)**;
 chuỗi ảnh mới thấy chữ NGÃ rõ ở cả 5 thời điểm, đè lên lửa.
 
+### Kỹ năng mới: Lửa địa ngục — bốn quả cầu lửa đỏ sẫm tự đuổi kẻ địch (17/09/2026)
+
+Anh xin: kỹ năng **"Lửa địa ngục"** — sát thương ban đầu bằng **Quả cầu lửa cấp 5**, hồi chiêu **0,5 s**; phóng **4 quả cầu lửa** giống Quả cầu
+lửa nhưng **tự dí đúng vào** người chơi / quái ở gần; vẫn **thiêu đốt**. Tôi hỏi trước, anh chọn:
+- cấp 1 = **176** (85 × 1,2⁴), vẫn +20% mỗi cấp; **25 năng lượng**, niệm **0,38 s**;
+- chia 4 quả cho tối đa **4 kẻ gần người tung nhất trong 20 m**; ít hơn 4 thì quả dư nhắm kẻ gần nhất; mục tiêu chết giữa đường thì đổi sang kẻ
+  còn sống gần quả nhất; **bám chắc** (quẹo ~360°/s); không có ai thì bay thẳng;
+- hình **lửa đỏ sẫm địa ngục**; **toả quạt rồi uốn cong**; icon dựng bằng **Blender MCP**.
+
+**Code:**
+- Số hiệu **11** (`CapDo.KyLuaDiaNguc`, thêm ở cuối; `SoKyNang` 12). Nối đủ các chỗ như Gió lốc: `PlayerController` (năng lượng / hồi chiêu /
+  niệm, `CastAt`, `Release`, `TungPhepTheoMang`, `ThoiGianNiem`, nguyên tố lửa, trạng thái `hoiLuaDiaNguc`), HUD, sảnh, Sách phép, chỉ báo
+  ngắm (đỏ sẫm), tư thế niệm (như Quả cầu lửa).
+- `Skills/LuaDiaNguc.cs`: `SatThuongGoc` đọc **impactDamage của prefab** Quả cầu lửa × 1,2⁴ (prefab đè code); `TimGanNhat`; `SpawnChum` toả
+  4 quả 18° và gán mục tiêu.
+- Đường bay / va chạm / nổ / thiêu đốt **dùng lại `Fireball`**, chỉ thêm phần dí (`tocQueo`, `mucTieu`, `DiMucTieu`): bay thẳng 0,1 s cho thấy
+  hình quạt rồi quẹo ≤ 360°/s (trong 4 m quẹo gấp đôi để không quay vòng quanh mục tiêu).
+- Hình: `VfxFactory.NhuomLuaDiaNguc` nhân màu (1; 0,28; 0,16) vào hạt, vật liệu (bản sao riêng, xoá khi huỷ — `XoaVatLieuRieng`), vệt,
+  đèn của chính quả cầu lửa và vụ nổ (`FireExplosion` nay trả về vật nổ).
+- Icon `Resources/Icons/LuaDiaNguc.png` từ `CongCu/Blender/lua_dia_nguc.blend`: bốn quả lửa đỏ sẫm từ bốn phía uốn vào một điểm sáng. Lần
+  render đầu 4 quả dồn cục và màu cam — ảnh PNG sRGB làm màu tuyến tính sáng lên, phải hạ kênh xanh lá rất thấp mới ra đỏ sẫm; Glare
+  compositor không ăn nên thay bằng đĩa hào quang.
+
+**Lỗi thật tìm ra khi đo:** lần chạy đầu phần lớn quả **không trúng** — chẩn đoán in chỗ nổ: cách mặt đất 0,04–0,5 m. Quả bay ngang ở độ cao
+lúc phóng, uốn cong trên đất Act2 gồ ghề thì **đâm xuống đất**. Sửa: khi còn xa (> 2,5 m ngang) quả giữ cao **≥ 1,2 m trên mặt đất phía trước
+1,5 m**, tới gần mới hạ vào ngực mục tiêu. Sau đó vẫn ~1/4 quả nổ sớm — vào **lò lửa giữa map** cạnh chỗ đứng: đo cả Act2 **không có chỗ trống
+bán kính 11 m** nào (bia, đá, cây dày đặc). Đó là luật cũ của Quả cầu lửa (đâm vật cản thì nổ), nên phép thử tạm **tắt 143 va chạm đồ vật
+trong 26 m** (chỉ trong Play) để đo riêng khả năng dí. Trong trận thật, quả lửa vòng cung rộng (bán kính quẹo ~2,7 m) giữa bãi mộ sẽ có quả
+nổ vào vật cản.
+
+**Số đo** (menu 72, `luadianguc.txt`, **0 lỗi**; ảnh `luadianguc_1_uon_cong.png`):
+
+| Đo | Kết quả |
+|---|---|
+| Thông số | số hiệu 11, 12 kỹ năng; 25 năng lượng, hồi chiêu 0,5 (bấm mỗi khung: nhận lại sau 0,52 s), niệm 0,38; sát thương gốc **176,26** = prefab 85 × 1,2⁴ |
+| Tung thật | khoá → từ chối; mở → **4 quả**, trừ 25 |
+| 4 bia ngoài hình quạt (±70°, ±150°, 9–12 m) + bia 25 m phía sau | 4 quả gán **4 mục tiêu khác nhau**, mỗi bia trúng 1 quả, 4/4 bia mất máu, bia 25 m mất 0; ĐỐI CHỨNG chùm Quả cầu lửa thường cùng chỗ: **0** bia trúng |
+| Một bia | 4/4 quả gán vào nó, 4/4 trúng |
+| Bia chạy ngang 5 m/s | mất 593 máu (4 quả) |
+| Mục tiêu bị giết sau 0,15 s | 4/4 quả chuyển sang bia còn lại, bia đó mất 612 |
+| Không có ai | 4 quả, hướng đổi 0,00° sau 0,4 s; lệch nhau đúng 18,0° |
+| Sát thương | một quả Lửa địa ngục cấp 1 mất 142,35 / một quả Quả cầu lửa **cấp 5 thật** cùng chỗ 137,09 → ×1,038 (cả hai giảm theo khoảng cách nổ); bia bị thiêu đốt |
+| Màu | tỉ lệ xanh lá/đỏ của hạt: thường 1,000, địa ngục **0,280**; nhuộm 4 quả + 4 vụ nổ |
+| Qua mạng | gói kỹ năng 11 của người kia → máy mình ra 4 quả; mình tung → gói mang số 11; giết bia → kẻ đánh cuối là người tung |
+| Menu 61 | Lửa địa ngục giết quái → +18 kinh nghiệm đúng giá; menu 70 (Quả cầu lửa) vẫn 0 lỗi sau khi sửa `Fireball` |
+
 ### Gió lốc: hai tia sét cách nhau 1,2 m; cấp 5 phóng hai lốc song song (17/09/2026)
 
 Anh báo: hai tia sét trong lốc **gần sát nhau quá** — cho xa ra một chút nhưng vẫn trong lốc và bám lốc; và **nâng lên cấp 5 thì đánh ra
@@ -9382,6 +9428,7 @@ Lần chạy đầu phép thử báo cả 10 con "lơ lửng": tia chiếu từ 
 | **69. Chay thu GIUT SET (20 m, 75, 4 tia, 15% choang)** | Thông số; tung thật `CastAt(6)` vào 5 bia (đúng 4 bia mất 75 cùng một khung hình); tầm 20 m bằng bia 19,9 / 20,4 m; tia lan ra ngoài tầm vẫn trúng ×0,85; 160 lần phóng đếm tỉ lệ choáng tia đầu và tia lan riêng (bằng StunnedEffect trên bia); cấp kỹ năng kéo dài choáng. Số đo `giatset.txt`. |
 | **71. Chay thu GIO LOC (ky nang moi)** | Thông số; tung thật `CastAt(10)` (khoá, 3 lốc, 20 năng lượng, hồi chiêu đo bằng bấm mỗi khung); lưới Blender, cao 5 m so Lốc xoáy thật, xám trắng, không đèn, không tia sét; **xoáy một chiều đi lên** (độ xoắn dải gió đo ngoài Play + chiều quay thật từng lớp + chiều trượt ảnh); khói bụi đen bay lên và cuộn cùng chiều (theo dõi từng hạt), vòng phun nằm ngang (phun thử 200 hạt), vệt phía sau; bán kính chân ×1,68 / phần trên ×1,0 (so công thức gốc); tia sét hiệu ứng khi trúng (5 bia → 5 tia từ thân lốc, 5 cháy sém, 0 cột sáng đứng, mất đúng 75); 1 lốc, sống 4,5 s; không trèo mái nhà mồ (đối chứng tia cũ chạm mái); tốc độ 8 m/s và thời gian sống; xuyên bia mộ (tia đối chứng); 75 một lần, 225 ba lốc, vùng 2,2 m (2,5 / 2,7 m); 190 lần trúng đếm hất tung độc lập, độ cao, thời gian bay; khiên chặn hất; ngắt chiêu người chơi (đối chứng) và đòn quái (đối chứng); qua mạng: gói số 10, bit hất tung, mặt nạ 5 bit, bản sao bay / ngắt chiêu / không hất lần hai; lò lửa tắt rồi cháy lại sau 30 s. Số đo `gioloc.txt`. |
 | **71b. Chup anh GIO LOC (so voi Loc xoay)** | Chỉ chụp: hai lốc bay ngang màn hình 5 khung liên tiếp + Lốc xoáy lớn để so. Ảnh `gioloc_can_*.png`, `gioloc_locxoay_*.png`. |
+| **72. Chay thu LUA DIA NGUC (ky nang moi)** | Thông số (số hiệu 11, năng lượng/hồi chiêu/niệm, sát thương gốc = prefab Quả cầu lửa × 1,2⁴, chữ Sách phép, icon); tung thật; tự dí 4 bia ngoài hình quạt (đối chứng Quả cầu lửa thường 0 bia), 1 bia, bia chạy ngang, mục tiêu chết giữa đường, không có ai bay thẳng 18°; sát thương so với Quả cầu lửa cấp 5 thật + thiêu đốt; màu đỏ sẫm; qua mạng + kẻ đánh. Tạm tắt va chạm đồ vật 26 m (Act2 không có chỗ trống). Số đo `luadianguc.txt`. |
 | **70. Chay thu QUA CAU LUA (85 sat thuong, vet lua moi)** | Sát thương đọc thẳng prefab và trên quả cầu thật khi tung; quả cầu sinh từ prefab bay vào bia (mất 85 × giảm theo khoảng cách); hạt `Flames` không còn ảnh tam giác mà là flipbook Blender, có vệt lửa dài `TrailRenderer`; nổ xong vệt được thả ra; chụp cận cảnh lúc bay. Chạy trên bản cũ ra 7 lỗi (đối chứng). Số đo `quacaulua.txt`. |
 | **56. Chay thu DOT QUAI Act2 + cho xuat phat** | *(13/09/2026: thêm đo chờ 30 giây và 10 con xa 55–65 m)*  Kiểm chỗ xuất phát ngẫu nhiên (hai máy cùng mã phòng ra cùng danh sách, cách nhau ≥ 22 m, trên đất, ngoài nước, không vướng vật cản) và luật đợt quái Act2 (đợt 1 bốn con quanh mỗi người; đợt sau cộng dồn quái và mạnh thêm 5% máu · sát thương); kiểm Act1 không bị đổi. Số đo `dotquai_act2.txt`. |
 | **55. Chay thu KET TRAN (nguoi song sot cuoi cung)** | Mở kênh giả lập như menu 45: kiểm gói tin kết trận/chết, máy chủ phòng phán quyết đúng lúc còn một người, bảng điểm cộng đúng người, máy khách không tự kết luận và hiện đúng kết quả nghe được, chết rồi camera chuyển sang người còn sống, chụp màn kết trận. Số đo `kettran.txt`, ảnh `kettran_*.png`. |

@@ -39,6 +39,9 @@ public static class CapDo
     /// <summary>Gio loc (them 16/09/2026) - so 10, cung luat THEM O CUOI nhu Qua cau bang.</summary>
     public const int KyGioLoc = 10;
 
+    /// <summary>Lua dia nguc (them 17/09/2026) - so 11, THEM O CUOI.</summary>
+    public const int KyLuaDiaNguc = 11;
+
     /// <summary>Cap toi da cua TUNG ky nang: binh mau / binh mana la 1, con lai 5.</summary>
     public static int CapToiDaCua(int ky) { return LaKyBinh(ky) ? 1 : CapKyNangToiDa; }
 
@@ -50,7 +53,7 @@ public static class CapDo
     /// nhat 5,98 m/giay). Dung o cap 10: x1,363 (~7,1 m/giay).
     /// </summary>
     public const int CapTangTocToiDa = 10;
-    public const int SoKyNang = 11;      // 7 phep + binh mau + binh mana + qua cau bang + gio loc
+    public const int SoKyNang = 12;      // 7 phep + binh mau + binh mana + qua cau bang + gio loc + lua dia nguc
 
     /// <summary>Giet mot nguoi choi khac duoc bao nhieu kinh nghiem.</summary>
     public const int KnGietNguoi = 250;

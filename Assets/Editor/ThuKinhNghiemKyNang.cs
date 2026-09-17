@@ -165,7 +165,7 @@ public static class ThuKinhNghiemKyNang
     // ================================================================
 
     static readonly string[] TenKyNang = { "Qua cau lua", "Mua bang", "Sam set", "Loc xoay", "Thien thach", "Khien", "Giut set",
-                                            "Binh mau", "Binh mana", "Qua cau bang", "Gio loc" };
+                                            "Binh mau", "Binh mana", "Qua cau bang", "Gio loc", "Lua dia nguc" };
 
     static IEnumerator KichBan()
     {
@@ -186,9 +186,11 @@ public static class ThuKinhNghiemKyNang
         CapDo.Them(100 + 135 + 180 + 245 + 330 + 445);
         // 9 = Qua cau bang, 10 = Gio loc (16/09/2026) - len them mot cap cho diem thu tam
         CapDo.Them(CapDo.CanDeLenCap(CapDo.Cap));
-        foreach (int k in new[] { 0, 1, 2, 3, 4, 6, 9, 10 }) CapDo.MoKhoa(k);
+        // 11 = Lua dia nguc (17/09/2026) - them mot cap nua cho diem thu chin
+        CapDo.Them(CapDo.CanDeLenCap(CapDo.Cap));
+        foreach (int k in new[] { 0, 1, 2, 3, 4, 6, 9, 10, 11 }) CapDo.MoKhoa(k);
         Ghi("chuan bi: cap " + CapDo.Cap + ", mo khoa " + CapDo.DaMo(0) + CapDo.DaMo(1) + CapDo.DaMo(2)
-            + CapDo.DaMo(3) + CapDo.DaMo(4) + CapDo.DaMo(6) + CapDo.DaMo(9) + CapDo.DaMo(10));
+            + CapDo.DaMo(3) + CapDo.DaMo(4) + CapDo.DaMo(6) + CapDo.DaMo(9) + CapDo.DaMo(10) + CapDo.DaMo(11));
 
         // Moi con quai dang co: tat nao, don ra xa - khong de chung chen vao phep do
         if (QuaiSong().Count < 8) { dir.SinhDotQuanhNguoi(); yield return new WaitForSeconds(1f); }
@@ -206,7 +208,7 @@ public static class ThuKinhNghiemKyNang
         Ghi("A. tung tung ky nang that vao mot con quai mau 1");
 
         int dung = 0;
-        foreach (int k in new[] { 0, 1, 2, 3, 4, 6, 9, 10 })
+        foreach (int k in new[] { 0, 1, 2, 3, 4, 6, 9, 10, 11 })
         {
             if (dung >= kho.Count) { Loi("het quai de thu"); break; }
             var q = kho[dung++];

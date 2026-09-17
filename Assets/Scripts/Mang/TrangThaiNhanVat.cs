@@ -29,7 +29,7 @@ public struct TrangThaiNhanVat
     public float mana;
 
     // Ho chieu bay ky nang. Thieu thi chay lai se tung phep hai lan.
-    public float hoiCauLua, hoiBang, hoiSet, hoiLoc, hoiThienThach, hoiKhieng, hoiGiatSet, hoiCauBang, hoiGioLoc;
+    public float hoiCauLua, hoiBang, hoiSet, hoiLoc, hoiThienThach, hoiKhieng, hoiGiatSet, hoiCauBang, hoiGioLoc, hoiLuaDiaNguc;
 
     /// <summary>Dang niem chu do dang - con bao nhieu giay nua thi xong.</summary>
     public float dangNiem;

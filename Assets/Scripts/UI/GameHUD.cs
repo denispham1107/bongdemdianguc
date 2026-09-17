@@ -21,7 +21,7 @@ public partial class GameHUD : MonoBehaviour
     const float Ref = 1080f;             // thiet ke theo man hinh cao 1080
 
     Texture2D iconFire, iconIce, iconBolt, iconWind, iconMeteor, iconKhieng, iconGiatSet;
-    Texture2D iconBinhMau, iconBinhMana, iconCauBang, iconGioLoc;
+    Texture2D iconBinhMau, iconBinhMana, iconCauBang, iconGioLoc, iconLuaDiaNguc;
     GUIStyle kieuSoBinh;
     Texture2D gradMau, gradMana, gradKhieng, gradKhiengYeu, gradKinhNghiem;
     Texture2D vongNen, vongNum, vanhNut;
@@ -208,6 +208,7 @@ public partial class GameHUD : MonoBehaviour
         iconBinhMana = IconKyNang.BinhMana();
         iconCauBang = IconKyNang.CauBang();
         iconGioLoc = IconKyNang.GioLoc();
+        iconLuaDiaNguc = IconKyNang.LuaDiaNguc();
         vongNen = VongTron(96, new Color(1f, 1f, 1f, 1f), 0.86f, 0.10f);
         anhSachPhep = Resources.Load<Texture2D>("GiaoDien/SachPhep");
         anhMatQuy = Resources.Load<Texture2D>("GiaoDien/MatQuy");
@@ -1173,11 +1174,11 @@ public partial class GameHUD : MonoBehaviour
     /// 0,272 = 0,34 (ban cu) x 0,8.</summary>
     public const float RongKhoaVuong = 0.272f;
 
-    /// <summary>Bieu tuong moi ky nang, xep theo SO HIEU ky nang (0..10).</summary>
+    /// <summary>Bieu tuong moi ky nang, xep theo SO HIEU ky nang (0..11).</summary>
     public Texture2D[] BoIcon()
     {
         return new Texture2D[] { iconFire, iconIce, iconBolt, iconWind,
-                                 iconMeteor, iconKhieng, iconGiatSet, iconBinhMau, iconBinhMana, iconCauBang, iconGioLoc };
+                                 iconMeteor, iconKhieng, iconGiatSet, iconBinhMau, iconBinhMana, iconCauBang, iconGioLoc, iconLuaDiaNguc };
     }
 
     void VeNutKyNangTron(float s)
@@ -1279,6 +1280,7 @@ public partial class GameHUD : MonoBehaviour
             case CapDo.KyBinhMana: return player.BinhManaCooldown01;
             case CapDo.KyQuaCauBang: return player.QuaCauBangCooldown01;
             case CapDo.KyGioLoc: return player.GioLocCooldown01;
+            case CapDo.KyLuaDiaNguc: return player.LuaDiaNgucCooldown01;
             // Khong de "default" tra ve Khieng: them ky nang moi ma quen sua
             // cho nay thi nut moi lay nham vong hoi chieu cua Khieng, va loi ay
             // nhin vao khong doc ra duoc.

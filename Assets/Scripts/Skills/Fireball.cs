@@ -25,9 +25,57 @@ public class Fireball : MonoBehaviour
     /// khi choi doi khang, luc do lop Player nam trong damageMask.</summary>
     public Damageable boQua;
 
+    [Header("Tu di muc tieu (Lua dia nguc) - 0 = bay thang nhu Qua cau lua")]
+    public float tocQueo = 0f;
+    public float tamTim = 20f;
+    public float giayBatDauDi = 0f;
+    public Damageable mucTieu;
+    /// <summary>Lua dia nguc: vu no cung nhuom do sam.</summary>
+    public bool diaNguc;
+
+    /// <summary>Huong bay hien tai (phep thu doc).</summary>
+    public Vector3 HuongBay { get { return dir; } }
+
     Vector3 dir;
     float age;
     bool exploded;
+    static int lopDatDi = -1;
+
+    /// <summary>
+    /// Queo huong bay ve muc tieu (nguc ~1 m tren chan) toi da tocQueo do/giay; trong 4 m queo gap doi de khong quay vong quanh
+    /// muc tieu (17 m/s va 360 do/giay la ban kinh queo 2,7 m). Muc tieu chet / mat thi tim ke con song gan qua nhat.
+    /// </summary>
+    void DiMucTieu(float dt)
+    {
+        if (age < giayBatDauDi) return;
+        if (mucTieu == null || mucTieu.IsDead || !mucTieu.gameObject.activeInHierarchy)
+        {
+            var ds = LuaDiaNguc.TimGanNhat(transform.position, damageMask, boQua, tamTim, 1);
+            mucTieu = ds.Count > 0 ? ds[0] : null;
+            if (mucTieu == null) return;
+        }
+        Vector3 p = transform.position;
+        Vector3 dich = mucTieu.transform.position + Vector3.up * 1.0f;
+        Vector3 ngang = new Vector3(dich.x - p.x, 0f, dich.z - p.z);
+        float kcNgang = ngang.magnitude;
+        // BAM DO CAO TREN MAT DAT (menu 72 do 17/09/2026: bay ngang o do cao luc phong, uon cong tren dat Act2 go ghe thi 7/8 qua
+        // dam xuong dat cach 0,04-0,5 m). Con xa: giu cao >= 1,2 m tren mat dat phia truoc 1,5 m; gan (< 2,5 m) moi ha thang vao nguc.
+        float yMuon = dich.y;
+        if (kcNgang > 2.5f)
+        {
+            Vector3 truoc = p + (kcNgang > 0.01f ? ngang / kcNgang : dir) * 1.5f;
+            if (lopDatDi < 0) lopDatDi = LayerMask.GetMask("Ground");
+            RaycastHit h;
+            if (Physics.Raycast(truoc + Vector3.up * 20f, Vector3.down, out h, 60f, lopDatDi, QueryTriggerInteraction.Ignore))
+                yMuon = Mathf.Max(yMuon, h.point.y + 1.2f);
+        }
+        Vector3 toi = new Vector3(ngang.x, yMuon - p.y, ngang.z);
+        float kc = toi.magnitude;
+        if (kc < 0.01f) return;
+        float queo = tocQueo * (kc < 4f ? 2f : 1f) * Mathf.Deg2Rad * dt;
+        dir = Vector3.RotateTowards(dir, toi / kc, queo, 0f).normalized;
+        if (dir.sqrMagnitude > 0.001f) transform.rotation = Quaternion.LookRotation(dir);
+    }
 
     public static Fireball Spawn(Vector3 pos, Vector3 direction, LayerMask hitMask, LayerMask damageMask)
     {
@@ -124,6 +172,8 @@ public class Fireball : MonoBehaviour
         }
         age += dt;
 
+        if (tocQueo > 0f) DiMucTieu(dt);
+
         float step = speed * dt;
         Vector3 from = transform.position;
 
@@ -201,7 +251,8 @@ public class Fireball : MonoBehaviour
         exploded = true;
 
         VfxFactory.ThaDuoiLua(transform);
-        VfxFactory.FireExplosion(transform.position, blastRadius);
+        var no = VfxFactory.FireExplosion(transform.position, blastRadius);
+        if (diaNguc) VfxFactory.NhuomLuaDiaNguc(no);
         CombatUtil.AreaDamage(transform.position, blastRadius, impactDamage, damageMask,
                               DamageType.Fire, burnSeconds, boQua);
 
