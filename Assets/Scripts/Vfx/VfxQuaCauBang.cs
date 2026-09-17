@@ -120,9 +120,65 @@ public static partial class VfxFactory
     public static void BuildQuaCauBangVisual(Transform parent, float radius, bool banRoi)
     {
         float heSoHat = banRoi ? 0.5f : 1f;
-        // 1) LOI PHA LE tu Blender. Luoi dung o ban kinh loi 0,5 -> phong theo radius.
-        var luoi = LuoiQuaCauBang;
         float k = radius / 0.5f;
+        // 1) LOI. Ban roi cua Mua bang: cau TRON KHONG GAI boc khi lanh phat sang (nguoi dung 17/09/2026: "khong can
+        //    cho cac gai xung quanh, chi can cho qua cau co boc khi lanh bang phat sang"). Ky nang Qua cau bang giu gai.
+        if (!(banRoi && DungCauBangTron(parent, k)))
+            DungLoiCoGai(parent, radius, k);
+
+        BuildPhanBayQuaCauBang(parent, radius, banRoi, heSoHat);
+    }
+
+    static GameObject mauCauBangTron;
+    static bool daTimCauBangTron;
+    static Material mKhiLanhBoc;
+
+    /// <summary>
+    /// Cau bang tron dung bang Blender MCP (CongCu/Blender/cau_bang_tron.blend -> Resources/KyNang/QuaCauBang/CauBangTron.fbx):
+    /// LoiTron (r 0,5, mat hoi gon) + hai vo KhiLanh0 (r 0,66) / KhiLanh1 (r 0,84) trai anh KhiLanhBoc (soi khi lanh xoan,
+    /// lien mach theo u, mo dan ve hai cuc). Hai vo cong sang (additive), quay nguoc chieu nhau tren hai truc khac nhau
+    /// va truot anh - soi khi cuon quanh loi. Tra false neu khong nap duoc (luc do dung loi co gai cu).
+    /// </summary>
+    static bool DungCauBangTron(Transform parent, float k)
+    {
+        if (!daTimCauBangTron)
+        {
+            daTimCauBangTron = true;
+            mauCauBangTron = Resources.Load<GameObject>(ThuMucQuaCauBang + "CauBangTron");
+        }
+        if (mauCauBangTron == null) return false;
+        if (mKhiLanhBoc == null)
+        {
+            var t = Resources.Load<Texture2D>(ThuMucQuaCauBang + "KhiLanhBoc");
+            if (t == null) return false;
+            mKhiLanhBoc = Mats.Additive("KhiLanhBoc", t, new Color(0.62f, 0.86f, 1f, 1f), 1.6f);
+        }
+        int soLop = 0;
+        foreach (var mf in mauCauBangTron.GetComponentsInChildren<MeshFilter>())
+        {
+            bool laLoi = mf.name == "LoiTron";
+            var go = laLoi
+                ? ProcMesh.Part("LoiBang", parent, mf.sharedMesh, LoiCauBangMat, Vector3.zero, Quaternion.identity, Vector3.one * k, false)
+                : ProcMesh.Part(mf.name, parent, mf.sharedMesh, mKhiLanhBoc, Vector3.zero,
+                                mf.name == "KhiLanh1" ? Quaternion.Euler(23f, 11f, 63f) : Quaternion.identity, Vector3.one * k, false);
+            var sp = go.AddComponent<Spin>();
+            if (laLoi) { sp.axis = Vector3.forward; sp.degreesPerSecond = 90f; }
+            else if (mf.name == "KhiLanh0") { sp.axis = new Vector3(0.3f, 1f, 0.2f).normalized; sp.degreesPerSecond = 210f; }
+            else { sp.axis = new Vector3(-0.4f, -1f, 0.3f).normalized; sp.degreesPerSecond = 150f; }
+            if (!laLoi)
+            {
+                var tr = go.AddComponent<ScrollUV>();
+                tr.speed = mf.name == "KhiLanh0" ? new Vector2(0.35f, 0.18f) : new Vector2(-0.25f, -0.12f);
+            }
+            soLop++;
+        }
+        return soLop > 0;
+    }
+
+    static void DungLoiCoGai(Transform parent, float radius, float k)
+    {
+        // LOI PHA LE CO GAI tu Blender. Luoi dung o ban kinh loi 0,5 -> phong theo radius.
+        var luoi = LuoiQuaCauBang;
         GameObject loi;
         // Xoay 180 do quanh truc dung: truc duoi gai trong Blender la -Y, qua FBX thanh +Z
         // (do bang bounds: tam luoi lech +0,75 theo Z) - khong xoay thi duoi chi ve phia truoc.
@@ -135,7 +191,11 @@ public static partial class VfxFactory
         var xoay = loi.AddComponent<Spin>();
         xoay.axis = Vector3.forward;
         xoay.degreesPerSecond = 160f;
+    }
 
+    /// <summary>Phan chung cua qua cau dang bay/roi: hao quang, luong khi lanh, vet bang, manh bang, den.</summary>
+    static void BuildPhanBayQuaCauBang(Transform parent, float radius, bool banRoi, float heSoHat)
+    {
         // 2) Hao quang lanh bam quanh qua cau
         var hq = NewPS("HaoQuang", parent, Vector3.zero, HaoQuangCauBangMat, ParticleSystemRenderMode.Billboard);
         var hm = hq.main;

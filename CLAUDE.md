@@ -144,9 +144,12 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
   (thêm trường prefab là phải sửa hai scene). Lưới FBX xoay 180° (đuôi gai −Y Blender → +Z Unity). Menu 68 kiểm.
   Cụm gai băng trên đất của **Mưa băng** dùng chung cỡ hình `QuaCauBang.BanKinhHinhBang` (2,55 m, người dùng xin 16/09/2026) —
   chỉ hình, vùng sát thương mỗi tảng vẫn 1,7 m (menu 68 mục J đo kích thước thật).
-  **Mưa băng rơi QUẢ CẦU BĂNG** thay tảng băng (16/09/2026): `VfxFactory.QuaCauBangRoi` (cùng hình/luồng khí lạnh/vệt băng, bản nhẹ:
+  **Mưa băng rơi QUẢ CẦU BĂNG** thay tảng băng (16/09/2026): `VfxFactory.QuaCauBangRoi` (luồng khí lạnh/vệt băng như Quả cầu băng, bản nhẹ:
   nửa lượng hạt, không đèn riêng), rơi **THẲNG ĐỨNG** (người dùng chốt 16/09/2026 — tôi từng cho rơi chéo, người dùng không muốn);
   `FallingShard` giữ nguyên rơi/sát thương/đóng băng, chạm đất thì `ThaDuoiQuaCauBang`. Menu 68 mục K.
+  **Quả rơi là CẦU TRÒN KHÔNG GAI** (17/09/2026, người dùng): Blender MCP `CongCu/Blender/cau_bang_tron.blend` → `CauBangTron.fbx`
+  (lõi `LoiTron` + hai vỏ `KhiLanh0/1` trải ảnh `KhiLanhBoc`, cộng sáng, quay) — `VfxFactory.DungCauBangTron`, chỉ bản `banRoi`;
+  kỹ năng Quả cầu băng vẫn lõi có gai.
   **Cụm gai băng chỉ mọc khi trúng đồ vật / kẻ địch** (người dùng chọn 16/09/2026): trong 1,7 m có va chạm lớp `Default` (bia, đá,
   cây, nhà mồ, hàng rào, lò lửa — mặt đất là lớp `Ground`) hoặc kẻ địch còn sống → nổ đủ + gai; chỉ trúng đất → `IceImpact(..., coGai:false)`
   tắt `CumGai*` + `HaoQuang*`, giữ chớp, vòng lạnh, sương, giọt nước, mảnh băng, vết sương giá. Mưa băng nhắm kẻ địch 100%
