@@ -121,58 +121,13 @@ public static partial class VfxFactory
     {
         float heSoHat = banRoi ? 0.5f : 1f;
         float k = radius / 0.5f;
-        // 1) LOI. Ban roi cua Mua bang: cau TRON KHONG GAI boc khi lanh phat sang (nguoi dung 17/09/2026: "khong can
-        //    cho cac gai xung quanh, chi can cho qua cau co boc khi lanh bang phat sang"). Ky nang Qua cau bang giu gai.
-        if (!(banRoi && DungCauBangTron(parent, k)))
+        // 1) LOI PHA LE - chi ky nang Qua cau bang. Ban roi cua Mua bang KHONG co khoi cau (nguoi dung 17/09/2026: "bo khoi
+        //    cau, cho cac vet sang bang rot tu tren troi xuong"): chi con vet sao bang + hao quang + khi lanh + manh bang.
+        //    (Ban truoc cung ngay: cau tron boc khi lanh CauBangTron - da bo.)
+        if (!banRoi)
             DungLoiCoGai(parent, radius, k);
 
         BuildPhanBayQuaCauBang(parent, radius, banRoi, heSoHat);
-    }
-
-    static GameObject mauCauBangTron;
-    static bool daTimCauBangTron;
-    static Material mKhiLanhBoc;
-
-    /// <summary>
-    /// Cau bang tron dung bang Blender MCP (CongCu/Blender/cau_bang_tron.blend -> Resources/KyNang/QuaCauBang/CauBangTron.fbx):
-    /// LoiTron (r 0,5, mat hoi gon) + hai vo KhiLanh0 (r 0,66) / KhiLanh1 (r 0,84) trai anh KhiLanhBoc (soi khi lanh xoan,
-    /// lien mach theo u, mo dan ve hai cuc). Hai vo cong sang (additive), quay nguoc chieu nhau tren hai truc khac nhau
-    /// va truot anh - soi khi cuon quanh loi. Tra false neu khong nap duoc (luc do dung loi co gai cu).
-    /// </summary>
-    static bool DungCauBangTron(Transform parent, float k)
-    {
-        if (!daTimCauBangTron)
-        {
-            daTimCauBangTron = true;
-            mauCauBangTron = Resources.Load<GameObject>(ThuMucQuaCauBang + "CauBangTron");
-        }
-        if (mauCauBangTron == null) return false;
-        if (mKhiLanhBoc == null)
-        {
-            var t = Resources.Load<Texture2D>(ThuMucQuaCauBang + "KhiLanhBoc");
-            if (t == null) return false;
-            mKhiLanhBoc = Mats.Additive("KhiLanhBoc", t, new Color(0.62f, 0.86f, 1f, 1f), 1.6f);
-        }
-        int soLop = 0;
-        foreach (var mf in mauCauBangTron.GetComponentsInChildren<MeshFilter>())
-        {
-            bool laLoi = mf.name == "LoiTron";
-            var go = laLoi
-                ? ProcMesh.Part("LoiBang", parent, mf.sharedMesh, LoiCauBangMat, Vector3.zero, Quaternion.identity, Vector3.one * k, false)
-                : ProcMesh.Part(mf.name, parent, mf.sharedMesh, mKhiLanhBoc, Vector3.zero,
-                                mf.name == "KhiLanh1" ? Quaternion.Euler(23f, 11f, 63f) : Quaternion.identity, Vector3.one * k, false);
-            var sp = go.AddComponent<Spin>();
-            if (laLoi) { sp.axis = Vector3.forward; sp.degreesPerSecond = 90f; }
-            else if (mf.name == "KhiLanh0") { sp.axis = new Vector3(0.3f, 1f, 0.2f).normalized; sp.degreesPerSecond = 210f; }
-            else { sp.axis = new Vector3(-0.4f, -1f, 0.3f).normalized; sp.degreesPerSecond = 150f; }
-            if (!laLoi)
-            {
-                var tr = go.AddComponent<ScrollUV>();
-                tr.speed = mf.name == "KhiLanh0" ? new Vector2(0.35f, 0.18f) : new Vector2(-0.25f, -0.12f);
-            }
-            soLop++;
-        }
-        return soLop > 0;
     }
 
     static void DungLoiCoGai(Transform parent, float radius, float k)
@@ -191,6 +146,41 @@ public static partial class VfxFactory
         var xoay = loi.AddComponent<Spin>();
         xoay.axis = Vector3.forward;
         xoay.degreesPerSecond = 160f;
+    }
+
+    static Material mVetSaoBang;
+
+    /// <summary>Do dai (giay) vet sao bang cua Mua bang - qua roi 20 m trong 0,96 s, nhanh dan (cuoi ~42 m/s) nen vet dai 3-7 m.</summary>
+    public const float GiayVetSaoBang = 0.17f;
+
+    /// <summary>
+    /// VET SAO BANG cua Mua bang (nguoi dung 17/09/2026: vet sang bang "dai, manh nhu sao bang"). Anh VetSaoBang.png ve bang
+    /// Blender MCP (CongCu/Blender/vet_sao_bang.blend): u = 0 dau vet (nut sang trang), loi manh nho dan va nhat dan ve u = 1,
+    /// hao quang xanh lanh, vai dom lap lanh. TrailRenderer keo gian anh doc theo vet (Stretch) - dau vet o u = 0 nhu widthCurve.
+    /// Ten "VetBang" giu nguyen de ThaDuoiQuaCauBang tha no ra tan dan nhu truoc.
+    /// </summary>
+    static void DungVetSaoBang(Transform parent)
+    {
+        if (mVetSaoBang == null)
+        {
+            var t = Resources.Load<Texture2D>(ThuMucQuaCauBang + "VetSaoBang");
+            mVetSaoBang = Mats.Additive("VetSaoBang", t != null ? t : TextureFactory.SoftDot(1.1f), new Color(0.80f, 0.93f, 1f, 1f), 2.2f);
+        }
+        var vet = new GameObject("VetBang");
+        vet.transform.SetParent(parent, false);
+        var tr = vet.AddComponent<TrailRenderer>();
+        tr.time = GiayVetSaoBang;
+        tr.minVertexDistance = 0.15f;
+        tr.textureMode = LineTextureMode.Stretch;
+        tr.alignment = LineAlignment.View;
+        tr.widthCurve = new AnimationCurve(new Keyframe(0f, 0.55f), new Keyframe(1f, 0.30f));
+        tr.material = mVetSaoBang;
+        var g = new Gradient();
+        g.SetKeys(new[] { new GradientColorKey(Color.white, 0f), new GradientColorKey(Color.white, 1f) },
+                  new[] { new GradientAlphaKey(1f, 0f), new GradientAlphaKey(1f, 1f) });
+        tr.colorGradient = g;
+        tr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+        tr.receiveShadows = false;
     }
 
     /// <summary>Phan chung cua qua cau dang bay/roi: hao quang, luong khi lanh, vet bang, manh bang, den.</summary>
@@ -230,20 +220,24 @@ public static partial class VfxFactory
         var srot = suong.rotationOverLifetime; srot.enabled = true;
         srot.z = new ParticleSystem.MinMaxCurve(-1.2f, 1.2f);
 
-        // 4) VET BANG: dai sang lanh keo dai theo duong bay
-        var vet = new GameObject("VetBang");
-        vet.transform.SetParent(parent, false);
-        var tr = vet.AddComponent<TrailRenderer>();
-        tr.time = 0.42f;
-        tr.minVertexDistance = 0.12f;
-        tr.widthCurve = new AnimationCurve(new Keyframe(0f, radius * 1.1f), new Keyframe(1f, 0f));
-        tr.material = VetBangMat;
-        var g = new Gradient();
-        g.SetKeys(new[] { new GradientColorKey(new Color(0.90f, 0.98f, 1f), 0f), new GradientColorKey(new Color(0.35f, 0.62f, 1f), 1f) },
-                  new[] { new GradientAlphaKey(0.9f, 0f), new GradientAlphaKey(0.45f, 0.4f), new GradientAlphaKey(0f, 1f) });
-        tr.colorGradient = g;
-        tr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
-        tr.receiveShadows = false;
+        // 4) VET BANG: dai sang lanh keo dai theo duong bay. Ban roi: VET SAO BANG dai manh (anh Blender)
+        if (banRoi) DungVetSaoBang(parent);
+        else
+        {
+            var vet = new GameObject("VetBang");
+            vet.transform.SetParent(parent, false);
+            var tr = vet.AddComponent<TrailRenderer>();
+            tr.time = 0.42f;
+            tr.minVertexDistance = 0.12f;
+            tr.widthCurve = new AnimationCurve(new Keyframe(0f, radius * 1.1f), new Keyframe(1f, 0f));
+            tr.material = VetBangMat;
+            var g = new Gradient();
+            g.SetKeys(new[] { new GradientColorKey(new Color(0.90f, 0.98f, 1f), 0f), new GradientColorKey(new Color(0.35f, 0.62f, 1f), 1f) },
+                      new[] { new GradientAlphaKey(0.9f, 0f), new GradientAlphaKey(0.45f, 0.4f), new GradientAlphaKey(0f, 1f) });
+            tr.colorGradient = g;
+            tr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+            tr.receiveShadows = false;
+        }
 
         // 5) MANH BANG lap lanh vang ra sau va roi xuong
         var manh = NewPS("ManhBangRoi", parent, Vector3.zero, ManhBangMat, ParticleSystemRenderMode.Billboard);

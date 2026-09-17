@@ -42,11 +42,11 @@ using UnityEngine;
 ///      trung do vat / nguoi choi khac / quai thi vua no vua tao bang") - roi THAT tung ca, dem CumGai dang bat
 ///      trong hieu ung no: dat trong -> 0; bia mo trong 1,7 m -> co; ke dich trong 1,7 m -> co; DOI CHUNG bia mo
 ///      ngoai 1,7 m -> 0; cac phan con lai cua vu no (chop, vong, suong...) van co. Them thong ke mot con Mua bang that.
-///   K (sua 17/09/2026, nguoi dung: qua cau roi cua Mua bang "khong can cho cac gai xung quanh, chi can cho qua cau co boc
-///      khi lanh bang phat sang, hieu ung roi van giu nhu cu"): qua roi dung luoi TRON Blender (CauBangTron: LoiTron + 2 vo
-///      KhiLanh trai anh KhiLanhBoc, cong sang, dang quay) - KHONG dung luoi co gai; hop bao loi can doi (luoi co gai lech
-///      +0,75 m ve duoi -> DOI CHUNG: dung thu luoi co gai cung phep do phai ra lech). Luong khi lanh, vet bang, roi thang
-///      dung giu nguyen. Ky nang Qua cau bang (muc C/G) van dung luoi co gai.
+///   K (sua lai 17/09/2026, nguoi dung: Mua bang "bo khoi cau, cho cac vet sang bang rot tu tren troi xuong"; chon: chi bo
+///      khoi cau, vet dai manh nhu sao bang, ve bang Blender MCP, cham dat giu nguyen): moi qua roi KHONG co MeshRenderer nao
+///      (DOI CHUNG: qua cua ky nang Qua cau bang dung cung ham phai co luoi); vet dung anh VetSaoBang keo gian; do DO DAI THAT
+///      cua vet (tong doan noi cac diem TrailRenderer) luc qua xuong thap, va ti le dai / rong; hao quang, luong khi lanh,
+///      manh bang van phat; roi thang dung, gay sat thuong, lam cham nhu cu. Ky nang Qua cau bang (muc C/G) van luoi co gai.
 ///
 /// Ket qua: PlayTestShots/quacaubang.txt, anh quacaubang_*.png.
 /// </summary>
@@ -495,19 +495,15 @@ public static class ThuQuaCauBang
             yield return new WaitForFixedUpdate();
             float mauMua0 = biaMua.health;
             var bao = IceStorm.Spawn(cho, maskEnemy);
-            int soRoiMax = 0, soTangCu = 0, soDungLuoi = 0, soCoSuong = 0, soCoVet = 0, soDuoiSau = 0, soCoDen = 0, soXet = 0;
+            int soRoiMax = 0, soTangCu = 0, soCoSuong = 0, soCoVet = 0, soCoDen = 0, soXet = 0;
             int soThangDung = 0; float lechNgangMax = 0f;
-            // Luoi tron Blender va doi chung luoi co gai
-            var mauTron = Resources.Load<GameObject>("KyNang/QuaCauBang/CauBangTron");
-            UnityEngine.Mesh luoiTron = null;
-            if (mauTron != null) foreach (var m in mauTron.GetComponentsInChildren<MeshFilter>()) if (m.name == "LoiTron") luoiTron = m.sharedMesh;
-            int soLuoiTron = 0, soCoVoKhi = 0, soVoQuay = 0, soCanDoi = 0, soHaoQuang = 0;
-            float lechLoiMax = 0f, tileMax = 0f;
-            var goDC = new GameObject("TAM_DoiChungGai");
+            // DOI CHUNG: qua cua ky nang Qua cau bang dung cung ham (banRoi = false) phai co luoi
+            var goDC = new GameObject("TAM_DoiChungLuoi");
             VfxFactory.BuildQuaCauBangVisual(goDC.transform, 0.43f, false);
-            var mrDC = goDC.transform.Find("LoiBang").GetComponent<MeshRenderer>();
-            float lechDoiChung = (mrDC.bounds.center - goDC.transform.position).magnitude;
+            int luoiDoiChung = goDC.GetComponentsInChildren<MeshRenderer>().Length;
             Object.Destroy(goDC);
+            int soKhongLuoi = 0, soVetSaoBang = 0, soHaoQuang = 0, soManh = 0;
+            var vetDaiNhat = new Dictionary<FallingShard, float>();
             int hatMax = 0; bool biCham = false, daChup = false;
             var daXet = new HashSet<FallingShard>();
             float hanK = Time.time + 5.5f;
@@ -529,41 +525,31 @@ public static class ThuQuaCauBang
                     float lechNgang = new Vector2(f.transform.position.x - f.target.x, f.transform.position.z - f.target.z).magnitude;
                     lechNgangMax = Mathf.Max(lechNgangMax, lechNgang);
                     if (lechNgang < 0.01f && Vector3.Angle(f.transform.forward, Vector3.down) < 0.5f) soThangDung++;
-                    var loi = f.transform.Find("LoiBang");
-                    var mf = loi != null ? loi.GetComponent<MeshFilter>() : null;
-                    if (mf != null && mf.sharedMesh == luoi) soDungLuoi++;
-                    if (mf != null && luoiTron != null && mf.sharedMesh == luoiTron) soLuoiTron++;
-                    int voOk = 0, voQuay = 0;
-                    foreach (var tenVo in new[] { "KhiLanh0", "KhiLanh1" })
-                    {
-                        var vo = f.transform.Find(tenVo);
-                        var vr = vo != null ? vo.GetComponent<MeshRenderer>() : null;
-                        if (vr != null && vr.enabled && vr.sharedMaterial != null && vr.sharedMaterial.shader == Mats.AddShader
-                            && vr.sharedMaterial.mainTexture != null && vr.sharedMaterial.mainTexture.name == "KhiLanhBoc") voOk++;
-                        var spin = vo != null ? vo.GetComponent<Spin>() : null;
-                        if (spin != null && spin.enabled && Mathf.Abs(spin.degreesPerSecond) > 1f) voQuay++;
-                    }
-                    if (voOk == 2) soCoVoKhi++;
-                    if (voQuay == 2) soVoQuay++;
+                    if (f.GetComponentsInChildren<MeshRenderer>().Length == 0) soKhongLuoi++;
+                    var trv = f.GetComponentInChildren<TrailRenderer>();
+                    if (trv != null && trv.sharedMaterial != null && trv.sharedMaterial.mainTexture != null
+                        && trv.sharedMaterial.mainTexture.name == "VetSaoBang" && trv.textureMode == LineTextureMode.Stretch) soVetSaoBang++;
                     var hq = f.transform.Find("HaoQuang");
                     if (hq != null && hq.GetComponent<ParticleSystem>().isEmitting) soHaoQuang++;
+                    var mb = f.transform.Find("ManhBangRoi");
+                    if (mb != null && mb.GetComponent<ParticleSystem>().isEmitting) soManh++;
                     var ps = f.transform.Find("LuongKhiLanh");
                     if (ps != null && ps.GetComponent<ParticleSystem>().particleCount > 0) soCoSuong++;
-                    if (f.GetComponentInChildren<TrailRenderer>() != null) soCoVet++;
+                    if (trv != null) soCoVet++;
                     if (f.GetComponentInChildren<Light>() != null) soCoDen++;
-                    var mr = loi != null ? loi.GetComponent<MeshRenderer>() : null;
-                    Vector3 huongRoi = (f.target - f.transform.position).normalized;
-                    if (mr != null && Vector3.Dot(mr.bounds.center - f.transform.position, huongRoi) < -0.02f) soDuoiSau++;
-                    if (mr != null)
-                    {
-                        float lechLoi = (mr.bounds.center - f.transform.position).magnitude;
-                        lechLoiMax = Mathf.Max(lechLoiMax, lechLoi);
-                        // Hop bao CUC BO cua luoi: mr.bounds la hop truc the gioi cua hop da xoay -> cau dang quay cung ra ti le toi 1,4
-                        Vector3 e = mf.sharedMesh.bounds.extents;
-                        float tile = Mathf.Max(e.x, Mathf.Max(e.y, e.z)) / Mathf.Max(0.001f, Mathf.Min(e.x, Mathf.Min(e.y, e.z)));
-                        tileMax = Mathf.Max(tileMax, tile);
-                        if (lechLoi < 0.05f && tile < 1.1f) soCanDoi++;
-                    }
+                }
+                // Do dai that cua vet moi qua (lay lon nhat trong doi qua)
+                foreach (var f in roi)
+                {
+                    var trv = f.GetComponentInChildren<TrailRenderer>();
+                    if (trv == null || trv.positionCount < 2) continue;
+                    float dai = 0f;
+                    for (int i = 1; i < trv.positionCount; i++) dai += Vector3.Distance(trv.GetPosition(i), trv.GetPosition(i - 1));
+                    // doan tu diem vet gan nhat toi qua (khong gia dinh thu tu diem cua TrailRenderer)
+                    dai += Mathf.Min(Vector3.Distance(trv.GetPosition(0), f.transform.position),
+                                     Vector3.Distance(trv.GetPosition(trv.positionCount - 1), f.transform.position));
+                    float cu; vetDaiNhat.TryGetValue(f, out cu);
+                    vetDaiNhat[f] = Mathf.Max(cu, dai);
                 }
                 int hat = 0;
                 foreach (var p in Object.FindObjectsByType<ParticleSystem>(FindObjectsInactive.Exclude)) hat += p.particleCount;
@@ -587,17 +573,23 @@ public static class ThuQuaCauBang
                 yield return null;
             }
             float matMua = mauMua0 - biaMua.health;
-            Ghi(string.Format("K. Mua bang that: vat dang roi cung luc toi da {0}; da xet {1} qua: luoi CO GAI {2}, luoi TRON {3}, hai vo khi lanh cong sang {4}, vo dang quay {5}, hao quang dang phat {6}, loi can doi (khong duoi gai) {7}, lech tam loi lon nhat {8:F3} m (doi chung luoi co gai {9:F3} m); luong khi lanh dang phat {10}, vet bang {11}, co den rieng {12}; tang bang cu (con \"Tang\") {13}",
-                soRoiMax, soXet, soDungLuoi, soLuoiTron, soCoVoKhi, soVoQuay, soHaoQuang, soCanDoi, lechLoiMax, lechDoiChung, soCoSuong, soCoVet, soCoDen, soTangCu));
-            Ghi(string.Format("    ti le canh dai / canh ngan hop bao cuc bo cua luoi loi lon nhat {0:F3}", tileMax));
+            float vetMin = float.MaxValue, vetMax = 0f, vetTong = 0f;
+            foreach (var kv in vetDaiNhat) { vetMin = Mathf.Min(vetMin, kv.Value); vetMax = Mathf.Max(vetMax, kv.Value); vetTong += kv.Value; }
+            if (vetDaiNhat.Count == 0) vetMin = 0f;
+            float vetTB = vetDaiNhat.Count > 0 ? vetTong / vetDaiNhat.Count : 0f;
+            Ghi(string.Format("K. Mua bang that: vat dang roi cung luc toi da {0}; da xet {1} qua: KHONG co luoi (khoi cau) {2} (doi chung qua cua ky nang Qua cau bang: {3} luoi); vet sao bang (anh VetSaoBang, keo gian) {4}; hao quang dang phat {5}, manh bang dang phat {6}, luong khi lanh dang phat {7}, co vet {8}, co den rieng {9}; tang bang cu (con \"Tang\") {10}",
+                soRoiMax, soXet, soKhongLuoi, luoiDoiChung, soVetSaoBang, soHaoQuang, soManh, soCoSuong, soCoVet, soCoDen, soTangCu));
+            Ghi(string.Format("    do dai vet lon nhat moi qua ({0} qua): ngan nhat {1:F2} m, trung binh {2:F2} m, dai nhat {3:F2} m; rong dau vet 0,55 m -> dai / rong trung binh x{4:F1}",
+                vetDaiNhat.Count, vetMin, vetTB, vetMax, vetTB / 0.55f));
             Ghi(string.Format("    bia giua vung mat {0:F0} mau, bi cham/dong cung {1}; tong so hat cung luc toi da {2}", matMua, biCham, hatMax));
             Ghi(string.Format("    roi THANG DUNG: {0}/{1} qua (lech ngang lon nhat so voi diem roi {2:F3} m, truc bay chi thang xuong)", soThangDung, soXet, lechNgangMax));
             Kiem(soThangDung == soXet, "qua cau bang cua Mua bang khong roi thang dung");
             Kiem(soXet >= 10, "Mua bang khong roi du qua de xet");
-            Kiem(soCoSuong == soXet && soCoVet == soXet, "qua roi cua Mua bang mat luong khi lanh / vet bang (hieu ung roi phai giu nhu cu)");
-            Kiem(lechDoiChung > 0.3f, "doi chung: luoi co gai khong lech tam - phep do can doi vo nghia");
-            Kiem(luoiTron != null && soLuoiTron == soXet && soDungLuoi == 0 && soCanDoi == soXet && soDuoiSau == 0, "qua roi cua Mua bang van con gai / khong dung cau tron Blender");
-            Kiem(soCoVoKhi == soXet && soVoQuay == soXet && soHaoQuang == soXet, "qua roi cua Mua bang thieu vo khi lanh phat sang / hao quang");
+            Kiem(luoiDoiChung > 0, "doi chung: qua cua ky nang Qua cau bang khong co luoi - phep dem luoi vo nghia");
+            Kiem(soKhongLuoi == soXet, "qua roi cua Mua bang van con khoi cau");
+            Kiem(soVetSaoBang == soXet && soCoVet == soXet, "qua roi cua Mua bang khong co vet sao bang");
+            Kiem(vetDaiNhat.Count >= 10 && vetTB > 2.5f && vetTB / 0.55f > 5f, "vet sang bang khong dai manh");
+            Kiem(soHaoQuang == soXet && soManh == soXet && soCoSuong == soXet, "mat hao quang / manh bang / luong khi lanh (chi duoc bo khoi cau)");
             Kiem(soCoDen == 0, "qua cau roi van gan den rieng (nang cho dien thoai)");
             Kiem(soTangCu == 0, "van con tang bang cu roi xuong");
             Kiem(matMua > 1f && biCham, "Mua bang doi hinh xong khong con gay sat thuong / lam cham");

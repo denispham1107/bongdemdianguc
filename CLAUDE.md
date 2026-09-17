@@ -147,9 +147,9 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
   **Mưa băng rơi QUẢ CẦU BĂNG** thay tảng băng (16/09/2026): `VfxFactory.QuaCauBangRoi` (luồng khí lạnh/vệt băng như Quả cầu băng, bản nhẹ:
   nửa lượng hạt, không đèn riêng), rơi **THẲNG ĐỨNG** (người dùng chốt 16/09/2026 — tôi từng cho rơi chéo, người dùng không muốn);
   `FallingShard` giữ nguyên rơi/sát thương/đóng băng, chạm đất thì `ThaDuoiQuaCauBang`. Menu 68 mục K.
-  **Quả rơi là CẦU TRÒN KHÔNG GAI** (17/09/2026, người dùng): Blender MCP `CongCu/Blender/cau_bang_tron.blend` → `CauBangTron.fbx`
-  (lõi `LoiTron` + hai vỏ `KhiLanh0/1` trải ảnh `KhiLanhBoc`, cộng sáng, quay) — `VfxFactory.DungCauBangTron`, chỉ bản `banRoi`;
-  kỹ năng Quả cầu băng vẫn lõi có gai.
+  **Quả rơi KHÔNG CÒN KHỐI CẦU — chỉ vệt sáng băng như sao băng** (17/09/2026, người dùng; trước đó cùng ngày là cầu tròn bọc khí lạnh,
+  đã bỏ): `VfxFactory.DungVetSaoBang` (TrailRenderer 0,17 s, ảnh `VetSaoBang.png` vẽ bằng Blender MCP `CongCu/Blender/vet_sao_bang.blend`),
+  giữ hào quang, luồng khí lạnh, mảnh băng; chỉ bản `banRoi` — kỹ năng Quả cầu băng vẫn lõi có gai.
   **Cụm gai băng chỉ mọc khi trúng đồ vật / kẻ địch** (người dùng chọn 16/09/2026): trong 1,7 m có va chạm lớp `Default` (bia, đá,
   cây, nhà mồ, hàng rào, lò lửa — mặt đất là lớp `Ground`) hoặc kẻ địch còn sống → nổ đủ + gai; chỉ trúng đất → `IceImpact(..., coGai:false)`
   tắt `CumGai*` + `HaoQuang*`, giữ chớp, vòng lạnh, sương, giọt nước, mảnh băng, vết sương giá. Mưa băng nhắm kẻ địch 100%

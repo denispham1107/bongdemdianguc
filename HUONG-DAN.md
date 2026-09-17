@@ -8334,7 +8334,37 @@ sát thương hiện ra** (2,1 m) để số không đè lên chữ. Bỏ chữ 
 **Số đo** (menu 62, 0 lỗi): tung thật 10 lần → trúng 10, ngã 7; dấu hiệu hiện **376/383 khung hình đang ngã (98%)**;
 chuỗi ảnh mới thấy chữ NGÃ rõ ở cả 5 thời điểm, đè lên lửa.
 
+### Mưa băng: bỏ khối cầu, chỉ còn vệt sáng băng rơi như sao băng (17/09/2026)
+
+Anh báo: **bỏ khối cầu**, cho các **vệt sáng băng rớt từ trên trời xuống**. Tôi hỏi trước, anh chọn: **chỉ bỏ khối cầu** (giữ quầng sáng
+nhỏ ở đầu vệt, luồng khí lạnh, mảnh băng lấp lánh); vệt **dài, mảnh như sao băng**; vẽ bằng **Blender MCP**; chạm đất **giữ nguyên**.
+Quả cầu tròn bọc khí lạnh làm cùng ngày (mục ngay dưới) bị bỏ: xoá `CauBangTron.fbx` và `KhiLanhBoc.png` khỏi `Resources` (file Blender
+`cau_bang_tron.blend` vẫn giữ trong `CongCu/Blender`).
+
+**Vẽ trong Blender** (`CongCu/Blender/vet_sao_bang.blend`, ảnh thử `CongCu/Blender/vet_sao_bang_render/xem.png`): ảnh `VetSaoBang.png` 512×64,
+u = 0 là đầu vệt (nút sáng trắng), lõi mảnh nhỏ dần và nhạt dần về đuôi, quầng xanh lạnh hai bên, vài đốm lấp lánh. Lần đầu đuôi tắt quá
+sớm (giữa vệt độ sáng 0,14) và đốm lấm tấm như bụi → kéo dài độ sáng (giữa vệt 0,46), bớt đốm.
+
+**Unity** (`Vfx/VfxQuaCauBang.cs`): bản rơi (`banRoi`) không dựng lõi; vệt là `DungVetSaoBang` — `TrailRenderer` kéo giãn ảnh (Stretch),
+sống `GiayVetSaoBang` = 0,17 s, rộng 0,55 m ở đầu → 0,30 m ở đuôi, cộng sáng. Quả rơi 20 m trong 0,96 s và nhanh dần (cuối ~42 m/s) nên
+vệt tự dài ra khi xuống thấp. Tên vẫn `VetBang` để `ThaDuoiQuaCauBang` thả nó tan dần khi chạm đất như cũ.
+
+**Số đo** (menu 68 mục K, `quacaubang.txt`, **0 lỗi**; ảnh `quacaubang_5_muabang_roi.png`, `quacaubang_5b_muabang_roi_can.png`):
+
+| Đo | Kết quả |
+|---|---|
+| Khối cầu | 33/33 quả rơi **không có lưới nào**; ĐỐI CHỨNG quả của kỹ năng Quả cầu băng dựng bằng cùng hàm: 1 lưới |
+| Vệt sao băng | 33/33 dùng ảnh `VetSaoBang` kéo giãn; độ dài thật (cộng các đoạn của vệt) lớn nhất mỗi quả: ngắn nhất **3,76 m**, trung bình **7,14 m**, dài nhất 12,80 m; dài / rộng ×13 |
+| Phần giữ lại | quầng sáng 33/33, mảnh băng 33/33, luồng khí lạnh 33/33, 0 đèn riêng; rơi thẳng đứng 33/33; bia mất 812 máu và bị chậm |
+| Chạm đất | cụm gai chỉ khi trúng đồ vật / kẻ địch: như trước (mục L đạt đủ) |
+| Kỹ năng Quả cầu băng | vẫn lưới có gai, đuôi phía sau |
+
+Trong ảnh chụp gần: đầu vệt sáng trắng nằm dưới, đuôi mảnh nhạt dần lên trời — đúng chiều. Vệt dài nhất 12,8 m vượt mức tính (~7 m ở
+42 m/s × 0,17 s), nhiều khả năng do Editor tụt khung làm các điểm của vệt giãn thưa; chưa đo riêng.
+
 ### Mưa băng: quả cầu rơi thành cầu tròn bọc khí lạnh phát sáng, bỏ gai (17/09/2026)
+
+> ⚠️ **Đã thay ngay trong ngày** (mục trên): bỏ hẳn khối cầu, chỉ còn vệt sáng băng như sao băng.
 
 Anh báo: quả cầu băng của Mưa băng **không cần các gai xung quanh**, chỉ cần quả cầu có **khí lạnh bọc quanh, phát sáng**; hiệu ứng
 rơi giữ như cũ. Tôi hỏi trước, anh chọn: bỏ **gai trên thân quả cầu** (cụm gai mọc dưới đất khi trúng đồ vật / kẻ địch giữ nguyên);
@@ -9200,7 +9230,7 @@ Lần chạy đầu phép thử báo cả 10 con "lơ lửng": tia chiếu từ 
 | **65. Chay thu BINH MAU - BINH MANA (roi, nhat, uong, mang)** | Tỉ lệ rơi (3000 lần + giết quái thật), nhặt trong / ngoài bán kính, uống (khoá, hết, đầy, hồi chiêu, 100 / 50), số bình trên ô (so ảnh với ô đối chứng), chữ Sách phép to (so bề ngang nét với chữ đối chứng cỡ cũ / mới), cuộn thân chi tiết, 5 ca mạng qua bộ đồng bộ thật + kênh giả lập. Số đo `binh_mau_mana.txt`. |
 | **66. Chay thu NUT KY NANG o sanh (sach phep xem truoc) + con mat** | Ngoài Play: quét chữ có dấu 3 file, chạy thật cầu nối localStorage bằng node. Trong Play: đăng nhập, mở Sách phép xem trước (tất cả kỹ năng mở — nay 11/11, so độ sáng hình với đối chứng khoá), thông số đọc từ nhân vật trưng bày = prefab, xếp ô → kho lưu, vào Act2 lúc sách mở (sách đóng, thanh kỹ năng đúng thứ tự), đo con mắt quỷ hai trạng thái; thoát Play nạp lại từ kho. Số đo `sachphep_sanh.txt`. |
 | **67. Chay thu MUA BANG dong bang NGUOI CHOI KHAC (qua mang)** | Bộ đồng bộ thật + kênh giả lập: người kia tung Mưa băng vào mình bằng gói kỹ năng thật (6 cơn) — trúng, chậm, đóng cứng, khoá chân/phép, gói trạng thái mang bit đóng cứng; bản sao nhận gói đóng cứng thì đứng im và tan đúng lúc; đếm chữ nổi "ĐÓNG BĂNG!" (khớp số lần bắt đầu đóng cứng, bản sao đúng 1 lần) có đối chứng "CHOÁNG!"; vỏ băng phủ lên model có xương và làm vùng thân xanh lên trên ảnh chụp. Số đo `bang_nguoichoi.txt`. |
-| **68. Chay thu QUA CAU BANG (ky nang moi)** | Tài nguyên Blender nạp được; thông số thật trên nhân vật (hồi chiêu 0,55); tung thật `CastAt(9)` (khoá, 3 quả, năng lượng, hồi chiêu); bia trên / lệch đường bay; sát thương 65 ở tâm và vùng nổ 3,4 m; 1000 lần gieo làm chậm (40%, 50%, 2 giây, cấp kéo dài); hình lúc bay (lưới, đuôi gai phía sau, luồng khí lạnh, vệt băng) và sau khi nổ; gói kỹ năng số 9 qua mạng; icon HUD, chữ Sách phép; kích thước thật cụm băng Mưa băng = Quả cầu băng (đối chứng cỡ cũ); Mưa băng thật rơi quả cầu băng **tròn không gai** (lưới tròn Blender, hai vỏ khí lạnh cộng sáng đang quay, hào quang, lõi cân đối có đối chứng lưới gai, luồng khí lạnh, vệt, không đèn, không còn tảng cũ, vẫn gây sát thương, rơi thẳng đứng); cụm gai chỉ khi trúng đồ vật / kẻ địch (4 trường hợp + đối chứng + 2 cơn thật). Số đo `quacaubang.txt`. |
+| **68. Chay thu QUA CAU BANG (ky nang moi)** | Tài nguyên Blender nạp được; thông số thật trên nhân vật (hồi chiêu 0,55); tung thật `CastAt(9)` (khoá, 3 quả, năng lượng, hồi chiêu); bia trên / lệch đường bay; sát thương 65 ở tâm và vùng nổ 3,4 m; 1000 lần gieo làm chậm (40%, 50%, 2 giây, cấp kéo dài); hình lúc bay (lưới, đuôi gai phía sau, luồng khí lạnh, vệt băng) và sau khi nổ; gói kỹ năng số 9 qua mạng; icon HUD, chữ Sách phép; kích thước thật cụm băng Mưa băng = Quả cầu băng (đối chứng cỡ cũ); Mưa băng thật rơi **vệt sáng băng như sao băng, không khối cầu** (0 lưới, đối chứng quả của kỹ năng có lưới; ảnh vệt Blender, độ dài thật của vệt, hào quang, mảnh băng, luồng khí lạnh, không đèn, không còn tảng cũ, vẫn gây sát thương, rơi thẳng đứng); cụm gai chỉ khi trúng đồ vật / kẻ địch (4 trường hợp + đối chứng + 2 cơn thật). Số đo `quacaubang.txt`. |
 | **69. Chay thu GIUT SET (20 m, 75, 4 tia, 15% choang)** | Thông số; tung thật `CastAt(6)` vào 5 bia (đúng 4 bia mất 75 cùng một khung hình); tầm 20 m bằng bia 19,9 / 20,4 m; tia lan ra ngoài tầm vẫn trúng ×0,85; 160 lần phóng đếm tỉ lệ choáng tia đầu và tia lan riêng (bằng StunnedEffect trên bia); cấp kỹ năng kéo dài choáng. Số đo `giatset.txt`. |
 | **71. Chay thu GIO LOC (ky nang moi)** | Thông số; tung thật `CastAt(10)` (khoá, 3 lốc, 20 năng lượng, hồi chiêu đo bằng bấm mỗi khung); lưới Blender, cao 5 m so Lốc xoáy thật, xám trắng, không đèn, không tia sét; **xoáy một chiều đi lên** (độ xoắn dải gió đo ngoài Play + chiều quay thật từng lớp + chiều trượt ảnh); khói bụi đen bay lên và cuộn cùng chiều (theo dõi từng hạt), vòng phun nằm ngang (phun thử 200 hạt), vệt phía sau; bán kính chân ×1,68 / phần trên ×1,0 (so công thức gốc); tia sét hiệu ứng khi trúng (5 bia → 5 tia từ thân lốc, 5 cháy sém, 0 cột sáng đứng, mất đúng 75); 1 lốc, sống 4,5 s; không trèo mái nhà mồ (đối chứng tia cũ chạm mái); tốc độ 8 m/s và thời gian sống; xuyên bia mộ (tia đối chứng); 75 một lần, 225 ba lốc, vùng 2,2 m (2,5 / 2,7 m); 190 lần trúng đếm hất tung độc lập, độ cao, thời gian bay; khiên chặn hất; ngắt chiêu người chơi (đối chứng) và đòn quái (đối chứng); qua mạng: gói số 10, bit hất tung, mặt nạ 5 bit, bản sao bay / ngắt chiêu / không hất lần hai; lò lửa tắt rồi cháy lại sau 30 s. Số đo `gioloc.txt`. |
 | **71b. Chup anh GIO LOC (so voi Loc xoay)** | Chỉ chụp: hai lốc bay ngang màn hình 5 khung liên tiếp + Lốc xoáy lớn để so. Ảnh `gioloc_can_*.png`, `gioloc_locxoay_*.png`. |
