@@ -165,8 +165,12 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
 - **Tàng hình** (`Combat/TangHinh.cs`, shader `S_TangHinh`, 18/09/2026): thay TOÀN BỘ vật liệu model bằng shader viền fresnel (khác
   `FrozenEffect` chỉ phủ thêm lớp); 20 giây, hồi chiêu 30 s, 30 năng lượng; **quái không thấy** (`GameDirector.GanNhat` bỏ qua, `EnemyAI`
   chọn lại ngay), **miễn mọi hiệu ứng** (`TangHinh.ChanHieuUng` chặn ở đầu mỗi `Apply`, và xoá hiệu ứng đang dính) nhưng **vẫn ăn sát thương**;
-  đi nhanh +20%; **đòn đầu tiên bằng kỹ năng gây sát thương ×2 rồi tan** (Khiên / bình không tính); người khác chỉ thấy khi mình di chuyển,
-  mình luôn thấy thân mình mờ. Bit mạng `CoTangHinh` = bit thứ 6 → **mặt nạ byte cờ nay 0x3F** (gói người chơi dùng hết 8 bit). Menu 73 kiểm.
+  đi nhanh +20%; **đòn đầu tiên bằng kỹ năng gây sát thương nhân đôi TOÀN BỘ sát thương của kỹ năng ấy** (mọi vệt Mưa băng, mọi quả trong chùm,
+  cả sát thương cháy — vì nhân vào `manhHon`) rồi tan (Khiên / bình không tính); **hai giây cuối thân NHẤP NHÁY** (0,22 s, độ hiện 1 ↔ 0,12) và
+  **chỉ máy của mình thấy** (`laCuaMinh && !tuMang` — bản sao không đếm được giờ thật); người khác chỉ thấy khi mình di chuyển,
+  mình luôn thấy thân mình mờ. Bit mạng `CoTangHinh` = bit thứ 6 → **mặt nạ byte cờ nay 0x3F** (gói người chơi dùng hết 8 bit).
+  ⚠️ Đòn đầu quyết định ở **`BeginCast`** (lúc bắt đầu niệm) chứ không ở `Release`, vì gói phép bay đi từ đó: cờ `donTangHinh` đi nhờ
+  **bit cao của byte cấp kỹ năng** trong gói 17 byte, không thì máy kia phát lại phép với sát thương thường. Menu 73 kiểm.
 - **Lửa địa ngục** (`Skills/LuaDiaNguc.cs`, 17/09/2026): **5 quả** `Fireball` (18/09/2026, trước là 4) toả 18° rồi **tự dí** (`Fireball.tocQueo` 360°/s,
   giữ ≥ 1,3 m trên mặt đất — đo đất ở BA chỗ: dưới quả, theo hướng bay, về phía mục tiêu; không thì đâm đất Act2) tối đa 5 kẻ gần người tung nhất
   trong 20 m; cấp 1 = impactDamage prefab Quả cầu lửa × 1,2⁴ (176); **31 năng lượng** (⚠️ số nằm trong **prefab `Player_Sorceress`**) · hồi chiêu 0,5 ·

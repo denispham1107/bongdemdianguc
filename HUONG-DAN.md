@@ -8334,6 +8334,52 @@ sát thương hiện ra** (2,1 m) để số không đè lên chữ. Bỏ chữ 
 **Số đo** (menu 62, 0 lỗi): tung thật 10 lần → trúng 10, ngã 7; dấu hiệu hiện **376/383 khung hình đang ngã (98%)**;
 chuỗi ảnh mới thấy chữ NGÃ rõ ở cả 5 thời điểm, đè lên lửa.
 
+### Tàng hình: nhấp nháy hai giây cuối, và đòn đầu nhân đôi TOÀN BỘ sát thương của kỹ năng (18/09/2026)
+
+Anh xin thêm hai điều cho **Tàng hình**:
+
+1. **Sắp hết tàng hình thì báo trước**: hai giây cuối, nhân vật **nhấp nháy liên tục** — và **chỉ mình người điều khiển
+   thấy**, người chơi khác không thấy dấu hiệu này.
+2. **Đòn đầu tiên phải nhân đôi TẤT CẢ sát thương của kỹ năng ấy**, không phải chỉ cú trúng đầu: tung Mưa băng thì
+   **mọi vệt băng rơi xuống** đều 200%, tung Quả cầu băng thì **mỗi quả trong chùm** đều 200%.
+
+**Nhấp nháy.** `TangHinh.Update` đã tự tính "độ hiện" mỗi khung (`_Amount` của shader). Nay khi còn ≤ 2 giây
+(`GiayNhapNhay`), độ hiện đổi qua lại giữa **1,00 và 0,12** theo nhịp **0,22 giây** — nhấp nháy bằng độ sáng chứ không
+tắt hẳn renderer (tắt renderer mỗi 0,1 giây vừa tốn vừa giật). Điều kiện `laCuaMinh && !tuMang` chặn hẳn bản sao của
+người khác: bản sao **không đếm được giờ thật** (mỗi gói tin lại đẩy `conLai` lên), nên nếu không chặn thì nó sẽ nhấp
+nháy suốt — và anh muốn chỉ mình mình thấy.
+
+**Đòn đầu ×2.** Chỗ nhân đôi vốn nằm trong `Release` và nhân vào `manhHon` — hệ số sát thương của **cả kỹ năng**, nó
+đi vào từng quả cầu, từng vệt băng, từng nhịp cháy. Đo lại thì phần này **đã đúng sẵn**: mỗi vệt Mưa băng ghi 29,04 →
+**58,08**, mỗi quả trong chùm năm quả đều gấp đôi. Nhưng có **một lỗ thật, chỉ lộ ra khi chơi mạng**:
+
+> Gói tin "tôi vừa tung phép" bay đi từ lúc **BẮT ĐẦU NIỆM**, còn việc nhân đôi lại quyết định ở **lúc phép bay ra**.
+> Máy bên kia phát lại phép ấy để tính trúng, mà trong gói **không có một bit nào** nói "đòn này gấp đôi" — nên máy
+> mình tính 249 còn máy họ tính 124,5. Hai máy kể hai chuyện khác nhau, đúng cái bẫy mà `capKyNang` đã từng vá.
+
+**Sửa:** quyết định "đòn này là đòn đầu của Tàng hình" ngay trong `BeginCast` (lúc bắt đầu niệm), giữ trong
+`PlayerController.donTangHinhDangTung`, và **gửi kèm gói phép**: cờ nằm ở **bit cao của byte cấp kỹ năng**
+(cấp chỉ 1..5 nên bảy bit dưới thừa chỗ — không phải nới gói 17 byte). Bên nhận đọc `donTangHinh` rồi truyền vào
+`TungPhepTheoMang`. Chiêu bị **ngắt giữa chừng** thì trả lại quyền đòn đầu cho Tàng hình (đòn chưa bay ra thì chưa tiêu).
+
+**Số đo** (menu 73, `tanghinh.txt`, **0 lỗi**; ảnh `tanghinh_3_nhapnhay_sang.png` / `tanghinh_4_nhapnhay_mo.png` là hai pha
+của cùng một nhịp):
+
+| Đo | Kết quả |
+|---|---|
+| Nhấp nháy | lúc còn > 2 giây: độ hiện **1,00..1,00** (đứng yên, không nháy); trong 2 giây cuối: **0,12..1,00**, đổi sáng/tối **18 lần** trong 63 khung |
+| Chỉ mình thấy | bản sao của người khác (ép `conLai` = 1 giây): **không nhấp nháy** |
+| Mưa băng | sát thương ghi trên **từng vệt**: thường 33–35 vệt đều **29,04**; đang tàng hình 35 vệt đều **58,08** → **×2,00** (nếu chỉ vệt đầu ×2 thì các vệt sau vẫn 29,04) |
+| Mưa băng, máu bia thật | 26,5/lần trúng → **48,6/lần** = ×1,84 (tổng không tròn 2,00 vì mỗi cơn bão số vệt **trúng** bia khác nhau và sát thương vùng giảm dần từ tâm ra rìa) |
+| Quả cầu băng cấp 5 | 5 quả: **442,4 → 884,7** = **×2,00** (nếu chỉ quả đầu ×2 thì 1,20) |
+| Qua mạng | gói phép viết–đọc lại: cấp 5 + cờ đòn đầu đều đúng; **người kia** tung Quả cầu lửa qua mạng: gói không cờ 137,3, gói có cờ **273,2** = ×1,99; mình đánh đòn đầu → gói gửi đi **có mang cờ** |
+| Hồi quy | menu 37 (kỹ năng qua mạng), 63, 68, 71, 72, 61 — đều **0 lỗi** |
+
+Hai phép thử cũ sai lộ ra nhân dịp này, đã sửa: menu 37 mục 7 tung Sấm sét mà **không mở khoá kỹ năng** nên CastAt từ
+chối (báo "không có gói nào đi ra" — lỗi của phép thử, không phải của đường mạng); menu 72 còn kiểm `SoKyNang == 12`
+trong khi nay là 13. Menu 68 mục L thì **chập chờn**: quái thật lang thang tới gần chỗ thử là trong 1,7 m có kẻ địch
+sống nên cụm gai mọc lên — nay dọn quái quanh chỗ thử trước khi đo (cùng một cái bẫy với `TAM_` sót lại).
+
 ### Kỹ năng mới: Tàng hình — thân trong suốt, quái không thấy, đòn sau gấp đôi (18/09/2026)
 
 Anh gửi ảnh Dark Templar và xin kỹ năng **"Tàng hình"**: thân người trong suốt như trong ảnh; quái **không thấy và không đánh**;
@@ -9507,7 +9553,7 @@ Lần chạy đầu phép thử báo cả 10 con "lơ lửng": tia chiếu từ 
 | **69. Chay thu GIUT SET (20 m, 75, 4 tia, 15% choang)** | Thông số; tung thật `CastAt(6)` vào 5 bia (đúng 4 bia mất 75 cùng một khung hình); tầm 20 m bằng bia 19,9 / 20,4 m; tia lan ra ngoài tầm vẫn trúng ×0,85; 160 lần phóng đếm tỉ lệ choáng tia đầu và tia lan riêng (bằng StunnedEffect trên bia); cấp kỹ năng kéo dài choáng. Số đo `giatset.txt`. |
 | **71. Chay thu GIO LOC (ky nang moi)** | Thông số; tung thật `CastAt(10)` (khoá, 3 lốc, 20 năng lượng, hồi chiêu đo bằng bấm mỗi khung); lưới Blender, cao 5 m so Lốc xoáy thật, xám trắng, không đèn, không tia sét; **xoáy một chiều đi lên** (độ xoắn dải gió đo ngoài Play + chiều quay thật từng lớp + chiều trượt ảnh); khói bụi đen bay lên và cuộn cùng chiều (theo dõi từng hạt), vòng phun nằm ngang (phun thử 200 hạt), vệt phía sau; bán kính chân ×1,68 / phần trên ×1,0 (so công thức gốc); tia sét hiệu ứng khi trúng (5 bia → 5 tia từ thân lốc, 5 cháy sém, 0 cột sáng đứng, mất đúng 75); 1 lốc, sống 4,5 s; không trèo mái nhà mồ (đối chứng tia cũ chạm mái); tốc độ 8 m/s và thời gian sống; xuyên bia mộ (tia đối chứng); 75 một lần, 225 ba lốc, vùng 2,2 m (2,5 / 2,7 m); 190 lần trúng đếm hất tung độc lập, độ cao, thời gian bay; khiên chặn hất; ngắt chiêu người chơi (đối chứng) và đòn quái (đối chứng); qua mạng: gói số 10, bit hất tung, mặt nạ 5 bit, bản sao bay / ngắt chiêu / không hất lần hai; lò lửa tắt rồi cháy lại sau 30 s. Số đo `gioloc.txt`. |
 | **71b. Chup anh GIO LOC (so voi Loc xoay)** | Chỉ chụp: hai lốc bay ngang màn hình 5 khung liên tiếp + Lốc xoáy lớn để so. Ảnh `gioloc_can_*.png`, `gioloc_locxoay_*.png`. |
-| **73. Chay thu TANG HINH (ky nang moi)** | Thông số (số hiệu 12, 30 năng lượng, hồi chiêu 30 s, 20 giây); thân đổi sang shader tàng hình rồi trả lại; miễn 6 hiệu ứng (đối chứng lúc thường dính đủ), xoá hiệu ứng đang dính, vẫn ăn sát thương; 24 quái thật mất dấu; tốc độ ×1,20 đo bằng quãng đường; đòn đầu ×2,00 rồi tan, Khiên không làm tan; hết giờ tự tan; qua mạng bit `CoTangHinh`, bản sao đứng yên tắt renderer. Số đo `tanghinh.txt`. |
+| **73. Chay thu TANG HINH (ky nang moi)** | Thông số (số hiệu 12, 30 năng lượng, hồi chiêu 30 s, 20 giây); thân đổi sang shader tàng hình rồi trả lại; miễn 6 hiệu ứng (đối chứng lúc thường dính đủ), xoá hiệu ứng đang dính, vẫn ăn sát thương; 24 quái thật mất dấu; tốc độ ×1,20 đo bằng quãng đường; đòn đầu ×2,00 rồi tan, Khiên không làm tan; hết giờ tự tan; qua mạng bit `CoTangHinh`, bản sao đứng yên tắt renderer; **nhấp nháy 2 giây cuối** (18 lần đổi sáng/tối, bản sao người khác không nháy) và hai ảnh hai pha; **đòn đầu ×2 cho TOÀN BỘ sát thương**: từng vệt Mưa băng 29,04 → 58,08, Quả cầu băng cấp 5 442,4 → 884,7; cờ đòn đầu đi qua gói phép (người kia tung qua mạng cũng ×2). Số đo `tanghinh.txt`. |
 | **72. Chay thu LUA DIA NGUC (ky nang moi)** | Thông số (số hiệu 11, năng lượng 31/hồi chiêu/niệm, sát thương gốc = prefab Quả cầu lửa × 1,2⁴, chữ Sách phép, icon); tung thật 5 quả; tự dí 5 bia ngoài hình quạt (đối chứng Quả cầu lửa thường 0 bia), 1 bia, bia chạy ngang, mục tiêu chết giữa đường, không có ai bay thẳng 18°; sát thương so với Quả cầu lửa cấp 5 thật + thiêu đốt; màu giống hệt Quả cầu lửa; qua mạng + kẻ đánh. Tạm tắt va chạm đồ vật 26 m (Act2 không có chỗ trống). Số đo `luadianguc.txt`. |
 | **70. Chay thu QUA CAU LUA (85 sat thuong, vet lua moi)** | Sát thương đọc thẳng prefab và trên quả cầu thật khi tung; quả cầu sinh từ prefab bay vào bia (mất 85 × giảm theo khoảng cách); hạt `Flames` không còn ảnh tam giác mà là flipbook Blender, có vệt lửa dài `TrailRenderer`; nổ xong vệt được thả ra; chụp cận cảnh lúc bay. Chạy trên bản cũ ra 7 lỗi (đối chứng). Số đo `quacaulua.txt`. |
 | **56. Chay thu DOT QUAI Act2 + cho xuat phat** | *(13/09/2026: thêm đo chờ 30 giây và 10 con xa 55–65 m)*  Kiểm chỗ xuất phát ngẫu nhiên (hai máy cùng mã phòng ra cùng danh sách, cách nhau ≥ 22 m, trên đất, ngoài nước, không vướng vật cản) và luật đợt quái Act2 (đợt 1 bốn con quanh mỗi người; đợt sau cộng dồn quái và mạnh thêm 5% máu · sát thương); kiểm Act1 không bị đổi. Số đo `dotquai_act2.txt`. |

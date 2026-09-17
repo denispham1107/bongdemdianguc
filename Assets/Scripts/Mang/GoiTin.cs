@@ -330,6 +330,9 @@ public static class GoiTin
         /// may minh lai yeu theo cap cua minh - hai man hinh hai con so.
         /// </summary>
         public byte capKyNang;
+        /// <summary>Don dau tien cua Tang hinh: TOAN BO sat thuong cua phep nay x2 tren MOI may (18/09/2026).
+        /// Di nho trong bit cao cua byte cap ky nang (cap chi 1..5 nen sau bit duoi thua suc chua).</summary>
+        public bool donTangHinh;
         public int soThuTu;     // de ben nhan bo qua ban sao lap lai
         public Vector3 diemNgam;
 
@@ -500,7 +503,9 @@ public static class GoiTin
         b[i++] = LoaiKyNang;
         b[i++] = p.chiSo;
         b[i++] = p.kyNang;
-        b[i++] = p.capKyNang == 0 ? (byte)1 : p.capKyNang;
+        byte cap = p.capKyNang == 0 ? (byte)1 : (byte)(p.capKyNang & 0x7F);
+        if (p.donTangHinh) cap |= 0x80;      // bit cao = don dau tien cua Tang hinh (x2)
+        b[i++] = cap;
 
         b[i++] = (byte)(p.soThuTu & 0xFF);
         b[i++] = (byte)((p.soThuTu >> 8) & 0xFF);
@@ -529,7 +534,9 @@ public static class GoiTin
         int i = 1;
         ra.chiSo = b[i++];
         ra.kyNang = b[i++];
-        ra.capKyNang = b[i++];
+        byte capDoc = b[i++];
+        ra.donTangHinh = (capDoc & 0x80) != 0;
+        ra.capKyNang = (byte)(capDoc & 0x7F);
         if (ra.capKyNang < 1) ra.capKyNang = 1;
 
         ra.soThuTu = b[i] | (b[i + 1] << 8) | (b[i + 2] << 16) | (b[i + 3] << 24);

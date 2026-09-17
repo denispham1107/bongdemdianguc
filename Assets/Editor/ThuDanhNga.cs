@@ -266,7 +266,7 @@ public static class ThuDanhNga
         Ghi("");
         Ghi("D. nguoi choi bi nga");
         int soPhep = 0;
-        System.Action<int, Vector3> dem = (a, b) => soPhep++;
+        System.Action<int, Vector3, bool> dem = (a, b, d) => soPhep++;
         pc.DaTungPhep += dem;
         CapDo.MoKhoa(4); CapDo.Them(1000); CapDo.MoKhoa(0);
         BiDanhNga.Apply(toi, 1.5f);
@@ -318,7 +318,7 @@ public static class ThuDanhNga
                 float mauTruocF = qf.health;
                 pc.mana = pc.maxMana;
                 int truocPhep = 0;
-                System.Action<int, Vector3> demF = (a, b) => truocPhep++;
+                System.Action<int, Vector3, bool> demF = (a, b, d) => truocPhep++;
                 pc.DaTungPhep += demF;
                 pc.CastAt(4, qf.transform.position);
                 pc.DaTungPhep -= demF;

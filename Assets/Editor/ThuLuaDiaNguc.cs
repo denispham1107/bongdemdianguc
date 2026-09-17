@@ -252,7 +252,7 @@ public static class ThuLuaDiaNguc
         Ghi(string.Format("A. sat thuong goc {0:F2} = qua cau lua PREFAB {1} x 1,2^4 ({2:F2}); ten \"{3}\", tom tat \"{4}\", mo ta {5} ky tu; HUD {6} icon, icon so 11 {7}; icon file {8}",
             LuaDiaNguc.SatThuongGoc, impactPrefab, impactPrefab * Mathf.Pow(1.2f, 4), SachPhep.Ten(K), SachPhep.TomTat(K), SachPhep.MoTa(K).Length,
             bo != null ? bo.Length : -1, bo != null && bo.Length > K && bo[K] != null ? "co" : "KHONG", tIcon != null ? tIcon.width + "x" + tIcon.height : "KHONG"));
-        Kiem(K == 11 && CapDo.SoKyNang == 12, "so hieu / so ky nang sai");
+        Kiem(K == 11 && CapDo.SoKyNang == 13, "so hieu / so ky nang sai");   // 13 tu khi them Tang hinh (18/09/2026)
         Kiem(Mathf.Approximately(toi.luaDiaNgucCost, 31f) && Mathf.Approximately(nl, 31f), "nang luong khong phai 31");
         Kiem(Mathf.Approximately(toi.luaDiaNgucCooldown, 0.5f) && Mathf.Approximately(hc, 0.5f), "hoi chieu khong phai 0,5");
         Kiem(Mathf.Approximately(toi.luaDiaNgucCastTime, 0.38f), "niem khong phai 0,38");
@@ -266,7 +266,7 @@ public static class ThuLuaDiaNguc
         toi.transform.rotation = Quaternion.LookRotation(huong);
         Vector3 goc = toi.transform.position;
         int soPhep = 0, kyVua = -1;
-        System.Action<int, Vector3> dem = (s, a) => { soPhep++; kyVua = s; };
+        System.Action<int, Vector3, bool> dem = (s, a, d) => { soPhep++; kyVua = s; };
         toi.DaTungPhep += dem;
         CapDo.BatDauTranMoi();
         int s0 = soPhep;

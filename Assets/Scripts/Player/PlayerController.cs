@@ -995,7 +995,7 @@ public class PlayerController : MonoBehaviour
     /// nghe thi khong sao - nhan vat van tung phep binh thuong, chi la mot
     /// minh minh thay.
     /// </summary>
-    public event System.Action<int, Vector3> DaTungPhep;
+    public event System.Action<int, Vector3, bool> DaTungPhep;
 
     /// <summary>
     /// TUNG PHEP THEO LENH TU MAY KIA - khong hoi nang luong, khong hoi chieu.
@@ -1025,6 +1025,12 @@ public class PlayerController : MonoBehaviour
     /// </summary>
     public void TungPhepTheoMang(int skill, Vector3 aim, float doTreGiay, int capKyNang)
     {
+        TungPhepTheoMang(skill, aim, doTreGiay, capKyNang, false);
+    }
+
+    /// <summary>Nhu tren, kem co "day la don dau tien cua Tang hinh" doc tu goi tin (sat thuong x2 tren MOI may).</summary>
+    public void TungPhepTheoMang(int skill, Vector3 aim, float doTreGiay, int capKyNang, bool donTangHinh)
+    {
         // 0..6, Qua cau bang (9), Gio loc (10). Binh (7, 8) khong bao gio di qua goi tung phep.
         if ((skill < 0 || skill > 6) && skill != CapDo.KyQuaCauBang && skill != CapDo.KyGioLoc && skill != CapDo.KyLuaDiaNguc
             && skill != CapDo.KyTangHinh) return;
@@ -1035,11 +1041,23 @@ public class PlayerController : MonoBehaviour
         // may nay lai yeu di theo cap cua minh, va hai may thay hai con so sat
         // thuong khac nhau.
         capPhepDangTung = Mathf.Clamp(capKyNang, 1, CapDo.CapKyNangToiDa);
+        phepNayTuMang = true;
+        donTangHinhTuMang = donTangHinh;
         BeginCast(skill, ThoiGianNiem(skill), aim);
     }
 
     /// <summary>Do tre cua phep dang niem, neu no den tu mang. 0 = phep cua chinh may nay.</summary>
     float buTreCuaPhepNay;
+
+    /// <summary>
+    /// Phep dang niem co phai DON DAU TIEN trong trang thai Tang hinh khong - TOAN BO sat thuong cua no x2
+    /// (moi qua cau bang, moi vet mua bang... - nguoi dung chot 18/09/2026).
+    /// Quyet dinh o BeginCast chu khong o Release, vi goi tin bao sang may khac ngay luc bat dau niem.
+    /// </summary>
+    public bool donTangHinhDangTung;
+
+    /// <summary>Phep sap niem den tu mang (co "don dau" doc tu goi tin, khong tu tinh lai).</summary>
+    bool phepNayTuMang, donTangHinhTuMang;
 
     /// <summary>Thoi gian niem chu cua tung phep - de cho ca duong mang dung chung.</summary>
     float ThoiGianNiem(int skill)
@@ -1062,7 +1080,26 @@ public class PlayerController : MonoBehaviour
 
     void BeginCast(int skill, float castTime, Vector3 aim)
     {
-        if (DaTungPhep != null) DaTungPhep(skill, aim);
+        // TANG HINH - DON DAU TIEN (18/09/2026): quyet dinh NGAY LUC BAT DAU NIEM, khong phai luc Release,
+        // vi goi tin bay sang may khac tu day. Quyet dinh o Release thi ben kia phat lai phep voi sat thuong
+        // thuong, con may minh tinh gap doi - hai may ke hai con so khac nhau.
+        if (phepNayTuMang)
+        {
+            donTangHinhDangTung = donTangHinhTuMang;
+            phepNayTuMang = false;
+        }
+        else
+        {
+            donTangHinhDangTung = false;
+            var tgNiem = GetComponent<TangHinh>();
+            if (tgNiem != null && tgNiem.conLai > 0f && tgNiem.conDonDau && KyGaySatThuong(skill))
+            {
+                donTangHinhDangTung = true;
+                tgNiem.conDonDau = false;
+            }
+        }
+
+        if (DaTungPhep != null) DaTungPhep(skill, aim, donTangHinhDangTung);
 
         castingSkill = skill;
         castTotal = castTime;
@@ -1114,6 +1151,14 @@ public class PlayerController : MonoBehaviour
         castTimer = 0f;
         castReleased = true;
         SoLanNgatChieu++;
+
+        // Chieu bi ngat thi don chua bay ra: tra lai quyen "don dau x2" cho Tang hinh.
+        if (donTangHinhDangTung)
+        {
+            donTangHinhDangTung = false;
+            var tgNgat = GetComponent<TangHinh>();
+            if (tgNgat != null) tgNgat.conDonDau = true;
+        }
         if (chargeVfx != null) { Destroy(chargeVfx); chargeVfx = null; }
         if (anim != null) anim.DungNiem();
         if (hoatHinhRieng != null) hoatHinhRieng.HuyNiem();
@@ -1165,13 +1210,17 @@ public class PlayerController : MonoBehaviour
 
         // TANG HINH (18/09/2026): don dau tien bang mot ky nang GAY SAT THUONG an gap doi va lam tan tang hinh ngay.
         // Khien / binh / chinh Tang hinh khong tinh (nguoi dung chon).
-        var tangHinh = GetComponent<TangHinh>();
-        if (tangHinh != null && tangHinh.conLai > 0f && tangHinh.conDonDau && KyGaySatThuong(castingSkill))
+        //
+        // "manhHon" la he so sat thuong cua CA ky nang: no di vao tung qua cau bang, tung vet mua bang, tung
+        // nhip chay cua lua... nen nhan o day la TOAN BO sat thuong cua ky nang ay x2 (nguoi dung chot 18/09/2026),
+        // khong phai chi mot cu trung dau tien.
+        if (donTangHinhDangTung)
         {
             manhHon *= TangHinh.NhanDonDau;
-            tangHinh.conDonDau = false;
+            donTangHinhDangTung = false;
             TangHinh.SoLanDonDau++;
-            tangHinh.Tat();
+            var tangHinh = GetComponent<TangHinh>();
+            if (tangHinh != null) tangHinh.Tat();
         }
 
         Vector3 origin = rig != null && rig.castPoint != null

@@ -250,7 +250,7 @@ public static class ThuQuaCauBang
         toi.transform.rotation = Quaternion.LookRotation(huong);
         Vector3 goc = toi.transform.position;
         int soPhep = 0; int kyVuaTung = -1;
-        System.Action<int, Vector3> dem = (s, a) => { soPhep++; kyVuaTung = s; };
+        System.Action<int, Vector3, bool> dem = (s, a, d) => { soPhep++; kyVuaTung = s; };
         toi.DaTungPhep += dem;
 
         CapDo.BatDauTranMoi();
@@ -741,6 +741,20 @@ public static class ThuQuaCauBang
             if (!timDuoc) { Ghi("[LOI] khong tim duoc bia mo co cho trong de thu"); loi++; }
             else
             {
+                // QUAI THAT lang thang toi gan cho thu thi trong 1,7 m co Damageable con song -> cum gai moc len va
+                // muc nay bao loi "dat trong ma van co gai". Lan chay 18/09/2026 dinh dung cai nay (ca 1 va ca 3 deu
+                // ra 8 gai), chay lai thi het - dau hieu cua phep thu chap chon. Don sach quai quanh cho thu truoc da.
+                int quaiDon = 0;
+                foreach (var qL in Object.FindObjectsByType<EnemyAI>(FindObjectsInactive.Exclude))
+                {
+                    if (qL == null) continue;
+                    float dL = Mathf.Min(Vector3.Distance(qL.transform.position, gan),
+                               Mathf.Min(Vector3.Distance(qL.transform.position, xa), Vector3.Distance(qL.transform.position, trong)));
+                    if (dL < 30f) { Object.Destroy(qL.gameObject); quaiDon++; }
+                }
+                yield return new WaitForSeconds(0.3f);
+                Ghi("L. don " + quaiDon + " quai that quanh cho thu (quai song trong 1,7 m se lam moc cum gai)");
+
                 string[] tenCa = { "dat trong (khong vat, khong ke dich)", "bia mo " + tenBia + " cach 1,0 m (co va cham lop Default trong 1,7 m: " + (Physics.CheckSphere(gan, 1.7f, lopVat, QueryTriggerInteraction.Ignore) ? "co" : "KHONG") + ")",
                                    "quai vat (bia do don lop Enemy) cach 1,0 m", "bia mo cach 2,6 m (ngoai 1,7 m)",
                                    "NGUOI CHOI KHAC (bia do don lop Player, mask Enemy+Player) cach 1,0 m", "chinh NGUOI TUNG (lop Player, boQua) cach 1,0 m, mask Enemy+Player" };

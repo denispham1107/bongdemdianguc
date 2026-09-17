@@ -333,6 +333,10 @@ public static class ThuKyNangQuaMang
         KenhTrucTiep.guiSangBenKia = t => daGui.Add(t);
 
         int phepGuiTruoc = db.SoPhepDaGui;
+        // Vao tran moi ky nang deu KHOA (CapDo, 13/09/2026): khong mo Sam set ra thi CastAt tu choi va
+        // muc nay bao "khong co goi nao di ra" - do la loi cua phep thu, khong phai cua duong mang.
+        if (!CapDo.DaMo(2)) { CapDo.Them(CapDo.CanDeLenCap(CapDo.Cap)); CapDo.MoKhoa(2); }
+        toi.mana = toi.maxMana;
         toi.CastAt(2, toi.transform.position + new Vector3(0f, 0f, 6f));   // sam set
         yield return new WaitForSeconds(0.5f);
 

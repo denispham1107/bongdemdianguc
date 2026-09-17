@@ -303,7 +303,7 @@ public static class ThuGioLoc
         toi.transform.rotation = Quaternion.LookRotation(huong);
         Vector3 goc = toi.transform.position;
         int soPhep = 0, kyVua = -1;
-        System.Action<int, Vector3> dem = (s, a) => { soPhep++; kyVua = s; };
+        System.Action<int, Vector3, bool> dem = (s, a, d) => { soPhep++; kyVua = s; };
         toi.DaTungPhep += dem;
         CapDo.BatDauTranMoi();
         int s0 = soPhep;

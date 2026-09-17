@@ -360,8 +360,10 @@ public static class SachPhep
                      + "vài đường nét mờ khi bạn DI CHUYỂN; bạn đứng yên thì họ không thấy gì.\n\n"
                      + "Trong 20 giây tàng hình, bạn MIỄN mọi hiệu ứng (đóng băng, làm chậm, choáng, ngã, hất tung, thiêu đốt) — "
                      + "các hiệu ứng đang dính cũng bị xoá — và đi nhanh hơn 20%. Vẫn mất máu nếu bị đánh trúng.\n\n"
-                     + "Kỹ năng GÂY SÁT THƯƠNG đầu tiên bạn tung ra mạnh GẤP ĐÔI, và ngay lúc đó tàng hình tan. Khiên, bình máu "
-                     + "và bình mana không làm tan tàng hình.\n\n"
+                     + "Kỹ năng GÂY SÁT THƯƠNG đầu tiên bạn tung ra mạnh GẤP ĐÔI — TOÀN BỘ sát thương của kỹ năng ấy, "
+                     + "nghĩa là mọi vệt Mưa băng rơi xuống, mọi quả cầu trong chùm, cả sát thương cháy theo sau. Ngay lúc "
+                     + "tung ra, tàng hình tan. Khiên, bình máu và bình mana không làm tan tàng hình.\n\n"
+                     + "Hai giây cuối, thân bạn NHẤP NHÁY để bạn biết sắp hiện hình — chỉ mình bạn thấy dấu hiệu này.\n\n"
                      + "Hồi chiêu 30 giây.";
             case CapDo.KyLuaDiaNguc:
                 return "Phóng ra NĂM quả cầu lửa. Năm quả toả quạt rồi uốn cong, TỰ ĐUỔI theo tối đa "

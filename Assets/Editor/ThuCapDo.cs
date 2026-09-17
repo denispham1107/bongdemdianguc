@@ -277,7 +277,7 @@ public static class ThuCapDo
 
         // ---- D2. CHUA MO THI KHONG TUNG DUOC ----
         int soPhep = 0;
-        System.Action<int, Vector3> dem = (a, v) => soPhep++;
+        System.Action<int, Vector3, bool> dem = (a, v, d) => soPhep++;
         pc.DaTungPhep += dem;
 
         pc.CastAt(1, pc.transform.position + pc.transform.forward * 6f);

@@ -25,6 +25,12 @@ public class TangHinh : MonoBehaviour
     public const float MucKhiDi = 1f;
     /// <summary>Cham hon nguong nay coi nhu dang dung yen (m/s).</summary>
     public const float NguongDung = 0.15f;
+    /// <summary>Con bao nhieu giay thi bat dau NHAP NHAY bao sap hien hinh (nguoi dung xin 18/09/2026).</summary>
+    public const float GiayNhapNhay = 2f;
+    /// <summary>Mot nhip nhap nhay: nua dau mo han, nua sau hien lai.</summary>
+    public const float NhipNhapNhay = 0.22f;
+    /// <summary>Do hien o nua "toi" cua nhip nhap nhay.</summary>
+    public const float MucLucNhay = 0.12f;
 
     public float conLai = ThoiGian;
 
@@ -36,6 +42,11 @@ public class TangHinh : MonoBehaviour
 
     /// <summary>Dem cho phep thu (menu 73).</summary>
     public static int SoLanBat, SoLanDonDau, SoLanChanHieuUng;
+
+    /// <summary>Do hien dang dat cho shader (_Amount) - phep thu menu 73 doc truong nay.</summary>
+    public float mucHien = 1f;
+    /// <summary>Dang trong 2 giay nhap nhay bao sap hien hinh khong (chi dung tren may CUA MINH).</summary>
+    public bool dangNhapNhay;
 
     readonly List<Renderer> daDoi = new List<Renderer>();
     readonly List<Material[]> vatLieuGoc = new List<Material[]>();
@@ -150,7 +161,17 @@ public class TangHinh : MonoBehaviour
         // dung yen thi mo dan trong GiayMoHan roi bien mat han (nguoi dung chon 18/09/2026).
         float dich = laCuaMinh || toc > NguongDung ? MucKhiDi : 0f;
         muc = Mathf.MoveTowards(muc, dich, dt / Mathf.Max(0.01f, GiayMoHan));
-        if (matTang != null) matTang.SetFloat("_Amount", muc);
+
+        // HAI GIAY CUOI: than minh NHAP NHAY de biet sap hien hinh (nguoi dung xin 18/09/2026).
+        // CHI tren may cua MINH: ban sao cua nguoi khac (tuMang) khong dem duoc gio that - moi goi tin lai day
+        // conLai len, nen no se nhap nhay suot; va nguoi dung muon nguoi choi khac KHONG thay dau hieu nay.
+        dangNhapNhay = laCuaMinh && !tuMang && conLai > 0f && conLai <= GiayNhapNhay;
+        float hien = muc;
+        if (dangNhapNhay && Mathf.Repeat(conLai, NhipNhapNhay) < NhipNhapNhay * 0.5f) hien = muc * MucLucNhay;
+        mucHien = hien;
+
+        if (matTang != null) matTang.SetFloat("_Amount", hien);
+        // Bat/tat renderer van theo "muc" chu khong theo "hien": nhap nhay bang do sang, khong tat han hinh.
         for (int i = 0; i < daDoi.Count; i++)
             if (daDoi[i] != null) daDoi[i].enabled = muc > 0.01f;
 

@@ -302,7 +302,7 @@ public class DongBoTran : MonoBehaviour
         toi.DaTungPhep += KhiToiTungPhep;
     }
 
-    void KhiToiTungPhep(int kyNang, Vector3 diemNgam)
+    void KhiToiTungPhep(int kyNang, Vector3 diemNgam, bool donTangHinh)
     {
         if (!CoKenhNaoMo) return;
 
@@ -317,6 +317,9 @@ public class DongBoTran : MonoBehaviour
 
             soThuTu = ++soPhepDaTung,
             diemNgam = diemNgam,
+
+            // Don dau tien trong Tang hinh: bao sang de ben kia phat lai phep cung x2 (18/09/2026).
+            donTangHinh = donTangHinh,
 
             // Bao luon cho ben kia biet minh dang nhin thay ho tre bao nhieu.
             // Ho se lui ve dung khoanh khac nay roi moi tinh trung.
@@ -748,7 +751,7 @@ public class DongBoTran : MonoBehaviour
         n.phepDaLam = p.soThuTu;
 
         SoPhepDaNhan++;
-        n.nhanVat.TungPhepTheoMang(p.kyNang, p.diemNgam, p.doTreMs / 1000f, p.capKyNang);
+        n.nhanVat.TungPhepTheoMang(p.kyNang, p.diemNgam, p.doTreMs / 1000f, p.capKyNang, p.donTangHinh);
     }
 
     /// <summary>
