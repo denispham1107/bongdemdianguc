@@ -33,19 +33,14 @@ public class FallingShard : MonoBehaviour
 
     static readonly Collider[] boDem = new Collider[32];
 
-    /// <summary>Lop DO VAT: moi va cham lop Default (bia, da, cay, nha mo, hang rao, lo lua - do o Act2).
-    /// Mat dat nam o lop Ground (terrain Act2, WorldFactory Act1) nen khong tinh.</summary>
-    static int lopDoVat = -1;
-
     /// <summary>
-    /// Trong ban kinh sat thuong (impactRadius, 1,7 m) co DO VAT (va cham lop Default) hoac KE DICH con song
-    /// (Damageable tren damageMask, tru nguoi tung) khong. Nguoi dung chon: "trung" = nam trong vung sat thuong.
+    /// Trong ban kinh sat thuong (impactRadius, 1,7 m) co KE DICH con song (Damageable tren damageMask - quai vat, va nguoi
+    /// choi khac khi choi mang - tru nguoi tung) khong. Nguoi dung chon: "trung" = nam trong vung sat thuong.
+    /// 17/09/2026 nguoi dung: "chi tao bang tren mat dat khi danh trung nguoi choi khac hoac cac quai vat" - bo han
+    /// truong hop do vat (va cham lop Default: bia, cay, nha mo...) truoc day cung moc gai.
     /// </summary>
-    bool TrungDoVatHoacKeDich()
+    bool TrungKeDich()
     {
-        if (lopDoVat < 0) lopDoVat = LayerMask.GetMask("Default");
-        if (Physics.CheckSphere(target, impactRadius, lopDoVat, QueryTriggerInteraction.Ignore)) return true;
-
         int n = Physics.OverlapSphereNonAlloc(target, impactRadius, boDem, damageMask, QueryTriggerInteraction.Collide);
         for (int i = 0; i < n; i++)
         {
@@ -71,9 +66,9 @@ public class FallingShard : MonoBehaviour
 
         if (k >= 1f)
         {
-            // CUM GAI BANG CHI MOC KHI TRUNG DO VAT HOAC KE DICH (nguoi dung 16/09/2026): chi trung mat dat
-            // thi no binh thuong, khong co gai. Hoi TRUOC khi gay sat thuong - con nao chet vi cu nay van tinh.
-            bool coGai = TrungDoVatHoacKeDich();
+            // CUM GAI BANG CHI MOC KHI TRUNG KE DICH - quai vat / nguoi choi khac (nguoi dung 17/09/2026; 16/09 la ca do vat):
+            // trung mat dat hay do vat thi no binh thuong, khong co gai. Hoi TRUOC khi gay sat thuong - con nao chet vi cu nay van tinh.
+            bool coGai = TrungKeDich();
             // HINH cum bang to bang cua Qua cau bang (2,55 m, prefab nuong o 1,7 -> x1,5). Nguoi dung
             // 16/09/2026 xin. CHI hinh to ra: vung sat thuong / dong bang ben duoi van la impactRadius.
             VfxFactory.IceImpact(target, Mathf.Max(impactRadius, QuaCauBang.BanKinhHinhBang), coGai);

@@ -148,10 +148,10 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
   nửa lượng hạt, không đèn riêng), rơi **THẲNG ĐỨNG** (người dùng chốt 16/09/2026 — tôi từng cho rơi chéo, người dùng không muốn);
   `FallingShard` giữ nguyên rơi/sát thương/đóng băng, chạm đất thì `ThaDuoiQuaCauBang`. Menu 68 mục K.
   **Quả rơi KHÔNG CÒN KHỐI CẦU — chỉ vệt sáng băng như sao băng** (17/09/2026, người dùng; trước đó cùng ngày là cầu tròn bọc khí lạnh,
-  đã bỏ): `VfxFactory.DungVetSaoBang` (TrailRenderer 0,17 s, rộng 0,66→0,36 m × ngẫu nhiên 0,7–1, đầu là đốm tròn `DauSaoBang`; ảnh `VetSaoBang.png`/`DauSaoBang.png` vẽ bằng Blender MCP `CongCu/Blender/vet_sao_bang.blend`),
+  đã bỏ): `VfxFactory.DungVetSaoBang` (TrailRenderer 0,17 s, rộng 0,66→0,36 m × ngẫu nhiên 0,7–1, đầu là tấm `DauSaoBang` giọt sáng mũi nhọn răng cưa xoay theo hướng rơi (`DauSaoBangHuong`); ảnh `VetSaoBang.png`/`DauSaoBang.png` vẽ bằng Blender MCP `CongCu/Blender/vet_sao_bang.blend`),
   giữ hào quang, luồng khí lạnh, mảnh băng; chỉ bản `banRoi` — kỹ năng Quả cầu băng vẫn lõi có gai.
-  **Cụm gai băng chỉ mọc khi trúng đồ vật / kẻ địch** (người dùng chọn 16/09/2026): trong 1,7 m có va chạm lớp `Default` (bia, đá,
-  cây, nhà mồ, hàng rào, lò lửa — mặt đất là lớp `Ground`) hoặc kẻ địch còn sống → nổ đủ + gai; chỉ trúng đất → `IceImpact(..., coGai:false)`
+  **Cụm gai băng chỉ mọc khi trúng quái / người chơi khác** (người dùng 17/09/2026; 16/09 là cả đồ vật): trong 1,7 m có Damageable còn sống
+  trên `damageMask` trừ người tung (`FallingShard.TrungKeDich`) → nổ đủ + gai; không trúng ai (đất trống, đồ vật) → `IceImpact(..., coGai:false)`
   tắt `CumGai*` + `HaoQuang*`, giữ chớp, vòng lạnh, sương, giọt nước, mảnh băng, vết sương giá. Mưa băng nhắm kẻ địch 100%
   (`aimAtEnemyChance = 1`) nên có kẻ địch là gần như quả nào cũng có gai. Menu 68 mục L.
 - **Gió lốc** (`Skills/GioLoc.cs`, hình `Vfx/VfxGioLoc.cs`, hiệu ứng `Combat/BiHatTung.cs`, 16/09/2026): **1 lốc** mỗi lần tung (17/09/2026, trước là 3). **Hình dựng bằng

@@ -8334,7 +8334,40 @@ sát thương hiện ra** (2,1 m) để số không đè lên chữ. Bỏ chữ 
 **Số đo** (menu 62, 0 lỗi): tung thật 10 lần → trúng 10, ngã 7; dấu hiệu hiện **376/383 khung hình đang ngã (98%)**;
 chuỗi ảnh mới thấy chữ NGÃ rõ ở cả 5 thời điểm, đè lên lửa.
 
+### Mưa băng: đầu vệt nhọn răng cưa hướng xuống; chỉ mọc băng khi trúng quái / người chơi khác (17/09/2026)
+
+Anh gửi ảnh khoanh đầu vệt: cho **hơi nhọn và có răng cưa một chút** như sao băng thật; và **chỉ tạo băng trên mặt đất khi đánh trúng
+người chơi khác hoặc quái vật**. Tôi hỏi trước, anh chọn: **mũi nhọn chĩa xuống đất** (hướng rơi); rơi trúng đồ vật mà không có ai thì
+**không mọc băng**; các phần nổ khác (chớp, vòng lạnh, sương, mảnh băng, vết sương giá) **giữ như cũ**.
+
+**Đầu vệt** — vẽ lại `DauSaoBang.png` trong Blender (128×256, `CongCu/Blender/vet_sao_bang.blend`, ảnh `vet_sao_bang_render/xem_dau.png`):
+giọt sáng, phía sau tròn, phía trước thuôn thành mũi, hai sườn có vài răng cưa hướng ra sau (so le hai bên). Lần 1 răng cưa dồn về phía
+sau và mũi mềm như ngọn nến; lần 2 thành cây thông (quá nhiều răng) → giảm còn vài răng, mũi ngắn lại.
+Mũi phải chĩa theo hướng rơi, mà hạt billboard xoay tự do không giữ được hướng → đầu là **một tấm tứ giác** (`DauSaoBangHuong.cs`):
+trục lên của tấm luôn trùng hướng rơi, mặt tấm quay về camera quanh trục đó; tâm đốm sáng đặt đúng đầu vệt.
+
+**Mọc băng** (`FallingShard.TrungKeDich`): bỏ hẳn phép thử va chạm lớp `Default`; chỉ còn Damageable còn sống trên `damageMask`
+(quái; người chơi khác khi chơi mạng) trừ người tung.
+
+**Số đo** (menu 68, `quacaubang.txt`, **0 lỗi**; ảnh `quacaubang_5b_muabang_roi_can.png`):
+
+| Đo | Kết quả |
+|---|---|
+| Tấm đầu vệt | 32/32 vệt: đúng cỡ, mũi trùng hướng rơi (cos nhỏ nhất **1,0000**), mặt quay về camera (**1,0000**) |
+| Hình đầu (đọc thẳng PNG) | bề ngang ở đốm **39** điểm ảnh, gần mũi **4** → nhọn; **3 răng cưa** (ĐỐI CHỨNG đốm tròn cũ trong git: 0 răng); mép 0,004 |
+| Rơi cạnh bia mộ 1 m (có va chạm Default trong 1,7 m) | **0** gai (trước: 8) |
+| Quái 1 m / người chơi khác 1 m | 8 gai / 8 gai |
+| Chính người tung đứng trong vùng | 0 gai |
+| Mưa băng thật không có ai | **0/37** quả có gai, trong khi **14/37** quả rơi gần đồ vật |
+| Còn lại | vệt 0,463–0,652 m, dài trung bình 6,87 m; rơi thẳng 32/32; bia mất 788 máu, bị chậm; các phần nổ khác vẫn 8/8 |
+
+**Lỗi của chính phép thử, tìm ra nhờ dòng chẩn đoán thêm hôm nay:** lần chạy đầu, cơn Mưa băng "không có ai" cho 37/37 quả có gai — chẩn
+đoán in ra `TAM_BiaDuong@Enemy`: bia thử của mục C vẫn còn sống gần đó, và Mưa băng nhắm kẻ địch 100% nên cả cơn đổ vào nó. Đây cũng là
+nguyên nhân lần báo lỗi "chập chờn" ở mục trước (chỗ thử `TS_obelisk_369`). Sửa: dọn mọi bia `TAM_` còn sống trước cơn đó.
+
 ### Mưa băng: vệt sáng to thêm 20%, đầu tròn phát sáng, to nhỏ ngẫu nhiên (17/09/2026)
+
+> ⚠️ Đầu tròn trong mục này **đã đổi** thành giọt sáng mũi nhọn răng cưa (mục trên).
 
 Anh báo: vệt sáng băng **to thêm 20%**; **đầu vệt như bị cắt mất ngang** — thiết kế lại; mỗi vệt **to nhỏ ngẫu nhiên** nhưng không bé hơn
 70% cỡ gốc. Tôi hỏi trước, anh chọn: 20% **chỉ bề ngang**; ngẫu nhiên **70%–100% của cỡ mới**; đầu vệt là **đốm sáng tròn** phát sáng.
@@ -8420,7 +8453,7 @@ Quả cầu băng vẫn đi `DungLoiCoGai`. Nạp không được lưới tròn 
 Phép thử sửa 2 lần: tỉ lệ cạnh lấy từ `Renderer.bounds` ra **1,395** cho cầu tròn — đó là hộp trục thế giới bao quanh hộp đã xoay, nên
 vật đang quay cũng ra ~√2 → đổi sang hộp bao cục bộ của lưới (1,010). Lần chạy đầu mục L báo 4 lỗi (quả rơi chỗ trống vẫn có gai) ở một chỗ
 thử khác (`TS_obelisk_369`); hai lần chạy sau ở chỗ khác đều đạt. Luồng gai không bị động đến trong lần sửa này; đã thêm dòng chẩn đoán liệt kê
-kẻ địch còn sống quanh điểm rơi để lần sau gặp lại biết ngay nguyên nhân.
+kẻ địch còn sống quanh điểm rơi để lần sau gặp lại biết ngay nguyên nhân. (Sau đó tìm ra: bia thử `TAM_BiaDuong` của mục C còn sót — xem mục "đầu vệt nhọn răng cưa".)
 
 ### Gió lốc: chân to thêm 20% nữa, tia sét hiệu ứng khi trúng đối thủ (17/09/2026)
 

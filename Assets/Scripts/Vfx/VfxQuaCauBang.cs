@@ -156,7 +156,7 @@ public static partial class VfxFactory
     /// <summary>Moi vet ngau nhien TiLeNhoNhat..1 lan co goc (nguoi dung: to nho khac nhau, khong be hon 70% co goc).</summary>
     public const float TiLeVetSaoBangNhoNhat = 0.7f;
 
-    /// <summary>Duong kinh dom sang tron o dau vet = he so x be rong dau vet.</summary>
+    /// <summary>Be rong tam dau vet (giot sang mui nhon) = he so x be rong dau vet; cao gap doi.</summary>
     public const float HeSoDauSaoBang = 1.6f;
 
     /// <summary>Do dai (giay) vet sao bang cua Mua bang - qua roi 20 m trong 0,96 s, nhanh dan (cuoi ~42 m/s) nen vet dai 3-7 m.</summary>
@@ -182,17 +182,19 @@ public static partial class VfxFactory
         }
         float tiLe = Random.Range(TiLeVetSaoBangNhoNhat, 1f);
 
-        // DAU TRON PHAT SANG (nguoi dung 17/09/2026: dau vet "giong nhu bi cat mat ngang"). Anh vet nay mo vao tu u = 0 va loi
-        // thuon nhon ve dau; dom sang tron + 4 tia (anh DauSaoBang, Blender) phu dung dau vet nen khong con canh cat.
-        var dau = NewPS("DauSaoBang", parent, Vector3.zero, mDauSaoBang, ParticleSystemRenderMode.Billboard);
-        var dm = dau.main;
-        dm.startLifetime = 0.1f; dm.startSpeed = 0f;
-        float coDau = RongDauVetSaoBang * HeSoDauSaoBang * tiLe;
-        dm.startSize = new ParticleSystem.MinMaxCurve(coDau * 0.95f, coDau * 1.05f);
-        dm.startRotation = new ParticleSystem.MinMaxCurve(0f, Mathf.PI * 2f);
-        dm.simulationSpace = ParticleSystemSimulationSpace.Local; dm.maxParticles = 6;
-        var dem = dau.emission; dem.rateOverTime = 40f;
-        var dsh = dau.shape; dsh.enabled = false;
+        // DAU VET (nguoi dung 17/09/2026): lan 1 "giong nhu bi cat mat ngang" -> anh vet mo vao tu u = 0, loi thuon ve dau, them dom
+        // sang; lan 2 "hoi nhon nhon va co rang cua mot chut" -> anh DauSaoBang doi thanh giot sang mui nhon chi huong roi, rang cua
+        // hai suon, tren tam tu giac xoay theo truc roi (DauSaoBangHuong) thay hat billboard tron.
+        var dau = new GameObject("DauSaoBang");
+        dau.transform.SetParent(parent, false);
+        dau.AddComponent<MeshFilter>().sharedMesh = DauSaoBangHuong.TuGiac;
+        var dmr = dau.AddComponent<MeshRenderer>();
+        dmr.sharedMaterial = mDauSaoBang;
+        dmr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+        dmr.receiveShadows = false;
+        var huong = dau.AddComponent<DauSaoBangHuong>();
+        huong.huongRoi = parent.forward;
+        huong.rong = RongDauVetSaoBang * HeSoDauSaoBang * tiLe;
 
         var vet = new GameObject("VetBang");
         vet.transform.SetParent(parent, false);

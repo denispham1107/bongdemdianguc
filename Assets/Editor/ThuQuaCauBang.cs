@@ -51,6 +51,13 @@ using UnityEngine;
 ///      ngau nhien 70%..100%): be rong THAT dau vet moi qua (widthCurve(0) x widthMultiplier) nam trong 0,462..0,66 m va phan tan;
 ///      dom sang tron DauSaoBang dang phat, co dung ti le; doc THANG file PNG tren dia (khong qua anh Unity da nen): cot dau vet
 ///      alpha ~0 (DOI CHUNG ban cu trong git la canh cat sang), anh dau tron sang o tam va tat o mep.
+///      Sua lan 3 cung ngay (nguoi dung: dau "hoi nhon nhon va co rang cua mot chut"; chon mui chi xuong dat): dau la TAM TU GIAC
+///      DauSaoBang - do truc len cua tam trung huong roi, mat tam quay ve camera, dung co; anh PNG: be ngang (alpha > 0,5) tai
+///      mui hep hon o dom (nhon), dem so "rang" = so lan be ngang NO RA khi di tu dom ve mui (DOI CHUNG anh dom tron cu: 0 rang).
+///   L (17/09/2026, nguoi dung: "chi tao bang tren mat dat khi danh trung nguoi choi khac hoac cac quai vat"): bia mo trong 1,7 m
+///      KHONG con moc gai (doi chung doc lap: co va cham lop Default trong 1,7 m); quai (lop Enemy) -> co; NGUOI CHOI KHAC (lop
+///      Player, mask co Player) -> co; chinh NGUOI TUNG dung trong vung (boQua) -> khong; Mua bang that khong co ai -> 0 gai du
+///      co qua roi gan do vat.
 ///
 /// Ket qua: PlayTestShots/quacaubang.txt, anh quacaubang_*.png.
 /// </summary>
@@ -507,7 +514,7 @@ public static class ThuQuaCauBang
             int luoiDoiChung = goDC.GetComponentsInChildren<MeshRenderer>().Length;
             Object.Destroy(goDC);
             int soKhongLuoi = 0, soVetSaoBang = 0, soHaoQuang = 0, soManh = 0, soDauTron = 0, soDauDungCo = 0;
-            float rongMin = float.MaxValue, rongMax = 0f;
+            float rongMin = float.MaxValue, rongMax = 0f, dotMuiMin = 1f, dotCamMin = 1f;
             var vetDaiNhat = new Dictionary<FallingShard, float>();
             int hatMax = 0; bool biCham = false, daChup = false;
             var daXet = new HashSet<FallingShard>();
@@ -530,7 +537,9 @@ public static class ThuQuaCauBang
                     float lechNgang = new Vector2(f.transform.position.x - f.target.x, f.transform.position.z - f.target.z).magnitude;
                     lechNgangMax = Mathf.Max(lechNgangMax, lechNgang);
                     if (lechNgang < 0.01f && Vector3.Angle(f.transform.forward, Vector3.down) < 0.5f) soThangDung++;
-                    if (f.GetComponentsInChildren<MeshRenderer>().Length == 0) soKhongLuoi++;
+                    int luoiKhac = 0;
+                    foreach (var mrr in f.GetComponentsInChildren<MeshRenderer>()) if (mrr.name != "DauSaoBang") luoiKhac++;
+                    if (luoiKhac == 0) soKhongLuoi++;
                     var trv = f.GetComponentInChildren<TrailRenderer>();
                     if (trv != null && trv.sharedMaterial != null && trv.sharedMaterial.mainTexture != null
                         && trv.sharedMaterial.mainTexture.name == "VetSaoBang" && trv.textureMode == LineTextureMode.Stretch) soVetSaoBang++;
@@ -541,12 +550,19 @@ public static class ThuQuaCauBang
                         float rong = trv.widthCurve.Evaluate(0f) * trv.widthMultiplier;
                         rongMin = Mathf.Min(rongMin, rong); rongMax = Mathf.Max(rongMax, rong);
                         var dau = f.transform.Find("DauSaoBang");
-                        var dps = dau != null ? dau.GetComponent<ParticleSystem>() : null;
-                        if (dps != null && dps.isEmitting && dps.GetComponent<ParticleSystemRenderer>().sharedMaterial.mainTexture.name == "DauSaoBang")
+                        var dmr = dau != null ? dau.GetComponent<MeshRenderer>() : null;
+                        if (dmr != null && dmr.enabled && dmr.sharedMaterial != null && dmr.sharedMaterial.mainTexture != null
+                            && dmr.sharedMaterial.mainTexture.name == "DauSaoBang")
                         {
                             soDauTron++;
-                            float co = (dps.main.startSize.constantMin + dps.main.startSize.constantMax) * 0.5f;
-                            if (Mathf.Abs(co - rong * VfxFactory.HeSoDauSaoBang) < 0.02f) soDauDungCo++;
+                            Vector3 huongRoiDau = (f.target - f.transform.position).normalized;
+                            float dotMui = Vector3.Dot(dau.up, huongRoiDau);
+                            var camC = Camera.main;
+                            Vector3 toiCam = camC != null ? camC.transform.position - dau.position : Vector3.back;
+                            toiCam -= huongRoiDau * Vector3.Dot(toiCam, huongRoiDau);
+                            float dotCam = Mathf.Abs(Vector3.Dot(dau.forward, toiCam.normalized));
+                            dotMuiMin = Mathf.Min(dotMuiMin, dotMui); dotCamMin = Mathf.Min(dotCamMin, dotCam);
+                            if (Mathf.Abs(dau.lossyScale.x - rong * VfxFactory.HeSoDauSaoBang) < 0.02f && dotMui > 0.99f && dotCam > 0.99f) soDauDungCo++;
                         }
                     }
                     var mb = f.transform.Find("ManhBangRoi");
@@ -599,8 +615,8 @@ public static class ThuQuaCauBang
                 soRoiMax, soXet, soKhongLuoi, luoiDoiChung, soVetSaoBang, soHaoQuang, soManh, soCoSuong, soCoVet, soCoDen, soTangCu));
             Ghi(string.Format("    do dai vet lon nhat moi qua ({0} qua): ngan nhat {1:F2} m, trung binh {2:F2} m, dai nhat {3:F2} m; rong dau vet trung binh ~{4:F2} m -> dai / rong x{5:F1}",
                 vetDaiNhat.Count, vetMin, vetTB, vetMax, (rongMin + rongMax) * 0.5f, vetTB / Mathf.Max(0.01f, (rongMin + rongMax) * 0.5f)));
-            Ghi(string.Format("    be rong dau vet that: nho nhat {0:F3} m, lon nhat {1:F3} m (cho phep {2:F3}..{3:F3}; ban truoc 0,55 -> x1,2 = 0,66); dom sang tron o dau {4}/{5}, dung co {6}",
-                rongMin, rongMax, 0.66f * 0.7f, 0.66f, soDauTron, soXet, soDauDungCo));
+            Ghi(string.Format("    be rong dau vet that: nho nhat {0:F3} m, lon nhat {1:F3} m (cho phep {2:F3}..{3:F3}; ban truoc 0,55 -> x1,2 = 0,66); tam dau vet (giot mui nhon) {4}/{5}, dung co + mui trung huong roi + quay ve camera {6} (cos mui-huong roi nho nhat {7:F4}, cos mat-camera nho nhat {8:F4})",
+                rongMin, rongMax, 0.66f * 0.7f, 0.66f, soDauTron, soXet, soDauDungCo, dotMuiMin, dotCamMin));
             // Doc thang PNG tren dia - doc lap voi cach Unity nhap anh
             System.Func<string, Texture2D> docPng = duong =>
             {
@@ -618,18 +634,47 @@ public static class ThuQuaCauBang
                     cotDau = Mathf.Max(cotDau, anhVet.GetPixel(0, y).a);
                     cotSau = Mathf.Max(cotSau, anhVet.GetPixel(anhVet.width / 10, y).a);
                 }
+            // Hinh dau: be ngang (so diem anh alpha > 0,5) theo tung hang; dom o y = DomSangY, mui ve +y (hang tang)
+            System.Func<Texture2D, int[]> beNgang = a =>
+            {
+                var bn = new int[a.height];
+                for (int y = 0; y < a.height; y++) for (int x = 0; x < a.width; x++) if (a.GetPixel(x, y).a > 0.5f) bn[y]++;
+                return bn;
+            };
+            System.Func<Texture2D, float, int> hangCua = (a, yy) => Mathf.Clamp(Mathf.RoundToInt((yy + 1f) * 0.5f * a.height), 0, a.height - 1);
+            // so rang = so lan be ngang no ra >= 2 diem anh (sau khi da thu hep) khi di tu hang rong nhat ve mui
+            System.Func<Texture2D, int> demRang = a =>
+            {
+                // bat dau tu hang RONG NHAT (tu dom tro len) - phan phinh cua dom tron khong bi dem la rang
+                var bn = beNgang(a); int y0 = hangCua(a, DauSaoBangHuong.DomSangY);
+                for (int y = y0; y < a.height; y++) if (bn[y] >= bn[y0]) y0 = y;
+                int rang = 0, nhoNhat = bn[y0];
+                for (int y = y0 + 1; y < a.height; y++)
+                {
+                    if (bn[y] >= nhoNhat + 2) { rang++; nhoNhat = bn[y]; }
+                    nhoNhat = Mathf.Min(nhoNhat, bn[y]);
+                }
+                return rang;
+            };
+            int soRang = -1, rangCu = -1, rongDom = 0, rongGanMui = 0;
             if (anhDau != null)
             {
-                dauTam = anhDau.GetPixel(anhDau.width / 2, anhDau.height / 2).a;
-                for (int i = 0; i < anhDau.width; i++)
-                    dauMep = Mathf.Max(dauMep, Mathf.Max(anhDau.GetPixel(i, 0).a, anhDau.GetPixel(0, i).a));
+                dauTam = anhDau.GetPixel(anhDau.width / 2, hangCua(anhDau, DauSaoBangHuong.DomSangY)).a;
+                for (int i = 0; i < anhDau.width; i++) dauMep = Mathf.Max(dauMep, Mathf.Max(anhDau.GetPixel(i, 0).a, anhDau.GetPixel(i, anhDau.height - 1).a));
+                for (int i = 0; i < anhDau.height; i++) dauMep = Mathf.Max(dauMep, Mathf.Max(anhDau.GetPixel(0, i).a, anhDau.GetPixel(anhDau.width - 1, i).a));
+                var bn = beNgang(anhDau);
+                rongDom = bn[hangCua(anhDau, DauSaoBangHuong.DomSangY)];
+                rongGanMui = bn[hangCua(anhDau, 0.45f)];
+                soRang = demRang(anhDau);
             }
+            var anhDauCu = docPng("Temp/DauSaoBang_cu.png");
+            if (anhDauCu != null) { rangCu = demRang(anhDauCu); Object.DestroyImmediate(anhDauCu); }
             // DOI CHUNG: anh vet ban truoc (git HEAD~, co canh cat) - tim bang file tam do phep thu ghi ra neu co
             float cotDauCu = -1f;
             var anhCu = docPng("Temp/VetSaoBang_cu.png");
             if (anhCu != null) for (int y = 0; y < anhCu.height; y++) cotDauCu = Mathf.Max(cotDauCu, anhCu.GetPixel(0, y).a);
-            Ghi(string.Format("    anh PNG tren dia: vet - alpha lon nhat cot dau (u=0) {0:F3}, cot u=0,1 {1:F3} (DOI CHUNG anh cu cot dau {2:F3}); dau tron - tam {3:F3}, mep {4:F3}",
-                cotDau, cotSau, cotDauCu, dauTam, dauMep));
+            Ghi(string.Format("    anh PNG tren dia: vet - alpha lon nhat cot dau (u=0) {0:F3}, cot u=0,1 {1:F3} (DOI CHUNG anh cu cot dau {2:F3}); dau - dom {3:F3}, mep {4:F3}, be ngang o dom {5} diem anh / gan mui (y 0,45) {6} diem anh, so rang cua {7} (DOI CHUNG anh dom tron cu: {8} rang)",
+                cotDau, cotSau, cotDauCu, dauTam, dauMep, rongDom, rongGanMui, soRang, rangCu));
             if (anhVet != null) Object.DestroyImmediate(anhVet);
             if (anhDau != null) Object.DestroyImmediate(anhDau);
             if (anhCu != null) Object.DestroyImmediate(anhCu);
@@ -642,7 +687,10 @@ public static class ThuQuaCauBang
             Kiem(soVetSaoBang == soXet && soCoVet == soXet, "qua roi cua Mua bang khong co vet sao bang");
             Kiem(vetDaiNhat.Count >= 10 && vetTB > 2.5f && vetTB / 0.66f > 5f, "vet sang bang khong dai manh");
             Kiem(rongMin >= 0.66f * 0.7f - 0.001f && rongMax <= 0.661f && rongMax - rongMin > 0.08f, "be rong vet khong nam trong 70%..100% cua 0,66 m / khong ngau nhien");
-            Kiem(soDauTron == soXet && soDauDungCo == soXet, "dau vet thieu dom sang tron / sai co");
+            Kiem(soDauTron == soXet && soDauDungCo == soXet, "dau vet thieu tam giot sang / sai co / mui khong chi huong roi / khong quay ve camera");
+            Kiem(rongGanMui > 0 && rongGanMui * 2 < rongDom, "dau vet khong nhon ve mui");
+            Kiem(soRang >= 3 && soRang <= 12, "dau vet khong co rang cua (hoac rang cua qua nhieu)");
+            Kiem(rangCu == 0, "doi chung: anh dom tron cu cung dem ra rang - phep dem rang vo nghia");
             Kiem(cotDau < 0.02f && cotSau > 0.5f && dauTam > 0.9f && dauMep < 0.02f, "anh vet con canh cat o dau / anh dau tron hong");
             Kiem(cotDauCu < 0f || cotDauCu > 0.5f, "doi chung: anh cu khong co canh cat - phep do cot dau vo nghia");
             Kiem(soHaoQuang == soXet && soManh == soXet && soCoSuong == soXet, "mat hao quang / manh bang / luong khi lanh (chi duoc bo khoi cau)");
@@ -653,7 +701,7 @@ public static class ThuQuaCauBang
             if (bao != null) Object.Destroy(bao.gameObject);
         }
 
-        // ================= L. CUM GAI CHI KHI TRUNG DO VAT / KE DICH =================
+        // ================= L. CUM GAI CHI KHI TRUNG KE DICH (QUAI / NGUOI CHOI KHAC) =================
         Ghi("");
         {
             yield return new WaitForSeconds(2.5f);
@@ -683,18 +731,28 @@ public static class ThuQuaCauBang
             if (!timDuoc) { Ghi("[LOI] khong tim duoc bia mo co cho trong de thu"); loi++; }
             else
             {
-                string[] tenCa = { "dat trong (khong vat, khong ke dich)", "bia mo " + tenBia + " cach 1,0 m", "ke dich (bia do don) cach 1,0 m", "DOI CHUNG bia mo cach 2,6 m (ngoai 1,7 m)" };
-                Vector3[] choCa = { trong, gan, trong, xa };
-                var gaiBat = new int[4]; var phanKhac = new int[4]; var coGaiDem = new int[4];
-                for (int ca = 0; ca < 4; ca++)
+                string[] tenCa = { "dat trong (khong vat, khong ke dich)", "bia mo " + tenBia + " cach 1,0 m (co va cham lop Default trong 1,7 m: " + (Physics.CheckSphere(gan, 1.7f, lopVat, QueryTriggerInteraction.Ignore) ? "co" : "KHONG") + ")",
+                                   "quai vat (bia do don lop Enemy) cach 1,0 m", "bia mo cach 2,6 m (ngoai 1,7 m)",
+                                   "NGUOI CHOI KHAC (bia do don lop Player, mask Enemy+Player) cach 1,0 m", "chinh NGUOI TUNG (lop Player, boQua) cach 1,0 m, mask Enemy+Player" };
+                Vector3[] choCa = { trong, gan, trong, xa, trong, trong };
+                int soCa = tenCa.Length;
+                var gaiBat = new int[soCa]; var phanKhac = new int[soCa]; var coGaiDem = new int[soCa];
+                int maskCaNguoi = maskEnemy | LayerMask.GetMask("Player");
+                for (int ca = 0; ca < soCa; ca++)
                 {
                     Damageable keDich = null;
-                    if (ca == 2) { keDich = TaoBia("TAM_KeDichL", choCa[ca] + Vector3.right * 1.0f); yield return new WaitForFixedUpdate(); }
+                    if (ca == 2 || ca == 4 || ca == 5)
+                    {
+                        keDich = TaoBia("TAM_KeDichL" + ca, choCa[ca] + Vector3.right * 1.0f);
+                        if (ca != 2) keDich.gameObject.layer = LayerMask.NameToLayer("Player");
+                        yield return new WaitForFixedUpdate();
+                    }
                     var truoc = new HashSet<GameObject>(UnityEngine.SceneManagement.SceneManager.GetActiveScene().GetRootGameObjects());
                     int coGai0 = FallingShard.SoLanCoGai;
                     var qua = VfxFactory.QuaCauBangRoi(choCa[ca], 3f, 0.12f);
                     var fs = qua.GetComponent<FallingShard>();
-                    fs.damage = 1f; fs.impactRadius = 1.7f; fs.damageMask = maskEnemy;
+                    fs.damage = 1f; fs.impactRadius = 1.7f; fs.damageMask = ca >= 4 ? maskCaNguoi : maskEnemy;
+                    if (ca == 5) fs.boQua = keDich;
                     GameObject no = null;
                     float hanL = Time.time + 1.5f;
                     while (no == null && Time.time < hanL)
@@ -711,14 +769,16 @@ public static class ThuQuaCauBang
                         }
                     coGaiDem[ca] = FallingShard.SoLanCoGai - coGai0;
                     if (ca == 0) { yield return new WaitForSeconds(0.35f); yield return Chup("quacaubang_6_trung_dat_khong_gai"); }
-                    if (ca == 1) { yield return new WaitForSeconds(0.35f); yield return Chup("quacaubang_7_trung_bia_co_gai"); }
+                    if (ca == 1) { yield return new WaitForSeconds(0.35f); yield return Chup("quacaubang_7_trung_bia_khong_gai"); }
                     if (keDich != null) Object.Destroy(keDich.gameObject);
                     yield return new WaitForSeconds(1.2f);
                 }
-                for (int ca = 0; ca < 4; ca++)
+                for (int ca = 0; ca < soCa; ca++)
                     Ghi(string.Format("L. {0}: cum gai dang bat {1}, cac phan no khac dang bat {2}, bo dem co gai +{3}", tenCa[ca], gaiBat[ca], phanKhac[ca], coGaiDem[ca]));
                 Kiem(gaiBat[0] == 0 && gaiBat[3] == 0, "chi trung mat dat ma van moc cum gai bang");
-                Kiem(gaiBat[1] > 0 && gaiBat[2] > 0, "trung do vat / ke dich ma khong co cum gai bang");
+                Kiem(gaiBat[1] == 0, "trung do vat (bia mo) ma van moc cum gai bang");
+                Kiem(gaiBat[2] > 0 && gaiBat[4] > 0, "trung quai / nguoi choi khac ma khong co cum gai bang");
+                Kiem(gaiBat[5] == 0, "chinh nguoi tung dung trong vung cung lam moc cum gai");
                 Kiem(phanKhac[0] > 0 && phanKhac[0] == phanKhac[1], "no khong co gai ma mat luon cac phan no khac");
             }
 
@@ -744,6 +804,12 @@ public static class ThuQuaCauBang
                 int ganVatDocLap = 0;
                 var tenKeDichGan = new HashSet<string>();
                 var daDem = new HashSet<FallingShard>();
+                // Don moi bia do don TAM_ con song (TAM_BiaDuong cua muc C con dung gan day): Mua bang nham ke dich 100% nen chi
+                // mot con sot lai la ca con Mua bang do vao no (lan chay 17/09/2026: 37/37 qua co gai, chan doan ra TAM_BiaDuong).
+                foreach (var dd in Object.FindObjectsByType<Damageable>(FindObjectsInactive.Exclude))
+                    if (dd.name.StartsWith("TAM_")) Object.Destroy(dd.gameObject);
+                yield return new WaitForFixedUpdate();
+                yield return new WaitForFixedUpdate();
                 var baoL2 = IceStorm.Spawn(trong, maskEnemy);
                 float hanL2 = Time.time + 6.8f;
                 while (Time.time < hanL2)
@@ -765,8 +831,8 @@ public static class ThuQuaCauBang
                 Ghi(string.Format("L. Mua bang that KHONG co ke dich: {0} qua cham dat, {1} qua co cum gai, {2} qua khong gai; dem doc lap theo diem roi: {3}/{4} qua co do vat trong 1,7 m",
                     cham2, gai2, cham2 - gai2, ganVatDocLap, daDem.Count));
                 Ghi("    (chan doan) Damageable song tren damageMask trong 1,7 m quanh cac diem roi: " + (tenKeDichGan.Count == 0 ? "khong co" : string.Join(", ", tenKeDichGan)));
-                Kiem(gai2 == ganVatDocLap, "so qua co gai khong khop so qua roi gan do vat");
-                Kiem(cham2 - gai2 > 0, "khong co ke dich ma qua nao cung co gai");
+                Kiem(gai2 == 0, "Mua bang khong co ke dich ma van co qua moc gai (do vat khong duoc moc gai nua)");
+                Kiem(ganVatDocLap > 0, "doi chung: khong qua nao roi gan do vat - chua thu duoc truong hop do vat");
                 if (baoL2 != null) Object.Destroy(baoL2.gameObject);
             }
         }
