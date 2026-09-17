@@ -34,6 +34,7 @@ public static class HieuUngQuaMang
     public const byte CoChoang = 1 << 2;         // dang choang
     public const byte CoNga = 1 << 3;            // dang bi thien thach danh nga
     public const byte CoHatTung = 1 << 4;        // dang bi Gio loc hat tung (16/09/2026) - bit THU NAM, mat na 0x1F
+    public const byte CoTangHinh = 1 << 5;       // dang TANG HINH (18/09/2026) - bit THU SAU, mat na len 0x3F
 
     /// <summary>Doc trang thai hieu ung that tren mot vat - de gui di.</summary>
     public static byte DocCo(GameObject go)
@@ -56,6 +57,9 @@ public static class HieuUngQuaMang
 
         var ht = go.GetComponent<BiHatTung>();
         if (ht != null && ht.DangBay) co |= CoHatTung;
+
+        var tg = go.GetComponent<TangHinh>();
+        if (tg != null && tg.conLai > 0f) co |= CoTangHinh;
 
         return co;
     }
@@ -128,6 +132,12 @@ public static class HieuUngQuaMang
         // Mot cu hat tron 0,5 giay tren ban sao; goi tiep tuc "dang bay" chi keo dai rat it. Kem NGAT CHIEU
         // ban sao dang niem (xem PlayerController.NgatChieu).
         if ((co & CoHatTung) != 0) BiHatTung.ApTuMang(d);
+
+        // ---- Tang hinh ----
+        // Ban sao chi thay DUONG NET khi nguoi ay DI CHUYEN (TangHinh tu do toc do cua ban sao); dung yen thi bien mat han.
+        var tg2 = go.GetComponent<TangHinh>();
+        if ((co & CoTangHinh) != 0) TangHinh.ApTuMang(d, GiuSongGiay);
+        else if (tg2 != null && tg2.conLai > 0.05f) tg2.conLai = 0.05f;
 
         // ---- Choang ----
         var st = go.GetComponent<StunnedEffect>();

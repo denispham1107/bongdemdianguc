@@ -226,6 +226,7 @@ public class ChiBaoNgam : MonoBehaviour
             case CapDo.KyQuaCauBang: return new Color(0.62f, 0.90f, 1.00f);   // qua cau bang
             case CapDo.KyGioLoc: return new Color(0.92f, 0.68f, 0.40f);       // gio loc - nau
             case CapDo.KyLuaDiaNguc: return new Color(1.00f, 0.22f, 0.12f);   // lua dia nguc - do sam
+            case CapDo.KyTangHinh: return new Color(0.55f, 0.95f, 1.00f);     // tang hinh - xanh lo
             default: return new Color(0.40f, 0.95f, 1.00f);
         }
     }

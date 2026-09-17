@@ -34,35 +34,35 @@ E2. long nut (17x17 diem): 56 mau khac nhau
 D2. mo sach phep: DangMo = True
     anh sachphep_2_bang_camung: 424 KB
 D3. dang mo sach: goi input = huongDi (0.00, 0.00, 0.00), kyNang -1, muonDiToi False
-    anh sachphep_5_hud_maytinh_khoa: 820 KB
+    anh sachphep_5_hud_maytinh_khoa: 822 KB
 E. nut sach phep - ban may tinh (man 1568x581, co chu 8)
 E1. chu "Sách phép": net that cao 9 diem, bang glyph 11 diem -> 82%
     so voi nhan chuan khong cat cung co chu: 9 / 9
 E2. long nut (17x17 diem): 56 mau khac nhau
 D4. ban may tinh: dung cam ung = False, so o = 7
-    anh sachphep_3_bang_maytinh: 417 KB
+    anh sachphep_3_bang_maytinh: 415 KB
 D5. keo Thien thach (4) vao o 1 -> 4 1 2 3 0 5 6
     anh sachphep_4_hud_da_doi_cho: 837 KB
 
 F. sach phep - ban cam ung (man 1568x581)
 F0. man 1560x572: cua so 869 x 443 (khung xanh nguoi dung ve ~865 x 442; ban cu 625 x 381)
-F1. chon ky nang 4 (con khoa) - do sang tung hang: 0(khoa)=0.066 1(mo)=0.191 2(khoa)=0.060 3(mo)=0.165 4(khoa)*=0.311 5(khoa)=0.060 6(khoa)=0.059 7(khoa)=0.062 8(khoa)=0.065 9(khoa)=0.064 10(khoa)=0.025
-    anh sachphep_6_chon_4_camung: 436 KB
-F1. chon ky nang 1 (da mo) - do sang tung hang: 0(khoa)=0.066 1(mo)*=0.333 2(khoa)=0.060 3(mo)=0.165 4(khoa)=0.063 5(khoa)=0.060 6(khoa)=0.059 7(khoa)=0.062 8(khoa)=0.065 9(khoa)=0.064 10(khoa)=0.025
+F1. chon ky nang 4 (con khoa) - do sang tung hang: 0(khoa)=0.066 1(mo)=0.191 2(khoa)=0.060 3(mo)=0.165 4(khoa)*=0.317 5(khoa)=0.060 6(khoa)=0.059 7(khoa)=0.062 8(khoa)=0.064 9(khoa)=0.065 10(khoa)=0.025 11(khoa)=0.020 12(khoa)=0.000
+    anh sachphep_6_chon_4_camung: 437 KB
+F1. chon ky nang 1 (da mo) - do sang tung hang: 0(khoa)=0.066 1(mo)*=0.339 2(khoa)=0.060 3(mo)=0.165 4(khoa)=0.063 5(khoa)=0.060 6(khoa)=0.059 7(khoa)=0.062 8(khoa)=0.064 9(khoa)=0.065 10(khoa)=0.025 11(khoa)=0.020 12(khoa)=0.000
 F1b. hinh hang 0 (con khoa): diem sang cua o khoa 21
-    anh sachphep_6_chon_1_camung: 443 KB
-F2. cham o 2 (giu ky nang 1): dang xem = 1, vanh o chon 0.142 / vanh o khac sang nhat 0.098 (trung binh 4 khung, x1.45)
-F2b. cham o trong 3: vanh o trong 0.179, vanh o 2 (vua chon luc nay) 0.107 (x1.67)
+    anh sachphep_6_chon_1_camung: 444 KB
+F2. cham o 2 (giu ky nang 1): dang xem = 1, vanh o chon 0.145 / vanh o khac sang nhat 0.099 (trung binh 4 khung, x1.46)
+F2b. cham o trong 3: vanh o trong 0.166, vanh o 2 (vua chon luc nay) 0.106 (x1.57)
 F3. o 6 giu Khien: luc KHOA do sang 0.219, diem sang cua o khoa 8 | sau MO KHOA do sang 0.796
 
 F. sach phep - ban may tinh (man 1568x581)
-F1. chon ky nang 4 (con khoa) - do sang tung hang: 0(khoa)=0.066 1(mo)=0.191 2(khoa)=0.060 3(mo)=0.165 4(khoa)*=0.308 5(khoa)=0.060 6(khoa)=0.059 7(khoa)=0.062 8(khoa)=0.065 9(khoa)=0.064 10(khoa)=0.025
+F1. chon ky nang 4 (con khoa) - do sang tung hang: 0(khoa)=0.066 1(mo)=0.191 2(khoa)=0.060 3(mo)=0.165 4(khoa)*=0.299 5(khoa)=0.060 6(khoa)=0.059 7(khoa)=0.062 8(khoa)=0.064 9(khoa)=0.065 10(khoa)=0.025 11(khoa)=0.020 12(khoa)=0.000
     anh sachphep_7_chon_4_maytinh: 427 KB
-F1. chon ky nang 1 (da mo) - do sang tung hang: 0(khoa)=0.066 1(mo)*=0.347 2(khoa)=0.060 3(mo)=0.165 4(khoa)=0.063 5(khoa)=0.060 6(khoa)=0.059 7(khoa)=0.062 8(khoa)=0.065 9(khoa)=0.064 10(khoa)=0.025
+F1. chon ky nang 1 (da mo) - do sang tung hang: 0(khoa)=0.066 1(mo)*=0.335 2(khoa)=0.060 3(mo)=0.165 4(khoa)=0.063 5(khoa)=0.060 6(khoa)=0.059 7(khoa)=0.062 8(khoa)=0.064 9(khoa)=0.065 10(khoa)=0.025 11(khoa)=0.020 12(khoa)=0.000
 F1b. hinh hang 0 (con khoa): diem sang cua o khoa 21
-    anh sachphep_7_chon_1_maytinh: 434 KB
-F2. cham o 2 (giu ky nang 1): dang xem = 1, vanh o chon 0.332 / vanh o khac sang nhat 0.132 (trung binh 4 khung, x2.52)
-F2b. cham o trong 3: vanh o trong 0.287, vanh o 2 (vua chon luc nay) 0.116 (x2.47)
+    anh sachphep_7_chon_1_maytinh: 435 KB
+F2. cham o 2 (giu ky nang 1): dang xem = 1, vanh o chon 0.314 / vanh o khac sang nhat 0.123 (trung binh 4 khung, x2.55)
+F2b. cham o trong 3: vanh o trong 0.303, vanh o 2 (vua chon luc nay) 0.120 (x2.52)
 F3. o 6 giu Khien: luc KHOA do sang 0.243, diem sang cua o khoa 23 | sau MO KHOA do sang 0.828
 
 so loi ghi nhan = 0

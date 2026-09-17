@@ -44,6 +44,8 @@ public static class IconKyNang
     public static Texture2D GioLoc()     { return Ve("Icons/GioLoc",     new Color(0.20f, 0.11f, 0.04f)); }
     // Lua dia nguc: dung trong Blender qua MCP (CongCu/Blender/lua_dia_nguc.blend, 17/09/2026), nen do mau toi
     public static Texture2D LuaDiaNguc() { return Ve("Icons/LuaDiaNguc", new Color(0.24f, 0.02f, 0.02f)); }
+    // Tang hinh: dung trong Blender qua MCP (CongCu/Blender/tang_hinh.blend, 18/09/2026), nen xanh lo toi
+    public static Texture2D TangHinh()   { return Ve("Icons/TangHinh",   new Color(0.03f, 0.13f, 0.16f)); }
 
     /// <summary>
     /// Dat anh Blender vao mot cai dia nut.

@@ -7,11 +7,13 @@ using UnityEngine;
 public static class Mats
 {
     static Shader shStandard, shFire, shIce, shFrozen, shAdd, shAlpha, shSky, shTerrain, shFoliage;
+    static Shader shTangHinh;
 
     public static Shader Standard { get { if (shStandard == null) shStandard = Shader.Find("Standard"); return shStandard; } }
     public static Shader FireShader { get { if (shFire == null) shFire = Shader.Find("Diablo25D/Fire"); return shFire; } }
     public static Shader IceShader { get { if (shIce == null) shIce = Shader.Find("Diablo25D/Ice"); return shIce; } }
     public static Shader FrozenShader { get { if (shFrozen == null) shFrozen = Shader.Find("Diablo25D/FrozenShell"); return shFrozen; } }
+    public static Shader TangHinhShader { get { if (shTangHinh == null) shTangHinh = Shader.Find("Diablo25D/TangHinh"); return shTangHinh; } }
     public static Shader AddShader { get { if (shAdd == null) shAdd = Shader.Find("Diablo25D/ParticleAdditive"); return shAdd; } }
     public static Shader AlphaShader { get { if (shAlpha == null) shAlpha = Shader.Find("Diablo25D/ParticleAlpha"); return shAlpha; } }
     public static Shader SkyShader { get { if (shSky == null) shSky = Shader.Find("Diablo25D/SkyGradient"); return shSky; } }

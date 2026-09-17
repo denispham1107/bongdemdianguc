@@ -279,13 +279,15 @@ public class EnemyAI : MonoBehaviour
 
         var gan = dir.GanNhat(transform.position);
         if (gan != null) target = gan;
+        // Dang duoi ma nguoi ay tang hinh: MAT DAU NGAY (nguoi dung chon 18/09/2026)
+        else if (target != null && TangHinh.Dang(target)) target = null;
     }
 
     void Update()
     {
         if (health != null && health.IsDead) return;
 
-        if (Time.time >= chonLaiLuc)
+        if (Time.time >= chonLaiLuc || (target != null && TangHinh.Dang(target)))
         {
             chonLaiLuc = Time.time + NhipChonLaiGiay;
             ChonMucTieu();

@@ -229,6 +229,7 @@ public static class SachPhep
             case CapDo.KyQuaCauBang: return "QUẢ CẦU BĂNG";
             case CapDo.KyGioLoc: return "GIÓ LỐC";
             case CapDo.KyLuaDiaNguc: return "LỬA ĐỊA NGỤC";
+            case CapDo.KyTangHinh: return "TÀNG HÌNH";
             default: return "";
         }
     }
@@ -250,6 +251,7 @@ public static class SachPhep
             case CapDo.KyQuaCauBang: return "Ba quả băng, 40% đóng băng";
             case CapDo.KyGioLoc: return "Một cơn lốc, 55% hất tung";
             case CapDo.KyLuaDiaNguc: return "Năm quả lửa tự đuổi kẻ địch";
+            case CapDo.KyTangHinh: return "Trong suốt 20 giây, đòn sau gấp đôi";
             default: return "";
         }
     }
@@ -353,6 +355,14 @@ public static class SachPhep
                      + "Lốc lướt qua lò lửa thì dập tắt lửa, 30 giây sau lò cháy lại.\n\n"
                      + "CẤP 5: phóng cùng lúc HAI cơn lốc song song, cách nhau 4 m — kẻ đứng giữa bị cả hai quét qua thì trúng hai lần — "
                      + "nhưng tốn GẤP ĐÔI năng lượng.";
+            case CapDo.KyTangHinh:
+                return "Cả thân người hoá trong suốt: quái vật KHÔNG THẤY và không đánh bạn nữa. Người chơi khác chỉ thấy "
+                     + "vài đường nét mờ khi bạn DI CHUYỂN; bạn đứng yên thì họ không thấy gì.\n\n"
+                     + "Trong 20 giây tàng hình, bạn MIỄN mọi hiệu ứng (đóng băng, làm chậm, choáng, ngã, hất tung, thiêu đốt) — "
+                     + "các hiệu ứng đang dính cũng bị xoá — và đi nhanh hơn 20%. Vẫn mất máu nếu bị đánh trúng.\n\n"
+                     + "Kỹ năng GÂY SÁT THƯƠNG đầu tiên bạn tung ra mạnh GẤP ĐÔI, và ngay lúc đó tàng hình tan. Khiên, bình máu "
+                     + "và bình mana không làm tan tàng hình.\n\n"
+                     + "Hồi chiêu 30 giây.";
             case CapDo.KyLuaDiaNguc:
                 return "Phóng ra NĂM quả cầu lửa. Năm quả toả quạt rồi uốn cong, TỰ ĐUỔI theo tối đa "
                      + "năm kẻ địch (quái hoặc người chơi khác) gần bạn nhất trong 20 m — ít kẻ địch hơn thì quả dư lao vào kẻ gần nhất; "
@@ -384,6 +394,7 @@ public static class SachPhep
             case CapDo.KyQuaCauBang: nangLuong = pc.quaCauBangCost; hoiChieu = pc.quaCauBangCooldown; niemChu = pc.quaCauBangCastTime; break;
             case CapDo.KyGioLoc: nangLuong = pc.gioLocCost; hoiChieu = pc.gioLocCooldown; niemChu = pc.gioLocCastTime; break;
             case CapDo.KyLuaDiaNguc: nangLuong = pc.luaDiaNgucCost; hoiChieu = pc.luaDiaNgucCooldown; niemChu = pc.luaDiaNgucCastTime; break;
+            case CapDo.KyTangHinh: nangLuong = pc.tangHinhCost; hoiChieu = pc.tangHinhCooldown; niemChu = pc.tangHinhCastTime; break;
         }
     }
 }

@@ -209,6 +209,8 @@ public class GameDirector : MonoBehaviour
 
             var mau = t.GetComponent<Damageable>();
             if (mau != null && mau.IsDead) continue;
+            // TANG HINH: quai khong thay (18/09/2026) - bo qua han khoi danh sach chon muc tieu
+            if (TangHinh.Dang(t)) continue;
 
             float d = (t.position - tu).sqrMagnitude;
             if (d < gonNhat) { gonNhat = d; gan = t; }

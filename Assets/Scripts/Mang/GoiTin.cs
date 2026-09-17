@@ -424,7 +424,8 @@ public static class GoiTin
             byte co = 0;
             if (p.dangChay) co |= 1;
             if (p.daChet) co |= 2;
-            co |= (byte)((p.coHieuUng & 0x1F) << 2);
+            // SAU bit (0x3F) tu 18/09/2026: Tang hinh la bit thu sau - byte co dung het 8 bit (2 + 6).
+            co |= (byte)((p.coHieuUng & 0x3F) << 2);
             b[i++] = co;
 
             // Byte thu 12 moi nguoi: mau khieng. Truoc day byte nay de trong -
@@ -477,7 +478,7 @@ public static class GoiTin
             byte co = b[i++];
             p.dangChay = (co & 1) != 0;
             p.daChet = (co & 2) != 0;
-            p.coHieuUng = (byte)((co >> 2) & 0x1F);
+            p.coHieuUng = (byte)((co >> 2) & 0x3F);
 
             p.khieng01 = b[i++] / 255f;
 
@@ -695,7 +696,7 @@ public static class GoiTin
             // Byte cuoi truoc day chi mang "da chet" (0/1). Gio bit 0 van la
             // da chet, bit 1-5 la hieu ung (ke ca bi danh nga, bi hat tung) - khong
             // phai doi co goi. Xem ghi chu 0x1F o goi trang thai nguoi choi.
-            b[i++] = (byte)((q.daChet ? 1 : 0) | ((q.coHieuUng & 0x1F) << 1));
+            b[i++] = (byte)((q.daChet ? 1 : 0) | ((q.coHieuUng & 0x3F) << 1));
         }
         return b;
     }
@@ -733,7 +734,7 @@ public static class GoiTin
             q.mau01 = b[i++] / 255f;
             byte coQ = b[i++];
             q.daChet = (coQ & 1) != 0;
-            q.coHieuUng = (byte)((coQ >> 1) & 0x1F);
+            q.coHieuUng = (byte)((coQ >> 1) & 0x3F);
 
             ra[n] = q;
         }

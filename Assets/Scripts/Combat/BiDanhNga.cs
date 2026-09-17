@@ -64,6 +64,7 @@ public class BiDanhNga : MonoBehaviour
     /// </summary>
     public static void Apply(Damageable d, float giay)
     {
+        if (TangHinh.ChanHieuUng(d)) return;      // tang hinh mien moi hieu ung (18/09/2026)
         if (d == null || d.IsDead || giay <= 0f) return;
         // Ban sao khong tu gieo hieu ung cho minh - trang thai that den tu goi
         // tin cua may chu so huu (HieuUngQuaMang.ApCo). Cung quy uoc voi choang.

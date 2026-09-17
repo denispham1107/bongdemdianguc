@@ -57,6 +57,7 @@ public class BiHatTung : MonoBehaviour
     /// </summary>
     public static BiHatTung Apply(Damageable d, float giay)
     {
+        if (TangHinh.ChanHieuUng(d)) return null;   // tang hinh mien moi hieu ung (18/09/2026)
         if (d == null || d.IsDead || giay <= 0f) return null;
         if (d.mauDoMayKhacQuyet) return null;
         // Dang bi Loc xoay cuon tren troi: WhirledEffect da dat vi tri, hat them la hai co che giat nhau

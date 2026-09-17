@@ -8334,6 +8334,52 @@ sát thương hiện ra** (2,1 m) để số không đè lên chữ. Bỏ chữ 
 **Số đo** (menu 62, 0 lỗi): tung thật 10 lần → trúng 10, ngã 7; dấu hiệu hiện **376/383 khung hình đang ngã (98%)**;
 chuỗi ảnh mới thấy chữ NGÃ rõ ở cả 5 thời điểm, đè lên lửa.
 
+### Kỹ năng mới: Tàng hình — thân trong suốt, quái không thấy, đòn sau gấp đôi (18/09/2026)
+
+Anh gửi ảnh Dark Templar và xin kỹ năng **"Tàng hình"**: thân người trong suốt như trong ảnh; quái **không thấy và không đánh**;
+người chơi khác chỉ thấy **đường nét khi mình di chuyển**, mình đứng yên thì họ **không thấy gì**; **miễn toàn bộ hiệu ứng**;
+đi **nhanh hơn 20%**; kéo **20 giây**; **đòn đầu tiên** bằng một kỹ năng mạnh thêm 200% và làm tan tàng hình; hồi chiêu **30 giây**.
+Tôi hỏi trước, anh chọn: "tăng 200%" = **gấp 2**; chỉ **kỹ năng gây sát thương** mới tính (Khiên, bình không); miễn hiệu ứng nhưng
+**vẫn ăn sát thương**; **30 năng lượng**, niệm 0,38; đứng yên **mờ dần 0,4 giây**; **chính mình vẫn thấy thân mình mờ mờ**;
+quái đang đuổi thì **mất dấu ngay**; icon dựng bằng **Blender MCP**.
+
+**Cách làm:**
+- Số hiệu **12** (`CapDo.KyTangHinh`; `SoKyNang` 13), nối đủ các chỗ như những kỹ năng trước (HUD, sảnh, Sách phép, chỉ báo ngắm,
+  tư thế niệm như Khiên, trạng thái `hoiTangHinh`).
+- `Combat/TangHinh.cs`: **thay toàn bộ vật liệu** của model bằng shader mới `Diablo25D/TangHinh` (giữ bản gốc để trả lại) — khác
+  `FrozenEffect` chỉ *phủ thêm* một lớp. Shader: gần như trong suốt, chỉ còn **viền fresnel** xanh lơ + vài vệt sáng trôi dọc thân.
+  Shader đã thêm vào **Always Included** (bài học cũ: shader chỉ nạp lúc chạy thì bản build không có).
+- Người khác thấy gì: component tự đo tốc độ của chính nó. Của mình → luôn hiện mờ; bản sao người khác → đang đi thì hiện đường nét,
+  đứng yên thì `_Amount` về 0 trong 0,4 giây rồi **tắt hẳn renderer**.
+- Miễn hiệu ứng: `TangHinh.ChanHieuUng` chặn ngay đầu `FrozenEffect.Apply/ApCham`, `StunnedEffect.Apply`, `BiDanhNga.Apply`,
+  `BiHatTung.Apply`, `BurningEffect.Apply`; lúc bật thì xoá sạch hiệu ứng đang dính.
+- Quái không thấy: `GameDirector.GanNhat` bỏ qua người đang tàng hình, và `EnemyAI` chọn lại mục tiêu ngay khi mục tiêu tàng hình.
+- Đòn đầu: trong `Release`, nếu đang tàng hình và kỹ năng **gây sát thương** (`PlayerController.KyGaySatThuong`) thì nhân đôi hệ số
+  sát thương rồi tắt tàng hình.
+- Qua mạng: bit thứ sáu `CoTangHinh` (1<<5) — **mặt nạ byte cờ nới lên 0x3F** ở cả gói người chơi (dùng hết 8 bit: 2 + 6) và gói quái.
+
+**Hai lỗi thật, tìm ra nhờ đo:**
+1. Bật lại tàng hình ngay sau khi vừa tắt thì `GetComponent` trả về component **đang chờ huỷ** — đặt thời gian cho nó vô ích.
+2. Component mới khai báo sẵn `conLai = 20 s`, mà `Bat` lấy `Max(conLai, giây)` → đặt 1,2 giây không ăn gì (đo ra "tan sau 4 giây").
+   Sửa: component mới đặt đúng số giây, component cũ mới lấy Max.
+
+**Số đo** (menu 73, `tanghinh.txt`, **0 lỗi**; ảnh `tanghinh_1_dang_tang_hinh.png`, `tanghinh_2_quai_mat_dau.png`):
+
+| Đo | Kết quả |
+|---|---|
+| Thông số | số hiệu 12, 13 kỹ năng; 30 năng lượng (trừ đúng 30), hồi chiêu 30 s, niệm 0,38; trạng thái 20 s |
+| Hình | trước khi bật: 0 renderer dùng shader tàng hình, sau khi bật: có; tắt thì trả lại vật liệu cũ |
+| Miễn hiệu ứng | áp 6 hiệu ứng lúc đang tàng hình → **dính 0**; ĐỐI CHỨNG lúc không tàng hình → dính 3/3; bật lúc đang dính 3 hiệu ứng → còn 0; **vẫn mất 100 máu** khi bị đánh |
+| Quái | 24 quái thật: trước khi tàng hình **24/24** nhắm mình, sau khi tàng hình **0**; `GanNhat` trả null |
+| Tốc độ | đo quãng đường thật: 6,24 m/s so với 5,20 m/s → **×1,200** |
+| Đòn đầu | một chùm Quả cầu lửa: thường 124,5 máu, lúc tàng hình **249,0** → ×2,00; sau đòn đó tàng hình **tan**; tung Khiên thì **không** tan |
+| Hết giờ | đặt 1,2 giây → tự tan sau 1,23 giây |
+| Qua mạng | gói trạng thái mang bit `CoTangHinh` (byte cờ = 32); bản sao nhận bit: đứng yên **0 renderer hiện**, di chuyển thì hiện lại |
+| Hồi quy | menu 63 (đánh ngã qua mạng, cùng byte cờ) và menu 59 (Sách phép, nay 13 kỹ năng): 0 lỗi |
+
+Một chỗ suýt báo oan: đối chứng "không tàng hình thì dính đủ" lúc đầu ra 2/3 — vì `BurningEffect` **làm tan băng** (luật cũ của game),
+áp cùng lúc thì đóng băng bị xoá ngay. Đo tách làm hai đợt thì ra 3/3.
+
 ### Lửa địa ngục năm quả màu như Quả cầu lửa; Quả cầu băng đóng băng 40%, cấp 5 năm quả (18/09/2026)
 
 Anh xin bốn việc: **Lửa địa ngục** thêm một quả (thành 5) và **màu quả + vụ nổ giống hệt Quả cầu lửa**; **Quả cầu băng** mỗi quả **40%
@@ -9461,6 +9507,7 @@ Lần chạy đầu phép thử báo cả 10 con "lơ lửng": tia chiếu từ 
 | **69. Chay thu GIUT SET (20 m, 75, 4 tia, 15% choang)** | Thông số; tung thật `CastAt(6)` vào 5 bia (đúng 4 bia mất 75 cùng một khung hình); tầm 20 m bằng bia 19,9 / 20,4 m; tia lan ra ngoài tầm vẫn trúng ×0,85; 160 lần phóng đếm tỉ lệ choáng tia đầu và tia lan riêng (bằng StunnedEffect trên bia); cấp kỹ năng kéo dài choáng. Số đo `giatset.txt`. |
 | **71. Chay thu GIO LOC (ky nang moi)** | Thông số; tung thật `CastAt(10)` (khoá, 3 lốc, 20 năng lượng, hồi chiêu đo bằng bấm mỗi khung); lưới Blender, cao 5 m so Lốc xoáy thật, xám trắng, không đèn, không tia sét; **xoáy một chiều đi lên** (độ xoắn dải gió đo ngoài Play + chiều quay thật từng lớp + chiều trượt ảnh); khói bụi đen bay lên và cuộn cùng chiều (theo dõi từng hạt), vòng phun nằm ngang (phun thử 200 hạt), vệt phía sau; bán kính chân ×1,68 / phần trên ×1,0 (so công thức gốc); tia sét hiệu ứng khi trúng (5 bia → 5 tia từ thân lốc, 5 cháy sém, 0 cột sáng đứng, mất đúng 75); 1 lốc, sống 4,5 s; không trèo mái nhà mồ (đối chứng tia cũ chạm mái); tốc độ 8 m/s và thời gian sống; xuyên bia mộ (tia đối chứng); 75 một lần, 225 ba lốc, vùng 2,2 m (2,5 / 2,7 m); 190 lần trúng đếm hất tung độc lập, độ cao, thời gian bay; khiên chặn hất; ngắt chiêu người chơi (đối chứng) và đòn quái (đối chứng); qua mạng: gói số 10, bit hất tung, mặt nạ 5 bit, bản sao bay / ngắt chiêu / không hất lần hai; lò lửa tắt rồi cháy lại sau 30 s. Số đo `gioloc.txt`. |
 | **71b. Chup anh GIO LOC (so voi Loc xoay)** | Chỉ chụp: hai lốc bay ngang màn hình 5 khung liên tiếp + Lốc xoáy lớn để so. Ảnh `gioloc_can_*.png`, `gioloc_locxoay_*.png`. |
+| **73. Chay thu TANG HINH (ky nang moi)** | Thông số (số hiệu 12, 30 năng lượng, hồi chiêu 30 s, 20 giây); thân đổi sang shader tàng hình rồi trả lại; miễn 6 hiệu ứng (đối chứng lúc thường dính đủ), xoá hiệu ứng đang dính, vẫn ăn sát thương; 24 quái thật mất dấu; tốc độ ×1,20 đo bằng quãng đường; đòn đầu ×2,00 rồi tan, Khiên không làm tan; hết giờ tự tan; qua mạng bit `CoTangHinh`, bản sao đứng yên tắt renderer. Số đo `tanghinh.txt`. |
 | **72. Chay thu LUA DIA NGUC (ky nang moi)** | Thông số (số hiệu 11, năng lượng 31/hồi chiêu/niệm, sát thương gốc = prefab Quả cầu lửa × 1,2⁴, chữ Sách phép, icon); tung thật 5 quả; tự dí 5 bia ngoài hình quạt (đối chứng Quả cầu lửa thường 0 bia), 1 bia, bia chạy ngang, mục tiêu chết giữa đường, không có ai bay thẳng 18°; sát thương so với Quả cầu lửa cấp 5 thật + thiêu đốt; màu giống hệt Quả cầu lửa; qua mạng + kẻ đánh. Tạm tắt va chạm đồ vật 26 m (Act2 không có chỗ trống). Số đo `luadianguc.txt`. |
 | **70. Chay thu QUA CAU LUA (85 sat thuong, vet lua moi)** | Sát thương đọc thẳng prefab và trên quả cầu thật khi tung; quả cầu sinh từ prefab bay vào bia (mất 85 × giảm theo khoảng cách); hạt `Flames` không còn ảnh tam giác mà là flipbook Blender, có vệt lửa dài `TrailRenderer`; nổ xong vệt được thả ra; chụp cận cảnh lúc bay. Chạy trên bản cũ ra 7 lỗi (đối chứng). Số đo `quacaulua.txt`. |
 | **56. Chay thu DOT QUAI Act2 + cho xuat phat** | *(13/09/2026: thêm đo chờ 30 giây và 10 con xa 55–65 m)*  Kiểm chỗ xuất phát ngẫu nhiên (hai máy cùng mã phòng ra cùng danh sách, cách nhau ≥ 22 m, trên đất, ngoài nước, không vướng vật cản) và luật đợt quái Act2 (đợt 1 bốn con quanh mỗi người; đợt sau cộng dồn quái và mạnh thêm 5% máu · sát thương); kiểm Act1 không bị đổi. Số đo `dotquai_act2.txt`. |
