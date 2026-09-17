@@ -30,7 +30,8 @@ public class GioLoc : MonoBehaviour
 {
     public const float SatThuongGoc = 75f;
     public const float XacSuatHatTung = 0.55f;
-    public const float BanKinhTrung = 2.2f;
+    /// <summary>Vung trung 2,42 m (nguoi dung 17/09/2026: toan bo ban kinh loc to them 10% - ca hinh lan vung trung; truoc 2,2).</summary>
+    public const float BanKinhTrung = 2.42f;
     /// <summary>Loc tu tan sau 4,5 giay (nguoi dung 17/09/2026, truoc do 3,5).</summary>
     public const float ThoiGianSong = 4.5f;
 
@@ -40,8 +41,11 @@ public class GioLoc : MonoBehaviour
     /// <summary>Chieu cao hinh loc (luoi Blender) - nguoi dung chon ~5 m.</summary>
     public const float ChieuCao = 5f;
 
-    /// <summary>Toc do bay 8 m/s (nguoi dung 17/09/2026 - truoc do 12,75 roi 10).</summary>
-    public const float TocDo = 8f;
+    /// <summary>Toc do bay 9,5 m/s (nguoi dung 17/09/2026 - truoc do 12,75 roi 10 roi 8).</summary>
+    public const float TocDo = 9.5f;
+
+    /// <summary>Nhip hai tia set trong long loc - bang nhip Loc xoay (Tornado.boltInterval 0,45).</summary>
+    public const float NhipSetTrongLoc = 0.45f;
 
     /// <summary>Lo lua bi dap tat bao lau thi chay lai.</summary>
     public const float GiayLoChayLai = 30f;
@@ -58,7 +62,7 @@ public class GioLoc : MonoBehaviour
     /// <summary>Bu tre mang: tua nhanh cho kip cho nguoi tung nhin thay (nhu QuaCauBang).</summary>
     public float tuaTruoc;
 
-    float age, loTimer;
+    float age, loTimer, setTimer;
     bool daTan;
     GameObject visual;
     readonly HashSet<Damageable> daTrung = new HashSet<Damageable>();
@@ -130,6 +134,10 @@ public class GioLoc : MonoBehaviour
         loTimer -= dt;
         if (loTimer <= 0f) { loTimer = 0.1f; DapTatLo(); }
 
+        // Hai tia set tu dinh loc danh xuong trong long loc, lien tuc nhu Loc xoay - chi hinh
+        setTimer -= dt;
+        if (setTimer <= 0f) { setTimer = NhipSetTrongLoc; VfxFactory.GioLocSetTrongLoc(transform.position); }
+
         if (age >= ThoiGianSong) Tan();
     }
 
@@ -173,9 +181,7 @@ public class GioLoc : MonoBehaviour
         // Khieng do tron don thi khong hat tung (luat chung cua CombatUtil.AreaDamage)
         bool khiengDo = d.khieng != null && d.khieng.DangBat;
 
-        // Tia set tu giua than loc (2,2 m) giat sang - chi hieu ung, khong sat thuong
-        VfxFactory.GioLocGiatSet(transform.position + Vector3.up * 2.2f, d);
-
+        // (17/09/2026 nguoi dung bo hieu ung tia set + chop + chay sem khi trung doi thu; thay bang 2 tia set trong long loc)
         d.GhiKeDanh(boQua);
         d.TakeDamage(damage, DamageType.Physical, nguc);
 
@@ -220,11 +226,15 @@ public class GioLoc : MonoBehaviour
         public float thoiGian = 0.35f;
         float t;
         readonly List<Transform> vo = new List<Transform>();
+        readonly List<Vector3> coGoc = new List<Vector3>();
 
         void Start()
         {
             foreach (var r in GetComponentsInChildren<MeshRenderer>())
+            {
                 vo.Add(r.transform);
+                coGoc.Add(r.transform.localScale);      // vo da nhan HeSoBanKinhGioLoc theo x/z - co tu co do
+            }
         }
 
         void Update()
@@ -232,7 +242,7 @@ public class GioLoc : MonoBehaviour
             t += Time.deltaTime;
             float k = Mathf.Clamp01(1f - t / thoiGian);
             for (int i = 0; i < vo.Count; i++)
-                if (vo[i] != null) vo[i].localScale = new Vector3(k, k, k);
+                if (vo[i] != null) vo[i].localScale = coGoc[i] * k;
         }
     }
 }

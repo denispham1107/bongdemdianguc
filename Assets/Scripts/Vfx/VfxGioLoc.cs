@@ -30,6 +30,10 @@ public static partial class VfxFactory
     /// <summary>Dau cua van toc quy dao hat quanh +Y de hat cuon CUNG CHIEU voi than loc (do menu 71).</summary>
     public const float ChieuQuyDaoGioLoc = -1f;
 
+    /// <summary>Toan bo ban kinh loc (vo, dai gio, vong bui, vet bui, hat dat) nhan them - nguoi dung 17/09/2026: to them 10%.
+    /// Chieu cao giu 5 m.</summary>
+    public const float HeSoBanKinhGioLoc = 1.1f;
+
     static GameObject khoLocNho;
     static bool daTimLocNho;
     static Material mGioDai, mGioSoi, mBuiDenCuon;
@@ -91,6 +95,7 @@ public static partial class VfxFactory
                 go.transform.SetParent(root.transform, false);
                 go.transform.localPosition = mf.transform.localPosition;
                 go.transform.localRotation = mf.transform.localRotation;
+                go.transform.localScale = Vector3.Scale(mf.transform.localScale, new Vector3(HeSoBanKinhGioLoc, 1f, HeSoBanKinhGioLoc));
                 go.AddComponent<MeshFilter>().sharedMesh = mf.sharedMesh;
                 var mr = go.AddComponent<MeshRenderer>();
                 var m = new Material(goc);
@@ -110,7 +115,7 @@ public static partial class VfxFactory
         BuildBuiCuonQuanhThan(root.transform);
 
         // Vet khoi bui den o lai phia sau duong loc di (khong gian the gioi) - cung ham cua Loc xoay, doi sang bui Blender
-        var vet = BuildKhoiBuiLoc(root.transform, 0.55f);
+        var vet = BuildKhoiBuiLoc(root.transform, 0.55f * HeSoBanKinhGioLoc);
         var mbd = BuiDenCuonMat;
         if (mbd != null) vet.GetComponent<ParticleSystemRenderer>().sharedMaterial = mbd;
         var vm = vet.main; vm.maxParticles = 110;
@@ -119,38 +124,47 @@ public static partial class VfxFactory
         vv.orbitalY = new ParticleSystem.MinMaxCurve(ChieuQuyDaoGioLoc * 2.2f, ChieuQuyDaoGioLoc * 4.0f);
 
         // Hat dat cat li ti bi hut quay quanh than
-        BuildDebrisSwarm(root.transform, 0.45f, "Grit", 0.04f, 0.13f, 50f, 110, 2.2f, 4.6f);
+        BuildDebrisSwarm(root.transform, 0.45f * HeSoBanKinhGioLoc, "Grit", 0.04f, 0.13f, 50f, 110, 2.2f, 4.6f);
         var grit = root.transform.Find("Grit").GetComponent<ParticleSystem>();
         var gv = grit.velocityOverLifetime;
         gv.orbitalY = new ParticleSystem.MinMaxCurve(ChieuQuyDaoGioLoc * 7f, ChieuQuyDaoGioLoc * 11f);
         return root;
     }
 
-    /// <summary>So lan tia set hieu ung da phong (phep thu menu 71 doc).</summary>
-    public static int SoTiaSetGioLoc;
+    /// <summary>So nhip set trong loc da phong (moi nhip 2 tia) - phep thu menu 71 doc.</summary>
+    public static int SoNhipSetTrongGioLoc;
+
+    /// <summary>Chieu cao Loc xoay lon do duoc (menu 71, 17/09/2026: 15,37 m) - lay ti le thu nho tia set cho Gio loc cao 5 m.</summary>
+    public const float ChieuCaoLocXoayDo = 15.37f;
 
     /// <summary>
-    /// LOC TRUNG MOT DOI THU: tia set GIAT TU THAN LOC sang muc tieu + cho muc tieu dung CHOP SANG va CHAY SEM BOC KHOI
-    /// dung nhu Sam set danh trung (LightningStrike.Strike: LightningImpact + SetChayDen luong khoi 0,45). CHI HIEU UNG,
-    /// khong gay sat thuong (nguoi dung 17/09/2026). Moi doi thu bi trung mot tia - so tia bang so doi thu.
+    /// HAI TIA SET TRONG LONG GIO LOC, danh tu DINH loc xuong (nguoi dung 17/09/2026: "luon cho 2 tia set xuat hien trong loc,
+    /// xuat phat tu tren dinh loc danh xuong, giong 2 tia set cua Loc xoay, nhung kich thuoc phu hop voi loc nho"). Chep cach
+    /// dung tia cua <see cref="TornadoBolt"/> (do day 0,85 / 0,70, doi 0,16-0,28 / 0,13-0,22 s, 16 / 22 doan, giat 1,5 / 1,05,
+    /// nhanh 1-2 / 2-3) nhung: CA HAI tia deu tu dinh xuong va nam gan truc; BE DAY nhan ti le chieu cao 5 / 15,37 (do giat va
+    /// nhanh la ti le theo do dai tia nen tu nho theo). CHI HINH, khong sat thuong. Goi moi 0,45 s nhu Loc xoay.
     /// </summary>
-    public static void GioLocGiatSet(Vector3 thanLoc, Damageable d)
+    public static void GioLocSetTrongLoc(Vector3 chan)
     {
-        if (d == null) return;
-        SoTiaSetGioLoc++;
-        Vector3 chan = d.transform.position;
-        var arc = LightningArc.Create(thanLoc, chan + Vector3.up * 1.0f, 0.9f, 0.28f);
-        arc.segments = 16;
-        arc.branches = Random.Range(1, 3);
-        // Chop cua Sam set (prefab Vfx_SetChamDat, ban kinh 2,1 cua Skill_SamSet) NHUNG TAT hai COT SANG DUNG Column0/1: chung
-        // boc quanh tia set tu TROI danh xuong - tia cua Gio loc giat NGANG tu than loc (nguoi dung chon), de cot lai la nhin
-        // nhu set tu troi (anh gioloc_3_tia_set 17/09/2026). Giu vung sang, loi, vong xung kich, tia lua, bui.
-        var pf = GameAssets.I != null ? GameAssets.I.lightningImpactPrefab : null;
-        var chop = pf != null ? GameAssets.Make(pf, chan) : BuildLightningImpact(chan, 2.1f);
-        if (chop != null)
-            foreach (Transform con in chop.transform)
-                if (con.name.StartsWith("Column")) con.gameObject.SetActive(false);
-        SetChayDen(chan, 2.1f * 0.72f, 0.45f);
+        SoNhipSetTrongGioLoc++;
+        float k = GioLoc.ChieuCao / ChieuCaoLocXoayDo;
+        float goc = Random.Range(0f, Mathf.PI * 2f);
+        for (int i = 0; i < 2; i++)
+        {
+            float a1 = goc + i * Mathf.PI + Random.Range(-0.5f, 0.5f);
+            float a2 = a1 + Random.Range(0.8f, 1.8f);           // xuong thap thi lech goc - tia nghieng theo chieu xoay
+            float r1 = Random.Range(0.10f, 0.35f), r2 = Random.Range(0.05f, 0.25f);
+            Vector3 dinh = chan + new Vector3(Mathf.Cos(a1) * r1, GioLoc.ChieuCao * Random.Range(0.86f, 0.96f), Mathf.Sin(a1) * r1);
+            float yDuoi = i == 0 ? Random.Range(0.3f, 1.2f) : Random.Range(1.0f, 2.2f);
+            Vector3 duoi = chan + new Vector3(Mathf.Cos(a2) * r2, yDuoi, Mathf.Sin(a2) * r2);
+            var arc = i == 0
+                ? LightningArc.Create(dinh, duoi, 0.85f * k, Random.Range(0.16f, 0.28f))
+                : LightningArc.Create(dinh, duoi, 0.70f * k, Random.Range(0.13f, 0.22f));
+            arc.name = "SetTrongGioLoc";
+            arc.segments = i == 0 ? 16 : 22;
+            arc.jitter = i == 0 ? 1.5f : 1.05f;
+            arc.branches = i == 0 ? Random.Range(1, 3) : Random.Range(2, 4);
+        }
     }
 
     /// <summary>
@@ -173,7 +187,7 @@ public static partial class VfxFactory
         m.simulationSpace = ParticleSystemSimulationSpace.Local;
         m.maxParticles = 90;
         var em = ps.emission; em.rateOverTime = 44f;
-        var sh = ps.shape; sh.shapeType = ParticleSystemShapeType.Circle; sh.radius = 0.45f; sh.radiusThickness = 1f;
+        var sh = ps.shape; sh.shapeType = ParticleSystemShapeType.Circle; sh.radius = 0.45f * HeSoBanKinhGioLoc; sh.radiusThickness = 1f;
         sh.rotation = new Vector3(-90f, 0f, 0f);     // vong nam NGANG tren mat dat (Circle mac dinh dung trong mat phang XY)
 
         var vel = ps.velocityOverLifetime;

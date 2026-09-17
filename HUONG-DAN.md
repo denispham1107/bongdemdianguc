@@ -8334,6 +8334,38 @@ sát thương hiện ra** (2,1 m) để số không đè lên chữ. Bỏ chữ 
 **Số đo** (menu 62, 0 lỗi): tung thật 10 lần → trúng 10, ngã 7; dấu hiệu hiện **376/383 khung hình đang ngã (98%)**;
 chuỗi ảnh mới thấy chữ NGÃ rõ ở cả 5 thời điểm, đè lên lửa.
 
+### Gió lốc: rộng thêm 10%, bay 9,5 m/s, bỏ sét khi trúng, hai tia sét luôn đánh trong lòng lốc (17/09/2026)
+
+Anh báo: toàn bộ bán kính lốc **to thêm 10%**; **bỏ** hiệu ứng tia sét khi lốc trúng quái / người chơi khác; tốc độ **9,5**; **luôn có
+2 tia sét trong lốc**, đánh từ đỉnh xuống giống Lốc xoáy nhưng **cỡ tia phải hợp với lốc nhỏ**. Tôi hỏi trước, anh chọn: 10% gồm **cả
+hình lẫn vùng trúng**; bỏ **hết** gói hiệu ứng khi trúng (tia sét, chớp, cháy sém bốc khói); hai tia **theo nhịp 0,45 s như Lốc xoáy, chỉ hình**.
+
+**Sửa:**
+- `VfxFactory.HeSoBanKinhGioLoc = 1,1`: bốn lớp lưới nhân 1,1 theo x/z (chiều cao giữ 5 m), vòng bụi chân 0,45 → 0,495 m, vệt bụi và hạt đất
+  nhân theo. `CoLaiRoiTat` (co lốc lúc tan) giờ co từ cỡ gốc của từng lớp — trước nó gán thẳng `(k,k,k)` sẽ xoá mất hệ số 1,1.
+- `GioLoc.BanKinhTrung` 2,2 → **2,42**; `GioLoc.TocDo` 8 → **9,5**.
+- Bỏ `VfxFactory.GioLocGiatSet` (tia từ thân lốc sang đối thủ + chớp Sấm sét + cháy sém).
+- `VfxFactory.GioLocSetTrongLoc` (gọi mỗi `GioLoc.NhipSetTrongLoc` = 0,45 s): chép cách dựng hai tia của `TornadoBolt` (độ dày 0,85 / 0,70,
+  số đoạn, độ giật, nhánh, thời gian sống) nhưng **cả hai tia từ gần đỉnh (86–96% chiều cao) đánh xuống** gần trục lốc, đuôi xuống thấp
+  0,3–2,2 m; **bề dày nhân 5 / 15,37** (chiều cao Gió lốc / Lốc xoáy đo được). Độ giật và nhánh tính theo tỉ lệ độ dài tia nên tự nhỏ theo.
+- Sách phép: bỏ câu cháy sém, thêm "Trong lòng lốc luôn lóe hai tia sét đánh từ đỉnh xuống".
+
+**Số đo** (menu 71, `gioloc.txt`, **0 lỗi**; ảnh `gioloc_can_1.png` thấy hai tia trong lốc):
+
+| Đo | Kết quả |
+|---|---|
+| Bề ngang thật vỏ Vo1 / lưới | **×1,100**, chiều cao ×1,000; vòng phun bụi 0,491 m |
+| Vùng trúng | bia lệch 2,72 m mất 75, 2,92 m mất 0 (với 2,2 cũ thì 2,72 m đã trượt) |
+| Tốc độ | **9,50 m/s**; ngừng đi sau 4,54 s |
+| Tia sét trong lốc | 6 nhịp → **12 tia**, 6/6 nhịp đúng 2 tia; đầu tia cao ≥ 4,32 m, đuôi thấp hơn đầu ≥ 2 m, lệch khỏi trục ≤ 0,31 m |
+| Cỡ tia | lõi 0,0608 m / tia THẬT của Lốc xoáy đo cùng lúc 0,1870 m = **×0,325**; tỉ lệ chiều cao đo được ×0,325 |
+| Khi trúng 5 bia | tia từ thân lốc sang bia **0**, chớp **0**, cháy sém **0**; mỗi bia mất đúng 75 |
+| Phần khác | 1 lốc, 20 năng lượng, hồi chiêu 0,4; hất tung 60,0% (190 lần), khiên chặn; ngắt chiêu; qua mạng; lò lửa; không trèo mái nhà — như cũ |
+
+Phép thử sửa 2 lần, đều do chính nó: tỉ lệ bề ngang lấy từ `Renderer.bounds` lúc vỏ đang quay ra **×1,319** (hộp trục thế giới bao hộp cục
+bộ đã xoay — cùng cái bẫy với phép đo quả cầu băng hôm nay) → đo lúc vỏ ở góc 0; đếm tia từ lúc sinh lốc thì cộng cả tia đã tắt trong lúc
+chờ → chụp lại mốc đếm ngay trước vòng đếm.
+
 ### Mưa băng: đầu vệt nhọn răng cưa hướng xuống; chỉ mọc băng khi trúng quái / người chơi khác (17/09/2026)
 
 Anh gửi ảnh khoanh đầu vệt: cho **hơi nhọn và có răng cưa một chút** như sao băng thật; và **chỉ tạo băng trên mặt đất khi đánh trúng
@@ -8456,6 +8488,8 @@ thử khác (`TS_obelisk_369`); hai lần chạy sau ở chỗ khác đều đ�
 kẻ địch còn sống quanh điểm rơi để lần sau gặp lại biết ngay nguyên nhân. (Sau đó tìm ra: bia thử `TAM_BiaDuong` của mục C còn sót — xem mục "đầu vệt nhọn răng cưa".)
 
 ### Gió lốc: chân to thêm 20% nữa, tia sét hiệu ứng khi trúng đối thủ (17/09/2026)
+
+> ⚠️ **Tia sét khi trúng đối thủ đã bỏ** cùng ngày, thay bằng hai tia sét luôn đánh trong lòng lốc (mục "Gió lốc: rộng thêm 10%...").
 
 Anh xin: thân dưới **to thêm 20%**; lốc **trúng quái / người chơi khác** thì xuất hiện **tia sét tương ứng số đối thủ bị trúng**, chỗ
 bị đánh **bốc khói như Sấm sét đánh trúng**; tia sét **chỉ là hiệu ứng, không gây sát thương**.
