@@ -47,6 +47,10 @@ using UnityEngine;
 ///      (DOI CHUNG: qua cua ky nang Qua cau bang dung cung ham phai co luoi); vet dung anh VetSaoBang keo gian; do DO DAI THAT
 ///      cua vet (tong doan noi cac diem TrailRenderer) luc qua xuong thap, va ti le dai / rong; hao quang, luong khi lanh,
 ///      manh bang van phat; roi thang dung, gay sat thuong, lam cham nhu cu. Ky nang Qua cau bang (muc C/G) van luoi co gai.
+///      Sua tiep cung ngay (nguoi dung: to them 20% be ngang; dau vet "giong nhu bi cat mat ngang" -> dau tron phat sang; to nho
+///      ngau nhien 70%..100%): be rong THAT dau vet moi qua (widthCurve(0) x widthMultiplier) nam trong 0,462..0,66 m va phan tan;
+///      dom sang tron DauSaoBang dang phat, co dung ti le; doc THANG file PNG tren dia (khong qua anh Unity da nen): cot dau vet
+///      alpha ~0 (DOI CHUNG ban cu trong git la canh cat sang), anh dau tron sang o tam va tat o mep.
 ///
 /// Ket qua: PlayTestShots/quacaubang.txt, anh quacaubang_*.png.
 /// </summary>
@@ -502,7 +506,8 @@ public static class ThuQuaCauBang
             VfxFactory.BuildQuaCauBangVisual(goDC.transform, 0.43f, false);
             int luoiDoiChung = goDC.GetComponentsInChildren<MeshRenderer>().Length;
             Object.Destroy(goDC);
-            int soKhongLuoi = 0, soVetSaoBang = 0, soHaoQuang = 0, soManh = 0;
+            int soKhongLuoi = 0, soVetSaoBang = 0, soHaoQuang = 0, soManh = 0, soDauTron = 0, soDauDungCo = 0;
+            float rongMin = float.MaxValue, rongMax = 0f;
             var vetDaiNhat = new Dictionary<FallingShard, float>();
             int hatMax = 0; bool biCham = false, daChup = false;
             var daXet = new HashSet<FallingShard>();
@@ -531,6 +536,19 @@ public static class ThuQuaCauBang
                         && trv.sharedMaterial.mainTexture.name == "VetSaoBang" && trv.textureMode == LineTextureMode.Stretch) soVetSaoBang++;
                     var hq = f.transform.Find("HaoQuang");
                     if (hq != null && hq.GetComponent<ParticleSystem>().isEmitting) soHaoQuang++;
+                    if (trv != null)
+                    {
+                        float rong = trv.widthCurve.Evaluate(0f) * trv.widthMultiplier;
+                        rongMin = Mathf.Min(rongMin, rong); rongMax = Mathf.Max(rongMax, rong);
+                        var dau = f.transform.Find("DauSaoBang");
+                        var dps = dau != null ? dau.GetComponent<ParticleSystem>() : null;
+                        if (dps != null && dps.isEmitting && dps.GetComponent<ParticleSystemRenderer>().sharedMaterial.mainTexture.name == "DauSaoBang")
+                        {
+                            soDauTron++;
+                            float co = (dps.main.startSize.constantMin + dps.main.startSize.constantMax) * 0.5f;
+                            if (Mathf.Abs(co - rong * VfxFactory.HeSoDauSaoBang) < 0.02f) soDauDungCo++;
+                        }
+                    }
                     var mb = f.transform.Find("ManhBangRoi");
                     if (mb != null && mb.GetComponent<ParticleSystem>().isEmitting) soManh++;
                     var ps = f.transform.Find("LuongKhiLanh");
@@ -579,8 +597,42 @@ public static class ThuQuaCauBang
             float vetTB = vetDaiNhat.Count > 0 ? vetTong / vetDaiNhat.Count : 0f;
             Ghi(string.Format("K. Mua bang that: vat dang roi cung luc toi da {0}; da xet {1} qua: KHONG co luoi (khoi cau) {2} (doi chung qua cua ky nang Qua cau bang: {3} luoi); vet sao bang (anh VetSaoBang, keo gian) {4}; hao quang dang phat {5}, manh bang dang phat {6}, luong khi lanh dang phat {7}, co vet {8}, co den rieng {9}; tang bang cu (con \"Tang\") {10}",
                 soRoiMax, soXet, soKhongLuoi, luoiDoiChung, soVetSaoBang, soHaoQuang, soManh, soCoSuong, soCoVet, soCoDen, soTangCu));
-            Ghi(string.Format("    do dai vet lon nhat moi qua ({0} qua): ngan nhat {1:F2} m, trung binh {2:F2} m, dai nhat {3:F2} m; rong dau vet 0,55 m -> dai / rong trung binh x{4:F1}",
-                vetDaiNhat.Count, vetMin, vetTB, vetMax, vetTB / 0.55f));
+            Ghi(string.Format("    do dai vet lon nhat moi qua ({0} qua): ngan nhat {1:F2} m, trung binh {2:F2} m, dai nhat {3:F2} m; rong dau vet trung binh ~{4:F2} m -> dai / rong x{5:F1}",
+                vetDaiNhat.Count, vetMin, vetTB, vetMax, (rongMin + rongMax) * 0.5f, vetTB / Mathf.Max(0.01f, (rongMin + rongMax) * 0.5f)));
+            Ghi(string.Format("    be rong dau vet that: nho nhat {0:F3} m, lon nhat {1:F3} m (cho phep {2:F3}..{3:F3}; ban truoc 0,55 -> x1,2 = 0,66); dom sang tron o dau {4}/{5}, dung co {6}",
+                rongMin, rongMax, 0.66f * 0.7f, 0.66f, soDauTron, soXet, soDauDungCo));
+            // Doc thang PNG tren dia - doc lap voi cach Unity nhap anh
+            System.Func<string, Texture2D> docPng = duong =>
+            {
+                if (!System.IO.File.Exists(duong)) return null;
+                var t = new Texture2D(2, 2, TextureFormat.RGBA32, false);
+                t.LoadImage(System.IO.File.ReadAllBytes(duong));
+                return t;
+            };
+            var anhVet = docPng("Assets/Resources/KyNang/QuaCauBang/VetSaoBang.png");
+            var anhDau = docPng("Assets/Resources/KyNang/QuaCauBang/DauSaoBang.png");
+            float cotDau = 0f, cotSau = 0f, dauTam = 0f, dauMep = 0f;
+            if (anhVet != null)
+                for (int y = 0; y < anhVet.height; y++)
+                {
+                    cotDau = Mathf.Max(cotDau, anhVet.GetPixel(0, y).a);
+                    cotSau = Mathf.Max(cotSau, anhVet.GetPixel(anhVet.width / 10, y).a);
+                }
+            if (anhDau != null)
+            {
+                dauTam = anhDau.GetPixel(anhDau.width / 2, anhDau.height / 2).a;
+                for (int i = 0; i < anhDau.width; i++)
+                    dauMep = Mathf.Max(dauMep, Mathf.Max(anhDau.GetPixel(i, 0).a, anhDau.GetPixel(0, i).a));
+            }
+            // DOI CHUNG: anh vet ban truoc (git HEAD~, co canh cat) - tim bang file tam do phep thu ghi ra neu co
+            float cotDauCu = -1f;
+            var anhCu = docPng("Temp/VetSaoBang_cu.png");
+            if (anhCu != null) for (int y = 0; y < anhCu.height; y++) cotDauCu = Mathf.Max(cotDauCu, anhCu.GetPixel(0, y).a);
+            Ghi(string.Format("    anh PNG tren dia: vet - alpha lon nhat cot dau (u=0) {0:F3}, cot u=0,1 {1:F3} (DOI CHUNG anh cu cot dau {2:F3}); dau tron - tam {3:F3}, mep {4:F3}",
+                cotDau, cotSau, cotDauCu, dauTam, dauMep));
+            if (anhVet != null) Object.DestroyImmediate(anhVet);
+            if (anhDau != null) Object.DestroyImmediate(anhDau);
+            if (anhCu != null) Object.DestroyImmediate(anhCu);
             Ghi(string.Format("    bia giua vung mat {0:F0} mau, bi cham/dong cung {1}; tong so hat cung luc toi da {2}", matMua, biCham, hatMax));
             Ghi(string.Format("    roi THANG DUNG: {0}/{1} qua (lech ngang lon nhat so voi diem roi {2:F3} m, truc bay chi thang xuong)", soThangDung, soXet, lechNgangMax));
             Kiem(soThangDung == soXet, "qua cau bang cua Mua bang khong roi thang dung");
@@ -588,7 +640,11 @@ public static class ThuQuaCauBang
             Kiem(luoiDoiChung > 0, "doi chung: qua cua ky nang Qua cau bang khong co luoi - phep dem luoi vo nghia");
             Kiem(soKhongLuoi == soXet, "qua roi cua Mua bang van con khoi cau");
             Kiem(soVetSaoBang == soXet && soCoVet == soXet, "qua roi cua Mua bang khong co vet sao bang");
-            Kiem(vetDaiNhat.Count >= 10 && vetTB > 2.5f && vetTB / 0.55f > 5f, "vet sang bang khong dai manh");
+            Kiem(vetDaiNhat.Count >= 10 && vetTB > 2.5f && vetTB / 0.66f > 5f, "vet sang bang khong dai manh");
+            Kiem(rongMin >= 0.66f * 0.7f - 0.001f && rongMax <= 0.661f && rongMax - rongMin > 0.08f, "be rong vet khong nam trong 70%..100% cua 0,66 m / khong ngau nhien");
+            Kiem(soDauTron == soXet && soDauDungCo == soXet, "dau vet thieu dom sang tron / sai co");
+            Kiem(cotDau < 0.02f && cotSau > 0.5f && dauTam > 0.9f && dauMep < 0.02f, "anh vet con canh cat o dau / anh dau tron hong");
+            Kiem(cotDauCu < 0f || cotDauCu > 0.5f, "doi chung: anh cu khong co canh cat - phep do cot dau vo nghia");
             Kiem(soHaoQuang == soXet && soManh == soXet && soCoSuong == soXet, "mat hao quang / manh bang / luong khi lanh (chi duoc bo khoi cau)");
             Kiem(soCoDen == 0, "qua cau roi van gan den rieng (nang cho dien thoai)");
             Kiem(soTangCu == 0, "van con tang bang cu roi xuong");

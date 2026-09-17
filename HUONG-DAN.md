@@ -8334,6 +8334,32 @@ sát thương hiện ra** (2,1 m) để số không đè lên chữ. Bỏ chữ 
 **Số đo** (menu 62, 0 lỗi): tung thật 10 lần → trúng 10, ngã 7; dấu hiệu hiện **376/383 khung hình đang ngã (98%)**;
 chuỗi ảnh mới thấy chữ NGÃ rõ ở cả 5 thời điểm, đè lên lửa.
 
+### Mưa băng: vệt sáng to thêm 20%, đầu tròn phát sáng, to nhỏ ngẫu nhiên (17/09/2026)
+
+Anh báo: vệt sáng băng **to thêm 20%**; **đầu vệt như bị cắt mất ngang** — thiết kế lại; mỗi vệt **to nhỏ ngẫu nhiên** nhưng không bé hơn
+70% cỡ gốc. Tôi hỏi trước, anh chọn: 20% **chỉ bề ngang**; ngẫu nhiên **70%–100% của cỡ mới**; đầu vệt là **đốm sáng tròn** phát sáng.
+
+**Vì sao đầu bị cắt:** ảnh vệt cũ sáng nhất đúng ở cột u = 0 (độ đục 1,0) và thân vệt rộng đủ 0,55 m ngay tại đó, nên đầu `TrailRenderer`
+là một cạnh thẳng ngang, sáng rực.
+
+**Vẽ lại trong Blender** (`CongCu/Blender/vet_sao_bang.blend`, ảnh xem `vet_sao_bang_render/xem_dau.png`):
+- `VetSaoBang.png`: thân vệt **mờ vào từ u = 0** (độ đục cột đầu 0) và lõi **thuôn nhọn** về đầu, không còn cạnh.
+- `DauSaoBang.png` 128×128 (mới): đốm sáng tròn trắng xanh, quầng tròn, 4 tia lấp lánh thẳng + 2 tia chéo mờ, tắt hẳn ở mép.
+
+**Unity** (`VfxFactory.DungVetSaoBang`): bề rộng gốc `RongDauVetSaoBang` 0,66 m / `RongDuoiVetSaoBang` 0,36 m (trước 0,55 / 0,30); mỗi vệt
+`Random.Range(0,7; 1)` nhân vào `widthMultiplier`; đốm `DauSaoBang` (hạt billboard cộng sáng, đường kính 1,6 × bề rộng đầu vệt, cùng tỉ lệ
+ngẫu nhiên) đặt đúng đầu vệt. Chiều dài không đổi.
+
+**Số đo** (menu 68 mục K, `quacaubang.txt`, **0 lỗi**; ảnh `quacaubang_5b_muabang_roi_can.png`):
+
+| Đo | Kết quả |
+|---|---|
+| Bề rộng đầu vệt thật của 33 vệt | nhỏ nhất **0,482 m**, lớn nhất **0,659 m** (cho phép 0,462–0,660) |
+| Đốm sáng tròn ở đầu | 33/33 đang phát, 33/33 đúng cỡ theo vệt của nó |
+| Ảnh đọc thẳng từ file PNG trên đĩa | cột đầu vệt độ đục **0,000** (ĐỐI CHỨNG ảnh cũ trong git: **1,000**), cột u = 0,1: 1,000; đốm tròn: tâm 1,000, mép 0,000 |
+| Chiều dài | trung bình 6,98 m, ngắn nhất 3,34 m (không đổi) |
+| Phần còn lại | không lưới 33/33, quầng sáng, mảnh băng, khí lạnh 33/33; rơi thẳng 33/33; bia mất 815 máu, bị chậm; cụm gai chạm đất đạt đủ |
+
 ### Mưa băng: bỏ khối cầu, chỉ còn vệt sáng băng rơi như sao băng (17/09/2026)
 
 Anh báo: **bỏ khối cầu**, cho các **vệt sáng băng rớt từ trên trời xuống**. Tôi hỏi trước, anh chọn: **chỉ bỏ khối cầu** (giữ quầng sáng

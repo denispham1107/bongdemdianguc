@@ -148,7 +148,16 @@ public static partial class VfxFactory
         xoay.degreesPerSecond = 160f;
     }
 
-    static Material mVetSaoBang;
+    static Material mVetSaoBang, mDauSaoBang;
+
+    /// <summary>Be rong vet sao bang CO GOC o dau / duoi (m). 17/09/2026 nguoi dung: to them 20% chi be ngang (0,55/0,30 -> 0,66/0,36).</summary>
+    public const float RongDauVetSaoBang = 0.66f, RongDuoiVetSaoBang = 0.36f;
+
+    /// <summary>Moi vet ngau nhien TiLeNhoNhat..1 lan co goc (nguoi dung: to nho khac nhau, khong be hon 70% co goc).</summary>
+    public const float TiLeVetSaoBangNhoNhat = 0.7f;
+
+    /// <summary>Duong kinh dom sang tron o dau vet = he so x be rong dau vet.</summary>
+    public const float HeSoDauSaoBang = 1.6f;
 
     /// <summary>Do dai (giay) vet sao bang cua Mua bang - qua roi 20 m trong 0,96 s, nhanh dan (cuoi ~42 m/s) nen vet dai 3-7 m.</summary>
     public const float GiayVetSaoBang = 0.17f;
@@ -166,6 +175,25 @@ public static partial class VfxFactory
             var t = Resources.Load<Texture2D>(ThuMucQuaCauBang + "VetSaoBang");
             mVetSaoBang = Mats.Additive("VetSaoBang", t != null ? t : TextureFactory.SoftDot(1.1f), new Color(0.80f, 0.93f, 1f, 1f), 2.2f);
         }
+        if (mDauSaoBang == null)
+        {
+            var t = Resources.Load<Texture2D>(ThuMucQuaCauBang + "DauSaoBang");
+            mDauSaoBang = Mats.Additive("DauSaoBang", t != null ? t : TextureFactory.SoftDot(1.4f), new Color(0.85f, 0.95f, 1f, 1f), 2.0f);
+        }
+        float tiLe = Random.Range(TiLeVetSaoBangNhoNhat, 1f);
+
+        // DAU TRON PHAT SANG (nguoi dung 17/09/2026: dau vet "giong nhu bi cat mat ngang"). Anh vet nay mo vao tu u = 0 va loi
+        // thuon nhon ve dau; dom sang tron + 4 tia (anh DauSaoBang, Blender) phu dung dau vet nen khong con canh cat.
+        var dau = NewPS("DauSaoBang", parent, Vector3.zero, mDauSaoBang, ParticleSystemRenderMode.Billboard);
+        var dm = dau.main;
+        dm.startLifetime = 0.1f; dm.startSpeed = 0f;
+        float coDau = RongDauVetSaoBang * HeSoDauSaoBang * tiLe;
+        dm.startSize = new ParticleSystem.MinMaxCurve(coDau * 0.95f, coDau * 1.05f);
+        dm.startRotation = new ParticleSystem.MinMaxCurve(0f, Mathf.PI * 2f);
+        dm.simulationSpace = ParticleSystemSimulationSpace.Local; dm.maxParticles = 6;
+        var dem = dau.emission; dem.rateOverTime = 40f;
+        var dsh = dau.shape; dsh.enabled = false;
+
         var vet = new GameObject("VetBang");
         vet.transform.SetParent(parent, false);
         var tr = vet.AddComponent<TrailRenderer>();
@@ -173,7 +201,8 @@ public static partial class VfxFactory
         tr.minVertexDistance = 0.15f;
         tr.textureMode = LineTextureMode.Stretch;
         tr.alignment = LineAlignment.View;
-        tr.widthCurve = new AnimationCurve(new Keyframe(0f, 0.55f), new Keyframe(1f, 0.30f));
+        tr.widthCurve = new AnimationCurve(new Keyframe(0f, RongDauVetSaoBang), new Keyframe(1f, RongDuoiVetSaoBang));
+        tr.widthMultiplier = tiLe;
         tr.material = mVetSaoBang;
         var g = new Gradient();
         g.SetKeys(new[] { new GradientColorKey(Color.white, 0f), new GradientColorKey(Color.white, 1f) },
@@ -306,7 +335,7 @@ public static partial class VfxFactory
             var ps = c.GetComponent<ParticleSystem>();
             var tr = c.GetComponent<TrailRenderer>();
             if (ps == null && tr == null) continue;
-            if (ps != null && c.name == "HaoQuang") continue;
+            if (ps != null && (c.name == "HaoQuang" || c.name == "DauSaoBang")) continue;
             c.SetParent(null, true);
             if (ps != null) ps.Stop(true, ParticleSystemStopBehavior.StopEmitting);
             if (tr != null) tr.emitting = false;
