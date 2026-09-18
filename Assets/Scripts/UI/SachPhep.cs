@@ -364,6 +364,8 @@ public static class SachPhep
                      + "MỘT TIA — chọn 5 kẻ gần quả cầu nhất trong 9 m, tính cả quái vật lẫn người chơi khác.\n\n"
                      + "Mỗi tia gây sát thương bằng GIỰT SÉT ở cấp 5, và có 30% khả năng làm kẻ trúng đòn CHOÁNG 1,5 giây — "
                      + "không đi, không đánh, không tung được phép.\n\n"
+                     + "Chưa bắn đủ 10 lượt thì quả cầu VẪN ĐỨNG NGUYÊN CHỖ ĐÓ chờ kẻ địch tới gần — quá 20 giây không ai tới "
+                     + "thì mới tan.\n\n"
                      + "Hồi chiêu 5 giây.";
             case CapDo.KyTangHinh:
                 return "Cả thân người hoá trong suốt: quái vật KHÔNG THẤY và không đánh bạn nữa. Người chơi khác chỉ thấy "

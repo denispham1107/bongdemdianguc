@@ -2,26 +2,29 @@
 
 A. so hieu 13, so ky nang 14; nang luong 55, hoi chieu 5 s, niem 0.62 s; Sach phep doc 55/5/0.62
 A. hang so: 10 luot x 0.4 s, 5 tia/luot, ban trong 9 m, tam ngam 18 m, choang 30 % x 1.5 s; sat thuong tia 155.52 (Giut set 75 x 1,2^4 = 155.52)
-A. luoi Blender: loi cau khung bao (2.00, 2.00, 2.03), vo dien khung bao (2.92, 2.96, 2.81); anh 256x256/256x256/256x256; icon 256x256
+A. luoi Blender: loi cau khung bao (2.01, 2.01, 1.99), vo dien khung bao (4.53, 4.10, 3.66); anh 256x256/256x256/256x256; icon 256x256
 A. ten "QUẢ CẦU ĐIỆN", tom tat "Cầu điện bắn 10 lượt, mỗi lượt 5 tia", mo ta 504 ky tu; HUD 14 icon, icon so 13 co
 
-B. (0 quai da don) khoa -> tu choi True; mo khoa -> tung True, ton 55.0 nang luong, hoi chieu ngay sau 5.0 s; qua cau tren canh True (3 renderer, 1 he hat)
-C1. co ke dich cach cho ngam 3,5 m -> qua cau cach KE DICH 1.40 m, cach cho ngam 3.88 m (phai bam ke dich)
+B. (0 quai da don) khoa -> tu choi True; mo khoa -> tung True, ton 55.0 nang luong, hoi chieu ngay sau 5.0 s; qua cau tren canh True (4 renderer, 1 he hat)
+C1. co ke dich cach cho ngam 3,5 m -> qua cau cach KE DICH 1.40 m, cach cho ngam 4.83 m (phai bam ke dich)
 C2. DOI CHUNG khong co ke dich nao: qua cau cach cho ngam 0.00 m (phai ~0)
 
-D. so luot ban 10 (mong 10), tu luot dau den luot cuoi 3.70 giay (mong 3.6 = 9 x 0,4)
+D. so luot ban 10 (mong 10), tu luot dau den luot cuoi 3.72 giay (mong 3.6 = 9 x 0,4)
 E. 7 bia trong 9 m (5 bia gan 2,0-3,2 m, 2 bia xa 6,5 m): tong so tia ban ra 50 (mong 50 = 10 x 5)
-    bia 0 cach cau 2.2 m: trung 10 lan, mat 1555.2 mau (155.5/lan)
-    bia 1 cach cau 2.2 m: trung 10 lan, mat 1555.2 mau (155.5/lan)
-    bia 2 cach cau 4.4 m: trung 10 lan, mat 1555.2 mau (155.5/lan)
-    bia 3 cach cau 5.6 m: trung 0 lan, mat 0.0 mau (0.0/lan)
-    bia 4 cach cau 4.7 m: trung 10 lan, mat 1555.2 mau (155.5/lan)
-    bia 5 cach cau 4.2 m: trung 10 lan, mat 1555.2 mau (155.5/lan)
-    bia 6 cach cau 9.0 m: trung 0 lan, mat 0.0 mau (0.0/lan)
+    bia 0 cach cau 2.3 m: trung 10 lan, mat 1555.2 mau (155.5/lan)
+    bia 1 cach cau 4.3 m: trung 10 lan, mat 1555.2 mau (155.5/lan)
+    bia 2 cach cau 5.8 m: trung 10 lan, mat 1555.2 mau (155.5/lan)
+    bia 3 cach cau 5.4 m: trung 10 lan, mat 1555.2 mau (155.5/lan)
+    bia 4 cach cau 3.0 m: trung 10 lan, mat 1555.2 mau (155.5/lan)
+    bia 5 cach cau 5.9 m: trung 0 lan, mat 0.0 mau (0.0/lan)
+    bia 6 cach cau 8.4 m: trung 0 lan, mat 0.0 mau (0.0/lan)
 F. sat thuong trung binh moi tia len bia gan: 155.52 (mong 155.52 = Giut set cap 5)
-E. 5 ke GAN NHAT (theo khoang cach that): bia 0,1,5,2,4; ke thu 6 tro di: bia 3,6
+E. 5 ke GAN NHAT (theo khoang cach that): bia 0,4,1,3,2; ke thu 6 tro di: bia 5,6
 
-G. 400 tia that -> choang 117 lan = 29.3 % (mong 30%); giay choang do duoc 1.50 (mong 1.5)
+G. 400 tia that -> choang 119 lan = 29.8 % (mong 30%); giay choang do duoc 1.50 (mong 1.5)
+
+I. tha cau o cho khong co ai: sau 6 giay cau con song True (ban cu tan sau 4 giay), da ban 0 luot, dich khoi cho 0.00 m; hinh co vanh sang True, co tia toe ra True (259 khung thay tia)
+I. dat bia canh no -> tong so luot da ban 10 (mong 10), sau do tu tan True
 
 H. goi phep so 13 tu nguoi kia -> so qua cau tren canh 0 -> 1; minh tung -> goi gui di mang so 13: True
 

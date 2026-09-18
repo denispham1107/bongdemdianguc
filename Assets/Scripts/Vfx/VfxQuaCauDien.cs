@@ -7,7 +7,8 @@ using UnityEngine;
 /// nhung cung dien cuon quanh, thinh thoang BAN CAC TIA DIEN ra moi ke dich chung quanh.
 ///
 /// Tai nguyen dung bang Blender MCP (CongCu/Blender/qua_cau_dien.blend) -> Resources/KyNang/QuaCauDien:
-///   - CauDien.fbx      : LoiCauDien (khoi cau go ghe) + VoDienCauDien (cung dien cuon quanh + gai toe ra);
+///   - CauDien.fbx      : LoiCauDien (khoi cau, TOI mau nhu trong anh) + VanhSangCauDien (vo cau mong lam VANH SANG
+///                        boc ngoai) + VoDienCauDien (cung dien cuon quanh + tia toe ra);
 ///   - HaoQuangDien.png : vang sang tron co van dien toa ra - hao quang boc quanh cau;
 ///   - TiaDien.png      : mot soi tia dien luon song, dung cho vet tia;
 ///   - HatDien.png      : dom sang bon canh - hat dien bay quanh cau.
@@ -20,9 +21,9 @@ public static partial class VfxFactory
 {
     const string ThuMucCauDien = "KyNang/QuaCauDien/";
 
-    static Mesh luoiLoiCauDien, luoiVoCauDien;
+    static Mesh luoiLoiCauDien, luoiVoCauDien, luoiVanhCauDien;
     static bool daTimLuoiCauDien;
-    static Material mLoiCauDien, mVoCauDien, mHaoQuangDien, mHatDien, mTiaDienVet;
+    static Material mLoiCauDien, mVoCauDien, mVanhCauDien, mHaoQuangDien, mHatDien, mTiaDienVet;
 
     static void TimLuoiCauDien()
     {
@@ -34,6 +35,7 @@ public static partial class VfxFactory
         {
             if (mf == null || mf.sharedMesh == null) continue;
             if (mf.name.StartsWith("Loi")) luoiLoiCauDien = mf.sharedMesh;
+            else if (mf.name.StartsWith("Vanh")) luoiVanhCauDien = mf.sharedMesh;
             else if (mf.name.StartsWith("Vo")) luoiVoCauDien = mf.sharedMesh;
         }
     }
@@ -42,13 +44,16 @@ public static partial class VfxFactory
     public static Mesh LuoiLoiCauDien { get { TimLuoiCauDien(); return luoiLoiCauDien; } }
     /// <summary>Cac cung dien cuon quanh cau + gai toe ra.</summary>
     public static Mesh LuoiVoCauDien { get { TimLuoiCauDien(); return luoiVoCauDien; } }
+    /// <summary>Vo cau mong lam vanh sang boc ngoai loi.</summary>
+    public static Mesh LuoiVanhCauDien { get { TimLuoiCauDien(); return luoiVanhCauDien; } }
 
     public static Material LoiCauDienMat
     {
         get
         {
+            // Loi TOI (anh nguoi dung gui lan hai: giua qua cau la mot khoi xanh sam, khong phai dom trang)
             if (mLoiCauDien == null)
-                mLoiCauDien = Mats.Additive("P_LoiCauDien", TextureFactory.SoftDot(1.3f), new Color(0.20f, 0.46f, 1f, 1f), 1.15f);
+                mLoiCauDien = Mats.Additive("P_LoiCauDien", TextureFactory.SoftDot(1.3f), new Color(0.07f, 0.17f, 0.55f, 1f), 0.5f);
             return mLoiCauDien;
         }
     }
@@ -63,6 +68,17 @@ public static partial class VfxFactory
         }
     }
 
+    /// <summary>Vanh sang boc ngoai loi - cai vong xanh ruc trong anh.</summary>
+    public static Material VanhCauDienMat
+    {
+        get
+        {
+            if (mVanhCauDien == null)
+                mVanhCauDien = Mats.Additive("P_VanhCauDien", TextureFactory.SoftDot(1.3f), new Color(0.22f, 0.54f, 1f, 1f), 0.95f);
+            return mVanhCauDien;
+        }
+    }
+
     public static Material HaoQuangDienMat
     {
         get
@@ -71,7 +87,7 @@ public static partial class VfxFactory
             {
                 var t = Resources.Load<Texture2D>(ThuMucCauDien + "HaoQuangDien");
                 mHaoQuangDien = Mats.Additive("P_HaoQuangDien", t != null ? t : TextureFactory.GlowPool(),
-                                              new Color(0.34f, 0.62f, 1f, 1f), 1.25f);
+                                              new Color(0.30f, 0.58f, 1f, 1f), 0.85f);
             }
             return mHaoQuangDien;
         }
@@ -129,7 +145,20 @@ public static partial class VfxFactory
         quayL.axis = new Vector3(0.2f, 1f, 0.1f).normalized;
         quayL.degreesPerSecond = 55f;
 
-        // 2) VO DIEN - quay NGUOC chieu loi cho ra cam giac dien cuon
+        // 2) VANH SANG boc ngoai loi (vo cau mong) - quay cham nguoc chieu
+        if (luoiVanhCauDien != null)
+        {
+            var vanh = new GameObject("VanhSang");
+            vanh.transform.SetParent(goc.transform, false);
+            vanh.transform.localScale = Vector3.one * banKinh;
+            vanh.AddComponent<MeshFilter>().sharedMesh = luoiVanhCauDien;
+            vanh.AddComponent<MeshRenderer>().sharedMaterial = VanhCauDienMat;
+            var quayN = vanh.AddComponent<Spin>();
+            quayN.axis = new Vector3(0.3f, 1f, -0.2f).normalized;
+            quayN.degreesPerSecond = -38f;
+        }
+
+        // 3) VO DIEN - quay NGUOC chieu loi cho ra cam giac dien cuon
         if (luoiVoCauDien != null)
         {
             var vo = new GameObject("VoDien");
@@ -142,28 +171,32 @@ public static partial class VfxFactory
             quayV.degreesPerSecond = -120f;
         }
 
-        // 3) HAO QUANG: tam anh luon quay mat ve may quay.
+        // 4) TIA DIEN TOE RA lien tuc quanh cau (anh nguoi dung gui: cau luon phong tia xuong dat)
+        var toe = goc.AddComponent<ToeTiaDien>();
+        toe.banKinh = banKinh;
+
+        // 5) HAO QUANG: tam anh luon quay mat ve may quay.
         // Tam nay la CON cua mot vat co Billboard - Billboard xoay CHA, con tam thi tu quay quanh truc
         // cua chinh no, nen van huong ve may quay ma van thay van dien chay vong.
         var neo = new GameObject("NeoHaoQuang");
         neo.transform.SetParent(goc.transform, false);
         neo.AddComponent<Billboard>();
         var hq = ProcMesh.Part("HaoQuang", neo.transform, GroundDecal.QuadMesh(), HaoQuangDienMat,
-                               Vector3.zero, Quaternion.identity, Vector3.one * banKinh * 3.4f, false);
+                               Vector3.zero, Quaternion.identity, Vector3.one * banKinh * 3.0f, false);
         var xoay = hq.AddComponent<Spin>();
         xoay.axis = Vector3.forward;
         xoay.degreesPerSecond = 26f;
 
-        // 4) HAT DIEN bay quanh cau
+        // 6) HAT DIEN bay quanh cau
         var hat = NewPS("HatDien", goc.transform, Vector3.zero, HatDienMat, ParticleSystemRenderMode.Billboard);
         var hm = hat.main;
         hm.duration = song; hm.loop = true;
         hm.startLifetime = new ParticleSystem.MinMaxCurve(0.25f, 0.65f);
         hm.startSpeed = new ParticleSystem.MinMaxCurve(0.8f, 2.4f);
-        hm.startSize = new ParticleSystem.MinMaxCurve(banKinh * 0.14f, banKinh * 0.38f);
+        hm.startSize = new ParticleSystem.MinMaxCurve(banKinh * 0.10f, banKinh * 0.26f);
         hm.simulationSpace = ParticleSystemSimulationSpace.World;
         hm.maxParticles = 160;
-        var hem = hat.emission; hem.rateOverTime = 70f;
+        var hem = hat.emission; hem.rateOverTime = 38f;
         var hsh = hat.shape; hsh.shapeType = ParticleSystemShapeType.Sphere; hsh.radius = banKinh * 1.15f;
         var hcol = hat.colorOverLifetime; hcol.enabled = true;
         hcol.color = new ParticleSystem.MinMaxGradient(Grad(
@@ -172,7 +205,7 @@ public static partial class VfxFactory
             new Color(0.22f, 0.50f, 1f), 1f,
             0f, 1f, 0.85f, 0f));
 
-        // 5) DEN XANH nhap nhay
+        // 7) DEN XANH nhap nhay
         var denGo = new GameObject("DenCauDien");
         denGo.transform.SetParent(goc.transform, false);
         var den = denGo.AddComponent<Light>();
@@ -197,6 +230,18 @@ public static partial class VfxFactory
         // Phai to mau NGAY DAY: LightningArc to mau trong Start, doi o khung sau thi tia loe sai mau mot khung
         arc.coreColor = new Color(1f, 1f, 1f, 1f);
         arc.glowColor = new Color(0.32f, 0.66f, 1f, 1f);
+        return arc;
+    }
+
+    /// <summary>Tia dien TOE RA quanh qua cau - chi de nhin, khong cham vao ai (xem ToeTiaDien).</summary>
+    public static LightningArc TiaCauDienToe(Vector3 tu, Vector3 den)
+    {
+        var arc = LightningArc.Create(tu, den, 0.85f, 0.16f);
+        arc.segments = 10;
+        arc.branches = Random.Range(0, 2);
+        arc.jitter = 0.85f;
+        arc.coreColor = new Color(0.90f, 0.97f, 1f, 1f);
+        arc.glowColor = new Color(0.24f, 0.58f, 1f, 1f);
         return arc;
     }
 

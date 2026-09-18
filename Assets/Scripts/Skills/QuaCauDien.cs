@@ -33,6 +33,10 @@ public class QuaCauDien : MonoBehaviour
     /// <summary>Tim ke dich de dat qua cau "ngay gan doi thu" trong ban kinh nay quanh cho ngam.</summary>
     public const float TimKeGanCho = 7f;
 
+    /// <summary>Khong co ai trong tam thi qua cau van DUNG NGUYEN CHO doi, nhung khong qua ngan nay giay
+    /// (nguoi dung chot 18/09/2026 - de khong co qua cau nam lai mai tren ban do).</summary>
+    public const float GiayChoToiDa = 20f;
+
     /// <summary>
     /// Sat thuong moi tia = sat thuong ky nang GIUT SET o CAP 5 (nguoi dung chot 18/09/2026).
     /// Doc thang tu hang cua Giut set chu khong chep tay con so: sua Giut set thi cai nay tu theo.
@@ -53,8 +57,9 @@ public class QuaCauDien : MonoBehaviour
     /// <summary>Dem cho phep thu (menu 74).</summary>
     public static int SoLuotDaBan, SoTiaDaBan, SoLanTrung;
 
-    int daBan;
+    int daBan;          // so luot DA BAN RA THAT (co it nhat mot tia)
     float nhip;
+    float dongHoSong;   // tong thoi gian qua cau da ton tai
     GameObject hinh;
 
     static readonly Collider[] bo = new Collider[64];
@@ -109,26 +114,42 @@ public class QuaCauDien : MonoBehaviour
     void Start()
     {
         if (satThuongTia <= 0f) satThuongTia = SatThuongTia;
-        float song = SoLuot * NhipLuot;
-        hinh = VfxFactory.QuaCauDienHinh(transform.position, BanKinhCau, song);
+        // Hinh phai song bang DOI CUA QUA CAU: cau co the phai doi ke dich toi gan nen khong biet truoc
+        // no song bao lau - giao han toi da, va OnDestroy tat hinh cung luc voi qua cau.
+        hinh = VfxFactory.QuaCauDienHinh(transform.position, BanKinhCau, GiayChoToiDa + 1f);
         CameraShake.Shake(0.18f, 0.05f);
         nhip = 0.12f;      // luot dau ban gan nhu ngay khi cau hien ra
     }
 
     void Update()
     {
+        // PHAI BAN DU 10 LUOT roi moi tan. Truoc 18/09/2026 dong ho chay deu 0,4 giay mot luot bat ke co ban
+        // duoc hay khong, nen khong co ke dich nao quanh day thi qua cau bien mat sau 4 giay MA CHUA DANH lan
+        // nao - nguoi dung khong muon vay: chua du 10 lan thi cu dung nguyen cho doi.
         if (daBan >= SoLuot) { Destroy(gameObject); return; }
+
+        dongHoSong += Time.deltaTime;
+        if (dongHoSong >= GiayChoToiDa) { Destroy(gameObject); return; }
 
         nhip -= Time.deltaTime;
         if (nhip > 0f) return;
-        nhip = NhipLuot;
-        daBan++;
-        SoLuotDaBan++;
-        BanMotLuot();
+
+        int soTiaVuaBan = BanMotLuot();
+        if (soTiaVuaBan > 0)
+        {
+            nhip = NhipLuot;      // 0,4 giay la khoang cach GIUA HAI LUOT BAN THAT
+            daBan++;
+            SoLuotDaBan++;
+        }
+        else
+        {
+            nhip = 0.15f;         // quanh day khong co ai: ngo lai som, khong tinh la mot luot
+        }
     }
 
-    /// <summary>Mot luot: toi da 5 tia, MOI KE DICH MOT TIA, chon 5 ke gan qua cau nhat trong 9 m.</summary>
-    void BanMotLuot()
+    /// <summary>Mot luot: toi da 5 tia, MOI KE DICH MOT TIA, chon 5 ke gan qua cau nhat trong 9 m.
+    /// Tra ve SO TIA da ban ra - 0 nghia la quanh day khong co ai, luot nay khong tinh.</summary>
+    int BanMotLuot()
     {
         mucTieu.Clear();
         int n = Physics.OverlapSphereNonAlloc(transform.position, banKinhBan, bo, damageMask,
@@ -145,6 +166,7 @@ public class QuaCauDien : MonoBehaviour
         mucTieu.Sort(SoSanhTheoKhoangCach);
 
         int soTia = Mathf.Min(SoTiaMoiLuot, mucTieu.Count);
+        int daBanRa = 0;
         for (int i = 0; i < soTia; i++)
         {
             var d = mucTieu[i];
@@ -159,10 +181,12 @@ public class QuaCauDien : MonoBehaviour
             d.TakeDamage(satThuongTia, DamageType.Lightning, den);
             SoTiaDaBan++;
             SoLanTrung++;
+            daBanRa++;
 
             if (!d.IsDead && Random.value < XacSuatChoang)
                 StunnedEffect.Apply(d, giayChoang);
         }
+        return daBanRa;
     }
 
     int SoSanhTheoKhoangCach(Damageable a, Damageable b)

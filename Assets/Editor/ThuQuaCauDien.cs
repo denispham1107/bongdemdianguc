@@ -23,6 +23,9 @@ using UnityEngine;
 ///      moi bia an dung 10 lan trung (10 luot).
 ///   F. Sat thuong moi tia = Giut set CAP 5 (75 x 1,2^4 = 155,5) - doi chung doc thang tu hang cua Giut set.
 ///   G. Choang 30% x 1,5 giay: 400 mau tia that.
+///   I. CHUA BAN DU 10 LUOT THI QUA CAU VAN DUNG DO (nguoi dung 18/09/2026): tha cau o cho khong co ai ->
+///      sau 6 giay (qua 4 giay cua ban cu) cau VAN CON va moi ban 0 luot; dat mot bia canh no -> ban du 10 luot
+///      roi moi tan; hinh co vanh sang + tia toe ra lien tuc.
 ///   H. Qua mang: goi phep so 13 tu nguoi kia -> may nay phat lai ra qua cau; minh tung -> goi gui di mang so 13.
 ///
 /// Ket qua: PlayTestShots/quacaudien.txt, anh quacaudien_*.png.
@@ -123,6 +126,15 @@ public static class ThuQuaCauDien
         int n = 0;
         foreach (var q in Object.FindObjectsByType<EnemyAI>(FindObjectsInactive.Exclude))
             if (q != null && Vector3.Distance(q.transform.position, quanh) < trong) { Object.Destroy(q.gameObject); n++; }
+        return n;
+    }
+
+    /// <summary>Don sach moi qua cau con sot - tu 18/09/2026 cau doi den khi ban du 10 luot nen no khong tu tan.</summary>
+    static int DonCau()
+    {
+        int n = 0;
+        foreach (var c in Object.FindObjectsByType<QuaCauDien>(FindObjectsInactive.Exclude))
+            if (c != null) { Object.DestroyImmediate(c.gameObject); n++; }
         return n;
     }
 
@@ -240,10 +252,11 @@ public static class ThuQuaCauDien
         Kiem(cau != null && soRenderer >= 2 && soHat >= 1, "khong dung duoc hinh qua cau dien");
         Kiem(xaBia >= 0f && xaBia < 2.2f && xaBia < xaNgam, "qua cau khong hien ngay canh doi thu");
 
-        // Doi con cau nay ban het roi moi do tiep
+        // Doi con cau nay ban het roi moi do tiep, con thua thi don han
         float hanC = Time.time + 5.5f;
         while (CauTrenCanh() != null && Time.time < hanC) yield return null;
         Object.Destroy(biaC.gameObject);
+        DonCau();
         yield return new WaitForSeconds(0.5f);
 
         // C2. DOI CHUNG: khong co ai gan cho ngam -> cau dung DUNG cho ngam
@@ -261,6 +274,7 @@ public static class ThuQuaCauDien
             Kiem(c2 != null && lech < 0.4f, "khong co ke dich ma qua cau van khong dung cho ngam");
             float hanC2 = Time.time + 5.5f;
             while (CauTrenCanh() != null && Time.time < hanC2) yield return null;
+            DonCau();
             yield return new WaitForSeconds(0.4f);
         }
 
@@ -268,6 +282,7 @@ public static class ThuQuaCauDien
         Ghi("");
         {
             DonQuai(choNgam, 26f);
+            DonCau();
             yield return new WaitForSeconds(0.3f);
 
             // 5 bia GAN (2,0..3,5 m) + 2 bia XA hon nhung VAN trong 9 m (6,5 m)
@@ -373,6 +388,7 @@ public static class ThuQuaCauDien
         Ghi("");
         {
             DonQuai(choNgam, 26f);
+            DonCau();
             var bia = new List<Damageable>();
             for (int i = 0; i < 5; i++)
             {
@@ -412,6 +428,60 @@ public static class ThuQuaCauDien
             Kiem(soMau >= 300, "qua it mau de ket luan ti le choang");
             Kiem(Mathf.Abs(soChoang / (float)soMau - 0.3f) < 0.07f, "ti le choang khong khoang 30%");
             Kiem(Mathf.Abs(giayDo - QuaCauDien.GiayChoang) < 0.05f, "choang khong keo 1,5 giay");
+        }
+
+        // ================= I. CHUA DU 10 LUOT THI VAN DUNG DO =================
+        Ghi("");
+        {
+            DonQuai(choNgam, 26f);
+            DonCau();
+            yield return new WaitForSeconds(0.3f);
+
+            int luot0 = QuaCauDien.SoLuotDaBan;
+            var con = QuaCauDien.Spawn(choNgam, maskEnemy, mauToi);
+            Vector3 choCau = con.transform.position;
+
+            // 6 giay KHONG co ke dich nao: ban cu tan sau 4 giay, ban moi phai con nguyen
+            int soTiaToe = 0;
+            float han = Time.time + 6f;
+            while (Time.time < han)
+            {
+                foreach (var a in Object.FindObjectsByType<LightningArc>(FindObjectsInactive.Exclude))
+                    if (a != null && Vector3.Distance(a.transform.position, choCau) < 6f) { soTiaToe++; break; }
+                yield return null;
+            }
+            bool conSongKhiVang = con != null;
+            float lechCho = con != null ? Vector3.Distance(con.transform.position, choCau) : -1f;
+            int luotSau6Giay = QuaCauDien.SoLuotDaBan - luot0;
+
+            var hinhI = GameObject.Find("HinhQuaCauDien");
+            bool coVanh = false, coToe = false;
+            if (hinhI != null)
+            {
+                foreach (var mf in hinhI.GetComponentsInChildren<MeshFilter>(true))
+                    if (mf != null && mf.sharedMesh == VfxFactory.LuoiVanhCauDien && mf.sharedMesh != null) coVanh = true;
+                coToe = hinhI.GetComponent<ToeTiaDien>() != null;
+            }
+
+            // Gio moi dat bia canh no -> phai ban du 10 luot
+            var biaI = TaoBia("TAM_CD_I", choCau + Vector3.right * 2.5f, 0.6f);
+            yield return new WaitForFixedUpdate();
+            float hanI = Time.time + 9f;
+            while (con != null && Time.time < hanI) yield return null;
+            int luotTong = QuaCauDien.SoLuotDaBan - luot0;
+            bool daTan = con == null;
+            Object.Destroy(biaI.gameObject);
+
+            Ghi(string.Format("I. tha cau o cho khong co ai: sau 6 giay cau con song {0} (ban cu tan sau 4 giay), da ban {1} luot, dich khoi cho {2:F2} m; hinh co vanh sang {3}, co tia toe ra {4} ({5} khung thay tia)",
+                conSongKhiVang, luotSau6Giay, lechCho, coVanh, coToe, soTiaToe));
+            Ghi(string.Format("I. dat bia canh no -> tong so luot da ban {0} (mong {1}), sau do tu tan {2}",
+                luotTong, QuaCauDien.SoLuot, daTan));
+            Kiem(conSongKhiVang && luotSau6Giay == 0, "khong co ke dich ma qua cau van tinh luot / van bien mat");
+            Kiem(lechCho >= 0f && lechCho < 0.05f, "qua cau khong dung nguyen mot cho");
+            Kiem(coVanh && coToe && soTiaToe > 30, "hinh thieu vanh sang hoac khong toe tia dien ra ngoai");
+            Kiem(luotTong == QuaCauDien.SoLuot && daTan, "co ke dich roi ma khong ban du 10 luot roi tan");
+            if (con != null) Object.Destroy(con.gameObject);
+            yield return new WaitForSeconds(0.4f);
         }
 
         // ================= H. QUA MANG =================

@@ -8370,6 +8370,22 @@ giây đều bị kéo dài thành 2**, kể cả **Giựt sét (1,5 s)** đã c
 | Qua mạng | gói phép số 13 từ máy kia → máy này phát lại ra quả cầu; mình tung → gói gửi đi mang số 13 |
 | Hồi quy | menu 69 (Giựt sét, cùng đường choáng), 61 (kinh nghiệm — nay gồm kỹ năng 13), 59 (Sách phép 14 kỹ năng): **0 lỗi** |
 
+**Anh xem xong bản đầu và xin sửa hai điều (cùng ngày):**
+
+1. **Chưa bắn đủ 10 lượt thì quả cầu phải đứng nguyên chỗ đó**, đừng tự biến mất. Bản đầu cho đồng hồ chạy đều
+   0,4 giây một lượt **bất kể có bắn được hay không**, nên thả quả cầu ở chỗ vắng là nó tan sau 4 giây mà **chưa đánh
+   lần nào**. Nay chỉ lượt **thật sự bắn ra tia** mới được tính; không có ai trong 9 m thì quả cầu ngó lại sau mỗi
+   0,15 giây và cứ đứng đó. Để không có quả cầu nằm lại mãi trên bản đồ, anh chốt hạn chờ **tối đa 20 giây**.
+2. **Vẽ lại cho giống ảnh hơn.** Dựng lại trong Blender của anh qua MCP: lõi cầu **tối màu** (xanh sẫm) thay vì đốm
+   sáng, thêm hẳn một **vành sáng** bọc ngoài (vỏ cầu mỏng), cung điện dày và dài hơn, và **10 tia toé ra ngoài**.
+   Ảnh hào quang vẽ lại thành **vòng khuyên sáng** (tâm mờ, rìa rực) chứ không phải vầng sáng đặc. Trong game thêm
+   `ToeTiaDien`: cứ ~0,13 giây phóng 2 tia điện ngắn ra chung quanh, **chúc xuống đất** như trong ảnh — tia này chỉ
+   để nhìn, không gây sát thương. Ba lớp (lõi, vành, vỏ điện) quay ngược chiều nhau.
+
+**Số đo của lần sửa** (menu 74 mục I, **0 lỗi**): thả quả cầu ở chỗ không có kẻ địch → sau **6 giây** (bản cũ đã tan
+từ giây thứ 4) quả cầu **vẫn còn**, đã bắn **0 lượt**, xê dịch khỏi chỗ đặt **0,00 m**; hình có vành sáng và có tia
+toé ra (**259 khung hình** thấy tia). Đặt một bia cạnh nó → bắn **đủ 10 lượt** rồi mới tan.
+
 Ba lần phép thử tự báo oan, đều là lỗi của **kịch bản đo** chứ không phải của kỹ năng — và đáng ghi lại vì cùng một
 kiểu: (1) đoán "5 bia gần" theo **thứ tự chỉ số** trong khi đặt bia theo vòng tròn nên thứ tự thật khác → nay sắp
 theo khoảng cách thật rồi mới kết luận; (2) đọc `transform` của quả cầu **sau khi nó tự tan** → `MissingReference`
