@@ -34,7 +34,10 @@ public class StunnedEffect : MonoBehaviour
         bool isNew = s == null;
         if (isNew) s = d.gameObject.AddComponent<StunnedEffect>();
 
-        s.remaining = Mathf.Max(s.remaining, seconds);
+        // Component MOI phai nhan DUNG so giay. Truong remaining khai bao san 2 giay, lay Max ngay tu lan dau thi
+        // MOI con choang ngan hon 2 giay deu bi keo thanh 2 (Qua cau dien 1,5 s do ra 2,00 - menu 74 18/09/2026;
+        // Giut set 1,5 s cung dinh y het). Chi khi DA CO san mot lan choang thi moi lay lan dai hon.
+        s.remaining = isNew ? seconds : Mathf.Max(s.remaining, seconds);
 
         // Chi bao "CHOÁNG!" o lan dau bi dinh, khoi roi mat. Truoc 14/09/2026 duong nay
         // in "CHOANG!" khong dau (chi duong qua mang HieuUngQuaMang co dau) - menu 67 kiem.

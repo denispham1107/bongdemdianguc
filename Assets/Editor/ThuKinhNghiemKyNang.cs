@@ -146,6 +146,7 @@ public static class ThuKinhNghiemKyNang
         foreach (var x in Object.FindObjectsByType<Fireball>(FindObjectsSortMode.None)) Object.Destroy(x.gameObject);
         foreach (var x in Object.FindObjectsByType<QuaCauBang>(FindObjectsSortMode.None)) Object.Destroy(x.gameObject);
         foreach (var x in Object.FindObjectsByType<GioLoc>(FindObjectsSortMode.None)) Object.Destroy(x.gameObject);
+        foreach (var x in Object.FindObjectsByType<QuaCauDien>(FindObjectsSortMode.None)) Object.Destroy(x.gameObject);
     }
 
     static float TenKn(Damageable q)
@@ -164,8 +165,11 @@ public static class ThuKinhNghiemKyNang
     //  KICH BAN
     // ================================================================
 
+    // ⚠️ Mang nay tra theo SO HIEU ky nang - them ky nang moi vao danh sach thu ma quen them ten o day thi
+    // coroutine nem IndexOutOfRange, CHET GIUA CHUNG va Play mode ket lai mai (18/09/2026 dinh dung cai nay).
     static readonly string[] TenKyNang = { "Qua cau lua", "Mua bang", "Sam set", "Loc xoay", "Thien thach", "Khien", "Giut set",
-                                            "Binh mau", "Binh mana", "Qua cau bang", "Gio loc", "Lua dia nguc" };
+                                            "Binh mau", "Binh mana", "Qua cau bang", "Gio loc", "Lua dia nguc",
+                                            "Tang hinh", "Qua cau dien" };
 
     static IEnumerator KichBan()
     {
@@ -188,9 +192,14 @@ public static class ThuKinhNghiemKyNang
         CapDo.Them(CapDo.CanDeLenCap(CapDo.Cap));
         // 11 = Lua dia nguc (17/09/2026) - them mot cap nua cho diem thu chin
         CapDo.Them(CapDo.CanDeLenCap(CapDo.Cap));
-        foreach (int k in new[] { 0, 1, 2, 3, 4, 6, 9, 10, 11 }) CapDo.MoKhoa(k);
+        // 13 = Qua cau dien (18/09/2026) - them mot cap nua cho diem thu MUOI.
+        // ⚠️ Them ky nang vao danh sach thu ma quen cap them diem thi MoKhoa that bai,
+        // CastAt tu choi im lang va muc do bao "phep khong giet duoc quai" - bao oan.
+        CapDo.Them(CapDo.CanDeLenCap(CapDo.Cap));
+        foreach (int k in new[] { 0, 1, 2, 3, 4, 6, 9, 10, 11, 13 }) CapDo.MoKhoa(k);
         Ghi("chuan bi: cap " + CapDo.Cap + ", mo khoa " + CapDo.DaMo(0) + CapDo.DaMo(1) + CapDo.DaMo(2)
-            + CapDo.DaMo(3) + CapDo.DaMo(4) + CapDo.DaMo(6) + CapDo.DaMo(9) + CapDo.DaMo(10) + CapDo.DaMo(11));
+            + CapDo.DaMo(3) + CapDo.DaMo(4) + CapDo.DaMo(6) + CapDo.DaMo(9) + CapDo.DaMo(10) + CapDo.DaMo(11)
+            + CapDo.DaMo(CapDo.KyCauDien));
 
         // Moi con quai dang co: tat nao, don ra xa - khong de chung chen vao phep do
         if (QuaiSong().Count < 8) { dir.SinhDotQuanhNguoi(); yield return new WaitForSeconds(1f); }
@@ -208,7 +217,7 @@ public static class ThuKinhNghiemKyNang
         Ghi("A. tung tung ky nang that vao mot con quai mau 1");
 
         int dung = 0;
-        foreach (int k in new[] { 0, 1, 2, 3, 4, 6, 9, 10, 11 })
+        foreach (int k in new[] { 0, 1, 2, 3, 4, 6, 9, 10, 11, 13 })
         {
             if (dung >= kho.Count) { Loi("het quai de thu"); break; }
             var q = kho[dung++];
@@ -238,8 +247,31 @@ public static class ThuKinhNghiemKyNang
             // IsDead va keDanhCuoi la truong C# thuong - van doc duoc sau khi
             // Unity da Destroy vat the (so sanh "q == null" thi lai ra true).
             float hanK = Time.time + 9f;
-            while (!q.IsDead && Time.time < hanK) yield return null;
+            // Theo doi ngay TRONG luc cho: vat do ky nang goi ra (Qua cau dien) chi song 4 giay,
+            // do sau khi cho 9 giay thi no da tan tu lau va khong ket luan duoc gi.
+            bool thayCau = false; float xaNhatCau = -1f, ganNhatCau = 9999f;
+            while (!q.IsDead && Time.time < hanK)
+            {
+                if (k == CapDo.KyCauDien)
+                {
+                    var c = Object.FindAnyObjectByType<QuaCauDien>();
+                    if (c != null && q != null)
+                    {
+                        thayCau = true;
+                        float kc = Vector3.Distance(c.transform.position, q.transform.position);
+                        xaNhatCau = Mathf.Max(xaNhatCau, kc);
+                        ganNhatCau = Mathf.Min(ganNhatCau, kc);
+                    }
+                }
+                yield return null;
+            }
             yield return new WaitForSeconds(0.3f);
+
+            // CHAN DOAN cho ky nang goi ra mot vat dung yen (Qua cau dien): no co ra doi khong,
+            // va con quai co con nam trong tam ban cua no khong
+            if (k == CapDo.KyCauDien)
+                Ghi(string.Format("    (chan doan) co thay qua cau {0}; khoang cach cau-quai gan nhat {1:F2} m, xa nhat {2:F2} m (ban trong {3} m)",
+                    thayCau, ganNhatCau > 9000f ? -1f : ganNhatCau, xaNhatCau, QuaCauDien.BanKinhBan));
 
             bool chet = q.IsDead;
             bool keDung = ReferenceEquals(q.keDanhCuoi, toi);

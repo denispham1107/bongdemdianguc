@@ -230,6 +230,7 @@ public static class SachPhep
             case CapDo.KyGioLoc: return "GIÓ LỐC";
             case CapDo.KyLuaDiaNguc: return "LỬA ĐỊA NGỤC";
             case CapDo.KyTangHinh: return "TÀNG HÌNH";
+            case CapDo.KyCauDien: return "QUẢ CẦU ĐIỆN";
             default: return "";
         }
     }
@@ -252,6 +253,7 @@ public static class SachPhep
             case CapDo.KyGioLoc: return "Một cơn lốc, 55% hất tung";
             case CapDo.KyLuaDiaNguc: return "Năm quả lửa tự đuổi kẻ địch";
             case CapDo.KyTangHinh: return "Trong suốt 20 giây, đòn sau gấp đôi";
+            case CapDo.KyCauDien: return "Cầu điện bắn 10 lượt, mỗi lượt 5 tia";
             default: return "";
         }
     }
@@ -355,6 +357,14 @@ public static class SachPhep
                      + "Lốc lướt qua lò lửa thì dập tắt lửa, 30 giây sau lò cháy lại.\n\n"
                      + "CẤP 5: phóng cùng lúc HAI cơn lốc song song, cách nhau 4 m — kẻ đứng giữa bị cả hai quét qua thì trúng hai lần — "
                      + "nhưng tốn GẤP ĐÔI năng lượng.";
+            case CapDo.KyCauDien:
+                return "Gọi ra một QUẢ CẦU ĐIỆN lơ lửng ngay cạnh kẻ địch gần chỗ bạn ngắm nhất — không có ai ở đó "
+                     + "thì quả cầu đứng đúng chỗ ngắm. Tầm ngắm 18 m, bằng Thiên thạch.\n\n"
+                     + "Cứ 0,4 giây quả cầu bắn ra một lượt tia điện, tối đa 10 lượt. Mỗi lượt bắn tới 5 tia, MỖI KẺ ĐỊCH "
+                     + "MỘT TIA — chọn 5 kẻ gần quả cầu nhất trong 9 m, tính cả quái vật lẫn người chơi khác.\n\n"
+                     + "Mỗi tia gây sát thương bằng GIỰT SÉT ở cấp 5, và có 30% khả năng làm kẻ trúng đòn CHOÁNG 1,5 giây — "
+                     + "không đi, không đánh, không tung được phép.\n\n"
+                     + "Hồi chiêu 5 giây.";
             case CapDo.KyTangHinh:
                 return "Cả thân người hoá trong suốt: quái vật KHÔNG THẤY và không đánh bạn nữa. Người chơi khác chỉ thấy "
                      + "vài đường nét mờ khi bạn DI CHUYỂN; bạn đứng yên thì họ không thấy gì.\n\n"
@@ -397,6 +407,7 @@ public static class SachPhep
             case CapDo.KyGioLoc: nangLuong = pc.gioLocCost; hoiChieu = pc.gioLocCooldown; niemChu = pc.gioLocCastTime; break;
             case CapDo.KyLuaDiaNguc: nangLuong = pc.luaDiaNgucCost; hoiChieu = pc.luaDiaNgucCooldown; niemChu = pc.luaDiaNgucCastTime; break;
             case CapDo.KyTangHinh: nangLuong = pc.tangHinhCost; hoiChieu = pc.tangHinhCooldown; niemChu = pc.tangHinhCastTime; break;
+            case CapDo.KyCauDien: nangLuong = pc.cauDienCost; hoiChieu = pc.cauDienCooldown; niemChu = pc.cauDienCastTime; break;
         }
     }
 }

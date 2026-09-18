@@ -8334,6 +8334,48 @@ sát thương hiện ra** (2,1 m) để số không đè lên chữ. Bỏ chữ 
 **Số đo** (menu 62, 0 lỗi): tung thật 10 lần → trúng 10, ngã 7; dấu hiệu hiện **376/383 khung hình đang ngã (98%)**;
 chuỗi ảnh mới thấy chữ NGÃ rõ ở cả 5 thời điểm, đè lên lửa.
 
+### Kỹ năng mới: Quả cầu điện — quả cầu lơ lửng bắn tia vào mọi kẻ quanh nó (18/09/2026)
+
+Anh gửi hai ảnh Diablo III và xin kỹ năng **"Quả cầu điện"**: dựng quả cầu **bằng Blender MCP** như trong ảnh,
+kèm hiệu ứng **bắn các tia điện ra xung quanh**; hồi chiêu **5 giây**; quả cầu hiện ra **ngay gần đối thủ**;
+tầm đánh **bằng Thiên thạch**; mỗi lần phóng **5 tia** tới quái và người chơi khác ở gần, **tối đa 10 lần**, cách
+nhau **0,4 giây**; mỗi tia sát thương bằng **Giựt sét ở cấp 5** và **30% gây choáng**.
+Tôi hỏi trước, anh chốt: "Giựt điện" là **Giựt sét** → mỗi tia **155,5** (75 × 1,2⁴); quả cầu **bám kẻ địch gần chỗ
+ngắm nhất**, bắn trong **9 m**; **55 năng lượng**, choáng **1,5 giây**; mỗi lượt **mỗi kẻ một tia**, dư thì bỏ.
+
+**Hình dựng trong Blender của anh qua MCP** (`CongCu/Blender/qua_cau_dien.blend` → `Resources/KyNang/QuaCauDien/`):
+`CauDien.fbx` gồm **LoiCauDien** (khối cầu gồ ghề, đỉnh bị nhiễu noise) và **VoDienCauDien** (5 cung điện cuốn quanh
++ 14 gai điện toé ra); ba ảnh vẽ bằng numpy trong Blender: `HaoQuangDien.png` (vầng sáng có vân điện xoè),
+`TiaDien.png` (sợi tia lượn sóng), `HatDien.png` (đốm bốn cánh). Icon `Resources/Icons/CauDien.png` render từ chính
+cảnh ấy. Lúc chạy `VfxFactory.QuaCauDienHinh` cho lõi và vỏ **quay ngược chiều nhau** (55 và −120 °/s) nên nhìn như
+điện đang cuộn, thêm hào quang billboard, hạt điện bay quanh và một ngọn đèn xanh nhấp nháy.
+
+**Một lỗi thật tìm ra nhờ kỹ năng này:** đo choáng ra **2,00 giây** trong khi phải là 1,5. `StunnedEffect.remaining`
+khai báo sẵn **2 giây**, mà `Apply` lấy `Max(remaining, seconds)` ngay từ lần đầu — nên **mọi cú choáng ngắn hơn 2
+giây đều bị kéo dài thành 2**, kể cả **Giựt sét (1,5 s)** đã có từ trước. Sửa: component **mới** nhận đúng số giây
+được giao, chỉ khi đã dính sẵn một lần choáng mới lấy lần dài hơn (cùng cái bẫy `AddComponent` mang giá trị mặc định
+đã gặp ở `FrozenEffect`).
+
+**Số đo** (menu 74, `quacaudien.txt`, **0 lỗi**; ảnh `quacaudien_1_cau.png`, `quacaudien_2_ban_tia.png`):
+
+| Đo | Kết quả |
+|---|---|
+| Thông số | số hiệu 13, 14 kỹ năng; 55 năng lượng (trừ đúng 55), hồi chiêu 5 s, niệm 0,62; tầm ngắm 18 m |
+| Tài nguyên Blender | lõi cầu khung bao 2,00×2,00×2,03; vỏ điện 2,92×2,96×2,81; ba ảnh 256×256; icon 256×256 |
+| Chỗ đặt | có kẻ địch cách chỗ ngắm 3,5 m → quả cầu cách **kẻ địch 1,40 m**, cách chỗ ngắm 2,8–3,7 m; ĐỐI CHỨNG không có ai → cách chỗ ngắm **0,00 m** |
+| Nhịp bắn | **10 lượt**, từ lượt đầu đến lượt cuối **3,71–3,80 giây** (9 × 0,4 = 3,6) |
+| Chia tia | 7 bia trong 9 m → **50 tia** (10 × 5); đúng **5 kẻ gần nhất** ăn mỗi lượt một tia, kẻ thứ 6 và kẻ ngoài 9 m **0 đòn** |
+| Sát thương | **155,52 mỗi tia** = Giựt sét cấp 5 (75 × 1,2⁴), đọc thẳng từ hằng của Giựt sét chứ không chép tay |
+| Choáng | 400 tia thật → **30,0%** (120 lần), thời gian choáng **1,50 giây** |
+| Qua mạng | gói phép số 13 từ máy kia → máy này phát lại ra quả cầu; mình tung → gói gửi đi mang số 13 |
+| Hồi quy | menu 69 (Giựt sét, cùng đường choáng), 61 (kinh nghiệm — nay gồm kỹ năng 13), 59 (Sách phép 14 kỹ năng): **0 lỗi** |
+
+Ba lần phép thử tự báo oan, đều là lỗi của **kịch bản đo** chứ không phải của kỹ năng — và đáng ghi lại vì cùng một
+kiểu: (1) đoán "5 bia gần" theo **thứ tự chỉ số** trong khi đặt bia theo vòng tròn nên thứ tự thật khác → nay sắp
+theo khoảng cách thật rồi mới kết luận; (2) đọc `transform` của quả cầu **sau khi nó tự tan** → `MissingReference`
+làm coroutine chết, Play mode kẹt lại; (3) trong menu 61, thêm kỹ năng vào danh sách thử mà **quên cấp thêm một
+điểm kỹ năng**, nên `MoKhoa` thất bại và `CastAt` từ chối im lặng — báo thành "phép không giết được quái".
+
 ### Tàng hình: nhấp nháy hai giây cuối, và đòn đầu nhân đôi TOÀN BỘ sát thương của kỹ năng (18/09/2026)
 
 Anh xin thêm hai điều cho **Tàng hình**:
@@ -9553,6 +9595,7 @@ Lần chạy đầu phép thử báo cả 10 con "lơ lửng": tia chiếu từ 
 | **69. Chay thu GIUT SET (20 m, 75, 4 tia, 15% choang)** | Thông số; tung thật `CastAt(6)` vào 5 bia (đúng 4 bia mất 75 cùng một khung hình); tầm 20 m bằng bia 19,9 / 20,4 m; tia lan ra ngoài tầm vẫn trúng ×0,85; 160 lần phóng đếm tỉ lệ choáng tia đầu và tia lan riêng (bằng StunnedEffect trên bia); cấp kỹ năng kéo dài choáng. Số đo `giatset.txt`. |
 | **71. Chay thu GIO LOC (ky nang moi)** | Thông số; tung thật `CastAt(10)` (khoá, 3 lốc, 20 năng lượng, hồi chiêu đo bằng bấm mỗi khung); lưới Blender, cao 5 m so Lốc xoáy thật, xám trắng, không đèn, không tia sét; **xoáy một chiều đi lên** (độ xoắn dải gió đo ngoài Play + chiều quay thật từng lớp + chiều trượt ảnh); khói bụi đen bay lên và cuộn cùng chiều (theo dõi từng hạt), vòng phun nằm ngang (phun thử 200 hạt), vệt phía sau; bán kính chân ×1,68 / phần trên ×1,0 (so công thức gốc); tia sét hiệu ứng khi trúng (5 bia → 5 tia từ thân lốc, 5 cháy sém, 0 cột sáng đứng, mất đúng 75); 1 lốc, sống 4,5 s; không trèo mái nhà mồ (đối chứng tia cũ chạm mái); tốc độ 8 m/s và thời gian sống; xuyên bia mộ (tia đối chứng); 75 một lần, 225 ba lốc, vùng 2,2 m (2,5 / 2,7 m); 190 lần trúng đếm hất tung độc lập, độ cao, thời gian bay; khiên chặn hất; ngắt chiêu người chơi (đối chứng) và đòn quái (đối chứng); qua mạng: gói số 10, bit hất tung, mặt nạ 5 bit, bản sao bay / ngắt chiêu / không hất lần hai; lò lửa tắt rồi cháy lại sau 30 s. Số đo `gioloc.txt`. |
 | **71b. Chup anh GIO LOC (so voi Loc xoay)** | Chỉ chụp: hai lốc bay ngang màn hình 5 khung liên tiếp + Lốc xoáy lớn để so. Ảnh `gioloc_can_*.png`, `gioloc_locxoay_*.png`. |
+| **74. Chay thu QUA CAU DIEN (ky nang moi)** | Thông số (số hiệu 13, 55 năng lượng, hồi chiêu 5 s, tầm 18 m) + tài nguyên Blender; quả cầu bám kẻ địch gần chỗ ngắm (đối chứng: không có ai thì đứng đúng chỗ ngắm); 10 lượt cách nhau 0,4 s; 50 tia, đúng 5 kẻ gần nhất mỗi kẻ một tia; 155,52 mỗi tia = Giựt sét cấp 5; 400 tia → choáng 30,0% × 1,50 s; gói phép số 13 qua mạng. Số đo `quacaudien.txt`. |
 | **73. Chay thu TANG HINH (ky nang moi)** | Thông số (số hiệu 12, 30 năng lượng, hồi chiêu 30 s, 20 giây); thân đổi sang shader tàng hình rồi trả lại; miễn 6 hiệu ứng (đối chứng lúc thường dính đủ), xoá hiệu ứng đang dính, vẫn ăn sát thương; 24 quái thật mất dấu; tốc độ ×1,20 đo bằng quãng đường; đòn đầu ×2,00 rồi tan, Khiên không làm tan; hết giờ tự tan; qua mạng bit `CoTangHinh`, bản sao đứng yên tắt renderer; **nhấp nháy 2 giây cuối** (18 lần đổi sáng/tối, bản sao người khác không nháy) và hai ảnh hai pha; **đòn đầu ×2 cho TOÀN BỘ sát thương**: từng vệt Mưa băng 29,04 → 58,08, Quả cầu băng cấp 5 442,4 → 884,7; cờ đòn đầu đi qua gói phép (người kia tung qua mạng cũng ×2). Số đo `tanghinh.txt`. |
 | **72. Chay thu LUA DIA NGUC (ky nang moi)** | Thông số (số hiệu 11, năng lượng 31/hồi chiêu/niệm, sát thương gốc = prefab Quả cầu lửa × 1,2⁴, chữ Sách phép, icon); tung thật 5 quả; tự dí 5 bia ngoài hình quạt (đối chứng Quả cầu lửa thường 0 bia), 1 bia, bia chạy ngang, mục tiêu chết giữa đường, không có ai bay thẳng 18°; sát thương so với Quả cầu lửa cấp 5 thật + thiêu đốt; màu giống hệt Quả cầu lửa; qua mạng + kẻ đánh. Tạm tắt va chạm đồ vật 26 m (Act2 không có chỗ trống). Số đo `luadianguc.txt`. |
 | **70. Chay thu QUA CAU LUA (85 sat thuong, vet lua moi)** | Sát thương đọc thẳng prefab và trên quả cầu thật khi tung; quả cầu sinh từ prefab bay vào bia (mất 85 × giảm theo khoảng cách); hạt `Flames` không còn ảnh tam giác mà là flipbook Blender, có vệt lửa dài `TrailRenderer`; nổ xong vệt được thả ra; chụp cận cảnh lúc bay. Chạy trên bản cũ ra 7 lỗi (đối chứng). Số đo `quacaulua.txt`. |
