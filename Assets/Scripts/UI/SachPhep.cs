@@ -433,6 +433,8 @@ public static class SachPhep
                 return "Nhân vật tan đi ở chỗ đang đứng và hiện ra ngay tại nơi bạn ngắm, xa nhất 15 m. Đi được XUYÊN QUA tường, bia mộ và mọi vật cản — chỉ cần chỗ đến đứng được.\n\n"
                      + "Ngắm vào chỗ không đứng được thì bạn dừng ở điểm trống gần nơi ngắm nhất trên đường thẳng. Bấm là đi ngay, không có động tác niệm, nên dùng để né đòn đang bay tới.\n\n"
                      + "Hồi chiêu 5 giây, và MỖI CẤP giảm 0,25 giây — lên cấp 5 chỉ còn 4 giây.\n\n"
+                     + "CẤP 5: dùng được NGAY cả khi đang bị choáng, bị đánh ngã, bị đóng băng hay bị hất tung — và nháy xong "
+                     + "thì mọi trạng thái bất lợi bị xoá sạch. Chỉ khi đang bị LỐC XOÁY cuốn lên trời thì chịu, không tốc biến được.\n\n"
                      + "Tốn 40 năng lượng.";
             case CapDo.KyHoaLocXoay:
                 return "Cơn GIÓ LỐC bạn vừa phóng ra sẽ PHÌNH TO thành một cơn LỐC XOÁY thật sự — vẫn bay nhanh "

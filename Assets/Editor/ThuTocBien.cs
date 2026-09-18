@@ -20,6 +20,8 @@ using UnityEngine;
 ///   D. Ngam vao cho KHONG DUNG DUOC (trong long mot khoi da) -> van nhay nhung lui ve diem trong gan do.
 ///   E. Hoi chieu giam theo cap: cap 1..5 = 5 / 4,75 / 4,5 / 4,25 / 4 giay (do tren nhan vat that).
 ///   F. Khong niem chu: tu luc bam den luc doi cho khong qua 0,2 giay.
+///   G. CAP 5 (nguoi dung 18/09/2026): dang choang / nga / dong bang / hat tung van bam duoc va nhay xong
+///      thi SACH het trang thai bat loi; DOI CHUNG cap 4 thi bi chan. Dang bi LOC XOAY cuon thi KHONG nhay duoc.
 ///
 /// Ket qua: PlayTestShots/tocbien.txt, anh tocbien_*.png.
 /// </summary>
@@ -269,8 +271,125 @@ public static class ThuTocBien
             Kiem(ketThucDungDuoc && cachDa > 1f, "nhay xong dung ngay trong vat can");
         }
 
+        // ================= G. CAP 5: GO TROI MOI TRANG THAI =================
+        Ghi("");
+        {
+            // --- DOI CHUNG: cap 4 thi bi chan ---
+            for (int i = 0; i < 8 && CapDo.CapCuaKyNang(K) < 4; i++)
+            {
+                CapDo.Them(CapDo.CanDeLenCap(CapDo.Cap));
+                CapDo.NangCap(K);
+            }
+            while (toi.HoiChieuGiay(K) > 0f) yield return null;
+            StunnedEffect.Apply(mauToi, 3f);
+            yield return null;
+            Vector3 truoc4 = toi.transform.position;
+            toi.mana = toi.maxMana;
+            int nhay4 = TocBien.SoLanNhay;
+            huong = HuongTrong(toi, 20f);
+            toi.CastAt(K, toi.transform.position + huong * 8f);
+            yield return new WaitForSeconds(0.2f);
+            bool cap4BiChan = TocBien.SoLanNhay == nhay4;
+            int capLuc4 = CapDo.CapCuaKyNang(K);
+            var stConLai = mauToi.GetComponent<StunnedEffect>();
+            bool con4 = stConLai != null && stConLai.IsStunned;
+
+            // --- CAP 5: bam duoc va sach het ---
+            for (int i = 0; i < 8 && CapDo.CapCuaKyNang(K) < 5; i++)
+            {
+                CapDo.Them(CapDo.CanDeLenCap(CapDo.Cap));
+                CapDo.NangCap(K);
+            }
+            while (toi.HoiChieuGiay(K) > 0f) yield return null;
+
+            // Ap DU BON trang thai nguoi dung neu dich danh, cung mot luc.
+            // ⚠️ KHONG dinh them BurningEffect o day: BurningEffect.Start goi frozen.Thaw() ("lua thieu
+            // lam tan bang"), nen lan chay dau chi con 4 trang thai va cai DONG BANG bien mat truoc khi
+            // do - phep thu se xanh ma chua he kiem duoc thu nguoi dung noi toi. Chay do rieng ben duoi.
+            FrozenEffect.Apply(mauToi, 3f);
+            StunnedEffect.Apply(mauToi, 3f);
+            BiDanhNga.Apply(mauToi, 3f);
+            BiHatTung.Apply(mauToi, 1.5f);
+            yield return null;
+            int dinhTruoc = 0;
+            var frTruoc = mauToi.GetComponent<FrozenEffect>();
+            if (frTruoc != null && frTruoc.IsFullyFrozen) dinhTruoc++;
+            if (mauToi.GetComponent<StunnedEffect>() != null) dinhTruoc++;
+            if (mauToi.GetComponent<BiDanhNga>() != null) dinhTruoc++;
+            if (mauToi.GetComponent<BiHatTung>() != null) dinhTruoc++;
+
+            Vector3 truoc5 = toi.transform.position;
+            toi.mana = toi.maxMana;
+            int nhay5 = TocBien.SoLanNhay;
+            huong = HuongTrong(toi, 20f);
+            toi.CastAt(K, toi.transform.position + huong * 8f);
+            float han5 = Time.time + 1f;
+            while (TocBien.SoLanNhay == nhay5 && Time.time < han5) yield return null;
+            yield return null;
+
+            bool cap5NhayDuoc = TocBien.SoLanNhay > nhay5;
+            float di5 = XaNgang(truoc5, toi.transform.position);
+            int conLai = 0;
+            var fr = mauToi.GetComponent<FrozenEffect>();
+            if (fr != null && (fr.IsFullyFrozen || fr.remaining > 0f)) conLai++;
+            var st2 = mauToi.GetComponent<StunnedEffect>();
+            if (st2 != null && st2.IsStunned) conLai++;
+            var ng2 = mauToi.GetComponent<BiDanhNga>();
+            if (ng2 != null && ng2.DangNga) conLai++;
+            var ht2 = mauToi.GetComponent<BiHatTung>();
+            if (ht2 != null && ht2.DangBay) conLai++;
+
+            Ghi(string.Format("G. DOI CHUNG cap {0}: dang choang ma bam -> bi chan {1} (van con choang {2})",
+                capLuc4, cap4BiChan, con4));
+            Ghi(string.Format("G. CAP 5: dinh {0} trang thai bat loi -> bam duoc {1}, nhay {2:F2} m, con lai {3} trang thai",
+                dinhTruoc, cap5NhayDuoc, di5, conLai));
+            Kiem(capLuc4 == 4 && cap4BiChan, "doi chung hong: cap 4 ma van bam duoc khi dang choang");
+            Kiem(CapDo.CapCuaKyNang(K) == 5 && cap5NhayDuoc && di5 > 5f, "cap 5 khong bam duoc khi dang bi khoa cung");
+            Kiem(dinhTruoc == 4 && conLai == 0, "cap 5 nhay xong ma trang thai bat loi khong bi xoa sach");
+
+            // --- Chay (BurningEffect) do RIENG: no tu lam tan bang nen khong do chung duoc ---
+            while (toi.HoiChieuGiay(K) > 0f) yield return null;
+            BurningEffect.Apply(mauToi, 5f, 6f, null);
+            yield return null;
+            bool coChay = mauToi.GetComponent<BurningEffect>() != null;
+            toi.mana = toi.maxMana;
+            int nhayChay = TocBien.SoLanNhay;
+            huong = HuongTrong(toi, 20f);
+            toi.CastAt(K, toi.transform.position + huong * 8f);
+            float hanChay = Time.time + 1f;
+            while (TocBien.SoLanNhay == nhayChay && Time.time < hanChay) yield return null;
+            yield return null;
+            bool conChay = mauToi.GetComponent<BurningEffect>() != null;
+            Ghi(string.Format("G. dang CHAY ({0}) -> nhay xong con chay {1}", coChay, conChay));
+            Kiem(coChay && !conChay, "cap 5 nhay xong ma con dang chay");
+
+            // --- NGOAI LE: dang bi LOC XOAY cuon thi khong nhay duoc ---
+            while (toi.HoiChieuGiay(K) > 0f) yield return null;
+            Vector3 choLoc = toi.transform.position + huong * 2f;
+            choLoc.y = VfxFactory.GroundY(choLoc);
+            var loc = Tornado.Spawn(choLoc, huong, LayerMask.GetMask("Player"));
+            loc.boQua = null;
+            float hanCuon = Time.time + 3f;
+            while (mauToi.GetComponent<WhirledEffect>() == null && Time.time < hanCuon) yield return null;
+            bool biCuon = mauToi.GetComponent<WhirledEffect>() != null;
+
+            int nhayLoc = TocBien.SoLanNhay;
+            toi.mana = toi.maxMana;
+            toi.CastAt(K, toi.transform.position + huong * 8f);
+            yield return new WaitForSeconds(0.2f);
+            bool locChan = TocBien.SoLanNhay == nhayLoc;
+            Ghi(string.Format("G. dang bi Loc xoay cuon ({0}) -> bam Toc bien bi chan {1} (ngoai le duy nhat)", biCuon, locChan));
+            Kiem(biCuon, "doi chung hong: khong bi Loc xoay cuon nen khong do duoc gi");
+            Kiem(locChan, "dang bi Loc xoay cuon ma van toc bien duoc");
+            if (loc != null) Object.Destroy(loc.gameObject);
+            var w = mauToi.GetComponent<WhirledEffect>(); if (w != null) w.Release();
+            yield return new WaitForSeconds(0.5f);
+        }
+
         foreach (var go in Object.FindObjectsByType<Transform>(FindObjectsInactive.Exclude))
             if (go != null && go.name.StartsWith("TAM_KhoiDa")) Object.Destroy(go.gameObject);
+        foreach (var t0 in Object.FindObjectsByType<Tornado>(FindObjectsInactive.Exclude))
+            if (t0 != null) Object.Destroy(t0.gameObject);
         toi.DaTungPhep -= dem;
         Ghi("");
         Ghi("so loi ghi nhan = " + loi);

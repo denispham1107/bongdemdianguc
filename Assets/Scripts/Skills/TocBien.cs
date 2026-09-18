@@ -48,9 +48,46 @@ public static class TocBien
         return neuKhongCo;
     }
 
+    /// <summary>Cap co phep nhay khi dang bi khoa cung va xoa sach trang thai bat loi (nguoi dung chot 18/09/2026).</summary>
+    public const int CapGoTroiBuoc = 5;
+
     /// <summary>Dem cho phep thu (menu 76).</summary>
-    public static int SoLanNhay;
+    public static int SoLanNhay, SoLanGoTroi;
     public static float QuangDuongCuoi;
+
+    /// <summary>
+    /// CAP 5: nhay duoc ngay ca khi dang CHOANG / NGA / DONG BANG / HAT TUNG, va nhay xong thi
+    /// XOA SACH moi trang thai bat loi (nguoi dung chot 18/09/2026).
+    ///
+    /// Ngoai le DUY NHAT: dang bi cuon trong LOC XOAY (<see cref="WhirledEffect"/>) thi chiu, khong nhay duoc -
+    /// luc do nguoi choi dang bay vong quanh truc loc, khong con dung tren mat dat nua.
+    /// </summary>
+    public static bool CapNamGoTroiDuoc(Component nguoi)
+    {
+        if (nguoi == null) return false;
+        if (CapDo.CapCuaKyNang(CapDo.KyTocBien) < CapGoTroiBuoc) return false;
+        return !DangBiCuonLoc(nguoi);
+    }
+
+    /// <summary>Dang bi Loc xoay cuon len khong.</summary>
+    public static bool DangBiCuonLoc(Component nguoi)
+    {
+        return nguoi != null && nguoi.GetComponent<WhirledEffect>() != null;
+    }
+
+    /// <summary>Xoa sach moi trang thai bat loi dang dinh: dong bang/cham, choang, nga, hat tung, thieu dot.</summary>
+    public static int GoSachTrangThai(GameObject go)
+    {
+        if (go == null) return 0;
+        int n = 0;
+        var f = go.GetComponent<FrozenEffect>();   if (f != null)  { f.Thaw(); n++; }
+        var st = go.GetComponent<StunnedEffect>(); if (st != null) { Object.Destroy(st); n++; }
+        var ng = go.GetComponent<BiDanhNga>();     if (ng != null) { Object.Destroy(ng); n++; }
+        var ht = go.GetComponent<BiHatTung>();     if (ht != null) { Object.Destroy(ht); n++; }
+        var ch = go.GetComponent<BurningEffect>(); if (ch != null) { Object.Destroy(ch); n++; }
+        if (n > 0) SoLanGoTroi++;
+        return n;
+    }
 
     /// <summary>Hoi chieu THAT SU o cap <paramref name="capKy"/>: 5 giay, moi cap giam 0,25.</summary>
     public static float HoiChieuTheoCap(int capKy)
@@ -114,6 +151,9 @@ public static class TocBien
         Physics.SyncTransforms();
 
         VfxFactory.TocBienHienRa(choDen);
+
+        // CAP 5: nhay xong thi sach moi trang thai bat loi
+        if (CapDo.CapCuaKyNang(CapDo.KyTocBien) >= CapGoTroiBuoc) GoSachTrangThai(pc.gameObject);
 
         SoLanNhay++;
         QuangDuongCuoi = Vector3.Distance(new Vector3(choCu.x, 0f, choCu.z), new Vector3(choDen.x, 0f, choDen.z));

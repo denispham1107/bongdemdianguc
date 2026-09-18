@@ -847,7 +847,13 @@ public class PlayerController : MonoBehaviour
         // DUOC PHEP NAO. Chan o day chu khong ngat phep dang niem do:
         // goi "toi vua tung phep" da gui di tu luc BeginCast, ngat giua chung
         // thi may ben kia van ve ra qua phep va van tinh sat thuong cua no.
-        string caidangkhoa = LyDoKhongTungDuoc();
+        // TOC BIEN CAP 5 la ngoai le duy nhat: nguoi dung chot 18/09/2026 - dung duoc NGAY khi dang
+        // choang / nga / dong bang / hat tung (va nhay xong thi sach het). Rieng dang bi LOC XOAY cuon
+        // thi van chiu - luc ay nguoi choi dang bay vong quanh truc loc.
+        bool goTroiDuoc = skill == CapDo.KyTocBien && TocBien.CapNamGoTroiDuoc(this);
+        string caidangkhoa = goTroiDuoc ? null : LyDoKhongTungDuoc();
+        if (skill == CapDo.KyTocBien && TocBien.DangBiCuonLoc(this))
+        { Say("BẠN ĐANG BỊ LỐC XOÁY CUỐN!"); return; }
         if (caidangkhoa != null) { Say(caidangkhoa); return; }
 
         // KY NANG CHUA MO THI KHONG TUNG DUOC. Vao tran ai cung cap 1 va moi

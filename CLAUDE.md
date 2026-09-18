@@ -171,6 +171,11 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
   hiện tại, đừng dùng trường `tocBienCooldown` vì đó chỉ là cấp 1). **Không niệm** (`castTime` 0,01 s — vẫn đủ để gói phép bay sang máy
   khác; bản sao chỉ chạy hiệu ứng, không tự kéo mình đi). ⚠️ Chỗ đến tính bằng `TocBien.MatDatY` **chỉ lớp Ground** — dùng
   `VfxFactory.GroundY` thì "trong lòng khối đá" hoá ra "trên nóc đá" và người chơi nháy được lên mái nhà mồ (menu 76 đo 18/09/2026).
+  **CẤP 5 GỠ TRÓI** (người dùng 18/09/2026): dùng được NGAY khi đang choáng / ngã / đóng băng / hất tung — ngoại lệ DUY NHẤT của
+  cái chặn trong `PlayerController.CastAt` (`TocBien.CapNamGoTroiDuoc`) — và nháy xong `TocBien.GoSachTrangThai` xoá sạch
+  `FrozenEffect` (qua `Thaw()`), `StunnedEffect`, `BiDanhNga`, `BiHatTung`, `BurningEffect`. Đang bị **Lốc xoáy** cuốn
+  (`WhirledEffect`) thì chịu. ⚠️ Đo thử đừng dính cháy chung với đóng băng: `BurningEffect.Start` gọi `frozen.Thaw()` nên
+  lửa nuốt mất cái đóng băng trước khi đo (menu 76 mục G tách riêng).
   Đổi `transform.position` phải **tắt `CharacterController` rồi bật lại**. Icon Blender MCP. Menu 76 kiểm.
 - **Hoá lốc xoáy** (`Skills/HoaLocXoay.cs`, 18/09/2026): bấm là cơn **Gió lốc đang bay của LẦN TUNG GẦN NHẤT** (mỗi cơn mang
   `GioLoc.lucTung`; cấp 5 hai cơn cùng mốc → hoá cả hai) **phình to thành Lốc xoáy** — `PhinhToThanhLoc` chỉ đổi tỉ lệ HÌNH
