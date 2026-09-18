@@ -555,10 +555,11 @@ public static class ThuSachPhep
         nhan(ScreenCapture.CaptureScreenshotAsTexture());
     }
 
+    /// <summary>Vung cua hang mot ky nang - HOI CHINH cua so ve, vi cot nay xep theo nhom
+    /// (18/09/2026) nen "chi so x chieu cao hang" khong con dung.</summary>
     static Rect HangKho(CuaSoSachPhep.BoCuc b, int i, float s)
     {
-        float le = 6f * s;
-        return new Rect(b.kho.x + le, b.kho.y + le + i * b.caoHang, b.kho.width - le * 2f, b.caoHang - 6f * s);
+        return CuaSoSachPhep.VungHangKyNang(b, i, s);
     }
 
     static IEnumerator DoSangCuaSo(string ban)
@@ -592,20 +593,25 @@ public static class ThuSachPhep
             Texture2D tex = null;
             yield return ChupTex(t => tex = t);
             var sang = new float[SachPhep.SoKyNang];
+            var thay = new bool[SachPhep.SoKyNang];     // hang nao dang bi cuon khuat thi khong do
             var sb = new StringBuilder();
             for (int i = 0; i < SachPhep.SoKyNang; i++)
             {
-                sang[i] = DoSang(tex, HangKho(b, i, s));
+                var vung = HangKho(b, i, s);
+                thay[i] = vung.width > 1f && vung.height > 1f;
+                if (!thay[i]) continue;
+                sang[i] = DoSang(tex, vung);
                 sb.Append(i).Append(CapDo.DaMo(i) ? "(mo)" : "(khoa)").Append(i == chon ? "*" : "")
                   .Append("=").Append(sang[i].ToString("F3")).Append(" ");
             }
             float moMin = 9f, khoaMax = 0f, khacMax = 0f;
             for (int i = 0; i < SachPhep.SoKyNang; i++)
             {
-                if (i == chon) continue;
+                if (i == chon || !thay[i]) continue;
                 khacMax = Mathf.Max(khacMax, sang[i]);
                 if (CapDo.DaMo(i)) moMin = Mathf.Min(moMin, sang[i]); else khoaMax = Mathf.Max(khoaMax, sang[i]);
             }
+            if (!thay[chon]) { Ghi("F1. ky nang " + chon + " dang bi cuon khuat - bo qua"); continue; }
             Ghi("F1. chon ky nang " + chon + (CapDo.DaMo(chon) ? " (da mo)" : " (con khoa)") + " - do sang tung hang: " + sb.ToString().Trim());
             Kiem(sang[chon] >= khacMax * 1.4f, "hang dang chon " + chon + " khong sang han cac hang khac: "
                  + sang[chon].ToString("F3") + " / " + khacMax.ToString("F3"));

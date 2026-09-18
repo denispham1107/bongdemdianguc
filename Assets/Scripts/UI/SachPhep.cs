@@ -31,6 +31,74 @@ public static class SachPhep
     /// <summary>So ky nang dang co trong kho.</summary>
     public const int SoKyNang = CapDo.SoKyNang;     // 7 phep + binh mau + binh mana + qua cau bang + gio loc + lua dia nguc
 
+    // ================================================================
+    //  XEP NHOM CHO COT DANH SACH (nguoi dung chot 18/09/2026)
+    // ================================================================
+    //  Truoc day cot trai xep theo SO HIEU ky nang (0,1,2,...) - thu tu ay do lich su
+    //  them ky nang quyet dinh chu khong theo he, nen Qua cau lua nam canh Mua bang.
+    //  Nguoi dung xin xep theo HE va theo dung thu tu duoi day. Chi la THU TU HIEN THI:
+    //  so hieu ky nang giu nguyen (no di qua goi tin va vao PlayerController.CastAt).
+
+    /// <summary>Ten cac nhom, theo dung thu tu hien ra tren cot.</summary>
+    public static readonly string[] TenNhom = { "LỬA", "BĂNG", "SÉT", "PHONG", "HỖ TRỢ" };
+
+    /// <summary>Mau chu tieu de cua tung nhom - theo he.</summary>
+    public static readonly Color[] MauNhom = {
+        new Color(1.00f, 0.55f, 0.20f),   // lua
+        new Color(0.55f, 0.85f, 1.00f),   // bang
+        new Color(0.70f, 0.60f, 1.00f),   // set
+        new Color(0.80f, 0.82f, 0.78f),   // phong
+        new Color(1.00f, 0.84f, 0.42f),   // ho tro
+    };
+
+    /// <summary>Ky nang cua tung nhom, dung thu tu nguoi dung viet.</summary>
+    public static readonly int[][] KyNangTheoNhom = {
+        new[] { 0, 4, CapDo.KyLuaDiaNguc },                       // Qua cau lua, Thien thach, Lua dia nguc
+        new[] { CapDo.KyQuaCauBang, 1, CapDo.KyTangHinh },        // Qua cau bang, Mua bang, Tang hinh
+        new[] { 6, 2, CapDo.KyCauDien },                          // Giut set, Sam set, Qua cau dien
+        new[] { CapDo.KyGioLoc, 3 },                              // Gio loc, Loc xoay
+        new[] { CapDo.KyBinhMau, CapDo.KyBinhMana, 5 },           // Binh mau, Binh mana, Khien
+    };
+
+    /// <summary>So ky nang trong mot nhom.</summary>
+    public static int SoKyNangNhom(int nhom)
+    {
+        return (nhom >= 0 && nhom < KyNangTheoNhom.Length) ? KyNangTheoNhom[nhom].Length : 0;
+    }
+
+    /// <summary>So nhom.</summary>
+    public static int SoNhom { get { return KyNangTheoNhom.Length; } }
+
+    /// <summary>So o trong danh sach: moi nhom mot dong tieu de + cac ky nang cua no.</summary>
+    public static int SoDongDanhSach
+    {
+        get
+        {
+            int n = 0;
+            for (int i = 0; i < KyNangTheoNhom.Length; i++) n += 1 + KyNangTheoNhom[i].Length;
+            return n;
+        }
+    }
+
+    /// <summary>
+    /// Dong thu <paramref name="dong"/> cua cot danh sach la gi.
+    /// Tra ve -1 va <paramref name="nhom"/> >= 0 neu do la DONG TIEU DE; nguoc lai tra so hieu ky nang.
+    /// </summary>
+    public static int KyNangODong(int dong, out int nhom)
+    {
+        nhom = -1;
+        int d = 0;
+        for (int g = 0; g < KyNangTheoNhom.Length; g++)
+        {
+            if (dong == d) { nhom = g; return -1; }        // dong tieu de cua nhom
+            d++;
+            var ds = KyNangTheoNhom[g];
+            if (dong < d + ds.Length) return ds[dong - d];
+            d += ds.Length;
+        }
+        return -1;
+    }
+
     /// <summary>So o tren ban cam ung - bang so nut tron dang ve.</summary>
     public const int SoOTron = 7;
 

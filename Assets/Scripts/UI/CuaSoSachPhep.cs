@@ -372,18 +372,76 @@ public static class CuaSoSachPhep
 
     static void KepCuon(BoCuc b, float s)
     {
-        float caoNoiDung = SachPhep.SoKyNang * b.caoHang;
+        float caoNoiDung = CaoDanhSach(b);
         float toiDa = Mathf.Max(0f, caoNoiDung - (b.kho.height - 12f * s));
         cuonKho = Mathf.Clamp(cuonKho, 0f, toiDa);
         cuonChiTiet = Mathf.Clamp(cuonChiTiet, 0f, Mathf.Max(0f, caoNoiDungThan - b.thanChiTiet.height + 8f * s));
+    }
+
+    /// <summary>
+    /// Cot danh sach nay KHONG con moi dong mot ky nang: xen giua la cac DONG TIEU DE NHOM
+    /// (LỬA / BĂNG / SÉT / PHONG / HỖ TRỢ - nguoi dung xin 18/09/2026), va dong tieu de thap hon
+    /// hang ky nang. Nen moi cho tinh vi tri deu phai di qua hai ham nay, khong duoc nhan
+    /// "chi so x chieu cao hang" nhu truoc.
+    /// </summary>
+    static float CaoDong(BoCuc b, int dong)
+    {
+        int nhom;
+        SachPhep.KyNangODong(dong, out nhom);
+        return nhom >= 0 ? b.caoHang * 0.52f : b.caoHang;
+    }
+
+    static float YCuaDong(BoCuc b, int dong)
+    {
+        float y = 0f;
+        for (int i = 0; i < dong; i++) y += CaoDong(b, i);
+        return y;
+    }
+
+    /// <summary>Tong chieu cao cua ca cot danh sach.</summary>
+    static float CaoDanhSach(BoCuc b)
+    {
+        return YCuaDong(b, SachPhep.SoDongDanhSach);
+    }
+
+    /// <summary>
+    /// Vung man hinh cua hang KY NANG <paramref name="ky"/> trong cot danh sach.
+    /// Tra ve Rect rong neu ky nang ay dang bi cuon ra ngoai khung.
+    /// Phep thu menu 59 goi ham nay chu khong tu nhan "chi so x chieu cao hang" - tu khi cot
+    /// xep theo nhom (18/09/2026) cong thuc ay khong con dung.
+    /// </summary>
+    public static Rect VungHangKyNang(BoCuc b, int ky, float s)
+    {
+        float le = 6f * s;
+        for (int dong = 0; dong < SachPhep.SoDongDanhSach; dong++)
+        {
+            int nhom;
+            if (SachPhep.KyNangODong(dong, out nhom) != ky) continue;
+            float y = b.kho.y + le + YCuaDong(b, dong) - cuonKho;
+            var r = new Rect(b.kho.x + le, y, b.kho.width - le * 2f, b.caoHang - 6f * s);
+            // Nam ngoai khung (dang bi cuon khuat) thi tra ve rong
+            if (r.yMax > b.kho.yMax || r.y < b.kho.y) return new Rect();
+            return r;
+        }
+        return new Rect();
     }
 
     static int HangTaiDiem(BoCuc b, Vector2 diem, float s)
     {
         if (!b.kho.Contains(diem)) return -1;
         float y = diem.y - (b.kho.y + 6f * s) + cuonKho;
-        int i = Mathf.FloorToInt(y / b.caoHang);
-        return (i >= 0 && i < SachPhep.SoKyNang) ? i : -1;
+        float moc = 0f;
+        for (int dong = 0; dong < SachPhep.SoDongDanhSach; dong++)
+        {
+            float cao = CaoDong(b, dong);
+            if (y >= moc && y < moc + cao)
+            {
+                int nhom;
+                return SachPhep.KyNangODong(dong, out nhom);   // -1 neu cham vao dong tieu de
+            }
+            moc += cao;
+        }
+        return -1;
     }
 
     static int OTaiDiem(BoCuc b, Vector2 diem, float s)
@@ -465,14 +523,38 @@ public static class CuaSoSachPhep
         // Nhip dap cua hang / o dang chon (khong phu thuoc Time.timeScale)
         float nhip = 0.5f + 0.5f * Mathf.Sin(Time.unscaledTime * 4f);
 
+        // Kieu chu cua DONG TIEU DE NHOM
+        var kNhom = new GUIStyle(GiaoDien.KieuChuNho);
+        kNhom.fontSize = Mathf.RoundToInt(15f * k * s);
+        kNhom.alignment = TextAnchor.LowerLeft;
+
         GUI.BeginGroup(b.kho);
         float le = 6f * s;
-        for (int i = 0; i < SachPhep.SoKyNang; i++)
+        for (int dong = 0; dong < SachPhep.SoDongDanhSach; dong++)
         {
-            float y = le + i * b.caoHang - cuonKho;
-            if (y > b.kho.height || y + b.caoHang < 0f) continue;
+            int nhom;
+            int i = SachPhep.KyNangODong(dong, out nhom);
+            float caoDong = CaoDong(b, dong);
+            float y = le + YCuaDong(b, dong) - cuonKho;
+            if (y > b.kho.height || y + caoDong < 0f) continue;
 
-            var hang = new Rect(le, y, b.kho.width - le * 2f, b.caoHang - 6f * s);
+            // ----- DONG TIEU DE NHOM: ten he + mot duong ke mo keo het be ngang -----
+            if (nhom >= 0)
+            {
+                var oNhom = new Rect(le + 4f * s, y, b.kho.width - le * 2f - 8f * s, caoDong - 3f * s);
+                kNhom.normal.textColor = SachPhep.MauNhom[nhom];
+                GUI.Label(oNhom, SachPhep.TenNhom[nhom], kNhom);
+
+                // Duong ke chay tu sau chu den het be ngang
+                float rongTenNhom = kNhom.CalcSize(new GUIContent(SachPhep.TenNhom[nhom])).x;
+                var keNgang = new Rect(oNhom.x + rongTenNhom + 8f * s, oNhom.yMax - 6f * s,
+                                       Mathf.Max(0f, oNhom.width - rongTenNhom - 10f * s), Mathf.Max(1f, 1.5f * s));
+                var mauKe = SachPhep.MauNhom[nhom]; mauKe.a = 0.35f;
+                GiaoDien.To(keNgang, mauKe);
+                continue;
+            }
+
+            var hang = new Rect(le, y, b.kho.width - le * 2f, caoDong - 6f * s);
             bool chon = dangXem == i;
             int capKy = CapDo.CapCuaKyNang(i);
             bool daMo = xemTruoc || capKy > 0;
@@ -543,7 +625,7 @@ public static class CuaSoSachPhep
         }
         GUI.EndGroup();
 
-        VeThanhCuon(b.kho, cuonKho, le * 2f + SachPhep.SoKyNang * b.caoHang, s);
+        VeThanhCuon(b.kho, cuonKho, le * 2f + CaoDanhSach(b), s);
     }
 
     /// <summary>
