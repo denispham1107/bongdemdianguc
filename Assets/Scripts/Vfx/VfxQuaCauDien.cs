@@ -8,9 +8,9 @@ using UnityEngine;
 ///
 /// Tai nguyen dung bang Blender MCP (CongCu/Blender/qua_cau_dien.blend) -> Resources/KyNang/QuaCauDien:
 ///   - CauDien.fbx      : LoiCauDien (khoi cau, TOI mau nhu trong anh) + VanhSangCauDien (vo cau MIN lam VANH SANG
-///                        boc ngoai) + VoDienCauDien (nam duong VIEN TRANG lon vong quanh, NAM NGOAI mat cau
-///                        nhu anh nguoi dung gui - cai bi che "rang cua rat xau" la may GAI THANG ngan chia ra
-///                        cua ban truoc, da bo han; vien lon vong quanh thi giu);
+///                        boc ngoai) + VoDienCauDien (BON DUONG GAN TRANG vong quanh, NAM NGOAI mat cau va GAY KHUC
+///                        MEO MO nhu tia dien that - nguoi dung 18/09/2026: ban ve cung tron deu "qua deu va thang
+///                        tap"; cai bi che "rang cua rat xau" truoc do la may GAI THANG ngan chia ra, da bo han);
 ///   - HaoQuangDien.png : vang sang tron co van dien toa ra - hao quang boc quanh cau;
 ///   - TiaDien.png      : mot soi tia dien luon song, dung cho vet tia;
 ///   - HatDien.png      : dom sang bon canh - hat dien bay quanh cau.
