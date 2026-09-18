@@ -41,6 +41,13 @@ public class Tornado : MonoBehaviour
     public float boltDamage = 14f;
     public float boltInterval = 0.45f;
 
+    /// <summary>
+    /// Don danh MOT LAN cho moi ke dich vua bi cuon vao (0 = khong co).
+    /// Dung cho ky nang "Hoa Loc Xoay" (14, 18/09/2026): con loc hoa ra mang theo ca don 75 cua Gio loc
+    /// ben canh sat thuong moi giay cua Loc xoay - nguoi dung chon "giu ca hai kieu don".
+    /// </summary>
+    public float donChamMotLan;
+
     public LayerMask damageMask;
 
     /// <summary>Nguoi tung phep - khong an don cua chinh minh. Chi co nghia
@@ -51,6 +58,7 @@ public class Tornado : MonoBehaviour
     public Vector3 travelDir = Vector3.forward;
 
     float age, catchTimer, boltTimer, wanderSeed, soilTimer;
+    readonly HashSet<Damageable> daAnDonCham = new HashSet<Damageable>();
     ParticleSystem psKhoiBui;
     GameObject visual;
     readonly List<WhirledEffect> caught = new List<WhirledEffect>();
@@ -265,6 +273,13 @@ public class Tornado : MonoBehaviour
 
             var w = WhirledEffect.Catch(d, this);
             if (w != null) caught.Add(w);
+
+            // Don cham MOT LAN (Hoa Loc Xoay): moi ke chi an mot lan du bi cuon di cuon lai
+            if (donChamMotLan > 0f && daAnDonCham.Add(d))
+            {
+                d.GhiKeDanh(boQua);
+                d.TakeDamage(donChamMotLan, DamageType.Physical, d.transform.position + Vector3.up * 1f);
+            }
         }
     }
 

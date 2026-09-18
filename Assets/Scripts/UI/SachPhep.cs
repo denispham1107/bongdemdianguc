@@ -56,7 +56,7 @@ public static class SachPhep
         new[] { 0, 4, CapDo.KyLuaDiaNguc },                       // Qua cau lua, Thien thach, Lua dia nguc
         new[] { CapDo.KyQuaCauBang, 1, CapDo.KyTangHinh },        // Qua cau bang, Mua bang, Tang hinh
         new[] { 6, 2, CapDo.KyCauDien },                          // Giut set, Sam set, Qua cau dien
-        new[] { CapDo.KyGioLoc, 3 },                              // Gio loc, Loc xoay
+        new[] { CapDo.KyGioLoc, 3, CapDo.KyHoaLocXoay },          // Gio loc, Loc xoay, Hoa loc xoay
         new[] { CapDo.KyBinhMau, CapDo.KyBinhMana, 5 },           // Binh mau, Binh mana, Khien
     };
 
@@ -299,6 +299,7 @@ public static class SachPhep
             case CapDo.KyLuaDiaNguc: return "LỬA ĐỊA NGỤC";
             case CapDo.KyTangHinh: return "TÀNG HÌNH";
             case CapDo.KyCauDien: return "QUẢ CẦU ĐIỆN";
+            case CapDo.KyHoaLocXoay: return "HOÁ LỐC XOÁY";
             default: return "";
         }
     }
@@ -322,6 +323,7 @@ public static class SachPhep
             case CapDo.KyLuaDiaNguc: return "Năm quả lửa tự đuổi kẻ địch";
             case CapDo.KyTangHinh: return "Trong suốt 20 giây, đòn sau gấp đôi";
             case CapDo.KyCauDien: return "Cầu điện bắn 10 lượt, mỗi lượt 5 tia";
+            case CapDo.KyHoaLocXoay: return "Hoá Gió lốc đang bay thành Lốc xoáy";
             default: return "";
         }
     }
@@ -425,6 +427,15 @@ public static class SachPhep
                      + "Lốc lướt qua lò lửa thì dập tắt lửa, 30 giây sau lò cháy lại.\n\n"
                      + "CẤP 5: phóng cùng lúc HAI cơn lốc song song, cách nhau 4 m — kẻ đứng giữa bị cả hai quét qua thì trúng hai lần — "
                      + "nhưng tốn GẤP ĐÔI năng lượng.";
+            case CapDo.KyHoaLocXoay:
+                return "Cơn GIÓ LỐC bạn vừa phóng ra sẽ PHÌNH TO thành một cơn LỐC XOÁY thật sự — vẫn bay nhanh "
+                     + "9,5 m/s như Gió lốc, nhưng cuốn bổng mọi kẻ địch và cả cảnh vật lên trời như Lốc xoáy.\n\n"
+                     + "Sát thương cộng cả hai: kẻ địch chạm vào ăn ngay đòn 75 của Gió lốc (một lần mỗi kẻ), rồi bị cuốn "
+                     + "lên và tiếp tục chịu 20 sát thương mỗi giây cùng những tia sét trong lòng lốc. Mỗi phần mạnh theo "
+                     + "CẤP HIỆN TẠI của kỹ năng tương ứng.\n\n"
+                     + "Gió lốc cấp 5 phóng hai cơn thì một lần bấm hoá cả hai. Cơn lốc mới sống 6 giây.\n\n"
+                     + "Không có cơn Gió lốc nào đang bay thì kỹ năng không tung ra và KHÔNG tốn năng lượng.\n\n"
+                     + "Tốn 45 năng lượng, hồi chiêu 0,5 giây.";
             case CapDo.KyCauDien:
                 return "Gọi ra một QUẢ CẦU ĐIỆN lơ lửng ngay cạnh kẻ địch gần chỗ bạn ngắm nhất — không có ai ở đó "
                      + "thì quả cầu đứng đúng chỗ ngắm. Tầm ngắm 18 m, bằng Thiên thạch.\n\n"
@@ -478,6 +489,7 @@ public static class SachPhep
             case CapDo.KyLuaDiaNguc: nangLuong = pc.luaDiaNgucCost; hoiChieu = pc.luaDiaNgucCooldown; niemChu = pc.luaDiaNgucCastTime; break;
             case CapDo.KyTangHinh: nangLuong = pc.tangHinhCost; hoiChieu = pc.tangHinhCooldown; niemChu = pc.tangHinhCastTime; break;
             case CapDo.KyCauDien: nangLuong = pc.cauDienCost; hoiChieu = pc.cauDienCooldown; niemChu = pc.cauDienCastTime; break;
+            case CapDo.KyHoaLocXoay: nangLuong = pc.hoaLocXoayCost; hoiChieu = pc.hoaLocXoayCooldown; niemChu = pc.hoaLocXoayCastTime; break;
         }
     }
 }

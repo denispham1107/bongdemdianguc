@@ -202,7 +202,7 @@ public class ManSanh : MonoBehaviour
                 IconKyNang.ThienThach(), IconKyNang.Khieng(), IconKyNang.GiatSet(),
                 IconKyNang.BinhMau(), IconKyNang.BinhMana(), IconKyNang.CauBang(),
                 IconKyNang.GioLoc(), IconKyNang.LuaDiaNguc(), IconKyNang.TangHinh(),
-                IconKyNang.CauDien() };
+                IconKyNang.CauDien(), IconKyNang.HoaLocXoay() };
         return iconXemTruoc;
     }
 

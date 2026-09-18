@@ -8334,6 +8334,49 @@ sát thương hiện ra** (2,1 m) để số không đè lên chữ. Bỏ chữ 
 **Số đo** (menu 62, 0 lỗi): tung thật 10 lần → trúng 10, ngã 7; dấu hiệu hiện **376/383 khung hình đang ngã (98%)**;
 chuỗi ảnh mới thấy chữ NGÃ rõ ở cả 5 thời điểm, đè lên lửa.
 
+### Gió lốc hồi mana, và kỹ năng mới "Hoá Lốc Xoáy" (18/09/2026)
+
+Anh xin hai việc cùng lúc. **Gió lốc**: mỗi lần đánh trúng kẻ địch thì hồi **10 mana cố định cho cả 5 cấp**, và
+**cấp 5 chỉ tốn 25 năng lượng**. **Kỹ năng mới "Hoá Lốc Xoáy"**: bấm là cơn Gió lốc đang bay của lần tung gần nhất
+**phình to thành Lốc xoáy**, giữ tốc độ bay của Gió lốc và mọi hiệu ứng cuốn bay lên của Lốc xoáy; sát thương tổng =
+cấp hiện tại của Gió lốc + cấp hiện tại của Lốc xoáy; 45 năng lượng, hồi chiêu 0,5 giây.
+
+Tôi hỏi trước, anh chốt: **giữ cả hai kiểu đòn** (chạm vào ăn ngay 75 của Gió lốc, rồi bị cuốn lên và chịu tiếp
+20/giây + tia sét của Lốc xoáy); cơn lốc mới sống **đủ 6 giây** của Lốc xoáy; **không có** cơn Gió lốc nào đang bay
+thì **từ chối, không tốn mana**; Gió lốc cấp 5 ra hai cơn thì **một lần bấm hoá cả hai**.
+
+**Cách làm:**
+- `GioLoc.ManaHoiMoiLanTrung` = 10, cộng trong `TrungMot` qua `HoiManaChoNguoiTung`. ⚠️ Chỉ cộng trên **máy của
+  chính người ấy** (`pc.tuDocInput`): bản sao mạng cũng chạy hàm này, cộng vào đó là hai máy kể hai con số khác nhau.
+- `GioLoc.NangLuongCan(cấp, gốc, hệ số cấp)`: cấp 1–4 giữ công thức cũ, **cấp 5 trả thẳng 25**.
+- Kỹ năng **14** `HoaLocXoay` (static, không phải MonoBehaviour): mỗi cơn Gió lốc nay mang `lucTung` (Time.time lúc
+  bấm) nên tìm được "lần tung gần nhất"; cấp 5 hai cơn cùng một mốc nên hoá cả hai. Hoá = sinh `Tornado` ngay chỗ
+  cơn Gió lốc, đặt `moveSpeed = GioLoc.TocDo` (9,5 thay vì 3,4), nhân sát thương mỗi giây / tia sét theo cấp Lốc xoáy,
+  đặt `Tornado.donChamMotLan` = 75 × cấp Gió lốc (trường mới, đánh **một lần mỗi kẻ** lúc bị cuốn), rồi huỷ cơn Gió lốc.
+- Hiệu ứng **to dần**: `PhinhToThanhLoc` chỉ đổi **tỉ lệ hình** từ 0,42 lên 1,00 trong 0,55 giây — không đụng vào sức
+  hút hay sát thương, không thì kẻ đứng sát cơn lốc đang phình sẽ không bị cuốn và nhìn như lốc hỏng.
+- `CastAt` hỏi `HoaLocXoay.CoLocDeHoa` **trước khi trừ mana**: bấm hụt thì không mất gì.
+
+**Số đo** (menu 75, `hoalocxoay.txt`, **0 lỗi**):
+
+| Đo | Kết quả |
+|---|---|
+| Hồi mana | một cơn Gió lốc quét 3 bia → trúng 3 lần, hồi đúng **30 mana**; ĐỐI CHỨNG bắn vào chỗ trống → **0** |
+| Năng lượng Gió lốc | cấp 1–4: 20,0 / 22,0 / 24,2 / 26,6; **cấp 5: 25,0** (bản cũ 58,6) |
+| Hoá | trước khi hoá 1 cơn Gió lốc → sau khi hoá **0 Gió lốc, có Lốc xoáy**, lệch chỗ **0,00 m** |
+| Giữ tốc độ | Lốc xoáy hoá ra bay **9,5 m/s** (Lốc xoáy gốc chỉ 3,4), sống **6,0 giây** |
+| Sát thương | đòn chạm một lần **75,0** = Gió lốc cấp hiện tại; sát thương mỗi giây **20,0** của Lốc xoáy; bia đứng yên mất **388 máu** |
+| To dần | tỉ lệ hình ngay khi hoá **0,42** → sau 0,55 giây **1,00** |
+| Bấm hụt | không có Gió lốc nào đang bay → **từ chối**, mana 302,5 → 302,5, hồi chiêu **0,00 s** |
+| Cấp 5 | Gió lốc cấp 5 ra 2 cơn → một lần bấm hoá **cả hai**, còn 0 Gió lốc |
+| Hồi quy | menu 71 (Gió lốc) và 59 (Sách phép, nay 15 kỹ năng): **0 lỗi** |
+
+Hai lần phép thử tự báo oan, cùng một kiểu và đáng ghi: **đo vị trí một vật đang bay thì phải đo đúng khoảnh khắc**.
+Lần đầu tôi đọc chỗ cơn Gió lốc *trước khi niệm* rồi so với Lốc xoáy sau khi hoá → lệch 5,12 m, đúng bằng quãng đường
+9,5 m/s × 0,55 giây niệm chiêu. Sửa xong lại lệch 9,35 m vì lần này chính **cơn Lốc xoáy** đã bay tiếp trước lúc tôi
+đọc. Chỉ khi ghi cả hai vị trí **ngay khung hình đầu tiên thấy cơn lốc mới** thì số đo mới ra 0,00 m. Tỉ lệ "to dần"
+cũng vậy: đọc trễ 0,5 giây thì thấy 0,91 thay vì 0,42 — phải theo dõi suốt trong vòng lặp.
+
 ### Kỹ năng mới: Quả cầu điện — quả cầu lơ lửng bắn tia vào mọi kẻ quanh nó (18/09/2026)
 
 Anh gửi hai ảnh Diablo III và xin kỹ năng **"Quả cầu điện"**: dựng quả cầu **bằng Blender MCP** như trong ảnh,
@@ -9617,6 +9660,7 @@ Lần chạy đầu phép thử báo cả 10 con "lơ lửng": tia chiếu từ 
 | **69. Chay thu GIUT SET (20 m, 75, 4 tia, 15% choang)** | Thông số; tung thật `CastAt(6)` vào 5 bia (đúng 4 bia mất 75 cùng một khung hình); tầm 20 m bằng bia 19,9 / 20,4 m; tia lan ra ngoài tầm vẫn trúng ×0,85; 160 lần phóng đếm tỉ lệ choáng tia đầu và tia lan riêng (bằng StunnedEffect trên bia); cấp kỹ năng kéo dài choáng. Số đo `giatset.txt`. |
 | **71. Chay thu GIO LOC (ky nang moi)** | Thông số; tung thật `CastAt(10)` (khoá, 3 lốc, 20 năng lượng, hồi chiêu đo bằng bấm mỗi khung); lưới Blender, cao 5 m so Lốc xoáy thật, xám trắng, không đèn, không tia sét; **xoáy một chiều đi lên** (độ xoắn dải gió đo ngoài Play + chiều quay thật từng lớp + chiều trượt ảnh); khói bụi đen bay lên và cuộn cùng chiều (theo dõi từng hạt), vòng phun nằm ngang (phun thử 200 hạt), vệt phía sau; bán kính chân ×1,68 / phần trên ×1,0 (so công thức gốc); tia sét hiệu ứng khi trúng (5 bia → 5 tia từ thân lốc, 5 cháy sém, 0 cột sáng đứng, mất đúng 75); 1 lốc, sống 4,5 s; không trèo mái nhà mồ (đối chứng tia cũ chạm mái); tốc độ 8 m/s và thời gian sống; xuyên bia mộ (tia đối chứng); 75 một lần, 225 ba lốc, vùng 2,2 m (2,5 / 2,7 m); 190 lần trúng đếm hất tung độc lập, độ cao, thời gian bay; khiên chặn hất; ngắt chiêu người chơi (đối chứng) và đòn quái (đối chứng); qua mạng: gói số 10, bit hất tung, mặt nạ 5 bit, bản sao bay / ngắt chiêu / không hất lần hai; lò lửa tắt rồi cháy lại sau 30 s. Số đo `gioloc.txt`. |
 | **71b. Chup anh GIO LOC (so voi Loc xoay)** | Chỉ chụp: hai lốc bay ngang màn hình 5 khung liên tiếp + Lốc xoáy lớn để so. Ảnh `gioloc_can_*.png`, `gioloc_locxoay_*.png`. |
+| **75. Chay thu HOA LOC XOAY + Gio loc hoi mana** | Thông số (số hiệu 14, 45 năng lượng, hồi chiêu 0,5); Gió lốc quét 3 bia hồi đúng 30 mana (đối chứng bắn chỗ trống: 0); năng lượng Gió lốc cấp 5 = 25 (bản cũ 58,6); hoá xong 0 Gió lốc / có Lốc xoáy lệch 0,00 m, bay 9,5 m/s, sống 6 s, đòn chạm 75 + 20/giây; hình to dần 0,42 → 1,00; bấm hụt không tốn mana và không vào hồi chiêu; cấp 5 hoá cả hai cơn. Số đo `hoalocxoay.txt`. |
 | **74. Chay thu QUA CAU DIEN (ky nang moi)** | Thông số (số hiệu 13, 55 năng lượng, hồi chiêu 5 s, tầm 18 m) + tài nguyên Blender; quả cầu bám kẻ địch gần chỗ ngắm (đối chứng: không có ai thì đứng đúng chỗ ngắm); 10 lượt cách nhau 0,4 s; 50 tia, đúng 5 kẻ gần nhất mỗi kẻ một tia; 155,52 mỗi tia = Giựt sét cấp 5; 400 tia → choáng 30,0% × 1,50 s; gói phép số 13 qua mạng. Số đo `quacaudien.txt`. |
 | **73. Chay thu TANG HINH (ky nang moi)** | Thông số (số hiệu 12, 30 năng lượng, hồi chiêu 30 s, 20 giây); thân đổi sang shader tàng hình rồi trả lại; miễn 6 hiệu ứng (đối chứng lúc thường dính đủ), xoá hiệu ứng đang dính, vẫn ăn sát thương; 24 quái thật mất dấu; tốc độ ×1,20 đo bằng quãng đường; đòn đầu ×2,00 rồi tan, Khiên không làm tan; hết giờ tự tan; qua mạng bit `CoTangHinh`, bản sao đứng yên tắt renderer; **nhấp nháy 2 giây cuối** (18 lần đổi sáng/tối, bản sao người khác không nháy) và hai ảnh hai pha; **đòn đầu ×2 cho TOÀN BỘ sát thương**: từng vệt Mưa băng 29,04 → 58,08, Quả cầu băng cấp 5 442,4 → 884,7; cờ đòn đầu đi qua gói phép (người kia tung qua mạng cũng ×2). Số đo `tanghinh.txt`. |
 | **72. Chay thu LUA DIA NGUC (ky nang moi)** | Thông số (số hiệu 11, năng lượng 31/hồi chiêu/niệm, sát thương gốc = prefab Quả cầu lửa × 1,2⁴, chữ Sách phép, icon); tung thật 5 quả; tự dí 5 bia ngoài hình quạt (đối chứng Quả cầu lửa thường 0 bia), 1 bia, bia chạy ngang, mục tiêu chết giữa đường, không có ai bay thẳng 18°; sát thương so với Quả cầu lửa cấp 5 thật + thiêu đốt; màu giống hệt Quả cầu lửa; qua mạng + kẻ đánh. Tạm tắt va chạm đồ vật 26 m (Act2 không có chỗ trống). Số đo `luadianguc.txt`. |

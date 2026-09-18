@@ -47,6 +47,7 @@ public static class IconKyNang
     // Tang hinh: dung trong Blender qua MCP (CongCu/Blender/tang_hinh.blend, 18/09/2026), nen xanh lo toi
     public static Texture2D TangHinh()   { return Ve("Icons/TangHinh",   new Color(0.03f, 0.13f, 0.16f)); }
     public static Texture2D CauDien()    { return Ve("Icons/CauDien",    new Color(0.02f, 0.08f, 0.20f)); }
+    public static Texture2D HoaLocXoay() { return Ve("Icons/HoaLocXoay", new Color(0.10f, 0.09f, 0.07f)); }
 
     /// <summary>
     /// Dat anh Blender vao mot cai dia nut.

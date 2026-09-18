@@ -1212,14 +1212,15 @@ public static class ThuGioLoc
             }
             yield return new WaitForSeconds(1.2f);
             float matM = mauM - biaM.health;
-            float mongTon4 = 20f * Mathf.Pow(1.1f, 3), mongTon5 = 20f * Mathf.Pow(1.1f, 4) * 2f, mongMat = 75f * Mathf.Pow(1.2f, 4) * 2f;
-            Ghi(string.Format("M. cap 4 (doi chung): {0} loc, ton {1:F2} nang luong (mong {2:F2}); cap {3}: {4} loc, ton {5:F2} (mong {6:F2})",
+            // CAP 5 nay ton DUNG 25 nang luong (nguoi dung doi 18/09/2026; truoc do 20 x 1,1^4 x 2 = 58,56)
+            float mongTon4 = 20f * Mathf.Pow(1.1f, 3), mongTon5 = GioLoc.NangLuongCap5, mongMat = 75f * Mathf.Pow(1.2f, 4) * 2f;
+            Ghi(string.Format("M. cap 4 (doi chung): {0} loc, ton {1:F2} nang luong (mong {2:F2}); cap {3}: {4} loc, ton {5:F2} (mong {6:F2} - con so CO DINH nguoi dung chot 18/09/2026, ban cu 58,56)",
                 soLoc4, ton4, mongTon4, cap5, hai.Count, ton5, mongTon5));
             Ghi(string.Format("M. hai loc: tam cach nhau luc sinh {0:F2} m, sau 1 s {1:F2} m; lech theo huong bay {2:F3} m (0 = xep ngang); cos hai huong bay {3:F4}; bia giua hai duong bay mat {4:F1} (mong {5:F1} = trung ca hai)",
                 cach0, cach1, lechDoc, dotHuong, matM, mongMat));
             Kiem(soLoc4 == 1 && Mathf.Abs(ton4 - mongTon4) < 0.05f, "doi chung cap 4 khong phai 1 loc / nang luong thuong");
             Kiem(cap5 == 5 && hai.Count == 2, "cap 5 khong ra dung 2 loc");
-            Kiem(Mathf.Abs(ton5 - mongTon5) < 0.05f, "cap 5 khong ton gap doi nang luong");
+            Kiem(Mathf.Abs(ton5 - mongTon5) < 0.05f, "cap 5 khong ton dung 25 nang luong");
             Kiem(Mathf.Abs(cach0 - 4f) < 0.05f && Mathf.Abs(cach1 - 4f) < 0.05f && lechDoc < 0.05f && dotHuong > 0.9999f, "hai loc khong song song cach nhau 4 m");
             // bia co 10 000 000 mau: so thuc float o do lon nay chi chinh xac toi 1 don vi, moi cu tru 155,52 thanh 156 -> hai loc 312
             Kiem(Mathf.Abs(matM - mongMat) < 1.1f, "bia giua khong bi ca hai loc trung");

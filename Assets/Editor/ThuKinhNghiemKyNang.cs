@@ -169,7 +169,9 @@ public static class ThuKinhNghiemKyNang
     // coroutine nem IndexOutOfRange, CHET GIUA CHUNG va Play mode ket lai mai (18/09/2026 dinh dung cai nay).
     static readonly string[] TenKyNang = { "Qua cau lua", "Mua bang", "Sam set", "Loc xoay", "Thien thach", "Khien", "Giut set",
                                             "Binh mau", "Binh mana", "Qua cau bang", "Gio loc", "Lua dia nguc",
-                                            "Tang hinh", "Qua cau dien" };
+                                            "Tang hinh", "Qua cau dien", "Hoa loc xoay" };
+    // Hoa loc xoay (14) KHONG nam trong danh sach thu o duoi: no can mot con Gio loc DANG BAY moi tung duoc,
+    // tung le mot minh thi CastAt tu choi. Duong sat thuong cua no la Tornado (so 3) - da co trong danh sach.
 
     static IEnumerator KichBan()
     {

@@ -48,6 +48,24 @@ public class GioLoc : MonoBehaviour
     /// <summary>Nhan them vao nang luong (sau he so cap chung): so loc tung ra.</summary>
     public static float HeSoNangLuongTheoCap(int capKy) { return SoLocTheoCap(capKy); }
 
+    /// <summary>CAP 5 chi ton 25 nang luong - con so CO DINH, khong nhan he so cap va khong nhan so loc
+    /// (nguoi dung chot 18/09/2026). Truoc do cap 5 ton 20 x 1,4641 x 2 = 58,6.</summary>
+    public const float NangLuongCap5 = 25f;
+
+    /// <summary>Nang luong THAT SU phai tra cho mot lan tung, da tinh het moi he so.</summary>
+    public static float NangLuongCan(int capKy, float nangLuongGoc, float heSoCapChung)
+    {
+        if (capKy >= CapHaiLoc) return NangLuongCap5;
+        return nangLuongGoc * heSoCapChung * HeSoNangLuongTheoCap(capKy);
+    }
+
+    /// <summary>Moi lan danh trung mot ke dich thi nguoi tung hoi bang nay mana - CO DINH cho ca 5 cap
+    /// (nguoi dung chot 18/09/2026).</summary>
+    public const float ManaHoiMoiLanTrung = 10f;
+
+    /// <summary>Dem cho phep thu (menu 71): tong mana da hoi lai nho danh trung.</summary>
+    public static float ManaDaHoi;
+
     /// <summary>
     /// soLoc loc SONG SONG cung huong, xep ngang (vuong goc huong bay) cach nhau <paramref name="khoangCach"/>, doi xung quanh chan.
     /// </summary>
@@ -63,6 +81,7 @@ public class GioLoc : MonoBehaviour
         {
             var loc = Spawn(chan + ngang * ((i - giua) * khoangCach), huong, damageMask);
             loc.boQua = boQua;
+            loc.lucTung = Time.time;
             loc.tuaTruoc = BuTre.TuaTruocGiay;
             loc.damage *= heSoSatThuong;
             loc.giayHatTung += themGiay;
@@ -89,6 +108,10 @@ public class GioLoc : MonoBehaviour
 
     public LayerMask damageMask;
     public Damageable boQua;
+
+    /// <summary>Time.time luc NGUOI CHOI BAM ra con loc nay. Ky nang "Hoa Loc Xoay" (14) tim lan tung
+    /// GAN NHAT cua nguoi ay theo con so nay - cap 5 ra hai loc thi ca hai mang cung mot moc.</summary>
+    public float lucTung;
     public Vector3 dir = Vector3.forward;
 
     /// <summary>Bu tre mang: tua nhanh cho kip cho nguoi tung nhin thay (nhu QuaCauBang).</summary>
@@ -96,6 +119,9 @@ public class GioLoc : MonoBehaviour
 
     float age, loTimer, setTimer;
     bool daTan;
+    /// <summary>Hinh con loc (luoi Blender + he hat) - Hoa Loc Xoay can tat rieng khi doi thanh Loc xoay.</summary>
+    public GameObject Hinh { get { return visual; } }
+
     GameObject visual;
     readonly HashSet<Damageable> daTrung = new HashSet<Damageable>();
 
@@ -192,6 +218,22 @@ public class GioLoc : MonoBehaviour
     }
 
     /// <summary>Quet ca doan vua di (8 m/s, may yeu 10 khung/giay = 0,8 m moi khung) chu khong chi diem cuoi.</summary>
+    /// <summary>
+    /// Trung ke dich thi NGUOI TUNG hoi 10 mana (nguoi dung 18/09/2026).
+    ///
+    /// Chi cong tren MAY CUA CHINH NGUOI AY: con loc do may khac phat lai (ban sao mang) cung chay
+    /// ham nay, nhung mana cua ban sao khong ai nhin thay - cong vao la hai may hien hai con so khac nhau.
+    /// </summary>
+    void HoiManaChoNguoiTung()
+    {
+        if (boQua == null) return;
+        var pc = boQua.GetComponent<PlayerController>();
+        if (pc == null || !pc.tuDocInput) return;
+        float truoc = pc.mana;
+        pc.mana = Mathf.Min(pc.maxMana, pc.mana + ManaHoiMoiLanTrung);
+        ManaDaHoi += pc.mana - truoc;
+    }
+
     void QuetTrung(Vector3 tu, Vector3 den)
     {
         Vector3 a = tu + Vector3.up * 1.0f, b = den + Vector3.up * 1.0f;
@@ -216,6 +258,7 @@ public class GioLoc : MonoBehaviour
         // (17/09/2026 nguoi dung bo hieu ung tia set + chop + chay sem khi trung doi thu; thay bang 2 tia set trong long loc)
         d.GhiKeDanh(boQua);
         d.TakeDamage(damage, DamageType.Physical, nguc);
+        HoiManaChoNguoiTung();
 
         if (!d.IsDead && !khiengDo && Random.value < xacSuatHatTung)
         {

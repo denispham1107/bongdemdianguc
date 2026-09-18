@@ -109,6 +109,11 @@ public class PlayerController : MonoBehaviour
     public float cauDienCooldown = QuaCauDien.HoiChieu;     // 5 giay
     public float cauDienCastTime = 0.62f;
 
+    [Header("Hoa loc xoay (ky nang 14) - doi Gio loc dang bay thanh Loc xoay")]
+    public float hoaLocXoayCost = HoaLocXoay.NangLuong;         // 45
+    public float hoaLocXoayCooldown = HoaLocXoay.HoiChieu;      // 0,5 giay
+    public float hoaLocXoayCastTime = 0.38f;
+
     [Header("Tham chieu")]
     public CharacterRig rig;
     public ProceduralAnimator anim;
@@ -130,6 +135,7 @@ public class PlayerController : MonoBehaviour
     public float LuaDiaNgucCooldown01 { get { return Mathf.Clamp01(luaDiaNgucTimer / luaDiaNgucCooldown); } }
     public float TangHinhCooldown01 { get { return Mathf.Clamp01(tangHinhTimer / tangHinhCooldown); } }
     public float CauDienCooldown01 { get { return Mathf.Clamp01(cauDienTimer / cauDienCooldown); } }
+    public float HoaLocXoayCooldown01 { get { return Mathf.Clamp01(hoaLocXoayTimer / hoaLocXoayCooldown); } }
 
     /// <summary>
     /// Con bao nhieu GIAY nua thi dung duoc ky nang <paramref name="skill"/>.
@@ -157,6 +163,7 @@ public class PlayerController : MonoBehaviour
             case CapDo.KyLuaDiaNguc: return Mathf.Max(0f, luaDiaNgucTimer);
             case CapDo.KyTangHinh: return Mathf.Max(0f, tangHinhTimer);
             case CapDo.KyCauDien: return Mathf.Max(0f, cauDienTimer);
+            case CapDo.KyHoaLocXoay: return Mathf.Max(0f, hoaLocXoayTimer);
         }
         return 0f;
     }
@@ -218,7 +225,7 @@ public class PlayerController : MonoBehaviour
     public int MatNaVatCan { get { return obstacleMask; } }
 
     float fireballTimer, iceTimer, boltTimer, tornadoTimer;
-    float castTimer, castTotal, meteorTimer, khiengTimer, giatSetTimer, quaCauBangTimer, gioLocTimer, luaDiaNgucTimer, tangHinhTimer, cauDienTimer;
+    float castTimer, castTotal, meteorTimer, khiengTimer, giatSetTimer, quaCauBangTimer, gioLocTimer, luaDiaNgucTimer, tangHinhTimer, cauDienTimer, hoaLocXoayTimer;
 
     // ---- Binh mau / binh mana (ky nang 7, 8 - them 13/09/2026) ----
     // HANG SO chu khong phai truong public: truong public se bi prefab va hai
@@ -383,6 +390,7 @@ public class PlayerController : MonoBehaviour
         if (luaDiaNgucTimer > 0f) luaDiaNgucTimer -= dt;
         if (tangHinhTimer > 0f) tangHinhTimer -= dt;
         if (cauDienTimer > 0f) cauDienTimer -= dt;
+        if (hoaLocXoayTimer > 0f) hoaLocXoayTimer -= dt;
         if (binhMauTimer > 0f) binhMauTimer -= dt;
         if (binhManaTimer > 0f) binhManaTimer -= dt;
 
@@ -914,12 +922,12 @@ public class PlayerController : MonoBehaviour
         }
         else if (skill == CapDo.KyGioLoc)
         {
-            // Cap 5 ra 2 loc -> ton gap doi (nguoi dung 17/09/2026)
-            tonThem *= GioLoc.HeSoNangLuongTheoCap(CapDo.CapCuaKyNang(skill));
+            // Cap duoi 5: ton gap doi theo so loc; CAP 5 ton dung 25 (nguoi dung 18/09/2026, truoc do 58,6)
+            float tonGioLoc = GioLoc.NangLuongCan(CapDo.CapCuaKyNang(skill), gioLocCost, tonThem);
             if (gioLocTimer > 0f) { Say("GIÓ LỐC đang hồi chiêu"); return; }
-            if (mana < gioLocCost * tonThem) { Say("Không đủ năng lượng!"); return; }
+            if (mana < tonGioLoc) { Say("Không đủ năng lượng!"); return; }
 
-            mana -= gioLocCost * tonThem;
+            mana -= tonGioLoc;
             gioLocTimer = gioLocCooldown;
             BeginCast(CapDo.KyGioLoc, gioLocCastTime, aim);
         }
@@ -931,6 +939,18 @@ public class PlayerController : MonoBehaviour
             mana -= tangHinhCost * tonThem;
             tangHinhTimer = tangHinhCooldown;
             BeginCast(CapDo.KyTangHinh, tangHinhCastTime, aim);
+        }
+        else if (skill == CapDo.KyHoaLocXoay)
+        {
+            if (hoaLocXoayTimer > 0f) { Say("HOÁ LỐC XOÁY đang hồi chiêu"); return; }
+            // Khong co con Gio loc nao dang bay thi TU CHOI - khong tru mana, khong vao hoi chieu
+            // (nguoi dung chon 18/09/2026).
+            if (!HoaLocXoay.CoLocDeHoa(health)) { Say("Không có GIÓ LỐC nào đang bay!"); return; }
+            if (mana < hoaLocXoayCost * tonThem) { Say("Không đủ năng lượng!"); return; }
+
+            mana -= hoaLocXoayCost * tonThem;
+            hoaLocXoayTimer = hoaLocXoayCooldown;
+            BeginCast(CapDo.KyHoaLocXoay, hoaLocXoayCastTime, aim);
         }
         else if (skill == CapDo.KyCauDien)
         {
@@ -1053,7 +1073,7 @@ public class PlayerController : MonoBehaviour
     {
         // 0..6, Qua cau bang (9), Gio loc (10). Binh (7, 8) khong bao gio di qua goi tung phep.
         if ((skill < 0 || skill > 6) && skill != CapDo.KyQuaCauBang && skill != CapDo.KyGioLoc && skill != CapDo.KyLuaDiaNguc
-            && skill != CapDo.KyTangHinh && skill != CapDo.KyCauDien) return;
+            && skill != CapDo.KyTangHinh && skill != CapDo.KyCauDien && skill != CapDo.KyHoaLocXoay) return;
         buTreCuaPhepNay = doTreGiay;
 
         // CAP CUA NGUOI TUNG, khong phai cap cua nguoi xem: goi tin mang theo
@@ -1095,6 +1115,7 @@ public class PlayerController : MonoBehaviour
             case CapDo.KyLuaDiaNguc: return luaDiaNgucCastTime;
             case CapDo.KyTangHinh: return tangHinhCastTime;
             case CapDo.KyCauDien: return cauDienCastTime;
+            case CapDo.KyHoaLocXoay: return hoaLocXoayCastTime;
             default: return giatSetCastTime;
         }
     }
@@ -1146,7 +1167,7 @@ public class PlayerController : MonoBehaviour
         int nguyenTo = (skill == 4) ? 0 : (skill == 5) ? 1 : (skill == 6) ? 2
                      : (skill == CapDo.KyQuaCauBang) ? 1 : (skill == CapDo.KyGioLoc) ? 3
                      : (skill == CapDo.KyLuaDiaNguc) ? 0 : (skill == CapDo.KyTangHinh) ? 1
-                     : (skill == CapDo.KyCauDien) ? 2 : skill;
+                     : (skill == CapDo.KyCauDien) ? 2 : (skill == CapDo.KyHoaLocXoay) ? 3 : skill;
         chargeVfx = VfxFactory.CastCharge(at, nguyenTo, castTime);
     }
 
@@ -1266,6 +1287,14 @@ public class PlayerController : MonoBehaviour
         else if (castingSkill == CapDo.KyTangHinh)
         {
             TangHinh.Bat(health, TangHinh.ThoiGian);
+        }
+        else if (castingSkill == CapDo.KyHoaLocXoay)
+        {
+            // Doi con Gio loc cua LAN TUNG GAN NHAT thanh Loc xoay. Sat thuong tong = cap hien tai
+            // cua Gio loc (don cham) + cap hien tai cua Loc xoay (moi giay + tia set) - nguoi dung chot.
+            float capGioLoc = CapDo.SatThuongTheoCap(Mathf.Max(1, CapDo.CapCuaKyNang(CapDo.KyGioLoc)));
+            float capLocXoay = CapDo.SatThuongTheoCap(Mathf.Max(1, CapDo.CapCuaKyNang(3)));
+            HoaLocXoay.Hoa(health, enemyMask, capGioLoc, capLocXoay);
         }
         else if (castingSkill == CapDo.KyCauDien)
         {
@@ -1582,6 +1611,7 @@ public class PlayerController : MonoBehaviour
         t.hoiLuaDiaNguc = luaDiaNgucTimer;
         t.hoiTangHinh   = tangHinhTimer;
         t.hoiCauDien    = cauDienTimer;
+        t.hoiHoaLocXoay = hoaLocXoayTimer;
         t.dangNiem      = castTimer;
         t.coDiemDen     = hasMoveTarget;
         t.diemDen       = moveTarget;
@@ -1620,6 +1650,7 @@ public class PlayerController : MonoBehaviour
         luaDiaNgucTimer = t.hoiLuaDiaNguc;
         tangHinhTimer   = t.hoiTangHinh;
         cauDienTimer    = t.hoiCauDien;
+        hoaLocXoayTimer = t.hoiHoaLocXoay;
         castTimer     = t.dangNiem;
         hasMoveTarget = t.coDiemDen;
         moveTarget    = t.diemDen;
