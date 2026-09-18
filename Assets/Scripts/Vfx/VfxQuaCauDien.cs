@@ -8,9 +8,14 @@ using UnityEngine;
 ///
 /// Tai nguyen dung bang Blender MCP (CongCu/Blender/qua_cau_dien.blend) -> Resources/KyNang/QuaCauDien:
 ///   - CauDien.fbx      : LoiCauDien (khoi cau, TOI mau nhu trong anh) + VanhSangCauDien (vo cau MIN lam VANH SANG
-///                        boc ngoai) + VoDienCauDien (BON DUONG GAN TRANG vong quanh, NAM NGOAI mat cau va GAY KHUC
-///                        MEO MO nhu tia dien that - nguoi dung 18/09/2026: ban ve cung tron deu "qua deu va thang
-///                        tap"; cai bi che "rang cua rat xau" truoc do la may GAI THANG ngan chia ra, da bo han);
+///                        boc ngoai) + VoDienCauDien (cac DUONG GAN TRANG lien mach vong quanh - KHONG DUNG NUA,
+///                        thay bang VoTiaDien.fbx ben duoi);
+///   - VoTiaDien.fbx    : BON KHUNG tia dien (VoTia0..3). Moi khung la CAC DOAN TIA DIEN RAT MONG (ong ban kinh
+///                        0,016 so voi cau ban kinh 1) chay theo DUNG NAM DUONG VONG cu, nhung DUT QUANG - moi
+///                        duong ngat thanh nhieu doan ngan co khoang ho, hai dau doan thuon nhon. Nguoi dung
+///                        18/09/2026: "thay cac duong van trang thanh cac tia dien mong bao boc xung quanh qua cau
+///                        giong nhu cac duong van trang hien gio (khong ve lien mach nhe)" + chon CHOP TAT LIEN TUC.
+///                        Bon khung dung chung nam duong nen doi khung nhin ra "dien chay", khong nhay lung tung.
 ///   - HaoQuangDien.png : vang sang tron co van dien toa ra - hao quang boc quanh cau;
 ///   - TiaDien.png      : mot soi tia dien luon song, dung cho vet tia;
 ///   - HatDien.png      : dom sang bon canh - hat dien bay quanh cau.
@@ -24,6 +29,7 @@ public static partial class VfxFactory
     const string ThuMucCauDien = "KyNang/QuaCauDien/";
 
     static Mesh luoiLoiCauDien, luoiVoCauDien, luoiVanhCauDien;
+    static Mesh[] khungTiaDien;
     static bool daTimLuoiCauDien;
     static Material mLoiCauDien, mVoCauDien, mVanhCauDien, mHaoQuangDien, mHatDien, mTiaDienVet;
 
@@ -40,7 +46,22 @@ public static partial class VfxFactory
             else if (mf.name.StartsWith("Vanh")) luoiVanhCauDien = mf.sharedMesh;
             else if (mf.name.StartsWith("Vo")) luoiVoCauDien = mf.sharedMesh;
         }
+
+        // Bon khung tia dien dut quang (VoTiaDien.fbx)
+        var goTia = Resources.Load<GameObject>(ThuMucCauDien + "VoTiaDien");
+        if (goTia != null)
+        {
+            var ds = new System.Collections.Generic.List<Mesh>();
+            foreach (var mf in goTia.GetComponentsInChildren<MeshFilter>())
+                if (mf != null && mf.sharedMesh != null && mf.name.StartsWith("VoTia")) ds.Add(mf.sharedMesh);
+            // Xep theo ten (VoTia0..3) de thu tu chop on dinh giua cac lan chay
+            ds.Sort((a, b) => string.CompareOrdinal(a.name, b.name));
+            if (ds.Count > 0) khungTiaDien = ds.ToArray();
+        }
     }
+
+    /// <summary>Bon khung tia dien dut quang - doi qua lai de thanh "chop tat".</summary>
+    public static Mesh[] KhungTiaDien { get { TimLuoiCauDien(); return khungTiaDien; } }
 
     /// <summary>Khoi cau go ghe o giua (luoi Blender; null thi dung khoi cau tron cua Unity).</summary>
     public static Mesh LuoiLoiCauDien { get { TimLuoiCauDien(); return luoiLoiCauDien; } }
@@ -65,7 +86,8 @@ public static partial class VfxFactory
         get
         {
             if (mVoCauDien == null)
-                mVoCauDien = Mats.Additive("P_VoCauDien", TextureFactory.SoftDot(1.3f), new Color(0.62f, 0.84f, 1f, 1f), 2.1f);
+                // Tia mong hon gan cu nhieu lan -> phai sang hon moi noi len tren nen qua cau
+                mVoCauDien = Mats.Additive("P_VoCauDien", TextureFactory.SoftDot(1.3f), new Color(0.80f, 0.93f, 1f, 1f), 3.2f);
             return mVoCauDien;
         }
     }
@@ -160,9 +182,26 @@ public static partial class VfxFactory
             quayN.degreesPerSecond = -38f;
         }
 
-        // 3) VO DIEN - quay NGUOC chieu loi cho ra cam giac dien cuon
-        if (luoiVoCauDien != null)
+        // 3) TIA DIEN DUT QUANG boc ngoai - quay NGUOC chieu loi VA chop tat lien tuc.
+        // Truoc day day la mot vo gan lien mach (luoiVoCauDien); nguoi dung 18/09/2026 doi thanh
+        // cac doan tia mong. Doi MESH chu khong bat/tat renderer: chi mot renderer, doi sharedMesh
+        // la xong - re nhat cho dien thoai.
+        Mesh[] khung = khungTiaDien;
+        if (khung != null && khung.Length > 0)
         {
+            var vo = new GameObject("TiaDienBoc");
+            vo.transform.SetParent(goc.transform, false);
+            vo.transform.localScale = Vector3.one * banKinh * 1.04f;
+            vo.AddComponent<MeshFilter>().sharedMesh = khung[0];
+            vo.AddComponent<MeshRenderer>().sharedMaterial = VoCauDienMat;
+            var quayV = vo.AddComponent<Spin>();
+            quayV.axis = new Vector3(-0.15f, 1f, 0.25f).normalized;
+            quayV.degreesPerSecond = -120f;
+            vo.AddComponent<ChopTiaDien>().khung = khung;
+        }
+        else if (luoiVoCauDien != null)
+        {
+            // Du phong: thieu VoTiaDien.fbx thi ve lai vo lien mach cu con hon khong co gi
             var vo = new GameObject("VoDien");
             vo.transform.SetParent(goc.transform, false);
             vo.transform.localScale = Vector3.one * banKinh * 1.04f;

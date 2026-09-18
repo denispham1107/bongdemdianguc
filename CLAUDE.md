@@ -190,9 +190,20 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
   **155,52** = `GiatSet.SatThuongNguoiChoi × CapDo.SatThuongTheoCap(5)` (đọc thẳng từ Giựt sét, không chép tay) và **30% choáng 1,5 s**;
   **55 năng lượng** · hồi chiêu **5 s** · niệm 0,62. Hình **dựng bằng Blender MCP** (`CongCu/Blender/qua_cau_dien.blend` →
   `Resources/KyNang/QuaCauDien/`: `CauDien.fbx` = lõi cầu **tối** + **vành sáng** + vỏ cung điện, ảnh hào quang **hình vòng khuyên**,
-  `TiaDien`/`HatDien`), ba lớp quay ngược chiều nhau; icon `Resources/Icons/CauDien.png`. ⚠️ Vỏ điện là **năm đường VIỀN TRẮNG lớn
-  vòng quanh, nằm NGOÀI mặt cầu** (người dùng xác nhận 18/09/2026) — thứ họ chê "răng cưa rất xấu" là mấy **gai thẳng ngắn chĩa ra**
-  của bản đầu, đã bỏ hẳn; cũng **không có tia sét nhỏ bắn ra liên tục** (đã thử rồi bỏ). Menu 74 kiểm.
+  `TiaDien`/`HatDien`), ba lớp quay ngược chiều nhau; icon `Resources/Icons/CauDien.png`. ⚠️ Vỏ điện nằm **NGOÀI mặt cầu**
+  (người dùng xác nhận 18/09/2026) — thứ họ chê "răng cưa rất xấu" là mấy **gai thẳng ngắn chĩa ra** của bản đầu, đã bỏ hẳn;
+  cũng **không có tia sét nhỏ bắn ra liên tục** (đã thử rồi bỏ).
+  ⚠️ **19/09/2026 đổi vỏ**: năm đường gân trắng LIỀN MẠCH → **các đoạn TIA ĐIỆN MỎNG ĐỨT QUÃNG, CHỚP TẮT** (người dùng xin,
+  và chốt "chớp tắt liên tục" + "mỗi đường đứt thành nhiều đoạn"). `VoTiaDien.fbx` (Blender MCP `CongCu/Blender/tia_dien_qua_cau.blend`)
+  có **bốn khung** `VoTia0..3` — cùng năm đường ấy, đoạn nằm chỗ khác; `Vfx/ChopTiaDien.cs` đổi `sharedMesh` mỗi 0,045–0,105 s
+  (một renderer, không bật/tắt vật thể). Ống dày **0,014** (gân cũ 0,019), zigzag bước 0,115 rad. ⚠️ Đừng làm mỏng hơn nữa:
+  bản 0,011 render ở Blender rất đẹp nhưng **trong game ở cự ly chơi thật thì vỡ thành lấm tấm**, mất nét tia — phải chụp
+  trong game mới biết. Menu 74 mục J kiểm (35 cụm rời, đối chứng vỏ cũ 4 cụm).
+  ⚠️ Hai lưới FBX này Read/Write TẮT → trong Play `mesh.vertices` rỗng; phép đo hình lưới chạy Ở EDITOR trước khi vào Play
+  (`ThuQuaCauDien.DoHinhLuoiTruocKhiChay` bật Read/Write tạm rồi trả lại).
+  ⚠️ Menu 74 **tắt `GameDirector` suốt phép thử**: nó chạy lâu (mục G bắn 400 tia thật) và đợt quái 24 con sinh giữa chừng
+  từng làm **GPU timeout → Windows reset driver → Unity tắt hẳn** (19/09/2026, dấu vết ở cuối `Logs/Editor.log`).
+  Menu 74 kiểm.
 - ⚠️ **`StunnedEffect.Apply` từng kéo mọi cú choáng ngắn hơn 2 giây thành 2 giây** (trường `remaining` khai báo sẵn 2 và `Apply` lấy
   `Max` ngay từ lần đầu) — sửa 18/09/2026: component MỚI nhận đúng số giây. Ảnh hưởng cả Giựt sét (1,5 s). Cùng cái bẫy `AddComponent`
   mang giá trị mặc định của `FrozenEffect`.

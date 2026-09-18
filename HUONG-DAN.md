@@ -8442,6 +8442,51 @@ Lần đầu tôi đọc chỗ cơn Gió lốc *trước khi niệm* rồi so v�
 đọc. Chỉ khi ghi cả hai vị trí **ngay khung hình đầu tiên thấy cơn lốc mới** thì số đo mới ra 0,00 m. Tỉ lệ "to dần"
 cũng vậy: đọc trễ 0,5 giây thì thấy 0,91 thay vì 0,42 — phải theo dõi suốt trong vòng lặp.
 
+### Quả cầu điện: đổi đường gân liền thành tia điện mỏng đứt quãng, chớp tắt (19/09/2026)
+
+Anh gửi ảnh quả cầu trong game và xin: *"Thay các đường vân trắng thành các tia điện mỏng bao bọc xung quanh
+quả cầu giống như các đường vân trắng hiện giờ (không vẽ liền mạch nhé)"*. Tôi hỏi lại hai điều và anh chốt:
+tia **chớp tắt liên tục** (không đứng yên), và **mỗi đường vòng đứt thành nhiều đoạn** chứ không rải lung tung.
+
+**Cách làm** — Blender MCP (`CongCu/Blender/tia_dien_qua_cau.blend` → `Resources/KyNang/QuaCauDien/VoTiaDien.fbx`):
+- Vẫn **đúng năm đường vòng** của bản gân cũ (trục nghiêng cố định theo số ngẫu nhiên có hạt giống), nhưng mỗi
+  đường bị **ngắt thành nhiều đoạn** có khoảng hở; hai đầu mỗi đoạn thuôn nhỏ nên tia tắt dần chứ không cụt.
+- Xuất **bốn khung** (`VoTia0..3`): cùng năm đường ấy, các đoạn nằm chỗ khác nhau. Lúc chạy,
+  `ChopTiaDien` chỉ **đổi `sharedMesh`** mỗi 0,045–0,105 giây (ngẫu nhiên, không bao giờ lặp lại đúng khung đang
+  hiện) — một renderer duy nhất, không sinh rác, không bật/tắt GameObject.
+
+**Hai lần đo lại vì mắt, không vì phép thử.** Bản đầu tôi để ống dày 0,011 (gân cũ 0,019) cho thật "mỏng".
+Render trong Blender rất đẹp, nhưng **chụp trong game ở cự ly chơi thật** thì tia vỡ thành một đám lấm tấm —
+mất hẳn nét tia. Lần hai: dày **0,014** và **zigzag thưa gấp đôi** (bước 0,115 rad thay vì 0,055) — ở Blender
+trông thưa hơn nhưng trong game mới ra đúng hình tia. Ngưỡng của phép thử vì thế hạ từ "mỏng hơn 40%" xuống
+**"mỏng hơn 20%"**, và tôi ghi rõ lý do ngay cạnh dòng ấy để lần sau không ai chỉnh ngược lên.
+
+**Số đo** (menu 74 mục J, `quacaudien.txt`, **0 lỗi**):
+
+| Đo | Kết quả |
+|---|---|
+| Đứt quãng | khung 0 có **35 cụm rời** — đối chứng vỏ gân cũ chỉ **4 cụm** (mỗi đường một nét liền) |
+| Mỏng | bề dày ống **0,013** so với gân cũ **0,019** (đo bằng trung vị cạnh ngắn nhất của tam giác, chia √3) |
+| Chớp tắt | trong 1,5 giây đổi **12 lần**, thấy đủ **4 khung khác nhau** |
+| Trên cảnh | có `TiaDienBoc` + `ChopTiaDien`, **không còn** lớp `VoDien` liền mạch |
+| Hồi quy | toàn bộ menu 74 (thông số, chỗ đặt, 10 lượt, 5 tia mỗi lượt, sát thương 155,52, choáng 30,8%, qua mạng): **0 lỗi** |
+
+⚠️ Hai lưới FBX này để **Read/Write TẮT**, nên trong Play `mesh.vertices` trả về mảng rỗng — lần chạy đầu đo ra
+"−1 cụm" và báo oan ba lỗi. Phép đo hình lưới vì thế chạy **ở Editor, trước khi vào Play**
+(`ThuQuaCauDien.DoHinhLuoiTruocKhiChay`): bật Read/Write tạm, đo, rồi trả lại đúng giá trị cũ.
+
+**Và một lần Unity sập thật.** Giữa lúc chạy menu 74, Unity của anh tắt hẳn. Không có crash dump; dấu vết nằm ở
+cuối `Logs/Editor.log`:
+
+> Failed to present D3D11 swapchain due to device reset/removed … This is an unrecoverable error and the
+> editor will shut down.
+
+Dòng ngay trước nó: `[GameDirector] Dot 1: 1 nguoi x 4 con + 0 con bat ki + 20 con xa`. Phép thử chạy lâu (riêng
+mục G bắn **400 tia sét thật** để đo tỉ lệ choáng), và giữa chừng `GameDirector` đếm đủ 30 giây rồi thả **24 con
+quái** vào đúng lúc đang vẽ hàng trăm tia — Windows phát hiện GPU timeout, reset driver, Unity buộc phải tắt.
+Phép thử tự dựng bia riêng nên **không cần con quái nào**: nay menu 74 tắt `GameDirector` suốt phép thử rồi trả
+lại. Vừa cứu GPU vừa làm số đo sạch hơn (quái thật cũng ăn tia và cũng bị nhắm).
+
 ### Kỹ năng mới: Quả cầu điện — quả cầu lơ lửng bắn tia vào mọi kẻ quanh nó (18/09/2026)
 
 Anh gửi hai ảnh Diablo III và xin kỹ năng **"Quả cầu điện"**: dựng quả cầu **bằng Blender MCP** như trong ảnh,

@@ -27,6 +27,9 @@ using UnityEngine;
 ///      sau 6 giay (qua 4 giay cua ban cu) cau VAN CON va moi ban 0 luot; dat mot bia canh no -> ban du 10 luot
 ///      roi moi tan; hinh co vanh sang, co VIEN TRANG lon vong ngoai mat cau, va KHONG con tia set nho ban ra lien tuc.
 ///   H. Qua mang: goi phep so 13 tu nguoi kia -> may nay phat lai ra qua cau; minh tung -> goi gui di mang so 13.
+///   J. TIA DIEN DUT QUANG (nguoi dung 18/09/2026, thay cac duong gan trang lien mach): bon khung VoTiaDien.fbx,
+///      moi khung dut thanh nhieu doan roi (dem cum lien thong, DOI CHUNG bang vo gan cu), ong MONG hon han vo cu,
+///      va tren canh la "TiaDienBoc" co ChopTiaDien doi khung lien tuc (do so lan doi trong 1,5 giay).
 ///
 /// Ket qua: PlayTestShots/quacaudien.txt, anh quacaudien_*.png.
 /// </summary>
@@ -51,6 +54,7 @@ public static class ThuQuaCauDien
         Directory.CreateDirectory("PlayTestShots");
         bao.Length = 0; loi = 0; daBatDau = false;
         Ghi("[ban 1] Qua cau dien");
+        DoHinhLuoiTruocKhiChay();
         canhCu = EditorSceneManager.GetActiveScene().path;
         if (canhCu != "Assets/Scenes/Act2.unity") EditorSceneManager.OpenScene("Assets/Scenes/Act2.unity");
         truocBat = EditorSettings.enterPlayModeOptionsEnabled; truocOpt = EditorSettings.enterPlayModeOptions;
@@ -59,6 +63,49 @@ public static class ThuQuaCauDien
         EditorApplication.update -= Nhip;
         EditorApplication.update += Nhip;
         EditorApplication.EnterPlaymode();
+    }
+
+    // Ket qua do hinh luoi (do o Editor, TRUOC khi vao Play - xem DoHinhLuoiTruocKhiChay)
+    static int cumTiaMoi = -1, cumVoCu = -1;
+    static float dayTiaMoi = -1f, dayVoCu = -1f;
+
+    /// <summary>
+    /// Do HINH DANG luoi tia dien va luoi vo gan cu.
+    ///
+    /// ⚠️ Phai do o day, trong Editor, TRUOC khi vao Play: hai FBX nay de Read/Write TAT (dung cho
+    /// dien thoai), nen trong Play `mesh.vertices` va `mesh.triangles` tra ve MANG RONG - lan chay
+    /// dau 18/09/2026 do duoc "-1 cum" va bao oan ba loi. O day thi bat Read/Write tam, do xong tra
+    /// lai dung gia tri cu roi nhap lai - dia van sach.
+    /// </summary>
+    static void DoHinhLuoiTruocKhiChay()
+    {
+        const string dTia = "Assets/Resources/KyNang/QuaCauDien/VoTiaDien.fbx";
+        const string dCau = "Assets/Resources/KyNang/QuaCauDien/CauDien.fbx";
+        var iTia = AssetImporter.GetAtPath(dTia) as ModelImporter;
+        var iCau = AssetImporter.GetAtPath(dCau) as ModelImporter;
+        if (iTia == null || iCau == null) return;
+        bool cuTia = iTia.isReadable, cuCau = iCau.isReadable;
+        try
+        {
+            if (!cuTia) { iTia.isReadable = true; iTia.SaveAndReimport(); }
+            if (!cuCau) { iCau.isReadable = true; iCau.SaveAndReimport(); }
+
+            foreach (var o in AssetDatabase.LoadAllAssetsAtPath(dTia))
+            {
+                var m = o as Mesh;
+                if (m != null && m.name.StartsWith("VoTia0")) { cumTiaMoi = SoCum(m); dayTiaMoi = BeDayOng(m); }
+            }
+            foreach (var o in AssetDatabase.LoadAllAssetsAtPath(dCau))
+            {
+                var m = o as Mesh;
+                if (m != null && m.name.StartsWith("Vo")) { cumVoCu = SoCum(m); dayVoCu = BeDayOng(m); }
+            }
+        }
+        finally
+        {
+            if (!cuTia) { iTia.isReadable = false; iTia.SaveAndReimport(); }
+            if (!cuCau) { iCau.isReadable = false; iCau.SaveAndReimport(); }
+        }
     }
 
     static void Nhip()
@@ -150,8 +197,29 @@ public static class ThuQuaCauDien
         float han0 = Time.time + 30f;
         while (dir == null && Time.time < han0) { dir = GameDirector.Instance; yield return null; }
         yield return new WaitForSeconds(1.5f);
+
+        // ⚠️ TAT GameDirector SUOT PHEP THU (19/09/2026).
+        // Phep thu nay chay lau (rieng muc G ban 400 tia set that de do ti le choang) va tu dung
+        // lay bia rieng - no khong can mot con quai nao. De GameDirector chay thi dung giua chung
+        // no sinh "dot 1" 24 con: 24 bo AI + model + hieu ung do vao giua luc dang ve hang tram
+        // tia set, GPU qua tai, Windows reset driver (TDR) va Unity TAT HAN:
+        //   "Failed to present D3D11 swapchain due to device reset/removed ... editor will shut down"
+        // (da lam Unity cua nguoi dung sap mot lan, 19/09/2026).
+        bool dirBatCu = false;
+        if (dir != null) { dirBatCu = dir.enabled; dir.enabled = false; }
+        int quaiDaDon = 0;
+        foreach (var q0 in Object.FindObjectsByType<EnemyAI>(FindObjectsInactive.Exclude))
+            if (q0 != null) { Object.Destroy(q0.gameObject); quaiDaDon++; }
+        Ghi("(tat GameDirector suot phep thu, don " + quaiDaDon + " quai co san - GPU khong phai ve thua)");
+        yield return null;
+
         var toi = TimToi();
-        if (toi == null) { Ghi("[LOI] khong tim thay nhan vat"); loi++; Ket(); yield break; }
+        if (toi == null)
+        {
+            Ghi("[LOI] khong tim thay nhan vat"); loi++;
+            if (dir != null) dir.enabled = dirBatCu;
+            Ket(); yield break;
+        }
         var mauToi = toi.GetComponent<Damageable>();
         mauToi.maxHealth = 1e6f; mauToi.health = 1e6f;
         int maskEnemy = LayerMask.GetMask("Enemy");
@@ -186,7 +254,7 @@ public static class ThuQuaCauDien
         Ghi(string.Format("A. ten \"{0}\", tom tat \"{1}\", mo ta {2} ky tu; HUD {3} icon, icon so 13 {4}",
             SachPhep.Ten(K), SachPhep.TomTat(K), SachPhep.MoTa(K).Length,
             bo != null ? bo.Length : -1, bo != null && bo.Length > K && bo[K] != null ? "co" : "KHONG"));
-        Kiem(K == 13 && CapDo.SoKyNang == 14, "so hieu / so ky nang sai");
+        Kiem(K == 13 && CapDo.SoKyNang == CapDo.KyTocBien + 1, "so hieu / so ky nang sai");
         Kiem(Mathf.Approximately(toi.cauDienCost, 55f) && Mathf.Approximately(nl, 55f), "nang luong khong phai 55");
         Kiem(Mathf.Approximately(toi.cauDienCooldown, 5f) && Mathf.Approximately(hc, 5f), "hoi chieu khong phai 5 giay");
         Kiem(Mathf.Approximately(QuaCauDien.GiayChoToiDa, 30f), "han song cua qua cau khong phai 30 giay");
@@ -544,12 +612,121 @@ public static class ThuQuaCauDien
         }
         TranHienTai.DangChoiMang = false;
 
+        // ================= J. TIA DIEN DUT QUANG + CHOP TAT =================
+        Ghi("");
+        {
+            var khung = VfxFactory.KhungTiaDien;
+            int soKhung = khung != null ? khung.Length : 0;
+
+            // Cum lien thong va be day ong da do o Editor truoc khi vao Play (Read/Write TAT)
+            int cumTia = cumTiaMoi;
+            float dayTia = dayTiaMoi;
+
+            // Tren canh: tha mot qua cau roi xem lop boc la gi
+            while (toi.HoiChieuGiay(K) > 0f) yield return null;
+            toi.mana = toi.maxMana;
+            Vector3 choJ = toi.transform.position + huong * 9f;
+            choJ.y = VfxFactory.GroundY(choJ);
+            toi.CastAt(K, choJ);
+            yield return new WaitForSeconds(0.3f);
+
+            var boc = GameObject.Find("TiaDienBoc");
+            var voLienMach = GameObject.Find("VoDien");
+            var chop = boc != null ? boc.GetComponent<ChopTiaDien>() : null;
+            var mfBoc = boc != null ? boc.GetComponent<MeshFilter>() : null;
+
+            int doi0 = chop != null ? chop.soLanDoi : -1;
+            var daThay = new System.Collections.Generic.HashSet<Object>();
+            float hanJ = Time.time + 1.5f;
+            while (Time.time < hanJ)
+            {
+                if (mfBoc != null && mfBoc.sharedMesh != null) daThay.Add(mfBoc.sharedMesh);
+                yield return null;
+            }
+            int soDoi = chop != null ? chop.soLanDoi - doi0 : -1;
+
+            Ghi(string.Format("J. VoTiaDien.fbx: {0} khung; khung 0 co {1} cum roi (doi chung vo gan cu: {2} cum); be day ong {3:F3} (vo cu {4:F3})",
+                soKhung, cumTia, cumVoCu, dayTia, dayVoCu));
+            Ghi(string.Format("J. tren canh: TiaDienBoc {0}, VoDien lien mach {1}, ChopTiaDien {2}; trong 1,5 s doi khung {3} lan, thay {4} khung khac nhau",
+                boc != null, voLienMach != null, chop != null, soDoi, daThay.Count));
+            Kiem(soKhung == 4, "khong nap du bon khung tia dien");
+            Kiem(cumTia >= 15, "khung tia khong dut quang (qua it cum roi)");
+            Kiem(cumVoCu > 0 && cumTia > cumVoCu * 2, "doi chung hong: tia moi khong dut nhieu hon vo gan cu");
+            // Mong hon gan cu it nhat 20%. Khong dam mong hon nua: ban 0,011 do duoc 18/09/2026 vo
+            // thanh dom lam tam khi nhin o cu ly choi that (anh tia_dien_trong_game.png) - het ra net tia.
+            Kiem(dayTia > 0f && dayVoCu > 0f && dayTia < dayVoCu * 0.8f, "tia moi khong mong hon vo gan cu");
+            Kiem(boc != null && chop != null && voLienMach == null, "tren canh khong phai lop tia dut quang");
+            Kiem(soDoi >= 10 && daThay.Count >= 3, "tia khong chop tat lien tuc");
+
+            foreach (var c in Object.FindObjectsByType<QuaCauDien>(FindObjectsInactive.Exclude)) if (c != null) Object.Destroy(c.gameObject);
+            yield return new WaitForSeconds(0.2f);
+        }
+
         foreach (var c in Object.FindObjectsByType<QuaCauDien>(FindObjectsInactive.Exclude)) if (c != null) Object.Destroy(c.gameObject);
         foreach (var d0 in Object.FindObjectsByType<Damageable>(FindObjectsInactive.Exclude)) if (d0.name.StartsWith("TAM_")) Object.Destroy(d0.gameObject);
         toi.DaTungPhep -= dem;
+        if (dir != null) dir.enabled = dirBatCu;
         Ghi("");
         Ghi("so loi ghi nhan = " + loi);
         Ket();
+    }
+
+    /// <summary>
+    /// So CUM LIEN THONG cua luoi: gop dinh trung vi tri (Unity tach dinh theo normal/UV) roi
+    /// noi theo tam giac. Duong lien mach = 1 cum; tia dut quang = moi doan mot cum.
+    /// </summary>
+    static int SoCum(Mesh m)
+    {
+        if (m == null) return -1;
+        var v = m.vertices; var tri = m.triangles;
+        if (v.Length == 0 || tri.Length == 0) return -1;
+
+        // gop dinh trung cho (lam tron 0,1 mm)
+        var cho = new System.Collections.Generic.Dictionary<Vector3Int, int>();
+        var goc = new int[v.Length];
+        for (int i = 0; i < v.Length; i++)
+        {
+            var k = new Vector3Int(Mathf.RoundToInt(v[i].x * 10000f), Mathf.RoundToInt(v[i].y * 10000f), Mathf.RoundToInt(v[i].z * 10000f));
+            int g;
+            if (!cho.TryGetValue(k, out g)) { g = cho.Count; cho[k] = g; }
+            goc[i] = g;
+        }
+        var cha = new int[cho.Count];
+        for (int i = 0; i < cha.Length; i++) cha[i] = i;
+        System.Func<int, int> tim = null;
+        tim = x => { while (cha[x] != x) { cha[x] = cha[cha[x]]; x = cha[x]; } return x; };
+        for (int t = 0; t + 2 < tri.Length; t += 3)
+        {
+            int a = tim(goc[tri[t]]), b = tim(goc[tri[t + 1]]), c = tim(goc[tri[t + 2]]);
+            if (a != b) cha[b] = a;
+            if (a != c) cha[tim(c)] = a;
+        }
+        var dau = new System.Collections.Generic.HashSet<int>();
+        for (int i = 0; i < cha.Length; i++) dau.Add(tim(i));
+        return dau.Count;
+    }
+
+    /// <summary>
+    /// Be day ong: ong ba canh co canh ngang = r x can3, nen lay TRUNG VI canh ngan nhat cua moi
+    /// tam giac roi chia can3. Do nay doc lap voi cach dung luoi (khong hoi Blender con so nao).
+    /// </summary>
+    static float BeDayOng(Mesh m)
+    {
+        if (m == null) return -1f;
+        var v = m.vertices; var tri = m.triangles;
+        if (v.Length == 0 || tri.Length == 0) return -1f;
+        var ds = new System.Collections.Generic.List<float>();
+        for (int t = 0; t + 2 < tri.Length; t += 3)
+        {
+            float a = Vector3.Distance(v[tri[t]], v[tri[t + 1]]);
+            float b = Vector3.Distance(v[tri[t + 1]], v[tri[t + 2]]);
+            float c = Vector3.Distance(v[tri[t + 2]], v[tri[t]]);
+            float nho = Mathf.Min(a, Mathf.Min(b, c));
+            if (nho > 1e-5f) ds.Add(nho);
+        }
+        if (ds.Count == 0) return -1f;
+        ds.Sort();
+        return ds[ds.Count / 2] / Mathf.Sqrt(3f);
     }
 
     static void TraLaiCanh()
