@@ -151,6 +151,8 @@ public class NguoiChoiHoatHinh : MonoBehaviour
         if (phep == CapDo.KyCauDien) phep = 2;
         // 14 = Hoa loc xoay: dong tac cua Loc xoay
         if (phep == CapDo.KyHoaLocXoay) phep = 3;
+        // 15 = Toc bien: dong tac nhu Khien (phep tu than)
+        if (phep == CapDo.KyTocBien) phep = 5;
         phepDangNiem = Mathf.Clamp(phep, 0, 5);
         thoiGianNiem = Mathf.Max(0.2f, thoiGian);
         niemTimer = 0f;

@@ -57,7 +57,7 @@ public static class SachPhep
         new[] { CapDo.KyQuaCauBang, 1, CapDo.KyTangHinh },        // Qua cau bang, Mua bang, Tang hinh
         new[] { 6, 2, CapDo.KyCauDien },                          // Giut set, Sam set, Qua cau dien
         new[] { CapDo.KyGioLoc, 3, CapDo.KyHoaLocXoay },          // Gio loc, Loc xoay, Hoa loc xoay
-        new[] { CapDo.KyBinhMau, CapDo.KyBinhMana, 5 },           // Binh mau, Binh mana, Khien
+        new[] { CapDo.KyBinhMau, CapDo.KyBinhMana, 5, CapDo.KyTocBien },   // Binh mau, Binh mana, Khien, Toc bien
     };
 
     /// <summary>So ky nang trong mot nhom.</summary>
@@ -300,6 +300,7 @@ public static class SachPhep
             case CapDo.KyTangHinh: return "TÀNG HÌNH";
             case CapDo.KyCauDien: return "QUẢ CẦU ĐIỆN";
             case CapDo.KyHoaLocXoay: return "HOÁ LỐC XOÁY";
+            case CapDo.KyTocBien: return "TỐC BIẾN";
             default: return "";
         }
     }
@@ -324,6 +325,7 @@ public static class SachPhep
             case CapDo.KyTangHinh: return "Trong suốt 20 giây, đòn sau gấp đôi";
             case CapDo.KyCauDien: return "Cầu điện bắn 10 lượt, mỗi lượt 5 tia";
             case CapDo.KyHoaLocXoay: return "Hoá Gió lốc đang bay thành Lốc xoáy";
+            case CapDo.KyTocBien: return "Dịch chuyển tức thời trong 15 m";
             default: return "";
         }
     }
@@ -427,6 +429,11 @@ public static class SachPhep
                      + "Lốc lướt qua lò lửa thì dập tắt lửa, 30 giây sau lò cháy lại.\n\n"
                      + "CẤP 5: phóng cùng lúc HAI cơn lốc song song, cách nhau 4 m — kẻ đứng giữa bị cả hai quét qua thì trúng hai lần — "
                      + "nhưng tốn GẤP ĐÔI năng lượng.";
+            case CapDo.KyTocBien:
+                return "Nhân vật tan đi ở chỗ đang đứng và hiện ra ngay tại nơi bạn ngắm, xa nhất 15 m. Đi được XUYÊN QUA tường, bia mộ và mọi vật cản — chỉ cần chỗ đến đứng được.\n\n"
+                     + "Ngắm vào chỗ không đứng được thì bạn dừng ở điểm trống gần nơi ngắm nhất trên đường thẳng. Bấm là đi ngay, không có động tác niệm, nên dùng để né đòn đang bay tới.\n\n"
+                     + "Hồi chiêu 5 giây, và MỖI CẤP giảm 0,25 giây — lên cấp 5 chỉ còn 4 giây.\n\n"
+                     + "Tốn 40 năng lượng.";
             case CapDo.KyHoaLocXoay:
                 return "Cơn GIÓ LỐC bạn vừa phóng ra sẽ PHÌNH TO thành một cơn LỐC XOÁY thật sự — vẫn bay nhanh "
                      + "9,5 m/s như Gió lốc, nhưng cuốn bổng mọi kẻ địch và cả cảnh vật lên trời như Lốc xoáy.\n\n"
@@ -490,6 +497,8 @@ public static class SachPhep
             case CapDo.KyTangHinh: nangLuong = pc.tangHinhCost; hoiChieu = pc.tangHinhCooldown; niemChu = pc.tangHinhCastTime; break;
             case CapDo.KyCauDien: nangLuong = pc.cauDienCost; hoiChieu = pc.cauDienCooldown; niemChu = pc.cauDienCastTime; break;
             case CapDo.KyHoaLocXoay: nangLuong = pc.hoaLocXoayCost; hoiChieu = pc.hoaLocXoayCooldown; niemChu = pc.hoaLocXoayCastTime; break;
+            // Hoi chieu Toc bien GIAM theo cap - doc hoi chieu HIEN TAI chu khong phai truong cap 1
+            case CapDo.KyTocBien: nangLuong = pc.tocBienCost; hoiChieu = pc.HoiChieuTocBien; niemChu = pc.tocBienCastTime; break;
         }
     }
 }

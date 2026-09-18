@@ -8334,6 +8334,43 @@ sát thương hiện ra** (2,1 m) để số không đè lên chữ. Bỏ chữ 
 **Số đo** (menu 62, 0 lỗi): tung thật 10 lần → trúng 10, ngã 7; dấu hiệu hiện **376/383 khung hình đang ngã (98%)**;
 chuỗi ảnh mới thấy chữ NGÃ rõ ở cả 5 thời điểm, đè lên lửa.
 
+### Kỹ năng mới: Tốc biến — dịch chuyển tức thời 15 m (18/09/2026)
+
+Anh xin kỹ năng **"Tốc biến"** xếp vào nhóm **Hỗ trợ**: bấm là nhân vật dịch chuyển tức thời tới chỗ khác trong
+**15 m**, có hiệu ứng **biến mất** ở chỗ đang đứng và **hiện ra** ở chỗ mới; hồi chiêu **5 giây**, **mỗi cấp giảm
+0,25 giây**. Tôi hỏi thêm, anh chốt: **40 năng lượng**; ngắm vào chỗ không đứng được thì **vẫn nháy nhưng lùi về
+điểm trống gần chỗ ngắm nhất** (tức đi xuyên được tường, bia mộ, miễn điểm đến đứng được); **không niệm chú**.
+
+**Cách làm:**
+- `TocBien.TimChoDen`: đi từ điểm ngắm (đã kẹp 15 m) **lùi dần 0,5 m** về phía người chơi cho tới khi gặp chỗ đứng
+  được (`Physics.CheckCapsule` cao 1,8 m bán kính 0,35 không chạm vật cản). Tìm **trước khi trừ mana**, không có chỗ
+  nào thì từ chối và không mất gì.
+- `TocBien.Nhay`: **tắt `CharacterController` trước khi đổi `transform.position`** rồi bật lại — Unity giữ vị trí
+  riêng trong đó, đổi transform mà không tắt thì khung sau nó kéo người về chỗ cũ.
+- "Không niệm chú" làm bằng `castTime = 0,01 giây`: vừa đủ một khung hình để gói tin *"tôi vừa tung phép"* bay sang
+  máy khác (không thì người ta chỉ thấy nhân vật **trượt** 15 m), mà người chơi vẫn thấy là tức thời — đo được
+  **0,025 giây** từ lúc bấm đến lúc đổi chỗ. Bản sao trên máy người khác **chỉ chạy hiệu ứng**, không tự kéo mình đi:
+  vị trí của họ do gói trạng thái quyết định.
+- Hiệu ứng (`VfxTocBien.cs`, dựng bằng code): chỗ cũ vòng sáng **thu vào** + khói tím bay lên; chỗ mới vòng sáng
+  **nở ra** + cột sáng ngắn + hạt toé, kèm một ngọn đèn tím loé.
+
+**Một lỗi thật, phép thử bắt được ngay:** mục D ngắm thẳng vào giữa một khối đá đặc mà kết quả báo *"chỗ đó đứng
+được"*. Nguyên nhân: tôi dùng `VfxFactory.GroundY`, mà hàm ấy tính **cả lớp Default** — nó trả về **nóc khối đá**,
+nên "trong lòng đá" biến thành "trên nóc đá" và hợp lệ. Người chơi sẽ nháy tót lên mái nhà mồ. Sửa: `TocBien.MatDatY`
+chỉ bắn tia vào **lớp Ground**, đúng như `GioLoc.MatDatY` đã phải làm khi lốc trèo lên mái nhà.
+
+**Số đo** (menu 76, `tocbien.txt`, **0 lỗi**; ảnh `tocbien_1_vua_nhay.png`):
+
+| Đo | Kết quả |
+|---|---|
+| Thông số | số hiệu 15, 16 kỹ năng; **40 năng lượng** (trừ đúng 40), hồi chiêu **5,00 s** ở cấp 1, tầm 15 m; Sách phép xếp vào nhóm **HỖ TRỢ** |
+| Hồi chiêu theo cấp | 5,00 / 4,75 / 4,50 / 4,25 / **4,00** giây |
+| Nháy | ngắm 10 m → đi đúng **10,00 m**, lệch chỗ ngắm **0,00 m**; có cả hai hiệu ứng trên cảnh |
+| Không niệm | từ lúc bấm đến lúc đổi chỗ **0,025 giây** |
+| Kẹp tầm | ngắm ra 30 m → chỉ nháy **15,01 m** |
+| Chỗ không đứng được | ngắm vào giữa khối đá (đứng được: **False**) → vẫn nháy **5,98 m** và dừng **cách khối đá 2,02 m**, chỗ đến đứng được |
+| Hồi quy | menu 59 (Sách phép, nay 16 kỹ năng): **0 lỗi** |
+
 ### Gió lốc hồi mana, và kỹ năng mới "Hoá Lốc Xoáy" (18/09/2026)
 
 Anh xin hai việc cùng lúc. **Gió lốc**: mỗi lần đánh trúng kẻ địch thì hồi **10 mana cố định cho cả 5 cấp**, và
@@ -9660,6 +9697,7 @@ Lần chạy đầu phép thử báo cả 10 con "lơ lửng": tia chiếu từ 
 | **69. Chay thu GIUT SET (20 m, 75, 4 tia, 15% choang)** | Thông số; tung thật `CastAt(6)` vào 5 bia (đúng 4 bia mất 75 cùng một khung hình); tầm 20 m bằng bia 19,9 / 20,4 m; tia lan ra ngoài tầm vẫn trúng ×0,85; 160 lần phóng đếm tỉ lệ choáng tia đầu và tia lan riêng (bằng StunnedEffect trên bia); cấp kỹ năng kéo dài choáng. Số đo `giatset.txt`. |
 | **71. Chay thu GIO LOC (ky nang moi)** | Thông số; tung thật `CastAt(10)` (khoá, 3 lốc, 20 năng lượng, hồi chiêu đo bằng bấm mỗi khung); lưới Blender, cao 5 m so Lốc xoáy thật, xám trắng, không đèn, không tia sét; **xoáy một chiều đi lên** (độ xoắn dải gió đo ngoài Play + chiều quay thật từng lớp + chiều trượt ảnh); khói bụi đen bay lên và cuộn cùng chiều (theo dõi từng hạt), vòng phun nằm ngang (phun thử 200 hạt), vệt phía sau; bán kính chân ×1,68 / phần trên ×1,0 (so công thức gốc); tia sét hiệu ứng khi trúng (5 bia → 5 tia từ thân lốc, 5 cháy sém, 0 cột sáng đứng, mất đúng 75); 1 lốc, sống 4,5 s; không trèo mái nhà mồ (đối chứng tia cũ chạm mái); tốc độ 8 m/s và thời gian sống; xuyên bia mộ (tia đối chứng); 75 một lần, 225 ba lốc, vùng 2,2 m (2,5 / 2,7 m); 190 lần trúng đếm hất tung độc lập, độ cao, thời gian bay; khiên chặn hất; ngắt chiêu người chơi (đối chứng) và đòn quái (đối chứng); qua mạng: gói số 10, bit hất tung, mặt nạ 5 bit, bản sao bay / ngắt chiêu / không hất lần hai; lò lửa tắt rồi cháy lại sau 30 s. Số đo `gioloc.txt`. |
 | **71b. Chup anh GIO LOC (so voi Loc xoay)** | Chỉ chụp: hai lốc bay ngang màn hình 5 khung liên tiếp + Lốc xoáy lớn để so. Ảnh `gioloc_can_*.png`, `gioloc_locxoay_*.png`. |
+| **76. Chay thu TOC BIEN (ky nang moi)** | Thông số (số hiệu 15, 40 năng lượng, tầm 15 m, nhóm HỖ TRỢ); hồi chiêu theo cấp 5 / 4,75 / 4,5 / 4,25 / 4; nháy đúng chỗ ngắm (lệch 0,00 m), có cả hai hiệu ứng; không niệm (0,025 s); ngắm 30 m chỉ nháy 15,01 m; ngắm vào giữa khối đá thì lùi về chỗ trống cách đá 2,02 m. Số đo `tocbien.txt`. |
 | **75. Chay thu HOA LOC XOAY + Gio loc hoi mana** | Thông số (số hiệu 14, 45 năng lượng, hồi chiêu 0,5); Gió lốc quét 3 bia hồi đúng 30 mana (đối chứng bắn chỗ trống: 0); năng lượng Gió lốc cấp 5 = 25 (bản cũ 58,6); hoá xong 0 Gió lốc / có Lốc xoáy lệch 0,00 m, bay 9,5 m/s, sống 6 s, đòn chạm 75 + 20/giây; hình to dần 0,42 → 1,00; bấm hụt không tốn mana và không vào hồi chiêu; cấp 5 hoá cả hai cơn. Số đo `hoalocxoay.txt`. |
 | **74. Chay thu QUA CAU DIEN (ky nang moi)** | Thông số (số hiệu 13, 55 năng lượng, hồi chiêu 5 s, tầm 18 m) + tài nguyên Blender; quả cầu bám kẻ địch gần chỗ ngắm (đối chứng: không có ai thì đứng đúng chỗ ngắm); 10 lượt cách nhau 0,4 s; 50 tia, đúng 5 kẻ gần nhất mỗi kẻ một tia; 155,52 mỗi tia = Giựt sét cấp 5; 400 tia → choáng 30,0% × 1,50 s; gói phép số 13 qua mạng. Số đo `quacaudien.txt`. |
 | **73. Chay thu TANG HINH (ky nang moi)** | Thông số (số hiệu 12, 30 năng lượng, hồi chiêu 30 s, 20 giây); thân đổi sang shader tàng hình rồi trả lại; miễn 6 hiệu ứng (đối chứng lúc thường dính đủ), xoá hiệu ứng đang dính, vẫn ăn sát thương; 24 quái thật mất dấu; tốc độ ×1,20 đo bằng quãng đường; đòn đầu ×2,00 rồi tan, Khiên không làm tan; hết giờ tự tan; qua mạng bit `CoTangHinh`, bản sao đứng yên tắt renderer; **nhấp nháy 2 giây cuối** (18 lần đổi sáng/tối, bản sao người khác không nháy) và hai ảnh hai pha; **đòn đầu ×2 cho TOÀN BỘ sát thương**: từng vệt Mưa băng 29,04 → 58,08, Quả cầu băng cấp 5 442,4 → 884,7; cờ đòn đầu đi qua gói phép (người kia tung qua mạng cũng ×2). Số đo `tanghinh.txt`. |
