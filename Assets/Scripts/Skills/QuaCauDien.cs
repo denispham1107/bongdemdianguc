@@ -33,9 +33,9 @@ public class QuaCauDien : MonoBehaviour
     /// <summary>Tim ke dich de dat qua cau "ngay gan doi thu" trong ban kinh nay quanh cho ngam.</summary>
     public const float TimKeGanCho = 7f;
 
-    /// <summary>Khong co ai trong tam thi qua cau van DUNG NGUYEN CHO doi, nhung khong qua ngan nay giay
-    /// (nguoi dung chot 18/09/2026 - de khong co qua cau nam lai mai tren ban do).</summary>
-    public const float GiayChoToiDa = 20f;
+    /// <summary>Qua cau ton tai lau nhat bang nay giay roi tan (nguoi dung doi 20 -> 30 giay, 18/09/2026).
+    /// Chua ban du 10 luot thi no van dung nguyen cho doi trong suot khoang nay.</summary>
+    public const float GiayChoToiDa = 30f;
 
     /// <summary>
     /// Sat thuong moi tia = sat thuong ky nang GIUT SET o CAP 5 (nguoi dung chot 18/09/2026).

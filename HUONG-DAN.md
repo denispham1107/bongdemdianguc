@@ -8382,9 +8382,15 @@ giây đều bị kéo dài thành 2**, kể cả **Giựt sét (1,5 s)** đã c
    `ToeTiaDien`: cứ ~0,13 giây phóng 2 tia điện ngắn ra chung quanh, **chúc xuống đất** như trong ảnh — tia này chỉ
    để nhìn, không gây sát thương. Ba lớp (lõi, vành, vỏ điện) quay ngược chiều nhau.
 
+**Anh xem tiếp trong game rồi chốt lần ba:** bỏ hẳn **tia sét nhỏ bắn ra liên tục** (đẹp trong ảnh tĩnh nhưng rối khi
+chơi); **giữ các đường viền trắng lớn vòng quanh và vẫn để chúng nằm NGOÀI mặt cầu** — thứ anh khoanh đỏ chê "răng cưa
+rất xấu" là mấy **gai thẳng ngắn chĩa ra** của bản đầu, không phải các đường viền; và quả cầu tồn tại **30 giây** thay
+vì 20. Nay vỏ điện là **năm đường viền lớn** (bán kính 1,20–1,31 so với mặt cầu 1,00), uốn mềm, không còn gai nào.
+
 **Số đo của lần sửa** (menu 74 mục I, **0 lỗi**): thả quả cầu ở chỗ không có kẻ địch → sau **6 giây** (bản cũ đã tan
-từ giây thứ 4) quả cầu **vẫn còn**, đã bắn **0 lượt**, xê dịch khỏi chỗ đặt **0,00 m**; hình có vành sáng và có tia
-toé ra (**259 khung hình** thấy tia). Đặt một bia cạnh nó → bắn **đủ 10 lượt** rồi mới tan.
+từ giây thứ 4) quả cầu **vẫn còn**, đã bắn **0 lượt**, xê dịch khỏi chỗ đặt **0,00 m**; hình có vành sáng, viền trắng
+xa tâm **1,243** (vành sáng 1,100 → viền đúng là nằm ngoài như ảnh anh gửi), và **0 khung hình** có tia sét quanh quả
+cầu khi không có kẻ địch (đã bỏ hẳn tia bắn liên tục). Đặt một bia cạnh nó → bắn **đủ 10 lượt** rồi mới tan.
 
 Ba lần phép thử tự báo oan, đều là lỗi của **kịch bản đo** chứ không phải của kỹ năng — và đáng ghi lại vì cùng một
 kiểu: (1) đoán "5 bia gần" theo **thứ tự chỉ số** trong khi đặt bia theo vòng tròn nên thứ tự thật khác → nay sắp

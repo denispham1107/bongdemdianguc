@@ -7,8 +7,10 @@ using UnityEngine;
 /// nhung cung dien cuon quanh, thinh thoang BAN CAC TIA DIEN ra moi ke dich chung quanh.
 ///
 /// Tai nguyen dung bang Blender MCP (CongCu/Blender/qua_cau_dien.blend) -> Resources/KyNang/QuaCauDien:
-///   - CauDien.fbx      : LoiCauDien (khoi cau, TOI mau nhu trong anh) + VanhSangCauDien (vo cau mong lam VANH SANG
-///                        boc ngoai) + VoDienCauDien (cung dien cuon quanh + tia toe ra);
+///   - CauDien.fbx      : LoiCauDien (khoi cau, TOI mau nhu trong anh) + VanhSangCauDien (vo cau MIN lam VANH SANG
+///                        boc ngoai) + VoDienCauDien (nam duong VIEN TRANG lon vong quanh, NAM NGOAI mat cau
+///                        nhu anh nguoi dung gui - cai bi che "rang cua rat xau" la may GAI THANG ngan chia ra
+///                        cua ban truoc, da bo han; vien lon vong quanh thi giu);
 ///   - HaoQuangDien.png : vang sang tron co van dien toa ra - hao quang boc quanh cau;
 ///   - TiaDien.png      : mot soi tia dien luon song, dung cho vet tia;
 ///   - HatDien.png      : dom sang bon canh - hat dien bay quanh cau.
@@ -171,11 +173,10 @@ public static partial class VfxFactory
             quayV.degreesPerSecond = -120f;
         }
 
-        // 4) TIA DIEN TOE RA lien tuc quanh cau (anh nguoi dung gui: cau luon phong tia xuong dat)
-        var toe = goc.AddComponent<ToeTiaDien>();
-        toe.banKinh = banKinh;
+        // KHONG co tia set toe ra lien tuc: nguoi dung xem anh trong game roi bo han (18/09/2026).
+        // Tia chi ban ra khi CO KE DICH - do la viec cua QuaCauDien.BanMotLuot.
 
-        // 5) HAO QUANG: tam anh luon quay mat ve may quay.
+        // 4) HAO QUANG: anh sang BAO BOC ben ngoai, tam luon quay mat ve may quay.
         // Tam nay la CON cua mot vat co Billboard - Billboard xoay CHA, con tam thi tu quay quanh truc
         // cua chinh no, nen van huong ve may quay ma van thay van dien chay vong.
         var neo = new GameObject("NeoHaoQuang");
@@ -187,7 +188,7 @@ public static partial class VfxFactory
         xoay.axis = Vector3.forward;
         xoay.degreesPerSecond = 26f;
 
-        // 6) HAT DIEN bay quanh cau
+        // 5) HAT DIEN bay quanh cau
         var hat = NewPS("HatDien", goc.transform, Vector3.zero, HatDienMat, ParticleSystemRenderMode.Billboard);
         var hm = hat.main;
         hm.duration = song; hm.loop = true;
@@ -205,7 +206,7 @@ public static partial class VfxFactory
             new Color(0.22f, 0.50f, 1f), 1f,
             0f, 1f, 0.85f, 0f));
 
-        // 7) DEN XANH nhap nhay
+        // 6) DEN XANH nhap nhay
         var denGo = new GameObject("DenCauDien");
         denGo.transform.SetParent(goc.transform, false);
         var den = denGo.AddComponent<Light>();
@@ -230,18 +231,6 @@ public static partial class VfxFactory
         // Phai to mau NGAY DAY: LightningArc to mau trong Start, doi o khung sau thi tia loe sai mau mot khung
         arc.coreColor = new Color(1f, 1f, 1f, 1f);
         arc.glowColor = new Color(0.32f, 0.66f, 1f, 1f);
-        return arc;
-    }
-
-    /// <summary>Tia dien TOE RA quanh qua cau - chi de nhin, khong cham vao ai (xem ToeTiaDien).</summary>
-    public static LightningArc TiaCauDienToe(Vector3 tu, Vector3 den)
-    {
-        var arc = LightningArc.Create(tu, den, 0.85f, 0.16f);
-        arc.segments = 10;
-        arc.branches = Random.Range(0, 2);
-        arc.jitter = 0.85f;
-        arc.coreColor = new Color(0.90f, 0.97f, 1f, 1f);
-        arc.glowColor = new Color(0.24f, 0.58f, 1f, 1f);
         return arc;
     }
 

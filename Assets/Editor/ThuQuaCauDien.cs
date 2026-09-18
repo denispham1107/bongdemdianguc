@@ -25,7 +25,7 @@ using UnityEngine;
 ///   G. Choang 30% x 1,5 giay: 400 mau tia that.
 ///   I. CHUA BAN DU 10 LUOT THI QUA CAU VAN DUNG DO (nguoi dung 18/09/2026): tha cau o cho khong co ai ->
 ///      sau 6 giay (qua 4 giay cua ban cu) cau VAN CON va moi ban 0 luot; dat mot bia canh no -> ban du 10 luot
-///      roi moi tan; hinh co vanh sang + tia toe ra lien tuc.
+///      roi moi tan; hinh co vanh sang, co VIEN TRANG lon vong ngoai mat cau, va KHONG con tia set nho ban ra lien tuc.
 ///   H. Qua mang: goi phep so 13 tu nguoi kia -> may nay phat lai ra qua cau; minh tung -> goi gui di mang so 13.
 ///
 /// Ket qua: PlayTestShots/quacaudien.txt, anh quacaudien_*.png.
@@ -189,6 +189,7 @@ public static class ThuQuaCauDien
         Kiem(K == 13 && CapDo.SoKyNang == 14, "so hieu / so ky nang sai");
         Kiem(Mathf.Approximately(toi.cauDienCost, 55f) && Mathf.Approximately(nl, 55f), "nang luong khong phai 55");
         Kiem(Mathf.Approximately(toi.cauDienCooldown, 5f) && Mathf.Approximately(hc, 5f), "hoi chieu khong phai 5 giay");
+        Kiem(Mathf.Approximately(QuaCauDien.GiayChoToiDa, 30f), "han song cua qua cau khong phai 30 giay");
         Kiem(QuaCauDien.SoLuot == 10 && Mathf.Approximately(QuaCauDien.NhipLuot, 0.4f)
              && QuaCauDien.SoTiaMoiLuot == 5 && Mathf.Approximately(QuaCauDien.BanKinhBan, 9f)
              && Mathf.Approximately(QuaCauDien.XacSuatChoang, 0.3f) && Mathf.Approximately(QuaCauDien.GiayChoang, 1.5f)
@@ -441,13 +442,15 @@ public static class ThuQuaCauDien
             var con = QuaCauDien.Spawn(choNgam, maskEnemy, mauToi);
             Vector3 choCau = con.transform.position;
 
-            // 6 giay KHONG co ke dich nao: ban cu tan sau 4 giay, ban moi phai con nguyen
-            int soTiaToe = 0;
+            // 6 giay KHONG co ke dich nao: ban cu tan sau 4 giay, ban moi phai con nguyen.
+            // Nhan tien dem luon tia set quanh cau - nguoi dung da BO hieu ung toe tia lien tuc (18/09/2026),
+            // nen khong co ke dich thi phai KHONG co tia nao.
+            int soKhungCoTia = 0;
             float han = Time.time + 6f;
             while (Time.time < han)
             {
                 foreach (var a in Object.FindObjectsByType<LightningArc>(FindObjectsInactive.Exclude))
-                    if (a != null && Vector3.Distance(a.transform.position, choCau) < 6f) { soTiaToe++; break; }
+                    if (a != null && Vector3.Distance(a.transform.position, choCau) < 6f) { soKhungCoTia++; break; }
                 yield return null;
             }
             bool conSongKhiVang = con != null;
@@ -455,13 +458,17 @@ public static class ThuQuaCauDien
             int luotSau6Giay = QuaCauDien.SoLuotDaBan - luot0;
 
             var hinhI = GameObject.Find("HinhQuaCauDien");
-            bool coVanh = false, coToe = false;
+            bool coVanh = false;
             if (hinhI != null)
-            {
                 foreach (var mf in hinhI.GetComponentsInChildren<MeshFilter>(true))
                     if (mf != null && mf.sharedMesh == VfxFactory.LuoiVanhCauDien && mf.sharedMesh != null) coVanh = true;
-                coToe = hinhI.GetComponent<ToeTiaDien>() != null;
-            }
+
+            // VIEN TRANG phai nam NGOAI mat cau (nguoi dung 18/09/2026: "keo cac vien trang ra ngoai y nhu
+            // hinh phien ban truoc"), nhung khong duoc di qua xa - xa qua la thanh gai chia ra nhu ban bi che.
+            float xaVien = 0f, xaVanh = 0f;
+            var mVien = VfxFactory.LuoiVoCauDien; var mVanh = VfxFactory.LuoiVanhCauDien;
+            if (mVien != null) xaVien = mVien.bounds.extents.magnitude / Mathf.Sqrt(3f);
+            if (mVanh != null) xaVanh = mVanh.bounds.extents.magnitude / Mathf.Sqrt(3f);
 
             // Gio moi dat bia canh no -> phai ban du 10 luot
             var biaI = TaoBia("TAM_CD_I", choCau + Vector3.right * 2.5f, 0.6f);
@@ -472,13 +479,18 @@ public static class ThuQuaCauDien
             bool daTan = con == null;
             Object.Destroy(biaI.gameObject);
 
-            Ghi(string.Format("I. tha cau o cho khong co ai: sau 6 giay cau con song {0} (ban cu tan sau 4 giay), da ban {1} luot, dich khoi cho {2:F2} m; hinh co vanh sang {3}, co tia toe ra {4} ({5} khung thay tia)",
-                conSongKhiVang, luotSau6Giay, lechCho, coVanh, coToe, soTiaToe));
+            Ghi(string.Format("I. tha cau o cho khong co ai: sau 6 giay cau con song {0} (ban cu tan sau 4 giay), da ban {1} luot, dich khoi cho {2:F2} m; han song {3} giay",
+                conSongKhiVang, luotSau6Giay, lechCho, QuaCauDien.GiayChoToiDa));
+            Ghi(string.Format("I. hinh: co vanh sang {0}; {1} khung thay tia set quanh cau (phai la 0 - da bo tia nho ban lien tuc); vien trang xa tam {2:F3}, vanh sang {3:F3} -> vien {4}",
+                coVanh, soKhungCoTia, xaVien, xaVanh, xaVien > xaVanh ? "nam NGOAI nhu anh nguoi dung gui" : "DANG OM SAT cau"));
             Ghi(string.Format("I. dat bia canh no -> tong so luot da ban {0} (mong {1}), sau do tu tan {2}",
                 luotTong, QuaCauDien.SoLuot, daTan));
             Kiem(conSongKhiVang && luotSau6Giay == 0, "khong co ke dich ma qua cau van tinh luot / van bien mat");
             Kiem(lechCho >= 0f && lechCho < 0.05f, "qua cau khong dung nguyen mot cho");
-            Kiem(coVanh && coToe && soTiaToe > 30, "hinh thieu vanh sang hoac khong toe tia dien ra ngoai");
+            Kiem(coVanh, "hinh thieu vanh sang bao boc ben ngoai");
+            Kiem(soKhungCoTia == 0, "van con tia set toe ra khi khong co ke dich - nguoi dung da bo hieu ung nay");
+            Kiem(xaVien > xaVanh && xaVien < xaVanh * 1.6f,
+                 "vien trang khong nam ngoai mat cau (hoac chia ra qua xa thanh gai)");
             Kiem(luotTong == QuaCauDien.SoLuot && daTan, "co ke dich roi ma khong ban du 10 luot roi tan");
             if (con != null) Object.Destroy(con.gameObject);
             yield return new WaitForSeconds(0.4f);

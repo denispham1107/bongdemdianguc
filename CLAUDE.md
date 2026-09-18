@@ -164,13 +164,14 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
   Icon `python CongCu/Icon/sinh_gio_loc.py`. Menu 71 kiểm, 71b chụp ảnh.
 - **Quả cầu điện** (`Skills/QuaCauDien.cs`, hình `Vfx/VfxQuaCauDien.cs`, 18/09/2026): quả cầu lơ lửng hiện **ngay cạnh kẻ địch gần
   chỗ ngắm nhất** (không có ai thì đứng đúng chỗ ngắm), tầm ngắm **18 m = Thiên thạch**; cứ **0,4 s bắn một lượt, ĐỦ 10 LƯỢT MỚI TAN**
-  (⚠️ 18/09/2026 người dùng chốt: quanh đó không có ai thì cầu **đứng nguyên chỗ chờ**, lượt không tính — chỉ hết hạn `GiayChoToiDa` 20 s mới tan),
+  (⚠️ 18/09/2026 người dùng chốt: quanh đó không có ai thì cầu **đứng nguyên chỗ chờ**, lượt không tính — chỉ hết hạn `GiayChoToiDa` **30 s** mới tan),
   mỗi lượt **5 tia — mỗi kẻ MỘT tia**, chọn 5 kẻ gần cầu nhất trong **9 m** (quái lẫn người chơi khác, dư thì bỏ); mỗi tia
   **155,52** = `GiatSet.SatThuongNguoiChoi × CapDo.SatThuongTheoCap(5)` (đọc thẳng từ Giựt sét, không chép tay) và **30% choáng 1,5 s**;
   **55 năng lượng** · hồi chiêu **5 s** · niệm 0,62. Hình **dựng bằng Blender MCP** (`CongCu/Blender/qua_cau_dien.blend` →
   `Resources/KyNang/QuaCauDien/`: `CauDien.fbx` = lõi cầu **tối** + **vành sáng** + vỏ cung điện, ảnh hào quang **hình vòng khuyên**,
-  `TiaDien`/`HatDien`), ba lớp quay ngược chiều nhau và `ToeTiaDien` liên tục phóng tia điện ngắn xuống đất như ảnh người dùng gửi;
-  icon `Resources/Icons/CauDien.png`. Menu 74 kiểm.
+  `TiaDien`/`HatDien`), ba lớp quay ngược chiều nhau; icon `Resources/Icons/CauDien.png`. ⚠️ Vỏ điện là **năm đường VIỀN TRẮNG lớn
+  vòng quanh, nằm NGOÀI mặt cầu** (người dùng xác nhận 18/09/2026) — thứ họ chê "răng cưa rất xấu" là mấy **gai thẳng ngắn chĩa ra**
+  của bản đầu, đã bỏ hẳn; cũng **không có tia sét nhỏ bắn ra liên tục** (đã thử rồi bỏ). Menu 74 kiểm.
 - ⚠️ **`StunnedEffect.Apply` từng kéo mọi cú choáng ngắn hơn 2 giây thành 2 giây** (trường `remaining` khai báo sẵn 2 và `Apply` lấy
   `Max` ngay từ lần đầu) — sửa 18/09/2026: component MỚI nhận đúng số giây. Ảnh hưởng cả Giựt sét (1,5 s). Cùng cái bẫy `AddComponent`
   mang giá trị mặc định của `FrozenEffect`.
