@@ -61,6 +61,9 @@ public class QuaCauBang : MonoBehaviour
     /// <summary>Qua cau da bay bao lau o may ben kia truoc khi tin den - xem Fireball.tuaTruoc.</summary>
     public float tuaTruoc;
 
+    /// <summary>Cap ky nang cua NGUOI TUNG - cap 5 thi tang bang het gio NO TUNG (nguoi dung 19/09/2026).</summary>
+    public int capKyNang = 1;
+
     Vector3 dir;
     float age;
     bool exploded;
@@ -86,7 +89,7 @@ public class QuaCauBang : MonoBehaviour
     /// <summary>Ban MOT CHUM qua cau bang toe hinh quat quanh truc DUNG - xem Fireball.SpawnChum.</summary>
     public static void SpawnChum(Vector3 pos, Vector3 direction, LayerMask hitMask, LayerMask damageMask,
                                  Damageable boQua = null, int soQua = 3, float gocToe = 11f,
-                                 float heSoSatThuong = 1f, float themGiayCham = 0f)
+                                 float heSoSatThuong = 1f, float themGiayCham = 0f, int capKyNang = 1)
     {
         Vector3 huong = direction.normalized;
         float giua = (soQua - 1) * 0.5f;
@@ -99,6 +102,7 @@ public class QuaCauBang : MonoBehaviour
             qua.impactDamage *= heSoSatThuong;
             qua.giayCham += themGiayCham;
             qua.giayDongBang += themGiayCham;
+            qua.capKyNang = capKyNang;
         }
     }
 
@@ -162,7 +166,11 @@ public class QuaCauBang : MonoBehaviour
         SoLanNo++;
 
         VfxFactory.ThaDuoiQuaCauBang(transform);
-        VfxFactory.NoQuaCauBang(transform.position, blastRadius);
+        var tangBang = VfxFactory.NoQuaCauBang(transform.position, blastRadius);
+        // CAP 5: tang bang den luc tan thi NO TUNG, them 100 sat thuong quanh do (nguoi dung 19/09/2026).
+        // Khac Mua bang: Qua cau bang VAN moc tang bang moi lan no, khong phu thuoc co dong bang duoc ai
+        // khong (nguoi dung chot nhu vay khi toi hoi lai).
+        if (capKyNang >= TangBangNo.CapNo) TangBangNo.Gan(tangBang, damageMask, boQua);
         NoBang(transform.position, blastRadius, impactDamage, damageMask, giayCham, giayDongBang, boQua);
         Khieng.NoTrungKhieng(transform.position, blastRadius, impactDamage, damageMask, boQua);
 

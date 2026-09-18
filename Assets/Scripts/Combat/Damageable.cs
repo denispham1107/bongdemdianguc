@@ -243,6 +243,23 @@ public static class CombatUtil
                                  float freezeChance, float freezeSeconds, Damageable boQua,
                                  out int soDongBang)
     {
+        return AreaFreeze(center, radius, damage, mask, chamTiLe, chamGiay,
+                          freezeChance, freezeSeconds, boQua, out soDongBang, null);
+    }
+
+    /// <summary>
+    /// Nhu tren, nhung ghi THEM tung ke BI DONG CUNG vao <paramref name="dsDongBang"/>.
+    ///
+    /// Mua bang can danh sach nay: tu 19/09/2026 nguoi dung xin "chi khi nao lam Dong Bang doi thu
+    /// thanh cong thi moi cho xuat hien tang bang o duoi dat, moi doi thu bi dong bang thanh cong se
+    /// cho xuat hien 1 tang bang" - tuc tang bang moc DUNG CHO TUNG KE bi dong, khong phai mot cum
+    /// o tam nhu truoc.
+    /// </summary>
+    public static int AreaFreeze(Vector3 center, float radius, float damage, LayerMask mask,
+                                 float chamTiLe, float chamGiay,
+                                 float freezeChance, float freezeSeconds, Damageable boQua,
+                                 out int soDongBang, System.Collections.Generic.List<Damageable> dsDongBang)
+    {
         int n = Physics.OverlapSphereNonAlloc(center, radius, buffer, mask, QueryTriggerInteraction.Collide);
         int hits = 0;
         soDongBang = 0;
@@ -274,6 +291,7 @@ public static class CombatUtil
             {
                 FrozenEffect.Apply(d, freezeSeconds);
                 soDongBang++;
+                if (dsDongBang != null) dsDongBang.Add(d);
             }
         }
         return hits;

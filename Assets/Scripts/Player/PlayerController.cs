@@ -1374,7 +1374,7 @@ public class PlayerController : MonoBehaviour
             if (dir.sqrMagnitude < 0.001f) dir = transform.forward;
             // Cap 5 ra 5 qua (nguoi dung 17/09/2026) - cap cua NGUOI TUNG di kem goi tin
             QuaCauBang.SpawnChum(origin, dir.normalized, obstacleMask, enemyMask, health,
-                                 QuaCauBang.SoQuaTheoCap(capPhep), 11f, manhHon, themGiay);
+                                 QuaCauBang.SoQuaTheoCap(capPhep), 11f, manhHon, themGiay, capPhep);
             CameraShake.Shake(0.12f, 0.05f);
         }
         else if (castingSkill == CapDo.KyGioLoc)
@@ -1398,6 +1398,8 @@ public class PlayerController : MonoBehaviour
                 mua.shardDamage *= manhHon;
                 mua.freezeSeconds += themGiay;
                 mua.chamGiay += themGiay;
+                // Cap 5: tang bang het gio thi no tung (TangBangNo). capPhep la cap cua NGUOI TUNG.
+                mua.capKyNang = capPhep;
             }
         }
         else if (castingSkill == 2)

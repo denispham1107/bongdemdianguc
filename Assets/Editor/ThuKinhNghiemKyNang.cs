@@ -340,6 +340,30 @@ public static class ThuKinhNghiemKyNang
             if (loc != null) Object.Destroy(loc.gameObject);
         }
 
+        // ---- B2b. Chet vi VU NO CUA TANG BANG (Mua bang / Qua cau bang cap 5, 19/09/2026) ----
+        // Day la mot duong gay sat thuong MOI: tang bang het gio thi no, +100 quanh do. Neu quen
+        // GhiKeDanh truoc TakeDamage thi giet bang no nay se thanh "ke giet vo danh" - khong ai duoc
+        // kinh nghiem, bang diem de trong (luat chung cua du an).
+        if (dung < kho.Count)
+        {
+            var q = kho[dung++];
+            Vector3 goc = pc.transform.position + new Vector3(0f, 0f, -34f);
+            goc.y = VfxFactory.GroundY(goc);
+            DatQuai(q, goc);
+            q.keDanhCuoi = null;
+            q.maxHealth = 40f; q.health = 40f;
+            yield return new WaitForFixedUpdate();
+
+            // Tha mot tang bang ngay tren dau no roi cho het gio
+            var tang = VfxFactory.IceImpact(goc, QuaCauBang.BanKinhHinhBang, true);
+            TangBangNo.Gan(tang, maskQuai, toi);
+            float hanN = Time.time + 8f;
+            while (!q.IsDead && Time.time < hanN) yield return null;
+            Ghi("B2b. chet vi VU NO CUA TANG BANG: chet " + q.IsDead + ", ke danh cuoi la minh " + ReferenceEquals(q.keDanhCuoi, toi));
+            Kiem(q.IsDead, "vu no tang bang khong giet duoc quai - phep do khong noi len gi");
+            Kiem(ReferenceEquals(q.keDanhCuoi, toi), "chet vi VU NO TANG BANG thi ke danh cuoi bi mat");
+        }
+
         // ---- B3. Vung lua cua thien thach phai biet nguoi tung ----
         {
             var truoc = new HashSet<VungLua>(Object.FindObjectsByType<VungLua>(FindObjectsSortMode.None));

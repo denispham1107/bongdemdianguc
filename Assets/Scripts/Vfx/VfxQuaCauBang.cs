@@ -346,9 +346,10 @@ public static partial class VfxFactory
     }
 
     /// <summary>Vu no bang cua qua cau: gai bang tu dat + vong lanh (IceImpact) + bung suong va manh bang.</summary>
-    public static void NoQuaCauBang(Vector3 pos, float radius)
+    /// <returns>TANG BANG vua moc - de noi goi gan TangBangNo khi ky nang dat cap 5.</returns>
+    public static GameObject NoQuaCauBang(Vector3 pos, float radius)
     {
-        IceImpact(pos, QuaCauBang.BanKinhHinhBang * radius / QuaCauBang.BanKinhNo);
+        var tangBang = IceImpact(pos, QuaCauBang.BanKinhHinhBang * radius / QuaCauBang.BanKinhNo);
 
         var root = new GameObject("NoQuaCauBang");
         root.transform.position = pos;
@@ -395,5 +396,7 @@ public static partial class VfxFactory
 
         // Vet suong gia luon de lai tren dat (IceImpact chi de 35%)
         GroundDecal.Spawn(new Vector3(pos.x, GroundY(pos), pos.z), radius * 0.9f, new Material(FrostMat), 5f, 2.5f);
+
+        return tangBang;
     }
 }

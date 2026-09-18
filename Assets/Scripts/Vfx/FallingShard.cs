@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>Manh bang roi: bay xuong muc tieu roi no.</summary>
@@ -28,27 +29,16 @@ public class FallingShard : MonoBehaviour
     Vector3 start;
     float t;
 
-    /// <summary>Dem cho phep thu: so lan cham dat / so lan co cum gai bang.</summary>
+    /// <summary>Cap ky nang cua NGUOI TUNG (di kem goi tin) - cap 5 thi tang bang no khi het gio.</summary>
+    public int capKyNang = 1;
+
+    /// <summary>Dem cho phep thu: so lan cham dat / so tang bang da moc.</summary>
     public static int SoLanCham, SoLanCoGai;
 
-    static readonly Collider[] boDem = new Collider[32];
+    /// <summary>So ke bi dong bang o cu roi gan nhat - phep thu (menu 68) doc.</summary>
+    public static int SoDongBangLanCuoi;
 
-    /// <summary>
-    /// Trong ban kinh sat thuong (impactRadius, 1,7 m) co KE DICH con song (Damageable tren damageMask - quai vat, va nguoi
-    /// choi khac khi choi mang - tru nguoi tung) khong. Nguoi dung chon: "trung" = nam trong vung sat thuong.
-    /// 17/09/2026 nguoi dung: "chi tao bang tren mat dat khi danh trung nguoi choi khac hoac cac quai vat" - bo han
-    /// truong hop do vat (va cham lop Default: bia, cay, nha mo...) truoc day cung moc gai.
-    /// </summary>
-    bool TrungKeDich()
-    {
-        int n = Physics.OverlapSphereNonAlloc(target, impactRadius, boDem, damageMask, QueryTriggerInteraction.Collide);
-        for (int i = 0; i < n; i++)
-        {
-            var d = boDem[i].GetComponentInParent<Damageable>();
-            if (d != null && !d.IsDead && d != boQua) return true;
-        }
-        return false;
-    }
+    static readonly List<Damageable> dsDongBang = new List<Damageable>();
 
     void Start()
     {
@@ -66,26 +56,58 @@ public class FallingShard : MonoBehaviour
 
         if (k >= 1f)
         {
-            // CUM GAI BANG CHI MOC KHI TRUNG KE DICH - quai vat / nguoi choi khac (nguoi dung 17/09/2026; 16/09 la ca do vat):
-            // trung mat dat hay do vat thi no binh thuong, khong co gai. Hoi TRUOC khi gay sat thuong - con nao chet vi cu nay van tinh.
-            bool coGai = TrungKeDich();
-            // HINH cum bang to bang cua Qua cau bang (2,55 m, prefab nuong o 1,7 -> x1,5). Nguoi dung
-            // 16/09/2026 xin. CHI hinh to ra: vung sat thuong / dong bang ben duoi van la impactRadius.
-            VfxFactory.IceImpact(target, Mathf.Max(impactRadius, QuaCauBang.BanKinhHinhBang), coGai);
             SoLanCham++;
-            if (coGai) SoLanCoGai++;
-            // Qua cau bang roi (Mua bang): tha luong khi lanh + vet bang ra tan dan nhu qua cau cua ky nang
-            VfxFactory.ThaDuoiQuaCauBang(transform);
+
+            // ⚠️ GAY SAT THUONG TRUOC, DUNG HINH SAU (doi thu tu tu 19/09/2026).
+            // Nguoi dung: "chi khi nao lam Dong Bang doi thu thanh cong thi moi cho xuat hien tang bang
+            // o duoi dat (moi doi thu bi dong bang thanh cong se cho xuat hien 1 tang bang)". Muon biet
+            // ai bi dong bang thi phai gieo xac suat xong da - nen khong the ve hinh truoc nhu ban cu.
+            //
+            // Truoc day luat la "trong 1,7 m co ke dich nao con song thi moc gai" (TrungKeDich) - tuc
+            // trung la co tang bang, ke ca khi khong dong bang duoc ai. Da bo han.
+            dsDongBang.Clear();
+            int soDong = 0;
             if (damage > 0f)
             {
                 // AreaFreeze chu khong AreaDamage: AreaDamage ap statusSeconds cho
                 // TAT CA muc tieu trung don, tuc cu cham la dong bang het - khong
                 // con la mot xac suat nua.
-                int soDong;
                 CombatUtil.AreaFreeze(target, impactRadius, damage, damageMask,
                                       chamTiLe, chamGiay,
-                                      freezeChance, freezeSeconds, boQua, out soDong);
+                                      freezeChance, freezeSeconds, boQua, out soDong, dsDongBang);
             }
+            SoDongBangLanCuoi = soDong;
+
+            // HINH cum bang to bang cua Qua cau bang (2,55 m, prefab nuong o 1,7 -> x1,5). Nguoi dung
+            // 16/09/2026 xin. CHI hinh to ra: vung sat thuong / dong bang ben duoi van la impactRadius.
+            float coHinh = Mathf.Max(impactRadius, QuaCauBang.BanKinhHinhBang);
+
+            if (dsDongBang.Count > 0)
+            {
+                // MOI KE BI DONG BANG MOT TANG - moc ngay duoi chan ke ay, khong phai mot cum o tam
+                for (int i = 0; i < dsDongBang.Count; i++)
+                {
+                    var d = dsDongBang[i];
+                    if (d == null) continue;
+                    Vector3 cho = d.transform.position;
+                    cho.y = VfxFactory.GroundY(cho);
+                    var tang = VfxFactory.IceImpact(cho, coHinh, true);
+                    SoLanCoGai++;
+                    // CAP 5: tang bang het gio thi no tung, them 100 sat thuong quanh do
+                    if (capKyNang >= TangBangNo.CapNo) TangBangNo.Gan(tang, damageMask, boQua);
+                }
+                // O cho roi van co chop sang / vong lanh / suong, chi khong co tang bang
+                if (dsDongBang.Count > 1 || Vector3.Distance(dsDongBang[0].transform.position, target) > 0.6f)
+                    VfxFactory.IceImpact(target, coHinh, false);
+            }
+            else
+            {
+                // Khong dong bang duoc ai (ke ca khi co trung va gay sat thuong): no binh thuong, KHONG tang bang
+                VfxFactory.IceImpact(target, coHinh, false);
+            }
+
+            // Qua cau bang roi (Mua bang): tha luong khi lanh + vet bang ra tan dan nhu qua cau cua ky nang
+            VfxFactory.ThaDuoiQuaCauBang(transform);
             Destroy(gameObject);
         }
     }

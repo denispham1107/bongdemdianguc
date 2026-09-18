@@ -8442,6 +8442,56 @@ Lần đầu tôi đọc chỗ cơn Gió lốc *trước khi niệm* rồi so v�
 đọc. Chỉ khi ghi cả hai vị trí **ngay khung hình đầu tiên thấy cơn lốc mới** thì số đo mới ra 0,00 m. Tỉ lệ "to dần"
 cũng vậy: đọc trễ 0,5 giây thì thấy 0,91 thay vì 0,42 — phải theo dõi suốt trong vòng lặp.
 
+### Tảng băng: chỉ mọc khi đóng băng được, và cấp 5 thì nổ tung (19/09/2026)
+
+Anh xin hai việc. **Mưa băng**: *"Chỉ khi nào làm Đóng Băng đối thủ thành công thì mới cho xuất hiện tảng băng ở
+dưới đất (mỗi đối thủ bị đóng băng thành công sẽ cho xuất hiện 1 tảng băng)"*. Và cho **cả Mưa băng lẫn Quả cầu
+băng**: *"Khi skill đạt cấp 5, tảng băng đến thời gian biến mất thay vì biến mất như bình thường, thì sẽ nổ tung
+gây thêm 100 sát thương cho đối thủ và các đối thủ ở gần đó"*. Hỏi lại, anh chốt: bán kính nổ **3,4 m** (bằng vùng
+nổ của Quả cầu băng), sát thương **đúng 100 cố định**, và **Quả cầu băng giữ nguyên** cách mọc tảng băng như cũ —
+luật "chỉ đóng băng mới có tảng băng" chỉ áp cho Mưa băng.
+
+**Luật cũ so với luật mới.** Trước đây `FallingShard.TrungKeDich` hỏi *"trong 1,7 m có kẻ địch nào còn sống
+không"* — có là mọc tảng băng, dù đóng băng được hay không (đóng băng chỉ là 35% số lần). Nay tảng băng mọc
+**dưới chân từng kẻ bị đóng cứng**, mỗi kẻ một tảng; không đóng được ai thì vụ nổ vẫn có chớp, vòng lạnh, sương,
+mảnh băng — chỉ không có tảng băng.
+
+Việc này buộc phải **đảo thứ tự trong `FallingShard`**: bản cũ vẽ hình trước rồi mới gây sát thương. Muốn biết ai
+bị đóng băng thì phải gieo xác suất xong đã, nên nay sát thương chạy trước, hình dựng sau.
+`CombatUtil.AreaFreeze` có thêm một chỗ nhận danh sách kẻ bị đóng cứng để trả về.
+
+**Vụ nổ** là `TangBangNo` gắn lên chính tảng băng: nó đọc tuổi thọ từ `AutoDestroy` của tảng (4 giây trong
+`Vfx_NoBang.prefab`) và nổ sớm hơn **0,12 giây** — nếu để đúng bằng nhau thì có lần `AutoDestroy` xoá vật trước khi
+`Update` kịp chạy và cả vụ nổ biến mất im lặng. Hình vụ nổ (`VfxFactory.NoTangBang`) dựng từ những mảnh có sẵn:
+mảnh băng vỡ tung, vòng lạnh lan trên đất, sương bung, một ngọn đèn loé. ⚠️ **Không được dùng lại
+`VfxFactory.NoQuaCauBang`** cho vụ nổ này — hàm ấy gọi `IceImpact`, tức lại mọc thêm một tảng băng mới: tảng băng
+nổ ra tảng băng, không bao giờ dứt.
+
+Cấp kỹ năng đi theo **cấp của NGƯỜI TUNG** (`capPhepDangTung`, đi kèm gói tin) chứ không phải cấp của người xem:
+`IceStorm.capKyNang` giữ suốt 5 giây con bão rồi giao cho từng mảnh rơi, `QuaCauBang.capKyNang` đi cùng mỗi quả.
+
+**Số đo** (menu 68 mục L và N, `quacaubang.txt`, **0 lỗi**):
+
+| Đo | Kết quả |
+|---|---|
+| Đóng băng chắc chắn (quái) | **8 cụm gai**, đúng **1** tảng băng |
+| Đóng băng chắc chắn (người chơi khác) | **8 cụm gai**, đúng **1** tảng băng |
+| **Trúng quái mà KHÔNG đóng băng** | **0** tảng băng — điều anh xin, và là điều bản cũ làm sai |
+| Đất trống / bia mộ / chính người tung | **0** tảng băng (đối chứng, giữ nguyên như trước) |
+| Mưa băng thật (có bia đỡ đòn) | 36 quả chạm đất, **10 quả** có tảng băng ≈ 28% — khớp với xác suất đóng băng 35% |
+| Mưa băng thật (không có kẻ địch) | 36 quả chạm đất, **0** tảng băng |
+| **Cấp 5, vụ nổ** | bia tại chỗ mất đúng **100,0**; bia cách **3,00 m** mất **60,0** (giảm dần); bia cách **4,00 m** mất **0,0** |
+| Đối chứng cấp 4 | **0** vụ nổ, không ai mất máu |
+| Quả cầu băng cấp 5 | tảng băng sau vụ nổ cũng nổ, bia mất thêm **86,0** |
+| Hồi quy | menu 58 (Mưa băng · Sấm sét): **0 lỗi** · menu 61 (kinh nghiệm, thêm ca B2b cho vụ nổ tảng băng): **0 lỗi** |
+
+**Hai lỗi của phép thử, không phải của game.** Lần chạy đầu menu 68 báo *"đối chứng hỏng: cấp 4 mà tảng băng vẫn
+nổ"* — 2 vụ nổ, bia mất đúng 55 máu. Hoá ra mục M ngay trước đó tung **Quả cầu băng thật ở cấp 5**, để lại mấy
+tảng băng mang luật nổ, và chúng phát nổ đúng vào giữa lúc mục N đang đo đối chứng. Nay mục N dọn sạch
+`TangBangNo` còn sống trước khi đo. Lỗi thứ hai: mục K báo *"ảnh đốm tròn cũ cũng đếm ra răng"* — hai ảnh đối
+chứng để trong `Temp/`, mà Unity **xoá sạch thư mục đó mỗi lần khởi động lại**, nên sau lần Unity sập chúng không
+còn. Đã chuyển sang `PlayTestShots/doichung/` và commit vào git.
+
 ### Quả cầu điện: đổi đường gân liền thành tia điện mỏng đứt quãng, chớp tắt (19/09/2026)
 
 Anh gửi ảnh quả cầu trong game và xin: *"Thay các đường vân trắng thành các tia điện mỏng bao bọc xung quanh

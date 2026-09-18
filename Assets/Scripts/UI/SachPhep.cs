@@ -348,6 +348,10 @@ public static class SachPhep
                      + "Tảng băng rơi trúng kẻ địch thì CHẮC CHẮN làm chậm một nửa tốc "
                      + "độ trong 2 giây, và 35% số lần còn đóng cứng hẳn 1,5 giây — kẻ "
                      + "bị đóng cứng không đi được và không tung được phép nào.\n\n"
+                     + "Mỗi kẻ bị ĐÓNG CỨNG sẽ mọc lên dưới chân một tảng băng — chỉ khi đóng "
+                     + "băng được mới có tảng băng, trúng suông thì không.\n\n"
+                     + "CẤP 5: tảng băng đến lúc tan thì NỔ TUNG thay vì biến mất, giáng thêm "
+                     + "100 sát thương lên kẻ đứng đó và mọi kẻ ở gần trong 3,4 mét.\n\n"
                      + "Bão tự tìm kẻ địch trong vùng để dội xuống, và không bao giờ "
                      + "nhắm vào chính người tung ra nó.";
             case 2:
@@ -415,7 +419,9 @@ public static class SachPhep
                      + "ban đầu 65 mỗi quả.\n\n"
                      + "Kẻ nào trúng đều bị LÀM CHẬM một nửa tốc độ trong 2 giây, và có 40% khả năng bị "
                      + "ĐÓNG BĂNG 1,5 giây — đứng cứng tại chỗ, không đi và không dùng được kỹ năng nào.\n\n"
-                     + "CẤP 5: mỗi lần tung ra NĂM quả cầu băng thay vì ba.\n\n"
+                     + "CẤP 5: mỗi lần tung ra NĂM quả cầu băng thay vì ba, và tảng băng mọc lên "
+                     + "sau vụ nổ đến lúc tan thì NỔ TUNG, giáng thêm 100 sát thương lên mọi kẻ "
+                     + "ở gần trong 3,4 mét.\n\n"
                      + "Hồi chiêu nhanh như Quả cầu lửa — đổi sức thiêu đốt lấy khả năng ghìm "
                      + "chân kẻ địch.";
             case CapDo.KyGioLoc:

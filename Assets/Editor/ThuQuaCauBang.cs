@@ -41,6 +41,11 @@ using UnityEngine;
 ///   F (sua 17/09/2026, nguoi dung: "moi qua cau bang co 40% kha nang Dong bang doi thu... khong the di chuyen va su dung skill";
 ///      chon: TRUNG LA CHAM nhu cu + THEM 40% dong bang 1,5 giay): 1000 lan no - ti le cham 100%, ti le dong cung ~40%,
 ///      dong cung 1,5 giay, cap 3 keo dai ca hai (+0,30).
+///   N. (19/09/2026, nguoi dung: "khi skill dat cap 5, tang bang den thoi gian bien mat thay vi bien mat nhu
+///      binh thuong, thi se no tung gay them 100 sat thuong cho doi thu va cac doi thu o gan do" - cho CA Mua bang
+///      lan Qua cau bang; hoi lai: ban kinh 3,4 m, dung 100 co dinh): tha tang bang THAT roi cho no het gio -
+///      bia dung tai cho mat dung 100, bia cach 3,0 m mat it hon (giam dan), bia cach 4,0 m KHONG mat gi;
+///      DOI CHUNG cap 4 -> tang bang tan im lang, khong ai mat mau. Lam ca voi Mua bang va Qua cau bang.
 ///   M. (cung ngay) CAP 5 ra 5 qua: tung that o cap 4 (DOI CHUNG) -> 3 qua, cap 5 -> 5 qua; goi ky nang cap 5 tu nguoi kia ->
 ///      may minh cung ra 5 qua. NGUOI CHOI bi dong bang: khong di duoc (HeSoTocBang = 0) va CastAt bi tu choi.
 ///   L. (16/09/2026, nguoi dung: qua cau cua Mua bang "chi trung mat dat thi no binh thuong khong tao khoi bang;
@@ -219,6 +224,13 @@ public static class ThuQuaCauBang
         mauToi.maxHealth = 1e7f; mauToi.health = 1e7f;
         foreach (var q in Object.FindObjectsByType<EnemyAI>(FindObjectsInactive.Include)) Object.DestroyImmediate(q.gameObject);
         int maskEnemy = LayerMask.GetMask("Enemy");
+
+        // ⚠️ TAT GameDirector SUOT PHEP THU. Phep thu nay rat dai va tu dung bia rieng; de
+        // GameDirector chay thi giua chung no tha them dot quai 24 con vao dung luc dang ve hang
+        // tram tang bang - 19/09/2026 menu 74 dinh dung canh nay va Unity TAT HAN vi GPU timeout
+        // ("Failed to present D3D11 swapchain due to device reset/removed").
+        bool dirBatCu = false;
+        if (dir != null) { dirBatCu = dir.enabled; dir.enabled = false; }
 
         // ================= A. TAI NGUYEN BLENDER =================
         Ghi("");
@@ -677,11 +689,15 @@ public static class ThuQuaCauBang
                 rongGanMui = bn[hangCua(anhDau, 0.45f)];
                 soRang = demRang(anhDau);
             }
-            var anhDauCu = docPng("Temp/DauSaoBang_cu.png");
+            // ⚠️ Anh DOI CHUNG de o PlayTestShots/doichung/ chu KHONG phai Temp/: Unity xoa sach Temp moi
+            // lan khoi dong lai, nen sau lan Unity sap 19/09/2026 phep thu doc ra -1 va bao loi GIA
+            // ("anh dom tron cu cung dem ra rang"). Hai file trich tu git: DauSaoBang cua ead6af9,
+            // VetSaoBang cua f2e70d9 - tuc ban NGAY TRUOC lan sua tuong ung.
+            var anhDauCu = docPng("PlayTestShots/doichung/DauSaoBang_cu.png");
             if (anhDauCu != null) { rangCu = demRang(anhDauCu); Object.DestroyImmediate(anhDauCu); }
             // DOI CHUNG: anh vet ban truoc (git HEAD~, co canh cat) - tim bang file tam do phep thu ghi ra neu co
             float cotDauCu = -1f;
-            var anhCu = docPng("Temp/VetSaoBang_cu.png");
+            var anhCu = docPng("PlayTestShots/doichung/VetSaoBang_cu.png");
             if (anhCu != null) for (int y = 0; y < anhCu.height; y++) cotDauCu = Mathf.Max(cotDauCu, anhCu.GetPixel(0, y).a);
             Ghi(string.Format("    anh PNG tren dia: vet - alpha lon nhat cot dau (u=0) {0:F3}, cot u=0,1 {1:F3} (DOI CHUNG anh cu cot dau {2:F3}); dau - dom {3:F3}, mep {4:F3}, be ngang o dom {5} diem anh / gan mui (y 0,45) {6} diem anh, so rang cua {7} (DOI CHUNG anh dom tron cu: {8} rang)",
                 cotDau, cotSau, cotDauCu, dauTam, dauMep, rongDom, rongGanMui, soRang, rangCu));
@@ -711,7 +727,7 @@ public static class ThuQuaCauBang
             if (bao != null) Object.Destroy(bao.gameObject);
         }
 
-        // ================= L. CUM GAI CHI KHI TRUNG KE DICH (QUAI / NGUOI CHOI KHAC) =================
+        // ================= L. TANG BANG CHI MOC KHI DONG BANG DUOC (luat moi 19/09/2026) =================
         Ghi("");
         {
             yield return new WaitForSeconds(2.5f);
@@ -755,37 +771,49 @@ public static class ThuQuaCauBang
                 yield return new WaitForSeconds(0.3f);
                 Ghi("L. don " + quaiDon + " quai that quanh cho thu (quai song trong 1,7 m se lam moc cum gai)");
 
+                // ⚠️ LUAT MOI (nguoi dung 19/09/2026): tang bang chi moc khi DONG BANG DUOC doi thu.
+                // Nen moi ca deu dat freezeChance ro rang: 1 = chac chan dong bang, 0 = chac chan khong.
+                // Ca 6 la ca QUAN TRONG NHAT cua luat moi: trung quai that nhung KHONG dong bang -> KHONG tang bang
+                // (ban cu thi van moc, vi luat cu chi hoi "trong 1,7 m co ke dich nao khong").
                 string[] tenCa = { "dat trong (khong vat, khong ke dich)", "bia mo " + tenBia + " cach 1,0 m (co va cham lop Default trong 1,7 m: " + (Physics.CheckSphere(gan, 1.7f, lopVat, QueryTriggerInteraction.Ignore) ? "co" : "KHONG") + ")",
-                                   "quai vat (bia do don lop Enemy) cach 1,0 m", "bia mo cach 2,6 m (ngoai 1,7 m)",
-                                   "NGUOI CHOI KHAC (bia do don lop Player, mask Enemy+Player) cach 1,0 m", "chinh NGUOI TUNG (lop Player, boQua) cach 1,0 m, mask Enemy+Player" };
-                Vector3[] choCa = { trong, gan, trong, xa, trong, trong };
+                                   "quai vat (bia do don lop Enemy) cach 1,0 m, DONG BANG chac chan",
+                                   "bia mo cach 2,6 m (ngoai 1,7 m)",
+                                   "NGUOI CHOI KHAC (lop Player, mask Enemy+Player) cach 1,0 m, DONG BANG chac chan",
+                                   "chinh NGUOI TUNG (lop Player, boQua) cach 1,0 m, mask Enemy+Player",
+                                   "quai vat cach 1,0 m nhung KHONG dong bang duoc (xac suat 0)" };
+                Vector3[] choCa = { trong, gan, trong, xa, trong, trong, trong };
+                float[] xsBang = { 1f, 1f, 1f, 1f, 1f, 1f, 0f };
                 int soCa = tenCa.Length;
                 var gaiBat = new int[soCa]; var phanKhac = new int[soCa]; var coGaiDem = new int[soCa];
                 int maskCaNguoi = maskEnemy | LayerMask.GetMask("Player");
                 for (int ca = 0; ca < soCa; ca++)
                 {
                     Damageable keDich = null;
-                    if (ca == 2 || ca == 4 || ca == 5)
+                    if (ca == 2 || ca == 4 || ca == 5 || ca == 6)
                     {
                         keDich = TaoBia("TAM_KeDichL" + ca, choCa[ca] + Vector3.right * 1.0f);
-                        if (ca != 2) keDich.gameObject.layer = LayerMask.NameToLayer("Player");
+                        if (ca == 4 || ca == 5) keDich.gameObject.layer = LayerMask.NameToLayer("Player");
                         yield return new WaitForFixedUpdate();
                     }
                     var truoc = new HashSet<GameObject>(UnityEngine.SceneManagement.SceneManager.GetActiveScene().GetRootGameObjects());
                     int coGai0 = FallingShard.SoLanCoGai;
                     var qua = VfxFactory.QuaCauBangRoi(choCa[ca], 3f, 0.12f);
                     var fs = qua.GetComponent<FallingShard>();
-                    fs.damage = 1f; fs.impactRadius = 1.7f; fs.damageMask = ca >= 4 ? maskCaNguoi : maskEnemy;
+                    fs.damage = 1f; fs.impactRadius = 1.7f;
+                    fs.damageMask = (ca == 4 || ca == 5) ? maskCaNguoi : maskEnemy;
+                    fs.freezeChance = xsBang[ca];
                     if (ca == 5) fs.boQua = keDich;
-                    GameObject no = null;
+                    // Mot cu roi nay co the sinh NHIEU vat: mot tang bang duoi chan moi ke bi dong bang,
+                    // cong mot vu no "khong gai" o dung cho roi. Gom HET roi cong don.
+                    var dsNo = new List<GameObject>();
                     float hanL = Time.time + 1.5f;
-                    while (no == null && Time.time < hanL)
+                    while (dsNo.Count == 0 && Time.time < hanL)
                     {
                         foreach (var g in UnityEngine.SceneManagement.SceneManager.GetActiveScene().GetRootGameObjects())
-                            if (!truoc.Contains(g) && (g.name.Contains("NoBang") || g.name.Contains("IceImpact"))) { no = g; break; }
+                            if (!truoc.Contains(g) && (g.name.Contains("NoBang") || g.name.Contains("IceImpact"))) dsNo.Add(g);
                         yield return null;
                     }
-                    if (no != null)
+                    foreach (var no in dsNo)
                         foreach (Transform con in no.transform)
                         {
                             if (con.name.StartsWith("CumGai")) { if (con.gameObject.activeSelf) gaiBat[ca]++; }
@@ -799,10 +827,12 @@ public static class ThuQuaCauBang
                 }
                 for (int ca = 0; ca < soCa; ca++)
                     Ghi(string.Format("L. {0}: cum gai dang bat {1}, cac phan no khac dang bat {2}, bo dem co gai +{3}", tenCa[ca], gaiBat[ca], phanKhac[ca], coGaiDem[ca]));
-                Kiem(gaiBat[0] == 0 && gaiBat[3] == 0, "chi trung mat dat ma van moc cum gai bang");
-                Kiem(gaiBat[1] == 0, "trung do vat (bia mo) ma van moc cum gai bang");
-                Kiem(gaiBat[2] > 0 && gaiBat[4] > 0, "trung quai / nguoi choi khac ma khong co cum gai bang");
-                Kiem(gaiBat[5] == 0, "chinh nguoi tung dung trong vung cung lam moc cum gai");
+                Kiem(gaiBat[0] == 0 && gaiBat[3] == 0, "chi trung mat dat ma van moc tang bang");
+                Kiem(gaiBat[1] == 0, "trung do vat (bia mo) ma van moc tang bang");
+                Kiem(gaiBat[2] > 0 && gaiBat[4] > 0, "dong bang duoc quai / nguoi choi khac ma khong moc tang bang");
+                Kiem(gaiBat[5] == 0, "chinh nguoi tung dung trong vung cung lam moc tang bang");
+                Kiem(gaiBat[6] == 0 && coGaiDem[6] == 0, "trung ke dich ma KHONG dong bang duoc thi khong duoc moc tang bang (luat moi 19/09/2026)");
+                Kiem(coGaiDem[2] == 1 && coGaiDem[4] == 1, "moi ke bi dong bang phai moc DUNG MOT tang bang");
                 Kiem(phanKhac[0] > 0 && phanKhac[0] == phanKhac[1], "no khong co gai ma mat luon cac phan no khac");
             }
 
@@ -923,6 +953,102 @@ public static class ThuQuaCauBang
             Kiem(sauBang == 0, "nguoi choi bi dong bang ma van tung duoc ky nang");
         }
 
+        // ================= N. CAP 5: TANG BANG NO KHI HET GIO =================
+        Ghi("");
+        {
+            foreach (var d0 in Object.FindObjectsByType<Damageable>(FindObjectsInactive.Exclude))
+                if (d0.name.StartsWith("TAM_")) Object.Destroy(d0.gameObject);
+            foreach (var q0 in Object.FindObjectsByType<QuaCauBang>(FindObjectsInactive.Exclude)) Object.Destroy(q0.gameObject);
+            // ⚠️ DON MOI TANG BANG CON SONG. Muc M vua tung Qua cau bang THAT o cap 5, nen no de lai
+            // may tang bang mang luat no - chung phat no trong 4 giay toi, dung vao giua luc muc N dang
+            // do DOI CHUNG cap 4. Lan chay dau 19/09/2026 vi the bao "cap 4 ma tang bang van no" (2 vu
+            // no, bia mat 55 mau = dung con so cua mot vu no o ria) - loi cua phep thu, khong phai cua game.
+            foreach (var t0 in Object.FindObjectsByType<TangBangNo>(FindObjectsInactive.Exclude))
+                if (t0 != null) Object.Destroy(t0.gameObject);
+            yield return new WaitForSeconds(0.6f);
+
+            Vector3 hN = HuongTrong(toi);
+            Vector3 choN = toi.transform.position + hN * 9f;
+            choN.y = VfxFactory.GroundY(choN);
+            Vector3 ngang = Vector3.Cross(Vector3.up, hN).normalized;
+
+            // Ba bia: ngay tai cho no, cach 3,0 m (trong 3,4 m) va cach 4,0 m (ngoai 3,4 m)
+            var biaTam = TaoBia("TAM_NoTam", choN);
+            var biaGan = TaoBia("TAM_NoGan", choN + ngang * 3.0f);
+            var biaXa = TaoBia("TAM_NoXa", choN + ngang * 4.0f);
+            yield return new WaitForFixedUpdate();
+            float thatTam = Vector3.Distance(choN, biaTam.transform.position);
+            float thatGan = Vector3.Distance(choN, biaGan.transform.position);
+            float thatXa = Vector3.Distance(choN, biaXa.transform.position);
+
+            // --- N1. DOI CHUNG: cap 4 thi tang bang tan im lang ---
+            int no0 = TangBangNo.SoLanNo;
+            var qua4 = VfxFactory.QuaCauBangRoi(choN, 3f, 0.12f);
+            var fs4 = qua4.GetComponent<FallingShard>();
+            fs4.damage = 1f; fs4.impactRadius = 1.7f; fs4.damageMask = maskEnemy;
+            fs4.freezeChance = 1f; fs4.capKyNang = 4;
+            yield return new WaitForSeconds(0.6f);
+            float m4Tam = biaTam.health, m4Gan = biaGan.health;
+            yield return new WaitForSeconds(5f);             // qua han 4 giay cua tang bang
+            float mat4Tam = m4Tam - biaTam.health, mat4Gan = m4Gan - biaGan.health;
+            int no4 = TangBangNo.SoLanNo - no0;
+
+            // --- N2. CAP 5: tang bang no ---
+            XoaHieuUng(biaTam); XoaHieuUng(biaGan); XoaHieuUng(biaXa);
+            biaTam.health = biaTam.maxHealth; biaGan.health = biaGan.maxHealth; biaXa.health = biaXa.maxHealth;
+            yield return null;
+
+            int no1 = TangBangNo.SoLanNo;
+            var qua5 = VfxFactory.QuaCauBangRoi(choN, 3f, 0.12f);
+            var fs5 = qua5.GetComponent<FallingShard>();
+            fs5.damage = 1f; fs5.impactRadius = 1.7f; fs5.damageMask = maskEnemy;
+            fs5.freezeChance = 1f; fs5.capKyNang = 5;
+            yield return new WaitForSeconds(0.6f);
+            // Mau NGAY SAU cu roi (da tru sat thuong cua chinh qua bang) - vu no do tu moc nay
+            float m5Tam = biaTam.health, m5Gan = biaGan.health, m5Xa = biaXa.health;
+            int soTang = 0;
+            foreach (var t in Object.FindObjectsByType<TangBangNo>(FindObjectsInactive.Exclude)) if (t != null) soTang++;
+            yield return new WaitForSeconds(5f);
+            float mat5Tam = m5Tam - biaTam.health, mat5Gan = m5Gan - biaGan.health, mat5Xa = m5Xa - biaXa.health;
+            int no5 = TangBangNo.SoLanNo - no1;
+
+            Ghi(string.Format("N. Mua bang CAP 4 (doi chung): {0} vu no; bia tai cho mat {1:F1} mau, bia 3,0 m mat {2:F1}",
+                no4, mat4Tam, mat4Gan));
+            Ghi(string.Format("N. Mua bang CAP 5: {0} tang bang co luat no, {1} vu no; bia tai cho ({2:F2} m) mat {3:F1}, bia {4:F2} m mat {5:F1}, bia {6:F2} m mat {7:F1} (ban kinh no {8} m, sat thuong {9})",
+                soTang, no5, thatTam, mat5Tam, thatGan, mat5Gan, thatXa, mat5Xa, TangBangNo.BanKinh, TangBangNo.SatThuong));
+            Kiem(no4 == 0 && mat4Tam < 1f, "doi chung hong: cap 4 ma tang bang van no");
+            Kiem(soTang >= 1 && no5 >= 1, "cap 5 ma tang bang khong no");
+            Kiem(Mathf.Abs(mat5Tam - TangBangNo.SatThuong) < 1f, "vu no khong gay dung 100 sat thuong o tam");
+            Kiem(mat5Gan > 50f && mat5Gan < TangBangNo.SatThuong, "bia trong ban kinh khong an don giam dan");
+            Kiem(mat5Xa < 1f, "bia NGOAI ban kinh 3,4 m ma van an don");
+
+            // --- N3. QUA CAU BANG cap 5: tang bang sau vu no cung no ---
+            XoaHieuUng(biaTam); XoaHieuUng(biaGan);
+            biaTam.health = biaTam.maxHealth;
+            yield return null;
+            int no2 = TangBangNo.SoLanNo;
+            var qc = QuaCauBang.Spawn(choN + hN * -3f + Vector3.up * 1f, hN, LayerMask.GetMask("Default"), maskEnemy);
+            qc.capKyNang = 5;
+            qc.boQua = mauToi;
+            yield return new WaitForSeconds(1.2f);
+            float mQC = biaTam.health;
+            int tangQC = 0;
+            foreach (var t in Object.FindObjectsByType<TangBangNo>(FindObjectsInactive.Exclude)) if (t != null) tangQC++;
+            yield return new WaitForSeconds(5f);
+            float matQC = mQC - biaTam.health;
+            int noQC = TangBangNo.SoLanNo - no2;
+            Ghi(string.Format("N. Qua cau bang CAP 5: {0} tang bang co luat no, {1} vu no; bia mat them {2:F1} mau sau khi qua cau da no xong",
+                tangQC, noQC, matQC));
+            Kiem(tangQC >= 1 && noQC >= 1, "Qua cau bang cap 5 ma tang bang khong no");
+            Kiem(matQC > 50f, "vu no tang bang cua Qua cau bang khong gay sat thuong");
+
+            Object.Destroy(biaTam.gameObject);
+            Object.Destroy(biaGan.gameObject);
+            Object.Destroy(biaXa.gameObject);
+            foreach (var q0 in Object.FindObjectsByType<QuaCauBang>(FindObjectsInactive.Exclude)) Object.Destroy(q0.gameObject);
+            yield return new WaitForSeconds(0.4f);
+        }
+
         // ================= I. HUD / SACH PHEP =================
         var hud = GameHUD.Ban;
         var bo = hud != null ? hud.BoIcon() : null;
@@ -937,6 +1063,7 @@ public static class ThuQuaCauBang
         {
             var g = GameObject.Find(ten); if (g != null) Object.Destroy(g);
         }
+        if (dir != null) dir.enabled = dirBatCu;
         Ghi("");
         Ghi("so loi ghi nhan = " + loi);
         Ket();

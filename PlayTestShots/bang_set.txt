@@ -5,8 +5,8 @@ A2. cum bang duoi dat (doc thang Vfx_NoBang.prefab)
 
 A1. tang bang roi (do 600 tang sinh ra that)
     luoi goc cao trung binh 0.888 m (6 hinh)
-    600 tang: cao 0.83 - 2.91 m, trung binh 1.582 m
-    truoc khi sua co 1.04-2.08 -> cao trung binh 1.385 m; nay to them 14.2%
+    600 tang: cao 0.82 - 2.87 m, trung binh 1.601 m
+    truoc khi sua co 1.04-2.08 -> cao trung binh 1.385 m; nay to them 15.6%
 
 B. tham so di tu prefab xuong tung tang bang
 B1. prefab Skill_MuaBang: cham 50% trong 2 giay; dong cung 35% trong 1.5 giay
@@ -14,20 +14,20 @@ B2. prefab Skill_SamSet: choang 35% trong 2.2 giay
 B3. tang bang that nhan duoc: cham 50% trong 2 giay; dong cung 35% trong 1.5 giay
 
 C. gieo 1000 lan len mot bia do don
-C1. mua bang: dong cung 34.4% (mong doi 35%), lam cham 100.0% (mong doi 100%)
-C2. sam set: choang 35.2% (mong doi 35%)
+C1. mua bang: dong cung 33.8% (mong doi 35%), lam cham 100.0% (mong doi 100%)
+C2. sam set: choang 32.2% (mong doi 35%)
 
 D. nguoi choi bi dong cung / choang (day can 0,6 giay moi lan)
    mo khoa san ky nang 1..4: True/True/True/True (nhan vat cap 4)
-D1. khong bi gi: di duoc 4.15 m, tung phep ra 1 lan
+D1. khong bi gi: di duoc 3.48 m, tung phep ra 1 lan
 D2. dong cung: DangBiKhoaCung = True, di duoc 0.00 m, bam 2 phep -> bay ra 0, loi nhac: BẠN ĐANG BỊ ĐÓNG BĂNG!
-D3. chi bi cham 50%: di duoc 1.74 m = 42% quang duong binh thuong
+D3. chi bi cham 50%: di duoc 1.80 m = 52% quang duong binh thuong
 D4. choang: DangBiKhoaCung = True, di duoc 0.00 m, bam phep -> bay ra 0, loi nhac: BẠN ĐANG BỊ CHOÁNG!
-D5. sau khi tan bang: di duoc 3.64 m (truoc do 4.15 m)
+D5. sau khi tan bang: di duoc 3.46 m (truoc do 3.48 m)
 
 E. mua bang tung ngay duoi chan minh, canh co hai bia
-E1. co bo qua nguoi tung: 42 tang - roi vao nguoi tung 2, roi vao ke dich 35
-E2. KHONG bo qua nguoi tung (kieu cu): 22 tang - roi vao nguoi tung 6, roi vao ke dich 16
+E1. co bo qua nguoi tung: 42 tang - roi vao nguoi tung 0, roi vao ke dich 35
+E2. KHONG bo qua nguoi tung (kieu cu): 20 tang - roi vao nguoi tung 5, roi vao ke dich 15
 
 F. mua bang cua NGUOI KHAC roi trung minh
 F1. sau 4 giay duoi con mua cua nguoi khac: co bi cham = True, co luc bi dong cung = True

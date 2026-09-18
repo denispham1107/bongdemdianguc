@@ -78,6 +78,13 @@ public class IceStorm : MonoBehaviour
     /// roi giao lai.</summary>
     public Damageable boQua;
 
+    /// <summary>
+    /// Cap ky nang cua NGUOI TUNG (di kem goi tin, xem PlayerController.capPhepDangTung).
+    /// Cap 5 thi moi tang bang het gio se NO TUNG them 100 sat thuong (nguoi dung 19/09/2026).
+    /// Giu o day cung ly do voi boQua: manh roi ra dan trong 5 giay, khong doc bien tam luc ay duoc.
+    /// </summary>
+    public int capKyNang = 1;
+
     float timer, shardTimer, chillTimer;
     static readonly Collider[] buffer = new Collider[64];
 
@@ -138,6 +145,7 @@ public class IceStorm : MonoBehaviour
                 fall.freezeChance = freezeChance;
                 fall.chamTiLe = chamTiLe;
                 fall.chamGiay = chamGiay;
+                fall.capKyNang = capKyNang;
             }
         }
 

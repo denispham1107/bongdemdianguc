@@ -1354,15 +1354,17 @@ public static partial class VfxFactory
     }
 
     /// <summary>NO BANG: manh bang vo tung, hoi lanh phut ra, gai bang moc len.</summary>
-    public static void IceImpact(Vector3 pos, float radius)
+    public static GameObject IceImpact(Vector3 pos, float radius)
     {
-        IceImpact(pos, radius, true);
+        return IceImpact(pos, radius, true);
     }
 
     /// <param name="coGai">false = no KHONG co cum gai bang (tat CumGai* va quang chan HaoQuang* cua chung),
     /// giu chop sang, vong lanh, suong, giot nuoc, manh bang, vet suong gia. Mua bang dung khi qua cau chi trung
     /// mat dat (nguoi dung 16/09/2026).</param>
-    public static void IceImpact(Vector3 pos, float radius, bool coGai)
+    /// <returns>Goc cua vu no (TANG BANG). Noi goi dung no de gan <see cref="TangBangNo"/> khi ky nang
+    /// dat cap 5 - nguoi dung 19/09/2026.</returns>
+    public static GameObject IceImpact(Vector3 pos, float radius, bool coGai)
     {
         var pf = GameAssets.I != null ? GameAssets.I.iceImpactPrefab : null;
         GameObject go;
@@ -1388,6 +1390,8 @@ public static partial class VfxFactory
         if (Random.value < 0.35f)
             GroundDecal.Spawn(new Vector3(pos.x, GroundY(pos), pos.z), radius * 0.9f,
                               new Material(FrostMat), 6f, 3f);
+
+        return go;
     }
 
     /// <summary>Vo bang VO TAN khi quai dang dong bang bi tieu diet.</summary>

@@ -150,10 +150,16 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
   **Quả rơi KHÔNG CÒN KHỐI CẦU — chỉ vệt sáng băng như sao băng** (17/09/2026, người dùng; trước đó cùng ngày là cầu tròn bọc khí lạnh,
   đã bỏ): `VfxFactory.DungVetSaoBang` (TrailRenderer 0,17 s, rộng 0,66→0,36 m × ngẫu nhiên 0,7–1, đầu là tấm `DauSaoBang` giọt sáng mũi nhọn răng cưa xoay theo hướng rơi (`DauSaoBangHuong`); ảnh `VetSaoBang.png`/`DauSaoBang.png` vẽ bằng Blender MCP `CongCu/Blender/vet_sao_bang.blend`),
   giữ hào quang, luồng khí lạnh, mảnh băng; chỉ bản `banRoi` — kỹ năng Quả cầu băng vẫn lõi có gai.
-  **Cụm gai băng chỉ mọc khi trúng quái / người chơi khác** (người dùng 17/09/2026; 16/09 là cả đồ vật): trong 1,7 m có Damageable còn sống
-  trên `damageMask` trừ người tung (`FallingShard.TrungKeDich`) → nổ đủ + gai; không trúng ai (đất trống, đồ vật) → `IceImpact(..., coGai:false)`
-  tắt `CumGai*` + `HaoQuang*`, giữ chớp, vòng lạnh, sương, giọt nước, mảnh băng, vết sương giá. Mưa băng nhắm kẻ địch 100%
-  (`aimAtEnemyChance = 1`) nên có kẻ địch là gần như quả nào cũng có gai. Menu 68 mục L.
+  ⚠️ **TẢNG BĂNG CHỈ MỌC KHI ĐÓNG BĂNG ĐƯỢC** (người dùng 19/09/2026; trước đó 17/09 là "trúng quái / người chơi khác",
+  16/09 là cả đồ vật): mỗi kẻ bị `FrozenEffect` đóng cứng → **1 tảng băng dưới chân kẻ ấy** (`CombatUtil.AreaFreeze` trả
+  danh sách kẻ bị đóng); không đóng được ai → `IceImpact(..., coGai:false)` tắt `CumGai*` + `HaoQuang*`, giữ chớp, vòng lạnh,
+  sương, giọt nước, mảnh băng, vết sương giá. ⚠️ Vì thế `FallingShard` **gây sát thương TRƯỚC, dựng hình SAU** (bản cũ ngược lại) —
+  phải gieo xác suất xong mới biết ai bị đóng băng. Tỉ lệ có tảng băng ≈ xác suất đóng băng 35% (menu 68 mục L đo 10/36).
+  ⚠️ **CẤP 5: tảng băng hết giờ thì NỔ**, +100 cố định trong 3,4 m (`Combat/TangBangNo.cs`, hình `Vfx/VfxTangBangNo.cs`) —
+  cho CẢ Mưa băng lẫn Quả cầu băng (Quả cầu băng vẫn mọc tảng băng mọi lần nổ, không cần đóng băng được ai). Cấp đi theo
+  NGƯỜI TUNG: `IceStorm.capKyNang` → `FallingShard.capKyNang`, `QuaCauBang.capKyNang`. `TangBangNo` nổ sớm hơn `AutoDestroy`
+  của tảng **0,12 s**, không thì có lần vật bị xoá trước khi `Update` kịp chạy và vụ nổ mất im lặng. ⚠️ Vụ nổ **không được**
+  gọi `VfxFactory.NoQuaCauBang` (hàm ấy gọi `IceImpact` → tảng băng nổ ra tảng băng, vô tận). Menu 68 mục L + N, menu 61 ca B2b.
 - **Gió lốc** (`Skills/GioLoc.cs`, hình `Vfx/VfxGioLoc.cs`, hiệu ứng `Combat/BiHatTung.cs`, 16/09/2026): **1 lốc** mỗi lần tung (17/09/2026, trước là 3). **Hình dựng bằng
   Blender MCP** (17/09/2026, `CongCu/Blender/gio_loc.blend` → `Resources/KyNang/GioLoc/`: `LocNho.fbx` 3 vỏ + dải gió cao 5 m, ảnh gió liền mạch
   `GioDai`/`GioSoi`, flipbook `BuiDenCuon`; chân ×1,68 so với gốc, nhỏ dần về 0 ở 2,3 m; toàn bộ bề ngang ×1,1 lúc chạy `HeSoBanKinhGioLoc`), xám trắng như Lốc xoáy, **xoáy MỘT chiều đi lên** (mọi lớp quay âm quanh +Y + UV trượt âm — chiều
