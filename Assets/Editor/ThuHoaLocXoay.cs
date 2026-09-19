@@ -191,9 +191,9 @@ public static class ThuHoaLocXoay
 
         CapDo.BatDauTranMoi();
         CapDo.Them(CapDo.CanDeLenCap(CapDo.Cap) * 3);
-        CapDo.MoKhoa(CapDo.KyGioLoc);
-        CapDo.MoKhoa(3);              // Loc xoay
-        CapDo.MoKhoa(K);
+        CapDo.MoCaDuongChoPhepThu(CapDo.KyGioLoc);
+        CapDo.MoCaDuongChoPhepThu(3);              // Loc xoay
+        CapDo.MoCaDuongChoPhepThu(K);
 
         int soPhep = 0;
         System.Action<int, Vector3, bool> dem = (s, a, d) => { soPhep++; };

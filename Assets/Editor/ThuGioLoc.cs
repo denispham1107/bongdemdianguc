@@ -309,10 +309,10 @@ public static class ThuGioLoc
         int s0 = soPhep;
         toi.CastAt(K, goc + huong * 8f);
         bool tuChoiKhoa = soPhep == s0;
-        CapDo.MoKhoa(K);
+        CapDo.MoCaDuongChoPhepThu(K);
         // Cap 1 chi co 1 diem: len mot cap de co them diem mo Qua cau lua (muc H can mot phep dang niem)
         CapDo.Them(CapDo.CanDeLenCap(1));
-        CapDo.MoKhoa(0);
+        CapDo.MoCaDuongChoPhepThu(0);
         Kiem(CapDo.DaMo(K) && CapDo.DaMo(0), "khong mo khoa duoc Gio loc va Qua cau lua cho phep thu");
         var biaB = TaoBia("TAM_BiaB", goc + huong * 8f);
         yield return new WaitForSeconds(0.3f);

@@ -14,13 +14,14 @@ using UnityEngine;
 ///     cuon len xuong duoc.
 ///   - Them hai ky nang Binh mau / Binh mana: mo khoa 1 diem, cap toi da 1; chi dung
 ///     khi da nhat binh; giet quai 10% ra binh mau, 10% ra binh mana; toi gan thi binh
-///     tu bay vao nguoi; so binh hien tren o ky nang; 1 binh hoi toi da 100 mau / 50
+///     tu bay vao nguoi; so binh hien tren o ky nang; 1 binh hoi toi da MauMoiBinh mau / ManaMoiBinh
 ///     nang luong; cho 0,5 giay. Choi nhieu nguoi binh la CUA CHUNG ca phong.
 ///
 /// Do bang SO:
 ///   A. Ti le roi (3000 lan gieo) + quai that chet thi binh roi dung cho quai chet.
 ///   B. Nhat mot minh: ngoai ban kinh khong bay, trong ban kinh bay vao, so binh +1.
-///   C. Uong: khoa / het binh / day / hoi chieu / hoi dung 100 - 50 / thieu it hoi dung phan thieu.
+///   C. Uong: khoa / het binh / day / hoi chieu / hoi DUNG BANG HANG (PlayerController.MauMoiBinh,
+///      ManaMoiBinh - 19/09/2026 nguoi dung doi thanh 200 / 75) / thieu it hoi dung phan thieu.
 ///   D. So binh tren o: anh chup o binh DOI khi so binh doi, o doi chung khong doi.
 ///   E. Chu to (do be ngang net chu tren anh chup so voi chu doi chung ve o co cu /
 ///      co moi) va cuon phan than chi tiet (than doi, dau muc dung yen).
@@ -248,14 +249,18 @@ public static class ThuBinhMauMana
         // ================================================================
         Ghi("");
         Ghi("C. uong binh");
+        // ⚠️ Doc thang tu HANG, khong chep tay con so: 19/09/2026 nguoi dung doi binh mau 100 -> 200
+        // va binh mana 50 -> 75, phep thu chep tay se bao loi oan.
+        float motBinhMau = PlayerController.MauMoiBinh;
+        float motBinhMana = PlayerController.ManaMoiBinh;
         float max = mau.maxHealth;
-        mau.health = max - 250f;
+        mau.health = max - (motBinhMau + 50f);         // thieu HON mot binh de uong khong bi kep
         float hoi = pc.UongBinh(CapDo.KyBinhMau);
         Ghi("C1. CHUA MO KHOA, co 1 binh: hoi " + hoi + ", con " + CapDo.SoBinhMau + " binh");
         Kiem(hoi == 0f && CapDo.SoBinhMau == 1, "chua mo khoa ma van uong duoc binh");
 
         CapDo.Them(100 + 135);                     // cap 3 = 3 diem
-        CapDo.MoKhoa(CapDo.KyBinhMau); CapDo.MoKhoa(CapDo.KyBinhMana);
+        CapDo.MoCaDuongChoPhepThu(CapDo.KyBinhMau); CapDo.MoCaDuongChoPhepThu(CapDo.KyBinhMana);
         bool nangDuoc = CapDo.NangCapDuoc(CapDo.KyBinhMau);
         Ghi("C2. mo khoa: cap binh mau " + CapDo.CapCuaKyNang(CapDo.KyBinhMau) + "/" + CapDo.CapToiDaCua(CapDo.KyBinhMau)
             + ", con " + CapDo.DiemKyNang + " diem, nang cap tiep duoc = " + nangDuoc);
@@ -264,9 +269,9 @@ public static class ThuBinhMauMana
         CapDo.ThemBinh(CapDo.KyBinhMau); CapDo.ThemBinh(CapDo.KyBinhMau);      // 3 binh
         float truoc = mau.health;
         hoi = pc.UongBinh(CapDo.KyBinhMau);
-        Ghi("C3. thieu 250 mau: hoi " + hoi + " (mau " + truoc + " -> " + mau.health + "), con " + CapDo.SoBinhMau + " binh");
-        Kiem(Mathf.Abs(hoi - 100f) < 0.01f && Mathf.Abs(mau.health - truoc - 100f) < 0.01f && CapDo.SoBinhMau == 2,
-             "mot binh mau khong hoi dung 100");
+        Ghi("C3. thieu " + (motBinhMau + 50f) + " mau: hoi " + hoi + " (mau " + truoc + " -> " + mau.health + "), con " + CapDo.SoBinhMau + " binh");
+        Kiem(Mathf.Abs(hoi - motBinhMau) < 0.01f && Mathf.Abs(mau.health - truoc - motBinhMau) < 0.01f && CapDo.SoBinhMau == 2,
+             "mot binh mau khong hoi dung " + motBinhMau);
         hoi = pc.UongBinh(CapDo.KyBinhMau);
         Ghi("C4. uong tiep NGAY: hoi " + hoi + ", con " + CapDo.SoBinhMau + " binh (hoi chieu 0,5 giay)");
         Kiem(hoi == 0f && CapDo.SoBinhMau == 2, "khong co hoi chieu 0,5 giay giua hai binh");
@@ -281,7 +286,7 @@ public static class ThuBinhMauMana
         hoi = pc.UongBinh(CapDo.KyBinhMau);
         Ghi("C5. sau 0,6 giay, thieu 30 mau: hoi " + hoi + ", mau " + mau.health + "/" + max + ", con " + CapDo.SoBinhMau + " binh");
         Kiem(Mathf.Abs(hoi - 30f) < 0.01f && Mathf.Abs(mau.health - max) < 0.01f && CapDo.SoBinhMau == 1,
-             "thieu 30 mau ma khong hoi dung 30 (hoi TOI DA 100)");
+             "thieu 30 mau ma khong hoi dung 30 (hoi TOI DA " + motBinhMau + ")");
         yield return new WaitForSeconds(0.6f);
         hoi = pc.UongBinh(CapDo.KyBinhMau);
         Ghi("C6. mau day: hoi " + hoi + ", con " + CapDo.SoBinhMau + " binh (khong phi binh)");
@@ -289,11 +294,12 @@ public static class ThuBinhMauMana
 
         // Mana - qua duong CastAt that (duong cua nut bam / phim tat)
         CapDo.ThemBinh(CapDo.KyBinhMana); CapDo.ThemBinh(CapDo.KyBinhMana);
-        pc.mana = pc.maxMana - 120f;
+        pc.mana = pc.maxMana - (motBinhMana + 45f);
         float mTruoc = pc.mana;
         pc.CastAt(CapDo.KyBinhMana, pc.transform.position + huong * 5f);
-        Ghi("C7. CastAt(binh mana), thieu 120 nang luong: " + mTruoc + " -> " + pc.mana + " (+" + (pc.mana - mTruoc) + "), con " + CapDo.SoBinhMana + " binh");
-        Kiem(Mathf.Abs(pc.mana - mTruoc - 50f) < 0.01f && CapDo.SoBinhMana == 1, "mot binh mana khong hoi dung 50 qua CastAt");
+        Ghi("C7. CastAt(binh mana), thieu " + (motBinhMana + 45f) + " nang luong: " + mTruoc + " -> " + pc.mana + " (+" + (pc.mana - mTruoc) + "), con " + CapDo.SoBinhMana + " binh");
+        Kiem(Mathf.Abs(pc.mana - mTruoc - motBinhMana) < 0.01f && CapDo.SoBinhMana == 1,
+             "mot binh mana khong hoi dung " + motBinhMana + " qua CastAt");
         yield return new WaitForSeconds(0.6f);
         pc.mana = pc.maxMana - 20f;
         hoi = pc.UongBinh(CapDo.KyBinhMana);
@@ -381,9 +387,12 @@ public static class ThuBinhMauMana
     {
         CapDo.BatDauTranMoi();
         CapDo.Them(100);                           // cap 2 = 2 diem
-        CapDo.MoKhoa(1);
+        CapDo.MoCaDuongChoPhepThu(1);
         CuaSoSachPhep.Mo();
-        CuaSoSachPhep.ChonKyNang(4);               // Thien thach, con khoa: dong cap la "CHUA MO KHOA..."
+        // Giut set: con khoa va KHONG co dieu kien bac, nen dong cap dung bang chuoi mau ben duoi.
+        // (Thien thach tu 19/09/2026 doi Qua cau lua cap 2, dong cap cua no dai them cau nhac
+        //  "Cần QUẢ CẦU LỬA cấp 2..." - do ra 2,07 lan chuoi mau va bao oan.)
+        CuaSoSachPhep.ChonKyNang(6);
         CuaSoSachPhep.CuonKho = 0f; CuaSoSachPhep.CuonThan = 0f;
         var b = CuaSoSachPhep.TinhBoCuc(Screen.width, Screen.height, s);
 
@@ -428,10 +437,13 @@ public static class ThuBinhMauMana
         float dc19 = BeNgangNet(tex, hopDc[0], 0.35f), dc22 = BeNgangNet(tex, hopDc[1], 0.35f);
         float dc16 = BeNgangNet(tex, hopDc[2], 0.35f), dc19b = BeNgangNet(tex, hopDc[3], 0.35f);
 
-        // Ten "MUA BANG" o hang 1 (da mo, khong chon): dai chu ten nam tu 6k den 28k
+        // ⚠️ HOI VI TRI HANG bang CuaSoSachPhep.VungHangKyNang, KHONG nhan "chi so x chieu cao hang":
+        // tu khi cot danh sach xep theo nhom he (18/09/2026) moi nhom co mot dong tieu de THAP HON
+        // hang thuong, nen phep nhan ay tro chech vao khoang trong - do ra "net that 0 diem" va bao
+        // oan "chu khong to them 15%" (19/09/2026).
         float k15 = CuaSoSachPhep.HeSoChuKho;
         float le = 6f * s;
-        var hang = new Rect(b.kho.x + le, b.kho.y + le + 1 * b.caoHang, b.kho.width - le * 2f, b.caoHang - 6f * s);
+        var hang = CuaSoSachPhep.VungHangKyNang(b, 1, s);      // hang cua MUA BANG - dung chuoi mau TenMau
         float ktIcon = hang.height - 10f * s;
         float xChu = hang.x + 10f * s + ktIcon + 10f * s;
         var daiTen = new Rect(xChu, hang.y + 6f * k15 * s + 1f, hang.xMax - xChu - 60f * s, 20f * k15 * s);

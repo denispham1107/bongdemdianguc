@@ -42,27 +42,27 @@ E2. long nut (15x15 diem): 59 mau khac nhau
 D4. ban may tinh: dung cam ung = False, so o = 7
     anh sachphep_3_bang_maytinh: 408 KB
 D5. keo Thien thach (4) vao o 1 -> 4 1 2 3 0 5 6
-    anh sachphep_4_hud_da_doi_cho: 828 KB
+    anh sachphep_4_hud_da_doi_cho: 830 KB
 
 F. sach phep - ban cam ung (man 1566x574)
 F0. man 1560x572: cua so 869 x 443 (khung xanh nguoi dung ve ~865 x 442; ban cu 625 x 381)
-F1. chon ky nang 4 (con khoa) - do sang tung hang: 0(khoa)=0.066 1(mo)=0.187 2(khoa)=0.057 4(khoa)*=0.302 6(khoa)=0.058 9(khoa)=0.067 11(khoa)=0.065 12(khoa)=0.062
-    anh sachphep_6_chon_4_camung: 429 KB
-F1. chon ky nang 1 (da mo) - do sang tung hang: 0(khoa)=0.066 1(mo)*=0.325 2(khoa)=0.057 4(khoa)=0.064 6(khoa)=0.058 9(khoa)=0.067 11(khoa)=0.065 12(khoa)=0.062
+F1. chon ky nang 4 (con khoa) - do sang tung hang: 0(khoa)=0.066 1(mo)=0.187 2(khoa)=0.057 4(khoa)*=0.296 6(khoa)=0.058 9(mo)=0.184 11(khoa)=0.065 12(khoa)=0.062
+    anh sachphep_6_chon_4_camung: 434 KB
+F1. chon ky nang 1 (da mo) - do sang tung hang: 0(khoa)=0.066 1(mo)*=0.326 2(khoa)=0.057 4(khoa)=0.064 6(khoa)=0.058 9(mo)=0.184 11(khoa)=0.065 12(khoa)=0.062
 F1b. hinh hang 0 (con khoa): diem sang cua o khoa 25
-    anh sachphep_6_chon_1_camung: 439 KB
-F2. cham o 2 (giu ky nang 1): dang xem = 1, vanh o chon 0.149 / vanh o khac sang nhat 0.096 (trung binh 4 khung, x1.56)
-F2b. cham o trong 3: vanh o trong 0.163, vanh o 2 (vua chon luc nay) 0.105 (x1.56)
-F3. o 6 giu Khien: luc KHOA do sang 0.214, diem sang cua o khoa 8 | sau MO KHOA do sang 0.779
+    anh sachphep_6_chon_1_camung: 440 KB
+F2. cham o 2 (giu ky nang 1): dang xem = 1, vanh o chon 0.155 / vanh o khac sang nhat 0.097 (trung binh 4 khung, x1.59)
+F2b. cham o trong 3: vanh o trong 0.163, vanh o 2 (vua chon luc nay) 0.105 (x1.55)
+F3. o 6 giu Khien: luc KHOA do sang 0.214, diem sang cua o khoa 8 | sau MO KHOA do sang 0.779   (chan doan: truoc do da mo False, con 12 diem, MoKhoa tra True, cap Khien nay 1)
 
 F. sach phep - ban may tinh (man 1566x574)
-F1. chon ky nang 4 (con khoa) - do sang tung hang: 0(khoa)=0.066 1(mo)=0.187 2(khoa)=0.057 4(khoa)*=0.304 6(khoa)=0.058 9(khoa)=0.067 11(khoa)=0.065 12(khoa)=0.062
-    anh sachphep_7_chon_4_maytinh: 420 KB
-F1. chon ky nang 1 (da mo) - do sang tung hang: 0(khoa)=0.066 1(mo)*=0.344 2(khoa)=0.057 4(khoa)=0.064 6(khoa)=0.058 9(khoa)=0.067 11(khoa)=0.065 12(khoa)=0.062
+F1. chon ky nang 4 (con khoa) - do sang tung hang: 0(khoa)=0.066 1(mo)=0.187 2(khoa)=0.057 4(khoa)*=0.319 6(khoa)=0.058 9(mo)=0.184 11(khoa)=0.065 12(khoa)=0.062
+    anh sachphep_7_chon_4_maytinh: 426 KB
+F1. chon ky nang 1 (da mo) - do sang tung hang: 0(khoa)=0.066 1(mo)*=0.351 2(khoa)=0.057 4(khoa)=0.064 6(khoa)=0.058 9(mo)=0.184 11(khoa)=0.065 12(khoa)=0.062
 F1b. hinh hang 0 (con khoa): diem sang cua o khoa 25
-    anh sachphep_7_chon_1_maytinh: 446 KB
-F2. cham o 2 (giu ky nang 1): dang xem = 1, vanh o chon 0.328 / vanh o khac sang nhat 0.131 (trung binh 4 khung, x2.51)
-F2b. cham o trong 3: vanh o trong 0.297, vanh o 2 (vua chon luc nay) 0.117 (x2.54)
-F3. o 6 giu Khien: luc KHOA do sang 0.244, diem sang cua o khoa 23 | sau MO KHOA do sang 0.834
+    anh sachphep_7_chon_1_maytinh: 448 KB
+F2. cham o 2 (giu ky nang 1): dang xem = 1, vanh o chon 0.330 / vanh o khac sang nhat 0.129 (trung binh 4 khung, x2.56)
+F2b. cham o trong 3: vanh o trong 0.278, vanh o 2 (vua chon luc nay) 0.110 (x2.52)
+F3. o 6 giu Khien: luc KHOA do sang 0.244, diem sang cua o khoa 23 | sau MO KHOA do sang 0.834   (chan doan: truoc do da mo False, con 12 diem, MoKhoa tra True, cap Khien nay 1)
 
 so loi ghi nhan = 0

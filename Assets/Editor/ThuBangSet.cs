@@ -368,7 +368,7 @@ public static class ThuBangSet
         // thi khong tung duoc phep" ra 0 chi vi ky nang con khoa - phep kiem khong con do gi.
         CapDo.BatDauTranMoi();
         for (int lan = 0; lan < 20 && CapDo.DiemKyNang < 4; lan++) CapDo.Them(CapDo.CanDeLenCap(CapDo.Cap));
-        for (int ky = 1; ky <= 4; ky++) CapDo.MoKhoa(ky);
+        for (int ky = 1; ky <= 4; ky++) CapDo.MoCaDuongChoPhepThu(ky);
         Ghi("   mo khoa san ky nang 1..4: " + CapDo.DaMo(1) + "/" + CapDo.DaMo(2) + "/" + CapDo.DaMo(3) + "/" + CapDo.DaMo(4)
             + " (nhan vat cap " + CapDo.Cap + ")");
         Kiem(CapDo.DaMo(1) && CapDo.DaMo(2) && CapDo.DaMo(3) && CapDo.DaMo(4), "khong mo khoa duoc ky nang cho phan D");

@@ -130,7 +130,7 @@ public static class ThuQuaCauLua
         Vector3 huong = HuongTrong(toi);
         toi.transform.rotation = Quaternion.LookRotation(huong);
         Vector3 goc = toi.transform.position;
-        CapDo.BatDauTranMoi(); CapDo.MoKhoa(0);
+        CapDo.BatDauTranMoi(); CapDo.MoCaDuongChoPhepThu(0);
         toi.mana = toi.maxMana;
         toi.CastAt(0, goc + huong * 10f);
         Fireball that = null;

@@ -285,7 +285,7 @@ public static class ThuQuaCauDien
         int s0 = soPhep;
         toi.CastAt(K, choNgam);
         bool tuChoiKhoa = soPhep == s0;
-        CapDo.MoKhoa(K);
+        CapDo.MoCaDuongChoPhepThu(K);
         yield return new WaitForSeconds(0.3f);
 
         // C1. Co ke dich gan cho ngam -> cau phai dung CANH KE DICH

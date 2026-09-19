@@ -214,7 +214,7 @@ public static class ThuTangHinh
         int s0 = soPhep;
         toi.CastAt(K, toi.transform.position);
         bool tuChoiKhoa = soPhep == s0;
-        CapDo.MoKhoa(K);
+        CapDo.MoCaDuongChoPhepThu(K);
         yield return new WaitForSeconds(0.3f);
         int shaderTruoc = DemShaderTangHinh(toi.gameObject);
         toi.mana = toi.maxMana;
@@ -354,7 +354,7 @@ public static class ThuTangHinh
             yield return new WaitForSeconds(0.4f);
             // Mo khoa Qua cau lua: can mot diem ky nang (diem dau da dung cho Tang hinh)
             if (CapDo.DiemKyNang <= 0) CapDo.Them(CapDo.CanDeLenCap(CapDo.Cap));
-            CapDo.MoKhoa(0);
+            CapDo.MoCaDuongChoPhepThu(0);
             Vector3 h2 = HuongTrong(toi);
             toi.transform.rotation = Quaternion.LookRotation(h2);
             // Bia THAN TO cach 7 m: ca ba qua trong chum deu dam trung, so do khong phu thuoc may man
@@ -394,7 +394,7 @@ public static class ThuTangHinh
             // 3) Khien khong lam tan tang hinh
             TangHinh.Bat(mauToi, TangHinh.ThoiGian);
             CapDo.Them(CapDo.CanDeLenCap(CapDo.Cap));
-            CapDo.MoKhoa(5);
+            CapDo.MoCaDuongChoPhepThu(5);
             toi.mana = toi.maxMana;
             toi.CastAt(5, toi.transform.position);
             yield return new WaitForSeconds(0.8f);
@@ -475,8 +475,8 @@ public static class ThuTangHinh
             yield return new WaitForSeconds(0.3f);
 
             for (int i = 0; i < 12; i++) CapDo.Them(CapDo.CanDeLenCap(CapDo.Cap));   // du diem de nang Qua cau bang len cap 5
-            CapDo.MoKhoa(1);
-            CapDo.MoKhoa(CapDo.KyQuaCauBang);
+            CapDo.MoCaDuongChoPhepThu(1);
+            CapDo.MoCaDuongChoPhepThu(CapDo.KyQuaCauBang);
             for (int i = 0; i < 4 && CapDo.NangCapDuoc(CapDo.KyQuaCauBang); i++) CapDo.NangCap(CapDo.KyQuaCauBang);
 
             Vector3 hK = HuongTrong(toi);

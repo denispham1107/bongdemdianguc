@@ -285,6 +285,18 @@ public static class SachPhep
     // con so thi KHONG viet cung o day ma lay tu PlayerController luc chay -
     // chep tay vao day thi sua can bang mot lan la bang thong so noi doi.
 
+    /// <summary>
+    /// Cau nhac DIEU KIEN MO KHOA (nguoi dung 19/09/2026): "Cần QUẢ CẦU LỬA cấp 2 mới mở được".
+    /// Tra ve null neu ky nang nay khong doi dieu kien gi hoac da du dieu kien.
+    /// </summary>
+    public static string NhacDieuKien(int ky)
+    {
+        int can = CapDo.KyCanTruoc(ky);
+        if (can < 0 || CapDo.DuBacDeMo(ky)) return null;
+        return "Cần " + Ten(can) + " cấp " + CapDo.CapCanTruoc(ky) + " mới mở được"
+             + "   (đang cấp " + CapDo.CapCuaKyNang(can) + ")";
+    }
+
     public static string Ten(int ky)
     {
         switch (ky)
@@ -325,8 +337,8 @@ public static class SachPhep
             case 4: return "Ba khối đá lửa rơi xuống";
             case 5: return "Vòm chắn quanh mình";
             case 6: return "4 tia sét lan, 15% choáng";
-            case CapDo.KyBinhMau: return "Uống một bình, hồi tối đa 100 máu";
-            case CapDo.KyBinhMana: return "Uống một bình, hồi tối đa 50 năng lượng";
+            case CapDo.KyBinhMau: return "Uống một bình, hồi tối đa 200 máu";
+            case CapDo.KyBinhMana: return "Uống một bình, hồi tối đa 75 năng lượng";
             case CapDo.KyQuaCauBang: return "Ba quả băng, 40% đóng băng";
             case CapDo.KyGioLoc: return "Một cơn lốc, 55% hất tung";
             case CapDo.KyLuaDiaNguc: return "Năm quả lửa tự đuổi kẻ địch";
@@ -403,7 +415,7 @@ public static class SachPhep
                      + "trúng — kể cả tia nhảy — có 15% khả năng làm kẻ địch BỊ CHOÁNG.\n\n"
                      + "Đòn rẻ, hồi nhanh, hợp lúc bị vây.";
             case CapDo.KyBinhMau:
-                return "Uống cạn một bình máu đặc sánh, hồi ngay tối đa 100 máu. Máu đang đầy "
+                return "Uống cạn một bình máu đặc sánh, hồi ngay tối đa 200 máu. Máu đang đầy "
                      + "thì không uống — không phí bình.\n\n"
                      + "Không có sẵn: bình máu chỉ có khi NHẶT được. Mỗi con quái bị hạ có "
                      + "10% khả năng rơi ra một bình máu. Tới gần là bình tự bay vào người, và "
@@ -413,7 +425,7 @@ public static class SachPhep
                      + "Chỉ cần mở khoá bằng 1 điểm kỹ năng, không nâng cấp được. Uống xong "
                      + "phải chờ 0,5 giây mới uống bình tiếp theo.";
             case CapDo.KyBinhMana:
-                return "Uống một bình nước phép xanh lạnh buốt, hồi ngay tối đa 50 năng lượng. "
+                return "Uống một bình nước phép xanh lạnh buốt, hồi ngay tối đa 75 năng lượng. "
                      + "Năng lượng đang đầy thì không uống.\n\n"
                      + "Bình mana chỉ có khi NHẶT được: mỗi con quái bị hạ có 10% khả năng rơi "
                      + "ra một bình. Tới gần là bình tự bay vào người, số bình còn lại hiện "

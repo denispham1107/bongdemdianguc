@@ -198,7 +198,7 @@ public static class ThuKinhNghiemKyNang
         // ⚠️ Them ky nang vao danh sach thu ma quen cap them diem thi MoKhoa that bai,
         // CastAt tu choi im lang va muc do bao "phep khong giet duoc quai" - bao oan.
         CapDo.Them(CapDo.CanDeLenCap(CapDo.Cap));
-        foreach (int k in new[] { 0, 1, 2, 3, 4, 6, 9, 10, 11, 13 }) CapDo.MoKhoa(k);
+        foreach (int k in new[] { 0, 1, 2, 3, 4, 6, 9, 10, 11, 13 }) CapDo.MoCaDuongChoPhepThu(k);
         Ghi("chuan bi: cap " + CapDo.Cap + ", mo khoa " + CapDo.DaMo(0) + CapDo.DaMo(1) + CapDo.DaMo(2)
             + CapDo.DaMo(3) + CapDo.DaMo(4) + CapDo.DaMo(6) + CapDo.DaMo(9) + CapDo.DaMo(10) + CapDo.DaMo(11)
             + CapDo.DaMo(CapDo.KyCauDien));

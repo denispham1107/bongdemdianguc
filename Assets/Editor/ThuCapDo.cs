@@ -22,6 +22,11 @@ using UnityEngine;
 ///   D. Trong Play: chi so THAT cua nhan vat truoc/sau khi len cap; ky nang
 ///      chua mo thi khong tung duoc; nang cap xong thi phep manh len that.
 ///   E. Goi tin: cap ky nang va kinh nghiem qua mang.
+///   F. DIEU KIEN MO KHOA THEO BAC (nguoi dung 19/09/2026): tam luat moi nhom he - Qua cau lua cap 2
+///      moi mo duoc Thien thach, Thien thach cap 5 moi mo duoc Lua dia nguc, y het cho Bang / Set / Phong.
+///      Do THAT: du diem ma chua du cap thi MoKhoa TRUOT; len du cap thi mo duoc; DOI CHUNG ky nang
+///      khong co dieu kien (Khien, Giut set, bon Khang) mo duoc ngay. Sach phep phai noi ro thieu gi.
+///   G. Binh mau 200 / binh mana 75 (nguoi dung 19/09/2026): uong THAT tren nhan vat.
 ///
 /// Ket qua ghi ra <c>PlayTestShots/capdo.txt</c>.
 /// </summary>
@@ -189,21 +194,26 @@ public static class ThuCapDo
         Kiem(CapDo.Cap == 1 && CapDo.DiemKyNang == 1 && soMo == 0,
              "vao tran khong dung: phai la cap 1, mot diem, khong ky nang nao mo");
 
-        bool mo1 = CapDo.MoKhoa(2);
-        bool mo2 = CapDo.MoKhoa(3);        // het diem roi, phai truot
-        Ghi("C2. mo ky nang 2 -> " + mo1 + " (phai True); mo tiep ky nang 3 -> " + mo2 + " (phai False)");
+        // Dung hai ky nang KHONG co dieu kien bac (Qua cau lua, Giut set): tu 19/09/2026 Sam set
+        // doi Giut set cap 2 va Loc xoay doi Gio loc cap 2, lay chung thi truot vi dieu kien chu
+        // khong phai vi het diem - muc nay dang do CHUYEN TRU DIEM.
+        bool mo1 = CapDo.MoKhoa(0);
+        bool mo2 = CapDo.MoKhoa(6);        // het diem roi, phai truot
+        Ghi("C2. mo ky nang 0 -> " + mo1 + " (phai True); mo tiep ky nang 6 -> " + mo2 + " (phai False)");
         Kiem(mo1 && !mo2, "mo khoa khong tru dung diem");
-        Kiem(CapDo.CapCuaKyNang(2) == 1, "mo khoa xong ky nang khong o cap 1");
+        Kiem(CapDo.CapCuaKyNang(0) == 1, "mo khoa xong ky nang khong o cap 1");
 
         // Len cap roi nang cap ky nang toi da
         CapDo.Them(999999);
         int truoc = CapDo.DiemKyNang;
         int lanNang = 0;
-        while (CapDo.NangCap(2)) lanNang++;
-        Ghi("C3. sau khi len cap " + CapDo.Cap + " con " + truoc + " diem; nang ky nang 2 duoc " + lanNang
-            + " lan -> cap " + CapDo.CapCuaKyNang(2) + " (toi da " + CapDo.CapKyNangToiDa + ")");
-        Kiem(CapDo.CapCuaKyNang(2) == CapDo.CapKyNangToiDa, "khong nang duoc toi cap toi da");
-        Kiem(!CapDo.NangCapDuoc(2), "da toi da ma van nang duoc nua");
+        // Ky nang 0 (Qua cau lua) - vua mo o C2 va KHONG co dieu kien bac nao. Truoc day cho nay
+        // dung ky nang 2 (Sam set), tu 19/09/2026 no bi khoa sau Giut set cap 2 nen nang khong duoc.
+        while (CapDo.NangCap(0)) lanNang++;
+        Ghi("C3. sau khi len cap " + CapDo.Cap + " con " + truoc + " diem; nang ky nang 0 duoc " + lanNang
+            + " lan -> cap " + CapDo.CapCuaKyNang(0) + " (toi da " + CapDo.CapKyNangToiDa + ")");
+        Kiem(CapDo.CapCuaKyNang(0) == CapDo.CapKyNangToiDa, "khong nang duoc toi cap toi da");
+        Kiem(!CapDo.NangCapDuoc(0), "da toi da ma van nang duoc nua");
 
         CapDo.BatDauTranMoi();
     }
@@ -250,6 +260,23 @@ public static class ThuCapDo
         return null;
     }
 
+    /// <summary>
+    /// Nang mot ky nang toi dung cap, tu them diem neu thieu.
+    ///
+    /// ⚠️ CO TRAN. Ban dau cho nay la "while (cap < mong) NangCap(...)" khong tran: het diem la
+    /// NangCap luon tra false, vong quay vo tan NGAY TRONG MOT KHUNG HINH va Unity treo cung -
+    /// khong ngoai le, khong log, nguoi dung phai tat Editor bang tay (19/09/2026).
+    /// </summary>
+    static void NangToiCap(int ky, int cap)
+    {
+        for (int i = 0; i < 60 && CapDo.CapCuaKyNang(ky) < cap; i++)
+        {
+            if (CapDo.DiemKyNang <= 0) CapDo.Them(CapDo.CanDeLenCap(CapDo.Cap));
+            if (!CapDo.DaMo(ky)) { if (!CapDo.MoKhoa(ky)) break; }
+            else if (!CapDo.NangCap(ky)) break;
+        }
+    }
+
     static IEnumerator KichBan()
     {
         var dir = GameDirector.Instance;
@@ -261,6 +288,11 @@ public static class ThuCapDo
         var pc = TimToi();
         if (pc == null) { Loi("khong tim thay nguoi choi"); Ket(); yield break; }
         var mau = pc.GetComponent<Damageable>();
+
+        // Tat GameDirector suot phep thu: dot quai sinh giua chung vua lam nang GPU vua lam nhieu
+        // so do (bai hoc 19/09/2026 - GPU timeout tung tat han Unity).
+        bool dirBatCu = dir.enabled;
+        dir.enabled = false;
 
         Ghi("");
         Ghi("D. trong tran dau");
@@ -280,27 +312,29 @@ public static class ThuCapDo
         System.Action<int, Vector3, bool> dem = (a, v, d) => soPhep++;
         pc.DaTungPhep += dem;
 
-        pc.CastAt(1, pc.transform.position + pc.transform.forward * 6f);
+        pc.CastAt(CapDo.KyQuaCauBang, pc.transform.position + pc.transform.forward * 6f);
         yield return null;
-        Ghi("D2. bam Mua bang khi chua mo -> phep bay ra " + soPhep + ", loi nhac: " + pc.LastMessage);
+        Ghi("D2. bam Qua cau bang khi chua mo -> phep bay ra " + soPhep + ", loi nhac: " + pc.LastMessage);
         Kiem(soPhep == 0, "ky nang chua mo ma van tung duoc");
 
         // ---- D3. MO KHOA XONG THI TUNG DUOC ----
-        CapDo.MoKhoa(1);
+        // ⚠️ Dung mot ky nang KHONG co dieu kien bac va chi ton DUNG mot diem co san: MoCaDuongChoPhepThu
+        // tu them kinh nghiem de co diem, nhan vat se nhay thang len cap 20 va muc D4 ben duoi
+        // ("len cap 2, chi so phai tang 15%") khong con gi de do.
+        CapDo.MoKhoa(CapDo.KyQuaCauBang);
         soPhep = 0;
-        pc.CastAt(1, pc.transform.position + pc.transform.forward * 6f);
+        pc.CastAt(CapDo.KyQuaCauBang, pc.transform.position + pc.transform.forward * 6f);
         yield return null;
-        Ghi("D3. mo khoa Mua bang -> phep bay ra " + soPhep);
+        Ghi("D3. mo khoa Qua cau bang -> phep bay ra " + soPhep + " (cap nhan vat van " + CapDo.Cap + ")");
         Kiem(soPhep == 1, "mo khoa roi van khong tung duoc");
+        Kiem(CapDo.Cap == 1, "mo khoa ma nhan vat len cap - muc D4 se do rong");
 
-        // Doc suc manh cua con bao vua tung (ky nang cap 1)
         yield return new WaitForSeconds(0.9f);
-        var bao1 = Object.FindAnyObjectByType<IceStorm>();
-        float satCap1 = bao1 != null ? bao1.shardDamage : 0f;
-        float dongCap1 = bao1 != null ? bao1.freezeSeconds : 0f;
-        if (bao1 != null) Object.DestroyImmediate(bao1.gameObject);
-        foreach (var fs in Object.FindObjectsByType<FallingShard>(FindObjectsSortMode.None))
-            Object.DestroyImmediate(fs.gameObject);
+        foreach (var qb in Object.FindObjectsByType<QuaCauBang>(FindObjectsSortMode.None))
+            Object.DestroyImmediate(qb.gameObject);
+        // Suc manh Mua bang cap 1 do o duoi (sau D4b) - Mua bang gio bi khoa sau Qua cau bang cap 2,
+        // ma mo ca duong toi no thi nhan vat len cap, lam hong phep do "len cap 2" cua D4.
+        float satCap1 = 0f, dongCap1 = 0f;
 
         // ---- D4. LEN CAP: CHI SO THAT PHAI TANG ----
         float mauTruoc = mau.maxHealth, manaTruoc = pc.maxMana, tocTruoc = pc.moveSpeed;
@@ -318,6 +352,19 @@ public static class ThuCapDo
         Kiem(CapDo.DiemKyNang >= 1, "len cap ma khong duoc them diem ky nang");
 
         // ---- D5. NANG CAP KY NANG: PHEP MANH LEN THAT ----
+        // Mo ca duong toi Mua bang (no doi Qua cau bang cap 2 tu 19/09/2026) roi tung o CAP 1
+        // de do suc manh goc - lam o day chu khong o D3, vi mo ca duong se lam nhan vat len cap.
+        CapDo.MoCaDuongChoPhepThu(1);
+        pc.mana = pc.maxMana;
+        pc.CastAt(1, pc.transform.position + pc.transform.forward * 6f);
+        yield return new WaitForSeconds(0.9f);
+        var baoGoc = Object.FindAnyObjectByType<IceStorm>();
+        satCap1 = baoGoc != null ? baoGoc.shardDamage : 0f;
+        dongCap1 = baoGoc != null ? baoGoc.freezeSeconds : 0f;
+        if (baoGoc != null) Object.DestroyImmediate(baoGoc.gameObject);
+        foreach (var fs in Object.FindObjectsByType<FallingShard>(FindObjectsSortMode.None))
+            Object.DestroyImmediate(fs.gameObject);
+
         CapDo.Them(999999);                     // len thang cap toi da de co du diem
         while (CapDo.NangCapDuoc(1)) CapDo.NangCap(1);
         yield return null;
@@ -393,8 +440,106 @@ public static class ThuCapDo
             Kiem(duoc == CapDo.KnCuaQuai(loaiQuai), "giet quai khong duoc dung so kinh nghiem");
         }
 
+        // ================= F. DIEU KIEN MO KHOA THEO BAC =================
+        Ghi("");
+        {
+            // {ky nang, ky nang can truoc, cap can}
+            int[][] luat = {
+                new[] { 4, 0, 2 }, new[] { CapDo.KyLuaDiaNguc, 4, 5 },
+                new[] { 1, CapDo.KyQuaCauBang, 2 }, new[] { CapDo.KyTangHinh, 1, 5 },
+                new[] { 2, 6, 2 }, new[] { CapDo.KyCauDien, 2, 5 },
+                new[] { 3, CapDo.KyGioLoc, 2 }, new[] { CapDo.KyHoaLocXoay, 3, 5 },
+            };
+            bool tatCaDung = true;
+            for (int i = 0; i < luat.Length; i++)
+            {
+                int ky = luat[i][0], can = luat[i][1], capCan = luat[i][2];
+                CapDo.BatDauTranMoi();
+                CapDo.Them(999999);                       // du diem, chi thieu moi DIEU KIEN
+
+                // 1) chua co ky nang truoc -> truot
+                bool truotKhiChuaCo = !CapDo.MoKhoa(ky);
+                string nhac = SachPhep.NhacDieuKien(ky);
+
+                // 2) co ky nang truoc nhung THIEU MOT CAP -> van truot
+                //    ⚠️ Ban than "can" cung co the bi khoa sau mot ky nang khac (Thien thach doi
+                //    Qua cau lua cap 2...), nen phai mo CA DUONG toi no truoc - lan chay dau
+                //    19/09/2026 quen cho nay, bon luat "cap 5" bao loi oan.
+                CapDo.MoCaDuongChoPhepThu(can);
+                NangToiCap(can, capCan - 1);
+                bool truotKhiThieuCap = !CapDo.MoKhoa(ky);
+                int capDangCo = CapDo.CapCuaKyNang(can);
+
+                // 3) len du cap -> mo duoc
+                NangToiCap(can, capCan);
+                bool moDuoc = CapDo.MoKhoa(ky);
+
+                bool ok = truotKhiChuaCo && truotKhiThieuCap && moDuoc && nhac != null;
+                if (!ok) tatCaDung = false;
+                Ghi(string.Format("F. {0} <- {1} cap {2}: chua co -> truot {3}; {1} cap {4} -> truot {5}; du cap {2} -> mo duoc {6}",
+                    SachPhep.Ten(ky), SachPhep.Ten(can), capCan, truotKhiChuaCo, capDangCo, truotKhiThieuCap, moDuoc));
+                if (i == 0) Ghi("    (Sach phep nhac) " + nhac);
+            }
+            Kiem(tatCaDung, "tam luat mo khoa theo bac khong chay dung");
+
+            // DOI CHUNG: ky nang KHONG co dieu kien thi mo duoc ngay
+            CapDo.BatDauTranMoi();
+            CapDo.Them(999999);
+            bool khien = CapDo.MoKhoa(5);
+            bool giutSet = CapDo.MoKhoa(6);
+            bool cauLua = CapDo.MoKhoa(0);
+            bool cauBang = CapDo.MoKhoa(CapDo.KyQuaCauBang);
+            bool gioLoc = CapDo.MoKhoa(CapDo.KyGioLoc);
+            bool khangLua = CapDo.MoKhoa(CapDo.KyKhangLua);
+            bool tocBien = CapDo.MoKhoa(CapDo.KyTocBien);
+            Ghi(string.Format("F. DOI CHUNG ky nang khong dieu kien mo ngay: Khien {0}, Giựt sét {1}, Cầu lửa {2}, Cầu băng {3}, Gió lốc {4}, Kháng Lửa {5}, Tốc biến {6}",
+                khien, giutSet, cauLua, cauBang, gioLoc, khangLua, tocBien));
+            Kiem(khien && giutSet && cauLua && cauBang && gioLoc && khangLua && tocBien,
+                 "ky nang khong co dieu kien ma cung bi chan");
+            Kiem(SachPhep.NhacDieuKien(0) == null && SachPhep.NhacDieuKien(5) == null,
+                 "ky nang khong dieu kien ma van co cau nhac");
+        }
+
+        // ================= G. BINH MAU 200 / BINH MANA 75 =================
+        Ghi("");
+        {
+            CapDo.BatDauTranMoi();
+            CapDo.Them(999999);
+            CapDo.MoKhoa(CapDo.KyBinhMau);
+            CapDo.MoKhoa(CapDo.KyBinhMana);
+            CapDo.ThemBinh(CapDo.KyBinhMau);
+            CapDo.ThemBinh(CapDo.KyBinhMana);
+            yield return null;
+
+            var mauG = pc.GetComponent<Damageable>();
+            mauG.maxHealth = 1000f; mauG.health = 100f;
+            pc.maxMana = 500f; pc.mana = 100f;
+            yield return null;
+
+            float mauTruocG = mauG.health;
+            pc.CastAt(CapDo.KyBinhMau, pc.transform.position);
+            yield return null;
+            float hoiMau = mauG.health - mauTruocG;
+
+            yield return new WaitForSeconds(0.6f);          // qua hoi chieu binh
+            // ⚠️ Do mana NGAY TRUOC khi uong. Do tu truoc luc cho 0,6 giay thi phan mana HOI TU NHIEN
+            // trong lúc cho cung bi tinh vao binh - lan chay dau 19/09/2026 ra 81 thay vi 75.
+            float manaTruocG = pc.mana;
+            pc.CastAt(CapDo.KyBinhMana, pc.transform.position);
+            yield return null;
+            float hoiMana = pc.mana - manaTruocG;
+
+            Ghi(string.Format("G. uong binh THAT: hoi {0:F0} mau (hang MauMoiBinh {1:F0}), hoi {2:F0} nang luong (hang ManaMoiBinh {3:F0})",
+                hoiMau, PlayerController.MauMoiBinh, hoiMana, PlayerController.ManaMoiBinh));
+            Kiem(Mathf.Abs(PlayerController.MauMoiBinh - 200f) < 0.01f, "hang binh mau khong phai 200");
+            Kiem(Mathf.Abs(PlayerController.ManaMoiBinh - 75f) < 0.01f, "hang binh mana khong phai 75");
+            Kiem(Mathf.Abs(hoiMau - 200f) < 0.5f, "uong binh mau khong hoi dung 200");
+            Kiem(Mathf.Abs(hoiMana - 75f) < 0.5f, "uong binh mana khong hoi dung 75");
+        }
+
         pc.DaTungPhep -= dem;
         CapDo.BatDauTranMoi();
+        dir.enabled = dirBatCu;
 
         Ghi("");
         Ghi("so loi ghi nhan = " + loi);

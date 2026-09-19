@@ -243,9 +243,9 @@ public class PlayerController : MonoBehaviour
     // HANG SO chu khong phai truong public: truong public se bi prefab va hai
     // canh luu de len (da vap voi tornadoCooldown), sua so trong code khong an.
     /// <summary>Mot binh mau hoi TOI DA bay nhieu mau.</summary>
-    public const float MauMoiBinh = 100f;
+    public const float MauMoiBinh = 200f;
     /// <summary>Mot binh mana hoi TOI DA bay nhieu nang luong.</summary>
-    public const float ManaMoiBinh = 50f;
+    public const float ManaMoiBinh = 75f;
     /// <summary>Uong xong mot binh phai cho bay nhieu giay moi uong tiep duoc.</summary>
     public const float HoiChieuBinh = 0.5f;
     float binhMauTimer, binhManaTimer;

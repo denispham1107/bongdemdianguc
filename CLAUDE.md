@@ -244,7 +244,15 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
   **Blender MCP** (`CongCu/Blender/vet_lua_qua_cau_lua.blend`): hạt `Flames` đổi từ `Tex_flame.png` (một **hình tam giác**) sang flipbook
   `Flipbooks/LuaDuoi` (4×4 đám lửa cuộn) + `TrailRenderer` vệt lửa dài `KyNang/QuaCauLua/VetLuaDai`; sửa lúc chạy trong
   `VfxFactory.NangCapDuoiLua` (gọi từ `Fireball.Spawn`, cả quả cầu của quái), nổ thì `ThaDuoiLua` thả vệt ra tan dần. Menu 70 kiểm.
-- ⚠️ **Bình máu / mana** (`CapDo.KyBinhMau/KyBinhMana`, `PlayerController.UongBinh`, hằng `MauMoiBinh 100`, `ManaMoiBinh 50`,
+- ⚠️ **MỞ KHOÁ THEO BẬC** (người dùng 19/09/2026, `CapDo.dieuKienMo` + `DuBacDeMo` + `KyCanTruoc`/`CapCanTruoc`):
+  LỬA Cầu lửa **cấp 2**→Thiên thạch, Thiên thạch **cấp 5**→Lửa địa ngục · BĂNG Cầu băng 2→Mưa băng, Mưa băng 5→Tàng hình ·
+  SÉT Giựt sét 2→Sấm sét, Sấm sét 5→Cầu điện · PHONG Gió lốc 2→Lốc xoáy, Lốc xoáy 5→Hoá lốc xoáy. **Chỉ chặn lúc MỞ KHOÁ**;
+  HỖ TRỢ và BỊ ĐỘNG không có điều kiện. Sách phép hiện `SachPhep.NhacDieuKien` trên dòng cấp và trên nút.
+  ⚠️ Phép thử phải gọi **`CapDo.MoCaDuongChoPhepThu(ky)`** chứ không `MoKhoa` (đã thay ở 18 file); hàm ấy lấy điểm bằng
+  `ThemDiemChoPhepThu` **không qua kinh nghiệm** — bản đầu bơm kinh nghiệm làm nhân vật nhảy lên cấp 20, mà ở cấp tối đa
+  thì giết quái không còn kinh nghiệm và menu 61 đo ra "+0" ở mọi kỹ năng.
+- ⚠️ **Bình máu / mana** (`CapDo.KyBinhMau/KyBinhMana`, `PlayerController.UongBinh`, hằng `MauMoiBinh 200`, `ManaMoiBinh 75`
+  (19/09/2026, trước là 100/50 — phép thử phải ĐỌC HẰNG, đừng chép tay con số),
   `HoiChieuBinh 0.5` — HẰNG chứ không phải trường public để prefab không đè): mở 1 điểm, `CapToiDaCua` = 1; không niệm, không
   đi qua gói kỹ năng. **Bình rơi CHUNG cả phòng** (`QuanLyBinhRoi` + `BinhRoi`): máy trọng tài quái gieo 10%/10% khi quái chết và
   gửi `LoaiBinhRoi`; máy nào có nhân vật tới gần 3,5 m thì xin (`LoaiXinBinh`); **chủ phòng giao cho người xin TRƯỚC**

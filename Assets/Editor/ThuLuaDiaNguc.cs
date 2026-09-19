@@ -272,7 +272,7 @@ public static class ThuLuaDiaNguc
         int s0 = soPhep;
         toi.CastAt(K, goc + huong * 8f);
         bool tuChoiKhoa = soPhep == s0;
-        CapDo.MoKhoa(K);
+        CapDo.MoCaDuongChoPhepThu(K);
         Kiem(CapDo.DaMo(K), "khong mo khoa duoc");
         yield return new WaitForSeconds(0.3f);
         toi.mana = toi.maxMana;

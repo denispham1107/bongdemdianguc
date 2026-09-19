@@ -15,8 +15,8 @@ B2. ky nang cap 5: sat thuong x2.074, nang luong x1.464, hieu ung +0.60 giay, ma
 
 C. diem ky nang: mo khoa va nang cap
 C1. vao tran: cap 1, diem 1, so ky nang da mo 0
-C2. mo ky nang 2 -> True (phai True); mo tiep ky nang 3 -> False (phai False)
-C3. sau khi len cap 20 con 19 diem; nang ky nang 2 duoc 4 lan -> cap 5 (toi da 5)
+C2. mo ky nang 0 -> True (phai True); mo tiep ky nang 6 -> False (phai False)
+C3. sau khi len cap 20 con 19 diem; nang ky nang 0 duoc 4 lan -> cap 5 (toi da 5)
 
 E. goi tin mang
 E1. goi ky nang 17 byte: cap 5 -> 5, ky nang 4, ghe 2, tre 120 ms
@@ -24,12 +24,25 @@ E2. goi kinh nghiem 4 byte: ghe 3, diem 4096
 
 D. trong tran dau
 D1. vao tran: cap 1, mau toi da 600, nang luong toi da 250, toc do 5.20, ky nang da mo 0
-D2. bam Mua bang khi chua mo -> phep bay ra 0, loi nhac: MƯA BĂNG chưa mở khoá — vào SÁCH PHÉP để mở
-D3. mo khoa Mua bang -> phep bay ra 1
+D2. bam Qua cau bang khi chua mo -> phep bay ra 0, loi nhac: QUẢ CẦU BĂNG chưa mở khoá — vào SÁCH PHÉP để mở
+D3. mo khoa Qua cau bang -> phep bay ra 1 (cap nhan vat van 1)
 D4. len cap 2: mau 600 -> 690 (x1.150), nang luong 250 -> 275 (x1.100), toc do 5.20 -> 5.38 (x1.035)
 D4b. len cap 20: toc do 5.20 -> 7.09 (x1.363, mong x1.363 = dung o cap 10), mau x14.23 (mong x14.23)
     (nhan vat con song: True)
 D5. Mua bang cap 5: sat thuong moi tang 29.04 -> 60.22 (x2.074, mong doi x2.074) | dong cung 1.50s -> 2.10s
 D6. khong co quai nao dang song de thu - bo qua
+
+F. THIÊN THẠCH <- QUẢ CẦU LỬA cap 2: chua co -> truot True; QUẢ CẦU LỬA cap 1 -> truot True; du cap 2 -> mo duoc True
+    (Sach phep nhac) Cần QUẢ CẦU LỬA cấp 2 mới mở được   (đang cấp 0)
+F. LỬA ĐỊA NGỤC <- THIÊN THẠCH cap 5: chua co -> truot True; THIÊN THẠCH cap 4 -> truot True; du cap 5 -> mo duoc True
+F. MƯA BĂNG <- QUẢ CẦU BĂNG cap 2: chua co -> truot True; QUẢ CẦU BĂNG cap 1 -> truot True; du cap 2 -> mo duoc True
+F. TÀNG HÌNH <- MƯA BĂNG cap 5: chua co -> truot True; MƯA BĂNG cap 4 -> truot True; du cap 5 -> mo duoc True
+F. SẤM SÉT <- GIỰT SÉT cap 2: chua co -> truot True; GIỰT SÉT cap 1 -> truot True; du cap 2 -> mo duoc True
+F. QUẢ CẦU ĐIỆN <- SẤM SÉT cap 5: chua co -> truot True; SẤM SÉT cap 4 -> truot True; du cap 5 -> mo duoc True
+F. LỐC XOÁY <- GIÓ LỐC cap 2: chua co -> truot True; GIÓ LỐC cap 1 -> truot True; du cap 2 -> mo duoc True
+F. HOÁ LỐC XOÁY <- LỐC XOÁY cap 5: chua co -> truot True; LỐC XOÁY cap 4 -> truot True; du cap 5 -> mo duoc True
+F. DOI CHUNG ky nang khong dieu kien mo ngay: Khien True, Giựt sét True, Cầu lửa True, Cầu băng True, Gió lốc True, Kháng Lửa True, Tốc biến True
+
+G. uong binh THAT: hoi 200 mau (hang MauMoiBinh 200), hoi 75 nang luong (hang ManaMoiBinh 75)
 
 so loi ghi nhan = 0

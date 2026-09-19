@@ -166,7 +166,7 @@ public static class ThuDanhNga
         Ghi("");
         Ghi("B. tung thien thach that");
         CapDo.BatDauTranMoi();
-        CapDo.MoKhoa(4);
+        CapDo.MoCaDuongChoPhepThu(4);
         pc.mana = pc.maxMana;
         pc.CastAt(4, pc.transform.position + pc.transform.forward * 9f);
         ThienThach ttThat = null;
@@ -268,7 +268,7 @@ public static class ThuDanhNga
         int soPhep = 0;
         System.Action<int, Vector3, bool> dem = (a, b, d) => soPhep++;
         pc.DaTungPhep += dem;
-        CapDo.MoKhoa(4); CapDo.Them(1000); CapDo.MoKhoa(0);
+        CapDo.MoCaDuongChoPhepThu(4); CapDo.Them(1000); CapDo.MoCaDuongChoPhepThu(0);
         BiDanhNga.Apply(toi, 1.5f);
         yield return null;
         bool khoa = pc.DangBiKhoaCung;

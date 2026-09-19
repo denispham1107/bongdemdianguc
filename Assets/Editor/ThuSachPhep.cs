@@ -580,8 +580,11 @@ public static class ThuSachPhep
 
         // ---- Chuan bi: cap cao, mo khoa 1 va 3, nang 3 len cap 3. Ky nang 5 con khoa ----
         CapDo.BatDauTranMoi();
-        CapDo.Them(100 + 135 + 180 + 245);          // cap 5 = 5 diem
-        CapDo.MoKhoa(1); CapDo.MoKhoa(3); CapDo.NangCap(3); CapDo.NangCap(3);
+        // Du diem han: tu 19/09/2026 Mua bang doi Qua cau bang cap 2 va Loc xoay doi Gio loc cap 2,
+        // nen mo hai cai nay ton 3 diem moi cai thay vi 1. De nguyen "cap 5 = 5 diem" nhu truoc thi
+        // het diem tu giua chung, va muc F3 ben duoi (mo khoa Khien roi chup lai) do ra hai anh y het.
+        CapDo.Them(999999);
+        CapDo.MoCaDuongChoPhepThu(1); CapDo.MoCaDuongChoPhepThu(3); CapDo.NangCap(3); CapDo.NangCap(3);
         SachPhep.DatLai();
         CuaSoSachPhep.Mo();
         var b = CuaSoSachPhep.TinhBoCuc(Screen.width, Screen.height, s);
@@ -693,7 +696,9 @@ public static class ThuSachPhep
             Texture2D khoa = null, mo = null;
             yield return ChupTex(t => khoa = t);
             float sKhoa = DoSang(khoa, giua);
-            CapDo.MoKhoa(5);
+            bool daMoTruoc = CapDo.DaMo(5);
+            int diemTruoc = CapDo.DiemKyNang;
+            bool moDuocKhien = CapDo.MoKhoa(5);
             yield return ChupTex(t => mo = t);
             float sMo = DoSang(mo, giua);
             // "XAM DI" o ngoai tran la NHAN mau (0,38; 0,36; 0,40) - lam TOI chu khong
@@ -710,7 +715,9 @@ public static class ThuSachPhep
                     if (0.2126f * c.r + 0.7152f * c.g + 0.0722f * c.b > 0.5f) diemSang++;
                 }
             Ghi("F3. o " + (o5 + 1) + " giu Khien: luc KHOA do sang " + sKhoa.ToString("F3") + ", diem sang cua o khoa " + diemSang
-                + " | sau MO KHOA do sang " + sMo.ToString("F3"));
+                + " | sau MO KHOA do sang " + sMo.ToString("F3")
+                + "   (chan doan: truoc do da mo " + daMoTruoc + ", con " + diemTruoc + " diem, MoKhoa tra " + moDuocKhien
+                + ", cap Khien nay " + CapDo.CapCuaKyNang(5) + ")");
             Kiem(sKhoa < sMo * 0.6f, "ky nang chua mo trong o khong bi toi di nhu ngoai tran");
             Kiem(diemSang >= 4, "khong thay o khoa tren o ky nang chua mo");
             Object.Destroy(khoa); Object.Destroy(mo);

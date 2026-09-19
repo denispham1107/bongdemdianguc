@@ -264,9 +264,57 @@ public static class CapDo
 
     public static bool DaMo(int ky) { return CapCuaKyNang(ky) > 0; }
 
+    // ================================================================
+    //  DIEU KIEN MO KHOA THEO BAC (nguoi dung xin 19/09/2026)
+    // ================================================================
+    //
+    // Moi nhom he co mot duong len: ky nang re nhat mo truoc, len du cap moi mo duoc cai sau.
+    //   LUA : Qua cau lua cap 2 -> Thien thach;  Thien thach cap 5 -> Lua dia nguc
+    //   BANG: Qua cau bang cap 2 -> Mua bang;    Mua bang cap 5   -> Tang hinh
+    //   SET : Giut set cap 2   -> Sam set;       Sam set cap 5    -> Qua cau dien
+    //   PHONG: Gio loc cap 2   -> Loc xoay;      Loc xoay cap 5   -> Hoa loc xoay
+    //
+    // CHI CHAN LUC MO KHOA. Mo roi thi nang cap tu do - nguoi dung viet "moi duoc mo khoa".
+    // Nhom HO TRO va BI DONG khong co dieu kien nao.
+
+    /// <summary>{ky nang, ky nang phai co truoc, cap toi thieu cua no}.</summary>
+    static readonly int[][] dieuKienMo = {
+        new[] { 4, 0, 2 },                                  // Thien thach  <- Qua cau lua cap 2
+        new[] { KyLuaDiaNguc, 4, 5 },                       // Lua dia nguc <- Thien thach cap 5
+        new[] { 1, KyQuaCauBang, 2 },                       // Mua bang     <- Qua cau bang cap 2
+        new[] { KyTangHinh, 1, 5 },                         // Tang hinh    <- Mua bang cap 5
+        new[] { 2, 6, 2 },                                  // Sam set      <- Giut set cap 2
+        new[] { KyCauDien, 2, 5 },                          // Qua cau dien <- Sam set cap 5
+        new[] { 3, KyGioLoc, 2 },                           // Loc xoay     <- Gio loc cap 2
+        new[] { KyHoaLocXoay, 3, 5 },                       // Hoa loc xoay <- Loc xoay cap 5
+    };
+
+    /// <summary>Ky nang phai co truoc moi mo duoc <paramref name="ky"/>; -1 neu khong doi gi.</summary>
+    public static int KyCanTruoc(int ky)
+    {
+        for (int i = 0; i < dieuKienMo.Length; i++)
+            if (dieuKienMo[i][0] == ky) return dieuKienMo[i][1];
+        return -1;
+    }
+
+    /// <summary>Cap toi thieu cua ky nang can truoc; 0 neu khong doi gi.</summary>
+    public static int CapCanTruoc(int ky)
+    {
+        for (int i = 0; i < dieuKienMo.Length; i++)
+            if (dieuKienMo[i][0] == ky) return dieuKienMo[i][2];
+        return 0;
+    }
+
+    /// <summary>Da du dieu kien BAC de mo ky nang nay chua (khong xet diem ky nang).</summary>
+    public static bool DuBacDeMo(int ky)
+    {
+        int can = KyCanTruoc(ky);
+        return can < 0 || CapCuaKyNang(can) >= CapCanTruoc(ky);
+    }
+
     public static bool MoKhoaDuoc(int ky)
     {
-        return ky >= 0 && ky < SoKyNang && !DaMo(ky) && DiemKyNang > 0;
+        return ky >= 0 && ky < SoKyNang && !DaMo(ky) && DiemKyNang > 0 && DuBacDeMo(ky);
     }
 
     public static bool NangCapDuoc(int ky)
@@ -283,6 +331,49 @@ public static class CapDo
         DiemKyNang--;
         if (KhiDoi != null) KhiDoi();
         return true;
+    }
+
+    /// <summary>
+    /// Mo khoa ky nang nay CUNG CA DUONG dan toi no: nang cac ky nang phai co truoc len du cap,
+    /// tu them diem ky nang neu thieu.
+    ///
+    /// ⚠️ CHI DANH CHO PHEP THU. Trong tran nguoi choi phai tu di duong ay - dieu kien bac
+    /// (nguoi dung xin 19/09/2026) chinh la thu bat ho di. Cac kich ban chay thu thi chi muon
+    /// "cho toi dung thu ky nang X" nen goi ham nay thay cho MoKhoa.
+    /// </summary>
+    public static void MoCaDuongChoPhepThu(int ky)
+    {
+        int can = KyCanTruoc(ky);
+        if (can >= 0)
+        {
+            MoCaDuongChoPhepThu(can);
+            int capCan = CapCanTruoc(ky);
+            for (int i = 0; i < 40 && CapCuaKyNang(can) < capCan; i++)
+            {
+                if (DiemKyNang <= 0) ThemDiemChoPhepThu(1);
+                if (!DaMo(can)) { if (!MoKhoa(can)) break; }
+                else if (!NangCap(can)) break;
+            }
+        }
+        if (DaMo(ky)) return;
+        if (DiemKyNang <= 0) ThemDiemChoPhepThu(1);
+        MoKhoa(ky);
+    }
+
+    /// <summary>
+    /// Cho them diem ky nang MA KHONG cho kinh nghiem.
+    ///
+    /// ⚠️ CHI DANH CHO PHEP THU. Ban dau MoCaDuongChoPhepThu di duong vong "them kinh nghiem de
+    /// len cap lay diem", nhung mo ca duong ton toi 3 diem moi ky nang nen nhan vat bi day thang
+    /// len CAP 20 - va o cap toi da thi giet quai khong con duoc kinh nghiem nua, menu 61 do ra
+    /// "+0 kinh nghiem" o moi ky nang (19/09/2026).
+    /// </summary>
+    public static void ThemDiemChoPhepThu(int n)
+    {
+        BaoDamCoSan();
+        if (n <= 0) return;
+        DiemKyNang += n;
+        if (KhiDoi != null) KhiDoi();
     }
 
     /// <summary>Nang mot ky nang da mo len mot cap.</summary>

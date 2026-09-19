@@ -8442,6 +8442,48 @@ Lần đầu tôi đọc chỗ cơn Gió lốc *trước khi niệm* rồi so v�
 đọc. Chỉ khi ghi cả hai vị trí **ngay khung hình đầu tiên thấy cơn lốc mới** thì số đo mới ra 0,00 m. Tỉ lệ "to dần"
 cũng vậy: đọc trễ 0,5 giây thì thấy 0,91 thay vì 0,42 — phải theo dõi suốt trong vòng lặp.
 
+### Mở khoá theo bậc, và bình máu 200 / bình mana 75 (19/09/2026)
+
+Anh xin mỗi nhóm hệ một **đường lên**: kỹ năng rẻ mở trước, lên đủ cấp mới mở được cái sau.
+
+| Nhóm | Bậc 1 → bậc 2 | Bậc 2 → bậc 3 |
+|---|---|---|
+| LỬA | Quả cầu lửa **cấp 2** → Thiên thạch | Thiên thạch **cấp 5** → Lửa địa ngục |
+| BĂNG | Quả cầu băng **cấp 2** → Mưa băng | Mưa băng **cấp 5** → Tàng hình |
+| SÉT | Giựt sét **cấp 2** → Sấm sét | Sấm sét **cấp 5** → Quả cầu điện |
+| PHONG | Gió lốc **cấp 2** → Lốc xoáy | Lốc xoáy **cấp 5** → Hoá lốc xoáy |
+
+Chỉ chặn **lúc mở khoá** — mở rồi thì nâng cấp tự do, đúng chữ anh viết. Nhóm HỖ TRỢ và BỊ ĐỘNG không có điều kiện.
+Sách phép nói rõ còn thiếu gì: *"Cần QUẢ CẦU LỬA cấp 2 mới mở được (đang cấp 0)"*, hiện cả trên dòng cấp lẫn trên
+chính cái nút mở khoá. Cùng lúc, **bình máu hồi 200** (trước 100) và **bình mana hồi 75** (trước 50).
+
+**Số đo** (menu 60 mục F và G, `capdo.txt`, **0 lỗi**):
+
+| Đo | Kết quả |
+|---|---|
+| Tám luật | với mỗi luật: chưa có kỹ năng trước → **trượt**; có nhưng **thiếu một cấp** → vẫn **trượt**; đủ cấp → **mở được** |
+| Đối chứng | Khiên, Giựt sét, Cầu lửa, Cầu băng, Gió lốc, Kháng Lửa, Tốc biến — **mở được ngay**, và không kỹ năng nào trong số đó có câu nhắc |
+| Bình | uống thật: hồi đúng **200 máu** và **75 năng lượng** |
+| Hồi quy | menu 59 Sách phép · 61 kinh nghiệm · 65 bình · 68 Quả cầu băng · 77 kháng hệ: **0 lỗi** |
+
+**Luật mới làm gãy hàng loạt phép thử cũ**, vì chúng quen gọi `CapDo.MoKhoa(X)` thẳng cho bất kỳ kỹ năng nào.
+Thêm `CapDo.MoCaDuongChoPhepThu(ky)` (mở cả đường dẫn tới nó) và thay ở 18 file. Ba cái bẫy gặp trên đường:
+
+- **`MoCaDuongChoPhepThu` ban đầu bơm KINH NGHIỆM để lấy điểm** → nhân vật nhảy thẳng lên **cấp 20**, mà ở cấp tối
+  đa thì giết quái không còn được kinh nghiệm: menu 61 đo ra "+0 kinh nghiệm" ở **mọi** kỹ năng. Nay có
+  `CapDo.ThemDiemChoPhepThu` cho điểm thẳng, không đụng tới cấp.
+- Cùng lý do đó, menu 60 mục D3 mở Mưa băng làm nhân vật lên cấp 20 trước khi D4 kịp đo *"lên cấp 2 thì máu tăng
+  15%"* — D4 đo được ×1,000. Nay D3 dùng một kỹ năng không có điều kiện và tốn đúng một điểm.
+- Menu 65 đo bề ngang nét chữ ở **hàng số 1** của cột trái bằng phép nhân `chỉ số × chiều cao hàng` — đúng cái bẫy
+  `CuaSoSachPhep.YCuaDong` đã ghi trong CLAUDE.md từ khi cột xếp theo nhóm. Nay hỏi `VungHangKyNang`.
+
+**Và một lần Unity treo cứng.** Đang chạy menu 60 thì Editor đứng hình hẳn, không ngoại lệ, không crash dump, log
+chỉ còn một file đầy ký tự null vì chưa kịp ghi — anh phải tắt bằng tay. Thủ phạm là dòng tôi vừa thêm:
+`while (CapDo.CapCuaKyNang(can) < capCan) CapDo.NangCap(can);`. `NangCap` trả `false` khi hết điểm và **không đổi
+gì**, nên vòng quay vô tận ngay trong một khung hình. Mọi vòng chờ trong kịch bản chạy thử nay đều có trần
+(`ThuCapDo.NangToiCap`). Khác với coroutine chết (Play kẹt nhưng Editor vẫn dùng được), kiểu treo này làm chết cả
+Editor — và **log sẽ không có gì để đọc**, nên đừng mất công tìm exception.
+
 ### Nhóm BỊ ĐỘNG và bốn kỹ năng Kháng (19/09/2026)
 
 Anh xin thêm vào Sách phép **một nhóm mới tên BỊ ĐỘNG**: *"các skill nằm trong nhóm này mỗi khi mở khoá hoặc

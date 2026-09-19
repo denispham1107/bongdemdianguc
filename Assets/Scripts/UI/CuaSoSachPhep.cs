@@ -719,7 +719,13 @@ public static class CuaSoSachPhep
                            ? "   ·   máu khiên ×" + CapDo.MauKhiengTheoCap(toiDa).ToString("0.00")
                            : "   ·   hiệu ứng +" + CapDo.ThemGiayHieuUngTheoCap(toiDa).ToString("0.00") + " giây");
         }
-        else if (capKy <= 0) dongCap = "CHƯA MỞ KHOÁ — cần 1 điểm kỹ năng";
+        else if (capKy <= 0)
+        {
+            // Ky nang bi khoa sau mot ky nang khac (nguoi dung 19/09/2026) thi noi ro can gi,
+            // khong de nguoi choi bam mai vao cai nut xam ma khong hieu vi sao.
+            string nhac = SachPhep.NhacDieuKien(dangXem);
+            dongCap = nhac != null ? "CHƯA MỞ KHOÁ — " + nhac : "CHƯA MỞ KHOÁ — cần 1 điểm kỹ năng";
+        }
         else if (laBinh) dongCap = "ĐÃ MỞ KHOÁ   ·   đang có " + CapDo.SoBinh(dangXem) + " bình";
         else
             dongCap = "Kỹ năng cấp " + capKy + " / " + CapDo.CapToiDaCua(dangXem)
@@ -769,7 +775,11 @@ public static class CuaSoSachPhep
             chu = "Mở khoá và nâng cấp trong trận — mỗi lần lên cấp được 1 điểm kỹ năng";
         }
         else if (capKy == 0)
-            chu = CapDo.DiemKyNang > 0 ? "MỞ KHOÁ  (1 điểm)" : "Hết điểm kỹ năng — lên cấp để có thêm";
+        {
+            string nhac = SachPhep.NhacDieuKien(dangXem);
+            chu = nhac != null ? nhac
+                : (CapDo.DiemKyNang > 0 ? "MỞ KHOÁ  (1 điểm)" : "Hết điểm kỹ năng — lên cấp để có thêm");
+        }
         else if (CapDo.LaKyBinh(dangXem))
             chu = "ĐÃ MỞ KHOÁ — nhặt bình khi giết quái để dùng";
         else if (capKy >= CapDo.CapToiDaCua(dangXem))

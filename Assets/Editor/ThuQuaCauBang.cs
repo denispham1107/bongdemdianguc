@@ -270,7 +270,7 @@ public static class ThuQuaCauBang
         toi.CastAt(K, goc + huong * 8f);
         bool tuChoiKhoa = soPhep == truocKhoa;
         string nhacKhoa = toi.LastMessage;
-        CapDo.MoKhoa(K);
+        CapDo.MoCaDuongChoPhepThu(K);
 
         var biaDuong = TaoBia("TAM_BiaDuong", goc + huong * 8f);
         var vuong = Vector3.Cross(Vector3.up, huong).normalized;

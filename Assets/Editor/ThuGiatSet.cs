@@ -145,7 +145,7 @@ public static class ThuGiatSet
         // ================= B. TUNG THAT VAO 5 BIA =================
         Ghi("");
         CapDo.BatDauTranMoi();
-        CapDo.MoKhoa(6);
+        CapDo.MoCaDuongChoPhepThu(6);
         toi.mana = toi.maxMana;
         Vector3 chanToi = toi.transform.position;
         // 5 bia tren vong cung 15 m, cach nhau 25 do (day cung 6,5 m > ban kinh lan 5,5)
@@ -265,7 +265,7 @@ public static class ThuGiatSet
         {
             CapDo.BatDauTranMoi();
             CapDo.Them(100 + 135);
-            CapDo.MoKhoa(6); CapDo.NangCap(6); CapDo.NangCap(6);
+            CapDo.MoCaDuongChoPhepThu(6); CapDo.NangCap(6); CapDo.NangCap(6);
             yield return new WaitForSeconds(0.7f);
             toi.mana = toi.maxMana;
             toi.CastAt(6, chanToi + huong * 10f);

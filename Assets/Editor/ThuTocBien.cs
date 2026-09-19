@@ -175,7 +175,7 @@ public static class ThuTocBien
         int s0 = soPhep;
         toi.CastAt(K, toi.transform.position + huong * 10f);
         bool tuChoiKhoa = soPhep == s0;
-        CapDo.MoKhoa(K);
+        CapDo.MoCaDuongChoPhepThu(K);
         yield return new WaitForSeconds(0.3f);
 
         {
