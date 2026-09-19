@@ -8442,6 +8442,43 @@ Lần đầu tôi đọc chỗ cơn Gió lốc *trước khi niệm* rồi so v�
 đọc. Chỉ khi ghi cả hai vị trí **ngay khung hình đầu tiên thấy cơn lốc mới** thì số đo mới ra 0,00 m. Tỉ lệ "to dần"
 cũng vậy: đọc trễ 0,5 giây thì thấy 0,91 thay vì 0,42 — phải theo dõi suốt trong vòng lặp.
 
+### Bảy nút kỹ năng tròn to thêm 20% (19/09/2026)
+
+Anh xin cụm nút cảm ứng **to thêm 20%**, và dặn: đừng để chúng chồng lên nhau, đừng tràn qua mép phải hay
+tràn xuống dưới màn hình.
+
+Cách làm đã có sẵn trong chính comment của `GameHUD` từ hai lần phóng to trước (1,1 rồi 1,15): **nhân tất cả
+cho cùng một hệ số** — bán kính nút, bán kính hai cung, bán kính cung riêng của nút thứ bảy, **và cả lề từ góc
+màn hình** — trong khi giữ nguyên mọi góc. Chỉ phóng to cái nút mà giữ nguyên hai cung thì các nút xúm vào nhau.
+
+| | Trước | Sau |
+|---|---|---|
+| Bán kính nút | 60,72 | **72,864** |
+| Lề từ góc màn hình | 101,2 | **121,44** |
+| Cung trong · cung ngoài · cung nút thứ 7 | 234,03 · 392,15 · 92,23 | **280,84 · 470,58 · 110,68** |
+| Cả cụm chiếm chỗ | 525,5 × 520,2 | **630,6 × 624,2** |
+
+**Số đo** (menu 78 — mới, `cumnut.txt`, **0 lỗi**):
+
+| Đo | Kết quả |
+|---|---|
+| To đúng 20% | bán kính ×1,200; bề ngang ×1,200; chiều cao ×1,200 (cụm không bị kéo méo) |
+| 21 cặp nút | chỗ hở hẹp nhất **18,5** trên đường kính 145,7 — trước là 15,4 trên 121,4, **đúng cùng tỉ lệ** |
+| Mép phải · mép dưới | còn dư ở **mọi** độ phân giải ngang, hẹp nhất là điện thoại 844×390: **38,6** và **35,1 px** |
+| Cần điều khiển | không nút nào chạm, chỗ hở gần nhất 289,9 px (máy 4:3 — trường hợp xấu nhất) |
+
+**Phép đo "không chồng nhau" tự nó vô nghĩa nếu không có đối chứng**, nên menu 78 tính thêm phương án sai —
+*chỉ nút to lên, hai cung giữ nguyên* — và bắt nó phải hỏng: chỗ hở ra **−8,9** (tức chồng nhau). Có vậy con
+số 18,5 ở trên mới nói lên điều gì.
+
+**Một chỗ màn hình dọc.** Ở 390×844 cụm vượt mép **trái** 102,8 px — nhưng bản cũ cũng đã vượt 20,7 px, và
+bản cảm ứng vốn chơi ngang (cần điều khiển góc trái dưới, cụm nút góc phải dưới, hai cái chỉ vừa nhau khi màn
+nằm ngang). Phép thử **ghi lại cả hai con số** thay vì tính là lỗi. Nếu anh muốn chơi dọc được thì bảo tôi.
+
+**Và một cái bẫy khi chụp ảnh đối chứng.** Đặt `CamUng.EpBat = true` rồi chụp thì ra ảnh **bản máy tính** với
+thanh ô vuông — vì `GameHUD.Update` ghi đè `CamUng.EpBat = epCamUng` mỗi khung hình. Phải đặt `hud.epCamUng`.
+Nay phép thử kiểm luôn `CamUng.DangDung` trước khi tin vào ảnh.
+
 ### Bốn ô trống trong Sách phép ở sảnh — một bản sao bị bỏ quên (19/09/2026)
 
 Anh bấm **KỸ NĂNG** ở phòng chờ và thấy bốn kỹ năng Kháng hiện ra **bốn ô trống trơn** — không có cả cái đĩa

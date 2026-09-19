@@ -278,8 +278,11 @@ public partial class GameHUD : MonoBehaviour
     // TAM phai day ra theo ban kinh, khong thi le bi an mat. Giu tam o 175 nhu
     // luc dau thi can cham mep man hinh (175 - 172,5 = 2,5 diem anh) va nua
     // vong ben trai nam ngoai vien. 172,5 + 60 = 232,5 giu dung le 60 nhu cu.
-    Vector2 TamJoystick(float s) { return new Vector2(232.5f * s, 232.5f * s); }
-    float BanKinhJoystick(float s) { return 172.5f * s; }
+    /// <summary>Ti le man hinh dung cho ca HUD: thiet ke theo man cao 1080. Phep thu doc ham nay, khong chep cong thuc.</summary>
+    public static float TiLeMan(float caoMan) { return caoMan / Ref; }
+
+    public static Vector2 TamJoystick(float s) { return new Vector2(232.5f * s, 232.5f * s); }
+    public static float BanKinhJoystick(float s) { return 172.5f * s; }
 
     /// <summary>
     /// Doc cham/chuot cho can joystick va cac nut ky nang.
@@ -1025,9 +1028,9 @@ public partial class GameHUD : MonoBehaviour
     /// Le tu goc man hinh toi TAM cua cung. Phai lon hon ban kinh nut, khong
     /// thi nut trong cung bi cat mat mot mieng o mep man hinh.
     /// </summary>
-    const float Le = 101.2f;
+    const float Le = 121.44f;
 
-    float BanKinhNut(float s) { return 60.72f * s; }
+    float BanKinhNut(float s) { return 72.864f * s; }
 
     /// <summary>
     /// Tam cua nut ky nang thu <paramref name="i"/>, tinh theo GOC PHAI DUOI.
@@ -1054,11 +1057,12 @@ public partial class GameHUD : MonoBehaviour
         // ke - gan nhu dinh nhau. Nhan TAT CA cho cung mot he so (ke ca le) thi
         // moi khoang cach cung len theo, ti le ho giu y nguyen nhu truoc.
         //
-        // Da nhan hai lan: 1,1 roi 1,15. Goc thi GIU NGUYEN - chi ban kinh doi.
+        // Da nhan BA lan: 1,1 roi 1,15 roi 1,2 (nguoi dung 19/09/2026 xin to them 20%).
+        // Goc thi GIU NGUYEN - chi ban kinh doi.
         //
-        // So do hien tai: cung trong R=234,03s buoc 34 do -> 136,9s; cung ngoai
-        // R=392,15s buoc 22 do -> 149,6s; duong kinh nut 2r = 121,4s. Cap gan
-        // nhau nhat giua HAI cung la 158,1s. Tat ca deu con ho.
+        // So do hien tai (menu 78 do, khong chep tay): cung trong R=280,84s buoc 34 do;
+        // cung ngoai R=470,58s buoc 22 do; duong kinh nut 2r = 145,7s. Cho hep nhat giua
+        // hai nut bat ky con ho 31,6s - dung ti le ho nhu truoc khi to len.
         // NUT THU BAY nam o mot cung RIENG, trong cung, sat goc man hinh.
         //
         // Sau nut cu xep thanh hai cung ba nut; nhet nut thu bay vao mot trong
@@ -1066,8 +1070,8 @@ public partial class GameHUD : MonoBehaviour
         // ban kinh 80,2 cho no nam GIUA nut Sam set va goc man hinh - dung cho
         // nguoi dung da khoanh tron trong hinh.
         //
-        // Kiem lai khoang cach: toi nut Sam set 147,7 | toi nut Mua bang 149,0
-        // | duong kinh nut 121,4. Cho hep nhat con ho 26,3.
+        // Nut thu bay la cho HEP NHAT trong ca cum: toi nut Sam set 177,2 | toi nut
+        // Mua bang 178,8 | duong kinh nut 145,7 -> con ho 31,6.
         Vector2 lech = LechNut(i);
         return new Vector2(Screen.width - lech.x * s, lech.y * s);
     }
@@ -1087,7 +1091,7 @@ public partial class GameHUD : MonoBehaviour
         // NUT THU BAY nam o mot cung RIENG, trong cung, sat goc man hinh.
         if (i == 6)
         {
-            const float banBay = 92.23f;
+            const float banBay = 110.676f;
             const float gocBay = 26.1f;
             float radBay = gocBay * Mathf.Deg2Rad;
             return new Vector2(Le + Mathf.Cos(radBay) * banBay,
@@ -1095,7 +1099,7 @@ public partial class GameHUD : MonoBehaviour
         }
 
         bool trong = i < 3;
-        float ban = trong ? 234.03f : 392.15f;
+        float ban = trong ? 280.836f : 470.58f;
         int k = trong ? i : i - 3;
 
         // Trai ra (goc lon) den len tren (goc nho)
@@ -1115,7 +1119,7 @@ public partial class GameHUD : MonoBehaviour
     /// </summary>
     public static void HinhHocCumNut(out float banKinhNut, out float rong, out float cao)
     {
-        banKinhNut = 60.72f;
+        banKinhNut = 72.864f;
         rong = 0f; cao = 0f;
         for (int i = 0; i < SoNut; i++)
         {
