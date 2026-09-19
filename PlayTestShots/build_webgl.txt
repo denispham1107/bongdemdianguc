@@ -5,8 +5,8 @@ tong dung luong: 196.8 MB
 so loi: 0 | so canh bao: 12
 thu muc ra: C:\Users\HP\Documents\GameUnity\Diablo25D\Build\WebGL
 --- file trong Build/ ---
-  2538a9e4a8163d64b8896449f5b82cb6.data  179.6 MB
-  525d949e62c2c3617d44b38db55b06d5.loader.js  0.0 MB
+  3317ff8c06d874c7a40713bc8691516e.data  179.6 MB
   5b8b9444bb84cccc1d0c70c97315c2ce.framework.js  0.3 MB
-  ef8e4a030b5ebf94b5ccc20e37c494dd.wasm  15.8 MB
-gan phien ban vao index.html: 2538a9e4a8163d64b8896449f5b82cb6.data?v=2538a9e4a8; 525d949e62c2c3617d44b38db55b06d5.loader.js?v=525d949e62; 5b8b9444bb84cccc1d0c70c97315c2ce.framework.js?v=5b8b9444bb; ef8e4a030b5ebf94b5ccc20e37c494dd.wasm?v=ef8e4a030b; productVersion +2538a9e4a8; 
+  d739b1203ffa540d65a2b41b10dd3b5c.loader.js  0.0 MB
+  e14b952d56ec26c8c68c77d236c77ad7.wasm  15.8 MB
+gan phien ban vao index.html: 3317ff8c06d874c7a40713bc8691516e.data?v=3317ff8c06; 5b8b9444bb84cccc1d0c70c97315c2ce.framework.js?v=5b8b9444bb; d739b1203ffa540d65a2b41b10dd3b5c.loader.js?v=d739b1203f; e14b952d56ec26c8c68c77d236c77ad7.wasm?v=e14b952d56; productVersion +3317ff8c06; 
