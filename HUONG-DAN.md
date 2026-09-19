@@ -8442,6 +8442,62 @@ Lần đầu tôi đọc chỗ cơn Gió lốc *trước khi niệm* rồi so v�
 đọc. Chỉ khi ghi cả hai vị trí **ngay khung hình đầu tiên thấy cơn lốc mới** thì số đo mới ra 0,00 m. Tỉ lệ "to dần"
 cũng vậy: đọc trễ 0,5 giây thì thấy 0,91 thay vì 0,42 — phải theo dõi suốt trong vòng lặp.
 
+### Lửa địa ngục xuyên bia mộ; Quả cầu lửa cấp 5 đánh ngã; Thiên thạch cấp 5 năm quả (19/09/2026)
+
+Ba việc nhỏ anh giao cùng lúc.
+
+**1. Lửa địa ngục bay xuyên vật nhỏ.** Anh xin: xuyên được bia và mộ, *không* xuyên được cây cối và nhà.
+Câu hỏi thật sự là "làm sao biết cái này nhỏ" — và tôi không muốn đoán theo tên, vì Act1 dựng bằng code còn
+Act2 nhập từ Blender, tên hai bên chẳng liên quan gì nhau. Nên tôi **đo cả hai màn trước khi viết một dòng nào**:
+
+| | Act2 | Act1 |
+|---|---|---|
+| Nhỏ | 452 bia mộ cao **0,16–3,18 m**, 229 tảng đá 0,12–1,31 m, 10 lò lửa 2,33 m | — |
+| To | 58 cây **6,54–17,47 m**, 5 nhà mồ 4,22–5,15 m (rộng 4,37–6,16), hàng rào 4,77 m rộng 107 m | 76 vách đá 4,53–14,55 m |
+
+Giữa "bia cao nhất" 3,18 m và "vật to thấp nhất" 4,22 m có một khe trống hơn **1 mét** — ngưỡng **4,00 m**
+nằm đúng giữa. Luật thành: vật cản **cao dưới 4 m và ngang dưới 4 m** thì quả bay xuyên; mặt đất và
+người/quái thì không bao giờ (dẫm đất phải nổ, trúng người phải nổ). `Fireball.LaVatNho` + `xuyenVatNho`,
+chỉ Lửa địa ngục bật.
+
+Một chỗ dễ sai: không được chỉ hỏi "vật gần nhất rồi bỏ qua nếu nó nhỏ". `SphereCast` trả về **một** vật, mà
+vật ấy rất hay là cái bia đang đứng chắn trước gốc cây — bỏ riêng nó đi thì quả xuyên luôn qua cây phía sau.
+Phải quét cả đoạn (`SphereCastAll`) rồi lấy vật **to** gần nhất.
+
+**2. Quả cầu lửa cấp 5: 30% đánh ngã**, nằm 1,5 giây đúng như Thiên thạch (dùng luôn `ThienThach.GieoDanhNga`
+nên tự động bỏ qua người tung, kẻ đã chết và kẻ đang có khiên). Mỗi quả trong chùm ba quả gieo riêng —
+giống hệt loạt ba quả Thiên thạch vẫn làm.
+
+**3. Thiên thạch cấp 5 rơi 5 quả** thay vì 3 (`ThienThach.SoQuaTheoCap`, đọc cấp của **người tung** nên qua
+mạng cũng đúng).
+
+**Số đo** (ba menu, **0 lỗi**):
+
+| Menu | Đo | Kết quả |
+|---|---|---|
+| 72 K1 | phân loại **755 vật cản thật** của Act2 | bia mộ 452/452 xuyên · đá 229/229 xuyên · lò lửa 10/10 xuyên · cây **0/58** · nhà mồ **0/5** · hàng rào **0/1** · mặt đất không xuyên |
+| 72 K2 | bắn quả thật qua bia thử cao 3,0 m | Lửa địa ngục đi tiếp **20,3 m**; đối chứng Quả cầu lửa thường **nổ ngay ở bia** (8,4 m ≈ đúng chỗ bia) |
+| 72 K3 | cây thử 8 m · nhà thử 5×4,5×5 m | nổ ở 8,3 m và 6,4 m — đúng mặt trước vật, không qua được |
+| 72 K4/K5 | bia THẬT và cây THẬT trong nghĩa địa | qua bia thật đi tiếp 16,9 m; tới cây thật thì nổ ở 8,3 m |
+| 72 K6 | đường tung thật | 5/5 quả Lửa địa ngục bật cờ xuyên; 0/3 quả Quả cầu lửa thường |
+| 70 D1 | xác suất ngã trên quả cầu THẬT, cấp 1→5 | 0 · 0 · 0 · 0 · **0,30**, nằm 1,5 giây |
+| 70 D2/D3 | một quả cấp 5 nổ giữa 400 bia | ngã **119 → 29,8%**; đối chứng cấp dưới 5: **0** |
+| 62 G | số quả mỗi loạt, cấp 1→5 | **3 · 3 · 3 · 3 · 5** |
+
+**Ba lần phép thử tự lừa mình.** Cả ba đều cùng một kiểu: *bấm phép xong đọc kết quả ngay ở khung hình sau*.
+Nhưng phép có **thời gian niệm**, nên chưa có gì để đọc — mà mảng số đo thì mặc định bằng 0, và số 0 ấy
+trông y hệt một lỗi thật ("cấp 5 không mang 30%", "mọi cấp đều rơi 0 quả"). Lần thứ ba là **hồi chiêu**:
+chờ 1,2 giây giữa hai lần tung thì cấp 2 và cấp 4 bị từ chối, bảng số đo ra `3, 0, 3, 0, 5`. Nay cả hai chỗ
+đều **đọc hồi chiêu thật từ nhân vật** (`SachPhep.ThongSo`) rồi mới tung tiếp — không chép tay con số nào.
+
+**Và một dư chấn của luật mở khoá theo bậc.** Menu 18d (cây cháy bằng phép thật) báo *"thả 8 giây mà cây
+không bắt lửa"*. Không phải lỗi mới: kịch bản ấy gọi thẳng `CastAt(4)` mà chưa bao giờ mở khoá kỹ năng, nên
+từ hôm qua Thiên thạch bị khoá sau Quả cầu lửa cấp 2 là nó **bị từ chối trong im lặng** — không ngoại lệ,
+không lời nhắc trong log, chỉ có "cây không cháy". Thêm `MoCaDuongChoPhepThu(4)` là xanh lại, và cây vẫn
+cháy rụi rồi mọc lại sau 37,4 giây như cũ. Quét lại toàn bộ `Assets/Editor` còn tìm thấy hai kịch bản cũ nữa
+mắc đúng lỗi này (menu 4 chụp hình, menu 7 kiểm hiệu ứng sót) — chúng chỉ chụp ảnh nên không ai thấy;
+đã sửa luôn.
+
 ### Mở khoá theo bậc, và bình máu 200 / bình mana 75 (19/09/2026)
 
 Anh xin mỗi nhóm hệ một **đường lên**: kỹ năng rẻ mở trước, lên đủ cấp mới mở được cái sau.

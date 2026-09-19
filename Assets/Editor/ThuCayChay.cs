@@ -311,9 +311,15 @@ public static class ThuCayChay
                             mauNguoi.maxHealth = 100000f;
                             mauNguoi.health = 100000f;
                         }
+                        // PHAI MO KHOA KY NANG: tu 19/09/2026 Thien thach khoa sau Qua cau lua cap 2
+                        // (CapDo.dieuKienMo), CastAt tu choi im lang va cay khong bao gio bat lua.
+                        CapDo.BatDauTranMoi();
+                        CapDo.MoCaDuongChoPhepThu(4);
+                        nguoi.mana = nguoi.maxMana;
                         nguoi.CastAt(4, chanCay);
-                        Ghi(string.Format("t={0:F2}s  nguoi choi TUNG PHEP Thien thach vao {1}",
-                                          t, chanCay.ToString("F2")));
+                        Ghi(string.Format("t={0:F2}s  nguoi choi TUNG PHEP Thien thach vao {1} (ky nang cap {2}, loi nhac: {3})",
+                                          t, chanCay.ToString("F2"), CapDo.CapCuaKyNang(4),
+                                          string.IsNullOrEmpty(nguoi.LastMessage) ? "(khong co)" : nguoi.LastMessage));
                     }
                     else
                     {

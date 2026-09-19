@@ -44,6 +44,12 @@ public static class LeakTest
             case 0:
                 if (t > 1.5f && player != null)
                 {
+                    // MO KHOA truoc khi tung: tu 19/09/2026 ky nang bi khoa luc dau tran, va ky nang
+                    // bac tren con doi ky nang truoc du cap (CapDo.dieuKienMo) - khong mo thi CastAt tu
+                    // choi im lang va kich ban chup duoc mot canh khong co phep nao.
+                    CapDo.BatDauTranMoi();
+                    for (int ky = 0; ky <= 4; ky++) CapDo.MoCaDuongChoPhepThu(ky);
+                    player.mana = player.maxMana;
                     // Ban 3 qua cau lua ve 3 huong
                     player.CastAt(0, player.transform.position + new Vector3(7f, 0f, 3f));
                     stage++;

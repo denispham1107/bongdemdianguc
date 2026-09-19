@@ -138,7 +138,12 @@ public static class PlayTest
             case 6:
                 if (t > 4.2f)
                 {
-                    if (player != null) player.CastAt(0, AimPoint(player, 9f));
+                    // MO KHOA truoc khi tung: tu 19/09/2026 ky nang bi khoa luc dau tran, va ky nang
+                    // bac tren con doi ky nang truoc du cap (CapDo.dieuKienMo) - khong mo thi CastAt tu
+                    // choi im lang va kich ban chup duoc mot canh khong co phep nao.
+                    CapDo.BatDauTranMoi();
+                    for (int ky = 0; ky <= 4; ky++) CapDo.MoCaDuongChoPhepThu(ky);
+                    if (player != null) { player.mana = player.maxMana; player.CastAt(0, AimPoint(player, 9f)); }
                     stage++;
                 }
                 break;

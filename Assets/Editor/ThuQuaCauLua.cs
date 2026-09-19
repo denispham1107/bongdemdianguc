@@ -17,6 +17,8 @@ using UnityEngine;
 ///      = 85 x he so giam theo khoang cach (tinh lai tu cho no that).
 ///   C. Vet lua: he hat Flames KHONG con dung Tex_flame (tam giac) ma dung flipbook Blender; co vet lua dai
 ///      (TrailRenderer) dung anh vet lua Blender; no xong vet lua duoc tha ra tan dan. Chup can canh.
+///   D. DANH NGA O CAP 5 (nguoi dung 19/09/2026): 30% moi ke trong vu no, nam 1,5 giay nhu Thien thach.
+///      Do tren duong tung THAT (CastAt) o tung cap, roi cho mot qua no vao mot cum bia de dem ti le that.
 ///
 /// Ket qua: PlayTestShots/quacaulua.txt, anh quacaulua_*.png.
 /// </summary>
@@ -209,6 +211,130 @@ public static class ThuQuaCauLua
 
         Ghi(string.Format("C2. no xong: {0} vet lua duoc tha ra tan dan tai cho", vetConLai));
         Kiem(vetConLai >= 1, "no xong vet lua bien mat cung qua cau");
+
+        // ================= D. DANH NGA O CAP 5 =================
+        Ghi("");
+        Ghi("D. danh nga o cap 5 (30%, 1,5 giay)");
+        var dirD = GameDirector.Instance;
+        if (dirD != null) dirD.enabled = false;          // dot quai sinh giua chung lam nhieu phep dem
+        foreach (var f in Object.FindObjectsByType<Fireball>(FindObjectsInactive.Exclude)) Object.DestroyImmediate(f.gameObject);
+
+        // D1. Tung THAT o tung cap: qua cau mang xac suat nao
+        CapDo.BatDauTranMoi();
+        CapDo.MoCaDuongChoPhepThu(0);
+        var xsTheoCap = new float[CapDo.CapKyNangToiDa + 1];
+        var giayTheoCap = new float[CapDo.CapKyNangToiDa + 1];
+        for (int capD = 1; capD <= CapDo.CapKyNangToiDa; capD++)
+        {
+            for (int v = 0; v < 60 && CapDo.CapCuaKyNang(0) < capD; v++)
+            {
+                CapDo.ThemDiemChoPhepThu(1);
+                if (!CapDo.NangCap(0)) break;           // TRAN: NangCap tra false ma khong doi gi -> vong vo tan
+            }
+            if (CapDo.CapCuaKyNang(0) != capD) { Ghi("[LOI] khong nang duoc Qua cau lua len cap " + capD); loi++; break; }
+            toi.mana = toi.maxMana;
+            toi.CastAt(0, goc + huong * 10f);
+            // PHAI CHO HET THOI GIAN NIEM roi qua cau moi bay ra: doc ngay sau mot khung hinh thi khong thay
+            // qua nao, va mang so do giu nguyen 0 - trong het nhu "cap 5 khong mang 30%" (lan chay dau 19/09/2026).
+            Fireball quaD1 = null;
+            float hanD1 = Time.time + 3f;                  // TRAN: vong cho nao cung phai co
+            while (quaD1 == null && Time.time < hanD1)
+            {
+                yield return null;
+                quaD1 = Object.FindAnyObjectByType<Fireball>();
+            }
+            if (quaD1 == null)
+            {
+                Ghi("[LOI] cap " + capD + ": khong tung duoc qua cau nao, loi nhac: " + toi.LastMessage);
+                loi++;
+            }
+            else
+            {
+                xsTheoCap[capD] = quaD1.ngaXacSuat; giayTheoCap[capD] = quaD1.ngaGiay;
+            }
+            foreach (var f in Object.FindObjectsByType<Fireball>(FindObjectsInactive.Exclude)) Object.DestroyImmediate(f.gameObject);
+            // Cho het hoi chieu THAT (doc tu nhan vat, khong chep tay) roi moi tung cap sau
+            float nlD, hcD, ncD;
+            SachPhep.ThongSo(toi, 0, out nlD, out hcD, out ncD);
+            yield return new WaitForSeconds(hcD + 0.4f);
+        }
+        Ghi("D1. xac suat nga tren qua cau THAT theo cap 1..5 = "
+            + xsTheoCap[1].ToString("F2") + ", " + xsTheoCap[2].ToString("F2") + ", " + xsTheoCap[3].ToString("F2") + ", "
+            + xsTheoCap[4].ToString("F2") + ", " + xsTheoCap[5].ToString("F2")
+            + "; nam " + giayTheoCap[5] + " giay (hang: " + Fireball.NgaXacSuatCap5 + " tu cap " + Fireball.CapDanhNga
+            + ", Thien thach nam " + ThienThach.NgaGiayNguoiChoi + " giay)");
+        for (int capD = 1; capD < Fireball.CapDanhNga; capD++)
+            Kiem(xsTheoCap[capD] == 0f, "cap " + capD + " da danh nga roi (" + xsTheoCap[capD] + ") - chi cap 5 moi duoc");
+        Kiem(Mathf.Abs(xsTheoCap[Fireball.CapDanhNga] - Fireball.NgaXacSuatCap5) < 0.0001f,
+             "cap 5 khong mang xac suat " + Fireball.NgaXacSuatCap5);
+        Kiem(Mathf.Abs(giayTheoCap[Fireball.CapDanhNga] - ThienThach.NgaGiayNguoiChoi) < 0.0001f,
+             "cap 5 khong nam bang Thien thach (" + ThienThach.NgaGiayNguoiChoi + " giay)");
+
+        // D2/D3. Cho mot qua no vao MOT CUM BIA va dem ti le nga that
+        const int SoBiaD = 400;
+        Vector3 caoD = goc + Vector3.up * 70f;
+        var cumBia = new System.Collections.Generic.List<Damageable>();
+        for (int i = 0; i < SoBiaD; i++)
+        {
+            var b = new GameObject("TAM_BiaNga" + i);
+            b.layer = LayerMask.NameToLayer("Enemy");
+            b.transform.position = caoD + new Vector3((i % 20) * 0.05f, 0f, (i / 20) * 0.05f);
+            var cc = b.AddComponent<CapsuleCollider>(); cc.height = 1.2f; cc.radius = 0.2f;
+            var dd = b.AddComponent<Damageable>(); dd.maxHealth = 1e6f; dd.health = 1e6f;
+            cumBia.Add(dd);
+        }
+        yield return new WaitForFixedUpdate();
+
+        int DemNga()
+        {
+            int n = 0;
+            foreach (var b in cumBia) if (b != null && b.GetComponent<BiDanhNga>() != null) n++;
+            return n;
+        }
+
+        // Cap 5: qua cau THAT sinh tu prefab, dat xac suat nhu PlayerController dat o cap 5
+        var quaD = Fireball.Spawn(caoD + Vector3.up * 0.5f, Vector3.down, 0, maskEnemy);
+        quaD.burnSeconds = 0f;
+        quaD.ngaXacSuat = Fireball.NgaXacSuatCap5;
+        quaD.ngaGiay = ThienThach.NgaGiayNguoiChoi;
+        float hanD = Time.time + 2f;
+        while (quaD != null && Time.time < hanD) yield return null;
+        yield return null;
+        int ngaD = DemNga();
+        float tlD = ngaD * 100f / SoBiaD;
+        Ghi("D2. mot qua cap 5 no giua " + SoBiaD + " bia: nga " + ngaD + " -> " + tlD.ToString("F1")
+            + "% (mong " + (Fireball.NgaXacSuatCap5 * 100f).ToString("F0") + "%, sai so ngau nhien ~2,3 diem)");
+        Kiem(Mathf.Abs(tlD - Fireball.NgaXacSuatCap5 * 100f) < 8f, "ti le danh nga that lech xa 30%");
+
+        // Doi chung: qua cau cap 1-4 (ngaXacSuat 0) khong lam nga con nao
+        foreach (var b in cumBia) { var bn = b.GetComponent<BiDanhNga>(); if (bn != null) Object.DestroyImmediate(bn); }
+        var quaD4 = Fireball.Spawn(caoD + Vector3.up * 0.5f, Vector3.down, 0, maskEnemy);
+        quaD4.burnSeconds = 0f;                            // ngaXacSuat giu nguyen mac dinh = 0
+        float hanD4 = Time.time + 2f;
+        while (quaD4 != null && Time.time < hanD4) yield return null;
+        yield return null;
+        int ngaD4 = DemNga();
+        Ghi("D3. DOI CHUNG qua cau cap duoi 5 (xac suat 0) no giua " + SoBiaD + " bia: nga " + ngaD4 + " (phai 0)");
+        Kiem(ngaD4 == 0, "qua cau chua cap 5 ma van danh nga");
+
+        // D4. Hieu ung nga la THAT: con bi nga giu 1,5 giay roi tu day
+        var biaNgaD = cumBia.Find(b => b != null && b.GetComponent<BiDanhNga>() != null);
+        if (biaNgaD == null)
+        {
+            BiDanhNga.Apply(cumBia[0], ThienThach.NgaGiayNguoiChoi); biaNgaD = cumBia[0];
+            Ghi("D4. (khong con nao con nga tu D2 - gieo tay mot con de do thoi gian nam)");
+        }
+        yield return new WaitForSeconds(1.2f);
+        bool conNgaD = biaNgaD != null && biaNgaD.GetComponent<BiDanhNga>() != null;
+        yield return new WaitForSeconds(0.6f);
+        bool dayRoiD = biaNgaD != null && biaNgaD.GetComponent<BiDanhNga>() == null;
+        Ghi("D5. sau 1,2 giay van nga " + conNgaD + "; sau 1,8 giay da day " + dayRoiD);
+        Kiem(conNgaD, "chua het 1,5 giay ma da dung day");
+        Kiem(dayRoiD, "qua 1,5 giay ma van nam");
+
+        foreach (var b in cumBia) if (b != null) Object.DestroyImmediate(b.gameObject);
+        foreach (var f in Object.FindObjectsByType<Fireball>(FindObjectsInactive.Exclude)) Object.DestroyImmediate(f.gameObject);
+        if (dirD != null) dirD.enabled = true;
 
         Ghi("");
         Ghi("so loi ghi nhan = " + loi);

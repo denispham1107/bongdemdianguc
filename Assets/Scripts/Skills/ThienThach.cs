@@ -44,6 +44,16 @@ public class ThienThach : MonoBehaviour
     /// <summary>Thien thach cua NGUOI CHOI: 40% danh nga, nam 1,5 giay (13/09/2026).</summary>
     public const float NgaXacSuatNguoiChoi = 0.40f;
     public const float NgaGiayNguoiChoi = 1.5f;
+
+    /// <summary>
+    /// SO QUA MOI LOAT: 3, len CAP 5 thi ROI THEM 2 QUA nua (nguoi dung 19/09/2026).
+    /// Cap doc o day la cap cua NGUOI TUNG (PlayerController.capPhepDangTung, di kem tung goi tung phep),
+    /// khong phai cap cua nguoi dang xem - giong SoQuaTheoCap cua Qua cau bang.
+    /// </summary>
+    public const int SoQuaThuong = 3;
+    public const int SoQuaCap5 = 5;
+    public const int CapNamQua = 5;
+    public static int SoQuaTheoCap(int capKy) { return capKy >= CapNamQua ? SoQuaCap5 : SoQuaThuong; }
     public float blastRadius = 4.2f;
 
     [Header("Vung lua de lai")]

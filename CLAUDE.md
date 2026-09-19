@@ -233,6 +233,12 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
   mình luôn thấy thân mình mờ. Bit mạng `CoTangHinh` = bit thứ 6 → **mặt nạ byte cờ nay 0x3F** (gói người chơi dùng hết 8 bit).
   ⚠️ Đòn đầu quyết định ở **`BeginCast`** (lúc bắt đầu niệm) chứ không ở `Release`, vì gói phép bay đi từ đó: cờ `donTangHinh` đi nhờ
   **bit cao của byte cấp kỹ năng** trong gói 17 byte, không thì máy kia phát lại phép với sát thương thường. Menu 73 kiểm.
+- ⚠️ **Lửa địa ngục XUYÊN VẬT NHỎ** (người dùng 19/09/2026): bia, mộ, đá không chặn đường; **cây cối và nhà vẫn chặn**.
+  `Fireball.xuyenVatNho` (chỉ Lửa địa ngục bật) + `Fireball.LaVatNho`: xuyên khi collider **cao < 4 m VÀ ngang < 4 m**,
+  trừ mặt đất và mọi thứ có `Damageable`. Đo bằng **kích thước, không theo tên** (Act1 dựng bằng code, Act2 nhập từ Blender):
+  Act2 bia mộ 0,16–3,18 m · đá 0,12–1,31 · lò lửa 2,33 | cây 6,54–17,47 · nhà mồ 4,22–5,15 · hàng rào 4,77; Act1 vách đá 4,53–14,55 —
+  khe trống giữa 3,18 và 4,22 rộng hơn 1 m. ⚠️ Phải quét **cả đoạn** (`SphereCastAll`) rồi lấy vật TO gần nhất: `SphereCast` chỉ
+  trả một vật, mà vật ấy hay là cái bia chắn trước gốc cây — bỏ riêng nó thì quả xuyên luôn qua cây. Menu 72 mục K.
 - **Lửa địa ngục** (`Skills/LuaDiaNguc.cs`, 17/09/2026): **5 quả** `Fireball` (18/09/2026, trước là 4) toả 18° rồi **tự dí** (`Fireball.tocQueo` 360°/s,
   giữ ≥ 1,3 m trên mặt đất — đo đất ở BA chỗ: dưới quả, theo hướng bay, về phía mục tiêu; không thì đâm đất Act2) tối đa 5 kẻ gần người tung nhất
   trong 20 m; cấp 1 = impactDamage prefab Quả cầu lửa × 1,2⁴ (176); **31 năng lượng** (⚠️ số nằm trong **prefab `Player_Sorceress`**) · hồi chiêu 0,5 ·
@@ -240,7 +246,10 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
 - **Giựt sét** (16/09/2026, hằng trong `GiatSet`: `TamNguoiChoi` 20 m, `SatThuongNguoiChoi` 75, `SoTiaNguoiChoi` 4, `XacSuatChoangNguoiChoi` 0,15,
   `GiayChoangNguoiChoi` 1,5 + 0,15 s/cấp): tối đa 4 tia cùng lúc (mỗi tia một kẻ địch phía trước), mỗi tia vẫn lan 5 lần; **mỗi cú trúng kể cả
   tia lan** gieo 15% choáng (`StunnedEffect.Apply` — bản sao mạng tự bỏ qua). Giựt sét của **quái** (`PhongCuaQuai`) không choáng. Menu 69 kiểm.
-- **Quả cầu lửa** sát thương **85** (16/09/2026) — ⚠️ số nằm trong **prefab `Skill_QuaCauLua`** (đè code). Vệt lửa phía sau vẽ lại bằng
+- **Quả cầu lửa** sát thương **85** (16/09/2026) — ⚠️ số nằm trong **prefab `Skill_QuaCauLua`** (đè code).
+  ⚠️ **CẤP 5: 30% ĐÁNH NGÃ** 1,5 giây (người dùng 19/09/2026, `Fireball.NgaXacSuatCap5` / `CapDanhNga`): dùng lại
+  `ThienThach.GieoDanhNga` nên tự bỏ qua người tung, kẻ đã chết và kẻ đang có khiên; **mỗi quả trong chùm gieo riêng**
+  như loạt Thiên thạch. Mặc định `ngaXacSuat = 0` nên quả cầu của quái không dính. Menu 70 mục D. Vệt lửa phía sau vẽ lại bằng
   **Blender MCP** (`CongCu/Blender/vet_lua_qua_cau_lua.blend`): hạt `Flames` đổi từ `Tex_flame.png` (một **hình tam giác**) sang flipbook
   `Flipbooks/LuaDuoi` (4×4 đám lửa cuộn) + `TrailRenderer` vệt lửa dài `KyNang/QuaCauLua/VetLuaDai`; sửa lúc chạy trong
   `VfxFactory.NangCapDuoiLua` (gọi từ `Fireball.Spawn`, cả quả cầu của quái), nổ thì `ThaDuoiLua` thả vệt ra tan dần. Menu 70 kiểm.
@@ -248,6 +257,9 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
   LỬA Cầu lửa **cấp 2**→Thiên thạch, Thiên thạch **cấp 5**→Lửa địa ngục · BĂNG Cầu băng 2→Mưa băng, Mưa băng 5→Tàng hình ·
   SÉT Giựt sét 2→Sấm sét, Sấm sét 5→Cầu điện · PHONG Gió lốc 2→Lốc xoáy, Lốc xoáy 5→Hoá lốc xoáy. **Chỉ chặn lúc MỞ KHOÁ**;
   HỖ TRỢ và BỊ ĐỘNG không có điều kiện. Sách phép hiện `SachPhep.NhacDieuKien` trên dòng cấp và trên nút.
+  ⚠️ Kịch bản chạy thử nào gọi `CastAt` cũng phải mở khoá trước, **kể cả kịch bản cũ chỉ chụp ảnh**: `CastAt` từ chối
+  trong IM LẶNG (không ngoại lệ, không dòng log), nên triệu chứng là thứ khác hẳn — menu 18d báo "thả 8 giây mà cây
+  không bắt lửa" (19/09/2026); menu 4 và menu 7 cũng sót, đã sửa.
   ⚠️ Phép thử phải gọi **`CapDo.MoCaDuongChoPhepThu(ky)`** chứ không `MoKhoa` (đã thay ở 18 file); hàm ấy lấy điểm bằng
   `ThemDiemChoPhepThu` **không qua kinh nghiệm** — bản đầu bơm kinh nghiệm làm nhân vật nhảy lên cấp 20, mà ở cấp tối đa
   thì giết quái không còn kinh nghiệm và menu 61 đo ra "+0" ở mọi kỹ năng.
@@ -299,6 +311,8 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
   hình, người bên trong vẫn chạy và vẫn bấm đủ bảy kỹ năng. Nay có `PlayerController.HeSoTocBang` và
   `DangBiKhoaCung`; chặn ở `CastAt` (lúc BẮT ĐẦU niệm) chứ không ngắt phép đang niệm — gói "tôi vừa tung phép"
   đã gửi đi rồi, ngắt giữa chừng là hai máy kể hai chuyện khác nhau.
+- ⚠️ **Thiên thạch CẤP 5 rơi 5 quả** thay vì 3 (người dùng 19/09/2026, `ThienThach.SoQuaTheoCap`, cấp của NGƯỜI TUNG
+  qua `capPhepDangTung` nên bản sao mạng cũng đúng). Menu 62 mục G.
 - **Thiên thạch của người chơi đánh ngã 40% · 1,5 s** (`BiDanhNga.cs`): lật **model con** (va chạm ở gốc vẫn đứng), xoay
   quanh trục của GỐC (model Meshy xoay sẵn 180° — xoay trục riêng là ngã úp). Thiên thạch Quỷ dữ mặc định 0%. Bit
   `CoNga` trong byte hiệu ứng mạng — ⚠️ byte cờ gói tin nay dành **6 bit** (0x3F, từ Tàng hình 18/09/2026); gói người chơi đã dùng hết 8 bit (2 + 6) — thêm hiệu ứng thứ 7 phải nới byte hoặc dùng byte khác, ở CẢ gói người chơi (`VietTrangThai`/`DocTrangThai`) lẫn gói quái, không thì bit mới bị cắt im lặng (menu 63). Chữ nổi trên đầu dùng font Inter (`VeSoSatThuong`) — trước đây font mặc định, mất dấu trên web.

@@ -4,6 +4,10 @@ using UnityEngine;
 /// KY NANG 1 - BAN QUA CAU LUA.
 /// Qua cau bay thang, keo theo duoi lua va khoi, cham vao dau la no ra
 /// mot vung lua lam bong chay ke dich xung quanh.
+///
+/// 19/09/2026 nguoi dung them hai thu, ca hai deu TAT theo mac dinh nen qua cau cua quai khong dinh gi:
+///   - <see cref="ngaXacSuat"/>: Qua cau lua CAP 5 danh nga 30% (PlayerController bat theo cap nguoi tung);
+///   - <see cref="xuyenVatNho"/>: qua cua Lua dia nguc bay XUYEN bia, mo, da - cay coi va nha van chan.
 /// </summary>
 public class Fireball : MonoBehaviour
 {
@@ -32,6 +36,49 @@ public class Fireball : MonoBehaviour
     public Damageable mucTieu;
     /// <summary>Danh dau qua cua Lua dia nguc (phep thu dem theo co nay). Mau / vu no giong het Qua cau lua.</summary>
     public bool diaNguc;
+
+    /// <summary>
+    /// BAY XUYEN VAT CAN NHO (bia, mo, da) - nguoi dung xin cho Lua dia nguc 19/09/2026;
+    /// cay coi va nha van chan nhu cu. Qua cau lua thuong de TAT.
+    /// </summary>
+    public bool xuyenVatNho;
+
+    [Header("Danh nga (Qua cau lua cap 5)")]
+    /// <summary>Xac suat danh nga moi ke trong vung no. 0 = TAT - mac dinh, va qua cau cua quai di duong nay.</summary>
+    [Range(0f, 1f)] public float ngaXacSuat = 0f;
+    public float ngaGiay = 1.5f;
+
+    /// <summary>Qua cau lua CAP 5: 30% danh nga (nguoi dung 19/09/2026). Thoi gian nam lay thang cua
+    /// Thien thach (ThienThach.NgaGiayNguoiChoi) vi nguoi dung xin "hieu ung giong nhu cua Thien thach".</summary>
+    public const int CapDanhNga = 5;
+    public const float NgaXacSuatCap5 = 0.30f;
+
+    /// <summary>
+    /// Vat can nay co phai VAT NHO khong - do bang KICH THUOC collider, khong theo ten: Act1 dung bang code,
+    /// Act2 nhap tu Blender, ten khong lien quan gi den nhau.
+    ///
+    /// So do 19/09/2026 (cao / ngang, met):
+    ///   Act2 nho:  452 bia mo 0,16-3,18 / toi 2,77   229 da 0,12-1,31   10 lo lua 2,33 / 1,00
+    ///   Act2 to:   58 cay 6,54-17,47    5 nha mo 4,22-5,15 / 4,37-6,16   hang rao 4,77 / 107,60
+    ///   Act1 to:   76 vach da 4,53-14,55
+    /// Khe ho giua "bia cao nhat" 3,18 va "vat to thap nhat" 4,22 rong hon 1 m - nguong 4,00 nam giua.
+    ///
+    /// MAT DAT va NGUOI/QUAI khong bao gio la vat nho: dat thi khong the xuyen, con nguoi/quai thi phai NO.
+    /// </summary>
+    public const float CaoVatNho = 4f;
+    public const float NgangVatNho = 4f;
+
+    static int lopDatXuyen = -1;
+
+    public static bool LaVatNho(Collider c)
+    {
+        if (c == null || c is TerrainCollider) return false;
+        if (lopDatXuyen < 0) lopDatXuyen = LayerMask.NameToLayer("Ground");
+        if (c.gameObject.layer == lopDatXuyen) return false;
+        if (c.GetComponentInParent<Damageable>() != null) return false;
+        Vector3 co = c.bounds.size;
+        return co.y < CaoVatNho && Mathf.Max(co.x, co.z) < NgangVatNho;
+    }
 
     /// <summary>Huong bay hien tai (phep thu doc).</summary>
     public Vector3 HuongBay { get { return dir; } }
@@ -136,7 +183,8 @@ public class Fireball : MonoBehaviour
     public static void SpawnChum(Vector3 pos, Vector3 direction, LayerMask hitMask,
                                  LayerMask damageMask, Damageable boQua = null,
                                  int soQua = 3, float gocToe = 11f,
-                                 float heSoSatThuong = 1f, float themGiayChay = 0f)
+                                 float heSoSatThuong = 1f, float themGiayChay = 0f,
+                                 float ngaXacSuat = 0f, float ngaGiay = 1.5f)
     {
         Vector3 huong = direction.normalized;
 
@@ -153,6 +201,8 @@ public class Fireball : MonoBehaviour
                 qua.tuaTruoc = BuTre.TuaTruocGiay;
                 qua.impactDamage *= heSoSatThuong;
                 qua.burnSeconds += themGiayChay;
+                qua.ngaXacSuat = ngaXacSuat;
+                qua.ngaGiay = ngaGiay;
             }
         }
     }
@@ -194,11 +244,33 @@ public class Fireball : MonoBehaviour
         Vector3 choNo = Vector3.zero;
 
         RaycastHit hit;
-        if (Physics.SphereCast(from, bodyRadius, dir, out hit, step + 0.05f, hitMask,
-                               QueryTriggerInteraction.Collide))
+        if (!xuyenVatNho)
         {
-            ganNhat = hit.distance;
-            choNo = hit.point - dir * bodyRadius * 0.5f;
+            if (Physics.SphereCast(from, bodyRadius, dir, out hit, step + 0.05f, hitMask,
+                                   QueryTriggerInteraction.Collide))
+            {
+                ganNhat = hit.distance;
+                choNo = hit.point - dir * bodyRadius * 0.5f;
+            }
+        }
+        else
+        {
+            // LUA DIA NGUC: bia, mo, da khong chan duong. Phai hoi CA DOAN chu khong lay cai gan nhat
+            // roi thoi - SphereCast chi tra ve MOT vat, ma vat ay rat hay la cai bia dang dung chan
+            // truoc goc cay; bo rieng no di thi qua cau se xuyen luon qua cay phia sau.
+            var vc = Physics.SphereCastAll(from, bodyRadius, dir, step + 0.05f, hitMask,
+                                           QueryTriggerInteraction.Collide);
+            for (int i = 0; i < vc.Length; i++)
+            {
+                if (vc[i].distance >= ganNhat) continue;
+                if (LaVatNho(vc[i].collider)) continue;
+                ganNhat = vc[i].distance;
+                // Sinh ra NGAY BEN TRONG vat can thi SphereCastAll tra distance 0 va point (0,0,0) -
+                // lay thang diem ay la vu no nhay ve goc toa do ban do.
+                Vector3 diem = vc[i].point;
+                if (vc[i].distance <= 0.0001f && diem == Vector3.zero) diem = from;
+                choNo = diem - dir * bodyRadius * 0.5f;
+            }
         }
 
         // KHIENG CUA NGUOI KHAC CHAN QUA CAU. hitMask cua qua cau nguoi choi
@@ -264,6 +336,12 @@ public class Fireball : MonoBehaviour
         VfxFactory.FireExplosion(transform.position, blastRadius);
         CombatUtil.AreaDamage(transform.position, blastRadius, impactDamage, damageMask,
                               DamageType.Fire, burnSeconds, boQua);
+
+        // DANH NGA (Qua cau lua cap 5). Gieo RIENG tung muc tieu bang chinh loi gieo cua Thien thach -
+        // no da bo qua nguoi tung, ke da chet va ke dang con khien. Goi SAU sat thuong: ke chet vi vu no
+        // thi khong nga nua.
+        if (ngaXacSuat > 0f)
+            ThienThach.GieoDanhNga(transform.position, blastRadius, damageMask, boQua, ngaXacSuat, ngaGiay);
 
         // Don no NGAY TREN MAT KHIENG thi tru mau khieng. AreaDamage o tren
         // khong lo duoc viec nay: no chi tim Damageable trong ban kinh, ma chu

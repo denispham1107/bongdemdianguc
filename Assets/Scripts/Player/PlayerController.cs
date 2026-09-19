@@ -1327,8 +1327,12 @@ public class PlayerController : MonoBehaviour
             // BA qua bay cung luc, toe hinh quat ve phia truoc.
             // Xem Fireball.SpawnChum - chum toe quanh truc DUNG nen nham chech
             // len hay xuong deu khong lam hai qua bien lech khoi mat phang ngang.
+            // CAP 5 danh nga 30% trong 1,5 giay (nguoi dung 19/09/2026) - MOI QUA trong chum gieo rieng,
+            // dung nhu loat ba qua Thien thach van lam.
             Fireball.SpawnChum(origin, dir.normalized, obstacleMask, enemyMask, health,
-                               3, 11f, manhHon, themGiay);
+                               3, 11f, manhHon, themGiay,
+                               capPhep >= Fireball.CapDanhNga ? Fireball.NgaXacSuatCap5 : 0f,
+                               ThienThach.NgaGiayNguoiChoi);
             CameraShake.Shake(0.12f, 0.05f);
         }
         else if (castingSkill == CapDo.KyTangHinh)
@@ -1445,8 +1449,9 @@ public class PlayerController : MonoBehaviour
             // ThienThach.SpawnLoat - hai qua sau lech ra chung quanh chu khong
             // roi trung mot cho.
             // 40% danh nga 1,5 giay; cap ky nang cao keo dai them nhu moi hieu ung khac
+            // CAP 5: 5 qua thay vi 3 (nguoi dung 19/09/2026 - ThienThach.SoQuaTheoCap)
             ThienThach.SpawnLoat(castAim, obstacleMask, enemyMask, health,
-                                 3, 0.7f, 2.8f, manhHon, themGiay,
+                                 ThienThach.SoQuaTheoCap(capPhep), 0.7f, 2.8f, manhHon, themGiay,
                                  ThienThach.NgaXacSuatNguoiChoi, ThienThach.NgaGiayNguoiChoi + themGiay);
         }
         else if (castingSkill == 5)

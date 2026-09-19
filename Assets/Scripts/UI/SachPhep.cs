@@ -365,7 +365,9 @@ public static class SachPhep
                      + "thứ quanh điểm nổ. Cây cối trúng lửa sẽ bắt cháy và cháy lan "
                      + "theo thân.\n\n"
                      + "Đây là đòn rẻ nhất và hồi nhanh nhất — thứ để dùng liên tục "
-                     + "giữa hai lần tung phép lớn.";
+                     + "giữa hai lần tung phép lớn.\n\n"
+                     + "Lên CẤP 5: mỗi quả nổ có 30% khả năng ĐÁNH NGÃ kẻ trúng đòn 1,5 giây — "
+                     + "kẻ bị ngã không đi được, không đánh được, không tung phép được.";
             case 1:
                 return "Gọi một cơn bão lạnh phủ xuống khu vực đã chọn: tuyết rơi, sương "
                      + "lạnh là đất, và từng tảng băng lớn liên tiếp rơi xuống.\n\n"
@@ -399,7 +401,8 @@ public static class SachPhep
                      + "Mỗi khối nổ ra một vùng lửa rộng, làm rung màn hình và để lại "
                      + "vũng lửa cháy trên mặt đất. Cây trúng thiên thạch sẽ cháy rụi "
                      + "rồi mọc lại sau 30 giây.\n\n"
-                     + "Đòn mạnh nhất, và cũng tốn năng lượng nhất.";
+                     + "Đòn mạnh nhất, và cũng tốn năng lượng nhất.\n\n"
+                     + "Lên CẤP 5: rơi NĂM khối thay vì ba.";
             case 5:
                 return "Dựng một vòm chắn sáng quanh chính mình. Mọi đòn đánh trừ vào "
                      + "khiên trước khi chạm tới máu.\n\n"
@@ -525,7 +528,8 @@ public static class SachPhep
                      + "năm kẻ địch (quái hoặc người chơi khác) gần bạn nhất trong 20 m — ít kẻ địch hơn thì quả dư lao vào kẻ gần nhất; "
                      + "mục tiêu gục giữa đường thì quả lửa chuyển sang kẻ còn sống gần nó nhất.\n\n"
                      + "Mỗi quả nổ gây 176 sát thương lửa (bằng Quả cầu lửa ở cấp 5) và THIÊU ĐỐT mọi kẻ trong vùng nổ như Quả cầu lửa. "
-                     + "Không có ai quanh bạn thì năm quả bay thẳng. Đâm vào vật cản thì nổ tại đó.\n\n"
+                     + "Không có ai quanh bạn thì năm quả bay thẳng.\n\n"
+                     + "Quả lửa XUYÊN QUA được bia mộ và đá trên đường bay — chỉ cây cối và nhà mới chặn được chúng.\n\n"
                      + "Nâng cấp: +20% sát thương mỗi cấp, lửa cháy lâu hơn.";
             default: return "";
         }

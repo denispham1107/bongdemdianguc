@@ -22,6 +22,8 @@ using UnityEngine;
 ///      vua dat), co dung im va khong danh, het 1,5 giay thi dung day va chay tiep.
 ///   D. Nguoi choi bi nga: khong di, khong tung phep.
 ///   E. Qua mang: co "dang nga" gui di va ve lai tren ban sao.
+///   G. SO QUA THEO CAP (nguoi dung 19/09/2026): cap 1-4 roi 3 qua, CAP 5 roi 5 qua - dem tren duong tung THAT
+///      (CastAt) chu khong goi thang SpawnLoat, vi so qua do PlayerController quyet dinh theo cap NGUOI TUNG.
 ///
 /// Ket qua ghi ra <c>PlayTestShots/danhnga.txt</c>, anh <c>danhnga_*.png</c>.
 /// </summary>
@@ -391,6 +393,62 @@ public static class ThuDanhNga
         Kiem(veLai, "ban sao khong ve lai trang thai nga tu goi tin");
         Kiem(tuDungDay, "goi ngung roi ma ban sao nam mai");
         q2.mauDoMayKhacQuyet = false;
+
+        // ================================================================
+        // G. SO QUA MOI LOAT THEO CAP (cap 5 them 2 qua - nguoi dung 19/09/2026)
+        // ================================================================
+        Ghi("");
+        Ghi("G. so qua moi loat theo cap ky nang");
+        foreach (var ttCu in Object.FindObjectsByType<ThienThach>(FindObjectsSortMode.None)) Object.DestroyImmediate(ttCu.gameObject);
+        CapDo.BatDauTranMoi();
+        CapDo.MoCaDuongChoPhepThu(4);
+        Vector3 choG = pc.transform.position + pc.transform.forward * 9f;
+        int[] demTheoCap = new int[CapDo.CapKyNangToiDa + 1];
+        for (int capG = 1; capG <= CapDo.CapKyNangToiDa; capG++)
+        {
+            // Nang DUNG len capG (co TRAN: NangCap tra false khi het diem va khong doi gi - vong khong tran treo cung Unity)
+            for (int v = 0; v < 60 && CapDo.CapCuaKyNang(4) < capG; v++)
+            {
+                CapDo.ThemDiemChoPhepThu(1);
+                if (!CapDo.NangCap(4)) break;
+            }
+            if (CapDo.CapCuaKyNang(4) != capG) { Loi("khong nang duoc Thien thach len cap " + capG); break; }
+
+            pc.mana = pc.maxMana;
+            pc.CastAt(4, choG);
+            // PHAI CHO HET THOI GIAN NIEM: bam la xong o day thi dem duoc 0 qua o MOI cap
+            // (lan chay dau 19/09/2026 dem ngay sau mot khung hinh, ca nam cap deu ra 0).
+            int demG = 0;
+            float hanG = Time.time + 3f;                   // TRAN: vong cho nao cung phai co
+            while (demG == 0 && Time.time < hanG)
+            {
+                yield return null;
+                demG = 0;
+                foreach (var tt in Object.FindObjectsByType<ThienThach>(FindObjectsSortMode.None))
+                    if (tt.boQua == toi) demG++;
+            }
+            if (demG == 0) Ghi("    cap " + capG + ": khong tung duoc, loi nhac: " + pc.LastMessage);
+            demTheoCap[capG] = demG;
+            // Xoa ngay: qua dang cho luot van la ThienThach, de lai thi cap sau dem cong don
+            foreach (var tt in Object.FindObjectsByType<ThienThach>(FindObjectsSortMode.None)) Object.DestroyImmediate(tt.gameObject);
+            // CHO HET HOI CHIEU THAT (doc tu nhan vat, khong chep tay): lan truoc cho 1,2 giay thi cap 2
+            // va cap 4 bi tu choi voi loi nhac "dang hoi chieu" va dem ra 0 qua.
+            float nlG, hcG, ncG;
+            SachPhep.ThongSo(pc, 4, out nlG, out hcG, out ncG);
+            yield return new WaitForSeconds(hcG + 0.5f);
+        }
+        Ghi("G1. so qua theo cap 1..5 = " + demTheoCap[1] + ", " + demTheoCap[2] + ", " + demTheoCap[3] + ", "
+            + demTheoCap[4] + ", " + demTheoCap[5] + "  (hang: SoQuaThuong " + ThienThach.SoQuaThuong
+            + ", SoQuaCap5 " + ThienThach.SoQuaCap5 + " tu cap " + ThienThach.CapNamQua + ")");
+        for (int capG = 1; capG < ThienThach.CapNamQua; capG++)
+            Kiem(demTheoCap[capG] == ThienThach.SoQuaThuong, "cap " + capG + " khong roi " + ThienThach.SoQuaThuong + " qua ma roi " + demTheoCap[capG]);
+        Kiem(demTheoCap[ThienThach.CapNamQua] == ThienThach.SoQuaCap5,
+             "cap " + ThienThach.CapNamQua + " khong roi " + ThienThach.SoQuaCap5 + " qua ma roi " + demTheoCap[ThienThach.CapNamQua]);
+        Kiem(demTheoCap[ThienThach.CapNamQua] - demTheoCap[1] == 2, "cap 5 khong THEM DUNG 2 qua so voi cap 1");
+        // DOI CHUNG: hang doc tu chinh ThienThach, khong chep tay
+        Ghi("G2. doi chung SoQuaTheoCap(1..5) = " + ThienThach.SoQuaTheoCap(1) + ", " + ThienThach.SoQuaTheoCap(2) + ", "
+            + ThienThach.SoQuaTheoCap(3) + ", " + ThienThach.SoQuaTheoCap(4) + ", " + ThienThach.SoQuaTheoCap(5));
+        foreach (var v in Object.FindObjectsByType<VungLua>(FindObjectsSortMode.None)) Object.Destroy(v.gameObject);
 
         Ghi("");
         Ghi("so loi ghi nhan = " + loi);

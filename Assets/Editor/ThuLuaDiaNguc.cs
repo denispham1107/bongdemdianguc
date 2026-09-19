@@ -26,6 +26,9 @@ using UnityEngine;
 ///      bia bi thieu dot (BurningEffect); cap 3 impactDamage = goc x 1,44.
 ///   I. Mau: hat lua cua qua dia nguc GIONG HET qua cau lua thuong (ti le kenh xanh la / do = 1,000).
 ///   J. Qua mang: goi ky nang 11 tu nguoi kia -> may minh ra 4 qua; minh tung -> goi mang kyNang 11. Giet bia -> ke danh = nguoi tung.
+///   K. XUYEN VAT CAN NHO (nguoi dung 19/09/2026): bay xuyen bia / mo / da, KHONG xuyen duoc cay coi va nha.
+///      K1 phan loai TUNG vat can that trong Act2 (755 cai) theo nhom cha; K2/K3 ban qua that xuyen vat thu
+///      tren troi; K4 ban qua that vao BIA THAT va CAY THAT trong nghia dia; K5 duong tung that co bat co xuyen.
 ///
 /// Ket qua: PlayTestShots/luadianguc.txt, anh luadianguc_*.png.
 /// </summary>
@@ -252,7 +255,10 @@ public static class ThuLuaDiaNguc
         Ghi(string.Format("A. sat thuong goc {0:F2} = qua cau lua PREFAB {1} x 1,2^4 ({2:F2}); ten \"{3}\", tom tat \"{4}\", mo ta {5} ky tu; HUD {6} icon, icon so 11 {7}; icon file {8}",
             LuaDiaNguc.SatThuongGoc, impactPrefab, impactPrefab * Mathf.Pow(1.2f, 4), SachPhep.Ten(K), SachPhep.TomTat(K), SachPhep.MoTa(K).Length,
             bo != null ? bo.Length : -1, bo != null && bo.Length > K && bo[K] != null ? "co" : "KHONG", tIcon != null ? tIcon.width + "x" + tIcon.height : "KHONG"));
-        Kiem(K == 11 && CapDo.SoKyNang == 13, "so hieu / so ky nang sai");   // 13 tu khi them Tang hinh (18/09/2026)
+        int soCoTen = 0;
+        for (int i = 0; i < CapDo.SoKyNang; i++) if (!string.IsNullOrEmpty(SachPhep.Ten(i))) soCoTen++;
+        Kiem(K == 11 && CapDo.SoKyNang == soCoTen, "so hieu sai, hoac co ky nang khong co ten ("
+             + CapDo.SoKyNang + " ky nang nhung " + soCoTen + " cai co ten)");
         Kiem(Mathf.Approximately(toi.luaDiaNgucCost, 31f) && Mathf.Approximately(nl, 31f), "nang luong khong phai 31");
         Kiem(Mathf.Approximately(toi.luaDiaNgucCooldown, 0.5f) && Mathf.Approximately(hc, 0.5f), "hoi chieu khong phai 0,5");
         Kiem(Mathf.Approximately(toi.luaDiaNgucCastTime, 0.38f), "niem khong phai 0,38");
@@ -606,6 +612,156 @@ public static class ThuLuaDiaNguc
         XoaQua();
 
         foreach (var c in daTat) if (c != null) c.enabled = true;
+        Physics.SyncTransforms();
+
+        // ================================================================
+        // K. XUYEN VAT CAN NHO (bia, mo, da) - cay coi va nha van chan
+        // ================================================================
+        Ghi("");
+        Ghi("K. xuyen vat can nho (nguong cao " + Fireball.CaoVatNho + " m, ngang " + Fireball.NgangVatNho + " m)");
+
+        // ---- K1. Phan loai TUNG vat can that trong canh, theo nhom cha ----
+        var demNho = new Dictionary<string, int>();
+        var demTo = new Dictionary<string, int>();
+        foreach (var c in Object.FindObjectsByType<Collider>(FindObjectsSortMode.None))
+        {
+            if (c.isTrigger || c is CharacterController) continue;
+            if (c.GetComponentInParent<Damageable>() != null) continue;       // nguoi / quai / bia thu
+            string cha = c.transform.parent != null ? c.transform.parent.name : "(khong cha)";
+            var d = Fireball.LaVatNho(c) ? demNho : demTo;
+            d.TryGetValue(cha, out int cu); d[cha] = cu + 1;
+        }
+        var khoa = new List<string>();
+        foreach (var k in demNho.Keys) if (!khoa.Contains(k)) khoa.Add(k);
+        foreach (var k in demTo.Keys) if (!khoa.Contains(k)) khoa.Add(k);
+        khoa.Sort();
+        foreach (var k in khoa)
+        {
+            demNho.TryGetValue(k, out int n); demTo.TryGetValue(k, out int t);
+            Ghi("K1. nhom \"" + k + "\": xuyen duoc " + n + ", bi chan " + t);
+        }
+        // Nhom cha cua Act2: BiaMo / Da / LoLua_Act2 phai XUYEN HET; Cay / NhaMo / HangRao phai CHAN HET
+        foreach (var k in new[] { "BiaMo", "Da" })
+        {
+            demTo.TryGetValue(k, out int t); demNho.TryGetValue(k, out int n);
+            Kiem(n > 0 && t == 0, "nhom " + k + " co " + t + " cai KHONG xuyen duoc (phai xuyen het)");
+        }
+        foreach (var k in new[] { "Cay", "NhaMo", "HangRao" })
+        {
+            demTo.TryGetValue(k, out int t); demNho.TryGetValue(k, out int n);
+            Kiem(t > 0 && n == 0, "nhom " + k + " co " + n + " cai XUYEN QUA duoc (phai chan het)");
+        }
+        // Mat dat khong bao gio xuyen duoc
+        var dat = Object.FindAnyObjectByType<TerrainCollider>();
+        Ghi("K1b. mat dat (TerrainCollider) xuyen duoc = " + (dat != null && Fireball.LaVatNho(dat)) + " (phai False)");
+        Kiem(dat != null && !Fireball.LaVatNho(dat), "mat dat lai xuyen duoc");
+
+        // ---- K2 / K3. Ban qua THAT vao vat thu tren troi (khong co gi khac gan do) ----
+        int lopVatCan = LayerMask.GetMask("Default");
+        Vector3 choK = toi.transform.position + Vector3.up * 70f;
+        Vector3 hK = Vector3.forward;
+
+        // Vat thu lay dung khoang kich thuoc do duoc trong Act2: bia cao nhat 3,18 m; cay thap nhat 6,54 m;
+        // nha mo 4,22 m va rong 4,37 m. Dung so SAT HAI BEN nguong de biet nguong dat dung cho.
+        var vatK = new List<GameObject>();
+
+        var biaK2 = new GameObject("TAM_BiaThu");
+        biaK2.transform.position = choK;
+        biaK2.AddComponent<BoxCollider>().size = new Vector3(1.4f, 3.0f, 1.0f);   // bia to nhat Act2: 3,18 m
+        Physics.SyncTransforms();
+        yield return new WaitForFixedUpdate();
+
+        yield return BanThu(choK - hK * 9f, hK, lopVatCan, true, 1.2f);
+        bool songK2 = kConSong; float xaK2 = kXaNhat;
+        yield return BanThu(choK - hK * 9f, hK, lopVatCan, false, 1.2f);
+        bool songK2b = kConSong; float xaK2b = kXaNhat;
+        Ghi("K2. bia thu cao 3,0 m: qua Lua dia nguc con song " + songK2 + ", di xa " + xaK2.ToString("F1")
+            + " m; DOI CHUNG qua cau lua thuong con song " + songK2b + ", di xa " + xaK2b.ToString("F1") + " m");
+        // kXaNhat do TU CHO BAN, ma cho ban cach vat 9 m: "no o vat" nghia la ~9 m, khong phai ~0 m.
+        Kiem(songK2 && xaK2 > 12f, "qua Lua dia nguc KHONG xuyen qua duoc cai bia");
+        Kiem(!songK2b && xaK2b > 7f && xaK2b < 9.5f,
+             "doi chung sai: qua cau lua thuong phai no NGAY O BIA (~9 m), do duoc " + xaK2b.ToString("F1") + " m");
+        Object.DestroyImmediate(biaK2);
+
+        var cayK3 = new GameObject("TAM_CayThu");
+        cayK3.transform.position = choK;
+        var ccK3 = cayK3.AddComponent<CapsuleCollider>(); ccK3.height = 8f; ccK3.radius = 0.6f;  // cay that: 6,54..17,47 m
+        Physics.SyncTransforms();
+        yield return new WaitForFixedUpdate();
+        yield return BanThu(choK - hK * 9f, hK, lopVatCan, true, 1.2f);
+        bool songK3 = kConSong; float xaK3 = kXaNhat;
+        Ghi("K3. cay thu cao 8 m: qua Lua dia nguc con song " + songK3 + ", di xa " + xaK3.ToString("F1")
+            + " m (phai no ngay truoc cay, ~8 m tinh tu cho ban)");
+        Kiem(!songK3, "qua Lua dia nguc xuyen qua CAY");
+        Kiem(xaK3 > 7f && xaK3 < 9.5f, "qua khong no O CAY (cay cach cho ban 9 m)");
+        Object.DestroyImmediate(cayK3);
+
+        var nhaK3 = new GameObject("TAM_NhaThu");
+        nhaK3.transform.position = choK;
+        nhaK3.AddComponent<BoxCollider>().size = new Vector3(5f, 4.5f, 5f);       // nha mo that: cao 4,22-5,15 rong 4,37-6,16
+        Physics.SyncTransforms();
+        yield return new WaitForFixedUpdate();
+        yield return BanThu(choK - hK * 9f, hK, lopVatCan, true, 1.2f);
+        bool songK3b = kConSong; float xaK3b = kXaNhat;
+        Ghi("K3b. nha thu 5 x 4,5 x 5 m: qua con song " + songK3b + ", di xa " + xaK3b.ToString("F1") + " m");
+        Kiem(!songK3b, "qua Lua dia nguc xuyen qua NHA");
+        Object.DestroyImmediate(nhaK3);
+        vatK.Clear();
+
+        // ---- K4 / K5. Ban vao BIA THAT va CAY THAT trong nghia dia ----
+        Vector3 tuBia, hBia;
+        var biaThat = TimVatThu("BiaMo", true, out tuBia, out hBia, toi.MatNaVatCan);
+        if (biaThat == null) Ghi("K4. (khong tim duoc bia that nao co duong ban trong - bo qua)");
+        else
+        {
+            yield return BanThu(tuBia, hBia, toi.MatNaVatCan, true, 1.0f);
+            bool songK4 = kConSong; float xaK4 = kXaNhat;
+            yield return BanThu(tuBia, hBia, toi.MatNaVatCan, false, 1.0f);
+            bool songK4b = kConSong; float xaK4b = kXaNhat;
+            Ghi("K4. BIA THAT [" + biaThat.name + "] cao " + biaThat.bounds.size.y.ToString("F2")
+                + " m: qua Lua dia nguc con song " + songK4 + " di xa " + xaK4.ToString("F1")
+                + " m; DOI CHUNG qua thuong con song " + songK4b + " di xa " + xaK4b.ToString("F1") + " m");
+            Kiem(songK4 && xaK4 > 12f, "khong xuyen qua duoc cai bia THAT trong nghia dia");
+            Kiem(!songK4b && xaK4b < 10f, "doi chung sai: qua cau lua thuong cung qua duoc cai bia that");
+        }
+
+        Vector3 tuCay, hCay;
+        var cayThat = TimVatThu("Cay", false, out tuCay, out hCay, toi.MatNaVatCan);
+        if (cayThat == null) Ghi("K5. (khong tim duoc cay that nao co duong ban trong - bo qua)");
+        else
+        {
+            float kcCay = Vector3.Dot(cayThat.bounds.center - tuCay, hCay);
+            yield return BanThu(tuCay, hCay, toi.MatNaVatCan, true, 1.2f);
+            Ghi("K5. CAY THAT [" + cayThat.name + "] cao " + cayThat.bounds.size.y.ToString("F2")
+                + " m, tam cach cho ban " + kcCay.ToString("F1") + " m: qua con song " + kConSong
+                + ", di xa " + kXaNhat.ToString("F1") + " m");
+            Kiem(!kConSong, "qua Lua dia nguc xuyen qua CAY THAT trong nghia dia");
+            Kiem(kXaNhat <= kcCay + 1.5f, "qua no o dau do PHIA SAU cay chu khong phai o cay");
+        }
+
+        // ---- K6. Duong tung THAT: chum Lua dia nguc bat co xuyen, chum Qua cau lua thi khong ----
+        XoaQua();
+        yield return null;
+        Vector3 hK6 = HuongTrong(toi);
+        LuaDiaNguc.SpawnChum(toi.transform.position + Vector3.up * 1.4f, hK6, toi.transform.position,
+                             toi.MatNaVatCan, maskEnemy, mauToi);
+        yield return null;
+        int soXuyen = 0, soQuaK6 = 0;
+        foreach (var f in Object.FindObjectsByType<Fireball>(FindObjectsInactive.Exclude))
+            if (f.diaNguc) { soQuaK6++; if (f.xuyenVatNho) soXuyen++; }
+        XoaQua();
+        yield return null;
+        Fireball.SpawnChum(toi.transform.position + Vector3.up * 1.4f, hK6, toi.MatNaVatCan, maskEnemy, mauToi, 3, 11f);
+        yield return null;
+        int thuongXuyen = 0, soQuaThuongK6 = 0;
+        foreach (var f in Object.FindObjectsByType<Fireball>(FindObjectsInactive.Exclude))
+            if (!f.diaNguc) { soQuaThuongK6++; if (f.xuyenVatNho) thuongXuyen++; }
+        XoaQua();
+        Ghi("K6. duong tung that: " + soQuaK6 + " qua Lua dia nguc, " + soXuyen + " cai bat xuyen vat nho; "
+            + soQuaThuongK6 + " qua cau lua thuong, " + thuongXuyen + " cai bat (phai 0)");
+        Kiem(soQuaK6 > 0 && soXuyen == soQuaK6, "khong phai qua Lua dia nguc nao cung bat xuyen vat nho");
+        Kiem(thuongXuyen == 0, "Qua cau lua thuong cung bay xuyen bia - nguoi dung chi xin cho Lua dia nguc");
+
         toi.DaTungPhep -= dem;
         if (dir != null) dir.enabled = true;
         Ghi("");
@@ -629,6 +785,70 @@ public static class ThuLuaDiaNguc
             DemTrung(conLai, cuoi, bia, trung);
         }
         yield return Chup("luadianguc_2_no");
+    }
+
+    // ---- Do cho muc K: ban MOT qua roi xem no di duoc bao xa truoc khi no ----
+    static bool kConSong;
+    static float kXaNhat;
+
+    /// <summary>
+    /// Ban mot qua cau tu <paramref name="tu"/> theo huong <paramref name="h"/>, theo no toi khi no no hoac het gio.
+    /// Ghi vao <see cref="kConSong"/> / <see cref="kXaNhat"/> (met di duoc theo huong ban - doc o khung CUOI CUNG
+    /// truoc khi qua bien mat, nen no xap xi cho no).
+    /// tocQueo = 0: muc nay do VA CHAM, khong do kha nang tu di muc tieu (muc C..G da do roi).
+    /// </summary>
+    static IEnumerator BanThu(Vector3 tu, Vector3 h, int lopVatCan, bool batXuyen, float giay)
+    {
+        var q = Fireball.Spawn(tu, h, lopVatCan, 0);
+        q.xuyenVatNho = batXuyen;
+        q.tocQueo = 0f;
+        q.burnSeconds = 0f;
+        kXaNhat = 0f;
+        float han = Time.time + giay;                   // TRAN thoi gian - vong cho nao cung phai co
+        while (q != null && Time.time < han)
+        {
+            kXaNhat = Vector3.Dot(q.transform.position - tu, h);
+            yield return null;
+        }
+        kConSong = q != null;
+        if (q != null) Object.DestroyImmediate(q.gameObject);
+    }
+
+    /// <summary>
+    /// Tim mot vat can THAT trong nhom cha <paramref name="nhom"/> ma ban vao duoc: doan duong toi no (va qua no,
+    /// neu <paramref name="doiDuongSauTrong"/>) khong co vat can TO nao khac chen ngang - khong thi phep do
+    /// "xuyen qua bia" thuc ra lai do cai cay dung sau cai bia.
+    /// </summary>
+    static Collider TimVatThu(string nhom, bool doiDuongSauTrong, out Vector3 tu, out Vector3 huong, int lopVatCan)
+    {
+        tu = Vector3.zero; huong = Vector3.forward;
+        var ds = new List<Collider>();
+        foreach (var c in Object.FindObjectsByType<Collider>(FindObjectsSortMode.None))
+        {
+            if (c.isTrigger || c.transform.parent == null || c.transform.parent.name != nhom) continue;
+            if (c.bounds.size.y < 1.2f) continue;                 // qua thap thi qua cau bay ngang khong cham
+            ds.Add(c);
+        }
+        for (int i = 0; i < ds.Count && i < 200; i++)
+        {
+            var c = ds[i];
+            Vector3 tam = c.bounds.center;
+            for (int g = 0; g < 8; g++)
+            {
+                Vector3 h = Quaternion.AngleAxis(g * 45f, Vector3.up) * Vector3.forward;
+                Vector3 batDau = tam - h * 9f;
+                float daiDo = doiDuongSauTrong ? 15f : 9f;        // bia: doi trong CA phia sau; cay: chi can phia truoc
+                bool sach = true, chamChinhNo = false;
+                foreach (var hit in Physics.SphereCastAll(batDau, 0.3f, h, daiDo, lopVatCan, QueryTriggerInteraction.Ignore))
+                {
+                    if (hit.collider == c) { chamChinhNo = true; continue; }
+                    if (!Fireball.LaVatNho(hit.collider)) { sach = false; break; }
+                }
+                if (!sach || !chamChinhNo) continue;
+                tu = batDau; huong = h; return c;
+            }
+        }
+        return null;
     }
 
     static void TraLaiCanh()

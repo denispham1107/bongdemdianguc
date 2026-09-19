@@ -10,6 +10,8 @@ using UnityEngine;
 ///   - chia 4 qua cho toi da 4 ke dich GAN NGUOI TUNG nhat trong 20 m, it hon 4 thi qua du nham ke gan nhat; muc tieu chet
 ///     giua duong thi doi sang ke con song gan qua nhat;
 ///   - bam chac (queo ~360 do/giay, gan muc tieu queo gap doi), dam vat can van no nhu Qua cau lua;
+///   - 19/09/2026 nguoi dung: BAY XUYEN vat the nho nhu bia va mo, KHONG xuyen duoc cay coi va nha
+///     (Fireball.xuyenVatNho - phan biet bang kich thuoc collider, xem Fireball.LaVatNho);
 ///   - 25 nang luong, niem 0,38 s; khong co ai thi 4 qua toa quat bay thang;
 ///   - mau qua cau va vu no GIONG HET Qua cau lua (17/09/2026 - truoc do nhuom do sam), toa quat roi uon cong; icon Blender MCP.
 ///
@@ -80,6 +82,7 @@ public static class LuaDiaNguc
             qua.tamTim = TamTim;
             qua.giayBatDauDi = GiayToaTruocKhiDi;
             qua.diaNguc = true;
+            qua.xuyenVatNho = true;      // bia / mo / da khong chan duong (nguoi dung 19/09/2026)
             if (mucTieu.Count > 0) qua.mucTieu = i < mucTieu.Count ? mucTieu[i] : mucTieu[0];
             // 17/09/2026 nguoi dung: mau va vu no GIONG HET Qua cau lua - bo lop nhuom do sam lam hom truoc.
         }
