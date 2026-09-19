@@ -50,6 +50,13 @@ public static class IconKyNang
     public static Texture2D HoaLocXoay() { return Ve("Icons/HoaLocXoay", new Color(0.10f, 0.09f, 0.07f)); }
     public static Texture2D TocBien()    { return Ve("Icons/TocBien",    new Color(0.09f, 0.04f, 0.15f)); }
 
+    // BON KY NANG BI DONG "KHANG ..." (19/09/2026) - anh ve bang script Python (CongCu/Icon/sinh_khang.py),
+    // nguoi dung chon khong dung Blender cho bon cai nay.
+    public static Texture2D KhangLua()   { return Ve("Icons/KhangLua",   new Color(0.16f, 0.05f, 0.02f)); }
+    public static Texture2D KhangBang()  { return Ve("Icons/KhangBang",  new Color(0.03f, 0.08f, 0.14f)); }
+    public static Texture2D KhangSet()   { return Ve("Icons/KhangSet",   new Color(0.08f, 0.05f, 0.16f)); }
+    public static Texture2D KhangPhong() { return Ve("Icons/KhangPhong", new Color(0.08f, 0.09f, 0.08f)); }
+
     /// <summary>
     /// Dat anh Blender vao mot cai dia nut.
     /// </summary>

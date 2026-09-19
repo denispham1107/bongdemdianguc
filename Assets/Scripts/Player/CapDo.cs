@@ -54,10 +54,34 @@ public static class CapDo
     /// <summary>Toc bien (them 18/09/2026) - so 15, THEM O CUOI.</summary>
     public const int KyTocBien = 15;
 
+    // ================= NHOM BI DONG (them 19/09/2026, nguoi dung xin) =================
+    // "Trong Sach phep them 1 nhom skill ten la bi dong, cac skill nam trong nhom nay moi khi mo khoa
+    // hoac nang cap se tang vinh vien thuoc tinh cua nhan vat."
+    // Bon ky nang khang: mo khoa giam 25% sat thuong cua he do TU NGUOI CHOI KHAC, moi cap them 5%
+    // (cap 5 = 45%). Khong bam duoc, khong keo vao o ky nang (nguoi dung chot) - xem KhangHe.cs.
+
+    /// <summary>Khang Lua (them 19/09/2026) - so 16, THEM O CUOI.</summary>
+    public const int KyKhangLua = 16;
+    /// <summary>Khang Bang - so 17.</summary>
+    public const int KyKhangBang = 17;
+    /// <summary>Khang Set - so 18.</summary>
+    public const int KyKhangSet = 18;
+    /// <summary>Khang Phong - so 19.</summary>
+    public const int KyKhangPhong = 19;
+
     /// <summary>Cap toi da cua TUNG ky nang: binh mau / binh mana la 1, con lai 5.</summary>
     public static int CapToiDaCua(int ky) { return LaKyBinh(ky) ? 1 : CapKyNangToiDa; }
 
     public static bool LaKyBinh(int ky) { return ky == KyBinhMau || ky == KyBinhMana; }
+
+    /// <summary>
+    /// Ky nang BI DONG: khong tung duoc, khong nam trong o ky nang - chi mo khoa / nang cap trong
+    /// Sach phep roi no tu cong vinh vien vao thuoc tinh nhan vat (nguoi dung 19/09/2026).
+    /// </summary>
+    public static bool LaKyBiDong(int ky)
+    {
+        return ky == KyKhangLua || ky == KyKhangBang || ky == KyKhangSet || ky == KyKhangPhong;
+    }
 
     /// <summary>
     /// Toc do chi tang toi cap nay, sau do dung (nguoi dung chot 13/09/2026). Tang
@@ -65,7 +89,7 @@ public static class CapDo
     /// nhat 5,98 m/giay). Dung o cap 10: x1,363 (~7,1 m/giay).
     /// </summary>
     public const int CapTangTocToiDa = 10;
-    public const int SoKyNang = 16;      // 7 phep + binh mau + binh mana + qua cau bang + gio loc + lua dia nguc + tang hinh + qua cau dien + hoa loc xoay + toc bien
+    public const int SoKyNang = 20;      // 7 phep + binh mau + binh mana + qua cau bang + gio loc + lua dia nguc + tang hinh + qua cau dien + hoa loc xoay + toc bien + 4 khang bi dong
 
     /// <summary>Giet mot nguoi choi khac duoc bao nhieu kinh nghiem.</summary>
     public const int KnGietNguoi = 250;

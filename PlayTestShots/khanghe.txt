@@ -1,0 +1,28 @@
+[ban 1] Khang he (nhom bi dong)
+(chan doan) khang co san tren nhan vat: lua 0 %, bang 0 %, set 0 %; khien khong co
+
+A. so ky nang 20; so hieu Khang: 16/17/18/19; nhom "BỊ ĐỘNG" (thu 5) gom ky nang: 16 17 18 19
+A. ky 16: ten "KHÁNG LỬA", tom tat "Bị động — chịu ít sát thương hệ Lửa", mo ta 392 ky tu; icon file 256x256; LaKyBiDong True; cap toi da 5
+A. ky 17: ten "KHÁNG BĂNG", tom tat "Bị động — chịu ít sát thương hệ Băng", mo ta 383 ky tu; icon file 256x256; LaKyBiDong True; cap toi da 5
+A. ky 18: ten "KHÁNG SÉT", tom tat "Bị động — chịu ít sát thương hệ Sét", mo ta 359 ky tu; icon file 256x256; LaKyBiDong True; cap toi da 5
+A. ky 19: ten "KHÁNG PHONG", tom tat "Bị động — chịu ít sát thương hệ Phong", mo ta 422 ky tu; icon file 256x256; LaKyBiDong True; cap toi da 5
+A. HUD 20 icon; icon so 16..19 co du
+
+B. ti le giam theo cap: cap 0=0%  cap 1=25%  cap 2=30%  cap 3=35%  cap 4=40%  cap 5=45%  (mong 0 / 25 / 30 / 35 / 40 / 45 %)
+
+C. LỬA: don 400 tu nguoi choi khac -> chua mo mat 400.0; cap 1 mat 300.0 (giam 25 %); cap 5 mat 220.0 (giam 45 %)
+C. BĂNG: don 400 tu nguoi choi khac -> chua mo mat 400.0; cap 1 mat 300.0 (giam 25 %); cap 5 mat 220.0 (giam 45 %)
+C. SÉT: don 400 tu nguoi choi khac -> chua mo mat 400.0; cap 1 mat 300.0 (giam 25 %); cap 5 mat 220.0 (giam 45 %)
+C. PHONG: don 400 tu nguoi choi khac -> chua mo mat 400.0; cap 1 mat 300.0 (giam 25 %); cap 5 mat 220.0 (giam 45 %)
+
+D. don LỬA 400 cua QUAI (dang co du bon khang cap 5) -> mat 400.0 (phai la 400, quai khong bi chan)
+D. don 400 KHONG ai ghi ke danh -> mat 400.0 (phai la 400)
+D. chi mo Khang LỬA cap 5: don Lua mat 220.0 (giam), don SÉT mat 400.0 (khong giam)
+
+E. tia set trong long loc (400): chi co Khang SÉT cap 5 -> mat 400.0 (phai 400); don Giựt sét that -> mat 220.0 (phai 220)
+E. cung tia set do, chi co Khang PHONG cap 5 -> mat 220.0 (phai 220 - he tinh theo NHOM ky nang)
+
+F. bam ca bon ky nang khang: 0 phep bay ra (phai 0), ton 0 mana (phai 0), hoi chieu 0.00 s (phai 0)
+F. cot danh sach: dong tieu de "BỊ ĐỘNG" o hang 21, Kháng Lửa ngay sau o hang 22; tong 26 hang
+
+so loi ghi nhan = 0

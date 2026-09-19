@@ -356,7 +356,9 @@ public class Tornado : MonoBehaviour
         arc.segments = 14;
         arc.branches = 1;
 
-        d.GhiKeDanh(boQua);
+        // He PHONG chu khong phai SET: tia nay la mot phan cua Loc xoay / Gio loc, ma hai ky nang ay
+        // nam nhom PHONG trong Sach phep - nguoi dung chot 19/09/2026 la Khang Phong chan no.
+        d.GhiKeDanh(boQua, HeSat.Phong);
         d.TakeDamage(boltDamage, DamageType.Lightning, d.transform.position + Vector3.up * 1f);
     }
 

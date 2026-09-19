@@ -40,7 +40,7 @@ public static class SachPhep
     //  so hieu ky nang giu nguyen (no di qua goi tin va vao PlayerController.CastAt).
 
     /// <summary>Ten cac nhom, theo dung thu tu hien ra tren cot.</summary>
-    public static readonly string[] TenNhom = { "LỬA", "BĂNG", "SÉT", "PHONG", "HỖ TRỢ" };
+    public static readonly string[] TenNhom = { "LỬA", "BĂNG", "SÉT", "PHONG", "HỖ TRỢ", "BỊ ĐỘNG" };
 
     /// <summary>Mau chu tieu de cua tung nhom - theo he.</summary>
     public static readonly Color[] MauNhom = {
@@ -49,6 +49,7 @@ public static class SachPhep
         new Color(0.70f, 0.60f, 1.00f),   // set
         new Color(0.80f, 0.82f, 0.78f),   // phong
         new Color(1.00f, 0.84f, 0.42f),   // ho tro
+        new Color(0.72f, 0.90f, 0.66f),   // bi dong (19/09/2026)
     };
 
     /// <summary>Ky nang cua tung nhom, dung thu tu nguoi dung viet.</summary>
@@ -58,6 +59,9 @@ public static class SachPhep
         new[] { 6, 2, CapDo.KyCauDien },                          // Giut set, Sam set, Qua cau dien
         new[] { CapDo.KyGioLoc, 3, CapDo.KyHoaLocXoay },          // Gio loc, Loc xoay, Hoa loc xoay
         new[] { CapDo.KyBinhMau, CapDo.KyBinhMana, 5, CapDo.KyTocBien },   // Binh mau, Binh mana, Khien, Toc bien
+        // NHOM BI DONG (nguoi dung 19/09/2026): khong bam duoc, khong keo vao o - mo khoa / nang cap
+        // la cong vinh vien vao thuoc tinh nhan vat.
+        new[] { CapDo.KyKhangLua, CapDo.KyKhangBang, CapDo.KyKhangSet, CapDo.KyKhangPhong },
     };
 
     /// <summary>So ky nang trong mot nhom.</summary>
@@ -301,6 +305,10 @@ public static class SachPhep
             case CapDo.KyCauDien: return "QUẢ CẦU ĐIỆN";
             case CapDo.KyHoaLocXoay: return "HOÁ LỐC XOÁY";
             case CapDo.KyTocBien: return "TỐC BIẾN";
+            case CapDo.KyKhangLua: return "KHÁNG LỬA";
+            case CapDo.KyKhangBang: return "KHÁNG BĂNG";
+            case CapDo.KyKhangSet: return "KHÁNG SÉT";
+            case CapDo.KyKhangPhong: return "KHÁNG PHONG";
             default: return "";
         }
     }
@@ -326,6 +334,10 @@ public static class SachPhep
             case CapDo.KyCauDien: return "Cầu điện bắn 10 lượt, mỗi lượt 5 tia";
             case CapDo.KyHoaLocXoay: return "Hoá Gió lốc đang bay thành Lốc xoáy";
             case CapDo.KyTocBien: return "Dịch chuyển tức thời trong 15 m";
+            case CapDo.KyKhangLua: return "Bị động — chịu ít sát thương hệ Lửa";
+            case CapDo.KyKhangBang: return "Bị động — chịu ít sát thương hệ Băng";
+            case CapDo.KyKhangSet: return "Bị động — chịu ít sát thương hệ Sét";
+            case CapDo.KyKhangPhong: return "Bị động — chịu ít sát thương hệ Phong";
             default: return "";
         }
     }
@@ -471,6 +483,31 @@ public static class SachPhep
                      + "tung ra, tàng hình tan. Khiên, bình máu và bình mana không làm tan tàng hình.\n\n"
                      + "Hai giây cuối, thân bạn NHẤP NHÁY để bạn biết sắp hiện hình — chỉ mình bạn thấy dấu hiệu này.\n\n"
                      + "Hồi chiêu 30 giây.";
+            case CapDo.KyKhangLua:
+                return "Da thịt bạn quen với lửa. Mọi sát thương từ kỹ năng hệ LỬA của người chơi khác — "
+                     + "Quả cầu lửa, Thiên thạch, Lửa địa ngục, và cả vệt cháy chúng để lại — đều nhẹ bớt.\n\n"
+                     + "BỊ ĐỘNG: không bấm, không đặt vào ô kỹ năng — mở khoá là có tác dụng ngay và giữ suốt trận.\n\n"
+                     + "Mở khoá giảm 25%, mỗi cấp sau giảm thêm 5% — lên cấp 5 là giảm 45%.\n\n"
+                     + "Chỉ chặn đòn của NGƯỜI CHƠI KHÁC. Đòn của quái vật không bị giảm.";
+            case CapDo.KyKhangBang:
+                return "Cái lạnh không còn ăn vào người bạn. Mọi sát thương từ kỹ năng hệ BĂNG của người chơi khác — "
+                     + "Quả cầu băng, Mưa băng, và vụ nổ của tảng băng — đều nhẹ bớt.\n\n"
+                     + "BỊ ĐỘNG: không bấm, không đặt vào ô kỹ năng — mở khoá là có tác dụng ngay và giữ suốt trận.\n\n"
+                     + "Mở khoá giảm 25%, mỗi cấp sau giảm thêm 5% — lên cấp 5 là giảm 45%.\n\n"
+                     + "Chỉ chặn đòn của NGƯỜI CHƠI KHÁC. Đòn của quái vật không bị giảm.";
+            case CapDo.KyKhangSet:
+                return "Dòng điện chạy vòng qua bạn. Mọi sát thương từ kỹ năng hệ SÉT của người chơi khác — "
+                     + "Giựt sét, Sấm sét, Quả cầu điện — đều nhẹ bớt.\n\n"
+                     + "BỊ ĐỘNG: không bấm, không đặt vào ô kỹ năng — mở khoá là có tác dụng ngay và giữ suốt trận.\n\n"
+                     + "Mở khoá giảm 25%, mỗi cấp sau giảm thêm 5% — lên cấp 5 là giảm 45%.\n\n"
+                     + "Chỉ chặn đòn của NGƯỜI CHƠI KHÁC. Đòn của quái vật không bị giảm.";
+            case CapDo.KyKhangPhong:
+                return "Bạn đứng vững trước gió. Mọi sát thương từ kỹ năng hệ PHONG của người chơi khác — "
+                     + "Gió lốc, Lốc xoáy, Hoá lốc xoáy, kể cả tia sét đánh trong lòng cơn lốc và cú rơi khi bị cuốn lên — "
+                     + "đều nhẹ bớt.\n\n"
+                     + "BỊ ĐỘNG: không bấm, không đặt vào ô kỹ năng — mở khoá là có tác dụng ngay và giữ suốt trận.\n\n"
+                     + "Mở khoá giảm 25%, mỗi cấp sau giảm thêm 5% — lên cấp 5 là giảm 45%.\n\n"
+                     + "Chỉ chặn đòn của NGƯỜI CHƠI KHÁC. Đòn của quái vật không bị giảm.";
             case CapDo.KyLuaDiaNguc:
                 return "Phóng ra NĂM quả cầu lửa. Năm quả toả quạt rồi uốn cong, TỰ ĐUỔI theo tối đa "
                      + "năm kẻ địch (quái hoặc người chơi khác) gần bạn nhất trong 20 m — ít kẻ địch hơn thì quả dư lao vào kẻ gần nhất; "

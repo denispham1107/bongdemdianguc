@@ -840,6 +840,10 @@ public class PlayerController : MonoBehaviour
         // duoc). Mau cua minh do chinh may nay quyet, goi trang thai tu mang sang.
         if (CapDo.LaKyBinh(skill)) { UongBinh(skill); return; }
 
+        // KY NANG BI DONG (Khang Lua/Bang/Set/Phong, 19/09/2026): khong tung duoc gi ca - mo khoa la
+        // no tu cong vinh vien vao thuoc tinh. Chan o day de khong ai tru mana / vao hoi chieu oan.
+        if (CapDo.LaKyBiDong(skill)) return;
+
         // Bam hut thi phai bao cho nguoi choi biet vi sao, khong duoc im lang.
         if (castTimer > 0f) { Say("Đang niệm chú, chờ một chút!"); return; }
 

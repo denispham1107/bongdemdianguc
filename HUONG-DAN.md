@@ -8442,6 +8442,53 @@ Lần đầu tôi đọc chỗ cơn Gió lốc *trước khi niệm* rồi so v�
 đọc. Chỉ khi ghi cả hai vị trí **ngay khung hình đầu tiên thấy cơn lốc mới** thì số đo mới ra 0,00 m. Tỉ lệ "to dần"
 cũng vậy: đọc trễ 0,5 giây thì thấy 0,91 thay vì 0,42 — phải theo dõi suốt trong vòng lặp.
 
+### Nhóm BỊ ĐỘNG và bốn kỹ năng Kháng (19/09/2026)
+
+Anh xin thêm vào Sách phép **một nhóm mới tên BỊ ĐỘNG**: *"các skill nằm trong nhóm này mỗi khi mở khoá hoặc
+nâng cấp sẽ tăng vĩnh viễn thuộc tính của nhân vật"*. Bốn kỹ năng đầu tiên của nhóm là **Kháng Lửa, Kháng Băng,
+Kháng Sét, Kháng Phong**: nhận sát thương từ kỹ năng hệ tương ứng **của người chơi khác** giảm **25% ở cấp đầu,
+mỗi cấp thêm 5%** (cấp 5 = 45%). Icon vẽ bằng script Python, không dùng Blender (anh chốt).
+
+Hỏi lại, anh chốt thêm hai điều: kỹ năng bị động **không kéo được vào ô kỹ năng** (nó tự chạy, không bấm được nên
+không được chiếm một trong bảy ô), và **tia sét đánh trong lòng Lốc xoáy / Gió lốc tính hệ PHONG** — theo nhóm kỹ
+năng, không theo loại sát thương.
+
+**Chỗ khó: làm sao biết đòn này đến từ người chơi khác.** `Damageable.keDanhCuoi` không dùng được —
+đòn của quái **không ghi gì cả**, nên nó vẫn giữ tên người chơi của đòn trước đó; hỏi nó thì đòn của quái cũng hoá
+ra "đòn của người chơi" và bị Kháng chặn oan. Nên `GhiKeDanh` nay đặt thêm một **cái thẻ dùng một lần**: chỉ tin
+khi được ghi **trong cùng khung hình**, và `TakeDamage` xoá nó ngay sau khi đọc. Mọi đường gây sát thương của
+người chơi đều đã gọi `GhiKeDanh` ngay trước `TakeDamage` (luật cũ của dự án, menu 61 canh), nên không phải sửa
+mười một chỗ để truyền thêm tham số.
+
+**Hệ của một đòn** suy thẳng từ `DamageType` vì nó khớp sẵn với nhóm trong Sách phép: Fire→LỬA, Ice→BĂNG,
+Lightning→SÉT, Physical→PHONG. Ngoại lệ duy nhất là tia sét của lốc — `Tornado.Bolt` nay gọi
+`GhiKeDanh(boQua, HeSat.Phong)` để nói rõ hệ.
+
+⚠️ Kháng đọc `CapDo` — cấp của nhân vật **máy này** — nên chỉ áp cho chính mình, không áp cho bản sao của người
+chơi khác (`mauDoMayKhacQuyet`). Điều đó đúng với cách chơi mạng hiện tại: máu của mỗi người do chính máy họ
+quyết, nên kháng của nạn nhân được tính ở đúng nơi biết cấp của nạn nhân.
+
+**Số đo** (menu 77, `khanghe.txt`, **0 lỗi**, chạy hai lần liên tiếp đều giống nhau):
+
+| Đo | Kết quả |
+|---|---|
+| Bảng tỉ lệ | cấp 0/1/2/3/4/5 = **0 / 25 / 30 / 35 / 40 / 45 %** |
+| Giảm thật trên máu (cả bốn hệ) | đòn 400 của người chơi khác → chưa mở **400,0**; cấp 1 **300,0**; cấp 5 **220,0** |
+| Đối chứng: đòn của QUÁI | **400,0** — không bị chặn, dù đang có đủ bốn kháng cấp 5 |
+| Đối chứng: đòn không rõ nguồn | **400,0** |
+| Đối chứng: kháng này không chặn hệ khác | chỉ mở Kháng Lửa cấp 5 → đòn Lửa **220,0**, đòn Sét **400,0** |
+| Tia sét trong lòng lốc | chỉ có Kháng Sét cấp 5 → **400,0** (không chặn); chỉ có Kháng Phong cấp 5 → **220,0** |
+| Đối chứng cho ca trên | Giựt sét thật vẫn bị Kháng Sét chặn: **220,0** |
+| Không tung được | bấm cả bốn → **0** phép bay ra, **0** mana, hồi chiêu **0,00 s** |
+| Cột Sách phép | tiêu đề "BỊ ĐỘNG" ở hàng 21, Kháng Lửa ngay sau ở hàng 22, tổng 26 hàng |
+| Hồi quy | menu 59 (Sách phép, nay 20 kỹ năng): **0 lỗi** |
+
+**Một lần chạy đầu ra số lệch mà tôi chưa giải thích được.** Lần đầu phép thử cho 224 thay vì 220, 304 thay vì
+300, 384 thay vì 400 — lệch vài đơn vị theo cả hai chiều. Tôi nghi độ chính xác `float` (thanh máu để 10 triệu) và
+đã **kiểm chứng riêng**: `1e7f - 220f` ra đúng `9999780`, tức float **không phải** nguyên nhân. Sau khi hạ máu thử
+xuống 100 000 và thêm phép kiểm cấp kỹ năng ngay trước mỗi lần đo, mọi con số tròn trịa và ổn định qua hai lần
+chạy. Tôi ghi lại đây vì chưa chứng minh được nguyên nhân thật — nếu số lệch quay lại thì chỗ này là manh mối.
+
 ### Tảng băng: chỉ mọc khi đóng băng được, và cấp 5 thì nổ tung (19/09/2026)
 
 Anh xin hai việc. **Mưa băng**: *"Chỉ khi nào làm Đóng Băng đối thủ thành công thì mới cho xuất hiện tảng băng ở

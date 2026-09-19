@@ -303,7 +303,9 @@ public static class CuaSoSachPhep
                 ChonKyNang(hang);
                 // KY NANG CON KHOA THI KHONG KEO DUOC: keo duoc thi no nam tren
                 // thanh ky nang nhu mot nut that, bam vao chi hien ra loi tu choi.
-                keoTuKho = HienDaMo(hang) ? hang : -1;
+                // KY NANG BI DONG cung khong keo duoc (nguoi dung chot 19/09/2026): no tu chay,
+                // khong bam duoc, nen khong duoc chiem mot trong bay o.
+                keoTuKho = (HienDaMo(hang) && !CapDo.LaKyBiDong(hang)) ? hang : -1;
             }
             else
             {

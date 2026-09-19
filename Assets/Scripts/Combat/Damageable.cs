@@ -91,9 +91,36 @@ public class Damageable : MonoBehaviour
     }
 
     /// <summary>Ghi lai ai vua danh vat nay. null thi giu nguoi truoc do.</summary>
+    /// <summary>
+    /// AI GAY DON SAP TOI - ve tam thoi, DUNG MOT LAN (them 19/09/2026 cho bon ky nang Khang).
+    ///
+    /// keDanhCuoi khong dung duoc vao viec nay: don cua QUAI khong ghi gi ca, nen no van giu ten
+    /// nguoi choi cua don TRUOC do - hoi no thi don cua quai cung hoa ra "don cua nguoi choi" va
+    /// bi Khang chan oan. Nen o day giu mot cai the rieng: chi tin khi duoc ghi TRONG CUNG KHUNG
+    /// HINH, va dung xong la xoa ngay.
+    /// </summary>
+    Damageable keGayDon;
+    int khungGhiKeGay;
+    HeSat heGayDon = HeSat.Khac;
+
     public void GhiKeDanh(Damageable ai)
     {
-        if (ai != null && ai != this) keDanhCuoi = ai;
+        GhiKeDanh(ai, HeSat.Khac);
+    }
+
+    /// <summary>
+    /// Nhu tren nhung noi ro HE cua don - dung cho cho ma DamageType khong khop nhom ky nang.
+    /// NGOAI LE DUY NHAT hien nay: tia set trong long Loc xoay / Gio loc (DamageType.Lightning
+    /// nhung ky nang thuoc nhom PHONG - nguoi dung chot 19/09/2026).
+    /// HeSat.Khac = "cu suy tu DamageType".
+    /// </summary>
+    public void GhiKeDanh(Damageable ai, HeSat he)
+    {
+        if (ai == null || ai == this) return;
+        keDanhCuoi = ai;
+        keGayDon = ai;
+        heGayDon = he;
+        khungGhiKeGay = Time.frameCount;
     }
 
     public void TakeDamage(float amount, DamageType type, Vector3 hitPoint)
@@ -104,6 +131,29 @@ public class Damageable : MonoBehaviour
         else if (type == DamageType.Ice) amount *= (1f - iceResist);
         else if (type == DamageType.Lightning) amount *= (1f - lightningResist);
         if (amount <= 0f) return;
+
+        // BON KY NANG BI DONG "KHANG ..." (19/09/2026): giam sat thuong cua he do khi don den TU
+        // NGUOI CHOI KHAC. Doc the mot lan do GhiKeDanh vua dat - het khung hinh la khong tin nua.
+        {
+            Damageable nguoiGay = (khungGhiKeGay == Time.frameCount) ? keGayDon : null;
+            HeSat heDon = heGayDon;
+            keGayDon = null; heGayDon = HeSat.Khac;      // the dung mot lan
+
+            // CapDo la cap cua nhan vat MAY NAY, nen chi ap cho chinh minh: ban sao cua nguoi choi
+            // khac (mauDoMayKhacQuyet) khong duoc muon cap khang cua minh.
+            if (nguoiGay != null && nguoiGay.isPlayer && isPlayer && !mauDoMayKhacQuyet)
+            {
+                if (heDon == HeSat.Khac) heDon = KhangHe.HeCua(type);
+                float giam = KhangHe.TiLeGiam(heDon);
+                if (giam > 0f)
+                {
+                    KhangHe.SoDonBiChan++;
+                    KhangHe.TongDaChan += amount * giam;
+                    amount *= (1f - giam);
+                    if (amount <= 0f) return;
+                }
+            }
+        }
 
         // KHIENG AN DON TRUOC. Dat SAU phan tinh khang (khang van co tac dung
         // len don danh vao khieng) nhung TRUOC khi tru mau that.
