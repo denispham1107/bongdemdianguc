@@ -8442,6 +8442,39 @@ Lần đầu tôi đọc chỗ cơn Gió lốc *trước khi niệm* rồi so v�
 đọc. Chỉ khi ghi cả hai vị trí **ngay khung hình đầu tiên thấy cơn lốc mới** thì số đo mới ra 0,00 m. Tỉ lệ "to dần"
 cũng vậy: đọc trễ 0,5 giây thì thấy 0,91 thay vì 0,42 — phải theo dõi suốt trong vòng lặp.
 
+### Bốn ô trống trong Sách phép ở sảnh — một bản sao bị bỏ quên (19/09/2026)
+
+Anh bấm **KỸ NĂNG** ở phòng chờ và thấy bốn kỹ năng Kháng hiện ra **bốn ô trống trơn** — không có cả cái đĩa
+nút, trong khi mọi kỹ năng khác vẫn đủ hình.
+
+Nguyên nhân không nằm ở ảnh icon (chúng vẫn đúng trong trận): bộ biểu tượng có **hai bản**. `GameHUD` giữ một
+bản, `ManSanh` giữ một bản riêng cho Sách phép xem trước. Khi thêm nhóm BỊ ĐỘNG tôi sửa bản của `GameHUD`
+thành 20 ô mà **không biết có bản thứ hai** — nó vẫn dài 16, nên kỹ năng số 16–19 không có gì để vẽ.
+
+Nay chỉ còn **một bảng duy nhất**: `IconKyNang.BoDayDu()`, xếp theo số hiệu kỹ năng và dựng theo
+`CapDo.SoKyNang`; cả HUD lẫn sảnh đều gọi nó. Thêm kỹ năng mới thì thêm đúng một dòng ở một chỗ.
+
+**Vì sao menu 66 vẫn báo xanh suốt thời gian ấy.** Phép đo độ sáng của nó **bỏ qua mọi hàng bị khuất dưới đáy
+cột** ("phải cuộn mới thấy") — mà bốn kỹ năng Kháng nằm **cuối** danh sách, nên chúng chưa bao giờ được đo.
+Mục **B1b** mới: đặt `CuaSoSachPhep.CuonKho` cho cuộn hết cột rồi đo đúng bốn hàng ấy, cộng một phép kiểm rẻ
+là bảng biểu tượng phải đủ `CapDo.SoKyNang` ô và không ô nào rỗng.
+
+Và phép thử ấy suýt nữa cũng vô dụng. Tôi **tháo biểu tượng ra để đối chứng**, và bản hỏng **vẫn lọt**:
+
+| | Độ sáng vành hình bốn ô | So với các kỹ năng khác cùng khung hình (0,227) |
+|---|---|---|
+| Có biểu tượng | 0,288 – 0,352 | ×1,27 – 1,55 |
+| Tháo biểu tượng ra | 0,115 – 0,127 | ×0,51 – 0,56 |
+
+Ngưỡng đầu tiên tôi đặt là ×0,5 — bản thiếu biểu tượng đo được 0,115, mà ngưỡng là 0,1135. Lọt qua trong gang
+tấc, và phép thử báo "0 lỗi" cho đúng cái lỗi anh vừa nhìn thấy. Nay ngưỡng là **×0,85**, nằm giữa hai cụm số:
+bản đúng xanh, bản tháo biểu tượng **đỏ**.
+
+**Một lỗi nữa lộ ra cùng lúc.** Mục B1 cũ tìm hàng bằng phép nhân `chỉ số × chiều cao hàng` — đúng cái bẫy
+CLAUDE.md đã ghi từ khi cột xếp theo nhóm hệ (mỗi nhóm có một dòng tiêu đề). Nó đo trúng khoảng trống giữa các
+nhóm nên cho tỉ lệ lung tung; sau khi hỏi `CuaSoSachPhep.VungHangKyNang`, tỉ lệ thấp nhất nhảy từ **×1,35 lên
+×3,22**.
+
 ### Lửa địa ngục xuyên bia mộ; Quả cầu lửa cấp 5 đánh ngã; Thiên thạch cấp 5 năm quả (19/09/2026)
 
 Ba việc nhỏ anh giao cùng lúc.

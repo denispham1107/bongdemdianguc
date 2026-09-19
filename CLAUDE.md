@@ -296,6 +296,11 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
   nhân "chỉ số × chiều cao hàng" (phép thử menu 59 hỏi `CuaSoSachPhep.VungHangKyNang`). Số hiệu kỹ năng KHÔNG đổi.
   ⚠️ Thứ tự ô ghi **thẳng localStorage** trên WebGL (`CD_DocChuoi/CD_GhiChuoi` trong `CauNoiCaiDat.jslib`, 14/09/2026) — PlayerPrefs
   WebGL ghi không đồng bộ, đóng tab ngay là mất; ngoài WebGL vẫn PlayerPrefs.
+- ⚠️ **BỘ BIỂU TƯỢNG KỸ NĂNG chỉ có MỘT BẢNG**: `IconKyNang.BoDayDu()` (xếp theo số hiệu, dài `CapDo.SoKyNang`).
+  `GameHUD.BoIcon` và `ManSanh.IconXemTruoc` đều gọi nó. 19/09/2026 hai nơi còn giữ hai bản riêng, thêm nhóm BỊ ĐỘNG
+  chỉ sửa bản của HUD → Sách phép ở **sảnh** hiện bốn ô TRỐNG TRƠN (người dùng báo). Thêm kỹ năng mới = thêm một dòng
+  ở `BoDayDu`. Menu 66 mục B1b kiểm (cuộn hết cột rồi đo, vì phép đo cũ bỏ qua mọi hàng bị khuất — chính chỗ bốn kỹ
+  năng Kháng nằm); ngưỡng ×0,85 đặt theo đối chứng THÁO biểu tượng ra (có 0,288–0,352 · không 0,115–0,127).
 - **Nút KỸ NĂNG ở sảnh** (14/09/2026, chỗ cũ của CÀI ĐẶT — CÀI ĐẶT lên đầu trang bên trái ĐĂNG XUẤT): mở Sách phép **xem trước**
   (`CuaSoSachPhep.MoXemTruoc`): 9 kỹ năng đủ màu, không ổ khoá, kéo thả được, không nút mở khoá / số bình; thông số đọc từ
   nhân vật trưng bày của MainMenu. `CuaSoSachPhep` là static — sảnh phải đóng nó khi rời sảnh (`OnDestroy`), không thì vào trận

@@ -20,9 +20,8 @@ public partial class GameHUD : MonoBehaviour
 
     const float Ref = 1080f;             // thiet ke theo man hinh cao 1080
 
-    Texture2D iconFire, iconIce, iconBolt, iconWind, iconMeteor, iconKhieng, iconGiatSet;
-    Texture2D iconBinhMau, iconBinhMana, iconCauBang, iconGioLoc, iconLuaDiaNguc, iconTangHinh, iconCauDien, iconHoaLocXoay, iconTocBien;
-    Texture2D iconKhangLua, iconKhangBang, iconKhangSet, iconKhangPhong;
+    // Ca bo bieu tuong, xep theo so hieu ky nang - dung BANG CHUNG IconKyNang.BoDayDu()
+    Texture2D[] boIcon;
     GUIStyle kieuSoBinh;
     Texture2D gradMau, gradMana, gradKhieng, gradKhiengYeu, gradKinhNghiem;
     Texture2D vongNen, vongNum, vanhNut;
@@ -198,26 +197,7 @@ public partial class GameHUD : MonoBehaviour
         gradKinhNghiem = GradientDoc(new Color(0.98f, 0.82f, 0.38f),
                                      new Color(0.80f, 0.48f, 0.10f),
                                      new Color(0.36f, 0.18f, 0.02f));
-        iconFire = IconKyNang.Lua();
-        iconIce = IconKyNang.Bang();
-        iconBolt = IconKyNang.Set();
-        iconWind = IconKyNang.Loc();
-        iconMeteor = IconKyNang.ThienThach();
-        iconKhieng = IconKyNang.Khieng();
-        iconGiatSet = IconKyNang.GiatSet();
-        iconBinhMau = IconKyNang.BinhMau();
-        iconBinhMana = IconKyNang.BinhMana();
-        iconCauBang = IconKyNang.CauBang();
-        iconGioLoc = IconKyNang.GioLoc();
-        iconLuaDiaNguc = IconKyNang.LuaDiaNguc();
-        iconTangHinh = IconKyNang.TangHinh();
-        iconCauDien = IconKyNang.CauDien();
-        iconHoaLocXoay = IconKyNang.HoaLocXoay();
-        iconTocBien = IconKyNang.TocBien();
-        iconKhangLua = IconKyNang.KhangLua();
-        iconKhangBang = IconKyNang.KhangBang();
-        iconKhangSet = IconKyNang.KhangSet();
-        iconKhangPhong = IconKyNang.KhangPhong();
+        boIcon = IconKyNang.BoDayDu();
         vongNen = VongTron(96, new Color(1f, 1f, 1f, 1f), 0.86f, 0.10f);
         anhSachPhep = Resources.Load<Texture2D>("GiaoDien/SachPhep");
         anhMatQuy = Resources.Load<Texture2D>("GiaoDien/MatQuy");
@@ -1183,13 +1163,11 @@ public partial class GameHUD : MonoBehaviour
     /// 0,272 = 0,34 (ban cu) x 0,8.</summary>
     public const float RongKhoaVuong = 0.272f;
 
-    /// <summary>Bieu tuong moi ky nang, xep theo SO HIEU ky nang (0..19).</summary>
+    /// <summary>Bieu tuong moi ky nang, xep theo SO HIEU ky nang (0 .. CapDo.SoKyNang - 1).</summary>
     public Texture2D[] BoIcon()
     {
-        return new Texture2D[] { iconFire, iconIce, iconBolt, iconWind,
-                                 iconMeteor, iconKhieng, iconGiatSet, iconBinhMau, iconBinhMana, iconCauBang, iconGioLoc, iconLuaDiaNguc, iconTangHinh,
-                                 iconCauDien, iconHoaLocXoay, iconTocBien,
-                                 iconKhangLua, iconKhangBang, iconKhangSet, iconKhangPhong };
+        if (boIcon == null || boIcon.Length != CapDo.SoKyNang) boIcon = IconKyNang.BoDayDu();
+        return boIcon;
     }
 
     void VeNutKyNangTron(float s)

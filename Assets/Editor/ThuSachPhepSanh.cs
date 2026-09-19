@@ -28,6 +28,7 @@ using Debug = UnityEngine.Debug;
 ///      B1. mo Sach phep xem truoc: HienDaMo ca 9 ky nang; DOI CHUNG cung cua so o che do
 ///          trong tran voi moi ky nang con khoa -> 0/9. Do sang hinh o cot trai va o o: xem
 ///          truoc phai sang han ban khoa (hinh ban khoa bi nhan 0,38).
+///      B1b. MOI ky nang deu co bieu tuong o sanh - ke ca nhom cuoi danh sach, phai CUON xuong moi thay.
 ///      B2. nhan vat mau cua man chinh co that, thong so trung prefab (doc thang prefab).
 ///      B3. doi o (ca bo may tinh lan bo cam ung) -> chuoi trong KHO LUU dung nhu tinh tay.
 ///      B4. dang mo sach ma vao tran (nap Act2): sach phai dong; thanh ky nang trong tran
@@ -258,11 +259,9 @@ console.log(out.join('|'));
         return new Rect(r.center.x - r.width * k * 0.5f, r.center.y - r.height * k * 0.5f, r.width * k, r.height * k);
     }
 
-    /// <summary>Hinh ky nang o hang i cot trai (theo dung cach VeKho xep), khi chua cuon.</summary>
-    static Rect HinhHang(CuaSoSachPhep.BoCuc b, int i, float s)
+    /// <summary>O hinh ben trai mot HANG da biet (dung cho hang lay tu CuaSoSachPhep.VungHangKyNang - da tinh cuon va nhom).</summary>
+    static Rect OHinhCuaHang(Rect hang, float s)
     {
-        float le = 6f * s;
-        var hang = new Rect(b.kho.x + le, b.kho.y + le + i * b.caoHang, b.kho.width - le * 2f, b.caoHang - 6f * s);
         float kt = hang.height - 10f * s;
         return new Rect(hang.x + 10f * s, hang.y + 5f * s, kt, kt);
     }
@@ -330,8 +329,13 @@ console.log(out.join('|'));
         for (int i = 0; i < SachPhep.SoKyNang; i++)
         {
             if (i == 4) continue;
-            var r = HinhHang(b, i, s);
-            if (r.yMax > b.kho.yMax) continue;          // hang bi khuat duoi day cot (phai cuon)
+            // ⚠️ PHAI hoi CuaSoSachPhep vi tri hang that: cot xep theo NHOM HE nen moi nhom co mot
+            // dong tieu de, "chi so x chieu cao hang" tro sang cho khac (CLAUDE.md da ghi cai bay nay).
+            // Ban cu do trung vao khoang trong giua cac nhom va cho ra ti le lung tung (19/09/2026).
+            var hang = CuaSoSachPhep.VungHangKyNang(b, i, s);
+            if (hang.height <= 1f) continue;
+            var r = OHinhCuaHang(hang, s);
+            if (r.yMax > b.kho.yMax || r.yMin < b.kho.yMin) continue;   // hang bi khuat (phai cuon)
             float a = DoSangVanhHinh(texXem, r), k = DoSangVanhHinh(texKhoa, r);
             float tl = a / Mathf.Max(0.001f, k);
             tiLeMin = Mathf.Min(tiLeMin, tl); soHangThay++;
@@ -358,6 +362,69 @@ console.log(out.join('|'));
         Kiem(soMoDoiChung == 0, "doi chung hong: trong tran luc moi vao van co ky nang da mo");
         Kiem(soHangThay >= 6 && tiLeMin >= 1.5f, "hinh ky nang o sanh chua sang du mau (van xam / co o khoa?)");
         Kiem(oMin >= 1.5f, "hinh trong o o sanh chua sang du mau (van xam / co o khoa?)");
+
+        // ---- B1b. MOI KY NANG DEU CO BIEU TUONG (ke ca nhom cuoi danh sach) ----
+        //
+        // ⚠️ Muc B1 o tren bo qua moi hang bi khuat duoi day cot ("phai cuon"), ma bon ky nang BI DONG
+        // nam CUOI danh sach - nen 19/09/2026 chung hien ra bon o TRONG TRON o sanh (khong co ca cai
+        // dia nut) ma phep thu van bao xanh; nguoi dung phai tu nhin thay. Nguyen nhan: ManSanh giu
+        // mot BAN RIENG cua bo bieu tuong, chi dai 16, khong ai sua khi them ky nang thu 17..20.
+        //
+        // Do hai lop: bang bieu tuong (re, chac), va anh THAT tren man hinh sau khi cuon het cot.
+        var boIcon = IconKyNang.BoDayDu();
+        int soTrong = 0;
+        var thieu = new StringBuilder();
+        for (int i = 0; i < boIcon.Length; i++)
+            if (boIcon[i] == null) { soTrong++; thieu.Append(i).Append(' '); }
+        Ghi("B1b. bang bieu tuong dung chung: " + boIcon.Length + " o (so ky nang " + CapDo.SoKyNang + "), o rong: "
+            + (soTrong == 0 ? "khong co" : thieu.ToString().Trim()));
+        Kiem(boIcon.Length == CapDo.SoKyNang, "bang bieu tuong khong du so ky nang");
+        Kiem(soTrong == 0, "co ky nang khong co bieu tuong trong bang");
+
+        // Cuon HET cot trai roi do anh that cua bon hang cuoi
+        sanh.MoSachPhep();
+        CuaSoSachPhep.ChonKyNang(5);
+        CuaSoSachPhep.CuonKho = 99999f;             // bi kep lai o lan ve sau -> xuong day cot
+        yield return new WaitForSecondsRealtime(0.4f);
+        Texture2D texCuoi = null;
+        yield return ChupTex(t => texCuoi = t);
+        yield return Chup("sachphep_sanh_2c_nhom_bi_dong");
+
+        var bCuoi = CuaSoSachPhep.TinhBoCuc(Screen.width, Screen.height, s);
+        // Moc so sanh: cac ky nang KHAC dang nhin thay o cung khung hinh nay
+        float sangMoc = 0f; int demMoc = 0;
+        for (int ky = 0; ky < CapDo.SoKyNang; ky++)
+        {
+            if (CapDo.LaKyBiDong(ky)) continue;
+            var rr = CuaSoSachPhep.VungHangKyNang(bCuoi, ky, s);
+            if (rr.height <= 1f || rr.yMin < bCuoi.kho.yMin || rr.yMax > bCuoi.kho.yMax) continue;
+            sangMoc += DoSangVanhHinh(texCuoi, OHinhCuaHang(rr, s)); demMoc++;
+        }
+        sangMoc = demMoc > 0 ? sangMoc / demMoc : 0f;
+
+        var sbBd = new StringBuilder();
+        float thapNhat = 99f; int soDo = 0;
+        for (int ky = 0; ky < CapDo.SoKyNang; ky++)
+        {
+            if (!CapDo.LaKyBiDong(ky)) continue;
+            var rr = CuaSoSachPhep.VungHangKyNang(bCuoi, ky, s);
+            if (rr.height <= 1f || rr.yMin < bCuoi.kho.yMin || rr.yMax > bCuoi.kho.yMax)
+            { sbBd.Append(ky).Append(":KHUAT "); continue; }
+            float sang = DoSangVanhHinh(texCuoi, OHinhCuaHang(rr, s));
+            sbBd.AppendFormat("{0}:{1:F3} ", ky, sang);
+            thapNhat = Mathf.Min(thapNhat, sang); soDo++;
+        }
+        Object.Destroy(texCuoi);
+        CuaSoSachPhep.Dong();
+        Ghi("B1b2. sau khi cuon het cot, do sang VANH hinh nhom BI DONG: " + sbBd.ToString().Trim()
+            + " -> thap nhat " + thapNhat.ToString("F3") + " tren " + soDo + " hang; moc cac ky nang khac cung khung hinh "
+            + sangMoc.ToString("F3") + " (" + demMoc + " hang)");
+        Kiem(soDo == 4, "khong do duoc ca bon ky nang bi dong (cuon chua toi day cot?)");
+        // ⚠️ NGUONG do bang DOI CHUNG that (19/09/2026): co bieu tuong 0,288-0,352 (x1,27-1,55 moc);
+        // thao bieu tuong ra 0,115-0,127 (x0,51-0,56 moc). Nguong dau tien toi dat la x0,5 - va ban
+        // THIEU BIEU TUONG van lot qua voi 0,115 > 0,1135. Nay lay x0,85, nam giua hai cum.
+        Kiem(demMoc >= 2 && thapNhat > sangMoc * 0.85f,
+             "bieu tuong ky nang bi dong qua toi so voi cac ky nang khac - o trong?");
 
         // ---- B2. nhan vat mau ----
         var pcMau = Object.FindAnyObjectByType<PlayerController>(FindObjectsInactive.Include);

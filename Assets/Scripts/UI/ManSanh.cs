@@ -196,13 +196,10 @@ public class ManSanh : MonoBehaviour
 
     static Texture2D[] IconXemTruoc()
     {
-        if (iconXemTruoc == null || iconXemTruoc[0] == null)
-            iconXemTruoc = new Texture2D[] {
-                IconKyNang.Lua(), IconKyNang.Bang(), IconKyNang.Set(), IconKyNang.Loc(),
-                IconKyNang.ThienThach(), IconKyNang.Khieng(), IconKyNang.GiatSet(),
-                IconKyNang.BinhMau(), IconKyNang.BinhMana(), IconKyNang.CauBang(),
-                IconKyNang.GioLoc(), IconKyNang.LuaDiaNguc(), IconKyNang.TangHinh(),
-                IconKyNang.CauDien(), IconKyNang.HoaLocXoay(), IconKyNang.TocBien() };
+        // Kiem CA DO DAI: bang cu giu lai tu lan truoc co the con thieu ky nang moi them
+        if (iconXemTruoc == null || iconXemTruoc.Length != CapDo.SoKyNang || iconXemTruoc[0] == null)
+            // BANG CHUNG voi GameHUD: ban rieng o day tung thieu bon ky nang Khang (19/09/2026)
+            iconXemTruoc = IconKyNang.BoDayDu();
         return iconXemTruoc;
     }
 

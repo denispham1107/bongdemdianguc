@@ -58,6 +58,40 @@ public static class IconKyNang
     public static Texture2D KhangPhong() { return Ve("Icons/KhangPhong", new Color(0.08f, 0.09f, 0.08f)); }
 
     /// <summary>
+    /// CA BO bieu tuong, xep theo SO HIEU ky nang (0 .. CapDo.SoKyNang - 1).
+    ///
+    /// ⚠️ CHI MOT CHO duoc dung bang nay. Truoc day GameHUD va ManSanh moi ben giu mot ban rieng,
+    /// nen 19/09/2026 them bon ky nang Khang thi ban cua GameHUD duoc sua con ban cua SANH bi bo quen:
+    /// Sach phep xem truoc o sanh hien bon o TRONG TRON - khong co ca cai dia nut (nguoi dung bao).
+    /// Them ky nang moi thi them DUNG mot dong o day; menu 66 kiem khong con o nao rong.
+    /// </summary>
+    public static Texture2D[] BoDayDu()
+    {
+        var bo = new Texture2D[CapDo.SoKyNang];
+        bo[0] = Lua();
+        bo[1] = Bang();
+        bo[2] = Set();
+        bo[3] = Loc();
+        bo[4] = ThienThach();
+        bo[5] = Khieng();
+        bo[6] = GiatSet();
+        bo[CapDo.KyBinhMau]    = BinhMau();
+        bo[CapDo.KyBinhMana]   = BinhMana();
+        bo[CapDo.KyQuaCauBang] = CauBang();
+        bo[CapDo.KyGioLoc]     = GioLoc();
+        bo[CapDo.KyLuaDiaNguc] = LuaDiaNguc();
+        bo[CapDo.KyTangHinh]   = TangHinh();
+        bo[CapDo.KyCauDien]    = CauDien();
+        bo[CapDo.KyHoaLocXoay] = HoaLocXoay();
+        bo[CapDo.KyTocBien]    = TocBien();
+        bo[CapDo.KyKhangLua]   = KhangLua();
+        bo[CapDo.KyKhangBang]  = KhangBang();
+        bo[CapDo.KyKhangSet]   = KhangSet();
+        bo[CapDo.KyKhangPhong] = KhangPhong();
+        return bo;
+    }
+
+    /// <summary>
     /// Dat anh Blender vao mot cai dia nut.
     /// </summary>
     /// <param name="duong">Duong trong Resources, khong co duoi file.</param>
