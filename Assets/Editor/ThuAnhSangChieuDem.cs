@@ -20,6 +20,7 @@ using UnityEngine;
 ///   D. Het 2 phut thi TRUNG KHOP anh sang dem "hien gio" - so tung so voi moc do duoc truoc khi lam
 ///      tinh nang nay (nguoi dung chot "giong hien gio", nen doi mau dem la phep thu phai bao).
 ///   E. Anh chup 5 moc.
+///   G. LO LUA DA: chua toi dem thi CA MUOI lo deu tat; vuot muc nhom lua thi ca muoi cai chay.
 ///   F. CHI ACT2: nap Act1 roi kiem khong co ChuyenChieuSangDem nao.
 ///
 /// Ket qua: PlayTestShots/anhsang_chieu_dem.txt, anh anhsang_*.png.
@@ -149,6 +150,31 @@ public static class ThuAnhSangChieuDem
         Kiem(den.transform.eulerAngles.x < DemGoc.x - 5f, "mat troi luc xe chieu khong THAP hon anh trang ban dem");
         yield return Chup("anhsang_1_xechieu");
 
+        // ================= G. LO LUA DA =================
+        // ⚠️ Phai do NGAY DAU, truoc moi muc khac: chi can mot lan Ap(1f) o dau do (muc B chay het nam
+        // moc, muc D nhay thang toi 1) la lua da nhom - va lua KHONG tat lai nua (chi nhom mot lan),
+        // nen do sau do thi moc nao cung thay du muoi lo dang chay.
+        Ghi("");
+        var dsLo = Object.FindObjectsByType<LoLuaDa>(FindObjectsSortMode.None);
+        var mocG = new float[] { 0f, 0.3f, ChuyenChieuSangDem.MucNhomLua - 0.05f, ChuyenChieuSangDem.MucNhomLua + 0.05f, 1f };
+        var demChay = new int[mocG.Length];
+        for (int i = 0; i < mocG.Length; i++)
+        {
+            // Ap() nhan TIEN DO, con muc nhom lua do theo duong cong da lam muot - doi nguoc lai
+            float tG = TienDoChoMuc(mocG[i]);
+            chuyen.Ap(tG);
+            yield return null;
+            foreach (var lo in dsLo) if (lo.DangChay) demChay[i]++;
+        }
+        Ghi(string.Format("G. muoi lo lua theo duong doi (muc nhom lua {0:F2}): "
+            + "duong cong {1:F2} -> {2} lo chay | {3:F2} -> {4} | {5:F2} -> {6} | {7:F2} -> {8} | {9:F2} -> {10}",
+            ChuyenChieuSangDem.MucNhomLua,
+            mocG[0], demChay[0], mocG[1], demChay[1], mocG[2], demChay[2], mocG[3], demChay[3], mocG[4], demChay[4]));
+        Kiem(dsLo.Length >= 10, "khong tim thay du muoi lo lua trong Act2");
+        Kiem(demChay[0] == 0 && demChay[1] == 0 && demChay[2] == 0, "chua toi dem ma lo lua da chay");
+        Kiem(demChay[3] == dsLo.Length && demChay[4] == dsLo.Length, "toi dem roi ma lo lua khong chay du ca muoi cai");
+        yield return Chup("anhsang_6_lo_lua_dem");
+
         // ================= B. DI MOT CHIEU =================
         Ghi("");
         Ghi("B. nam moc tren duong doi (0 = vua vao, 1 = dem han)");
@@ -235,6 +261,19 @@ public static class ThuAnhSangChieuDem
         Ghi("");
         Ghi("so loi ghi nhan = " + loi);
         Ket();
+    }
+
+    /// <summary>Tien do t sao cho duong cong smoothstep(t) = muc mong muon (dao nguoc smoothstep).</summary>
+    static float TienDoChoMuc(float muc)
+    {
+        muc = Mathf.Clamp01(muc);
+        float lo = 0f, hi = 1f;
+        for (int i = 0; i < 40; i++)                // chia doi 40 lan - dung tran, khong vong vo han
+        {
+            float giua = (lo + hi) * 0.5f;
+            if (giua * giua * (3f - 2f * giua) < muc) lo = giua; else hi = giua;
+        }
+        return (lo + hi) * 0.5f;
     }
 
     static bool SoSanh(Color a, Color b)

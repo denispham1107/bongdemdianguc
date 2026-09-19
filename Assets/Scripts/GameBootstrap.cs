@@ -81,6 +81,10 @@ public class GameBootstrap : MonoBehaviour
 
         WorldFactory.SetupMoonlight(sun);
 
+        // Mac dinh lo lua chay binh thuong; chi Act2 luc xe chieu moi tat (dat lai o day vi co la
+        // static, giu nguyen tu lan chay truoc).
+        LoLuaDa.ChoPhepNhomLua = true;
+
         // ACT2: vao tran luc XE CHIEU roi toi dan thanh dem trong 2 phut (nguoi dung 19/09/2026).
         // Gan SAU SetupMoonlight: ChuyenChieuSangDem doc chinh trang thai vua dat lam dich "ban dem",
         // nen sau nay doi mau dem trong WorldFactory thi no tu di theo.

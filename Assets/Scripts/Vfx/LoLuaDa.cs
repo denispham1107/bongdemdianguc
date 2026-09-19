@@ -27,6 +27,17 @@ public class LoLuaDa : MonoBehaviour
 
     public bool DangChay { get { return lua != null; } }
 
+    /// <summary>
+    /// CHUA TOI GIO NHOM LUA thi lo dung im, than nguoi lanh (nguoi dung 19/09/2026:
+    /// "khi khong phai ban dem thi cho tat lua o Lo Lua di").
+    ///
+    /// Act2 vao tran luc xe chieu (<see cref="ChuyenChieuSangDem"/>) nen co nay tat tu dau va chi bat
+    /// khi troi da toi. Mac dinh BAT: Act1, man chinh va moi cho khac giu nguyen nhu cu.
+    /// Dat trong Awake cua GameBootstrap - truoc moi Start - chu khong phai trong Start, vi thu tu
+    /// Start giua cac vat the khong co dinh.
+    /// </summary>
+    public static bool ChoPhepNhomLua = true;
+
     /// <summary>Moc Time.time se tu nhom lua lai (Gio loc dap tat). 0 = khong hen.</summary>
     float henChayLai;
 
@@ -39,14 +50,15 @@ public class LoLuaDa : MonoBehaviour
         foreach (var r in GetComponentsInChildren<Renderer>())
             if (r.name.Contains("Than")) ds.Add(r);
         than = ds.ToArray();
-        Chay();
+        if (ChoPhepNhomLua) Chay();
+        else DatMauThan(true);              // than nguoi lanh, khong khoi - lua chua tung duoc nhom
     }
 
     /// <summary>Nhom lua trong chau. Goi lai khi da chay roi thi khong lam gi.</summary>
     public void Chay()
     {
         henChayLai = 0f;
-        if (lua != null) return;
+        if (lua != null || !ChoPhepNhomLua) return;
         lua = VfxFactory.LuaLoDa(transform, new Vector3(0f, doCaoMieng, 0f), banKinhChau);
         DatMauThan(false);
     }

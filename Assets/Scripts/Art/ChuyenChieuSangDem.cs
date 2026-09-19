@@ -61,6 +61,14 @@ public class ChuyenChieuSangDem : MonoBehaviour
     public static readonly Color HeroChieu = new Color(1.00f, 0.82f, 0.62f);
     public const float ManhHeroChieu = 0.35f;
 
+    /// <summary>
+    /// TOI DAY THI NHOM LUA O CAC LO DA (nguoi dung 19/09/2026: chua phai ban dem thi lo tat lua).
+    /// Do theo duong cong da lam muot, khong phai theo phan giay da troi: 0,70 roi vao khoang troi da
+    /// toi han - anh sang moi truong con mot nua, sao da hien ro - chu khong phai luc con quang do
+    /// o chan troi.
+    /// </summary>
+    public const float MucNhomLua = 0.70f;
+
     // ---------------- Trang thai DEM (doc tu canh luc bat dau) ----------------
     Light den, heroLight;
     Material troi;
@@ -101,6 +109,7 @@ public class ChuyenChieuSangDem : MonoBehaviour
 
     float batDau;
     bool sanSang;
+    bool daNhomLua;
 
     /// <summary>Phan duong da di (0 = vua vao tran, 1 = da thanh dem han). Phep thu doc.</summary>
     public float TienDo
@@ -111,6 +120,10 @@ public class ChuyenChieuSangDem : MonoBehaviour
     /// <summary>Gan vao mot vat the trong canh Act2. Goi SAU khi bau troi va anh trang da dat xong.</summary>
     public static ChuyenChieuSangDem Gan(GameObject cho, Light denHuong)
     {
+        // Dat co NGAY TRONG AWAKE cua GameBootstrap, truoc moi Start: cac lo lua trong canh se doc no
+        // o Start cua chung. Dang chay phep thu (nhay thang toi dem) thi cu de lua chay nhu cu.
+        LoLuaDa.ChoPhepNhomLua = DangChayThu();
+
         var c = cho.AddComponent<ChuyenChieuSangDem>();
         c.den = denHuong;
         return c;
@@ -164,6 +177,7 @@ public class ChuyenChieuSangDem : MonoBehaviour
 
         batDau = Time.timeSinceLevelLoad;
         sanSang = true;
+        daNhomLua = false;
 
         if (DangChayThu()) { Ap(1f); enabled = false; return; }
         Ap(0f);
@@ -191,6 +205,15 @@ public class ChuyenChieuSangDem : MonoBehaviour
     {
         t = Mathf.Clamp01(t);
         float k = t * t * (3f - 2f * t);
+
+        // LO LUA DA: chua toi dem thi de tat. Chi nhom MOT LAN khi vuot muc - goi Chay() moi khung se
+        // nhom lai ca cai lo ma Gio loc vua dap tat (LoLuaDa.DapTatRoiChayLai hen 30 giay).
+        if (k >= MucNhomLua && !daNhomLua)
+        {
+            daNhomLua = true;
+            LoLuaDa.ChoPhepNhomLua = true;
+            foreach (var lo in FindObjectsByType<LoLuaDa>(FindObjectsSortMode.None)) lo.Chay();
+        }
 
         if (den != null)
         {

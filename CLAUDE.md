@@ -305,6 +305,12 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
   ⚠️ **Đang chạy phép thử thì NHẢY THẲNG tới đêm**: nhận ra bằng sự có mặt của `ChayThuMang`, kiểm ở CẢ `Start`
   lẫn `ChayThuMang.Awake` (thứ tự không cố định) — không thì hàng chục phép thử chụp ảnh trong Act2 đều lệch.
   Menu 79 bật `ChoPhepChuyenTrongPhepThu` và tự trả lại khi xong. Menu 79 kiểm.
+  ⚠️ **Mười lò lửa chỉ cháy khi trời đã tối** (người dùng 19/09/2026): `LoLuaDa.ChoPhepNhomLua` (mặc định BẬT —
+  Act1 và màn chính giữ nguyên) đặt trong **Awake** của GameBootstrap, trước mọi Start; lò **không nhóm lửa từ
+  đầu** chứ không phải nhóm rồi dập (dập thì mười cuộn khói bốc lên lúc vừa vào trận). Tới mức
+  `ChuyenChieuSangDem.MucNhomLua` = **0,70** trên đường cong thì nhóm cả mười, **một lần duy nhất** — gọi `Chay()`
+  mỗi khung sẽ nhóm lại chính cái lò Gió lốc vừa dập và hẹn 30 giây (`DapTatRoiChayLai`). Menu 79 mục G, và mục ấy
+  phải nằm **ngay đầu** kịch bản vì các mục khác gọi `Ap(1f)` là lửa nhóm rồi không tắt lại nữa.
 - ⚠️ **Phép thử đo "sát thương nhân đôi" phải đọc SỐ GHI TRÊN TỪNG ĐÒN**, không đếm tổng máu bia mất: tổng ấy
   phụ thuộc bao nhiêu quả trúng và trúng chỗ nào (sát thương vùng giảm từ tâm ra rìa) — menu 73 ra 1,35 rồi 1,73
   ở hai lần chạy cùng một bản code (19/09/2026). Đọc `impactDamage` từng quả thì ra đúng ×2,00 mọi lần; và phải

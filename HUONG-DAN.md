@@ -8477,6 +8477,18 @@ Vài lựa chọn nhỏ trong đó:
 | Đối chứng | đêm thì đèn **lạnh** (ấm −0,460), ngược hẳn lúc xế chiều (+0,660) |
 | Chỉ Act2 | nạp Act1: không có component nào, đèn Act1 giữ nguyên |
 
+
+**Mười lò lửa chỉ cháy khi trời đã tối** (anh xin ngay sau đó). Lò **không nhóm lửa từ đầu** chứ không phải
+nhóm rồi dập — dập thì mỗi lò phun một cuộn khói lúc vừa vào trận, mười cuộn cùng lúc trông rất lạ. Cờ
+`LoLuaDa.ChoPhepNhomLua` đặt trong **Awake** của `GameBootstrap`, trước mọi `Start`, vì thứ tự `Start` giữa các
+vật thể không cố định. Tới mức **0,70** trên đường cong (khoảng giây thứ 78) thì bật cờ và nhóm cả mười lò —
+**một lần duy nhất**, không gọi mỗi khung, nếu không sẽ nhóm lại chính cái lò mà Gió lốc vừa dập tắt và hẹn
+30 giây sau mới cháy lại. Số đo (menu 79 mục G): mức 0,00 · 0,30 · 0,65 → **0 lò**; mức 0,75 và 1,00 → **10 lò**.
+
+Chỗ này làm tôi vấp hai lần liền, cùng một kiểu: mục G ban đầu nằm cuối kịch bản, mà các mục trước đã gọi
+`Ap(1f)` — lửa nhóm rồi thì không tắt lại nữa, nên đo mốc nào cũng thấy đủ mười lò đang cháy. Phải đưa nó lên
+**ngay đầu**, trước mọi mục khác.
+
 **Việc này làm lộ một vấn đề lớn hơn với phép thử.** Hàng chục phép thử chụp ảnh trong Act2 ở những giây đầu
 trận — giờ nền trời cam thì ảnh đối chứng nào cũng lệch. Cách xử: **sự có mặt của `ChayThuMang`** (vật thể mà
 mọi kịch bản chạy thử đều dựng) là dấu hiệu "đang chạy thử" → nhảy thẳng tới đêm, ánh sáng đứng yên như trước.
