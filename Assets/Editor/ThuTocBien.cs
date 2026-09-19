@@ -139,7 +139,7 @@ public static class ThuTocBien
             bo != null && bo.Length > K && bo[K] != null ? "co" : "KHONG",
             tIcon != null ? tIcon.width + "x" + tIcon.height : "KHONG",
             nhomCua >= 0 ? SachPhep.TenNhom[nhomCua] : "KHONG CO"));
-        Kiem(K == 15 && CapDo.SoKyNang == 16, "so hieu / so ky nang sai");
+        Kiem(K == 15 && CapDo.SoKyNang == SachPhep.SoKyNangCoTen(), "so hieu sai, hoac co ky nang khong co ten");
         Kiem(Mathf.Approximately(toi.tocBienCost, 40f) && Mathf.Approximately(nl, 40f), "nang luong khong phai 40");
         Kiem(Mathf.Approximately(TocBien.Tam, 15f), "tam khong phai 15 m");
         Kiem(bo != null && bo.Length == CapDo.SoKyNang && bo[K] != null && tIcon != null, "thieu icon Toc bien");

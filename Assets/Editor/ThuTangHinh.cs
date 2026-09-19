@@ -195,7 +195,7 @@ public static class ThuTangHinh
         Ghi(string.Format("A. ten \"{0}\", tom tat \"{1}\", mo ta {2} ky tu; HUD {3} icon, icon so 12 {4}; icon file {5}",
             SachPhep.Ten(K), SachPhep.TomTat(K), SachPhep.MoTa(K).Length, bo != null ? bo.Length : -1,
             bo != null && bo.Length > K && bo[K] != null ? "co" : "KHONG", tIcon != null ? tIcon.width + "x" + tIcon.height : "KHONG"));
-        Kiem(K == 12 && CapDo.SoKyNang == 13, "so hieu / so ky nang sai");
+        Kiem(K == 12 && CapDo.SoKyNang == SachPhep.SoKyNangCoTen(), "so hieu sai, hoac co ky nang khong co ten");
         Kiem(Mathf.Approximately(toi.tangHinhCost, 30f) && Mathf.Approximately(nl, 30f), "nang luong khong phai 30");
         Kiem(Mathf.Approximately(toi.tangHinhCooldown, 30f) && Mathf.Approximately(hc, 30f), "hoi chieu khong phai 30 giay");
         Kiem(Mathf.Approximately(TangHinh.ThoiGian, 20f) && Mathf.Approximately(TangHinh.HeSoToc, 1.2f) && Mathf.Approximately(TangHinh.NhanDonDau, 2f),
@@ -366,7 +366,17 @@ public static class ThuTangHinh
             yield return new WaitForFixedUpdate();
             float m1 = b1.health;
             toi.mana = toi.maxMana;
+            foreach (var fx in Object.FindObjectsByType<Fireball>(FindObjectsSortMode.None)) Object.DestroyImmediate(fx.gameObject);
             toi.CastAt(0, b1.transform.position);
+            // Doc SO GHI TREN TUNG QUA: dem mau bia mat thi ti le ra 1,4 - 2,1 tuy so qua trung duoc bia
+            float donGhiThuong = 0f; int soQuaG0 = 0;
+            float hanG0 = Time.time + 2f;
+            while (soQuaG0 == 0 && Time.time < hanG0)
+            {
+                yield return null;
+                foreach (var f in Object.FindObjectsByType<Fireball>(FindObjectsSortMode.None))
+                { soQuaG0++; donGhiThuong = Mathf.Max(donGhiThuong, f.impactDamage); }
+            }
             float han1 = Time.time + 3f;
             while (Time.time < han1 && b1.health >= m1) yield return null;
             yield return new WaitForSeconds(0.2f);
@@ -381,7 +391,16 @@ public static class ThuTangHinh
             float m2 = b2.health;
             toi.mana = toi.maxMana;
             int donDau0 = TangHinh.SoLanDonDau;
+            foreach (var fx in Object.FindObjectsByType<Fireball>(FindObjectsSortMode.None)) Object.DestroyImmediate(fx.gameObject);
             toi.CastAt(0, b2.transform.position);
+            float donGhiTang = 0f; int soQuaG1 = 0;
+            float hanG1 = Time.time + 2f;
+            while (soQuaG1 == 0 && Time.time < hanG1)
+            {
+                yield return null;
+                foreach (var f in Object.FindObjectsByType<Fireball>(FindObjectsSortMode.None))
+                { soQuaG1++; donGhiTang = Mathf.Max(donGhiTang, f.impactDamage); }
+            }
             float han2 = Time.time + 3f;
             while (Time.time < han2 && b2.health >= m2) yield return null;
             yield return new WaitForSeconds(0.2f);
@@ -401,9 +420,13 @@ public static class ThuTangHinh
             bool conSauKhien = toi.GetComponent<TangHinh>() != null;
             var t5 = toi.GetComponent<TangHinh>(); if (t5 != null) t5.Tat();
 
-            Ghi(string.Format("G. (mo khoa Qua cau lua: {6}) mot chum Qua cau lua vao bia: binh thuong mat {0:F1}, khi dang tang hinh mat {1:F1} -> x{2:F2} (mong 2,00); bo dem don dau +{3}; sau don do con tang hinh {4}; tung KHIEN thi con tang hinh {5}",
-                donThuong, donTang, donThuong > 0 ? donTang / donThuong : 0f, demDonDau, conTangHinh, conSauKhien, CapDo.DaMo(0)));
-            Kiem(donThuong > 1f && Mathf.Abs(donTang / donThuong - 2f) < 0.06f, "don dau khong gap doi");
+            Ghi(string.Format("G. (mo khoa Qua cau lua: {6}) chum Qua cau lua: sat thuong GHI TREN QUA binh thuong {0:F2} ({7} qua), dang tang hinh {1:F2} ({8} qua) -> x{2:F2} (mong 2,00); bo dem don dau +{3}; sau don do con tang hinh {4}; tung KHIEN thi con tang hinh {5}",
+                donGhiThuong, donGhiTang, donGhiThuong > 0f ? donGhiTang / donGhiThuong : 0f, demDonDau, conTangHinh, conSauKhien,
+                CapDo.DaMo(0), soQuaG0, soQuaG1));
+            Ghi(string.Format("G2. (tham khao) mau bia mat: {0:F1} va {1:F1} - KHONG kiem so nay vi so qua trung bia moi lan mot khac",
+                donThuong, donTang));
+            Kiem(soQuaG0 > 0 && soQuaG0 == soQuaG1, "hai lan tung ra so qua khac nhau - phep do vo nghia");
+            Kiem(donGhiThuong > 1f && Mathf.Abs(donGhiTang / donGhiThuong - 2f) < 0.01f, "don dau khong gap doi");
             Kiem(demDonDau == 1 && !conTangHinh, "don dau khong lam tan tang hinh");
             Kiem(conSauKhien, "tung Khien (khong gay sat thuong) ma tang hinh lai tan");
         }
@@ -529,10 +552,17 @@ public static class ThuTangHinh
             Kiem(Mathf.Abs(vetMax[0] - vetMin[0]) < 0.01f && Mathf.Abs(vetMax[1] - vetMin[1]) < 0.01f,
                  "cac vet trong cung mot con bao khong cung mot con so - phep do nay vo nghia");
             Kiem(vetMin[0] > 1f && Mathf.Abs(vetMin[1] / vetMin[0] - 2f) < 0.01f, "Mua bang trong tang hinh: khong phai MOI vet deu x2");
-            Kiem(tbThuong > 1f && Mathf.Abs(tbTang / tbThuong - 2f) < 0.3f, "mau bia mat moi lan trung khong tang gap doi");
+            // KHONG kiem ti le nay: no dem tong mau bia mat, ma so vet TRUNG bia va cho trung moi con bao
+            // moi khac (sat thuong vung giam dan tu tam ra ria) - do duoc 1,35 va 1,73 o hai lan chay lien
+            // nhau cua CUNG mot ban code. Phan tren da do SO GHI TREN TUNG VET va ra dung 2,00 - chat che hon.
 
             // --- K2. QUA CAU BANG cap 5: 5 qua ---
+            // Doc SAT THUONG GHI TREN TUNG QUA (khong dem mau bia mat): so qua TRUNG duoc bia va cho
+            // trung moi lan mot khac, nen tong mau mat ra 1,72 - 1,87 tuy lan chay du moi qua deu x2.
             var tongCau = new float[2];
+            var soQuaK2 = new int[2];
+            var minQua = new float[2];
+            var maxQua = new float[2];
             for (int lan = 0; lan < 2; lan++)
             {
                 if (lan == 1) TangHinh.Bat(mauToi, TangHinh.ThoiGian);
@@ -541,16 +571,43 @@ public static class ThuTangHinh
                 float m0 = bia.health;
                 toi.mana = toi.maxMana;
                 toi.CastAt(CapDo.KyQuaCauBang, bia.transform.position);
-                yield return new WaitForSeconds(2.5f);
+
+                // Doc ngay khi chum vua bay ra, truoc khi qua nao kip no
+                minQua[lan] = float.MaxValue; maxQua[lan] = 0f;
+                float hanQ = Time.time + 1.5f;
+                while (soQuaK2[lan] == 0 && Time.time < hanQ)
+                {
+                    yield return null;
+                    foreach (var q in Object.FindObjectsByType<QuaCauBang>(FindObjectsSortMode.None))
+                    {
+                        soQuaK2[lan]++;
+                        minQua[lan] = Mathf.Min(minQua[lan], q.impactDamage);
+                        maxQua[lan] = Mathf.Max(maxQua[lan], q.impactDamage);
+                    }
+                }
+                yield return new WaitForSeconds(1.0f);
+                // ⚠️ DON TANG BANG truoc khi dem: tu 19/09/2026 Qua cau bang cap 5 de lai tang bang, het
+                // gio thi NO them 100 - mot con so CO DINH, khong di qua he so nhan doi cua Tang hinh.
+                // De no no trong cua so dem thi ti le ra 1,87 thay vi 2,00 va phep thu bao hong oan
+                // (muc nay do "moi qua trong chum co x2 khong", khong do vu no cua tang bang).
+                foreach (var tb in Object.FindObjectsByType<TangBangNo>(FindObjectsSortMode.None))
+                    Object.DestroyImmediate(tb);
+                yield return new WaitForSeconds(1.5f);
                 tongCau[lan] = m0 - bia.health;
                 Object.Destroy(bia.gameObject);
                 var tx = toi.GetComponent<TangHinh>(); if (tx != null) tx.Tat();
                 yield return new WaitForSeconds(0.8f);
             }
-            Ghi(string.Format("K2. QUA CAU BANG cap {0} ({1} qua): binh thuong {2:F1}, dang tang hinh {3:F1} -> x{4:F2} (mong 2,00; neu chi qua dau x2 thi 1,20)",
-                CapDo.CapCuaKyNang(CapDo.KyQuaCauBang), QuaCauBang.SoQuaTheoCap(CapDo.CapCuaKyNang(CapDo.KyQuaCauBang)), tongCau[0], tongCau[1],
-                tongCau[0] > 0 ? tongCau[1] / tongCau[0] : 0f));
-            Kiem(tongCau[0] > 1f && Mathf.Abs(tongCau[1] / tongCau[0] - 2f) < 0.06f, "Qua cau bang trong tang hinh: khong phai MOI qua deu x2");
+            Ghi(string.Format("K2. QUA CAU BANG cap {0}: sat thuong GHI TREN TUNG QUA - binh thuong {1} qua, {2:F2}..{3:F2}; dang tang hinh {4} qua, {5:F2}..{6:F2} -> x{7:F2} (mong 2,00; neu chi qua dau x2 thi qua thu hai tro di van la {2:F2})",
+                CapDo.CapCuaKyNang(CapDo.KyQuaCauBang), soQuaK2[0], minQua[0], maxQua[0], soQuaK2[1], minQua[1], maxQua[1],
+                minQua[0] > 0f ? minQua[1] / minQua[0] : 0f));
+            Ghi(string.Format("K2b. (tham khao) tong mau bia mat: binh thuong {0:F1}, tang hinh {1:F1} - KHONG kiem so nay vi so qua trung bia moi lan mot khac",
+                tongCau[0], tongCau[1]));
+            Kiem(soQuaK2[0] >= 2 && soQuaK2[0] == soQuaK2[1], "hai lan tung ra so qua khac nhau - phep do vo nghia");
+            Kiem(Mathf.Abs(maxQua[0] - minQua[0]) < 0.01f && Mathf.Abs(maxQua[1] - minQua[1]) < 0.01f,
+                 "cac qua trong cung mot chum khong cung mot con so - phep do nay vo nghia");
+            Kiem(minQua[0] > 1f && Mathf.Abs(minQua[1] / minQua[0] - 2f) < 0.01f,
+                 "Qua cau bang trong tang hinh: khong phai MOI qua deu x2");
         }
 
         // ================= H. HET GIO TU TAN =================
@@ -656,6 +713,8 @@ public static class ThuTangHinh
                 // L2. Ban sao phat lai phep theo goi: co co thi sat thuong x2 tren may NAY
                 Vector3 hL = HuongTrong(toi);
                 var tongL = new float[2];
+                var donL = new float[2];
+                var soQuaL = new int[2];
                 int stt = 100;
                 for (int lan = 0; lan < 2; lan++)
                 {
@@ -668,15 +727,37 @@ public static class ThuTangHinh
                         chiSo = 1, kyNang = 0, capKyNang = 1, soThuTu = ++stt,
                         diemNgam = biaL.transform.position, donTangHinh = lan == 1
                     });
+                    // Xoa sach qua cau dang bay truoc khi phat lai goi: lan chay dau bat phai qua cau lua
+                    // CUA QUAI (16,80 sat thuong) va ti le ra 0,20.
+                    foreach (var fx in Object.FindObjectsByType<Fireball>(FindObjectsSortMode.None)) Object.DestroyImmediate(fx.gameObject);
                     KenhTrucTiep.GiaLapNhan(GoiTin.SangChuoi(goiL));
+                    // Doc SO GHI TREN TUNG QUA chu khong dem mau bia mat: chum ba qua, so qua trung bia
+                    // va cho trung moi lan mot khac nen tong mau mat ra 1,89 du moi qua deu x2.
+                    donL[lan] = 0f; soQuaL[lan] = 0;
+                    float hanL = Time.time + 1.5f;
+                    while (soQuaL[lan] == 0 && Time.time < hanL)
+                    {
+                        yield return null;
+                        foreach (var f in Object.FindObjectsByType<Fireball>(FindObjectsSortMode.None))
+                        {
+                            // CHI qua cua ban sao "kia": quai trong canh cung ban qua cau lua (16,80 sat
+                            // thuong) va lan chay truoc phep do vo phai chung, ra ti le 0,20 roi 10,12.
+                            if (f.boQua != mauKia) continue;
+                            soQuaL[lan]++;
+                            donL[lan] = Mathf.Max(donL[lan], f.impactDamage);
+                        }
+                    }
                     yield return new WaitForSeconds(2.5f);
                     tongL[lan] = m0 - biaL.health;
                     Object.Destroy(biaL.gameObject);
                     yield return new WaitForSeconds(0.6f);
                 }
-                Ghi(string.Format("L2. nguoi KIA tung Qua cau lua qua mang: goi khong co co {0:F1}, goi co co don tang hinh {1:F1} -> x{2:F2} (mong 2,00)",
-                    tongL[0], tongL[1], tongL[0] > 0 ? tongL[1] / tongL[0] : 0f));
-                Kiem(tongL[0] > 1f && Mathf.Abs(tongL[1] / tongL[0] - 2f) < 0.06f, "goi phep co co ma ban sao khong danh x2");
+                Ghi(string.Format("L2. nguoi KIA tung Qua cau lua qua mang: sat thuong GHI TREN QUA - goi khong co co {0:F2} ({1} qua), goi co co don tang hinh {2:F2} ({3} qua) -> x{4:F2} (mong 2,00)",
+                    donL[0], soQuaL[0], donL[1], soQuaL[1], donL[0] > 0f ? donL[1] / donL[0] : 0f));
+                Ghi(string.Format("L2b. (tham khao) tong mau bia mat: {0:F1} va {1:F1} - KHONG kiem so nay vi so qua trung bia moi lan mot khac",
+                    tongL[0], tongL[1]));
+                Kiem(soQuaL[0] > 0 && soQuaL[0] == soQuaL[1], "hai lan phat lai ra so qua khac nhau - phep do vo nghia");
+                Kiem(donL[0] > 1f && Mathf.Abs(donL[1] / donL[0] - 2f) < 0.01f, "goi phep co co ma ban sao khong danh x2");
 
                 // L3. Khi MINH danh don dau trong tang hinh, goi gui di phai co co
                 daGui.Clear();

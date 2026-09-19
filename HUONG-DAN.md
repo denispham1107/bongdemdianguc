@@ -8442,6 +8442,56 @@ Lần đầu tôi đọc chỗ cơn Gió lốc *trước khi niệm* rồi so v�
 đọc. Chỉ khi ghi cả hai vị trí **ngay khung hình đầu tiên thấy cơn lốc mới** thì số đo mới ra 0,00 m. Tỉ lệ "to dần"
 cũng vậy: đọc trễ 0,5 giây thì thấy 0,91 thay vì 0,42 — phải theo dõi suốt trong vòng lặp.
 
+### Act2: vào trận lúc xế chiều, tối dần thành đêm trong 2 phút (19/09/2026)
+
+Anh xin: mới vào game thì Act2 sáng như **buổi xế chiều**, rồi trong **2 phút** chuyển dần sang đêm tối
+**giống hiện giờ**. Chỉ Act2.
+
+Thuận lợi là Act2 **không nướng lightmap nào** (đo được 0), nên mọi ánh sáng đều là thời gian thực và đổi
+lúc chạy là ăn ngay. `Art/ChuyenChieuSangDem.cs` nội suy bảy nhóm cùng lúc: đèn hướng (màu, độ mạnh, độ đậm
+bóng, **và góc chiếu**), ba tầng ánh sáng môi trường, màu và độ đậm sương mù, bầu trời (đỉnh trời · chân
+trời · mây · sao), đĩa sáng trên trời, và đèn điểm bám theo nhân vật.
+
+**Trạng thái đêm không viết tay trong file mới.** Nó **đọc thẳng từ cảnh** ngay lúc bắt đầu, sau khi
+`WorldFactory` đã đặt xong — nên sau này ai đổi màu đêm thì cái đích tự đi theo. Đây chính là bài học vừa
+phải trả giá ở [bốn ô trống trong Sách phép](#): hai nơi giữ hai bảng rồi lệch nhau.
+
+Vài lựa chọn nhỏ trong đó:
+
+- **Mặt trời thấp rồi lên cao.** Xế chiều đèn ở **13°** nên bóng cây đổ dài và xiên; tới đêm về **42°** như
+  ánh trăng cũ. Đĩa sáng trên trời đi theo đúng hướng đèn (cam to → trắng nhỏ).
+- **Sao chỉ hiện ở nửa sau.** Trời còn quầng đỏ ở chân trời mà đã đầy sao thì trông rất giả.
+- **Đường cong smoothstep**: mấy giây đầu và mấy giây cuối đổi chậm, khúc giữa đổi nhanh — ra cảm giác
+  "trời sập tối" chứ không phải một cái vặn đều đều.
+- Đồng hồ là `Time.timeSinceLevelLoad`, mỗi máy tự chạy. Cả phòng vào trận cùng lúc (đếm ngược 10 giây ở
+  sảnh) nên mọi người thấy gần như cùng một khung trời, và **không tốn gói tin nào**.
+
+**Số đo** (menu 79 — mới, **0 lỗi**):
+
+| Đo | Kết quả |
+|---|---|
+| Vừa vào trận | đèn `(1,00 0,64 0,34)` ấm 0,660 · mạnh **1,45** · góc **13°** · sao **0** · sương ấm 0,360 |
+| Năm mốc 0 → 1 | đèn 1,45 → 0,88; ấm 0,660 → **−0,460**; môi trường 0,295 → 0,143; sao 0 → 1; góc 13° → 42° — **không mốc nào đi ngược** |
+| Đồng hồ | sau 6,00 giây thật, tiến độ tăng 0,0500 (đúng 6/120) |
+| Hết 2 phút | **trùng khít** đêm hiện giờ: đèn `(0,520 0,720 0,980)` 0,88 / bóng 0,62 / 42°, ba tầng môi trường, sương `(0,115 0,175 0,215)` 0,0105, sao 1, quầng đĩa 0,9 |
+| Đối chứng | đêm thì đèn **lạnh** (ấm −0,460), ngược hẳn lúc xế chiều (+0,660) |
+| Chỉ Act2 | nạp Act1: không có component nào, đèn Act1 giữ nguyên |
+
+**Việc này làm lộ một vấn đề lớn hơn với phép thử.** Hàng chục phép thử chụp ảnh trong Act2 ở những giây đầu
+trận — giờ nền trời cam thì ảnh đối chứng nào cũng lệch. Cách xử: **sự có mặt của `ChayThuMang`** (vật thể mà
+mọi kịch bản chạy thử đều dựng) là dấu hiệu "đang chạy thử" → nhảy thẳng tới đêm, ánh sáng đứng yên như trước.
+Phải kiểm ở **cả hai đầu** vì thứ tự không cố định: vật thể ấy tạo từ `EditorApplication.update`, có thể trước
+hoặc sau `Start`. Riêng menu 79 bật cờ cho phép và tự trả lại khi xong.
+
+**Và ba phép đo mong manh lộ ra.** Menu 73 (Tàng hình) kiểm "đòn đầu nhân đôi" bằng cách đếm **tổng máu bia
+mất**. Con số ấy phụ thuộc bao nhiêu quả trúng được bia và trúng chỗ nào (sát thương vùng giảm dần từ tâm ra
+rìa), nên hai lần chạy **cùng một bản code** cho 1,35 và 1,73. Nay cả ba đọc **số ghi trên từng đòn** — đúng
+cách mà một ca khác trong chính phép thử ấy đã làm — và ra đúng **×2,00** mọi lần. Cùng lúc, một ca bắt nhầm
+quả cầu lửa **của quái** (16,80 sát thương) nên ra tỉ lệ 0,20 rồi 10,12; nay lọc theo người tung.
+
+Còn một chỗ thật sự thay đổi hành vi: Quả cầu băng cấp 5 nay để lại tảng băng **nổ +100 cố định**, mà số cố
+định thì không nhân đôi theo Tàng hình. Phép thử dọn tảng băng trước khi đếm và đo riêng phần đòn trực tiếp.
+
 ### Bảy nút kỹ năng tròn to thêm 20% (19/09/2026)
 
 Anh xin cụm nút cảm ứng **to thêm 20%**, và dặn: đừng để chúng chồng lên nhau, đừng tràn qua mép phải hay

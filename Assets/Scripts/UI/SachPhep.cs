@@ -535,6 +535,17 @@ public static class SachPhep
         }
     }
 
+    /// <summary>
+    /// So ky nang CO TEN - dung lam bat bien cho cac phep thu thay vi chep tay "13", "16", "20"...
+    /// Moi lan them ky nang moi la cac con so chep tay ay bao loi oan (19/09/2026 co 5 phep thu dinh).
+    /// </summary>
+    public static int SoKyNangCoTen()
+    {
+        int n = 0;
+        for (int i = 0; i < CapDo.SoKyNang; i++) if (!string.IsNullOrEmpty(Ten(i))) n++;
+        return n;
+    }
+
     /// <summary>Ba con so chinh cua mot ky nang, doc THANG tu nhan vat.</summary>
     public static void ThongSo(PlayerController pc, int ky,
                                out float nangLuong, out float hoiChieu, out float niemChu)

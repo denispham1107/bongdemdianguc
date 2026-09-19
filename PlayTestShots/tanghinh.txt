@@ -1,7 +1,7 @@
 [ban 1] Tang hinh
 
-A. so hieu 12, so ky nang 13; nang luong 30, hoi chieu 30 s, niem 0.38 s; Sach phep doc 30/30/0.38; thoi gian 20 s, he so toc 1.2, nhan don dau 2
-A. ten "TÀNG HÌNH", tom tat "Trong suốt 20 giây, đòn sau gấp đôi", mo ta 750 ky tu; HUD 13 icon, icon so 12 co; icon file 256x256
+A. so hieu 12, so ky nang 20; nang luong 30, hoi chieu 30 s, niem 0.38 s; Sach phep doc 30/30/0.38; thoi gian 20 s, he so toc 1.2, nhan don dau 2
+A. ten "TÀNG HÌNH", tom tat "Trong suốt 20 giây, đòn sau gấp đôi", mo ta 750 ky tu; HUD 20 icon, icon so 12 co; icon file 256x256
 
 B. khoa -> tu choi True; mo khoa -> tung True, co trang thai TangHinh True (con 19.4 s), ton 30 nang luong, hoi chieu ngay sau 29.4 s
 C. renderer dung shader tang hinh: truoc khi bat 0, sau khi bat 1
@@ -15,20 +15,23 @@ E2. bat tang hinh luc dang dinh 3 hieu ung -> con lai 0
 
 D. 24 quai that: nham minh truoc khi tang hinh 24, sau khi tang hinh 0; GameDirector.GanNhat: truoc Player, sau null
 
-G. (mo khoa Qua cau lua: True) mot chum Qua cau lua vao bia: binh thuong mat 166.7, khi dang tang hinh mat 333.4 -> x2.00 (mong 2,00); bo dem don dau +1; sau don do con tang hinh False; tung KHIEN thi con tang hinh True
+G. (mo khoa Qua cau lua: True) chum Qua cau lua: sat thuong GHI TREN QUA binh thuong 85.00 (3 qua), dang tang hinh 170.00 (3 qua) -> x2.00 (mong 2,00); bo dem don dau +1; sau don do con tang hinh False; tung KHIEN thi con tang hinh True
+G2. (tham khao) mau bia mat: 170.4 va 340.8 - KHONG kiem so nay vi so qua trung bia moi lan mot khac
 
-J. do hien cua than minh: luc con > 2 giay 1.00..1.00 (dung yen, khong nhap nhay); trong 2 giay cuoi 0.12..1.00, doi sang/toi 18 lan trong 63 khung (nhip 0.22 s)
+J. do hien cua than minh: luc con > 2 giay 1.00..1.00 (dung yen, khong nhap nhay); trong 2 giay cuoi 0.12..1.00, doi sang/toi 18 lan trong 65 khung (nhip 0.22 s)
 J. hai tam anh cung mot nhip: nua sang do hien 1.00, nua mo 0.12
 
-K1. MUA BANG (23 quai da don): sat thuong GHI TREN TUNG VET roi - binh thuong 34 vet, 29.04..29.04; dang tang hinh 35 vet, 58.08..58.08 -> x2.00 (mong 2,00; neu chi vet dau x2 thi vet thu hai tro di van la 29.04)
-K1. mau bia that su mat: binh thuong 883 qua 34 lan tut (26.0/lan); dang tang hinh 1102 qua 21 lan (52.5/lan) -> moi lan trung x2.02. TONG khong tron 2,00 (x1.25) vi so vet TRUNG bia moi con bao moi khac va sat thuong vung giam dan tu tam ra ria
-K2. QUA CAU BANG cap 5 (5 qua): binh thuong 442.2, dang tang hinh 884.8 -> x2.00 (mong 2,00; neu chi qua dau x2 thi 1,20)
+K1. MUA BANG (23 quai da don): sat thuong GHI TREN TUNG VET roi - binh thuong 35 vet, 60.22..60.22; dang tang hinh 35 vet, 120.43..120.43 -> x2.00 (mong 2,00; neu chi vet dau x2 thi vet thu hai tro di van la 60.22)
+K1. mau bia that su mat: binh thuong 2690 qua 43 lan tut (62.6/lan); dang tang hinh 3641 qua 36 lan (101.1/lan) -> moi lan trung x1.62. TONG khong tron 2,00 (x1.35) vi so vet TRUNG bia moi con bao moi khac va sat thuong vung giam dan tu tam ra ria
+K2. QUA CAU BANG cap 5: sat thuong GHI TREN TUNG QUA - binh thuong 5 qua, 134.78..134.78; dang tang hinh 5 qua, 269.57..269.57 -> x2.00 (mong 2,00; neu chi qua dau x2 thi qua thu hai tro di van la 134.78)
+K2b. (tham khao) tong mau bia mat: binh thuong 514.5, tang hinh 884.6 - KHONG kiem so nay vi so qua trung bia moi lan mot khac
 
-H. dat 1,2 giay -> tu tan sau 1.26 giay
+H. dat 1,2 giay -> tu tan sau 1.24 giay
 
 I. minh tang hinh -> goi trang thai co bit CoTangHinh: True (byte co = 32); ban sao nhan bit: co trang thai True, renderer hien khi DUNG YEN 0, khi DI CHUYEN 1; ban sao nhap nhay False (phai la False)
 L1. goi phep viet-doc: khong co co -> cap 5 don False; co co -> cap 5 don True
-L2. nguoi KIA tung Qua cau lua qua mang: goi khong co co 80.1, goi co co don tang hinh 160.0 -> x2.00 (mong 2,00)
+L2. nguoi KIA tung Qua cau lua qua mang: sat thuong GHI TREN QUA - goi khong co co 85.00 (3 qua), goi co co don tang hinh 170.00 (3 qua) -> x2.00 (mong 2,00)
+L2b. (tham khao) tong mau bia mat: 144.9 va 288.7 - KHONG kiem so nay vi so qua trung bia moi lan mot khac
 L3. minh danh don dau trong tang hinh -> goi phep gui di: co goi True, mang co don tang hinh True
 
 so loi ghi nhan = 0

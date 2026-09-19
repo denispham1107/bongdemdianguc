@@ -33,7 +33,7 @@ public static class WorldFactory
     /// nguyen tong cu. Neu khong tach ra thi doi mau cho Act2 se doi luon ca
     /// Act1, vi GameBootstrap goi BuildSkyAndFog o MOI man.
     /// </summary>
-    static bool LaAct2()
+    public static bool LaAct2()
     {
         var ten = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
         return !string.IsNullOrEmpty(ten) && ten.Contains("Act2");

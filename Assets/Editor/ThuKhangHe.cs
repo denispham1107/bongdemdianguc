@@ -191,7 +191,8 @@ public static class ThuKhangHe
             Ghi(string.Format("A. HUD {0} icon; icon so 16..19 {1}", bo != null ? bo.Length : -1,
                 bo != null && bo.Length == 20 && bo[16] != null && bo[17] != null && bo[18] != null && bo[19] != null ? "co du" : "THIEU"));
 
-            Kiem(CapDo.SoKyNang == 20 && CapDo.KyKhangLua == 16 && CapDo.KyKhangPhong == 19, "so hieu / so ky nang sai");
+            Kiem(CapDo.SoKyNang == SachPhep.SoKyNangCoTen() && CapDo.KyKhangLua == 16 && CapDo.KyKhangPhong == 19,
+                 "so hieu sai, hoac co ky nang khong co ten");
             Kiem(duNhom, "Sach phep khong co nhom BỊ ĐỘNG du bon ky nang");
             Kiem(bo != null && bo.Length == CapDo.SoKyNang && bo[16] != null && bo[19] != null, "HUD thieu icon khang");
             for (int i = 0; i < 4; i++)

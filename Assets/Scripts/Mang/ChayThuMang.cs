@@ -13,6 +13,15 @@ using UnityEngine;
 /// </summary>
 public class ChayThuMang : MonoBehaviour
 {
+    void Awake()
+    {
+        // Co mat vat the nay = dang chay mot kich ban chay thu. Act2 gio vao tran luc XE CHIEU roi toi
+        // dan (ChuyenChieuSangDem); de nguyen thi moi phep thu chup anh trong Act2 se thay mot bau troi
+        // khac han cai ma anh doi chung cua no da chup. Nhay thang toi dem cho anh sang dung yen.
+        // Menu 79 tu tat co nay vi no do CHINH cai chuyen anh sang.
+        ChuyenChieuSangDem.ToiDemNgay();
+    }
+
     public IEnumerator batDau;
 
     /// <summary>Phep thu can ve them len man hinh (vd mau doi chung) thi gan vao day.</summary>

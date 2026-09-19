@@ -254,7 +254,7 @@ public static class ThuQuaCauDien
         Ghi(string.Format("A. ten \"{0}\", tom tat \"{1}\", mo ta {2} ky tu; HUD {3} icon, icon so 13 {4}",
             SachPhep.Ten(K), SachPhep.TomTat(K), SachPhep.MoTa(K).Length,
             bo != null ? bo.Length : -1, bo != null && bo.Length > K && bo[K] != null ? "co" : "KHONG"));
-        Kiem(K == 13 && CapDo.SoKyNang == CapDo.KyTocBien + 1, "so hieu / so ky nang sai");
+        Kiem(K == 13 && CapDo.SoKyNang == SachPhep.SoKyNangCoTen(), "so hieu sai, hoac co ky nang khong co ten");
         Kiem(Mathf.Approximately(toi.cauDienCost, 55f) && Mathf.Approximately(nl, 55f), "nang luong khong phai 55");
         Kiem(Mathf.Approximately(toi.cauDienCooldown, 5f) && Mathf.Approximately(hc, 5f), "hoi chieu khong phai 5 giay");
         Kiem(Mathf.Approximately(QuaCauDien.GiayChoToiDa, 30f), "han song cua qua cau khong phai 30 giay");

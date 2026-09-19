@@ -255,8 +255,7 @@ public static class ThuLuaDiaNguc
         Ghi(string.Format("A. sat thuong goc {0:F2} = qua cau lua PREFAB {1} x 1,2^4 ({2:F2}); ten \"{3}\", tom tat \"{4}\", mo ta {5} ky tu; HUD {6} icon, icon so 11 {7}; icon file {8}",
             LuaDiaNguc.SatThuongGoc, impactPrefab, impactPrefab * Mathf.Pow(1.2f, 4), SachPhep.Ten(K), SachPhep.TomTat(K), SachPhep.MoTa(K).Length,
             bo != null ? bo.Length : -1, bo != null && bo.Length > K && bo[K] != null ? "co" : "KHONG", tIcon != null ? tIcon.width + "x" + tIcon.height : "KHONG"));
-        int soCoTen = 0;
-        for (int i = 0; i < CapDo.SoKyNang; i++) if (!string.IsNullOrEmpty(SachPhep.Ten(i))) soCoTen++;
+        int soCoTen = SachPhep.SoKyNangCoTen();
         Kiem(K == 11 && CapDo.SoKyNang == soCoTen, "so hieu sai, hoac co ky nang khong co ten ("
              + CapDo.SoKyNang + " ky nang nhung " + soCoTen + " cai co ten)");
         Kiem(Mathf.Approximately(toi.luaDiaNgucCost, 31f) && Mathf.Approximately(nl, 31f), "nang luong khong phai 31");

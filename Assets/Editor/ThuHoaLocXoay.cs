@@ -160,7 +160,7 @@ public static class ThuHoaLocXoay
             SachPhep.Ten(K), SachPhep.TomTat(K), SachPhep.MoTa(K).Length, bo != null ? bo.Length : -1,
             bo != null && bo.Length > K && bo[K] != null ? "co" : "KHONG",
             tIcon != null ? tIcon.width + "x" + tIcon.height : "KHONG", GioLoc.ManaHoiMoiLanTrung));
-        Kiem(K == 14 && CapDo.SoKyNang == 15, "so hieu / so ky nang sai");
+        Kiem(K == 14 && CapDo.SoKyNang == SachPhep.SoKyNangCoTen(), "so hieu sai, hoac co ky nang khong co ten");
         Kiem(Mathf.Approximately(toi.hoaLocXoayCost, 45f) && Mathf.Approximately(nl, 45f), "nang luong khong phai 45");
         Kiem(Mathf.Approximately(toi.hoaLocXoayCooldown, 0.5f) && Mathf.Approximately(hc, 0.5f), "hoi chieu khong phai 0,5 giay");
         Kiem(Mathf.Approximately(GioLoc.ManaHoiMoiLanTrung, 10f), "Gio loc khong hoi 10 mana moi lan trung");
