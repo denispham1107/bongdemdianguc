@@ -8479,6 +8479,26 @@ nằm ngang). Phép thử **ghi lại cả hai con số** thay vì tính là l�
 thanh ô vuông — vì `GameHUD.Update` ghi đè `CamUng.EpBat = epCamUng` mỗi khung hình. Phải đặt `hud.epCamUng`.
 Nay phép thử kiểm luôn `CamUng.DangDung` trước khi tin vào ảnh.
 
+**Sửa lại ngay sau đó**: anh thấy cụm nút *"hơi bị to quá"* nên xin **nhỏ lại 10%** (tổng cộng còn **×1,08** so
+với trước khi phóng to), và xin **cần điều khiển to thêm 10%**. Cùng một cách làm: nhân đều, giữ nguyên góc.
+
+| | Trước mọi thay đổi | Cuối cùng |
+|---|---|---|
+| Bán kính nút · lề | 60,72 · 101,2 | **65,578 · 109,296** |
+| Ba cung | 234,03 · 392,15 · 92,23 | **252,75 · 423,52 · 99,61** |
+| Cả cụm | 525,5 × 520,2 | **567,6 × 561,8** |
+| Cần điều khiển: bán kính · tâm · lề | 172,5 · 232,5 · 60 | **189,75 · 255,75 · 66** |
+
+Cần điều khiển cũng phải nhân **cả tâm**, không chỉ bán kính — giữ nguyên tâm mà bán kính to lên thì lề tụt từ
+60 xuống 42,75 và cần bị cắt ở mép. Số đo sau khi sửa (menu 78, **0 lỗi**): nút ×1,080 cả ba chiều; cần ×1,100
+cả bán kính lẫn tâm, lề 60 → 66; chỗ hở hẹp nhất giữa hai nút **16,6** trên đường kính 131,2; mép phải · mép
+dưới còn dư ít nhất **34,8 · 31,6 px** (điện thoại 844×390); cụm nút cách cần điều khiển gần nhất 303,7 px.
+
+**Đối chứng phải độc lập với con số đang chỉnh.** Đối chứng cũ là *"thu cụm về 1/hệ số, giữ nút"* — đúng khi hệ
+số là 1,2, nhưng khi nó thành 1,08 thì phép ấy chỉ phóng nút lên 8%, không đủ để chồng nhau, và đối chứng tự báo
+"vẫn còn hở" — tức phép đo B mất giá trị mà không ai biết. Nay đối chứng dùng **một mức cố định**: phóng riêng
+cái nút thêm 20% trong khi hai cung giữ nguyên, và nó phải cho chồng nhau (**−9,6**).
+
 ### Bốn ô trống trong Sách phép ở sảnh — một bản sao bị bỏ quên (19/09/2026)
 
 Anh bấm **KỸ NĂNG** ở phòng chờ và thấy bốn kỹ năng Kháng hiện ra **bốn ô trống trơn** — không có cả cái đĩa

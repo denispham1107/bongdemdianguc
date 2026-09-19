@@ -281,8 +281,10 @@ public partial class GameHUD : MonoBehaviour
     /// <summary>Ti le man hinh dung cho ca HUD: thiet ke theo man cao 1080. Phep thu doc ham nay, khong chep cong thuc.</summary>
     public static float TiLeMan(float caoMan) { return caoMan / Ref; }
 
-    public static Vector2 TamJoystick(float s) { return new Vector2(232.5f * s, 232.5f * s); }
-    public static float BanKinhJoystick(float s) { return 172.5f * s; }
+    // 19/09/2026 nguoi dung xin can dieu khien TO THEM 10%: nhan ca TAM lan ban kinh, nhu vay
+    // le tu goc man hinh (tam - ban kinh = 60 -> 66) cung len theo va can khong bi cat o mep.
+    public static Vector2 TamJoystick(float s) { return new Vector2(255.75f * s, 255.75f * s); }
+    public static float BanKinhJoystick(float s) { return 189.75f * s; }
 
     /// <summary>
     /// Doc cham/chuot cho can joystick va cac nut ky nang.
@@ -1028,9 +1030,9 @@ public partial class GameHUD : MonoBehaviour
     /// Le tu goc man hinh toi TAM cua cung. Phai lon hon ban kinh nut, khong
     /// thi nut trong cung bi cat mat mot mieng o mep man hinh.
     /// </summary>
-    const float Le = 121.44f;
+    const float Le = 109.296f;
 
-    float BanKinhNut(float s) { return 72.864f * s; }
+    float BanKinhNut(float s) { return 65.5776f * s; }
 
     /// <summary>
     /// Tam cua nut ky nang thu <paramref name="i"/>, tinh theo GOC PHAI DUOI.
@@ -1057,7 +1059,8 @@ public partial class GameHUD : MonoBehaviour
         // ke - gan nhu dinh nhau. Nhan TAT CA cho cung mot he so (ke ca le) thi
         // moi khoang cach cung len theo, ti le ho giu y nguyen nhu truoc.
         //
-        // Da nhan BA lan: 1,1 roi 1,15 roi 1,2 (nguoi dung 19/09/2026 xin to them 20%).
+        // Da nhan: 1,1 roi 1,15 roi 1,2 (19/09/2026 xin to them 20%), roi x0,9 cung ngay hom ay
+        // vi nguoi dung thay "hoi bi to qua" - tong cong x1,08 so voi truoc lan xin to.
         // Goc thi GIU NGUYEN - chi ban kinh doi.
         //
         // So do hien tai (menu 78 do, khong chep tay): cung trong R=280,84s buoc 34 do;
@@ -1091,7 +1094,7 @@ public partial class GameHUD : MonoBehaviour
         // NUT THU BAY nam o mot cung RIENG, trong cung, sat goc man hinh.
         if (i == 6)
         {
-            const float banBay = 110.676f;
+            const float banBay = 99.6084f;
             const float gocBay = 26.1f;
             float radBay = gocBay * Mathf.Deg2Rad;
             return new Vector2(Le + Mathf.Cos(radBay) * banBay,
@@ -1099,7 +1102,7 @@ public partial class GameHUD : MonoBehaviour
         }
 
         bool trong = i < 3;
-        float ban = trong ? 280.836f : 470.58f;
+        float ban = trong ? 252.7524f : 423.522f;
         int k = trong ? i : i - 3;
 
         // Trai ra (goc lon) den len tren (goc nho)
@@ -1119,7 +1122,7 @@ public partial class GameHUD : MonoBehaviour
     /// </summary>
     public static void HinhHocCumNut(out float banKinhNut, out float rong, out float cao)
     {
-        banKinhNut = 72.864f;
+        banKinhNut = 65.5776f;
         rong = 0f; cao = 0f;
         for (int i = 0; i < SoNut; i++)
         {

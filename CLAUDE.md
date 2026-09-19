@@ -296,11 +296,15 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
   nhân "chỉ số × chiều cao hàng" (phép thử menu 59 hỏi `CuaSoSachPhep.VungHangKyNang`). Số hiệu kỹ năng KHÔNG đổi.
   ⚠️ Thứ tự ô ghi **thẳng localStorage** trên WebGL (`CD_DocChuoi/CD_GhiChuoi` trong `CauNoiCaiDat.jslib`, 14/09/2026) — PlayerPrefs
   WebGL ghi không đồng bộ, đóng tab ngay là mất; ngoài WebGL vẫn PlayerPrefs.
-- ⚠️ **CỤM 7 NÚT TRÒN (cảm ứng) to thêm 20%** (người dùng 19/09/2026): bán kính nút **72,864**, lề **121,44**,
-  cung trong **280,84** · ngoài **470,58** · nút thứ bảy **110,68**; góc GIỮ NGUYÊN. Phóng to thì phải nhân
-  **tất cả** cho cùng hệ số kể cả LỀ — chỉ nút to mà cung giữ nguyên là các nút chồng nhau (menu 78 có đối chứng:
-  chỗ hở −8,9). Cả cụm 630,6 × 624,2; hở hẹp nhất 18,5 / đường kính 145,7. Màn NGANG không tràn mép nào (hẹp nhất
-  844×390: dư 38,6 phải · 35,1 dưới); màn DỌC vượt mép trái 102,8 (bản cũ cũng vượt 20,7 — bản cảm ứng chơi ngang).
+- ⚠️ **CỤM 7 NÚT TRÒN (cảm ứng) ×1,08 và CẦN ĐIỀU KHIỂN ×1,10** (người dùng 19/09/2026, xin hai lần: to 20%
+  rồi thấy to quá nên nhỏ bớt 10%): nút **65,578**, lề **109,296**, cung trong **252,75** · ngoài **423,52** ·
+  nút thứ bảy **99,61**; cần điều khiển bán kính **189,75**, tâm **255,75**, lề 66. Góc GIỮ NGUYÊN. Đổi cỡ thì phải
+  nhân **tất cả** cho cùng hệ số kể cả LỀ (và với cần điều khiển là cả TÂM — giữ tâm thì lề tụt 60 → 42,75 và cần bị
+  cắt ở mép); chỉ nút to mà cung giữ nguyên là các nút chồng nhau. Cả cụm 567,6 × 561,8; hở hẹp nhất 16,6 / đường
+  kính 131,2; cụm cách cần điều khiển ≥ 303,7 px. Màn NGANG không tràn mép nào (hẹp nhất 844×390: dư 34,8 phải ·
+  31,6 dưới); màn DỌC vượt mép trái 53,5 (bản gốc cũng vượt 20,7 — bản cảm ứng chơi ngang).
+  ⚠️ **Đối chứng của menu 78 phải độc lập với hệ số đang chỉnh**: bản đầu là "thu cụm về 1/hệ số" nên khi hệ số
+  đổi 1,2 → 1,08 thì nó hết bắt được lỗi mà vẫn im lặng. Nay là mức cố định "phóng riêng nút thêm 20%" (ra −9,6).
   ⚠️ Chụp ảnh bản cảm ứng phải đặt **`hud.epCamUng`**, không phải `CamUng.EpBat`: `GameHUD.Update` ghi đè
   `CamUng.EpBat = epCamUng` mỗi khung nên ảnh ra bản máy tính. Menu 78 kiểm.
 - ⚠️ **BỘ BIỂU TƯỢNG KỸ NĂNG chỉ có MỘT BẢNG**: `IconKyNang.BoDayDu()` (xếp theo số hiệu, dài `CapDo.SoKyNang`).

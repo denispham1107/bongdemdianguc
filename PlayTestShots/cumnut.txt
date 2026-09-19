@@ -1,29 +1,30 @@
 [ban 1] cum 7 nut ky nang tron - to them 20% (nguoi dung 19/09/2026)
 
-A. ban kinh nut 72.864 (truoc 60.720 -> x1.200); ca cum 630.6 x 624.2 (truoc 525.5 x 520.2 -> x1.200 va x1.200)
+A. ban kinh nut 65.578 (moc 60.720 -> x1.080, mong x1.080); ca cum 567.6 x 561.8 (moc 525.5 x 520.2 -> x1.080 va x1.080)
+A2. can joystick: ban kinh 189.75 (moc 172.50 -> x1.100, mong x1.10); tam 255.75 (moc 232.50 -> x1.100); le tu goc man 66.00 (moc 60.00)
 
-B. 21 cap nut: cho hep nhat 18.5 (giua nut 1 va nut 2), duong kinh nut 145.7; ban truoc cho hep nhat 15.4 / duong kinh 121.4
-B2. DOI CHUNG (chi nut to, hai cung giu nguyen): cho hep nhat -8.9 giua nut 1 va nut 2 -> CHONG NHAU dung nhu mong doi
+B. 21 cap nut: cho hep nhat 16.6 (giua nut 2 va nut 3), duong kinh nut 131.2; ban truoc cho hep nhat 15.4 / duong kinh 121.4
+B2. DOI CHUNG (phong to RIENG cai nut them 20%, hai cung giu nguyen): cho hep nhat -9.6 giua nut 2 va nut 3 -> CHONG NHAU dung nhu mong doi
 
 C. tran mep o tung do phan giai (cum do tu GOC PHAI DUOI; + la con cach mep, - la TRAN ra ngoai)
-    may tinh 1920x1080: phai 107.0 | duoi 97.3 | trai 1289.4 | tren 455.8  (ban kinh nut 72.9 px)
-    may tinh 1280x720: phai 71.3 | duoi 64.8 | trai 859.6 | tren 303.9  (ban kinh nut 48.6 px)
-    may tinh 4:3 1024x768: phai 76.1 | duoi 69.2 | trai 575.6 | tren 324.1  (ban kinh nut 51.8 px)
-    dien thoai ngang 844x390: phai 38.6 | duoi 35.1 | trai 616.3 | tren 164.6  (ban kinh nut 26.3 px)
-    dien thoai ngang 915x412: phai 40.8 | duoi 37.1 | trai 674.4 | tren 173.9  (ban kinh nut 27.8 px)
-    dien thoai ngang 2340x1080: phai 107.0 | duoi 97.3 | trai 1709.4 | tren 455.8  (ban kinh nut 72.9 px)
-    may bang ngang 1180x820: phai 81.2 | duoi 73.9 | trai 701.2 | tren 346.1  (ban kinh nut 55.3 px)
-    dien thoai DOC 390x844: phai 83.6 | duoi 76.0 | trai -102.8 | tren 356.2  (ban kinh nut 56.9 px)
-       (man doc khong tinh la loi - chi ghi lai: mep trai ban NAY -102.8, ban TRUOC khi to -20.7)
+    may tinh 1920x1080: phai 96.3 | duoi 87.5 | trai 1352.4 | tren 518.2  (ban kinh nut 65.6 px)
+    may tinh 1280x720: phai 64.2 | duoi 58.4 | trai 901.6 | tren 345.5  (ban kinh nut 43.7 px)
+    may tinh 4:3 1024x768: phai 68.5 | duoi 62.3 | trai 620.4 | tren 368.5  (ban kinh nut 46.6 px)
+    dien thoai ngang 844x390: phai 34.8 | duoi 31.6 | trai 639.0 | tren 187.1  (ban kinh nut 23.7 px)
+    dien thoai ngang 915x412: phai 36.7 | duoi 33.4 | trai 698.5 | tren 197.7  (ban kinh nut 25.0 px)
+    dien thoai ngang 2340x1080: phai 96.3 | duoi 87.5 | trai 1772.4 | tren 518.2  (ban kinh nut 65.6 px)
+    may bang ngang 1180x820: phai 73.1 | duoi 66.5 | trai 749.1 | tren 393.5  (ban kinh nut 49.8 px)
+    dien thoai DOC 390x844: phai 75.2 | duoi 68.4 | trai -53.5 | tren 405.0  (ban kinh nut 51.2 px)
+       (man doc khong tinh la loi - chi ghi lai: mep trai ban NAY -53.5, ban TRUOC khi to -20.7)
 
-D. khoang cach toi can joystick (goc trai duoi)
-    may tinh 1920x1080: cho ho gan nhat 886.3 px (can joystick ban kinh 172.5)
-    may tinh 1280x720: cho ho gan nhat 590.8 px (can joystick ban kinh 115.0)
-    may tinh 4:3 1024x768: cho ho gan nhat 289.9 px (can joystick ban kinh 122.7)
-    dien thoai ngang 844x390: cho ho gan nhat 470.5 px (can joystick ban kinh 62.3)
-    dien thoai ngang 915x412: cho ho gan nhat 520.4 px (can joystick ban kinh 65.8)
-    dien thoai ngang 2340x1080: cho ho gan nhat 1305.8 px (can joystick ban kinh 172.5)
-    may bang ngang 1180x820: cho ho gan nhat 395.8 px (can joystick ban kinh 131.0)
+D. khoang cach toi can joystick (goc trai duoi) - can da to them 10% nen cho ho hep hon truoc
+    may tinh 1920x1080: cho ho gan nhat 907.0 px (can joystick ban kinh 189.8)
+    may tinh 1280x720: cho ho gan nhat 604.7 px (can joystick ban kinh 126.5)
+    may tinh 4:3 1024x768: cho ho gan nhat 303.7 px (can joystick ban kinh 134.9)
+    dien thoai ngang 844x390: cho ho gan nhat 478.2 px (can joystick ban kinh 68.5)
+    dien thoai ngang 915x412: cho ho gan nhat 528.6 px (can joystick ban kinh 72.4)
+    dien thoai ngang 2340x1080: cho ho gan nhat 1327.0 px (can joystick ban kinh 189.8)
+    may bang ngang 1180x820: cho ho gan nhat 410.9 px (can joystick ban kinh 144.1)
 
 E. anh chup HUD cam ung o man 1566x574
 E2. dang ve ban cam ung: CamUng.DangDung = True

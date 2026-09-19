@@ -35,10 +35,18 @@ public static class ThuCumNutCamUng
     static bool truocBat;
     static EnterPlayModeOptions truocOpt;
 
-    /// <summary>Ban kinh nut TRUOC khi nguoi dung xin to them 20% - moc de kiem "to dung 20%".</summary>
+    /// <summary>
+    /// Moc: kich thuoc cum nut va can joystick TRUOC khi nguoi dung xin doi (19/09/2026).
+    /// Nguoi dung xin hai lan trong cung ngay: to them 20%, roi thay to qua nen nho bot 10%
+    /// -> tong cong x1,2 x 0,9 = x1,08. Can joystick to them 10%.
+    /// </summary>
     const float RTruoc = 60.72f;
     const float LeTruoc = 101.2f;
-    const float HeSoXin = 1.20f;
+    const float HeSoXin = 1.20f * 0.90f;
+
+    const float TamJoyTruoc = 232.5f;
+    const float BanKinhJoyTruoc = 172.5f;
+    const float HeSoJoy = 1.10f;
 
     /// <summary>Man hinh that de thu: ten, rong, cao, co phai man NGANG khong.</summary>
     static readonly object[][] ManThu =
@@ -111,11 +119,25 @@ public static class ThuCumNutCamUng
             caoCu = Mathf.Max(caoCu, l.y + RTruoc);
         }
         Ghi("");
-        Ghi(string.Format("A. ban kinh nut {0:F3} (truoc {1:F3} -> x{2:F3}); ca cum {3:F1} x {4:F1} (truoc {5:F1} x {6:F1} -> x{7:F3} va x{8:F3})",
-            r, RTruoc, r / RTruoc, rong, cao, rongCu, caoCu, rong / rongCu, cao / caoCu));
-        Kiem(Mathf.Abs(r / RTruoc - HeSoXin) < 0.001f, "ban kinh nut khong to dung 20%");
-        Kiem(Mathf.Abs(rong / rongCu - HeSoXin) < 0.001f, "be ngang cum khong len dung 20% - cum bi keo meo");
-        Kiem(Mathf.Abs(cao / caoCu - HeSoXin) < 0.001f, "chieu cao cum khong len dung 20% - cum bi keo meo");
+        Ghi(string.Format("A. ban kinh nut {0:F3} (moc {1:F3} -> x{2:F3}, mong x{3:F3}); ca cum {4:F1} x {5:F1} (moc {6:F1} x {7:F1} -> x{8:F3} va x{9:F3})",
+            r, RTruoc, r / RTruoc, HeSoXin, rong, cao, rongCu, caoCu, rong / rongCu, cao / caoCu));
+        Kiem(Mathf.Abs(r / RTruoc - HeSoXin) < 0.001f, "ban kinh nut khong dung ti le da chot");
+        Kiem(Mathf.Abs(rong / rongCu - HeSoXin) < 0.001f, "be ngang cum khong dung ti le - cum bi keo meo");
+        Kiem(Mathf.Abs(cao / caoCu - HeSoXin) < 0.001f, "chieu cao cum khong dung ti le - cum bi keo meo");
+
+        // ---- A2. CAN JOYSTICK to dung 10% va khong bi cat o mep ----
+        float sMoc = 1f;
+        float bkJoy = GameHUD.BanKinhJoystick(sMoc);
+        Vector2 tamJoy = GameHUD.TamJoystick(sMoc);
+        float leJoy = tamJoy.x - bkJoy;                       // tam - ban kinh = le tu goc man hinh
+        float leJoyTruoc = TamJoyTruoc - BanKinhJoyTruoc;
+        Ghi(string.Format("A2. can joystick: ban kinh {0:F2} (moc {1:F2} -> x{2:F3}, mong x{3:F2}); tam {4:F2} (moc {5:F2} -> x{6:F3}); le tu goc man {7:F2} (moc {8:F2})",
+            bkJoy, BanKinhJoyTruoc, bkJoy / BanKinhJoyTruoc, HeSoJoy,
+            tamJoy.x, TamJoyTruoc, tamJoy.x / TamJoyTruoc, leJoy, leJoyTruoc));
+        Kiem(Mathf.Abs(bkJoy / BanKinhJoyTruoc - HeSoJoy) < 0.001f, "can joystick khong to dung 10%");
+        Kiem(Mathf.Abs(tamJoy.x / TamJoyTruoc - HeSoJoy) < 0.001f, "tam can joystick khong dich theo - can se bi cat o mep");
+        Kiem(leJoy > 0f, "can joystick bi cat o mep trai / mep duoi man hinh");
+        Kiem(leJoy > leJoyTruoc, "le cua can joystick khong len theo");
 
         // ---- B. KHONG NUT NAO CHONG NUT NAO ----
         float hepNhat; int iA, iB;
@@ -130,13 +152,20 @@ public static class ThuCumNutCamUng
         Kiem(Mathf.Abs((hepNhat / (r * 2f)) - (hepCu / (RTruoc * 2f))) < 0.001f,
              "ti le cho ho doi - cum khong duoc nhan deu");
 
-        // DOI CHUNG: neu CHI nut to len ma hai cung giu nguyen thi phai CHONG NHAU.
-        // Khong co doi chung nay thi phep do tren luon xanh va khong chung minh duoc gi.
+        // DOI CHUNG - de biet phep do B co bat duoc loi that khong, chu khong phai luc nao cung xanh:
+        // lay chinh cum nay ma phong to RIENG cai nut them 20% (hai cung giu nguyen) - dung cai loi ma
+        // comment trong GameHUD canh bao - thi phai ra CHONG NHAU.
+        //
+        // ⚠️ Ban dau doi chung nay la "cum thu ve 1/HeSoXin, nut giu nguyen". No dung khi HeSoXin con la
+        // 1,2; den khi nguoi dung xin nho bot 10% (HeSoXin = 1,08) thi cach ay chi lam nut to 8% - khong
+        // du de chong nhau, va doi chung bao "van con ho" (lan chay 19/09/2026). Doi chung phai dung mot
+        // muc phong to CO DINH, khong an theo con so dang chinh.
+        const float PhongToThu = 1.20f;
         int cA, cB;
-        float hepSai = ChoHepNhat(1f / HeSoXin, r, out cA, out cB);
-        Ghi(string.Format("B2. DOI CHUNG (chi nut to, hai cung giu nguyen): cho hep nhat {0:F1} giua nut {1} va nut {2} -> {3}",
+        float hepSai = ChoHepNhat(1f, r * PhongToThu, out cA, out cB);
+        Ghi(string.Format("B2. DOI CHUNG (phong to RIENG cai nut them 20%, hai cung giu nguyen): cho hep nhat {0:F1} giua nut {1} va nut {2} -> {3}",
             hepSai, cA + 1, cB + 1, hepSai <= 0f ? "CHONG NHAU dung nhu mong doi" : "van con ho (phep do B khong bat duoc loi!)"));
-        Kiem(hepSai <= 0f, "doi chung hong: nut to len ma cung giu nguyen van khong chong nhau - phep do B vo nghia");
+        Kiem(hepSai <= 0f, "doi chung hong: nut to them 20% ma cung giu nguyen van khong chong nhau - phep do B vo nghia");
 
         // ---- C. KHONG TRAN MEP PHAI / MEP DUOI ----
         Ghi("");
@@ -185,7 +214,7 @@ public static class ThuCumNutCamUng
 
         // ---- D. KHONG DE LEN JOYSTICK ----
         Ghi("");
-        Ghi("D. khoang cach toi can joystick (goc trai duoi)");
+        Ghi("D. khoang cach toi can joystick (goc trai duoi) - can da to them 10% nen cho ho hep hon truoc");
         foreach (var m in ManThu)
         {
             string ten = (string)m[0];
