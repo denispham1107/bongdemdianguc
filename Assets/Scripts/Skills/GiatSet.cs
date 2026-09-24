@@ -23,6 +23,11 @@ using UnityEngine;
 /// Nguoi dung 16/09/2026: tam 20 m (truoc 19,5), sat thuong ban dau 75 (truoc 30), phong CUNG LUC
 /// toi da 4 tia neu co 4 ke dich phia truoc trong tam (truoc 3), moi tia van lan nhu cu; MOI CU
 /// TRUNG (ca tia lan) 15% gay choang.
+///
+/// Nguoi dung 24/09/2026: VE LAI giong anh mau - loi trang manh, quang xanh bao quanh, nhieu soi dien
+/// re nhanh, cum dien bung o tay va o cho trung (anh dung bang Blender MCP, xem LightningArc.anhBlender);
+/// tia HIEN 0,6 GIAY (<see cref="GiayTiaHien"/>, truoc 0,3) va bam theo hai tay / than ke dich; phu thuy
+/// day CA HAI TAY ra truoc (NguoiChoiHoatHinh.TuTheGiatSet). Luat choi khong doi.
 /// </summary>
 public class GiatSet : MonoBehaviour
 {
@@ -42,6 +47,18 @@ public class GiatSet : MonoBehaviour
     public const float XacSuatChoangNguoiChoi = 0.15f;
     /// <summary>Choang bao lau (cap ky nang cao cong them 0,15 giay moi cap).</summary>
     public const float GiayChoangNguoiChoi = 1.5f;
+
+    /// <summary>Moi tia hien bao lau, giay (nguoi dung chon 24/09/2026 - tia duy tri nhu anh mau).</summary>
+    public const float GiayTiaHien = 0.6f;
+
+    /// <summary>Be ngang dai anh cua tia dau (met) - nguoi dung 25/09/2026 xin manh hon (truoc 1,35).</summary>
+    public const float BeNgangTia = 0.70f;
+
+    /// <summary>
+    /// Diem giua hai tay nguoi tung (NguoiChoiHoatHinh.DiemGiatSet). Co thi dau tia dau tien bam theo no;
+    /// null (quai) thi dau tia dung yen.
+    /// </summary>
+    public Transform diemTay;
 
     [Tooltip("Ban kinh tim con tiep theo quanh con vua trung, met")]
     public float chainRadius = 5.5f;
@@ -81,7 +98,13 @@ public class GiatSet : MonoBehaviour
     [Tooltip("Loi tia - sang gan nhu trang")]
     public Color mauLoi = Color.white;
     [Tooltip("Quang quanh tia - day moi la mau nguoi choi NHIN THAY")]
-    public Color mauQuang = new Color(0.45f, 0.70f, 1f, 1f);
+    // Xanh dam hon tia cu (0,45 0,70 1): anh mau quang xanh lam ro, chi loi moi trang
+    // 25/09/2026 xanh DAM (0,30 0,52 -> 0,14 0,34): quang va hao quang day len ma kenh do/luc con cao thi tam cong
+    // lai thanh TRANG (menu 69 muc H: phan trang ban dem 7,0 -> 9,6 diem anh voi mau 0,25 0,45) - chi loi moi duoc trang.
+    public Color mauQuang = MauQuangNguoiChoi;
+
+    /// <summary>Mau quang cua Giut set nguoi choi - Qua cau dien cung dung (KieuTia).</summary>
+    public static readonly Color MauQuangNguoiChoi = new Color(0.14f, 0.34f, 1f, 1f);
 
     Vector3 origin, huong;
 
@@ -176,12 +199,14 @@ public class GiatSet : MonoBehaviour
     IEnumerator MotMach(Damageable muc, HashSet<Damageable> daTrung)
     {
         Vector3 tu = origin;
+        Transform tuT = diemTay;
         float sat = damage;
 
         for (int nhip = 0; nhip <= maxChains && muc != null; nhip++)
         {
             Vector3 den = DiemTrung(muc);
-            VeTia(tu, den, nhip == 0 ? 1.15f : 0.9f);
+            VeTia(tu, den, nhip == 0 ? 1.15f : 0.9f, tuT, muc.transform);
+            tuT = muc.transform;
             VfxFactory.SetChayDen(den, 1.25f);
             VfxFactory.NamChuongNgai(den, 2.2f, VfxFactory.LopChuongNgai);
 
@@ -234,11 +259,11 @@ public class GiatSet : MonoBehaviour
                             VfxFactory.LopChuongNgai, QueryTriggerInteraction.Ignore))
         {
             den = hit.point;
-            VeTia(origin, den, 1f);
+            VeTia(origin, den, 1f, diemTay, null);
             VfxFactory.NamDen(hit.point, hit.normal, Random.Range(0.40f, 0.70f));
             VfxFactory.SetChayDen(hit.point + hit.normal * 0.1f, 1.0f, 0.7f);
         }
-        else VeTia(origin, den, 1f);
+        else VeTia(origin, den, 1f, diemTay, null);
     }
 
     /// <summary>Diem ngam tren than ke dich, khong phai duoi chan no.</summary>
@@ -249,11 +274,35 @@ public class GiatSet : MonoBehaviour
         return d.transform.position + Vector3.up * 0.9f;
     }
 
-    void VeTia(Vector3 tu, Vector3 den, float day)
+    /// <summary>Dem cho phep thu: so tia da ve.</summary>
+    public static int SoTiaDaVe;
+
+    void VeTia(Vector3 tu, Vector3 den, float day, Transform bamDau, Transform bamCuoi)
     {
-        var arc = LightningArc.Create(tu, den, day, 0.30f);
+        SoTiaDaVe++;
+        var arc = LightningArc.Create(tu, den, day, GiayTiaHien);
         arc.coreColor = mauLoi;
         arc.glowColor = mauQuang;
+        KieuTia(arc, day, bamDau, bamCuoi);
+    }
+
+    /// <summary>
+    /// Bien <paramref name="arc"/> thanh KIEU TIA GIUT SET: dai anh Blender (loi trang manh, vien xanh, soi re nhanh),
+    /// cum dien bung hai dau, bam hai dau, duong gap khuc theo do dai. Khong dung toi mau va thoi gian song - noi goi
+    /// tu dat. Qua cau dien cung goi ham nay (nguoi dung 25/09/2026: "tia dien danh ra cung co hieu ung nhu tia set
+    /// cua Giut set") - sua kieu tia o DAY la ca hai ky nang cung doi.
+    /// </summary>
+    public static void KieuTia(LightningArc arc, float day, Transform bamDau, Transform bamCuoi)
+    {
+        // ANH VE TU BLENDER (nguoi dung 24/09/2026): loi, quang va soi re nhanh nam san trong anh nen duong
+        // di chi can gap khuc LON, khuc nho da co trong anh. Thieu anh thi LightningArc tu quay ve cach cu.
+        arc.anhBlender = true;
+        // Nguoi dung 25/09/2026: tia MANH lai (1,35 -> 0,70 m), cum bung o tay nho lai - xem LightningArc.NapAnh
+        arc.beNgang = BeNgangTia * day;
+        arc.coBungDau = 0.45f;
+        arc.coBungCuoi = 1.2f * day;
+        arc.BamHaiDau(bamDau, bamCuoi);
+        Vector3 tu = arc.start, den = arc.end;
 
         // HEP HON HAN cac tia set khac. Giut set phong RA TU TAY nguoi choi:
         // voi be ngang mac dinh (quang 1,05 -> dai rong 2,1 m) doan gan goc
@@ -264,9 +313,9 @@ public class GiatSet : MonoBehaviour
         // Doan cang dai thi cang nhieu khuc gap, khong thi tia dai thanh mot
         // duong gan nhu thang con tia ngan thi gap khuc lung tung.
         float dai = Vector3.Distance(tu, den);
-        arc.segments = Mathf.Clamp(Mathf.RoundToInt(dai * 2.2f), 8, 26);
-        arc.jitter = Mathf.Clamp(dai * 0.10f, 0.22f, 0.75f);
-        arc.branches = 3;
+        arc.segments = Mathf.Clamp(Mathf.RoundToInt(dai * 1.1f), 5, 18);
+        arc.jitter = Mathf.Clamp(dai * 0.05f, 0.15f, 0.42f);
+        arc.branches = 2;
     }
 
     /// <summary>

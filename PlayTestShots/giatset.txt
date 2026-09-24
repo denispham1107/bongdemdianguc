@@ -4,7 +4,21 @@ A. Giut set nguoi choi: tam 20, sat thuong 75, so tia 4, choang 15 % trong 1.5 g
 B. tung that vao 5 bia (vong cung 15 m, cach nhau 6,5 m): mat mau -50do:0.00 -25do:75.00 0do:75.00 25do:75.00 50do:75.00 -> mat dung 75: 4, khong mat: 1; so bia trung ngay khung dau tien: 4
 C. tam: bia tam 20,3 m (mat bia 19,9 m) trung True; bia tam 20,8 m (mat bia 20,4 m) trung False (tam cu 19,5 thi ca hai deu khong trung)
 D. lan: bia A (18 m) mat 75.00, bia B (22 m, ngoai tam, cach A 4 m) mat 64.00 (mong 75 va 63,75)
-E. 160 lan phong: tia dau trung 640, choang 98 = 15.3%; tia lan trung 640, choang 82 = 12.8% (mong 15%); bo dem trong GiatSet: dau 98/640, lan 82/640
+E. 160 lan phong: tia dau trung 640, choang 97 = 15.2%; tia lan trung 640, choang 95 = 14.8% (mong 15%); bo dem trong GiatSet: dau 97/640, lan 95/640
 F. cap ky nang 3: choang 1.80 giay (mong 1,80), sat thuong 108.0 (mong 75 x 1,44 = 108)
+
+G0. cat ngang tia o anh can canh: phan TRANG rong 0.5 diem anh, phan XANH rong 22.3 diem anh (trung binh 15 lat cat)
+G1. tia tu tay: anh loi 'GiatSetLoi', anh quang 'GiatSetQuang', anhBlender True, song 0.60 giay, do sang o giay 0.31 = 1.00 (tia duy tri: con nguyen toi 65% doi = 0,39 s); doi chung (tia mac dinh): anhBlender False, anh 'BoltStrip', song 0.26
+G2. tay: day 1.00; canh tay chi ra truoc (tich vo huong) phai 0.99, trai 0.98 (mong > 0,85); giua hai tay truoc than 0.63 m, hai tay cach nhau 0.22 m; doi chung luc dung yen: phai 0.16, trai 0.04
+G3. dau tia cach diem giua hai tay 0.000 m (mong < 0,05); doi chung: diem phong phep cu (dau gay) cach 0.32 m
+G4. bia chay 1,5 m: cuoi tia chay theo 1.50 m (mong 1,50); doi chung tia khong bam: 0.00 m
+G5. dang giu tay (day 1.00) thi buoc di: day con 0.00 (mong 0 - bo tay xuong, khong truot nhu tuong)
+G6. Giut set cua quai: anh 'GiatSetQuang', mau quang (RGBA(0.40, 1.00, 0.35, 1.00))
+   so tia da ve trong muc G: 8
+
+H. cat ngang tia (ngay, trung binh 5 lan tung x 5 lat cat): phan TRANG rong 11.6 diem anh, phan XANH rong 41.6 diem anh, tong do sang xanh 37.7
+H. goc choi that (ngay, may quay '3D tu do', cach 11.9 m, fov 55): vung tia 109939 diem anh - chui trang 1325 (1.21%), xanh sang 4815 (4.38%)
+H. cat ngang tia (dem, trung binh 5 lan tung x 5 lat cat): phan TRANG rong 5.2 diem anh, phan XANH rong 48.4 diem anh, tong do sang xanh 39.9
+H. goc choi that (dem, may quay '3D tu do', cach 11.9 m, fov 55): vung tia 109939 diem anh - chui trang 650 (0.59%), xanh sang 5330 (4.85%)
 
 so loi ghi nhan = 0

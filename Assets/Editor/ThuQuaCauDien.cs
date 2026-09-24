@@ -388,6 +388,28 @@ public static class ThuQuaCauDien
                 if (!daChup && QuaCauDien.SoLuotDaBan - luot0 >= 3)
                 {
                     daChup = true;
+                    // K. KIEU TIA GIUT SET (nguoi dung 25/09/2026): moi tia quanh cau dung anh Blender, cung mau vien
+                    // xanh cua Giut set, cung be ngang tia dau Giut set. Doi 1 khung de Start kip dat vat lieu.
+                    yield return null;
+                    int soTiaK = 0, soAnh = 0, soMau = 0, soNgang = 0;
+                    foreach (var a in Object.FindObjectsByType<LightningArc>(FindObjectsInactive.Exclude))
+                    {
+                        if (a == null || Vector3.Distance(a.start, choCau) > 1.5f) continue;
+                        soTiaK++;
+                        var core = a.transform.Find("Core");
+                        var mr = core != null ? core.GetComponent<MeshRenderer>() : null;
+                        if (a.anhBlender && mr != null && mr.sharedMaterial != null && mr.sharedMaterial.mainTexture != null
+                            && mr.sharedMaterial.mainTexture.name == "GiatSetLoi") soAnh++;
+                        if (a.glowColor == GiatSet.MauQuangNguoiChoi) soMau++;
+                        if (Mathf.Abs(a.beNgang - GiatSet.BeNgangTia * 1.15f) < 0.001f) soNgang++;
+                    }
+                    var dc = LightningArc.Create(Vector3.up * 700f, Vector3.up * 700f + Vector3.right * 3f, 1f, 0.3f);
+                    bool dcAnh = dc.anhBlender;
+                    Object.Destroy(dc.gameObject);
+                    Ghi(string.Format("K. kieu tia Giut set: {0} tia quanh cau - dung anh GiatSetLoi {1}, mau vien = Giut set {2}, be ngang = tia dau Giut set {3}; doi chung tia mac dinh anhBlender = {4}",
+                        soTiaK, soAnh, soMau, soNgang, dcAnh));
+                    Kiem(soTiaK >= 3 && soAnh == soTiaK && soMau == soTiaK && soNgang == soTiaK, "tia Qua cau dien chua co kieu tia Giut set");
+                    Kiem(!dcAnh, "doi chung: tia mac dinh cung dung anh - phep do khong phan biet duoc");
                     yield return Chup("quacaudien_2_ban_tia");
                 }
                 if (QuaCauDien.SoLuotDaBan > luotTruoc)

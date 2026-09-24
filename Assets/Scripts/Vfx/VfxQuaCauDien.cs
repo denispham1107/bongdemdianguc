@@ -260,16 +260,23 @@ public static partial class VfxFactory
         return goc;
     }
 
-    /// <summary>Mot tia dien ban tu qua cau toi ke dich - mau xanh lam ruc nhu trong anh.</summary>
-    public static LightningArc TiaCauDien(Vector3 tu, Vector3 den)
+    /// <summary>Thoi gian song cua mot tia cau dien, giay. GIU NHU CU (0,22): cau ban moi 0,4 giay, tia song 0,6 giay nhu
+    /// Giut set thi luot sau chong len luot truoc.</summary>
+    public const float GiaySongTiaCauDien = 0.22f;
+
+    /// <summary>
+    /// Mot tia dien ban tu qua cau toi ke dich. Nguoi dung 25/09/2026: "cung co hieu ung nhu tia set cua Giut set" -
+    /// dung chung GiatSet.KieuTia (anh Blender loi trang manh + vien xanh + soi re nhanh + cum bung, bam hai dau) va
+    /// CUNG MAU voi Giut set. Truoc do la tia vet mo ve bang code, be ngang 1,35, mau (0,32 0,66 1).
+    /// </summary>
+    public static LightningArc TiaCauDien(Vector3 tu, Vector3 den, Transform bamDau = null, Transform bamCuoi = null)
     {
-        var arc = LightningArc.Create(tu, den, 1.35f, 0.22f);
-        arc.segments = 16;
-        arc.branches = Random.Range(1, 3);
-        arc.jitter = 0.7f;
+        var arc = LightningArc.Create(tu, den, 1.15f, GiaySongTiaCauDien);
         // Phai to mau NGAY DAY: LightningArc to mau trong Start, doi o khung sau thi tia loe sai mau mot khung
-        arc.coreColor = new Color(1f, 1f, 1f, 1f);
-        arc.glowColor = new Color(0.32f, 0.66f, 1f, 1f);
+        arc.coreColor = Color.white;
+        arc.glowColor = GiatSet.MauQuangNguoiChoi;
+        // 1,15 = be day tia dau tien cua Giut set
+        GiatSet.KieuTia(arc, 1.15f, bamDau, bamCuoi);
         return arc;
     }
 

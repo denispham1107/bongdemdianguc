@@ -173,7 +173,8 @@ public class QuaCauDien : MonoBehaviour
             if (d == null || d.IsDead) continue;
 
             Vector3 den = d.transform.position + Vector3.up * 1.0f;
-            VfxFactory.TiaCauDien(transform.position, den);
+            // Dau tia bam qua cau, cuoi tia bam ke dich (kieu Giut set - ke dich chay thi tia chay theo)
+            VfxFactory.TiaCauDien(transform.position, den, transform, d.transform);
             VfxFactory.ChamTiaDien(den);
 
             // GhiKeDanh TRUOC TakeDamage - khong thi ke giet vo danh, mat kinh nghiem (menu 61)

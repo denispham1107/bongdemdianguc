@@ -1482,9 +1482,14 @@ public class PlayerController : MonoBehaviour
             dir.y = 0f;
             if (dir.sqrMagnitude < 0.01f) dir = transform.forward;
 
-            var set = GiatSet.Phong(origin, dir.normalized, enemyMask);
+            // Nguoi dung 24/09/2026: tia moc ra GIUA HAI TAY (tu the day hai tay), khong phai tu dau gay
+            Transform diemTay = hoatHinhRieng != null ? hoatHinhRieng.DiemGiatSet : null;
+            Vector3 tuTay = diemTay != null ? diemTay.position : origin;
+
+            var set = GiatSet.Phong(tuTay, dir.normalized, enemyMask);
             if (set != null)
             {
+                set.diemTay = diemTay;
                 set.boQua = health;
                 set.damage *= manhHon;
                 set.giayChoang += themGiay;     // cap ky nang keo dai choang nhu moi hieu ung

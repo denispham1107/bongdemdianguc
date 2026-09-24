@@ -25,6 +25,8 @@ public class NguoiChoiHoatHinh : MonoBehaviour
     public Transform head;
     public Transform tayTraiTren, tayTraiDuoi;
     public Transform tayPhaiTren, tayPhaiDuoi;
+    [Tooltip("Ban tay - de trong thi tu tim khop con ten co chu Hand duoi cang tay")]
+    public Transform banTayTrai, banTayPhai;
 
     [Header("Tham chieu")]
     public Animation boPhat;
@@ -84,12 +86,40 @@ public class NguoiChoiHoatHinh : MonoBehaviour
     float mucDi;
     float nghiengChet;
 
+    // ---- GIUT SET: day hai tay (nguoi dung 24/09/2026) ----
+    bool niemGiatSet;
+    float giayBayRa, giayGiuTay;
+
+    /// <summary>
+    /// Diem GIUA HAI BAN TAY, hoi nho ra truoc - tia Giut set moc ra tu day va bam theo no suot 0,6 giay.
+    /// Cap nhat cuoi LateUpdate, sau khi tu the da dat xong.
+    /// </summary>
+    public Transform DiemGiatSet { get; private set; }
+
+    /// <summary>Tay day ra truoc bao nhieu (0..1) o khung vua roi - cho phep thu doc.</summary>
+    public float MucDayTay { get; private set; }
+
     void Awake()
     {
         if (vaCham == null) vaCham = GetComponent<CharacterController>();
         if (mau == null) mau = GetComponent<Damageable>();
         if (boPhat == null) boPhat = GetComponentInChildren<Animation>();
+        // Prefab cu khong co hai truong ban tay: lay khop con cua cang tay
+        if (banTayTrai == null) banTayTrai = TimBanTay(tayTraiDuoi);
+        if (banTayPhai == null) banTayPhai = TimBanTay(tayPhaiDuoi);
+        var d = new GameObject("DiemGiatSet");
+        d.transform.SetParent(transform, false);
+        d.transform.localPosition = new Vector3(0f, 1.25f, 0.45f);
+        DiemGiatSet = d.transform;
         LuuTuTheChuan();
+    }
+
+    static Transform TimBanTay(Transform cangTay)
+    {
+        if (cangTay == null) return null;
+        for (int i = 0; i < cangTay.childCount; i++)
+            if (cangTay.GetChild(i).name.Contains("Hand")) return cangTay.GetChild(i);
+        return cangTay.childCount > 0 ? cangTay.GetChild(0) : null;
     }
 
     /// <summary>
@@ -135,10 +165,19 @@ public class NguoiChoiHoatHinh : MonoBehaviour
     /// <summary>Bat dau tu the niem chu cho <paramref name="phep"/> (0..3).</summary>
     public void NiemChu(int phep, float thoiGian)
     {
-        // 6 = Giut set dung chung tu the voi Sam set (2): deu la phep set, va
-        // bang tu the chi co SAU o. De nguyen thi Clamp keo 6 ve 5 - tuc phu
-        // thuy lam dong tac bat KHIENG trong khi tia set bay ra tu tay.
-        if (phep == 6) phep = 2;
+        // 6 = GIUT SET: tu the RIENG, day ca hai tay ra truoc va GIU suot luc tia con hien (nguoi dung
+        // 24/09/2026, theo anh mau). Dong ho tinh bang GIAY chu khong theo ti le: phan giu tay dai
+        // GiatSet.GiayTiaHien bat ke niem nhanh hay cham.
+        niemGiatSet = phep == 6;
+        if (niemGiatSet)
+        {
+            giayBayRa = Mathf.Max(0.2f, thoiGian) * mocPhepBayRa;
+            giayGiuTay = GiatSet.GiayTiaHien - 0.08f;
+            phepDangNiem = 6;
+            thoiGianNiem = giayBayRa + giayGiuTay;
+            niemTimer = 0f;
+            return;
+        }
         // 9 = Qua cau bang: cung dong tac DAM THANG ra truoc nhu Qua cau lua
         if (phep == CapDo.KyQuaCauBang) phep = 0;
         // 10 = Gio loc: dong tac cua Loc xoay
@@ -164,6 +203,7 @@ public class NguoiChoiHoatHinh : MonoBehaviour
         if (niemTimer < 0f) return;
         niemTimer = -1f;
         phepDangNiem = -1;
+        niemGiatSet = false;
         BatDauHoaVe();
     }
 
@@ -189,8 +229,12 @@ public class NguoiChoiHoatHinh : MonoBehaviour
                 // Niem xong: hoa tu tu ve tu the dung yen, khong bo tay cai rup
                 niemTimer = -1f;
                 phepDangNiem = -1;
+                niemGiatSet = false;
                 BatDauHoaVe();
             }
+            // Dang giu tay Giut set ma nguoi choi buoc di: bo tay xuong de chan buoc, khong truot nhu tuong
+            else if (niemGiatSet && niemTimer > giayBayRa + 0.12f && TocDoDi() > 0.15f)
+                HuyNiem();
         }
 
         // ---- Dong ho hoa ve ----
@@ -201,19 +245,19 @@ public class NguoiChoiHoatHinh : MonoBehaviour
         }
 
         // ---- Muc di ----
-        float muon = 0f;
-        if (niemTimer < 0f)
-        {
-            if (tocDoEp >= 0f) muon = Mathf.Clamp01(tocDoEp);
-            else if (vaCham != null)
-            {
-                Vector3 v = vaCham.velocity; v.y = 0f;
-                muon = Mathf.Clamp01(v.magnitude / Mathf.Max(0.1f, tocDoDiToiDa));
-            }
-        }
+        float muon = niemTimer < 0f ? TocDoDi() : 0f;
         mucDi = Mathf.MoveTowards(mucDi, muon, dt * 4.2f);
 
         PhatClipDi();
+    }
+
+    /// <summary>Muc di bo 0..1 (toc do ep tu mang, hoac van toc that cua CharacterController).</summary>
+    float TocDoDi()
+    {
+        if (tocDoEp >= 0f) return Mathf.Clamp01(tocDoEp);
+        if (vaCham == null) return 0f;
+        Vector3 v = vaCham.velocity; v.y = 0f;
+        return Mathf.Clamp01(v.magnitude / Mathf.Max(0.1f, tocDoDiToiDa));
     }
 
     /// <summary>
@@ -264,10 +308,76 @@ public class NguoiChoiHoatHinh : MonoBehaviour
             TuTheThoNhe();
         }
 
+        MucDayTay = 0f;
         if (niemTimer >= 0f)
-            TuTheNiemChu(phepDangNiem, Mathf.Clamp01(niemTimer / thoiGianNiem));
+        {
+            if (niemGiatSet) TuTheGiatSet(niemTimer);
+            else TuTheNiemChu(phepDangNiem, Mathf.Clamp01(niemTimer / thoiGianNiem));
+        }
 
         HoaVe();
+        CapNhatDiemGiatSet();
+    }
+
+    /// <summary>Dat DiemGiatSet vao giua hai ban tay, nho ra truoc 0,18 m (tay co thi lay, khong thi giu cho cu).</summary>
+    void CapNhatDiemGiatSet()
+    {
+        if (DiemGiatSet == null || banTayTrai == null || banTayPhai == null) return;
+        DiemGiatSet.position = (banTayTrai.position + banTayPhai.position) * 0.5f + transform.forward * 0.18f;
+    }
+
+    /// <summary>
+    /// GIUT SET (nguoi dung 24/09/2026, theo anh mau): GOM hai tay ve truoc nguc luc niem, roi DAY THANG ca
+    /// hai tay ve phia truoc - hai ban tay chum vao nhau, tia moc ra giua - va GIU the do suot luc tia con
+    /// hien, tay rung nhe theo dong dien. Het gio thi HoaVe dua ve tu the dung.
+    ///
+    /// Khac cac tu the kia (xoay THEM mot goc Euler vao khop): o day NGAM HUONG xuong - xoay canh tay cho
+    /// no chi dung huong muon trong the gioi. Truc rieng cua khop model Meshy khong ro rang, doan goc Euler
+    /// de "chi thang ra truoc" thi lech tuy model; ngam huong thi dung bat ke truc khop.
+    /// </summary>
+    void TuTheGiatSet(float giay)
+    {
+        float gom = Mathf.SmoothStep(0f, 1f, giay / Mathf.Max(0.01f, giayBayRa));
+        float day = Mathf.SmoothStep(0f, 1f, (giay - giayBayRa * 0.75f) / 0.10f);
+        MucDayTay = day;
+
+        Vector3 f = transform.forward, r = transform.right, u = Vector3.up;
+        float rung = day * 0.035f;
+        float t = Time.time;
+
+        // Gom: canh tay tren buong xuong hoi ra ngoai, cang tay chi vao giua truoc nguc
+        // Day: ca hai tay thang ra truoc, hoi chum vao giua; tay phai cao hon mot chut nhu anh mau
+        for (int ben = -1; ben <= 1; ben += 2)
+        {
+            bool phai = ben > 0;
+            Vector3 ngoai = r * ben;
+            Vector3 tren = (-u * 0.85f - f * 0.05f + ngoai * 0.35f).normalized;
+            Vector3 duoi = (f * 0.75f + u * 0.30f - ngoai * 0.60f).normalized;
+            Vector3 tren2 = (f - ngoai * 0.10f + u * (phai ? 0.08f : 0.0f)).normalized;
+            Vector3 duoi2 = (f - ngoai * 0.17f + u * (phai ? 0.06f : 0.0f)
+                            + r * rung * Mathf.Sin(t * 47f + ben) + u * rung * Mathf.Sin(t * 53f + ben * 2f)).normalized;
+
+            Vector3 muonTren = Vector3.Slerp(tren, tren2, day);
+            Vector3 muonDuoi = Vector3.Slerp(duoi, duoi2, day);
+            float w = Mathf.Max(gom, day);
+
+            NgamHuong(phai ? tayPhaiTren : tayTraiTren, phai ? tayPhaiDuoi : tayTraiDuoi, muonTren, w);
+            NgamHuong(phai ? tayPhaiDuoi : tayTraiDuoi, phai ? banTayPhai : banTayTrai, muonDuoi, w);
+        }
+
+        // Nguoi hoi chui ve truoc theo tay (x duong = cui, xem QuaCauLua)
+        Nghieng(spine, -4f * gom + 12f * day, 0f, 0f);
+        Nghieng(head, -6f * day, 0f, 0f);
+    }
+
+    /// <summary>Xoay <paramref name="khop"/> de doan khop -> <paramref name="con"/> chi theo huong <paramref name="muon"/> (the gioi), tron theo w.</summary>
+    static void NgamHuong(Transform khop, Transform con, Vector3 muon, float w)
+    {
+        if (khop == null || con == null || w <= 0f) return;
+        Vector3 d = con.position - khop.position;
+        if (d.sqrMagnitude < 1e-8f) return;
+        Quaternion q = Quaternion.FromToRotation(d.normalized, muon);
+        khop.rotation = Quaternion.Slerp(Quaternion.identity, q, w) * khop.rotation;
     }
 
     /// <summary>Dat MOI khop ve dung tu the chuan.</summary>
