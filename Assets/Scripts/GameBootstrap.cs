@@ -85,7 +85,7 @@ public class GameBootstrap : MonoBehaviour
         // static, giu nguyen tu lan chay truoc).
         LoLuaDa.ChoPhepNhomLua = true;
 
-        // ACT2: vao tran luc XE CHIEU roi toi dan thanh dem trong 2 phut (nguoi dung 19/09/2026).
+        // ACT2: vong DEM 4 phut -> NGAY 2 phut -> CHIEU 2 phut lap lai toi het tran (nguoi dung 25/09/2026).
         // Gan SAU SetupMoonlight: ChuyenChieuSangDem doc chinh trang thai vua dat lam dich "ban dem",
         // nen sau nay doi mau dem trong WorldFactory thi no tu di theo.
         if (WorldFactory.LaAct2()) ChuyenChieuSangDem.Gan(sun.gameObject, sun);

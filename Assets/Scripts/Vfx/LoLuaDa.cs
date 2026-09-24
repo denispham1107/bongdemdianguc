@@ -31,8 +31,10 @@ public class LoLuaDa : MonoBehaviour
     /// CHUA TOI GIO NHOM LUA thi lo dung im, than nguoi lanh (nguoi dung 19/09/2026:
     /// "khi khong phai ban dem thi cho tat lua o Lo Lua di").
     ///
-    /// Act2 vao tran luc xe chieu (<see cref="ChuyenChieuSangDem"/>) nen co nay tat tu dau va chi bat
-    /// khi troi da toi. Mac dinh BAT: Act1, man chinh va moi cho khac giu nguyen nhu cu.
+    /// Act2 chay vong DEM 4 phut -> NGAY 2 phut -> CHIEU 2 phut (<see cref="ChuyenChieuSangDem"/>, 25/09/2026): co
+    /// BAT luc vao tran (dem), TAT khi binh minh (lo bi dap), BAT lai luc hoang hon. Dang tat thi Chay() tu choi -
+    /// ke ca lan hen chay lai cua Gio loc, nen lo bi dap ban dem khong tu chay giua ban ngay.
+    /// Mac dinh BAT: Act1, man chinh va moi cho khac giu nguyen nhu cu.
     /// Dat trong Awake cua GameBootstrap - truoc moi Start - chu khong phai trong Start, vi thu tu
     /// Start giua cac vat the khong co dinh.
     /// </summary>

@@ -8442,6 +8442,164 @@ Lần đầu tôi đọc chỗ cơn Gió lốc *trước khi niệm* rồi so v�
 đọc. Chỉ khi ghi cả hai vị trí **ngay khung hình đầu tiên thấy cơn lốc mới** thì số đo mới ra 0,00 m. Tỉ lệ "to dần"
 cũng vậy: đọc trễ 0,5 giây thì thấy 0,91 thay vì 0,42 — phải theo dõi suốt trong vòng lặp.
 
+### Giựt sét vẽ lại theo ảnh mẫu, phù thủy đẩy hai tay (25/09/2026)
+
+Anh gửi một ảnh mẫu (pháp sư đứng bên phải phóng một luồng điện sang bầy xương bên trái) và xin ba điều:
+dựng lại tia **bằng Blender MCP** giống ảnh; tia có **lõi trắng mảnh, bao quanh là ánh sáng xanh**; và nhân vật
+**đưa cả hai tay** ra phóng như trong ảnh. Tôi hỏi lại ba chỗ chưa chắc, anh chốt: tia **hiện ~0,6 giây**
+(trước 0,3) nhưng luật chơi giữ nguyên; động tác **dựng bằng code** như mọi tư thế khác; tia mới áp cho
+**cả Giựt sét của quái** (Quỷ cây giữ màu xanh lá).
+
+**Hình tia — dựng trong Blender qua MCP** (`CongCu/Blender/giat_set.blend`, cảnh riêng `GiatSet`, không đụng cảnh
+của anh). Sinh đường sét bằng cách chia đôi đoạn thẳng rồi đẩy điểm giữa lệch sang bên, biên độ giảm dần qua
+9 tầng — giảm **chậm** (×0,66 mỗi tầng) để khúc nhỏ vẫn gãy sắc như ảnh mẫu; lần đầu giảm ×0,56 ra một đường
+uốn lượn mềm, không giống sét. Thêm 4 sợi phụ tách ra rồi nhập lại thân chính, 26 nhánh rẽ (có nhánh con,
+nhánh cháu). Render **hai lớp riêng**: *lõi* (ống mảnh, phát sáng trắng) và *quầng* (cùng hình nhưng ống dày
+hơn, qua compositor làm mờ hai cỡ 8 px + 42 px rồi cộng lại). Hai ảnh đều **xám** nên Unity tô màu lúc chạy được
+— nhờ vậy Quỷ cây dùng chung mà vẫn xanh lá. Mỗi ảnh 1024 × 2048: nửa dưới là **4 dải thân tia** lặp liền mạch
+theo chiều dài (thân chính vào và ra đúng giữa mép, các nhánh chép sang hai bên ±4 m), nửa trên là **4 cụm điện
+bùng** 2 × 2 cho hai đầu tia. Nằm ở `Resources/KyNang/GiatSet/GiatSetLoi.png`, `GiatSetQuang.png`.
+
+**Trong Unity** (`LightningArc.anhBlender`): đường đi vẫn gãy khúc bằng code nhưng chỉ khúc lớn (khúc nhỏ đã có
+trong ảnh), dải ảnh trải dọc theo đường, quay mặt về máy quay; ảnh **lặp lại** chứ không kéo giãn (một chu kỳ =
+4 lần bề ngang), nên tia 3 m hay 20 m đều giữ đúng tỉ lệ. Cứ 0,045 giây đổi dải khác + trượt ngẫu nhiên + lật dọc
+→ 4 dải ra hàng chục hình, tia "sống" như ảnh mẫu. Ở tay và ở chỗ trúng có cụm điện bùng. Tia **sáng nguyên 65%
+đời rồi mới tắt** (tia duy trì). Dưới cùng còn một lớp hào quang xanh rộng — lần chụp đầu chỉ có lõi và quầng
+trong ảnh, **nhìn ra toàn trắng**, mất hẳn cái màu xanh đậm bao quanh của ảnh mẫu.
+
+Tia **bám theo**: đầu tia bám điểm giữa hai bàn tay, cuối tia bám thân kẻ địch (quái chạy 1,5 m thì cuối tia đi
+đúng 1,50 m). Tia hiện 0,6 s mà đứng yên thì chỉ cần quái bước một bước là tia treo lơ lửng giữa không trung.
+
+**Động tác hai tay** (`NguoiChoiHoatHinh.TuTheGiatSet`): lúc niệm **gom hai tay về trước ngực**, tới lúc phép bay
+ra thì **đẩy thẳng cả hai tay** về phía trước, hai bàn tay chụm vào nhau (cách 0,2 m), tay phải hơi cao hơn như ảnh
+mẫu, người hơi chúi theo — và **giữ** suốt lúc tia còn hiện, tay rung nhẹ theo dòng điện. Khác các tư thế cũ
+(xoay thêm một góc Euler vào khớp), ở đây tôi **ngắm hướng xương**: xoay cánh tay sao cho đoạn vai → khuỷu chỉ
+đúng hướng muốn trong thế giới. Trục riêng của khớp model Meshy không rõ ràng, đoán góc Euler để "chỉ thẳng ra
+trước" rất dễ lệch; ngắm hướng thì đúng bất kể trục khớp. Đang giữ tay mà bước đi thì hạ tay xuống, không trượt
+như tượng. Tia mọc ra **giữa hai tay** (trước kia là đầu gậy tay phải, lệch 0,30 m).
+
+**Một lỗi thật lộ ra trong lúc đo.** Vật liệu của tia được cất trong biến static kèm cờ "đã nạp". Vật liệu tạo
+lúc Play **bị Unity xoá khi thoát Play**, nhưng biến static và cờ vẫn còn (các phép thử tắt nạp lại mã) — lần Play
+sau cờ bảo "đã nạp", vật liệu thì đã chết, tia **âm thầm quay về kiểu cũ**. Sửa bằng cách kiểm null của Unity như
+`VfxFactory` vẫn làm.
+
+**Số đo** (menu 69, mục G mới — **0 lỗi**; các mục A–F cũ vẫn đạt, menu 37 và 61 cũng 0 lỗi):
+
+| Đo | Kết quả | Đối chứng |
+|---|---|---|
+| G1 ảnh của tia | `GiatSetLoi` / `GiatSetQuang`, sống **0,60 s**, ở giây 0,32 còn sáng **1,00** | tia mặc định: ảnh `BoltStrip`, sống 0,26 |
+| G2 hai tay | cánh tay chỉ ra trước **0,99 / 0,98** (tích vô hướng), giữa hai tay trước thân 0,63 m, cách nhau 0,22 m | lúc đứng yên: 0,16 / 0,04 |
+| G3 chỗ mọc tia | cách điểm giữa hai tay **0,000 m** | đầu gậy cũ cách 0,30 m |
+| G4 bám kẻ địch | bia chạy 1,5 m → cuối tia đi **1,50 m** | tia không bám: 0,00 m |
+| G5 bước đi khi giữ tay | tay hạ ngay (1,00 → 0,00) | — |
+| G6 Giựt sét của quái | dùng ảnh mới, quầng giữ **xanh lá** | — |
+
+Ảnh: `PlayTestShots/giatset_3_hai_tay.png` (máy quay game), `giatset_4_can_canh.png` (cận tia),
+`giatset_5_tu_the.png` (cận tư thế).
+
+**Cùng ngày, anh chơi thử: "tia còn quá sáng và quá dày"** — trong khi ảnh cận tôi gửi thì anh ưng. Hai chỗ khác
+nhau: góc máy mặc định khi chơi là **"3D tự do"** (đứng sau lưng, nhìn dọc theo hướng tia) chứ không phải góc
+chéo tôi đặt để chụp; và lúc chơi thật trời đang **ban ngày**, còn phép thử luôn nhảy thẳng sang đêm. Nhìn dọc
+theo tia thì ba bốn tia cùng mọc từ một điểm giữa hai tay **chồng kín lên nhau** ngay trước mặt máy quay thành một
+mảng trắng. Menu 69 nay có **mục H** chụp đúng góc chơi thật, cả ngày lẫn đêm, và đếm điểm ảnh chói trắng (cả ba
+kênh > 0,94) trong vùng tia. Sửa: bề ngang dải ảnh **1,35 → 0,70 m**, độ sáng lõi 1,8 → 1,2, quầng 2,8 → 1,5, hào
+quang rộng 0,50 → 0,35 và đặc 0,85 → 0,45, cụm bùng ở tay 0,95 → 0,45 m, ở chỗ trúng 2,0 → 1,2 m, và đầu tia
+vuốt nhọn dài hơn (5% → 12% chiều dài) để các tia tách nhau ngay khỏi tay.
+
+| Góc chơi thật | Chói trắng trước | Chói trắng sau |
+|---|---|---|
+| Ban ngày | 16,11% | **5,63%** |
+| Ban đêm | 11,80% | **3,70%** |
+
+Ảnh: `PlayTestShots/giatset_6_goc_choi_ngay.png`, `giatset_6_goc_choi_dem.png`.
+
+**Lần ba: "tia trắng mảnh thanh hơn 50%, tăng ánh sáng xanh bọc ngoài".** Trước khi sửa, tôi đo xem cái "trắng"
+anh thấy thực ra là gì. Menu 69 thêm phép **cắt ngang tia** trên ảnh chụp: quét một đoạn vuông góc với tia, đếm
+bao nhiêu điểm ảnh trắng (cả ba kênh > 0,85) và bao nhiêu điểm ảnh xanh. Ở ảnh cận, lõi trắng chỉ rộng **0,6 điểm
+ảnh**, tức lõi trong ảnh vốn đã mảnh. Cái trắng dày ở góc chơi là **tâm quầng xanh cháy sáng**: đo trên ảnh
+quầng, dải > 0,9 rộng 21,8/256 điểm ảnh; tô màu (0,30 0,52 1) × 2 lần độ sáng rồi cộng hào quang, cộng hậu kỳ phát sáng
+thì kênh đỏ và lục cũng vượt ngưỡng, thành trắng.
+
+Lần đo đầu cũng bị nhiễu: bia thử màu trắng dưới nắng và tia bên cạnh lọt vào lát cắt. Nay bia sơn tối, mục H chỉ bắn một tia.
+
+Sửa ở hai nơi. **Blender MCP** vẽ lại cả hai ảnh, cùng hạt giống nên hình tia y hệt: lõi dùng ống **nhỏ một nửa**
+(bề rộng > 0,5 từ 5,5 còn 3,4 điểm ảnh; thân 0,0055 → 0,00275), quầng dùng ống mảnh hơn và phát sáng yếu hơn ở tâm
+(dải cháy sáng 21,8 → 6,1), còn phần loang rộng thì làm mờ rộng hơn (42 → 70 điểm ảnh) và cộng mạnh gấp 1,8 lần
+(dải > 0,2 từ 81,7 → 88,0). **Unity**: quầng sáng 1,5 → 2,2, hào quang rộng 0,35 → 0,55 và đặc 0,45 → 0,60, và quan
+trọng nhất là **màu quầng xanh đậm (0,14 0,34 1)**. Với màu (0,25 0,45 1), quầng dày lên thì tâm lại ngả trắng: phần
+trắng ban đêm **tăng** 7,0 → 9,6. Cuối cùng hạ lõi 1,3 → 1,0.
+
+| Góc chơi thật, một tia | Phần trắng trước | sau | Phần xanh trước | sau |
+|---|---|---|---|---|
+| Ban đêm | 7,0 điểm ảnh | **1,6** | 24,0 | **47,6** |
+| Ban ngày | 13,8 | **9,6** | 14,4 | **29,8** |
+
+Ban ngày, phần trắng giảm ít hơn vì mặt đất sáng cộng với quầng xanh cũng vượt ngưỡng "trắng" của phép đo,
+nhưng tỉ lệ điểm ảnh chói trong cả vùng tia vẫn giảm 5,63% → 0,80%.
+
+**Lần bốn: "tia trắng đã ổn, cho viền xanh sáng và dày hơn 10%".** Trước đó lõi và quầng dùng **chung một dải
+hình**, nới viền là nới cả lõi. Nay tách hai dải (`LightningArc.DungLuoiAnh`): dải quầng rộng hơn
+**`HeSoVienXanh` = 1,10** lần. Hai dải dùng chung đường đi, dải ảnh, độ trượt, nhánh và cụm bùng (gieo ngẫu nhiên một
+lần). Chu kỳ lặp ảnh tính theo bề ngang gốc, nên hai lớp trùng nhau theo chiều dọc tia, chỉ viền phình ra hai
+bên. Quầng sáng 2,2 → 2,42, hào quang rộng 0,55 → 0,605 và đặc 0,60 → 0,66, cả ba đều ×1,10.
+
+Thay đổi 10% nhỏ hơn độ dao động của một ảnh chụp, vì tia đổi hình ngẫu nhiên mỗi 0,045 s. Nên mục H nay **tung
+5 lần** mỗi điều kiện rồi lấy trung bình, và có thêm "tổng độ sáng xanh" (cộng kênh xanh lam của các điểm ảnh
+xanh trên lát cắt):
+
+| Góc chơi thật (TB 5 lần) | Viền xanh rộng | Tổng độ sáng xanh | Lõi trắng rộng |
+|---|---|---|---|
+| Ban ngày | 31,5 → **35,8** (+14%) | 28,8 → **32,1** (+11%) | 7,8 → 8,9 |
+| Ban đêm | 45,6 → **55,0** (+21%) | 38,1 → **45,1** (+18%) | 3,7 → 4,8 |
+
+Bề rộng đo được tăng hơn 10% vì viền sáng hơn nên có thêm điểm ảnh vượt ngưỡng "xanh". Lõi trắng rộng thêm khoảng
+1 điểm ảnh, vì quầng sáng hơn cộng vào tâm.
+
+**Quả cầu điện dùng chung kiểu tia (25/09/2026).** Anh xin các tia điện của Quả cầu điện "cũng có hiệu ứng như tia
+sét của Giựt sét". Phần dựng kiểu tia (dải ảnh Blender, cụm bùng hai đầu, bám hai đầu, gãy khúc theo độ dài) tách
+ra thành `GiatSet.KieuTia`, và `VfxFactory.TiaCauDien` gọi nó. Màu viền là `GiatSet.MauQuangNguoiChoi`, bề ngang
+bằng tia đầu của Giựt sét (×1,15). Đầu tia bám quả cầu, cuối tia bám kẻ địch. Từ nay **sửa kiểu tia ở một chỗ là cả
+hai kỹ năng cùng đổi**. Thời gian sống giữ **0,22 s** như cũ (`GiaySongTiaCauDien`): cầu bắn mỗi 0,4 s, sống 0,6 s như
+Giựt sét thì lượt sau chồng lên lượt trước.
+
+Menu 74 thêm mục K, đo ở lượt thứ ba: **5/5 tia** quanh cầu dùng ảnh `GiatSetLoi`, đúng màu viền của Giựt sét, đúng bề
+ngang (đối chứng: tia mặc định không dùng ảnh). Menu 74 cả bài **0 lỗi**. Ảnh `quacaudien_2_ban_tia.png`: trước đây năm
+tia là một mảng trắng loá, nay thấy rõ từng tia lõi trắng viền xanh.
+
+### Act2: vòng đêm 4 phút → ngày 2 phút → chiều 2 phút, lặp tới hết trận (25/09/2026)
+
+Anh xin: vừa vào game là **ban đêm 4 phút**, rồi **ban ngày 2 phút**, rồi **buổi chiều 2 phút**, rồi lặp lại như
+ban đầu cho tới khi hết trận. Tôi hỏi cách chuyển giữa hai buổi, anh chọn **chuyển mượt 30 giây**: mỗi buổi giữ
+nguyên ánh sáng của nó, chỉ 30 giây cuối mới chuyển dần sang buổi sau.
+
+Một vòng 8 phút: đêm 0–210 s · bình minh 210–240 · ngày 240–330 · chiều xuống 330–360 · chiều 360–450 ·
+hoàng hôn 450–480, rồi quay lại. Vẫn ba bộ ánh sáng cũ (ngày, chiều là hằng; đêm đọc thẳng từ cảnh). Có thêm
+hai lần chuyển mới:
+- **Bình minh** (đêm → ngày): sao tắt trong nửa đầu.
+- Góc đèn đổi sang **Slerp quaternion**: đêm đọc từ cảnh ghi góc dạng 0..360 độ, nên Lerp từng góc Euler có thể làm
+  mặt trời quay ngược cả vòng trong 30 giây.
+
+**Lò lửa giờ phải tắt được.** Trước đây lò chỉ nhóm một lần rồi thôi, vì đêm là trạng thái cuối. Nay vào trận là
+đêm nên lò cháy ngay từ đầu. Bình minh sáng quá mức 0,70 (giây 220,9) thì dập cả mười lò (còn làn khói), hoàng hôn
+tối quá mức ấy (giây 469,1) thì nhóm lại; mỗi lần qua mức chỉ làm một lần. Có một kẽ hở tôi chặn luôn: lò bị Gió
+lốc dập ban đêm được hẹn 30 giây sau tự cháy lại, nếu trời sáng trước giờ hẹn thì lò bùng lên giữa ban ngày. Nay cờ
+đang tắt thì `Chay()` từ chối, kể cả lần hẹn ấy.
+
+**Số đo** (menu 79 viết lại — **0 lỗi**):
+
+| Đo | Kết quả |
+|---|---|
+| Vừa vào trận | giây 1,15, buổi "đêm", đèn `(0,520 0,720 0,980)` 0,88 ở 42°, sao 1, lò **10/10** cháy |
+| Giữ nguyên trong buổi | đêm (0/100/205) · ngày (245/300/325) · chiều (365/420/445) đều không đổi một số nào; đối chứng: môi trường ngày 0,516 · chiều 0,295 · đêm 0,143 |
+| Ba lần chuyển | bình minh sáng dần, sao 1,00 → 0 · chiều xuống đèn ấm dần 0,140 → 0,660 · hoàng hôn tối dần, sao 0 → 1,00 — không mốc nào đi ngược; cuối mỗi lần chuyển trùng buổi sau |
+| Lặp lại | giây 480 đêm, 780 ngày, 900 chiều, 1060 đêm — trùng vòng đầu |
+| Lò lửa | đêm 10 · ngày + chiều 0; giây 220,6 → 10, 221,2 → 0; giây 468,8 → 0, 469,4 → 10 |
+| Gió lốc dập lò | vẫn đêm → cháy lại (đối chứng); trời đã sáng → **không** cháy lại |
+| Đồng hồ | 6,02 s thật → vòng tăng 6,02 s |
+| Chỉ Act2 | Act1 không có component, đèn giữ nguyên |
+
+Ảnh: `PlayTestShots/anhsang_1_dem_dau_tran.png` … `anhsang_6_hoang_hon.png`.
+
 ### Act2: ban ngày → xế chiều → đêm, mỗi chặng 2 phút (24/09/2026)
 
 Anh xin thêm một chặng **ban ngày** ở đầu: vào trận là ban ngày, 2 phút chuyển dần sang xế chiều. Tôi hỏi lại

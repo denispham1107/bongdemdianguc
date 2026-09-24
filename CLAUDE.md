@@ -93,7 +93,7 @@ thì lệnh MCP hết giờ.
 **Menu `Diablo 2.5D`** trong Unity (80 mục): 1 nướng asset + dựng màn, 3 tự kiểm tra,
 4 chạy thử & chụp hình, 14 chống ô vuông đen, 15–17 ảnh vỏ cây / đá mộ / sứt mẻ bia,
 18–18d chạy thử cây cháy, 19 hồi sinh sau lốc, 20 nướng điểm mồi lửa, 21 nút khoá góc nhìn,
-22 thanh kỹ năng bản PC, **26 chạy thử mạng (sảnh phòng), 27 chạy thử khoá tài khoản, 28 chụp màn đăng nhập·sảnh, 29 xuất bản WebGL, 30/30b bơm input Act2·Act1 (bước 1), 31 dự đoán & hiệu chỉnh (bước 2), 32 nhiều người một cảnh (bước 3), 33 nội suy (bước 4), 34 PvP (bước 5), 35 ghép phòng cùng màn, 36 tự gắn bộ nối mạng, 37 kỹ năng qua mạng, 38 quái chung & bù trễ, 39 đòn của quái qua mạng, 40 máu khởi đầu, 41 nhịp bước qua mạng, 42 chế độ điều khiển, 43 kiểm toán bước 5, 44 sửa bước 5, 45 bốn người, 46 hiệu ứng qua mạng, 47 chế độ bốn bộ xương, 48 cài đặt đồ hoạ, 49 cầu lửa trúng người·khiên, 50 giao diện đăng nhập·sảnh·phòng, 51/51b/51c màn chính từ Act2 (dựng · chọn góc · chụp lò lửa), 52 tên trên đầu nhân vật, 53 HUD kinh dị trong trận, 54/54b/54c mười lò lửa Act2 (đặt · chạy thử · lốc xoáy cuốn lò), 55 kết trận (người sống sót cuối cùng), 56 đợt quái Act2 · chỗ xuất phát, 57 bàn phím ảo che ô nhập, 58 mưa băng·sấm sét (đóng băng, choáng), 59 sách phép (kéo thả ô kỹ năng), 60 cấp độ·kinh nghiệm·điểm kỹ năng, 61 kinh nghiệm theo từng kỹ năng, 62 thiên thạch đánh ngã, 63 đánh ngã người chơi khác qua mạng, 64 quái vòng ngoài truy lùng sau 60 giây, 65 bình máu · bình mana (rơi, nhặt, uống, mạng), 66 nút KỸ NĂNG ở sảnh (Sách phép xem trước) · con mắt quỷ, 67 Mưa băng đóng băng người chơi khác (qua mạng), 68 Quả cầu băng, 69 Giựt sét (20 m · 75 · 4 tia · 15% choáng), 70 Quả cầu lửa (85 · vệt lửa mới), 71/71b Gió lốc (chạy thử · chụp ảnh), 72 Lửa địa ngục, 73 Tàng hình, 74 Quả cầu điện, 75 Hoá lốc xoáy · Gió lốc hồi mana, 76 Tốc biến, 77 Kháng hệ (nhóm bị động), 78 cụm nút kỹ năng cảm ứng, 79 ánh sáng ngày → xế chiều → đêm (Act2)**.
+22 thanh kỹ năng bản PC, **26 chạy thử mạng (sảnh phòng), 27 chạy thử khoá tài khoản, 28 chụp màn đăng nhập·sảnh, 29 xuất bản WebGL, 30/30b bơm input Act2·Act1 (bước 1), 31 dự đoán & hiệu chỉnh (bước 2), 32 nhiều người một cảnh (bước 3), 33 nội suy (bước 4), 34 PvP (bước 5), 35 ghép phòng cùng màn, 36 tự gắn bộ nối mạng, 37 kỹ năng qua mạng, 38 quái chung & bù trễ, 39 đòn của quái qua mạng, 40 máu khởi đầu, 41 nhịp bước qua mạng, 42 chế độ điều khiển, 43 kiểm toán bước 5, 44 sửa bước 5, 45 bốn người, 46 hiệu ứng qua mạng, 47 chế độ bốn bộ xương, 48 cài đặt đồ hoạ, 49 cầu lửa trúng người·khiên, 50 giao diện đăng nhập·sảnh·phòng, 51/51b/51c màn chính từ Act2 (dựng · chọn góc · chụp lò lửa), 52 tên trên đầu nhân vật, 53 HUD kinh dị trong trận, 54/54b/54c mười lò lửa Act2 (đặt · chạy thử · lốc xoáy cuốn lò), 55 kết trận (người sống sót cuối cùng), 56 đợt quái Act2 · chỗ xuất phát, 57 bàn phím ảo che ô nhập, 58 mưa băng·sấm sét (đóng băng, choáng), 59 sách phép (kéo thả ô kỹ năng), 60 cấp độ·kinh nghiệm·điểm kỹ năng, 61 kinh nghiệm theo từng kỹ năng, 62 thiên thạch đánh ngã, 63 đánh ngã người chơi khác qua mạng, 64 quái vòng ngoài truy lùng sau 60 giây, 65 bình máu · bình mana (rơi, nhặt, uống, mạng), 66 nút KỸ NĂNG ở sảnh (Sách phép xem trước) · con mắt quỷ, 67 Mưa băng đóng băng người chơi khác (qua mạng), 68 Quả cầu băng, 69 Giựt sét (20 m · 75 · 4 tia · 15% choáng), 70 Quả cầu lửa (85 · vệt lửa mới), 71/71b Gió lốc (chạy thử · chụp ảnh), 72 Lửa địa ngục, 73 Tàng hình, 74 Quả cầu điện, 75 Hoá lốc xoáy · Gió lốc hồi mana, 76 Tốc biến, 77 Kháng hệ (nhóm bị động), 78 cụm nút kỹ năng cảm ứng, 79 ánh sáng vòng đêm → ngày → chiều lặp lại (Act2)**.
 Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
 
 ## Quy tắc làm việc (rút ra từ những lần đã sai)
@@ -246,6 +246,26 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
 - **Giựt sét** (16/09/2026, hằng trong `GiatSet`: `TamNguoiChoi` 20 m, `SatThuongNguoiChoi` 75, `SoTiaNguoiChoi` 4, `XacSuatChoangNguoiChoi` 0,15,
   `GiayChoangNguoiChoi` 1,5 + 0,15 s/cấp): tối đa 4 tia cùng lúc (mỗi tia một kẻ địch phía trước), mỗi tia vẫn lan 5 lần; **mỗi cú trúng kể cả
   tia lan** gieo 15% choáng (`StunnedEffect.Apply` — bản sao mạng tự bỏ qua). Giựt sét của **quái** (`PhongCuaQuai`) không choáng. Menu 69 kiểm.
+  ⚠️ **25/09/2026 VẼ LẠI theo ảnh mẫu người dùng gửi**: lõi trắng mảnh + quầng xanh + sợi rẽ nhánh + cụm điện bùng hai đầu,
+  **ảnh dựng bằng Blender MCP** (`CongCu/Blender/giat_set.blend` → `Resources/KyNang/GiatSet/GiatSetLoi|GiatSetQuang.png`, ảnh XÁM để tô màu
+  lúc chạy; nửa dưới 4 dải thân tia lặp liền mạch theo u, nửa trên 4 cụm bùng 2×2) — `LightningArc.anhBlender` + lớp hào quang
+  `heSoHaoQuang`; **tia hiện 0,6 s** (`GiatSet.GiayTiaHien`, sáng nguyên 65% đời), **bám hai đầu** (`LightningArc.BamHaiDau`: giữa hai tay → thân
+  kẻ địch); áp cho cả Giựt sét của quái (giữ màu). Phù thủy **ĐẨY HAI TAY** (`NguoiChoiHoatHinh.TuTheGiatSet`, ngắm hướng xương bằng
+  `FromToRotation` chứ không cộng góc Euler), giữ tay suốt lúc tia hiện, bước đi thì hạ tay; tia mọc từ `NguoiChoiHoatHinh.DiemGiatSet`
+  (giữa hai bàn tay), không từ đầu gậy. Cùng ngày người dùng chơi thử thấy "quá sáng, quá dày" → **mảnh lại** (`GiatSet.BeNgangTia`
+  0,70 m, trước 1,35; lõi 1,2 · quầng 1,5 · hào quang 0,35/`HaoQuangDuc` 0,45): ⚠️ **ĐÁNH GIÁ Ở GÓC CHƠI THẬT** (máy quay "3D tự do"
+  sau lưng, ban ngày) — nhìn dọc theo tia thì các tia chồng lên nhau ngay trước máy quay, ảnh chụp góc chéo không thấy
+  (menu 69 mục H đếm điểm ảnh chói: ngày 16,1% → 5,6%). Lần ba (người dùng: "tia trắng mảnh hơn 50%, thêm xanh bọc ngoài"): ảnh vẽ lại
+  bằng Blender MCP (lõi ống 0,00275 = một nửa; quầng mảnh ở tâm, loang rộng 70 px ×1,8), quầng 2,2, hào quang 0,55/0,60, lõi 1,0 và
+  ⚠️ **màu quầng XANH ĐẬM (0,14 0,34 1)** — quầng sáng lên mà kênh đỏ/lục còn cao thì TÂM NGẢ TRẮNG (đo được: trắng tăng 7,0 → 9,6).
+  "Trắng dày" khi chơi là tâm quầng cháy sáng, không phải lõi (lõi ở ảnh cận chỉ 0,6 điểm ảnh) — đo bằng **cắt ngang tia**
+  (`ThuGiatSet.CatNgang`): đêm trắng 7,0 → 1,6, xanh 24 → 47,6. Lần bốn ("viền xanh sáng và dày hơn 10%"): lõi và quầng nay là
+  **HAI LƯỚI riêng** — quầng rộng `LightningArc.HeSoVienXanh` 1,10, cùng đường đi/dải ảnh/nhánh (gieo một lần), chu kỳ u theo bề ngang
+  gốc; quầng 2,42, hào quang 0,605/0,66. Mục H tung 5 lần lấy trung bình (một ảnh dao động hơn 10%).
+  ⚠️ **Quả cầu điện DÙNG CHUNG kiểu tia** (người dùng 25/09/2026): `GiatSet.KieuTia` (gọi từ `VfxFactory.TiaCauDien`, màu
+  `GiatSet.MauQuangNguoiChoi`, bám cầu → kẻ địch) — sửa kiểu tia là đổi cả hai; tia cầu điện vẫn sống 0,22 s (`GiaySongTiaCauDien`,
+  cầu bắn mỗi 0,4 s). Menu 74 mục K kiểm. ⚠️ Vật liệu static tạo lúc Play **bị xoá khi thoát Play** — kiểm bằng null của Unity, đừng
+  dùng cờ "đã nạp" (tia từng âm thầm quay về kiểu cũ). Menu 69 mục G kiểm (có đối chứng từng mục).
 - **Quả cầu lửa** sát thương **85** (16/09/2026) — ⚠️ số nằm trong **prefab `Skill_QuaCauLua`** (đè code).
   ⚠️ **CẤP 5: 30% ĐÁNH NGÃ** 1,5 giây (người dùng 19/09/2026, `Fireball.NgaXacSuatCap5` / `CapDanhNga`): dùng lại
   `ThienThach.GieoDanhNga` nên tự bỏ qua người tung, kẻ đã chết và kẻ đang có khiên; **mỗi quả trong chùm gieo riêng**
@@ -296,23 +316,23 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
   nhân "chỉ số × chiều cao hàng" (phép thử menu 59 hỏi `CuaSoSachPhep.VungHangKyNang`). Số hiệu kỹ năng KHÔNG đổi.
   ⚠️ Thứ tự ô ghi **thẳng localStorage** trên WebGL (`CD_DocChuoi/CD_GhiChuoi` trong `CauNoiCaiDat.jslib`, 14/09/2026) — PlayerPrefs
   WebGL ghi không đồng bộ, đóng tab ngay là mất; ngoài WebGL vẫn PlayerPrefs.
-- ⚠️ **ACT2: BAN NGÀY → XẾ CHIỀU → ĐÊM, mỗi chặng 2 phút** (người dùng 19/09 rồi 24/09/2026 — tổng **4 phút**:
-  giây 0 ngày, giây 120 xế chiều, giây 240 đêm; `Art/ChuyenChieuSangDem.cs`, gắn từ `GameBootstrap.BuildSun` khi
-  `WorldFactory.LaAct2()`). Act2 **không nướng lightmap** nên mọi ánh sáng là thời gian thực. Ba bộ `BoAnhSang`
-  nội suy bằng một hàm: **Ngày** (đèn `(1,00 0,95 0,86)` 1,35 ở **55°**, trời xanh nhạt, sương 0,0060) và **Xế chiều**
-  (đèn `(1,00 0,64 0,34)` 1,45 ở **13°**, trời cam) là hằng; ⚠️ **Đêm ĐỌC THẲNG TỪ CẢNH** lúc Start, không chép lại —
-  đổi màu đêm trong WorldFactory là cái đích tự đi theo. `Ap(t)`: t 0..1 trên cả 4 phút, `TienDoXeChieu` = 0,5; mỗi
-  chặng smoothstep riêng; sao chỉ hiện ở nửa sau chặng cuối; đồng hồ `Time.timeSinceLevelLoad`, không tốn gói tin.
-  ⚠️ **Đang chạy phép thử thì NHẢY THẲNG tới đêm**: nhận ra bằng sự có mặt của `ChayThuMang`, kiểm ở CẢ `Start`
-  lẫn `ChayThuMang.Awake` (thứ tự không cố định) — không thì hàng chục phép thử chụp ảnh trong Act2 đều lệch.
-  Menu 79 bật `ChoPhepChuyenTrongPhepThu` và tự trả lại khi xong. Menu 79 kiểm.
-  ⚠️ **Mười lò lửa chỉ cháy khi trời đã tối** (người dùng 19/09/2026): `LoLuaDa.ChoPhepNhomLua` (mặc định BẬT —
-  Act1 và màn chính giữ nguyên) đặt trong **Awake** của GameBootstrap, trước mọi Start; lò **không nhóm lửa từ
-  đầu** chứ không phải nhóm rồi dập (dập thì mười cuộn khói bốc lên lúc vừa vào trận). Tới mức
-  `ChuyenChieuSangDem.MucNhomLua` = **0,70** trên đường cong của chặng xế chiều → đêm (`TienDoNhomLua()` = 0,818,
-  tức **giây 196**) thì nhóm cả mười, **một lần duy nhất** — gọi `Chay()`
-  mỗi khung sẽ nhóm lại chính cái lò Gió lốc vừa dập và hẹn 30 giây (`DapTatRoiChayLai`). Menu 79 mục G, và mục ấy
-  phải nằm **ngay đầu** kịch bản vì các mục khác gọi `Ap(1f)` là lửa nhóm rồi không tắt lại nữa.
+- ⚠️ **ACT2: VÒNG ĐÊM 4 PHÚT → NGÀY 2 PHÚT → CHIỀU 2 PHÚT, LẶP LẠI TỚI HẾT TRẬN** (người dùng 25/09/2026; trước đó
+  19/09 và 24/09 là ngày → xế chiều → đêm rồi dừng). `Art/ChuyenChieuSangDem.cs`, gắn từ `GameBootstrap.BuildSun` khi
+  `WorldFactory.LaAct2()`. Vòng `ChuKy` 480 s: đêm 0–210 · **bình minh** 210–240 · ngày 240–330 · **chiều xuống** 330–360 ·
+  chiều 360–450 · **hoàng hôn** 450–480 (người dùng chọn "chuyển mượt 30 giây": mỗi buổi giữ nguyên, 30 giây CUỐI mới
+  chuyển). Act2 **không nướng lightmap** nên mọi ánh sáng là thời gian thực. Ba bộ `BoAnhSang`: **Ngày** (đèn
+  `(1,00 0,95 0,86)` 1,35 ở **55°**) và **Chiều** (`XeChieu`, đèn `(1,00 0,64 0,34)` 1,45 ở **13°**, trời cam) là hằng;
+  ⚠️ **Đêm ĐỌC THẲNG TỪ CẢNH** lúc Start, không chép lại. `ApGiay(giay)` / `TinhLuc`; góc đèn nội suy bằng **Slerp
+  quaternion** (Lerp Euler có thể quay ngược cả vòng); sao tắt ở nửa đầu bình minh, hiện ở nửa sau hoàng hôn; buổi
+  đứng yên thì không ghi lại mỗi khung; đồng hồ `Time.timeSinceLevelLoad`, không tốn gói tin.
+  ⚠️ **Đang chạy phép thử thì ĐỨNG YÊN Ở ĐÊM** (`GiayGiuaDem`): nhận ra bằng sự có mặt của `ChayThuMang`, kiểm ở CẢ
+  `Start` lẫn `ChayThuMang.Awake` — phép thử dài quá 3,5 phút mà vòng chạy thì sang ngày giữa chừng. Phép thử muốn một
+  buổi cụ thể: tắt component rồi `ApGiay(GiayGiuaNgay / GiayGiuaChieu / GiayGiuaDem)`. Menu 79 bật `ChoPhepChuyenTrongPhepThu`.
+  ⚠️ **Mười lò lửa chỉ cháy khi trời tối**: vào trận là đêm nên lò cháy ngay (`Gan` đặt `LoLuaDa.ChoPhepNhomLua = true`
+  trong **Awake** của GameBootstrap); độ tối qua `MucNhomLua` 0,70 thì đổi trạng thái **một lần**: bình minh giây
+  **220,9** (`GiayTatLua()`) `DapTat` cả mười (còn làn khói), hoàng hôn giây **469,1** (`GiayNhomLua()`) nhóm lại. Cờ tắt
+  thì `Chay()` từ chối — kể cả lần hẹn 30 giây của Gió lốc (`DapTatRoiChayLai`), nên lò bị dập ban đêm không tự cháy
+  giữa ban ngày. Menu 79 kiểm (31 mốc cả hai vòng, lò, Gió lốc, đồng hồ, đêm khớp mốc cũ, chỉ Act2).
 - ⚠️ **Phép thử đo "sát thương nhân đôi" phải đọc SỐ GHI TRÊN TỪNG ĐÒN**, không đếm tổng máu bia mất: tổng ấy
   phụ thuộc bao nhiêu quả trúng và trúng chỗ nào (sát thương vùng giảm từ tâm ra rìa) — menu 73 ra 1,35 rồi 1,73
   ở hai lần chạy cùng một bản code (19/09/2026). Đọc `impactDamage` từng quả thì ra đúng ×2,00 mọi lần; và phải

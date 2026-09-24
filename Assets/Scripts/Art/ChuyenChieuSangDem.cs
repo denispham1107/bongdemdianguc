@@ -1,43 +1,56 @@
 using UnityEngine;
 
 /// <summary>
-/// ACT2: VAO TRAN LUC BAN NGAY -> 2 PHUT SAU LA XE CHIEU -> 2 PHUT NUA LA DEM.
+/// ACT2: VONG NGAY DEM LAP LAI - DEM 4 PHUT -> NGAY 2 PHUT -> CHIEU 2 PHUT -> DEM ... cho toi het tran.
 ///
-/// Nguoi dung xin hai lan:
-///   19/09/2026 "moi vao game ... anh sang buoi xe chieu roi trong vong 2 phut chuyen dan anh sang tu tu qua
-///              dem toi giong hien gio";
-///   24/09/2026 "luc moi vao game cho them anh sang ban ngay roi trong vong 2 phut chuyen dan anh sang sang
-///              buoi xe chieu" - va nguoi dung chot: sau do xe chieu van toi dan thanh dem trong 2 phut nua
-///              (tong 4 phut: NGAY 0 s -> XE CHIEU 120 s -> DEM 240 s).
+/// Lich su yeu cau:
+///   19/09/2026 vao tran luc xe chieu, 2 phut toi dan thanh dem;
+///   24/09/2026 vao tran ban ngay -> 2 phut xe chieu -> 2 phut nua dem (roi dung o dem);
+///   25/09/2026 (hien hanh) "vua moi bat dau game se la ban dem trong 4ph roi chuyen sang ban ngay trong 2ph roi
+///              chuyen sang buoi chieu 2ph roi cu lap di lap lai nhu ban dau cho toi khi game ket thuc" - nguoi
+///              dung chon "chuyen muot 30 giay": moi buoi GIU NGUYEN anh sang cua no, 30 giay CUOI moi chuyen
+///              dan sang buoi sau (binh minh, chieu xuong, hoang hon).
+///
+/// Mot vong 8 phut (<see cref="ChuKy"/>), tinh tu luc nap man:
+///     0 - 210 s  DEM         | 210 - 240 s  binh minh (dem -> ngay)
+///   240 - 330 s  NGAY        | 330 - 360 s  chieu xuong (ngay -> chieu)
+///   360 - 450 s  CHIEU       | 450 - 480 s  hoang hon (chieu -> dem)   roi quay lai 0.
 /// Chi Act2 - Act1 va man chinh giu nguyen.
 ///
-/// CACH LAM: ba bo anh sang <see cref="BoAnhSang"/>. NGAY va XE CHIEU la hang so trong file nay; DEM thi
+/// CACH LAM: ba bo anh sang <see cref="BoAnhSang"/>. NGAY va CHIEU la hang so trong file nay; DEM thi
 /// KHONG viet tay ma DOC THANG tu canh ngay luc bat dau (sau khi <see cref="WorldFactory.BuildSkyAndFog"/> va
 /// <see cref="WorldFactory.SetupMoonlight"/> da dat xong) - sau nay ai chinh mau ban dem trong WorldFactory
-/// thi cai dich o day tu di theo, khong co chuyen hai noi giu hai bang mau roi lech nhau (dung cai loi bo
-/// bieu tuong ky nang da mac 19/09/2026).
+/// thi cai dich o day tu di theo.
 ///
-/// Doi nhung gi (deu la anh sang THOI GIAN THUC - Act2 khong nuong lightmap nao, do duoc 0 lightmap):
-///   - den huong (Moonlight): mau, do manh, do dam cua bong, va GOC CHIEU (trua mat troi cao 55 do,
-///     xe chieu ha thap 13 do nen bong do dai va xien, dem len 42 do nhu anh trang hien gio);
+/// Doi nhung gi (deu la anh sang THOI GIAN THUC - Act2 khong nuong lightmap nao):
+///   - den huong (Moonlight): mau, do manh, do dam cua bong, va GOC CHIEU (ngay 55 do, chieu 13 do, dem 42 do);
 ///   - anh sang moi truong ba tang (Trilight), mau va do dam cua suong mu;
-///   - bau troi (shader Diablo25D/SkyGradient): mau dinh troi / chan troi / may, do sang cua sao, va
-///     dia sang tren troi - MAT TROI trang vang, roi mat troi cam to, cuoi cung MAT TRANG trang nho;
-///   - den diem bam theo nhan vat (HeroLight): ban ngay gan nhu tat, dem thi xanh lanh nhu cu.
+///   - bau troi (shader Diablo25D/SkyGradient): dinh troi / chan troi / may, sao, dia sang tren troi;
+///   - den diem bam theo nhan vat (HeroLight).
+///
+/// LO LUA DA chi chay khi troi toi (nguoi dung 19/09/2026): vao tran la dem nen lo chay ngay tu dau; binh minh
+/// sang qua <see cref="MucNhomLua"/> thi TAT ca muoi lo, hoang hon toi qua muc ay thi NHOM lai - moi lan qua muc
+/// chi lam MOT lan (goi Chay() moi khung se nhom lai ca cai lo Gio loc vua dap tat).
 ///
 /// Dong ho: <see cref="Time.timeSinceLevelLoad"/> - moi may tu chay tu luc nap man. Ca phong vao tran
 /// cung luc (dem nguoc 10 giay o sanh) nen moi nguoi thay gan nhu cung mot khung troi; khong ton goi tin nao.
 /// </summary>
 public class ChuyenChieuSangDem : MonoBehaviour
 {
-    /// <summary>Moi chang 2 phut - nguoi dung chot.</summary>
-    public const float GiayMoiChang = 120f;
-    /// <summary>Hai chang: ngay -> xe chieu, xe chieu -> dem.</summary>
-    public const float GiayChuyen = GiayMoiChang * 2f;
-    /// <summary>Tien do (0..1 tren ca 4 phut) ung voi dung luc XE CHIEU.</summary>
-    public const float TienDoXeChieu = 0.5f;
+    /// <summary>Do dai tung buoi, giay - nguoi dung chot 25/09/2026.</summary>
+    public const float GiayDem = 240f, GiayNgay = 120f, GiayChieu = 120f;
+    /// <summary>Moi lan doi buoi chuyen dan trong 30 giay CUOI cua buoi truoc (nguoi dung chon).</summary>
+    public const float GiayChuyenBuoi = 30f;
+    /// <summary>Mot vong day du: dem + ngay + chieu = 8 phut.</summary>
+    public const float ChuKy = GiayDem + GiayNgay + GiayChieu;
 
-    /// <summary>Mot bo anh sang day du - de noi suy hai chang bang CUNG mot doan code.</summary>
+    /// <summary>Moc bat dau cua ngay / chieu trong vong (giay).</summary>
+    public const float MocNgay = GiayDem, MocChieu = GiayDem + GiayNgay;
+
+    /// <summary>Mot giay GIUA moi buoi (anh sang dung yen) - phep thu dung de dat canh ve mot buoi.</summary>
+    public const float GiayGiuaDem = 100f, GiayGiuaNgay = MocNgay + 45f, GiayGiuaChieu = MocChieu + 45f;
+
+    /// <summary>Mot bo anh sang day du - de noi suy moi lan chuyen bang CUNG mot doan code.</summary>
     public struct BoAnhSang
     {
         public Color den; public float manh, bong; public Vector3 goc;
@@ -51,7 +64,10 @@ public class ChuyenChieuSangDem : MonoBehaviour
             return new BoAnhSang
             {
                 den = Color.Lerp(a.den, b.den, k), manh = Mathf.Lerp(a.manh, b.manh, k),
-                bong = Mathf.Lerp(a.bong, b.bong, k), goc = Vector3.Lerp(a.goc, b.goc, k),
+                bong = Mathf.Lerp(a.bong, b.bong, k),
+                // Goc: SLERP quaternion chu khong Lerp tung goc Euler - dem doc tu canh ghi goc dang 0..360,
+                // Lerp Euler thi co the mat troi quay nguoc ca vong trong 30 giay binh minh
+                goc = Quaternion.Slerp(Quaternion.Euler(a.goc), Quaternion.Euler(b.goc), k).eulerAngles,
                 ambTroi = Color.Lerp(a.ambTroi, b.ambTroi, k), ambNgang = Color.Lerp(a.ambNgang, b.ambNgang, k),
                 ambDat = Color.Lerp(a.ambDat, b.ambDat, k), suong = Color.Lerp(a.suong, b.suong, k),
                 damSuong = Mathf.Lerp(a.damSuong, b.damSuong, k),
@@ -65,7 +81,7 @@ public class ChuyenChieuSangDem : MonoBehaviour
         }
     }
 
-    // ---------------- BAN NGAY (vua vao tran) ----------------
+    // ---------------- BAN NGAY ----------------
     // Nang trua nhat nhat cua nghia dia: mat troi cao, anh sang trang hoi am, troi xanh nhat, suong xam
     // xanh thua - van u am mot chut chu khong ruc ro nhu dong co.
     public static readonly BoAnhSang Ngay = new BoAnhSang
@@ -80,7 +96,7 @@ public class ChuyenChieuSangDem : MonoBehaviour
         hero = new Color(1.00f, 0.95f, 0.88f), manhHero = 0.15f,
     };
 
-    // ---------------- XE CHIEU (sau 2 phut) ----------------
+    // ---------------- BUOI CHIEU ----------------
     // Nang cuoi ngay: cam do o chan troi, dinh troi da nga xanh tham, chua co sao. Mat troi THAP (13 do)
     // nen bong do dai va xien. (Cung bo so da chot 19/09/2026 cho "vao tran luc xe chieu".)
     public static readonly BoAnhSang XeChieu = new BoAnhSang
@@ -96,18 +112,10 @@ public class ChuyenChieuSangDem : MonoBehaviour
     };
 
     /// <summary>
-    /// TOI DAY THI NHOM LUA O CAC LO DA (nguoi dung: "khi khong phai ban dem thi cho tat lua o Lo Lua").
-    /// Do tren duong cong da lam muot cua CHANG XE CHIEU -> DEM: 0,70 roi vao khoang troi da toi han -
+    /// Do toi (0 = ngay/chieu, 1 = dem han) ma tu do tro len LO LUA DA chay. 0,70 roi vao khoang troi da toi han -
     /// anh sang moi truong con mot nua, sao da hien ro - chu khong phai luc con quang do o chan troi.
-    /// Ca chang ban ngay lan xe chieu lo deu tat.
     /// </summary>
     public const float MucNhomLua = 0.70f;
-
-    /// <summary>Tien do (0..1 tren ca 4 phut) luc lo bat dau chay - phep thu doc, khong tu tinh lai.</summary>
-    public static float TienDoNhomLua()
-    {
-        return TienDoXeChieu + (1f - TienDoXeChieu) * DaoSmoothstep(MucNhomLua);
-    }
 
     static float Smoothstep(float x) { x = Mathf.Clamp01(x); return x * x * (3f - 2f * x); }
 
@@ -124,17 +132,33 @@ public class ChuyenChieuSangDem : MonoBehaviour
         return (lo + hi) * 0.5f;
     }
 
+    /// <summary>Giay (trong vong) luc hoang hon toi qua muc nhom lua - phep thu doc, khong tu tinh lai.</summary>
+    public static float GiayNhomLua() { return ChuKy - GiayChuyenBuoi + GiayChuyenBuoi * DaoSmoothstep(MucNhomLua); }
+    /// <summary>Giay (trong vong) luc binh minh sang qua muc nhom lua - lo tat.</summary>
+    public static float GiayTatLua() { return MocNgay - GiayChuyenBuoi + GiayChuyenBuoi * DaoSmoothstep(1f - MucNhomLua); }
+
+    /// <summary>Ten buoi o giay <paramref name="giay"/> (khong dau - chi de ghi bao cao phep thu).</summary>
+    public static string TenBuoi(float giay)
+    {
+        float g = Mathf.Repeat(giay, ChuKy);
+        if (g < MocNgay - GiayChuyenBuoi) return "dem";
+        if (g < MocNgay) return "binh minh";
+        if (g < MocChieu - GiayChuyenBuoi) return "ngay";
+        if (g < MocChieu) return "chieu xuong";
+        if (g < ChuKy - GiayChuyenBuoi) return "chieu";
+        return "hoang hon";
+    }
+
     // ---------------- BAN DEM (doc tu canh luc bat dau) ----------------
     Light den, heroLight;
     Material troi;
     BoAnhSang dem;
 
     /// <summary>
-    /// ⚠️ DANG CHAY MOT KICH BAN CHAY THU thi NHAY THANG toi dem, khong chuyen dan.
+    /// ⚠️ DANG CHAY MOT KICH BAN CHAY THU thi DUNG YEN O BAN DEM, khong chay vong.
     ///
-    /// Hang chuc phep thu chup anh trong Act2 o nhung giay dau tran (mau hat lua, do sang vanh hinh,
-    /// mau vo bang...). De troi sang ban ngay thi moi anh doi chung ay deu lech, va chung se bao hong
-    /// nhung thu chang lien quan gi den anh sang.
+    /// Hang chuc phep thu chup anh trong Act2 va so voi anh doi chung; vong ngay dem ma chay thi phep thu nao
+    /// dai qua 3,5 phut se sang ban ngay giua chung va bao hong nhung thu chang lien quan gi den anh sang.
     ///
     /// Nhan ra "dang chay thu" bang su co mat cua <see cref="ChayThuMang"/>. Phai kiem o CA HAI dau vi
     /// thu tu khong co dinh: vat the chay thu duoc tao tu EditorApplication.update, co the truoc hoac
@@ -149,24 +173,27 @@ public class ChuyenChieuSangDem : MonoBehaviour
         return !ChoPhepChuyenTrongPhepThu && FindAnyObjectByType<ChayThuMang>() != null;
     }
 
-    /// <summary>Dua canh ve han ban dem ngay lap tuc (goi tu ChayThuMang khi no thuc day sau Start).</summary>
+    /// <summary>Dua canh ve ban dem va dung vong (goi tu ChayThuMang khi no thuc day sau Start).</summary>
     public static void ToiDemNgay()
     {
         var c = FindAnyObjectByType<ChuyenChieuSangDem>();
         if (c == null || !c.sanSang || ChoPhepChuyenTrongPhepThu) return;
-        c.Ap(1f);
+        c.ApGiay(GiayGiuaDem);
         c.enabled = false;
     }
 
     float batDau;
     bool sanSang;
-    bool daNhomLua;
+    /// <summary>Lo lua dang o trang thai CHAY (theo vong ngay dem) - chi doi khi do toi vuot qua MucNhomLua.</summary>
+    bool loDangChay = true;
+    /// <summary>Buoi dung yen da dat xong (khoi ghi lai moi khung): -1 = chua / dang chuyen, 0 dem, 1 ngay, 2 chieu.</summary>
+    int buoiDaDat = -1;
 
-    /// <summary>Phan duong da di tren ca 4 phut (0 = vua vao tran, 0,5 = xe chieu, 1 = dem han). Phep thu doc.</summary>
-    public float TienDo
-    {
-        get { return GiayChuyen <= 0f ? 1f : Mathf.Clamp01((Time.timeSinceLevelLoad - batDau) / GiayChuyen); }
-    }
+    /// <summary>Giay da troi trong vong hien tai (0..480). Phep thu doc.</summary>
+    public float GiayTrongVong { get { return Mathf.Repeat(Time.timeSinceLevelLoad - batDau, ChuKy); } }
+
+    /// <summary>Lo lua dang duoc phep chay theo vong ngay dem (phep thu doc).</summary>
+    public bool LoDangChay { get { return loDangChay; } }
 
     /// <summary>Bo anh sang ban dem da doc tu canh (phep thu doc de so).</summary>
     public BoAnhSang Dem { get { return dem; } }
@@ -174,9 +201,9 @@ public class ChuyenChieuSangDem : MonoBehaviour
     /// <summary>Gan vao mot vat the trong canh Act2. Goi SAU khi bau troi va anh trang da dat xong.</summary>
     public static ChuyenChieuSangDem Gan(GameObject cho, Light denHuong)
     {
-        // Dat co NGAY TRONG AWAKE cua GameBootstrap, truoc moi Start: cac lo lua trong canh se doc no
-        // o Start cua chung. Dang chay phep thu (nhay thang toi dem) thi cu de lua chay nhu cu.
-        LoLuaDa.ChoPhepNhomLua = DangChayThu();
+        // Vao tran la BAN DEM nen lo chay ngay tu dau. Dat co NGAY TRONG AWAKE cua GameBootstrap, truoc moi Start:
+        // cac lo lua trong canh doc no o Start cua chung (co la static, con giu gia tri cua tran truoc).
+        LoLuaDa.ChoPhepNhomLua = true;
 
         var c = cho.AddComponent<ChuyenChieuSangDem>();
         c.den = denHuong;
@@ -201,7 +228,7 @@ public class ChuyenChieuSangDem : MonoBehaviour
             RenderSettings.skybox = troi;
         }
 
-        // ---- DOC trang thai DEM tu chinh canh (thieu thu gi thi lay tam cua xe chieu) ----
+        // ---- DOC trang thai DEM tu chinh canh (thieu thu gi thi lay tam cua buoi chieu) ----
         dem = XeChieu;
         if (den != null)
         {
@@ -230,10 +257,10 @@ public class ChuyenChieuSangDem : MonoBehaviour
 
         batDau = Time.timeSinceLevelLoad;
         sanSang = true;
-        daNhomLua = false;
+        loDangChay = LoLuaDa.ChoPhepNhomLua;
 
-        if (DangChayThu()) { Ap(1f); enabled = false; return; }
-        Ap(0f);
+        ApGiay(0f);
+        if (DangChayThu()) { ApGiay(GiayGiuaDem); enabled = false; }
     }
 
     Color DocMau(string ten, Color neuThieu) { return troi.HasProperty(ten) ? troi.GetColor(ten) : neuThieu; }
@@ -245,42 +272,69 @@ public class ChuyenChieuSangDem : MonoBehaviour
     void Update()
     {
         if (!sanSang) return;
-        Ap(TienDo);
-        if (TienDo >= 1f) { Ap(1f); enabled = false; }     // toi dem roi thi thoi, khong tinh moi khung nua
+        ApGiay(GiayTrongVong);
     }
 
     /// <summary>
-    /// Dat anh sang o mot diem tren ca 4 phut. <paramref name="t"/> 0 = ban ngay, 0,5 = xe chieu, 1 = dem.
-    /// Moi chang di theo duong cong smoothstep rieng: dau chang va cuoi chang doi cham, khuc giua doi
-    /// nhanh - nhin ra "nang nga dan" / "troi sap toi" chu khong phai mot cai van vo deu deu, va luc giao
-    /// hai chang (dung xe chieu) anh sang dung lai mot nhip chu khong bi gay.
+    /// Tinh bo anh sang va DO TOI (0..1) o giay <paramref name="giay"/> trong vong. Moi lan chuyen buoi di theo
+    /// smoothstep rieng: dau va cuoi doi cham, khuc giua doi nhanh.
     /// </summary>
-    public void Ap(float t)
+    public BoAnhSang TinhLuc(float giay, out float doToi, out int buoiDungYen)
     {
-        t = Mathf.Clamp01(t);
+        float g = Mathf.Repeat(giay, ChuKy);
+        buoiDungYen = -1;
         BoAnhSang b;
-        float kDem;                      // do tien tren CHANG XE CHIEU -> DEM (0 o ca chang ban ngay)
-        if (t <= TienDoXeChieu)
+        if (g < MocNgay - GiayChuyenBuoi) { b = dem; doToi = 1f; buoiDungYen = 0; }
+        else if (g < MocNgay)
         {
-            b = BoAnhSang.Lerp(Ngay, XeChieu, Smoothstep(t / TienDoXeChieu));
-            kDem = 0f;
+            // BINH MINH: sao tat trong NUA DAU (troi da xanh ma con day sao thi trong gia)
+            float k = Smoothstep((g - (MocNgay - GiayChuyenBuoi)) / GiayChuyenBuoi);
+            b = BoAnhSang.Lerp(dem, Ngay, k);
+            b.sao = Mathf.Lerp(dem.sao, Ngay.sao, Mathf.Clamp01(k / 0.55f));
+            doToi = 1f - k;
         }
+        else if (g < MocChieu - GiayChuyenBuoi) { b = Ngay; doToi = 0f; buoiDungYen = 1; }
+        else if (g < MocChieu)
+        {
+            float k = Smoothstep((g - (MocChieu - GiayChuyenBuoi)) / GiayChuyenBuoi);
+            b = BoAnhSang.Lerp(Ngay, XeChieu, k);
+            doToi = 0f;
+        }
+        else if (g < ChuKy - GiayChuyenBuoi) { b = XeChieu; doToi = 0f; buoiDungYen = 2; }
         else
         {
-            kDem = Smoothstep((t - TienDoXeChieu) / (1f - TienDoXeChieu));
-            b = BoAnhSang.Lerp(XeChieu, dem, kDem);
-            // Sao chi hien o NUA SAU chang cuoi: troi con do quang o chan troi ma da day sao thi trong rat gia
-            b.sao = Mathf.Lerp(XeChieu.sao, dem.sao, Mathf.Clamp01((kDem - 0.45f) / 0.55f));
+            // HOANG HON: sao chi hien o NUA SAU (troi con do quang o chan troi ma da day sao thi trong gia)
+            float k = Smoothstep((g - (ChuKy - GiayChuyenBuoi)) / GiayChuyenBuoi);
+            b = BoAnhSang.Lerp(XeChieu, dem, k);
+            b.sao = Mathf.Lerp(XeChieu.sao, dem.sao, Mathf.Clamp01((k - 0.45f) / 0.55f));
+            doToi = k;
+        }
+        return b;
+    }
+
+    /// <summary>Dat anh sang (va lo lua) dung nhu o giay <paramref name="giay"/> trong vong.</summary>
+    public void ApGiay(float giay)
+    {
+        float doToi; int buoi;
+        var b = TinhLuc(giay, out doToi, out buoi);
+
+        // LO LUA DA: chi doi khi do toi VUOT QUA muc - moi lan qua muc lam mot lan
+        bool nenChay = doToi >= MucNhomLua;
+        if (nenChay != loDangChay)
+        {
+            loDangChay = nenChay;
+            LoLuaDa.ChoPhepNhomLua = nenChay;
+            foreach (var lo in FindObjectsByType<LoLuaDa>(FindObjectsSortMode.None))
+            {
+                if (nenChay) lo.Chay();
+                else lo.DapTat();
+            }
         }
 
-        // LO LUA DA: chua toi dem thi de tat. Chi nhom MOT LAN khi vuot muc - goi Chay() moi khung se
-        // nhom lai ca cai lo ma Gio loc vua dap tat (LoLuaDa.DapTatRoiChayLai hen 30 giay).
-        if (kDem >= MucNhomLua && !daNhomLua)
-        {
-            daNhomLua = true;
-            LoLuaDa.ChoPhepNhomLua = true;
-            foreach (var lo in FindObjectsByType<LoLuaDa>(FindObjectsSortMode.None)) lo.Chay();
-        }
+        // Buoi dung yen da dat roi thi khoi ghi lai moi khung (chi Update goi lien tuc; phep thu goi lung tung
+        // thi buoiDaDat van dung vi moi lan dat deu ghi lai)
+        if (buoi >= 0 && buoi == buoiDaDat) return;
+        buoiDaDat = buoi;
 
         if (den != null)
         {

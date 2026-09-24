@@ -1,26 +1,49 @@
-[ban 2] Act2: ban ngay -> 120 giay sau xe chieu -> 240 giay la dem
+[ban 3] Act2: vong 480 giay - dem 240 / ngay 120 / chieu 120, chuyen 30 giay
 
-A. vua vao tran (giay 1.03, tien do that 0.0043): den RGBA(1.000, 0.950, 0.860, 1.000) am 0.140, do sang den 1.288, goc 55.0 do; moi truong 0.516; suong RGBA(0.620, 0.680, 0.740, 1.000); sao 0.00
-A2. giua duong (tien do 0.50 = giay 120): den RGBA(1.000, 0.640, 0.340, 1.000) am 0.660, do sang den 1.008, goc 13.0 do; moi truong 0.295; sao 0.00
+A. vua vao tran (giay 1.15 trong vong, buoi 'dem'): den RGBA(0.520, 0.720, 0.980, 1.000) manh 0.880 goc 42.0; moi truong RGBA(0.085, 0.155, 0.190, 1.000); sao 1.00; lo dang chay 10/10
 
-G. muoi lo lua (nhom tai tien do 0.818 = giay 196): 0.000 (giay 0) -> 0 lo | 0.250 (giay 60) -> 0 lo | 0.500 (giay 120) -> 0 lo | 0.650 (giay 156) -> 0 lo | 0.798 (giay 192) -> 0 lo | 0.838 (giay 201) -> 10 lo | 1.000 (giay 240) -> 10 lo
+B. ca vong 480 giay (dem 240 / ngay 120 / chieu 120, chuyen 30 giay cuoi moi buoi); lo tat o giay 220.90, nhom o giay 469.10
+    giay    0.0 dem         : den sang 0.613 am -0.460 | moi truong 0.1426 | sao 1.00 | goc  42.0 | lo chay 10
+    giay  100.0 dem         : den sang 0.613 am -0.460 | moi truong 0.1426 | sao 1.00 | goc  42.0 | lo chay 10
+    giay  205.0 dem         : den sang 0.613 am -0.460 | moi truong 0.1426 | sao 1.00 | goc  42.0 | lo chay 10
+    giay  212.0 binh minh   : den sang 0.620 am -0.452 | moi truong 0.1474 | sao 0.98 | goc  42.2 | lo chay 10
+    giay  218.0 binh minh   : den sang 0.714 am -0.355 | moi truong 0.2081 | sao 0.68 | goc  44.3 | lo chay 10
+    giay  220.6 binh minh   : den sang 0.781 am -0.288 | moi truong 0.2494 | sao 0.48 | goc  45.7 | lo chay 10
+    giay  221.2 binh minh   : den sang 0.799 am -0.272 | moi truong 0.2598 | sao 0.43 | goc  46.1 | lo chay 0
+    giay  228.0 binh minh   : den sang 1.023 am -0.071 | moi truong 0.3844 | sao 0.00 | goc  50.4 | lo chay 0
+    giay  235.0 binh minh   : den sang 1.230 am 0.096 | moi truong 0.4881 | sao 0.00 | goc  54.0 | lo chay 0
+    giay  239.9 binh minh   : den sang 1.288 am 0.140 | moi truong 0.5157 | sao 0.00 | goc  55.0 | lo chay 0
+    giay  245.0 ngay        : den sang 1.288 am 0.140 | moi truong 0.5157 | sao 0.00 | goc  55.0 | lo chay 0
+    giay  300.0 ngay        : den sang 1.288 am 0.140 | moi truong 0.5157 | sao 0.00 | goc  55.0 | lo chay 0
+    giay  325.0 ngay        : den sang 1.288 am 0.140 | moi truong 0.5157 | sao 0.00 | goc  55.0 | lo chay 0
+    giay  333.0 chieu xuong : den sang 1.281 am 0.155 | moi truong 0.5096 | sao 0.00 | goc  53.8 | lo chay 0
+    giay  340.0 chieu xuong : den sang 1.220 am 0.275 | moi truong 0.4586 | sao 0.00 | goc  44.1 | lo chay 0
+    giay  345.0 chieu xuong : den sang 1.154 am 0.400 | moi truong 0.4056 | sao 0.00 | goc  34.0 | lo chay 0
+    giay  352.0 chieu xuong : den sang 1.061 am 0.569 | moi truong 0.3340 | sao 0.00 | goc  20.4 | lo chay 0
+    giay  359.9 chieu xuong : den sang 1.008 am 0.660 | moi truong 0.2954 | sao 0.00 | goc  13.0 | lo chay 0
+    giay  365.0 chieu       : den sang 1.008 am 0.660 | moi truong 0.2954 | sao 0.00 | goc  13.0 | lo chay 0
+    giay  420.0 chieu       : den sang 1.008 am 0.660 | moi truong 0.2954 | sao 0.00 | goc  13.0 | lo chay 0
+    giay  445.0 chieu       : den sang 1.008 am 0.660 | moi truong 0.2954 | sao 0.00 | goc  13.0 | lo chay 0
+    giay  453.0 hoang hon   : den sang 0.997 am 0.629 | moi truong 0.2911 | sao 0.00 | goc  13.8 | lo chay 0
+    giay  460.0 hoang hon   : den sang 0.905 am 0.370 | moi truong 0.2558 | sao 0.00 | goc  20.5 | lo chay 0
+    giay  468.8 hoang hon   : den sang 0.737 am -0.108 | moi truong 0.1906 | sao 0.43 | goc  32.9 | lo chay 0
+    giay  469.4 hoang hon   : den sang 0.726 am -0.139 | moi truong 0.1864 | sao 0.48 | goc  33.7 | lo chay 10
+    giay  472.0 hoang hon   : den sang 0.682 am -0.264 | moi truong 0.1694 | sao 0.68 | goc  36.9 | lo chay 10
+    giay  479.9 hoang hon   : den sang 0.613 am -0.460 | moi truong 0.1427 | sao 1.00 | goc  42.0 | lo chay 10
+    giay  480.0 dem         : den sang 0.613 am -0.460 | moi truong 0.1426 | sao 1.00 | goc  42.0 | lo chay 10
+    giay  780.0 ngay        : den sang 1.288 am 0.140 | moi truong 0.5157 | sao 0.00 | goc  55.0 | lo chay 0
+    giay  900.0 chieu       : den sang 1.008 am 0.660 | moi truong 0.2954 | sao 0.00 | goc  13.0 | lo chay 0
+    giay 1060.0 dem         : den sang 0.613 am -0.460 | moi truong 0.1426 | sao 1.00 | goc  42.0 | lo chay 10
+B1. giu nguyen trong buoi: dem (0/100/205) True, ngay (245/300/325) True, chieu (365/420/445) True
+B2. binh minh sang dan True, sao tat dan True; chieu xuong den am dan True; hoang hon toi dan True, sao hien dan True
+B3. lap lai: giay 480 'dem', 780 'ngay', 900 'chieu', 1060 'dem' - trung vong dau True
+B4. lo lua: dem chay du True; ngay + chieu tat het True; binh minh tat dung giay 220.9 True; hoang hon nhom dung giay 469.1 True
 
-B. chin moc tren duong doi (0 = ngay, 0,5 = xe chieu, 1 = dem)
-    t=0.000 (giay   0): den sang 1.288 am 0.140 | moi truong 0.5157 | suong dam 0.0060 | sao 0.00 | goc 55.0
-    t=0.125 (giay  30): den sang 1.248 am 0.221 | moi truong 0.4813 | suong dam 0.0062 | sao 0.00 | goc 48.4
-    t=0.250 (giay  60): den sang 1.154 am 0.400 | moi truong 0.4056 | suong dam 0.0066 | sao 0.00 | goc 34.0
-    t=0.375 (giay  90): den sang 1.055 am 0.579 | moi truong 0.3298 | suong dam 0.0070 | sao 0.00 | goc 19.6
-    t=0.500 (giay 120): den sang 1.008 am 0.660 | moi truong 0.2954 | suong dam 0.0072 | sao 0.00 | goc 13.0
-    t=0.625 (giay 150): den sang 0.946 am 0.485 | moi truong 0.2715 | suong dam 0.0077 | sao 0.00 | goc 17.5
-    t=0.750 (giay 180): den sang 0.810 am 0.100 | moi truong 0.2190 | suong dam 0.0089 | sao 0.09 | goc 27.5
-    t=0.875 (giay 210): den sang 0.675 am -0.285 | moi truong 0.1665 | suong dam 0.0100 | sao 0.72 | goc 37.5
-    t=1.000 (giay 240): den sang 0.613 am -0.460 | moi truong 0.1426 | suong dam 0.0105 | sao 1.00 | goc 42.0
-B1. den toi dan True; moi truong toi dan True; sao khong bao gio bot True; mau den AM DAN o chang dau True, NGUOI DAN o chang sau True
+G. lo bi Gio loc dap, hen chay lai sau 1 giay: van dem -> chay lai True (doi chung, phai True); troi da sang ngay -> chay lai False (phai False)
 
-C. sau 6.02 giay that: tien do 0.0109 -> 0.0360 (tang 0.0251, mong 0.0251 = giay / 240)
+C. sau 6.02 giay that: giay trong vong 9.28 -> 15.30 (tang 6.02); buoi hien tai 'dem'
 
-D. het 240 giay: den RGBA(0.520, 0.720, 0.980, 1.000) manh 0.880 bong 0.62 goc 42.0; moi truong RGBA(0.120, 0.205, 0.265, 1.000)/RGBA(0.085, 0.155, 0.190, 1.000)/RGBA(0.045, 0.085, 0.105, 1.000); suong RGBA(0.115, 0.175, 0.215, 1.000) dam 0.0105; sao 1.00; quang dia 0.90
-D2. DOI CHUNG: luc dem den am = -0.460 (xe chieu 0.660, ban ngay 0.140)
+D. ban dem: den RGBA(0.520, 0.720, 0.980, 1.000) manh 0.880 bong 0.62 goc 42.0; moi truong RGBA(0.120, 0.205, 0.265, 1.000)/RGBA(0.085, 0.155, 0.190, 1.000)/RGBA(0.045, 0.085, 0.105, 1.000); suong RGBA(0.115, 0.175, 0.215, 1.000) dam 0.0105; sao 1.00; quang dia 0.90
 
 F. nap Act1: co ChuyenChieuSangDem = False (phai False); den Act1 RGBA(0.720, 0.740, 0.880, 1.000) manh 0.62
 
