@@ -8442,6 +8442,37 @@ Lần đầu tôi đọc chỗ cơn Gió lốc *trước khi niệm* rồi so v�
 đọc. Chỉ khi ghi cả hai vị trí **ngay khung hình đầu tiên thấy cơn lốc mới** thì số đo mới ra 0,00 m. Tỉ lệ "to dần"
 cũng vậy: đọc trễ 0,5 giây thì thấy 0,91 thay vì 0,42 — phải theo dõi suốt trong vòng lặp.
 
+### Act2: ban ngày → xế chiều → đêm, mỗi chặng 2 phút (24/09/2026)
+
+Anh xin thêm một chặng **ban ngày** ở đầu: vào trận là ban ngày, 2 phút chuyển dần sang xế chiều. Tôi hỏi lại
+chỗ duy nhất chưa rõ — *sau xế chiều thì sao* — và anh chốt: xế chiều **vẫn tối dần thành đêm trong 2 phút nữa**.
+Tổng **4 phút**: ngày (giây 0) → xế chiều (giây 120) → đêm (giây 240). Lò lửa tắt suốt ban ngày và xế chiều.
+
+`ChuyenChieuSangDem` viết lại quanh **một kiểu dữ liệu chung** `BoAnhSang` (đèn · môi trường · sương · bầu trời ·
+đĩa sáng · đèn nhân vật). Ba bộ: **Ngày** và **Xế chiều** là hằng số, **Đêm** vẫn đọc thẳng từ cảnh như trước.
+Hai chặng nội suy bằng **cùng một hàm** — thêm chặng thứ tư sau này chỉ là thêm một bộ số.
+
+Ban ngày: mặt trời **cao 55°**, đèn trắng hơi ấm `(1,00 0,95 0,86)`, trời xanh nhạt, mây trắng, sương xám xanh thưa
+0,0060 — vẫn hơi u ám chứ không rực rỡ như đồng cỏ. Mặt trời **hạ dần** 55° → 13° trong chặng đầu (bóng dài dần),
+rồi ánh trăng lên 42° ở chặng sau. Mỗi chặng có đường cong smoothstep riêng nên đúng lúc xế chiều ánh sáng "dừng
+lại một nhịp" chứ không bị gãy.
+
+**Số đo** (menu 79, **0 lỗi**):
+
+| Đo | Kết quả |
+|---|---|
+| Vừa vào trận | giây 1,05 · tiến độ thật 0,0044 · đèn ấm **0,140** · độ sáng đèn **1,288** · góc **55°** · môi trường **0,516** · sao 0 |
+| Giữa đường (giây 120) | xế chiều đúng như trước: ấm **0,660** · độ sáng 1,008 · góc **13°** · môi trường 0,295 · sao 0 |
+| Chín mốc 0 → 1 | đèn tối dần 1,288 → 0,613; môi trường 0,516 → 0,143; sao 0 → 1 không bao giờ bớt; màu đèn **ấm dần** ở chặng đầu (0,14 → 0,66) rồi **nguội dần** (→ −0,46) — không mốc nào đi ngược |
+| Đồng hồ | 6,02 giây thật → tiến độ +0,0251 (đúng 6/240) |
+| Hết 4 phút | trùng khít đêm cũ từng con số |
+| Lò lửa | giây 0 · 60 · 120 · 156 · 192 → **0 lò**; giây 201 và 240 → **10 lò** (nhóm tại giây 196) |
+| Chỉ Act2 | nạp Act1: không có component nào |
+
+Một cái bẫy trong ảnh chụp: lần đầu, ảnh "giữa ngày và chiều" lại thấy **lò đang cháy** — không phải lỗi game, mà vì
+ảnh ấy chụp sau khi mục đo lò lửa đã nhóm lửa (nhóm rồi thì không tắt lại). Mọi ảnh trước giờ nhóm lửa nay chụp
+**trước** mục đo lò lửa; ảnh giây 60 và giây 180 đều thấy lò tắt, đúng như trong game.
+
 ### Act2: vào trận lúc xế chiều, tối dần thành đêm trong 2 phút (19/09/2026)
 
 Anh xin: mới vào game thì Act2 sáng như **buổi xế chiều**, rồi trong **2 phút** chuyển dần sang đêm tối

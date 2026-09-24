@@ -93,7 +93,7 @@ thì lệnh MCP hết giờ.
 **Menu `Diablo 2.5D`** trong Unity (80 mục): 1 nướng asset + dựng màn, 3 tự kiểm tra,
 4 chạy thử & chụp hình, 14 chống ô vuông đen, 15–17 ảnh vỏ cây / đá mộ / sứt mẻ bia,
 18–18d chạy thử cây cháy, 19 hồi sinh sau lốc, 20 nướng điểm mồi lửa, 21 nút khoá góc nhìn,
-22 thanh kỹ năng bản PC, **26 chạy thử mạng (sảnh phòng), 27 chạy thử khoá tài khoản, 28 chụp màn đăng nhập·sảnh, 29 xuất bản WebGL, 30/30b bơm input Act2·Act1 (bước 1), 31 dự đoán & hiệu chỉnh (bước 2), 32 nhiều người một cảnh (bước 3), 33 nội suy (bước 4), 34 PvP (bước 5), 35 ghép phòng cùng màn, 36 tự gắn bộ nối mạng, 37 kỹ năng qua mạng, 38 quái chung & bù trễ, 39 đòn của quái qua mạng, 40 máu khởi đầu, 41 nhịp bước qua mạng, 42 chế độ điều khiển, 43 kiểm toán bước 5, 44 sửa bước 5, 45 bốn người, 46 hiệu ứng qua mạng, 47 chế độ bốn bộ xương, 48 cài đặt đồ hoạ, 49 cầu lửa trúng người·khiên, 50 giao diện đăng nhập·sảnh·phòng, 51/51b/51c màn chính từ Act2 (dựng · chọn góc · chụp lò lửa), 52 tên trên đầu nhân vật, 53 HUD kinh dị trong trận, 54/54b/54c mười lò lửa Act2 (đặt · chạy thử · lốc xoáy cuốn lò), 55 kết trận (người sống sót cuối cùng), 56 đợt quái Act2 · chỗ xuất phát, 57 bàn phím ảo che ô nhập, 58 mưa băng·sấm sét (đóng băng, choáng), 59 sách phép (kéo thả ô kỹ năng), 60 cấp độ·kinh nghiệm·điểm kỹ năng, 61 kinh nghiệm theo từng kỹ năng, 62 thiên thạch đánh ngã, 63 đánh ngã người chơi khác qua mạng, 64 quái vòng ngoài truy lùng sau 60 giây, 65 bình máu · bình mana (rơi, nhặt, uống, mạng), 66 nút KỸ NĂNG ở sảnh (Sách phép xem trước) · con mắt quỷ, 67 Mưa băng đóng băng người chơi khác (qua mạng), 68 Quả cầu băng, 69 Giựt sét (20 m · 75 · 4 tia · 15% choáng), 70 Quả cầu lửa (85 · vệt lửa mới), 71/71b Gió lốc (chạy thử · chụp ảnh), 72 Lửa địa ngục, 73 Tàng hình, 74 Quả cầu điện, 75 Hoá lốc xoáy · Gió lốc hồi mana, 76 Tốc biến, 77 Kháng hệ (nhóm bị động), 78 cụm nút kỹ năng cảm ứng, 79 ánh sáng xế chiều → đêm (Act2)**.
+22 thanh kỹ năng bản PC, **26 chạy thử mạng (sảnh phòng), 27 chạy thử khoá tài khoản, 28 chụp màn đăng nhập·sảnh, 29 xuất bản WebGL, 30/30b bơm input Act2·Act1 (bước 1), 31 dự đoán & hiệu chỉnh (bước 2), 32 nhiều người một cảnh (bước 3), 33 nội suy (bước 4), 34 PvP (bước 5), 35 ghép phòng cùng màn, 36 tự gắn bộ nối mạng, 37 kỹ năng qua mạng, 38 quái chung & bù trễ, 39 đòn của quái qua mạng, 40 máu khởi đầu, 41 nhịp bước qua mạng, 42 chế độ điều khiển, 43 kiểm toán bước 5, 44 sửa bước 5, 45 bốn người, 46 hiệu ứng qua mạng, 47 chế độ bốn bộ xương, 48 cài đặt đồ hoạ, 49 cầu lửa trúng người·khiên, 50 giao diện đăng nhập·sảnh·phòng, 51/51b/51c màn chính từ Act2 (dựng · chọn góc · chụp lò lửa), 52 tên trên đầu nhân vật, 53 HUD kinh dị trong trận, 54/54b/54c mười lò lửa Act2 (đặt · chạy thử · lốc xoáy cuốn lò), 55 kết trận (người sống sót cuối cùng), 56 đợt quái Act2 · chỗ xuất phát, 57 bàn phím ảo che ô nhập, 58 mưa băng·sấm sét (đóng băng, choáng), 59 sách phép (kéo thả ô kỹ năng), 60 cấp độ·kinh nghiệm·điểm kỹ năng, 61 kinh nghiệm theo từng kỹ năng, 62 thiên thạch đánh ngã, 63 đánh ngã người chơi khác qua mạng, 64 quái vòng ngoài truy lùng sau 60 giây, 65 bình máu · bình mana (rơi, nhặt, uống, mạng), 66 nút KỸ NĂNG ở sảnh (Sách phép xem trước) · con mắt quỷ, 67 Mưa băng đóng băng người chơi khác (qua mạng), 68 Quả cầu băng, 69 Giựt sét (20 m · 75 · 4 tia · 15% choáng), 70 Quả cầu lửa (85 · vệt lửa mới), 71/71b Gió lốc (chạy thử · chụp ảnh), 72 Lửa địa ngục, 73 Tàng hình, 74 Quả cầu điện, 75 Hoá lốc xoáy · Gió lốc hồi mana, 76 Tốc biến, 77 Kháng hệ (nhóm bị động), 78 cụm nút kỹ năng cảm ứng, 79 ánh sáng ngày → xế chiều → đêm (Act2)**.
 Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
 
 ## Quy tắc làm việc (rút ra từ những lần đã sai)
@@ -296,19 +296,21 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
   nhân "chỉ số × chiều cao hàng" (phép thử menu 59 hỏi `CuaSoSachPhep.VungHangKyNang`). Số hiệu kỹ năng KHÔNG đổi.
   ⚠️ Thứ tự ô ghi **thẳng localStorage** trên WebGL (`CD_DocChuoi/CD_GhiChuoi` trong `CauNoiCaiDat.jslib`, 14/09/2026) — PlayerPrefs
   WebGL ghi không đồng bộ, đóng tab ngay là mất; ngoài WebGL vẫn PlayerPrefs.
-- ⚠️ **ACT2 VÀO TRẬN LÚC XẾ CHIỀU, tối dần thành đêm trong 2 phút** (người dùng 19/09/2026,
-  `Art/ChuyenChieuSangDem.cs`, gắn từ `GameBootstrap.BuildSun` khi `WorldFactory.LaAct2()`). Act2 **không nướng
-  lightmap** nên mọi ánh sáng là thời gian thực. Xế chiều: đèn `(1,00 0,64 0,34)` mạnh 1,45 ở **13°** (bóng dài,
-  xiên), trời cam rực, không sao, sương thưa 0,0072; đêm: đúng những gì `WorldFactory` đặt. ⚠️ Trạng thái đêm
-  **ĐỌC THẲNG TỪ CẢNH** lúc Start, không chép lại — đổi màu đêm trong WorldFactory là cái đích tự đi theo.
-  Sao chỉ hiện ở nửa sau; đường cong smoothstep; đồng hồ `Time.timeSinceLevelLoad`, không tốn gói tin nào.
+- ⚠️ **ACT2: BAN NGÀY → XẾ CHIỀU → ĐÊM, mỗi chặng 2 phút** (người dùng 19/09 rồi 24/09/2026 — tổng **4 phút**:
+  giây 0 ngày, giây 120 xế chiều, giây 240 đêm; `Art/ChuyenChieuSangDem.cs`, gắn từ `GameBootstrap.BuildSun` khi
+  `WorldFactory.LaAct2()`). Act2 **không nướng lightmap** nên mọi ánh sáng là thời gian thực. Ba bộ `BoAnhSang`
+  nội suy bằng một hàm: **Ngày** (đèn `(1,00 0,95 0,86)` 1,35 ở **55°**, trời xanh nhạt, sương 0,0060) và **Xế chiều**
+  (đèn `(1,00 0,64 0,34)` 1,45 ở **13°**, trời cam) là hằng; ⚠️ **Đêm ĐỌC THẲNG TỪ CẢNH** lúc Start, không chép lại —
+  đổi màu đêm trong WorldFactory là cái đích tự đi theo. `Ap(t)`: t 0..1 trên cả 4 phút, `TienDoXeChieu` = 0,5; mỗi
+  chặng smoothstep riêng; sao chỉ hiện ở nửa sau chặng cuối; đồng hồ `Time.timeSinceLevelLoad`, không tốn gói tin.
   ⚠️ **Đang chạy phép thử thì NHẢY THẲNG tới đêm**: nhận ra bằng sự có mặt của `ChayThuMang`, kiểm ở CẢ `Start`
   lẫn `ChayThuMang.Awake` (thứ tự không cố định) — không thì hàng chục phép thử chụp ảnh trong Act2 đều lệch.
   Menu 79 bật `ChoPhepChuyenTrongPhepThu` và tự trả lại khi xong. Menu 79 kiểm.
   ⚠️ **Mười lò lửa chỉ cháy khi trời đã tối** (người dùng 19/09/2026): `LoLuaDa.ChoPhepNhomLua` (mặc định BẬT —
   Act1 và màn chính giữ nguyên) đặt trong **Awake** của GameBootstrap, trước mọi Start; lò **không nhóm lửa từ
   đầu** chứ không phải nhóm rồi dập (dập thì mười cuộn khói bốc lên lúc vừa vào trận). Tới mức
-  `ChuyenChieuSangDem.MucNhomLua` = **0,70** trên đường cong thì nhóm cả mười, **một lần duy nhất** — gọi `Chay()`
+  `ChuyenChieuSangDem.MucNhomLua` = **0,70** trên đường cong của chặng xế chiều → đêm (`TienDoNhomLua()` = 0,818,
+  tức **giây 196**) thì nhóm cả mười, **một lần duy nhất** — gọi `Chay()`
   mỗi khung sẽ nhóm lại chính cái lò Gió lốc vừa dập và hẹn 30 giây (`DapTatRoiChayLai`). Menu 79 mục G, và mục ấy
   phải nằm **ngay đầu** kịch bản vì các mục khác gọi `Ap(1f)` là lửa nhóm rồi không tắt lại nữa.
 - ⚠️ **Phép thử đo "sát thương nhân đôi" phải đọc SỐ GHI TRÊN TỪNG ĐÒN**, không đếm tổng máu bia mất: tổng ấy

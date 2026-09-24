@@ -6,21 +6,25 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 
 /// <summary>
-/// CHAY THU (menu 79): ACT2 VAO TRAN LUC XE CHIEU, TOI DAN THANH DEM TRONG 2 PHUT.
+/// CHAY THU (menu 79): ACT2 VAO TRAN LUC BAN NGAY -> 2 PHUT SAU XE CHIEU -> 2 PHUT NUA LA DEM.
 ///
-/// Nguoi dung 19/09/2026: "moi vao game hay thay doi cho toi chi trong Scene Act2 anh sang buoi xe chieu
-/// roi trong vong 2 phut chuyen dan anh sang tu tu qua dem toi giong hien gio".
+/// Nguoi dung 19/09/2026: vao tran luc xe chieu, 2 phut sau thanh dem "giong hien gio".
+/// Nguoi dung 24/09/2026: "luc moi vao game cho them anh sang ban ngay roi trong vong 2 phut chuyen dan
+/// anh sang sang buoi xe chieu, khi khong phai ban dem thi cho tat lua o Lo Lua" - va chot mach 4 phut:
+/// NGAY 0 s -> XE CHIEU 120 s -> DEM 240 s.
 ///
 /// Do bang SO:
-///   A. VUA VAO TRAN la xe chieu that: den AM (do > lam) va manh hon ban dem, suong am, CHUA CO SAO.
-///      DOI CHUNG: ban dem thi nguoc lai - den LANH (lam > do).
-///   B. Di mot chieu: qua 5 moc 0 / 0,25 / 0,5 / 0,75 / 1 thi do sang giam dan, mau nguoi dan,
-///      sao nhieu dan - khong moc nao di nguoc.
-///   C. Dong ho chay THAT: cho mot doan roi doc lai tien do, so voi thoi gian troi qua.
-///   D. Het 2 phut thi TRUNG KHOP anh sang dem "hien gio" - so tung so voi moc do duoc truoc khi lam
-///      tinh nang nay (nguoi dung chot "giong hien gio", nen doi mau dem la phep thu phai bao).
-///   E. Anh chup 5 moc.
-///   G. LO LUA DA: chua toi dem thi CA MUOI lo deu tat; vuot muc nhom lua thi ca muoi cai chay.
+///   A. VUA VAO TRAN la BAN NGAY that: mat troi CAO, anh sang moi truong sang nhat ca ba, den it am hon
+///      xe chieu han, chua co sao; dong ho thuc cua tran vua bat dau (tien do gan 0).
+///   A2. Dung GIUA duong (tien do 0,5) la XE CHIEU: den am, mat troi thap, chua co sao.
+///   G. LO LUA DA: ca chang ngay lan chang xe chieu deu TAT; qua muc nhom lua thi ca muoi cai chay.
+///      (Phai do NGAY SAU A, truoc moi muc khac - lua nhom roi thi khong tat lai nua.)
+///   B. Chin moc 0 -> 1: den toi dan, moi truong toi dan, sao khong bao gio bot - khong moc nao di nguoc;
+///      mau den AM DAN o chang dau roi NGUOI DAN o chang sau.
+///   C. Dong ho chay THAT: cho mot doan roi doc lai tien do, so voi thoi gian troi qua (tren 4 phut).
+///   D. Het 4 phut thi TRUNG KHOP anh sang dem "hien gio" - so tung so voi moc do duoc 19/09/2026, truoc
+///      khi co tinh nang nay. DOI CHUNG: ban dem den LANH, nguoc han luc xe chieu.
+///   E. Anh chup: ngay, giua ngay-chieu, xe chieu, gan toi, dem co lo lua.
 ///   F. CHI ACT2: nap Act1 roi kiem khong co ChuyenChieuSangDem nao.
 ///
 /// Ket qua: PlayTestShots/anhsang_chieu_dem.txt, anh anhsang_*.png.
@@ -45,7 +49,7 @@ public static class ThuAnhSangChieuDem
     static readonly Color DemSuong = new Color(0.115f, 0.175f, 0.215f);
     const float DemDamSuong = 0.0105f, DemSao = 1f, DemSangDia = 0.9f;
 
-    [MenuItem("Diablo 2.5D/79. Chay thu ANH SANG xe chieu -> dem (Act2)", false, 168)]
+    [MenuItem("Diablo 2.5D/79. Chay thu ANH SANG ngay -> xe chieu -> dem (Act2)", false, 168)]
     public static void Chay()
     {
         if (EditorSceneManager.GetActiveScene().isDirty)
@@ -58,7 +62,8 @@ public static class ThuAnhSangChieuDem
         bao.Length = 0; loi = 0; daBatDau = false;
         // Phep thu NAY do chinh cai chuyen anh sang, nen khong duoc nhay thang toi dem nhu cac phep thu khac
         ChuyenChieuSangDem.ChoPhepChuyenTrongPhepThu = true;
-        Ghi("[ban 1] Act2: vao tran luc xe chieu, toi dan thanh dem trong " + ChuyenChieuSangDem.GiayChuyen + " giay");
+        Ghi("[ban 2] Act2: ban ngay -> " + ChuyenChieuSangDem.GiayMoiChang + " giay sau xe chieu -> "
+            + ChuyenChieuSangDem.GiayChuyen + " giay la dem");
 
         canhCu = EditorSceneManager.GetActiveScene().path;
         if (canhCu != "Assets/Scenes/Act2.unity") EditorSceneManager.OpenScene("Assets/Scenes/Act2.unity");
@@ -87,7 +92,7 @@ public static class ThuAnhSangChieuDem
     /// <summary>Do sang cam nhan duoc cua mot mau (kieu mat nguoi).</summary>
     static float Sang(Color c) { return 0.2126f * c.r + 0.7152f * c.g + 0.0722f * c.b; }
 
-    /// <summary>Do "am" cua mau: do tru lam. Duong = ngA cam, am = ngA xanh lanh.</summary>
+    /// <summary>Do "am" cua mau: do tru lam. Duong = nga cam, am = nga xanh lanh.</summary>
     static float Am(Color c) { return c.r - c.b; }
 
     static float SoTroi(string ten, float neuThieu)
@@ -111,6 +116,9 @@ public static class ThuAnhSangChieuDem
         for (int i = 0; i < 90 && !File.Exists(duong); i++) yield return new WaitForEndOfFrame();
     }
 
+    /// <summary>Do sang cam nhan duoc cua CAI DEN HUONG (mau x do manh) - con so mat nguoi thay.</summary>
+    static float SangDen(Light den) { return Sang(den.color) * den.intensity; }
+
     static IEnumerator KichBan()
     {
         float han = Time.time + 30f;
@@ -129,87 +137,123 @@ public static class ThuAnhSangChieuDem
             loi++; Ket(); yield break;
         }
 
-        // ================= A. VUA VAO TRAN LA XE CHIEU =================
+        // Dong ho THAT cua tran vua bat dau chua (doc truoc khi dat tay bat ky moc nao)
+        float tienDoLucDau = chuyen.TienDo;
+        float giayLucDau = Time.timeSinceLevelLoad;
+
+        // ================= A. VUA VAO TRAN LA BAN NGAY =================
         // ⚠️ PHAI TAT component truoc khi dat tay mot moc: Update cua no goi Ap(TienDo) MOI KHUNG,
         // nen Ap(0,5) vua dat xong la khung sau bi keo ve dung cho dong ho dang chay (lan chay dau
         // 19/09/2026: ca nam moc deu ra y nhu nhau, va muc D bao sai tat ca).
         chuyen.enabled = false;
         chuyen.Ap(0f);
         yield return null;
-        float amChieu = Am(den.color), sangChieuDen = den.intensity;
-        float sangAmbChieu = Sang(RenderSettings.ambientEquatorColor);
-        float amSuongChieu = Am(RenderSettings.fogColor);
-        float saoChieu = SoTroi("_StarAmount", -1f);
+        float amNgay = Am(den.color), sangDenNgay = SangDen(den), gocNgay = den.transform.eulerAngles.x;
+        float ambNgay = Sang(RenderSettings.ambientEquatorColor);
+        float saoNgay = SoTroi("_StarAmount", -1f);
         Ghi("");
-        Ghi(string.Format("A. vua vao tran: den {0} (am = do-lam = {1:F3}), manh {2:F2}, goc {3:F1} do; anh sang moi truong {4:F3}; suong am {5:F3}; sao {6:F2}",
-            den.color, amChieu, sangChieuDen, den.transform.eulerAngles.x, sangAmbChieu, amSuongChieu, saoChieu));
-        Kiem(amChieu > 0.25f, "den luc vua vao tran khong AM (xe chieu phai nga cam)");
-        Kiem(sangChieuDen > DemManh, "den luc vua vao tran khong sang hon ban dem");
-        Kiem(amSuongChieu > 0.2f, "suong luc vua vao tran khong nga am");
-        Kiem(saoChieu <= 0.01f, "vua vao tran troi con sang ma da day sao");
-        Kiem(den.transform.eulerAngles.x < DemGoc.x - 5f, "mat troi luc xe chieu khong THAP hon anh trang ban dem");
-        yield return Chup("anhsang_1_xechieu");
+        Ghi(string.Format("A. vua vao tran (giay {0:F2}, tien do that {1:F4}): den {2} am {3:F3}, do sang den {4:F3}, goc {5:F1} do; moi truong {6:F3}; suong {7}; sao {8:F2}",
+            giayLucDau, tienDoLucDau, den.color, amNgay, sangDenNgay, gocNgay, ambNgay, RenderSettings.fogColor, saoNgay));
+        Kiem(tienDoLucDau < 0.02f, "vao tran ma dong ho da chay xa - khong phai luc bat dau ban ngay");
+        Kiem(gocNgay > 45f, "ban ngay ma mat troi khong cao");
+        Kiem(saoNgay <= 0.01f, "ban ngay ma da co sao");
+        yield return Chup("anhsang_1_ngay");
+
+        // ⚠️ MOI anh chup truoc muc nhom lua phai chup o DAY, truoc muc G: sau G lua da nhom va khong tat
+        // lai, anh "buoi chieu" se hien lo dang chay - sai voi game that (lan chay dau 24/09/2026).
+        chuyen.Ap(0.25f);
+        yield return null;
+        yield return Chup("anhsang_2_giua_ngay_chieu");
+
+        // ================= A2. GIUA DUONG LA XE CHIEU =================
+        chuyen.Ap(ChuyenChieuSangDem.TienDoXeChieu);
+        yield return null;
+        float amChieu = Am(den.color), sangDenChieu = SangDen(den), gocChieu = den.transform.eulerAngles.x;
+        float ambChieu = Sang(RenderSettings.ambientEquatorColor);
+        float saoChieu = SoTroi("_StarAmount", -1f);
+        Ghi(string.Format("A2. giua duong (tien do {0:F2} = giay {1:F0}): den {2} am {3:F3}, do sang den {4:F3}, goc {5:F1} do; moi truong {6:F3}; sao {7:F2}",
+            ChuyenChieuSangDem.TienDoXeChieu, ChuyenChieuSangDem.TienDoXeChieu * ChuyenChieuSangDem.GiayChuyen,
+            den.color, amChieu, sangDenChieu, gocChieu, ambChieu, saoChieu));
+        Kiem(amChieu > 0.25f, "xe chieu ma den khong nga cam");
+        Kiem(gocChieu < 20f, "xe chieu ma mat troi khong thap");
+        Kiem(saoChieu <= 0.01f, "xe chieu ma da co sao");
+        // So ngay voi xe chieu - DOI CHUNG cho muc A: ngay phai sang hon va it am hon han
+        Kiem(ambNgay > ambChieu * 1.3f, "ban ngay khong sang hon xe chieu ro rang");
+        Kiem(sangDenNgay > sangDenChieu, "den ban ngay khong sang hon den xe chieu");
+        Kiem(amNgay < amChieu - 0.2f, "den ban ngay am gan bang xe chieu - khong phan biet duoc hai luc");
+        yield return Chup("anhsang_3_xechieu");
+
+        // Gan toi nhung CHUA toi muc nhom lua - lo van phai tat trong anh
+        chuyen.Ap(0.75f);
+        yield return null;
+        yield return Chup("anhsang_4_gan_toi");
 
         // ================= G. LO LUA DA =================
-        // ⚠️ Phai do NGAY DAU, truoc moi muc khac: chi can mot lan Ap(1f) o dau do (muc B chay het nam
-        // moc, muc D nhay thang toi 1) la lua da nhom - va lua KHONG tat lai nua (chi nhom mot lan),
-        // nen do sau do thi moc nao cung thay du muoi lo dang chay.
+        // ⚠️ Phai do o day, truoc moi muc khac: chi can mot lan Ap(1f) (muc B chay het chin moc, muc D nhay
+        // thang toi 1) la lua da nhom - va lua KHONG tat lai nua (chi nhom mot lan), nen do sau do thi moc
+        // nao cung thay du muoi lo dang chay. Cac moc phai TANG DAN.
         Ghi("");
         var dsLo = Object.FindObjectsByType<LoLuaDa>(FindObjectsSortMode.None);
-        var mocG = new float[] { 0f, 0.3f, ChuyenChieuSangDem.MucNhomLua - 0.05f, ChuyenChieuSangDem.MucNhomLua + 0.05f, 1f };
+        float tNhom = ChuyenChieuSangDem.TienDoNhomLua();
+        var mocG = new float[] { 0f, 0.25f, ChuyenChieuSangDem.TienDoXeChieu, 0.65f, tNhom - 0.02f, tNhom + 0.02f, 1f };
         var demChay = new int[mocG.Length];
+        var sbG = new StringBuilder();
         for (int i = 0; i < mocG.Length; i++)
         {
-            // Ap() nhan TIEN DO, con muc nhom lua do theo duong cong da lam muot - doi nguoc lai
-            float tG = TienDoChoMuc(mocG[i]);
-            chuyen.Ap(tG);
+            chuyen.Ap(mocG[i]);
             yield return null;
             foreach (var lo in dsLo) if (lo.DangChay) demChay[i]++;
+            sbG.AppendFormat("{0:F3} (giay {1:F0}) -> {2} lo | ", mocG[i], mocG[i] * ChuyenChieuSangDem.GiayChuyen, demChay[i]);
         }
-        Ghi(string.Format("G. muoi lo lua theo duong doi (muc nhom lua {0:F2}): "
-            + "duong cong {1:F2} -> {2} lo chay | {3:F2} -> {4} | {5:F2} -> {6} | {7:F2} -> {8} | {9:F2} -> {10}",
-            ChuyenChieuSangDem.MucNhomLua,
-            mocG[0], demChay[0], mocG[1], demChay[1], mocG[2], demChay[2], mocG[3], demChay[3], mocG[4], demChay[4]));
+        Ghi(string.Format("G. muoi lo lua (nhom tai tien do {0:F3} = giay {1:F0}): {2}",
+            tNhom, tNhom * ChuyenChieuSangDem.GiayChuyen, sbG.ToString().TrimEnd(' ', '|')));
         Kiem(dsLo.Length >= 10, "khong tim thay du muoi lo lua trong Act2");
-        Kiem(demChay[0] == 0 && demChay[1] == 0 && demChay[2] == 0, "chua toi dem ma lo lua da chay");
-        Kiem(demChay[3] == dsLo.Length && demChay[4] == dsLo.Length, "toi dem roi ma lo lua khong chay du ca muoi cai");
+        bool tatHet = true;
+        for (int i = 0; i < mocG.Length; i++) if (mocG[i] < tNhom && demChay[i] != 0) tatHet = false;
+        Kiem(tatHet, "chua toi dem (ngay / xe chieu / chang toi dan) ma lo lua da chay");
+        Kiem(demChay[mocG.Length - 2] == dsLo.Length && demChay[mocG.Length - 1] == dsLo.Length,
+             "toi dem roi ma lo lua khong chay du ca muoi cai");
+        Kiem(tNhom > ChuyenChieuSangDem.TienDoXeChieu, "lo lua nhom ngay trong chang ban ngay / xe chieu");
         yield return Chup("anhsang_6_lo_lua_dem");
 
         // ================= B. DI MOT CHIEU =================
         Ghi("");
-        Ghi("B. nam moc tren duong doi (0 = vua vao, 1 = dem han)");
-        float[] moc = { 0f, 0.25f, 0.5f, 0.75f, 1f };
-        var sangDen = new float[moc.Length];
-        var amDen = new float[moc.Length];
-        var sangAmb = new float[moc.Length];
-        var sao = new float[moc.Length];
-        for (int i = 0; i < moc.Length; i++)
+        Ghi("B. chin moc tren duong doi (0 = ngay, 0,5 = xe chieu, 1 = dem)");
+        int soMoc = 9;
+        var sangDen = new float[soMoc];
+        var amDen = new float[soMoc];
+        var sangAmb = new float[soMoc];
+        var sao = new float[soMoc];
+        for (int i = 0; i < soMoc; i++)
         {
-            chuyen.Ap(moc[i]);
+            float t = i / (float)(soMoc - 1);
+            chuyen.Ap(t);
             yield return null;
-            sangDen[i] = den.intensity;
+            sangDen[i] = SangDen(den);
             amDen[i] = Am(den.color);
             sangAmb[i] = Sang(RenderSettings.ambientEquatorColor);
             sao[i] = SoTroi("_StarAmount", -1f);
-            Ghi(string.Format("    t={0:F2}: den manh {1:F3} am {2:F3} | moi truong {3:F4} | suong dam {4:F4} | sao {5:F2} | goc {6:F1}",
-                moc[i], sangDen[i], amDen[i], sangAmb[i], RenderSettings.fogDensity, sao[i], den.transform.eulerAngles.x));
-            if (i == 1) yield return Chup("anhsang_2_hoangHon");
-            if (i == 2) yield return Chup("anhsang_3_chapVang");
-            if (i == 3) yield return Chup("anhsang_4_gan_toi");
+            Ghi(string.Format("    t={0:F3} (giay {1,3:F0}): den sang {2:F3} am {3:F3} | moi truong {4:F4} | suong dam {5:F4} | sao {6:F2} | goc {7:F1}",
+                t, t * ChuyenChieuSangDem.GiayChuyen, sangDen[i], amDen[i], sangAmb[i], RenderSettings.fogDensity, sao[i], den.transform.eulerAngles.x));
         }
-        bool giamDan = true, nguoiDan = true, saoTangDan = true;
-        for (int i = 1; i < moc.Length; i++)
+        int giua = (soMoc - 1) / 2;                   // moc xe chieu
+        bool denToiDan = true, ambToiDan = true, saoKhongBot = true, amTangChangDau = true, amGiamChangSau = true;
+        for (int i = 1; i < soMoc; i++)
         {
-            if (sangDen[i] > sangDen[i - 1] + 0.001f) giamDan = false;
-            if (amDen[i] > amDen[i - 1] + 0.001f) nguoiDan = false;
-            if (sao[i] < sao[i - 1] - 0.001f) saoTangDan = false;
+            if (sangDen[i] > sangDen[i - 1] + 0.001f) denToiDan = false;
+            if (sangAmb[i] > sangAmb[i - 1] + 0.001f) ambToiDan = false;
+            if (sao[i] < sao[i - 1] - 0.001f) saoKhongBot = false;
+            if (i <= giua && amDen[i] < amDen[i - 1] - 0.001f) amTangChangDau = false;
+            if (i > giua && amDen[i] > amDen[i - 1] + 0.001f) amGiamChangSau = false;
         }
-        Ghi(string.Format("B1. den yeu dan {0}; mau nguoi dan (bot am) {1}; sao nhieu dan {2}; moi truong toi dan {3}",
-            giamDan, nguoiDan, saoTangDan, sangAmb[4] < sangAmb[0]));
-        Kiem(giamDan, "den khong yeu dan deu - co moc di nguoc");
-        Kiem(nguoiDan, "mau den khong nguoi dan deu - co moc am tro lai");
-        Kiem(saoTangDan, "sao khong nhieu dan deu");
-        Kiem(sangAmb[4] < sangAmb[0] * 0.6f, "anh sang moi truong cuoi chang khong toi han so voi luc dau");
+        Ghi(string.Format("B1. den toi dan {0}; moi truong toi dan {1}; sao khong bao gio bot {2}; mau den AM DAN o chang dau {3}, NGUOI DAN o chang sau {4}",
+            denToiDan, ambToiDan, saoKhongBot, amTangChangDau, amGiamChangSau));
+        Kiem(denToiDan, "den khong toi dan deu - co moc sang tro lai");
+        Kiem(ambToiDan, "anh sang moi truong khong toi dan deu");
+        Kiem(saoKhongBot, "sao bot di o mot moc nao do");
+        Kiem(amTangChangDau, "chang ngay -> xe chieu: mau den khong am dan");
+        Kiem(amGiamChangSau, "chang xe chieu -> dem: mau den khong nguoi dan");
+        Kiem(sangAmb[soMoc - 1] < sangAmb[0] * 0.4f, "cuoi chang moi truong khong toi han so voi ban ngay");
 
         // ================= C. DONG HO CHAY THAT =================
         Ghi("");
@@ -218,16 +262,16 @@ public static class ThuAnhSangChieuDem
         yield return new WaitForSeconds(6f);
         float tSau = chuyen.TienDo, gioSau = Time.timeSinceLevelLoad;
         float tienDoTheoGio = (gioSau - gioTruoc) / ChuyenChieuSangDem.GiayChuyen;
-        Ghi(string.Format("C. sau {0:F2} giay that: tien do {1:F4} -> {2:F4} (tang {3:F4}, mong {4:F4})",
-            gioSau - gioTruoc, tTruoc, tSau, tSau - tTruoc, tienDoTheoGio));
-        Kiem(Mathf.Abs((tSau - tTruoc) - tienDoTheoGio) < 0.005f, "dong ho chuyen anh sang khong khop thoi gian that");
+        Ghi(string.Format("C. sau {0:F2} giay that: tien do {1:F4} -> {2:F4} (tang {3:F4}, mong {4:F4} = giay / {5:F0})",
+            gioSau - gioTruoc, tTruoc, tSau, tSau - tTruoc, tienDoTheoGio, ChuyenChieuSangDem.GiayChuyen));
+        Kiem(Mathf.Abs((tSau - tTruoc) - tienDoTheoGio) < 0.003f, "dong ho chuyen anh sang khong khop thoi gian that");
 
         // ================= D. HET GIO THI TRUNG KHOP ANH SANG DEM =================
         Ghi("");
         chuyen.enabled = false;              // lai phai tat: Update se keo ve cho dong ho dang chay
         chuyen.Ap(1f);
         yield return null;
-        Ghi(string.Format("D. het {0} giay: den {1} manh {2:F3} bong {3:F2} goc {4:F1}; moi truong {5}/{6}/{7}; suong {8} dam {9:F4}; sao {10:F2}; quang dia {11:F2}",
+        Ghi(string.Format("D. het {0:F0} giay: den {1} manh {2:F3} bong {3:F2} goc {4:F1}; moi truong {5}/{6}/{7}; suong {8} dam {9:F4}; sao {10:F2}; quang dia {11:F2}",
             ChuyenChieuSangDem.GiayChuyen, den.color, den.intensity, den.shadowStrength, den.transform.eulerAngles.x,
             RenderSettings.ambientSkyColor, RenderSettings.ambientEquatorColor, RenderSettings.ambientGroundColor,
             RenderSettings.fogColor, RenderSettings.fogDensity, SoTroi("_StarAmount", -1f), SoTroi("_MoonStrength", -1f)));
@@ -244,9 +288,8 @@ public static class ThuAnhSangChieuDem
         Kiem(Mathf.Abs(SoTroi("_MoonStrength", -1f) - DemSangDia) < 0.01f, "dia trang cuoi cung khong bang ban dem");
         yield return Chup("anhsang_5_dem");
 
-        // DOI CHUNG cho muc A: ban dem thi den LANH chu khong am
-        Ghi(string.Format("D2. DOI CHUNG: luc dem den am = {0:F3} (luc xe chieu {1:F3})", Am(den.color), amChieu));
-        Kiem(Am(den.color) < 0f, "doi chung hong: den ban dem cung nga am, vay muc A khong chung minh duoc gi");
+        Ghi(string.Format("D2. DOI CHUNG: luc dem den am = {0:F3} (xe chieu {1:F3}, ban ngay {2:F3})", Am(den.color), amChieu, amNgay));
+        Kiem(Am(den.color) < 0f, "doi chung hong: den ban dem cung nga am");
 
         // ================= F. CHI ACT2 =================
         Ghi("");
@@ -261,19 +304,6 @@ public static class ThuAnhSangChieuDem
         Ghi("");
         Ghi("so loi ghi nhan = " + loi);
         Ket();
-    }
-
-    /// <summary>Tien do t sao cho duong cong smoothstep(t) = muc mong muon (dao nguoc smoothstep).</summary>
-    static float TienDoChoMuc(float muc)
-    {
-        muc = Mathf.Clamp01(muc);
-        float lo = 0f, hi = 1f;
-        for (int i = 0; i < 40; i++)                // chia doi 40 lan - dung tran, khong vong vo han
-        {
-            float giua = (lo + hi) * 0.5f;
-            if (giua * giua * (3f - 2f * giua) < muc) lo = giua; else hi = giua;
-        }
-        return (lo + hi) * 0.5f;
     }
 
     static bool SoSanh(Color a, Color b)

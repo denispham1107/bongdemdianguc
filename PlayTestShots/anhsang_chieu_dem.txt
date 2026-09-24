@@ -1,21 +1,26 @@
-[ban 1] Act2: vao tran luc xe chieu, toi dan thanh dem trong 120 giay
+[ban 2] Act2: ban ngay -> 120 giay sau xe chieu -> 240 giay la dem
 
-A. vua vao tran: den RGBA(1.000, 0.640, 0.340, 1.000) (am = do-lam = 0.660), manh 1.45, goc 13.0 do; anh sang moi truong 0.295; suong am 0.360; sao 0.00
+A. vua vao tran (giay 1.03, tien do that 0.0043): den RGBA(1.000, 0.950, 0.860, 1.000) am 0.140, do sang den 1.288, goc 55.0 do; moi truong 0.516; suong RGBA(0.620, 0.680, 0.740, 1.000); sao 0.00
+A2. giua duong (tien do 0.50 = giay 120): den RGBA(1.000, 0.640, 0.340, 1.000) am 0.660, do sang den 1.008, goc 13.0 do; moi truong 0.295; sao 0.00
 
-G. muoi lo lua theo duong doi (muc nhom lua 0.70): duong cong 0.00 -> 0 lo chay | 0.30 -> 0 | 0.65 -> 0 | 0.75 -> 10 | 1.00 -> 10
+G. muoi lo lua (nhom tai tien do 0.818 = giay 196): 0.000 (giay 0) -> 0 lo | 0.250 (giay 60) -> 0 lo | 0.500 (giay 120) -> 0 lo | 0.650 (giay 156) -> 0 lo | 0.798 (giay 192) -> 0 lo | 0.838 (giay 201) -> 10 lo | 1.000 (giay 240) -> 10 lo
 
-B. nam moc tren duong doi (0 = vua vao, 1 = dem han)
-    t=0.00: den manh 1.450 am 0.660 | moi truong 0.2954 | suong dam 0.0072 | sao 0.00 | goc 13.0
-    t=0.25: den manh 1.361 am 0.485 | moi truong 0.2715 | suong dam 0.0077 | sao 0.00 | goc 17.5
-    t=0.50: den manh 1.165 am 0.100 | moi truong 0.2190 | suong dam 0.0089 | sao 0.09 | goc 27.5
-    t=0.75: den manh 0.969 am -0.285 | moi truong 0.1665 | suong dam 0.0100 | sao 0.72 | goc 37.5
-    t=1.00: den manh 0.880 am -0.460 | moi truong 0.1426 | suong dam 0.0105 | sao 1.00 | goc 42.0
-B1. den yeu dan True; mau nguoi dan (bot am) True; sao nhieu dan True; moi truong toi dan True
+B. chin moc tren duong doi (0 = ngay, 0,5 = xe chieu, 1 = dem)
+    t=0.000 (giay   0): den sang 1.288 am 0.140 | moi truong 0.5157 | suong dam 0.0060 | sao 0.00 | goc 55.0
+    t=0.125 (giay  30): den sang 1.248 am 0.221 | moi truong 0.4813 | suong dam 0.0062 | sao 0.00 | goc 48.4
+    t=0.250 (giay  60): den sang 1.154 am 0.400 | moi truong 0.4056 | suong dam 0.0066 | sao 0.00 | goc 34.0
+    t=0.375 (giay  90): den sang 1.055 am 0.579 | moi truong 0.3298 | suong dam 0.0070 | sao 0.00 | goc 19.6
+    t=0.500 (giay 120): den sang 1.008 am 0.660 | moi truong 0.2954 | suong dam 0.0072 | sao 0.00 | goc 13.0
+    t=0.625 (giay 150): den sang 0.946 am 0.485 | moi truong 0.2715 | suong dam 0.0077 | sao 0.00 | goc 17.5
+    t=0.750 (giay 180): den sang 0.810 am 0.100 | moi truong 0.2190 | suong dam 0.0089 | sao 0.09 | goc 27.5
+    t=0.875 (giay 210): den sang 0.675 am -0.285 | moi truong 0.1665 | suong dam 0.0100 | sao 0.72 | goc 37.5
+    t=1.000 (giay 240): den sang 0.613 am -0.460 | moi truong 0.1426 | suong dam 0.0105 | sao 1.00 | goc 42.0
+B1. den toi dan True; moi truong toi dan True; sao khong bao gio bot True; mau den AM DAN o chang dau True, NGUOI DAN o chang sau True
 
-C. sau 6.02 giay that: tien do 0.0159 -> 0.0661 (tang 0.0502, mong 0.0502)
+C. sau 6.02 giay that: tien do 0.0109 -> 0.0360 (tang 0.0251, mong 0.0251 = giay / 240)
 
-D. het 120 giay: den RGBA(0.520, 0.720, 0.980, 1.000) manh 0.880 bong 0.62 goc 42.0; moi truong RGBA(0.120, 0.205, 0.265, 1.000)/RGBA(0.085, 0.155, 0.190, 1.000)/RGBA(0.045, 0.085, 0.105, 1.000); suong RGBA(0.115, 0.175, 0.215, 1.000) dam 0.0105; sao 1.00; quang dia 0.90
-D2. DOI CHUNG: luc dem den am = -0.460 (luc xe chieu 0.660)
+D. het 240 giay: den RGBA(0.520, 0.720, 0.980, 1.000) manh 0.880 bong 0.62 goc 42.0; moi truong RGBA(0.120, 0.205, 0.265, 1.000)/RGBA(0.085, 0.155, 0.190, 1.000)/RGBA(0.045, 0.085, 0.105, 1.000); suong RGBA(0.115, 0.175, 0.215, 1.000) dam 0.0105; sao 1.00; quang dia 0.90
+D2. DOI CHUNG: luc dem den am = -0.460 (xe chieu 0.660, ban ngay 0.140)
 
 F. nap Act1: co ChuyenChieuSangDem = False (phai False); den Act1 RGBA(0.720, 0.740, 0.880, 1.000) manh 0.62
 

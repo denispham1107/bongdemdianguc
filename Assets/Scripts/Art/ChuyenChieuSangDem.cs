@@ -1,89 +1,140 @@
 using UnityEngine;
 
 /// <summary>
-/// ACT2: VAO TRAN LUC XE CHIEU, ROI TOI DAN THANH DEM TRONG 2 PHUT.
+/// ACT2: VAO TRAN LUC BAN NGAY -> 2 PHUT SAU LA XE CHIEU -> 2 PHUT NUA LA DEM.
 ///
-/// Nguoi dung xin 19/09/2026: "moi vao game ... anh sang buoi xe chieu roi trong vong 2 phut chuyen dan
-/// anh sang tu tu qua dem toi giong hien gio". Chi Act2 - Act1 va man chinh giu nguyen.
+/// Nguoi dung xin hai lan:
+///   19/09/2026 "moi vao game ... anh sang buoi xe chieu roi trong vong 2 phut chuyen dan anh sang tu tu qua
+///              dem toi giong hien gio";
+///   24/09/2026 "luc moi vao game cho them anh sang ban ngay roi trong vong 2 phut chuyen dan anh sang sang
+///              buoi xe chieu" - va nguoi dung chot: sau do xe chieu van toi dan thanh dem trong 2 phut nua
+///              (tong 4 phut: NGAY 0 s -> XE CHIEU 120 s -> DEM 240 s).
+/// Chi Act2 - Act1 va man chinh giu nguyen.
 ///
-/// CACH LAM: trang thai DEM khong viet tay o day ma DOC THANG tu canh ngay luc bat dau (sau khi
-/// <see cref="WorldFactory.BuildSkyAndFog"/> va <see cref="WorldFactory.SetupMoonlight"/> da dat xong).
-/// Nho vay sau nay ai chinh mau ban dem trong WorldFactory thi cai dich o day tu dong di theo - khong co
-/// chuyen hai noi giu hai bang mau roi lech nhau (dung cai loi bo bieu tuong ky nang da mac 19/09/2026).
-/// Chi co trang thai XE CHIEU la hang so trong file nay.
+/// CACH LAM: ba bo anh sang <see cref="BoAnhSang"/>. NGAY va XE CHIEU la hang so trong file nay; DEM thi
+/// KHONG viet tay ma DOC THANG tu canh ngay luc bat dau (sau khi <see cref="WorldFactory.BuildSkyAndFog"/> va
+/// <see cref="WorldFactory.SetupMoonlight"/> da dat xong) - sau nay ai chinh mau ban dem trong WorldFactory
+/// thi cai dich o day tu di theo, khong co chuyen hai noi giu hai bang mau roi lech nhau (dung cai loi bo
+/// bieu tuong ky nang da mac 19/09/2026).
 ///
 /// Doi nhung gi (deu la anh sang THOI GIAN THUC - Act2 khong nuong lightmap nao, do duoc 0 lightmap):
-///   - den huong (Moonlight): mau, do manh, do dam cua bong, va GOC CHIEU (chieu thi mat troi thap nen
-///     bong do dai va xien; toi dan thi den len cao 42 do nhu anh trang hien gio);
+///   - den huong (Moonlight): mau, do manh, do dam cua bong, va GOC CHIEU (trua mat troi cao 55 do,
+///     xe chieu ha thap 13 do nen bong do dai va xien, dem len 42 do nhu anh trang hien gio);
 ///   - anh sang moi truong ba tang (Trilight), mau va do dam cua suong mu;
-///   - bau troi (shader Diablo25D/SkyGradient): mau dinh troi / chan troi / may, do sang cua sao,
-///     va dia sang tren troi - lucs dau la MAT TROI cam to, cuoi cung la MAT TRANG trang nho;
-///   - den diem bam theo nhan vat (HeroLight): chieu thi gan nhu khong thay, dem thi xanh lanh nhu cu.
+///   - bau troi (shader Diablo25D/SkyGradient): mau dinh troi / chan troi / may, do sang cua sao, va
+///     dia sang tren troi - MAT TROI trang vang, roi mat troi cam to, cuoi cung MAT TRANG trang nho;
+///   - den diem bam theo nhan vat (HeroLight): ban ngay gan nhu tat, dem thi xanh lanh nhu cu.
 ///
 /// Dong ho: <see cref="Time.timeSinceLevelLoad"/> - moi may tu chay tu luc nap man. Ca phong vao tran
 /// cung luc (dem nguoc 10 giay o sanh) nen moi nguoi thay gan nhu cung mot khung troi; khong ton goi tin nao.
 /// </summary>
 public class ChuyenChieuSangDem : MonoBehaviour
 {
-    /// <summary>Hai phut - nguoi dung chot.</summary>
-    public const float GiayChuyen = 120f;
+    /// <summary>Moi chang 2 phut - nguoi dung chot.</summary>
+    public const float GiayMoiChang = 120f;
+    /// <summary>Hai chang: ngay -> xe chieu, xe chieu -> dem.</summary>
+    public const float GiayChuyen = GiayMoiChang * 2f;
+    /// <summary>Tien do (0..1 tren ca 4 phut) ung voi dung luc XE CHIEU.</summary>
+    public const float TienDoXeChieu = 0.5f;
 
-    // ---------------- Trang thai XE CHIEU (diem xuat phat) ----------------
-    // Nang cuoi ngay: cam do o chan troi, dinh troi da nga xanh tham, chua co sao.
-    public static readonly Color DenChieu = new Color(1.00f, 0.64f, 0.34f);
-    public const float ManhChieu = 1.45f;
-    public const float BongChieu = 0.80f;
-    /// <summary>Goc chieu luc xe chieu: mat troi THAP (13 do) nen bong do dai va xien.</summary>
-    public static readonly Vector3 GocChieu = new Vector3(13f, 148f, 0f);
+    /// <summary>Mot bo anh sang day du - de noi suy hai chang bang CUNG mot doan code.</summary>
+    public struct BoAnhSang
+    {
+        public Color den; public float manh, bong; public Vector3 goc;
+        public Color ambTroi, ambNgang, ambDat, suong; public float damSuong;
+        public Color troiDinh, troiChan, troiDuoi, may; public float damMay, sao;
+        public Color dia; public float coDia, quangDia, sangDia;
+        public Color hero; public float manhHero;
 
-    public static readonly Color AmbientTroiChieu = new Color(0.46f, 0.34f, 0.28f);
-    public static readonly Color AmbientNgangChieu = new Color(0.42f, 0.27f, 0.18f);
-    public static readonly Color AmbientDatChieu = new Color(0.24f, 0.14f, 0.09f);
+        public static BoAnhSang Lerp(BoAnhSang a, BoAnhSang b, float k)
+        {
+            return new BoAnhSang
+            {
+                den = Color.Lerp(a.den, b.den, k), manh = Mathf.Lerp(a.manh, b.manh, k),
+                bong = Mathf.Lerp(a.bong, b.bong, k), goc = Vector3.Lerp(a.goc, b.goc, k),
+                ambTroi = Color.Lerp(a.ambTroi, b.ambTroi, k), ambNgang = Color.Lerp(a.ambNgang, b.ambNgang, k),
+                ambDat = Color.Lerp(a.ambDat, b.ambDat, k), suong = Color.Lerp(a.suong, b.suong, k),
+                damSuong = Mathf.Lerp(a.damSuong, b.damSuong, k),
+                troiDinh = Color.Lerp(a.troiDinh, b.troiDinh, k), troiChan = Color.Lerp(a.troiChan, b.troiChan, k),
+                troiDuoi = Color.Lerp(a.troiDuoi, b.troiDuoi, k), may = Color.Lerp(a.may, b.may, k),
+                damMay = Mathf.Lerp(a.damMay, b.damMay, k), sao = Mathf.Lerp(a.sao, b.sao, k),
+                dia = Color.Lerp(a.dia, b.dia, k), coDia = Mathf.Lerp(a.coDia, b.coDia, k),
+                quangDia = Mathf.Lerp(a.quangDia, b.quangDia, k), sangDia = Mathf.Lerp(a.sangDia, b.sangDia, k),
+                hero = Color.Lerp(a.hero, b.hero, k), manhHero = Mathf.Lerp(a.manhHero, b.manhHero, k),
+            };
+        }
+    }
 
-    public static readonly Color SuongChieu = new Color(0.60f, 0.36f, 0.24f);
-    /// <summary>Chieu con nhin xa hon dem: suong thua hon.</summary>
-    public const float DamSuongChieu = 0.0072f;
+    // ---------------- BAN NGAY (vua vao tran) ----------------
+    // Nang trua nhat nhat cua nghia dia: mat troi cao, anh sang trang hoi am, troi xanh nhat, suong xam
+    // xanh thua - van u am mot chut chu khong ruc ro nhu dong co.
+    public static readonly BoAnhSang Ngay = new BoAnhSang
+    {
+        den = new Color(1.00f, 0.95f, 0.86f), manh = 1.35f, bong = 0.70f, goc = new Vector3(55f, 148f, 0f),
+        ambTroi = new Color(0.55f, 0.62f, 0.72f), ambNgang = new Color(0.50f, 0.52f, 0.52f),
+        ambDat = new Color(0.30f, 0.28f, 0.24f),
+        suong = new Color(0.62f, 0.68f, 0.74f), damSuong = 0.0060f,
+        troiDinh = new Color(0.30f, 0.48f, 0.78f), troiChan = new Color(0.72f, 0.80f, 0.86f),
+        troiDuoi = new Color(0.25f, 0.25f, 0.25f), may = new Color(0.88f, 0.90f, 0.94f), damMay = 0.55f, sao = 0f,
+        dia = new Color(1.00f, 0.95f, 0.80f), coDia = 0.045f, quangDia = 0.45f, sangDia = 2.2f,
+        hero = new Color(1.00f, 0.95f, 0.88f), manhHero = 0.15f,
+    };
 
-    public static readonly Color TroiDinhChieu = new Color(0.115f, 0.150f, 0.300f);
-    public static readonly Color TroiChanChieu = new Color(0.960f, 0.420f, 0.170f);
-    public static readonly Color TroiDuoiChieu = new Color(0.200f, 0.110f, 0.080f);
-    public static readonly Color MayChieu = new Color(0.850f, 0.440f, 0.270f);
-    public const float DamMayChieu = 0.62f;
-    /// <summary>Chua co sao luc chieu.</summary>
-    public const float SaoChieu = 0f;
-    /// <summary>Dia MAT TROI: cam, to va sang hon dia trang ban dem.</summary>
-    public static readonly Color DiaChieu = new Color(1.00f, 0.66f, 0.30f);
-    public const float CoDiaChieu = 0.060f;
-    public const float QuangDiaChieu = 0.55f;
-    public const float SangDiaChieu = 1.80f;
-
-    /// <summary>Den diem bam theo nhan vat: luc chieu troi con sang nen ha xuong cho khoi loe.</summary>
-    public static readonly Color HeroChieu = new Color(1.00f, 0.82f, 0.62f);
-    public const float ManhHeroChieu = 0.35f;
+    // ---------------- XE CHIEU (sau 2 phut) ----------------
+    // Nang cuoi ngay: cam do o chan troi, dinh troi da nga xanh tham, chua co sao. Mat troi THAP (13 do)
+    // nen bong do dai va xien. (Cung bo so da chot 19/09/2026 cho "vao tran luc xe chieu".)
+    public static readonly BoAnhSang XeChieu = new BoAnhSang
+    {
+        den = new Color(1.00f, 0.64f, 0.34f), manh = 1.45f, bong = 0.80f, goc = new Vector3(13f, 148f, 0f),
+        ambTroi = new Color(0.46f, 0.34f, 0.28f), ambNgang = new Color(0.42f, 0.27f, 0.18f),
+        ambDat = new Color(0.24f, 0.14f, 0.09f),
+        suong = new Color(0.60f, 0.36f, 0.24f), damSuong = 0.0072f,
+        troiDinh = new Color(0.115f, 0.150f, 0.300f), troiChan = new Color(0.960f, 0.420f, 0.170f),
+        troiDuoi = new Color(0.200f, 0.110f, 0.080f), may = new Color(0.850f, 0.440f, 0.270f), damMay = 0.62f, sao = 0f,
+        dia = new Color(1.00f, 0.66f, 0.30f), coDia = 0.060f, quangDia = 0.55f, sangDia = 1.80f,
+        hero = new Color(1.00f, 0.82f, 0.62f), manhHero = 0.35f,
+    };
 
     /// <summary>
-    /// TOI DAY THI NHOM LUA O CAC LO DA (nguoi dung 19/09/2026: chua phai ban dem thi lo tat lua).
-    /// Do theo duong cong da lam muot, khong phai theo phan giay da troi: 0,70 roi vao khoang troi da
-    /// toi han - anh sang moi truong con mot nua, sao da hien ro - chu khong phai luc con quang do
-    /// o chan troi.
+    /// TOI DAY THI NHOM LUA O CAC LO DA (nguoi dung: "khi khong phai ban dem thi cho tat lua o Lo Lua").
+    /// Do tren duong cong da lam muot cua CHANG XE CHIEU -> DEM: 0,70 roi vao khoang troi da toi han -
+    /// anh sang moi truong con mot nua, sao da hien ro - chu khong phai luc con quang do o chan troi.
+    /// Ca chang ban ngay lan xe chieu lo deu tat.
     /// </summary>
     public const float MucNhomLua = 0.70f;
 
-    // ---------------- Trang thai DEM (doc tu canh luc bat dau) ----------------
+    /// <summary>Tien do (0..1 tren ca 4 phut) luc lo bat dau chay - phep thu doc, khong tu tinh lai.</summary>
+    public static float TienDoNhomLua()
+    {
+        return TienDoXeChieu + (1f - TienDoXeChieu) * DaoSmoothstep(MucNhomLua);
+    }
+
+    static float Smoothstep(float x) { x = Mathf.Clamp01(x); return x * x * (3f - 2f * x); }
+
+    /// <summary>Tim x sao cho smoothstep(x) = y (chia doi 40 lan - co tran, khong vong vo han).</summary>
+    static float DaoSmoothstep(float y)
+    {
+        y = Mathf.Clamp01(y);
+        float lo = 0f, hi = 1f;
+        for (int i = 0; i < 40; i++)
+        {
+            float giua = (lo + hi) * 0.5f;
+            if (Smoothstep(giua) < y) lo = giua; else hi = giua;
+        }
+        return (lo + hi) * 0.5f;
+    }
+
+    // ---------------- BAN DEM (doc tu canh luc bat dau) ----------------
     Light den, heroLight;
     Material troi;
-    Color denDem, ambTroiDem, ambNgangDem, ambDatDem, suongDem, heroDem;
-    float manhDem, bongDem, damSuongDem, manhHeroDem;
-    Vector3 gocDem;
-    Color troiDinhDem, troiChanDem, troiDuoiDem, mayDem, diaDem;
-    float damMayDem, saoDem, coDiaDem, quangDiaDem, sangDiaDem;
+    BoAnhSang dem;
 
     /// <summary>
     /// ⚠️ DANG CHAY MOT KICH BAN CHAY THU thi NHAY THANG toi dem, khong chuyen dan.
     ///
     /// Hang chuc phep thu chup anh trong Act2 o nhung giay dau tran (mau hat lua, do sang vanh hinh,
-    /// mau vo bang...). De troi cam luc xe chieu thi moi anh doi chung ay deu lech, va chung se bao
-    /// hong nhung thu chang lien quan gi den anh sang.
+    /// mau vo bang...). De troi sang ban ngay thi moi anh doi chung ay deu lech, va chung se bao hong
+    /// nhung thu chang lien quan gi den anh sang.
     ///
     /// Nhan ra "dang chay thu" bang su co mat cua <see cref="ChayThuMang"/>. Phai kiem o CA HAI dau vi
     /// thu tu khong co dinh: vat the chay thu duoc tao tu EditorApplication.update, co the truoc hoac
@@ -111,11 +162,14 @@ public class ChuyenChieuSangDem : MonoBehaviour
     bool sanSang;
     bool daNhomLua;
 
-    /// <summary>Phan duong da di (0 = vua vao tran, 1 = da thanh dem han). Phep thu doc.</summary>
+    /// <summary>Phan duong da di tren ca 4 phut (0 = vua vao tran, 0,5 = xe chieu, 1 = dem han). Phep thu doc.</summary>
     public float TienDo
     {
         get { return GiayChuyen <= 0f ? 1f : Mathf.Clamp01((Time.timeSinceLevelLoad - batDau) / GiayChuyen); }
     }
+
+    /// <summary>Bo anh sang ban dem da doc tu canh (phep thu doc de so).</summary>
+    public BoAnhSang Dem { get { return dem; } }
 
     /// <summary>Gan vao mot vat the trong canh Act2. Goi SAU khi bau troi va anh trang da dat xong.</summary>
     public static ChuyenChieuSangDem Gan(GameObject cho, Light denHuong)
@@ -143,36 +197,35 @@ public class ChuyenChieuSangDem : MonoBehaviour
         if (RenderSettings.skybox != null)
         {
             troi = new Material(RenderSettings.skybox);
-            troi.name = "Sky_ChieuToiDem";
+            troi.name = "Sky_NgayChieuDem";
             RenderSettings.skybox = troi;
         }
 
-        // ---- DOC trang thai DEM tu chinh canh ----
+        // ---- DOC trang thai DEM tu chinh canh (thieu thu gi thi lay tam cua xe chieu) ----
+        dem = XeChieu;
         if (den != null)
         {
-            denDem = den.color; manhDem = den.intensity; bongDem = den.shadowStrength;
-            gocDem = den.transform.eulerAngles;
+            dem.den = den.color; dem.manh = den.intensity; dem.bong = den.shadowStrength;
+            dem.goc = den.transform.eulerAngles;
         }
-        if (heroLight != null) { heroDem = heroLight.color; manhHeroDem = heroLight.intensity; }
-
-        ambTroiDem = RenderSettings.ambientSkyColor;
-        ambNgangDem = RenderSettings.ambientEquatorColor;
-        ambDatDem = RenderSettings.ambientGroundColor;
-        suongDem = RenderSettings.fogColor;
-        damSuongDem = RenderSettings.fogDensity;
-
+        if (heroLight != null) { dem.hero = heroLight.color; dem.manhHero = heroLight.intensity; }
+        dem.ambTroi = RenderSettings.ambientSkyColor;
+        dem.ambNgang = RenderSettings.ambientEquatorColor;
+        dem.ambDat = RenderSettings.ambientGroundColor;
+        dem.suong = RenderSettings.fogColor;
+        dem.damSuong = RenderSettings.fogDensity;
         if (troi != null)
         {
-            troiDinhDem = DocMau("_TopColor", TroiDinhChieu);
-            troiChanDem = DocMau("_HorizColor", TroiChanChieu);
-            troiDuoiDem = DocMau("_BottomColor", TroiDuoiChieu);
-            mayDem = DocMau("_CloudColor", MayChieu);
-            damMayDem = DocSo("_CloudAmount", DamMayChieu);
-            saoDem = DocSo("_StarAmount", 1f);
-            diaDem = DocMau("_MoonColor", DiaChieu);
-            coDiaDem = DocSo("_MoonSize", 0.024f);
-            quangDiaDem = DocSo("_MoonGlow", 0.30f);
-            sangDiaDem = DocSo("_MoonStrength", 0.9f);
+            dem.troiDinh = DocMau("_TopColor", dem.troiDinh);
+            dem.troiChan = DocMau("_HorizColor", dem.troiChan);
+            dem.troiDuoi = DocMau("_BottomColor", dem.troiDuoi);
+            dem.may = DocMau("_CloudColor", dem.may);
+            dem.damMay = DocSo("_CloudAmount", dem.damMay);
+            dem.sao = DocSo("_StarAmount", 1f);
+            dem.dia = DocMau("_MoonColor", dem.dia);
+            dem.coDia = DocSo("_MoonSize", 0.024f);
+            dem.quangDia = DocSo("_MoonGlow", 0.30f);
+            dem.sangDia = DocSo("_MoonStrength", 0.9f);
         }
 
         batDau = Time.timeSinceLevelLoad;
@@ -197,18 +250,32 @@ public class ChuyenChieuSangDem : MonoBehaviour
     }
 
     /// <summary>
-    /// Dat anh sang o mot diem giua duong. <paramref name="t"/> 0 = xe chieu, 1 = dem.
-    /// Duong cong smoothstep: nhung giay dau va nhung giay cuoi doi cham, khuc giua doi nhanh -
-    /// nhin ra "troi sap toi" chu khong phai mot cai van vo tu tu deu deu.
+    /// Dat anh sang o mot diem tren ca 4 phut. <paramref name="t"/> 0 = ban ngay, 0,5 = xe chieu, 1 = dem.
+    /// Moi chang di theo duong cong smoothstep rieng: dau chang va cuoi chang doi cham, khuc giua doi
+    /// nhanh - nhin ra "nang nga dan" / "troi sap toi" chu khong phai mot cai van vo deu deu, va luc giao
+    /// hai chang (dung xe chieu) anh sang dung lai mot nhip chu khong bi gay.
     /// </summary>
     public void Ap(float t)
     {
         t = Mathf.Clamp01(t);
-        float k = t * t * (3f - 2f * t);
+        BoAnhSang b;
+        float kDem;                      // do tien tren CHANG XE CHIEU -> DEM (0 o ca chang ban ngay)
+        if (t <= TienDoXeChieu)
+        {
+            b = BoAnhSang.Lerp(Ngay, XeChieu, Smoothstep(t / TienDoXeChieu));
+            kDem = 0f;
+        }
+        else
+        {
+            kDem = Smoothstep((t - TienDoXeChieu) / (1f - TienDoXeChieu));
+            b = BoAnhSang.Lerp(XeChieu, dem, kDem);
+            // Sao chi hien o NUA SAU chang cuoi: troi con do quang o chan troi ma da day sao thi trong rat gia
+            b.sao = Mathf.Lerp(XeChieu.sao, dem.sao, Mathf.Clamp01((kDem - 0.45f) / 0.55f));
+        }
 
         // LO LUA DA: chua toi dem thi de tat. Chi nhom MOT LAN khi vuot muc - goi Chay() moi khung se
         // nhom lai ca cai lo ma Gio loc vua dap tat (LoLuaDa.DapTatRoiChayLai hen 30 giay).
-        if (k >= MucNhomLua && !daNhomLua)
+        if (kDem >= MucNhomLua && !daNhomLua)
         {
             daNhomLua = true;
             LoLuaDa.ChoPhepNhomLua = true;
@@ -217,36 +284,35 @@ public class ChuyenChieuSangDem : MonoBehaviour
 
         if (den != null)
         {
-            den.color = Color.Lerp(DenChieu, denDem, k);
-            den.intensity = Mathf.Lerp(ManhChieu, manhDem, k);
-            den.shadowStrength = Mathf.Lerp(BongChieu, bongDem, k);
-            den.transform.rotation = Quaternion.Euler(Vector3.Lerp(GocChieu, gocDem, k));
+            den.color = b.den;
+            den.intensity = b.manh;
+            den.shadowStrength = b.bong;
+            den.transform.rotation = Quaternion.Euler(b.goc);
         }
         if (heroLight != null)
         {
-            heroLight.color = Color.Lerp(HeroChieu, heroDem, k);
-            heroLight.intensity = Mathf.Lerp(ManhHeroChieu, manhHeroDem, k);
+            heroLight.color = b.hero;
+            heroLight.intensity = b.manhHero;
         }
 
-        RenderSettings.ambientSkyColor = Color.Lerp(AmbientTroiChieu, ambTroiDem, k);
-        RenderSettings.ambientEquatorColor = Color.Lerp(AmbientNgangChieu, ambNgangDem, k);
-        RenderSettings.ambientGroundColor = Color.Lerp(AmbientDatChieu, ambDatDem, k);
-        RenderSettings.fogColor = Color.Lerp(SuongChieu, suongDem, k);
-        RenderSettings.fogDensity = Mathf.Lerp(DamSuongChieu, damSuongDem, k);
+        RenderSettings.ambientSkyColor = b.ambTroi;
+        RenderSettings.ambientEquatorColor = b.ambNgang;
+        RenderSettings.ambientGroundColor = b.ambDat;
+        RenderSettings.fogColor = b.suong;
+        RenderSettings.fogDensity = b.damSuong;
 
         if (troi != null)
         {
-            DatMau("_TopColor", Color.Lerp(TroiDinhChieu, troiDinhDem, k));
-            DatMau("_HorizColor", Color.Lerp(TroiChanChieu, troiChanDem, k));
-            DatMau("_BottomColor", Color.Lerp(TroiDuoiChieu, troiDuoiDem, k));
-            DatMau("_CloudColor", Color.Lerp(MayChieu, mayDem, k));
-            DatSo("_CloudAmount", Mathf.Lerp(DamMayChieu, damMayDem, k));
-            // Sao chi hien o NUA SAU: troi con do quang o chan troi ma da day sao thi trong rat gia
-            DatSo("_StarAmount", Mathf.Lerp(SaoChieu, saoDem, Mathf.Clamp01((k - 0.45f) / 0.55f)));
-            DatMau("_MoonColor", Color.Lerp(DiaChieu, diaDem, k));
-            DatSo("_MoonSize", Mathf.Lerp(CoDiaChieu, coDiaDem, k));
-            DatSo("_MoonGlow", Mathf.Lerp(QuangDiaChieu, quangDiaDem, k));
-            DatSo("_MoonStrength", Mathf.Lerp(SangDiaChieu, sangDiaDem, k));
+            DatMau("_TopColor", b.troiDinh);
+            DatMau("_HorizColor", b.troiChan);
+            DatMau("_BottomColor", b.troiDuoi);
+            DatMau("_CloudColor", b.may);
+            DatSo("_CloudAmount", b.damMay);
+            DatSo("_StarAmount", b.sao);
+            DatMau("_MoonColor", b.dia);
+            DatSo("_MoonSize", b.coDia);
+            DatSo("_MoonGlow", b.quangDia);
+            DatSo("_MoonStrength", b.sangDia);
 
             // Dia sang phai nam DUNG huong den dang chieu toi (day la huong NHIN TOI no, nguoc voi
             // forward cua den) - khong thi mat troi mot noi, bong do mot neo.
