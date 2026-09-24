@@ -37,8 +37,12 @@ public class GiatSet : MonoBehaviour
     // Sua thi sua ca PlayerController.TamGiatSet (vach ngam ve theo con so ay).
     public float range = TamNguoiChoi;
 
-    /// <summary>Tam cua Giut set nguoi choi, met.</summary>
-    public const float TamNguoiChoi = 20f;
+    /// <summary>
+    /// Tam cua Giut set nguoi choi, met. 25/09/2026 nguoi dung: "cho tam danh bang voi tam danh cua skill Sam set" -
+    /// chon GIAM 20 -> 12 m (Sam set: PlayerController.boltRange 12, so nam trong prefab Player_Sorceress). Menu 69
+    /// so hai con so voi nhau.
+    /// </summary>
+    public const float TamNguoiChoi = 12f;
     /// <summary>Sat thuong ban dau (cap 1, nhip dau) cua Giut set nguoi choi.</summary>
     public const float SatThuongNguoiChoi = 75f;
     /// <summary>So tia phong cung luc toi da.</summary>

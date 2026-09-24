@@ -94,6 +94,27 @@ public class LoLuaDa : MonoBehaviour
         henChayLai = Time.time + giay;
     }
 
+    static readonly Collider[] boDem = new Collider[32];
+
+    /// <summary>
+    /// Dap tat moi lo DANG CHAY co va cham nam trong vung cau (<paramref name="tam"/>, <paramref name="banKinh"/>) roi
+    /// hen chay lai sau <paramref name="giay"/> giay - nhu Gio loc luot qua. Qua cau bang no / Mua bang roi trung lo
+    /// (nguoi dung 25/09/2026). Tra ve so lo vua dap.
+    /// </summary>
+    public static int DapTatTrongVung(Vector3 tam, float banKinh, float giay)
+    {
+        int n = Physics.OverlapSphereNonAlloc(tam, banKinh, boDem, 1 << 0, QueryTriggerInteraction.Ignore);
+        int dem = 0;
+        for (int i = 0; i < n; i++)
+        {
+            var lo = boDem[i].GetComponentInParent<LoLuaDa>();
+            if (lo == null || !lo.DangChay) continue;
+            lo.DapTatRoiChayLai(giay);
+            dem++;
+        }
+        return dem;
+    }
+
     void Update()
     {
         if (henChayLai <= 0f || lua != null || Time.time < henChayLai) return;

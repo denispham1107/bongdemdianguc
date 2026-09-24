@@ -76,8 +76,47 @@ public class Fireball : MonoBehaviour
         if (lopDatXuyen < 0) lopDatXuyen = LayerMask.NameToLayer("Ground");
         if (c.gameObject.layer == lopDatXuyen) return false;
         if (c.GetComponentInParent<Damageable>() != null) return false;
+        // LO LUA DA (2,33 m) nho hon nguong nhung VAN CHAN - nguoi dung 25/09/2026: "cac vat can khac nhu nha,
+        // cay coi, lo lua... van cho va cham no nhu binh thuong" (ap cho ca Lua dia nguc, nguoi dung chon).
+        if (c.GetComponentInParent<LoLuaDa>() != null) return false;
         Vector3 co = c.bounds.size;
         return co.y < CaoVatNho && Mathf.Max(co.x, co.z) < NgangVatNho;
+    }
+
+    /// <summary>
+    /// Vat can GAN NHAT chan duong bay trong buoc nay (cap nhat <paramref name="ganNhat"/> / <paramref name="choNo"/>
+    /// neu gan hon). <paramref name="xuyen"/> = bo qua vat nho (<see cref="LaVatNho"/>). Dung chung cho Qua cau lua,
+    /// Lua dia nguc va Qua cau bang.
+    /// </summary>
+    public static void VatCanChan(Vector3 from, float banKinh, Vector3 huong, float dai, LayerMask mask, bool xuyen,
+                                  ref float ganNhat, ref Vector3 choNo)
+    {
+        if (!xuyen)
+        {
+            RaycastHit hit;
+            if (Physics.SphereCast(from, banKinh, huong, out hit, dai, mask, QueryTriggerInteraction.Collide)
+                && hit.distance < ganNhat)
+            {
+                ganNhat = hit.distance;
+                choNo = hit.point - huong * banKinh * 0.5f;
+            }
+            return;
+        }
+        // XUYEN VAT NHO: phai hoi CA DOAN chu khong lay cai gan nhat roi thoi - SphereCast chi tra ve MOT vat,
+        // ma vat ay rat hay la cai bia dang dung chan truoc goc cay; bo rieng no di thi qua cau se xuyen luon
+        // qua cay phia sau.
+        var vc = Physics.SphereCastAll(from, banKinh, huong, dai, mask, QueryTriggerInteraction.Collide);
+        for (int i = 0; i < vc.Length; i++)
+        {
+            if (vc[i].distance >= ganNhat) continue;
+            if (LaVatNho(vc[i].collider)) continue;
+            ganNhat = vc[i].distance;
+            // Sinh ra NGAY BEN TRONG vat can thi SphereCastAll tra distance 0 va point (0,0,0) -
+            // lay thang diem ay la vu no nhay ve goc toa do ban do.
+            Vector3 diem = vc[i].point;
+            if (vc[i].distance <= 0.0001f && diem == Vector3.zero) diem = from;
+            choNo = diem - huong * banKinh * 0.5f;
+        }
     }
 
     /// <summary>Huong bay hien tai (phep thu doc).</summary>
@@ -184,7 +223,7 @@ public class Fireball : MonoBehaviour
                                  LayerMask damageMask, Damageable boQua = null,
                                  int soQua = 3, float gocToe = 11f,
                                  float heSoSatThuong = 1f, float themGiayChay = 0f,
-                                 float ngaXacSuat = 0f, float ngaGiay = 1.5f)
+                                 float ngaXacSuat = 0f, float ngaGiay = 1.5f, bool xuyenVatNho = false)
     {
         Vector3 huong = direction.normalized;
 
@@ -203,6 +242,7 @@ public class Fireball : MonoBehaviour
                 qua.burnSeconds += themGiayChay;
                 qua.ngaXacSuat = ngaXacSuat;
                 qua.ngaGiay = ngaGiay;
+                qua.xuyenVatNho = xuyenVatNho;
             }
         }
     }
@@ -243,35 +283,7 @@ public class Fireball : MonoBehaviour
         float ganNhat = float.MaxValue;
         Vector3 choNo = Vector3.zero;
 
-        RaycastHit hit;
-        if (!xuyenVatNho)
-        {
-            if (Physics.SphereCast(from, bodyRadius, dir, out hit, step + 0.05f, hitMask,
-                                   QueryTriggerInteraction.Collide))
-            {
-                ganNhat = hit.distance;
-                choNo = hit.point - dir * bodyRadius * 0.5f;
-            }
-        }
-        else
-        {
-            // LUA DIA NGUC: bia, mo, da khong chan duong. Phai hoi CA DOAN chu khong lay cai gan nhat
-            // roi thoi - SphereCast chi tra ve MOT vat, ma vat ay rat hay la cai bia dang dung chan
-            // truoc goc cay; bo rieng no di thi qua cau se xuyen luon qua cay phia sau.
-            var vc = Physics.SphereCastAll(from, bodyRadius, dir, step + 0.05f, hitMask,
-                                           QueryTriggerInteraction.Collide);
-            for (int i = 0; i < vc.Length; i++)
-            {
-                if (vc[i].distance >= ganNhat) continue;
-                if (LaVatNho(vc[i].collider)) continue;
-                ganNhat = vc[i].distance;
-                // Sinh ra NGAY BEN TRONG vat can thi SphereCastAll tra distance 0 va point (0,0,0) -
-                // lay thang diem ay la vu no nhay ve goc toa do ban do.
-                Vector3 diem = vc[i].point;
-                if (vc[i].distance <= 0.0001f && diem == Vector3.zero) diem = from;
-                choNo = diem - dir * bodyRadius * 0.5f;
-            }
-        }
+        VatCanChan(from, bodyRadius, dir, step + 0.05f, hitMask, xuyenVatNho, ref ganNhat, ref choNo);
 
         // KHIENG CUA NGUOI KHAC CHAN QUA CAU. hitMask cua qua cau nguoi choi
         // khong co lop Khieng (xem PlayerController.obstacleMask), nen truoc day

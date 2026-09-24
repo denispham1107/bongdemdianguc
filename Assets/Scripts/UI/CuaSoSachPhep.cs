@@ -610,7 +610,7 @@ public static class CuaSoSachPhep
                                          : (chon ? GiaoDien.MauLoi : new Color(0.40f, 0.37f, 0.35f));
             string chuGoc = xemTruoc ? ("tối đa cấp " + CapDo.CapToiDaCua(i))
                           : !daMo ? "chưa mở"
-                          : CapDo.LaKyBinh(i) ? ("còn " + CapDo.SoBinh(i) + " bình")
+                          : CapDo.LaKyBinh(i) ? ("Cấp " + capKy + "/" + CapDo.CapToiDaCua(i) + "  ·  còn " + CapDo.SoBinh(i) + " bình")
                           : ("Cấp " + capKy + "/" + CapDo.CapToiDaCua(i));
 
             int o = SachPhep.ONaoGiu(i);
@@ -675,8 +675,8 @@ public static class CuaSoSachPhep
         SachPhep.ThongSo(pc, dangXem, out nl, out hc, out nc);
         string dongSo = laBinh
             ? "Hồi tối đa " + (dangXem == CapDo.KyBinhMau
-                                ? Mathf.RoundToInt(PlayerController.MauMoiBinh) + " máu"
-                                : Mathf.RoundToInt(PlayerController.ManaMoiBinh) + " năng lượng")
+                                ? Mathf.RoundToInt(PlayerController.MauBinhTheoCap(Mathf.Max(1, CapDo.CapCuaKyNang(dangXem)))) + " máu"
+                                : Mathf.RoundToInt(PlayerController.ManaBinhTheoCap(Mathf.Max(1, CapDo.CapCuaKyNang(dangXem)))) + " năng lượng")
               + "   ·   Hồi chiêu " + hc.ToString("0.##") + " giây"
               + (xemTruoc ? "" : "   ·   Đang có " + CapDo.SoBinh(dangXem) + " bình")
             : pc == null ? "Tối đa cấp " + CapDo.CapToiDaCua(dangXem)
@@ -710,7 +710,14 @@ public static class CuaSoSachPhep
         {
             // O sanh chua co cap: ke cach mo va SUC MANH O CAP TOI DA de nguoi choi so sanh
             int toiDa = CapDo.CapToiDaCua(dangXem);
-            if (laBinh) dongCap = "Mở khoá bằng 1 điểm kỹ năng   ·   không nâng cấp được";
+            if (laBinh)
+                dongCap = "Có sẵn cấp 1   ·   tối đa cấp " + toiDa + "   ·   ở cấp " + toiDa + ": hồi "
+                        + (dangXem == CapDo.KyBinhMau
+                           ? Mathf.RoundToInt(PlayerController.MauBinhTheoCap(toiDa)) + " máu"
+                           : Mathf.RoundToInt(PlayerController.ManaBinhTheoCap(toiDa)) + " năng lượng");
+            else if (dangXem == CapDo.KyTocDo)
+                dongCap = "Mở khoá bằng 1 điểm kỹ năng   ·   tối đa cấp " + toiDa + "   ·   ở cấp " + toiDa
+                        + ": nhanh hơn " + Mathf.RoundToInt(CapDo.TocThemTheoCap(toiDa) * 100f) + "% tốc độ gốc";
             else
                 dongCap = "Mở khoá bằng 1 điểm kỹ năng   ·   tối đa cấp " + toiDa
                         + "   ·   ở cấp " + toiDa + ": sát thương ×" + CapDo.SatThuongTheoCap(toiDa).ToString("0.00")
@@ -726,7 +733,15 @@ public static class CuaSoSachPhep
             string nhac = SachPhep.NhacDieuKien(dangXem);
             dongCap = nhac != null ? "CHƯA MỞ KHOÁ — " + nhac : "CHƯA MỞ KHOÁ — cần 1 điểm kỹ năng";
         }
-        else if (laBinh) dongCap = "ĐÃ MỞ KHOÁ   ·   đang có " + CapDo.SoBinh(dangXem) + " bình";
+        else if (laBinh)
+            dongCap = "Bình cấp " + capKy + " / " + CapDo.CapToiDaCua(dangXem) + "   ·   hồi tối đa "
+                    + (dangXem == CapDo.KyBinhMau
+                       ? Mathf.RoundToInt(PlayerController.MauBinhTheoCap(capKy)) + " máu"
+                       : Mathf.RoundToInt(PlayerController.ManaBinhTheoCap(capKy)) + " năng lượng")
+                    + "   ·   đang có " + CapDo.SoBinh(dangXem) + " bình";
+        else if (dangXem == CapDo.KyTocDo)
+            dongCap = "Bị động cấp " + capKy + " / " + CapDo.CapToiDaCua(dangXem) + "   ·   nhanh hơn "
+                    + (CapDo.TocThemTheoCap(capKy) * 100f).ToString("0.#") + "% tốc độ gốc";
         else
             dongCap = "Kỹ năng cấp " + capKy + " / " + CapDo.CapToiDaCua(dangXem)
                     + "   ·   sát thương ×" + CapDo.SatThuongTheoCap(capKy).ToString("0.00")
@@ -780,8 +795,6 @@ public static class CuaSoSachPhep
             chu = nhac != null ? nhac
                 : (CapDo.DiemKyNang > 0 ? "MỞ KHOÁ  (1 điểm)" : "Hết điểm kỹ năng — lên cấp để có thêm");
         }
-        else if (CapDo.LaKyBinh(dangXem))
-            chu = "ĐÃ MỞ KHOÁ — nhặt bình khi giết quái để dùng";
         else if (capKy >= CapDo.CapToiDaCua(dangXem))
             chu = "ĐÃ TỐI ĐA (cấp " + CapDo.CapToiDaCua(dangXem) + ")";
         else

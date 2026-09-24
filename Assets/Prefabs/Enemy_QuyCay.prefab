@@ -1046,6 +1046,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Damageable
   maxHealth: 110
   health: 110
+  mauDoMayKhacQuyet: 0
   fireResist: -0.25
   iceResist: 0
   lightningResist: 0.35
@@ -1054,6 +1055,7 @@ MonoBehaviour:
   rig: {fileID: 5825014159763789451}
   anim: {fileID: 0}
   khieng: {fileID: 0}
+  keDanhCuoi: {fileID: 0}
 --- !u!114 &3033811471031709371
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1078,6 +1080,7 @@ MonoBehaviour:
   tenClipDi: diBo
   ai: {fileID: 4312786080478475710}
   mau: {fileID: 5962168319736289197}
+  tocDoEp: -1
   nhipRieng: 0
   tocDoTho: 1.35
   bienDoTho: 1.9
@@ -1100,7 +1103,7 @@ MonoBehaviour:
   loiNuoc: {fileID: 0}
   turnSpeed: 9
   aggroRange: 20
-  attackRange: 8
+  attackRange: 9.6
   attackDamage: 9
   attackCooldown: 1.5
   attackAnimTime: 0.6
@@ -1111,12 +1114,10 @@ MonoBehaviour:
   banKinhNo: 2.6
   tocDoCau: 13
   danhBangThienThach: 0
-  luaBanKinh: 2.2
-  luaThoiGian: 2.5
-  luaSatThuongMoiGiay: 8
   danhBangTiaSet: 1
   tiaMauLoi: {r: 0.85, g: 1, b: 0.85, a: 1}
   tiaMauQuang: {r: 0.25, g: 1, b: 0.3, a: 1}
+  tamTiaSet: 12
   diemPhongPhep: {fileID: 8705993028895962823}
   target: {fileID: 0}
   anim: {fileID: 0}

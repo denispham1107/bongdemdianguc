@@ -450,6 +450,38 @@ public static class ThuDanhNga
             + ThienThach.SoQuaTheoCap(3) + ", " + ThienThach.SoQuaTheoCap(4) + ", " + ThienThach.SoQuaTheoCap(5));
         foreach (var v in Object.FindObjectsByType<VungLua>(FindObjectsSortMode.None)) Object.Destroy(v.gameObject);
 
+        // G3. NHIP ROI (nguoi dung 25/09/2026: rut ngan khoang cho, chon 0,35 giay - truoc 0,7). Do THOI DIEM
+        // CHAM DAT that cua tung qua (vat ThienThach bien mat khi no), khong doc lai hang so.
+        {
+            pc.mana = pc.maxMana;
+            pc.CastAt(4, choG);
+            var dsNo = new List<float>();
+            int conTruoc = -1;
+            float hanN = Time.time + 8f;
+            bool daCo = false;
+            while (Time.time < hanN)
+            {
+                yield return null;
+                int con = 0;
+                foreach (var tt in Object.FindObjectsByType<ThienThach>(FindObjectsSortMode.None)) if (tt.boQua == toi) con++;
+                if (con > 0) daCo = true;
+                if (daCo && conTruoc > con) for (int k = 0; k < conTruoc - con; k++) dsNo.Add(Time.time);
+                conTruoc = con;
+                if (daCo && con == 0) break;
+            }
+            var sbN = new System.Text.StringBuilder();
+            float tong = 0f;
+            for (int k = 1; k < dsNo.Count; k++) { float d = dsNo[k] - dsNo[k - 1]; tong += d; sbN.AppendFormat("{0:F2} ", d); }
+            float tb = dsNo.Count > 1 ? tong / (dsNo.Count - 1) : -1f;
+            Ghi(string.Format("G3. cap {0}: {1} qua cham dat, khoang cach giua hai lan cham dat: {2}-> trung binh {3:F3} giay (mong {4:F2}; cu 0,70); ca loat {5:F2} giay",
+                CapDo.CapCuaKyNang(4), dsNo.Count, sbN.ToString(), tb, ThienThach.GiayCachNhau,
+                dsNo.Count > 1 ? dsNo[dsNo.Count - 1] - dsNo[0] : -1f));
+            Kiem(dsNo.Count == ThienThach.SoQuaCap5, "khong dem du " + ThienThach.SoQuaCap5 + " lan cham dat");
+            Kiem(Mathf.Abs(tb - 0.35f) < 0.05f && Mathf.Abs(ThienThach.GiayCachNhau - 0.35f) < 0.001f,
+                 "khoang cho giua hai qua khong phai 0,35 giay");
+            foreach (var v in Object.FindObjectsByType<VungLua>(FindObjectsSortMode.None)) Object.Destroy(v.gameObject);
+        }
+
         Ghi("");
         Ghi("so loi ghi nhan = " + loi);
         Ket();

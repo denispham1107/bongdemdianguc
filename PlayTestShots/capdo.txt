@@ -14,7 +14,7 @@ B1. nhan vat cap 10: mau x3.518, nang luong x2.358, toc do x1.363 | cap 20: mau 
 B2. ky nang cap 5: sat thuong x2.074, nang luong x1.464, hieu ung +0.60 giay, mau khien x1.749
 
 C. diem ky nang: mo khoa va nang cap
-C1. vao tran: cap 1, diem 1, so ky nang da mo 0
+C1. vao tran: cap 1, diem 1, so ky nang da mo 2 (binh mau cap 1, binh mana cap 1)
 C2. mo ky nang 0 -> True (phai True); mo tiep ky nang 6 -> False (phai False)
 C3. sau khi len cap 20 con 19 diem; nang ky nang 0 duoc 4 lan -> cap 5 (toi da 5)
 
@@ -23,7 +23,7 @@ E1. goi ky nang 17 byte: cap 5 -> 5, ky nang 4, ghe 2, tre 120 ms
 E2. goi kinh nghiem 4 byte: ghe 3, diem 4096
 
 D. trong tran dau
-D1. vao tran: cap 1, mau toi da 600, nang luong toi da 250, toc do 5.20, ky nang da mo 0
+D1. vao tran: cap 1, mau toi da 600, nang luong toi da 250, toc do 5.20, ky nang da mo (tru hai binh co san) 0
 D2. bam Qua cau bang khi chua mo -> phep bay ra 0, loi nhac: QUẢ CẦU BĂNG chưa mở khoá — vào SÁCH PHÉP để mở
 D3. mo khoa Qua cau bang -> phep bay ra 1 (cap nhan vat van 1)
 D4. len cap 2: mau 600 -> 690 (x1.150), nang luong 250 -> 275 (x1.100), toc do 5.20 -> 5.38 (x1.035)

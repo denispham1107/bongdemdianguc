@@ -32,6 +32,9 @@ public class FallingShard : MonoBehaviour
     /// <summary>Cap ky nang cua NGUOI TUNG (di kem goi tin) - cap 5 thi tang bang no khi het gio.</summary>
     public int capKyNang = 1;
 
+    /// <summary>Dem cho phep thu: so lo lua Mua bang da dap tat.</summary>
+    public static int SoLoDapTat;
+
     /// <summary>Dem cho phep thu: so lan cham dat / so tang bang da moc.</summary>
     public static int SoLanCham, SoLanCoGai;
 
@@ -77,6 +80,9 @@ public class FallingShard : MonoBehaviour
                                       freezeChance, freezeSeconds, boQua, out soDong, dsDongBang);
             }
             SoDongBangLanCuoi = soDong;
+
+            // Trung LO LUA thi dap tat lua nhu Gio loc (nguoi dung 25/09/2026) - lo nam trong vung sat thuong
+            if (damage > 0f) SoLoDapTat += LoLuaDa.DapTatTrongVung(target, impactRadius, GioLoc.GiayLoChayLai);
 
             // HINH cum bang to bang cua Qua cau bang (2,55 m, prefab nuong o 1,7 -> x1,5). Nguoi dung
             // 16/09/2026 xin. CHI hinh to ra: vung sat thuong / dong bang ben duoi van la impactRadius.

@@ -176,7 +176,9 @@ public static class ThuKhangHe
             for (int i = 0; i < 4; i++) anh[i] = Resources.Load<Texture2D>(tenAnh[i]);
 
             var sb = new StringBuilder();
-            bool duNhom = nhomBiDong >= 0 && SachPhep.KyNangTheoNhom[nhomBiDong].Length == 4;
+            // CO DU bon ky nang Khang (khong dem cung "== 4": 25/09/2026 nhom them Toc do di chuyen)
+            bool duNhom = nhomBiDong >= 0;
+            if (duNhom) foreach (var k4 in ky4) if (System.Array.IndexOf(SachPhep.KyNangTheoNhom[nhomBiDong], k4) < 0) duNhom = false;
             if (nhomBiDong >= 0)
                 foreach (int k in SachPhep.KyNangTheoNhom[nhomBiDong]) sb.Append(k).Append(' ');
 
@@ -189,7 +191,7 @@ public static class ThuKhangHe
                     anh[i] != null ? anh[i].width + "x" + anh[i].height : "KHONG",
                     CapDo.LaKyBiDong(ky4[i]), CapDo.CapToiDaCua(ky4[i])));
             Ghi(string.Format("A. HUD {0} icon; icon so 16..19 {1}", bo != null ? bo.Length : -1,
-                bo != null && bo.Length == 20 && bo[16] != null && bo[17] != null && bo[18] != null && bo[19] != null ? "co du" : "THIEU"));
+                bo != null && bo.Length == CapDo.SoKyNang && bo[16] != null && bo[17] != null && bo[18] != null && bo[19] != null ? "co du" : "THIEU"));
 
             Kiem(CapDo.SoKyNang == SachPhep.SoKyNangCoTen() && CapDo.KyKhangLua == 16 && CapDo.KyKhangPhong == 19,
                  "so hieu sai, hoac co ky nang khong co ten");

@@ -46,7 +46,7 @@ public static class ThuGiatSet
     static bool truocBat;
     static EnterPlayModeOptions truocOpt;
 
-    [MenuItem("Diablo 2.5D/69. Chay thu GIUT SET (20 m, 75, 4 tia, 15% choang)", false, 157)]
+    [MenuItem("Diablo 2.5D/69. Chay thu GIUT SET (12 m, 75, 4 tia, 15% choang)", false, 157)]
     public static void Chay()
     {
         if (EditorSceneManager.GetActiveScene().isDirty)
@@ -56,7 +56,7 @@ public static class ThuGiatSet
         }
         Directory.CreateDirectory("PlayTestShots");
         bao.Length = 0; loi = 0; daBatDau = false;
-        Ghi("[ban 1] Giut set: tam 20, sat thuong 75, 4 tia, 15% choang");
+        Ghi("[ban 2] Giut set: tam 12 (= Sam set), sat thuong 75, 4 tia, 15% choang; Quy cay tam +20%");
         canhCu = EditorSceneManager.GetActiveScene().path;
         if (canhCu != "Assets/Scenes/Act2.unity") EditorSceneManager.OpenScene("Assets/Scenes/Act2.unity");
         truocBat = EditorSettings.enterPlayModeOptionsEnabled; truocOpt = EditorSettings.enterPlayModeOptions;
@@ -145,7 +145,11 @@ public static class ThuGiatSet
         var quai = GiatSet.PhongCuaQuai(Vector3.up * 520f, huong, 0, 20f, 14f, Color.white, Color.white);
         Ghi(string.Format("A. Giut set nguoi choi: tam {0}, sat thuong {1}, so tia {2}, choang {3:P0} trong {4} giay; vach ngam TamNgam(6) = {5}; Giut set cua quai: choang {6:P0}",
             mau.range, mau.damage, mau.soTiaDau, mau.xacSuatChoang, mau.giayChoang, toi.TamNgam(6), quai.xacSuatChoang));
-        Kiem(Mathf.Approximately(mau.range, 20f) && Mathf.Approximately(toi.TamNgam(6), 20f), "tam khong phai 20 m");
+        // 25/09/2026: tam = tam SAM SET (nguoi dung chon giam 20 -> 12). So voi boltRange DOC TU NHAN VAT (prefab),
+        // khong chep tay 12 - doi mot ben ma quen ben kia la phep kiem bat ngay.
+        Ghi(string.Format("A2. tam Giut set {0} m, tam Sam set (boltRange cua nhan vat) {1} m", GiatSet.TamNguoiChoi, toi.boltRange));
+        Kiem(Mathf.Approximately(mau.range, toi.boltRange) && Mathf.Approximately(toi.TamNgam(6), toi.boltRange)
+             && Mathf.Approximately(GiatSet.TamNguoiChoi, 12f), "tam Giut set khong bang tam Sam set (12 m)");
         Kiem(Mathf.Approximately(mau.damage, 75f), "sat thuong ban dau khong phai 75");
         Kiem(mau.soTiaDau == 4, "khong phong 4 tia");
         Kiem(Mathf.Approximately(mau.xacSuatChoang, 0.15f), "xac suat choang khong phai 15%");
@@ -161,8 +165,9 @@ public static class ThuGiatSet
         Vector3 chanToi = toi.transform.position;
         // 5 bia tren vong cung 15 m, cach nhau 25 do (day cung 6,5 m > ban kinh lan 5,5)
         var bia = new List<Damageable>();
-        float[] goc = { -50f, -25f, 0f, 25f, 50f };
-        foreach (var a in goc) bia.Add(TaoBia("TAM_Bia" + a, Vong(chanToi, huong, 15f, a)));
+        // 5 bia tren vong cung 10 m (trong tam 12), cach nhau 40 do (day cung 6,8 m > ban kinh lan 5,5)
+        float[] goc = { -80f, -40f, 0f, 40f, 80f };
+        foreach (var a in goc) bia.Add(TaoBia("TAM_Bia" + a, Vong(chanToi, huong, 10f, a)));
         yield return new WaitForFixedUpdate();
         var truoc = new float[5];
         for (int i = 0; i < 5; i++) truoc[i] = bia[i].health;
@@ -186,7 +191,7 @@ public static class ThuGiatSet
             if (mat[i] < 0.01f) soKhong++;
             sb.AppendFormat("{0}do:{1:F2} ", goc[i], mat[i]);
         }
-        Ghi("B. tung that vao 5 bia (vong cung 15 m, cach nhau 6,5 m): mat mau " + sb.ToString().Trim()
+        Ghi("B. tung that vao 5 bia (vong cung 10 m, cach nhau 6,8 m): mat mau " + sb.ToString().Trim()
             + " -> mat dung 75: " + soMat75 + ", khong mat: " + soKhong + "; so bia trung ngay khung dau tien: " + soTrungKhungDau);
         Kiem(soMat75 == 4 && soKhong == 1, "khong phong dung 4 tia, moi tia 75 sat thuong");
         Kiem(soTrungKhungDau == 4, "4 tia khong trung cung mot luc");
@@ -196,7 +201,8 @@ public static class ThuGiatSet
         // ================= C. TAM 20 M =================
         Vector3 g = chanToi + Vector3.up * 60f + huong * 3f;     // tren khong trung
         Vector3 goc0 = g + Vector3.up;                            // cung do cao voi tam bia
-        float[] tam = { 20.3f, 20.8f };
+        float T = GiatSet.TamNguoiChoi;
+        float[] tam = { T + 0.3f, T + 0.8f };
         var trungTam = new bool[2];
         for (int k = 0; k < 2; k++)
         {
@@ -210,20 +216,20 @@ public static class ThuGiatSet
             DonBia();
             yield return null;
         }
-        Ghi(string.Format("C. tam: bia tam 20,3 m (mat bia 19,9 m) trung {0}; bia tam 20,8 m (mat bia 20,4 m) trung {1} (tam cu 19,5 thi ca hai deu khong trung)",
-            trungTam[0], trungTam[1]));
-        Kiem(trungTam[0] && !trungTam[1], "tam danh khong phai 20 m");
+        Ghi(string.Format("C. tam {2}: bia tam {3:F1} m (mat bia {4:F1} m) trung {0}; bia tam {5:F1} m (mat bia {6:F1} m) trung {1} (tam cu 20 thi ca hai deu trung)",
+            trungTam[0], trungTam[1], T, tam[0], tam[0] - 0.4f, tam[1], tam[1] - 0.4f));
+        Kiem(trungTam[0] && !trungTam[1], "tam danh khong phai " + T + " m");
 
         // ================= D. TIA LAN =================
         {
-            var A = TaoBia("TAM_BiaA", g + huong * 18f);
-            var B = TaoBia("TAM_BiaB", g + huong * 22f);
+            var A = TaoBia("TAM_BiaA", g + huong * (T - 2f));
+            var B = TaoBia("TAM_BiaB", g + huong * (T + 2f));
             yield return new WaitForFixedUpdate();
             float mA = A.health, mB = B.health;
             var gs = GiatSet.Phong(goc0, huong, maskEnemy);
             gs.xacSuatChoang = 0f;
             yield return new WaitForSeconds(0.4f);
-            Ghi(string.Format("D. lan: bia A (18 m) mat {0:F2}, bia B (22 m, ngoai tam, cach A 4 m) mat {1:F2} (mong 75 va 63,75)", mA - A.health, mB - B.health));
+            Ghi(string.Format("D. lan: bia A ({2:F0} m) mat {0:F2}, bia B ({3:F0} m, ngoai tam, cach A 4 m) mat {1:F2} (mong 75 va 63,75)", mA - A.health, mB - B.health, T - 2f, T + 2f));
             // TakeDamage lam tron sat thuong ve so nguyen (63,75 -> 64) - so voi so da lam tron
             Kiem(Mathf.Abs(mA - A.health - 75f) < 0.01f && Mathf.Abs(mB - B.health - Mathf.Round(63.75f)) < 0.01f, "tia lan khong con nhu cu");
             DonBia();
@@ -234,8 +240,8 @@ public static class ThuGiatSet
             var dau = new List<Damageable>(); var lan = new List<Damageable>();
             foreach (var a in new[] { -30f, -10f, 10f, 30f })
             {
-                dau.Add(TaoBia("TAM_Dau" + a, Vong(g, huong, 17f, a)));
-                lan.Add(TaoBia("TAM_Lan" + a, Vong(g, huong, 21.5f, a)));
+                dau.Add(TaoBia("TAM_Dau" + a, Vong(g, huong, T - 3f, a)));
+                lan.Add(TaoBia("TAM_Lan" + a, Vong(g, huong, T + 1.5f, a)));
             }
             yield return new WaitForFixedUpdate();
             int trungDau = 0, choangDau = 0, trungLan = 0, choangLan = 0;
@@ -297,6 +303,7 @@ public static class ThuGiatSet
 
         yield return MucG(toi, chanToi, huong);
         yield return MucH(toi, chanToi, huong);
+        yield return MucI(toi, chanToi, huong);
 
         Ghi("");
         Ghi("so loi ghi nhan = " + loi);
@@ -416,6 +423,68 @@ public static class ThuGiatSet
         }
         if (soLat > 0) { trang /= soLat; xanh /= soLat; sangXanh /= soLat; }
         Object.DestroyImmediate(tex);
+    }
+
+    /// <summary>
+    /// I. QUY CAY (nguoi dung 25/09/2026): tam danh +20% - dung lai phong o 9,6 m (truoc 8), tia bay toi 12 m (truoc 10);
+    /// giu mau xanh la, kieu tia Giut set. Sinh QUY CAY THAT tu kho quai (prefab - prefab de len so trong code), dat cach
+    /// nguoi choi 16 m, doi no tu di toi va phong: do cho no dung lai, tam cua vat GiatSet no tao ra, anh cua tia.
+    /// </summary>
+    static IEnumerator MucI(PlayerController toi, Vector3 chanToi, Vector3 huong)
+    {
+        Ghi("");
+        Vector3 cho = chanToi + huong * 16f;
+        cho.y = VfxFactory.GroundY(cho) + 0.1f;
+        var go = EnemyFactory.Spawn(MonsterType.QuyCay, cho, null, toi.transform);
+        var ai = go != null ? go.GetComponent<EnemyAI>() : null;
+        if (ai == null) { Ghi("[LOI] I. khong sinh duoc Quy cay"); loi++; yield break; }
+        ai.target = toi.transform;
+        Ghi(string.Format("I1. Quy cay sinh tu kho quai: attackRange {0:F2} (mong {1:F2}, truoc 8), tamTiaSet {2:F2} (mong {3:F2}, truoc attackRange+2 = 10)",
+            ai.attackRange, EnemyFactory.TamDanhQuyCay, ai.tamTiaSet, EnemyFactory.TamTiaQuyCay));
+        Kiem(Mathf.Abs(ai.attackRange - 9.6f) < 0.01f && Mathf.Abs(EnemyFactory.TamDanhQuyCay - 8f * 1.2f) < 0.001f,
+             "Quy cay THAT (prefab) chua co tam danh 9,6 m - prefab de len so trong code?");
+        Kiem(Mathf.Abs(ai.tamTiaSet - 12f) < 0.01f, "tia Quy cay THAT chua bay toi 12 m");
+
+        // Doi no phong: bat vat GiatSet do quai tao (xac suat choang 0 - chi quai moi tat choang)
+        GiatSet gs = null;
+        float xaKhiPhong = -1f;
+        float han = Time.time + 12f;
+        while (gs == null && Time.time < han && go != null)
+        {
+            yield return null;
+            foreach (var g in Object.FindObjectsByType<GiatSet>(FindObjectsInactive.Exclude))
+                if (g.xacSuatChoang == 0f && g.boQua == null) { gs = g; break; }
+            if (gs != null)
+            {
+                Vector3 d = go.transform.position - toi.transform.position; d.y = 0f;
+                xaKhiPhong = d.magnitude;
+            }
+        }
+        float tamGs = gs != null ? gs.range : -1f;
+        Color quang = gs != null ? gs.mauQuang : Color.clear;
+        // Tia cua no: doi 0,1 giay cho Start dung hinh
+        yield return new WaitForSeconds(0.1f);
+        LightningArc tia = null;
+        foreach (var a in Object.FindObjectsByType<LightningArc>(FindObjectsInactive.Exclude))
+            if (a.glowColor == quang && quang != Color.clear) { tia = a; break; }
+        string anh = "(khong co)";
+        if (tia != null)
+        {
+            var core = tia.transform.Find("Core");
+            var mr = core != null ? core.GetComponent<MeshRenderer>() : null;
+            if (mr != null && mr.sharedMaterial != null && mr.sharedMaterial.mainTexture != null) anh = mr.sharedMaterial.mainTexture.name;
+        }
+        yield return Chup("giatset_7_quy_cay");
+        Ghi(string.Format("I2. Quy cay phong o cach nguoi choi {0:F2} m (dung lai o tam danh {1:F2}); vat Giut set cua no tam {2:F2} m; mau vien {3}; tia dung anh '{4}', song {5:F2} giay",
+            xaKhiPhong, ai.attackRange, tamGs, quang.ToString("F2"), anh, tia != null ? tia.lifetime : -1f));
+        Kiem(gs != null, "Quy cay khong phong tia nao trong 12 giay");
+        Kiem(Mathf.Abs(tamGs - 12f) < 0.01f, "tia Quy cay phong ra khong co tam 12 m");
+        Kiem(xaKhiPhong > 8.2f && xaKhiPhong < 10.2f, "Quy cay khong dung lai phong o khoang 9,6 m (tam cu 8 m)");
+        Kiem(quang.g > 0.8f && quang.r < 0.4f, "tia Quy cay mat mau xanh la");
+        Kiem(anh == "GiatSetLoi" && tia != null && Mathf.Abs(tia.lifetime - GiatSet.GiayTiaHien) < 0.001f,
+             "tia Quy cay khong phai kieu tia Giut set");
+        if (go != null) Object.Destroy(go);
+        yield return null;
     }
 
     static IEnumerator MucH(PlayerController toi, Vector3 chanToi, Vector3 huong)

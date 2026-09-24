@@ -38,6 +38,9 @@ public class EnemyAI : MonoBehaviour
     public bool danhBangTiaSet = false;
     public Color tiaMauLoi = Color.white;
     public Color tiaMauQuang = new Color(0.45f, 0.70f, 1f, 1f);
+
+    /// <summary>Tam bay cua tia Giut set cua quai, met. Am = cu nhu cu (attackRange + 2). Quy cay dat rieng.</summary>
+    public float tamTiaSet = -1f;
     [Tooltip("Cho phep phep bay ra - de trong thi tu tim xuong ban tay")]
     public Transform diemPhongPhep;
 
@@ -759,7 +762,7 @@ public class EnemyAI : MonoBehaviour
         // mask ngay tai cho nhu the nay. Chi lop Player: tia khong bao gio
         // giat vao dong bon cua chinh no.
         GiatSet.PhongCuaQuai(tu, h.normalized, LayerMask.GetMask("Player"),
-                             satThuongCau, attackRange + 2f,
+                             satThuongCau, tamTiaSet > 0f ? tamTiaSet : attackRange + 2f,
                              tiaMauLoi, tiaMauQuang);
     }
 

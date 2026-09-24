@@ -61,7 +61,7 @@ public static class SachPhep
         new[] { CapDo.KyBinhMau, CapDo.KyBinhMana, 5, CapDo.KyTocBien },   // Binh mau, Binh mana, Khien, Toc bien
         // NHOM BI DONG (nguoi dung 19/09/2026): khong bam duoc, khong keo vao o - mo khoa / nang cap
         // la cong vinh vien vao thuoc tinh nhan vat.
-        new[] { CapDo.KyKhangLua, CapDo.KyKhangBang, CapDo.KyKhangSet, CapDo.KyKhangPhong },
+        new[] { CapDo.KyKhangLua, CapDo.KyKhangBang, CapDo.KyKhangSet, CapDo.KyKhangPhong, CapDo.KyTocDo },
     };
 
     /// <summary>So ky nang trong mot nhom.</summary>
@@ -321,6 +321,7 @@ public static class SachPhep
             case CapDo.KyKhangBang: return "KHÁNG BĂNG";
             case CapDo.KyKhangSet: return "KHÁNG SÉT";
             case CapDo.KyKhangPhong: return "KHÁNG PHONG";
+            case CapDo.KyTocDo: return "TỐC ĐỘ DI CHUYỂN";
             default: return "";
         }
     }
@@ -337,8 +338,9 @@ public static class SachPhep
             case 4: return "Ba khối đá lửa rơi xuống";
             case 5: return "Vòm chắn quanh mình";
             case 6: return "4 tia sét lan, 15% choáng";
-            case CapDo.KyBinhMau: return "Uống một bình, hồi tối đa 200 máu";
-            case CapDo.KyBinhMana: return "Uống một bình, hồi tối đa 75 năng lượng";
+            // NGAN: goc phai hang con ghi "Cap 1/3 - con N binh" (25/09/2026) - dai hon la chu de len nhau
+            case CapDo.KyBinhMau: return "Hồi tối đa " + Mathf.RoundToInt(PlayerController.MauBinhTheoCap(CapHienThi(ky))) + " máu";
+            case CapDo.KyBinhMana: return "Hồi tối đa " + Mathf.RoundToInt(PlayerController.ManaBinhTheoCap(CapHienThi(ky))) + " năng lượng";
             case CapDo.KyQuaCauBang: return "Ba quả băng, 40% đóng băng";
             case CapDo.KyGioLoc: return "Một cơn lốc, 55% hất tung";
             case CapDo.KyLuaDiaNguc: return "Năm quả lửa tự đuổi kẻ địch";
@@ -350,9 +352,13 @@ public static class SachPhep
             case CapDo.KyKhangBang: return "Bị động — chịu ít sát thương hệ Băng";
             case CapDo.KyKhangSet: return "Bị động — chịu ít sát thương hệ Sét";
             case CapDo.KyKhangPhong: return "Bị động — chịu ít sát thương hệ Phong";
+            case CapDo.KyTocDo: return "Bị động — chạy nhanh hơn";
             default: return "";
         }
     }
+
+    /// <summary>Cap de ghi so len chu: cap hien tai, it nhat 1 (o sanh chua co cap nao).</summary>
+    static int CapHienThi(int ky) { return Mathf.Max(1, CapDo.CapCuaKyNang(ky)); }
 
     /// <summary>Lời kể dài, hiện ở khung chi tiết bên phải.</summary>
     public static string MoTa(int ky)
@@ -364,6 +370,7 @@ public static class SachPhep
                      + "Quả nào chạm vật cản hay kẻ địch thì nổ tại chỗ, thiêu cháy mọi "
                      + "thứ quanh điểm nổ. Cây cối trúng lửa sẽ bắt cháy và cháy lan "
                      + "theo thân.\n\n"
+                     + "Quả lửa bay XUYÊN QUA bia mộ và đá — chỉ nhà, cây cối và lò lửa mới chặn được.\n\n"
                      + "Đây là đòn rẻ nhất và hồi nhanh nhất — thứ để dùng liên tục "
                      + "giữa hai lần tung phép lớn.\n\n"
                      + "Lên CẤP 5: mỗi quả nổ có 30% khả năng ĐÁNH NGÃ kẻ trúng đòn 1,5 giây — "
@@ -378,6 +385,7 @@ public static class SachPhep
                      + "băng được mới có tảng băng, trúng suông thì không.\n\n"
                      + "CẤP 5: tảng băng đến lúc tan thì NỔ TUNG thay vì biến mất, giáng thêm "
                      + "100 sát thương lên kẻ đứng đó và mọi kẻ ở gần trong 3,4 mét.\n\n"
+                     + "Tảng băng rơi trúng LÒ LỬA thì dập tắt lửa, 30 giây sau lò cháy lại.\n\n"
                      + "Bão tự tìm kẻ địch trong vùng để dội xuống, và không bao giờ "
                      + "nhắm vào chính người tung ra nó.";
             case 2:
@@ -411,32 +419,34 @@ public static class SachPhep
                      + "cháy thì nhìn như lửa đã lọt qua khiên.\n\n"
                      + "Khiên vỡ khi hết máu, và mờ dần theo lượng máu còn lại.";
             case 6:
-                return "Tia sét phóng thẳng từ tay tới kẻ địch phía trước trong tầm 20 mét. Có "
+                return "Tia sét phóng thẳng từ tay tới kẻ địch phía trước trong tầm 12 mét (bằng Sấm sét). Có "
                      + "tới 4 kẻ địch thì 4 tia cùng phóng ra một lúc, mỗi tia một kẻ. Chạm "
                      + "kẻ địch rồi mỗi tia lại NHẢY tiếp sang những kẻ đứng gần đó.\n\n"
                      + "Sát thương ban đầu 75, mỗi lần nhảy giảm bớt một ít. Mỗi cú đánh "
                      + "trúng — kể cả tia nhảy — có 15% khả năng làm kẻ địch BỊ CHOÁNG.\n\n"
                      + "Đòn rẻ, hồi nhanh, hợp lúc bị vây.";
             case CapDo.KyBinhMau:
-                return "Uống cạn một bình máu đặc sánh, hồi ngay tối đa 200 máu. Máu đang đầy "
+                return "Uống cạn một bình máu đặc sánh, hồi ngay tối đa " + Mathf.RoundToInt(PlayerController.MauBinhTheoCap(CapHienThi(ky))) + " máu. Máu đang đầy "
                      + "thì không uống — không phí bình.\n\n"
-                     + "Không có sẵn: bình máu chỉ có khi NHẶT được. Mỗi con quái bị hạ có "
+                     + "Kỹ năng có sẵn, nhưng BÌNH thì phải NHẶT mới có. Mỗi con quái bị hạ có "
                      + "10% khả năng rơi ra một bình máu. Tới gần là bình tự bay vào người, và "
                      + "số bình đang có hiện ngay trên ô kỹ năng.\n\n"
                      + "Chơi nhiều người thì bình rơi là của CHUNG cả phòng — ai tới trước người "
                      + "ấy được.\n\n"
-                     + "Chỉ cần mở khoá bằng 1 điểm kỹ năng, không nâng cấp được. Uống xong "
-                     + "phải chờ 0,5 giây mới uống bình tiếp theo.";
+                     + "CÓ SẴN Ở CẤP 1 — không cần mở khoá. Mỗi lần nâng cấp (1 điểm kỹ năng) một bình hồi "
+                     + "thêm 75 máu, tối đa cấp 3: 200 → 275 → 350 máu. Uống xong phải chờ 0,5 giây mới uống "
+                     + "bình tiếp theo.";
             case CapDo.KyBinhMana:
-                return "Uống một bình nước phép xanh lạnh buốt, hồi ngay tối đa 75 năng lượng. "
+                return "Uống một bình nước phép xanh lạnh buốt, hồi ngay tối đa " + Mathf.RoundToInt(PlayerController.ManaBinhTheoCap(CapHienThi(ky))) + " năng lượng. "
                      + "Năng lượng đang đầy thì không uống.\n\n"
                      + "Bình mana chỉ có khi NHẶT được: mỗi con quái bị hạ có 10% khả năng rơi "
                      + "ra một bình. Tới gần là bình tự bay vào người, số bình còn lại hiện "
                      + "trên ô kỹ năng.\n\n"
                      + "Chơi nhiều người thì bình rơi là của CHUNG cả phòng — ai tới trước người "
                      + "ấy được.\n\n"
-                     + "Mở khoá bằng 1 điểm kỹ năng, không nâng cấp được. Uống xong phải chờ "
-                     + "0,5 giây mới uống bình tiếp theo.";
+                     + "CÓ SẴN Ở CẤP 1 — không cần mở khoá. Mỗi lần nâng cấp (1 điểm kỹ năng) một bình hồi "
+                     + "thêm 45 năng lượng, tối đa cấp 3: 75 → 120 → 165. Uống xong phải chờ 0,5 giây mới uống "
+                     + "bình tiếp theo.";
             case CapDo.KyQuaCauBang:
                 return "Ba quả cầu băng pha lê cùng phóng ra, toè thành hình quạt về phía trước. "
                      + "Phía sau mỗi quả kéo theo một luồng không khí lạnh buốt và một vệt băng "
@@ -444,6 +454,8 @@ public static class SachPhep
                      + "Quả nào chạm vật cản hay kẻ địch thì vỡ tung thành một vụ nổ băng: mọi "
                      + "kẻ địch trong vùng nổ đều mất máu, đứng càng gần tâm càng đau. Sát thương "
                      + "ban đầu 65 mỗi quả.\n\n"
+                     + "Quả băng bay XUYÊN QUA bia mộ và đá — chỉ nhà, cây cối và lò lửa mới chặn được. "
+                     + "Nổ trúng LÒ LỬA thì dập tắt lửa, 30 giây sau lò cháy lại.\n\n"
                      + "Kẻ nào trúng đều bị LÀM CHẬM một nửa tốc độ trong 2 giây, và có 40% khả năng bị "
                      + "ĐÓNG BĂNG 1,5 giây — đứng cứng tại chỗ, không đi và không dùng được kỹ năng nào.\n\n"
                      + "CẤP 5: mỗi lần tung ra NĂM quả cầu băng thay vì ba, và tảng băng mọc lên "
@@ -523,13 +535,18 @@ public static class SachPhep
                      + "BỊ ĐỘNG: không bấm, không đặt vào ô kỹ năng — mở khoá là có tác dụng ngay và giữ suốt trận.\n\n"
                      + "Mở khoá giảm 25%, mỗi cấp sau giảm thêm 5% — lên cấp 5 là giảm 45%.\n\n"
                      + "Chỉ chặn đòn của NGƯỜI CHƠI KHÁC. Đòn của quái vật không bị giảm.";
+            case CapDo.KyTocDo:
+                return "Đôi chân bạn nhẹ hẳn đi. Nhân vật chạy NHANH HƠN suốt trận.\n\n"
+                     + "BỊ ĐỘNG: không bấm, không đặt vào ô kỹ năng — mở khoá là có tác dụng ngay và giữ suốt trận.\n\n"
+                     + "Mở khoá tăng 10% tốc độ di chuyển GỐC của nhân vật, mỗi cấp sau tăng thêm 2,5% — lên cấp 5 "
+                     + "là nhanh hơn 20%. Phần tăng này cộng thêm vào tốc độ bạn có được khi lên cấp nhân vật.";
             case CapDo.KyLuaDiaNguc:
                 return "Phóng ra NĂM quả cầu lửa. Năm quả toả quạt rồi uốn cong, TỰ ĐUỔI theo tối đa "
                      + "năm kẻ địch (quái hoặc người chơi khác) gần bạn nhất trong 20 m — ít kẻ địch hơn thì quả dư lao vào kẻ gần nhất; "
                      + "mục tiêu gục giữa đường thì quả lửa chuyển sang kẻ còn sống gần nó nhất.\n\n"
                      + "Mỗi quả nổ gây 176 sát thương lửa (bằng Quả cầu lửa ở cấp 5) và THIÊU ĐỐT mọi kẻ trong vùng nổ như Quả cầu lửa. "
                      + "Không có ai quanh bạn thì năm quả bay thẳng.\n\n"
-                     + "Quả lửa XUYÊN QUA được bia mộ và đá trên đường bay — chỉ cây cối và nhà mới chặn được chúng.\n\n"
+                     + "Quả lửa XUYÊN QUA được bia mộ và đá trên đường bay — chỉ cây cối, nhà và lò lửa mới chặn được chúng.\n\n"
                      + "Nâng cấp: +20% sát thương mỗi cấp, lửa cháy lâu hơn.";
             default: return "";
         }

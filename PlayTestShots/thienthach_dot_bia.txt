@@ -1,0 +1,11 @@
+[ban 1] Thien thach dot chay bia mo, nha mo y het cay
+
+A. nhom 'BiaMo': 452 vat, chay duoc 452; 40 kieu luoi, co bo diem moi lua 40 (it hon 300 diem: 0)
+A. nhom 'NhaMo': 5 vat, chay duoc 5; 2 kieu luoi, co bo diem moi lua 2 (it hon 300 diem: 0)
+A. nhom 'Da': 229 vat, chay duoc 0; 3 kieu luoi, co bo diem moi lua 0 (it hon 300 diem: 0)
+
+B1. BiaMo/TS_round_0: bat lua True; 340 diem moi lua; chay 4.7 giay; giua doan chay lan 100 %, do sang 0.697 -> 0.162 (x0.23); chay rui mat hinh True, tat va cham True; moc lai True, do sang sau khi moc 0.697
+B2. NhaMo/MAUS_A_001_682: bat lua True; 340 diem moi lua; chay 4.7 giay; giua doan chay lan 100 %, do sang 0.697 -> 0.161 (x0.23); chay rui mat hinh True, tat va cham True; moc lai True, do sang sau khi moc 0.697
+B3. so vat chay cung luc nhieu nhat 3 (tran 4); vat KHONG phai cay / bia / nha bi dot: 0 (phai 0)
+
+so loi ghi nhan = 0

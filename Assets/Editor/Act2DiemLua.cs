@@ -4,7 +4,8 @@ using UnityEditor;
 using UnityEditor.SceneManagement;
 
 /// <summary>
-/// NUONG BO DIEM MOI LUA cho moi loai luoi cay trong Act2.
+/// NUONG BO DIEM MOI LUA cho moi loai luoi cay trong Act2 - va tu 25/09/2026 ca 40 luoi BIA MO, 2 luoi NHA MO
+/// (Thien thach dot chay chung y het cay; CayChay.GocCay nhan ra ca ba nen vong quet ben duoi tu gom du).
 ///
 /// Quet ca hai man, gom cac <c>sharedMesh</c> cua cay lai (chin loai o Act2),
 /// rai diem deu tren be mat tung cai roi luu thanh
@@ -33,7 +34,7 @@ public static class Act2DiemLua
 
     const string ThuMuc = "Assets/Resources/" + DiemLuaCay.ThuMuc;
 
-    [MenuItem("Diablo 2.5D/20. Nuong diem moi lua cho cay", false, 99)]
+    [MenuItem("Diablo 2.5D/20. Nuong diem moi lua cho cay, bia mo, nha mo", false, 99)]
     public static void Chay()
     {
         if (!AssetDatabase.IsValidFolder("Assets/Resources"))

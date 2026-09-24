@@ -308,6 +308,11 @@ public static class EnemyFactory
     /// kia, de nguong lui xa thi ca dan cu giat lui ra roi lai lao vao, nhin ra
     /// mot dam gian gio chu khong ra mot dan quai vay danh.
     /// </summary>
+    /// <summary>Quy cay dung lai phong set o bao xa (8 m x 1,2 - nguoi dung 25/09/2026).</summary>
+    public const float TamDanhQuyCay = 8f * 1.2f;
+    /// <summary>Tia Giut set cua Quy cay bay toi bao xa (truoc la attackRange + 2 = 10 m; x 1,2).</summary>
+    public const float TamTiaQuyCay = 10f * 1.2f;
+
     public static GameObject LapRapQuyCay(GameObject model, Transform parent, Transform player)
     {
         EnemyAI ai; Damageable hp; CharacterRig rig;
@@ -328,7 +333,9 @@ public static class EnemyFactory
         ai.turnSpeed = 9f;
 
         ai.aggroRange = 20f;
-        ai.attackRange = 8f;
+        // TAM DANH +20% (nguoi dung 25/09/2026): dung lai phong o 8 -> 9,6 m, tia bay toi 10 -> 12 m
+        ai.attackRange = TamDanhQuyCay;
+        ai.tamTiaSet = TamTiaQuyCay;
         ai.khoangLui = 4.5f;
 
         ai.attackCooldown = 1.5f;

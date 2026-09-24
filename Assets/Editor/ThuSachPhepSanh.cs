@@ -359,7 +359,9 @@ console.log(out.join('|'));
         Ghi("    do sang hinh trong o: " + sbO.ToString().Trim() + " -> thap nhat x" + oMin.ToString("F2"));
         Kiem(xemTruoc, "nut KY NANG khong mo che do xem truoc");
         Kiem(soMoXemTruoc == SachPhep.SoKyNang, "xem truoc van con ky nang bi khoa");
-        Kiem(soMoDoiChung == 0, "doi chung hong: trong tran luc moi vao van co ky nang da mo");
+        // Dau tran chi hai ky nang BINH co san (nguoi dung 25/09/2026) - moi thu khac con khoa
+        int soBinh = 0; for (int i = 0; i < SachPhep.SoKyNang; i++) if (CapDo.LaKyBinh(i)) soBinh++;
+        Kiem(soMoDoiChung == soBinh, "doi chung hong: trong tran luc moi vao so ky nang da mo khac so ky nang binh (" + soBinh + ")");
         Kiem(soHangThay >= 6 && tiLeMin >= 1.5f, "hinh ky nang o sanh chua sang du mau (van xam / co o khoa?)");
         Kiem(oMin >= 1.5f, "hinh trong o o sanh chua sang du mau (van xam / co o khoa?)");
 
@@ -419,7 +421,8 @@ console.log(out.join('|'));
         Ghi("B1b2. sau khi cuon het cot, do sang VANH hinh nhom BI DONG: " + sbBd.ToString().Trim()
             + " -> thap nhat " + thapNhat.ToString("F3") + " tren " + soDo + " hang; moc cac ky nang khac cung khung hinh "
             + sangMoc.ToString("F3") + " (" + demMoc + " hang)");
-        Kiem(soDo == 4, "khong do duoc ca bon ky nang bi dong (cuon chua toi day cot?)");
+        int soBiDong = SachPhep.KyNangTheoNhom[SachPhep.KyNangTheoNhom.Length - 1].Length;
+        Kiem(soDo == soBiDong, "khong do duoc het " + soBiDong + " ky nang bi dong (cuon chua toi day cot?)");
         // ⚠️ NGUONG do bang DOI CHUNG that (19/09/2026): co bieu tuong 0,288-0,352 (x1,27-1,55 moc);
         // thao bieu tuong ra 0,115-0,127 (x0,51-0,56 moc). Nguong dau tien toi dat la x0,5 - va ban
         // THIEU BIEU TUONG van lot qua voi 0,115 > 0,1135. Nay lay x0,85, nam giua hai cum.

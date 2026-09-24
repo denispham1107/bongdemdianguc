@@ -56,6 +56,8 @@ public static class IconKyNang
     public static Texture2D KhangBang()  { return Ve("Icons/KhangBang",  new Color(0.03f, 0.08f, 0.14f)); }
     public static Texture2D KhangSet()   { return Ve("Icons/KhangSet",   new Color(0.08f, 0.05f, 0.16f)); }
     public static Texture2D KhangPhong() { return Ve("Icons/KhangPhong", new Color(0.08f, 0.09f, 0.08f)); }
+    /// <summary>Bi dong Toc do di chuyen (25/09/2026) - khien mau nhom BI DONG, dau hieu mui ten toc do.</summary>
+    public static Texture2D TocDo()      { return Ve("Icons/TocDo",      new Color(0.06f, 0.10f, 0.05f)); }
 
     /// <summary>
     /// CA BO bieu tuong, xep theo SO HIEU ky nang (0 .. CapDo.SoKyNang - 1).
@@ -88,6 +90,7 @@ public static class IconKyNang
         bo[CapDo.KyKhangBang]  = KhangBang();
         bo[CapDo.KyKhangSet]   = KhangSet();
         bo[CapDo.KyKhangPhong] = KhangPhong();
+        bo[CapDo.KyTocDo]      = TocDo();
         return bo;
     }
 

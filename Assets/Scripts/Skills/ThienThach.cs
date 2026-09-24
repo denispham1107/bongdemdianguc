@@ -126,9 +126,15 @@ public class ThienThach : MonoBehaviour
     /// </summary>
     /// <param name="heSoSatThuong">Nhan them theo CAP ky nang cua nguoi tung (xem CapDo).</param>
     /// <param name="themGiayChay">Vung lua chay them bao nhieu giay - cung theo cap.</param>
+    /// <summary>
+    /// Khoang cho giua hai qua trong mot loat, giay. Nguoi dung 25/09/2026 xin rut ngan va chon 0,35 (truoc 0,7):
+    /// 3 qua roi xong trong 0,7 giay, cap 5 (5 qua) trong 1,4 giay. Chi ky nang nguoi choi - Quy du co nhip rieng.
+    /// </summary>
+    public const float GiayCachNhau = 0.35f;
+
     public static void SpawnLoat(Vector3 diemNgam, LayerMask hitMask, LayerMask damageMask,
                                  Damageable boQua = null,
-                                 int soQua = 3, float cachNhau = 0.7f, float tanRong = 2.8f,
+                                 int soQua = 3, float cachNhau = GiayCachNhau, float tanRong = 2.8f,
                                  float heSoSatThuong = 1f, float themGiayChay = 0f,
                                  float ngaXacSuat = 0f, float ngaGiay = 1.5f)
     {

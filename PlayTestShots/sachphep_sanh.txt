@@ -1,14 +1,14 @@
 [menu 66] nut KY NANG o sanh, cat thu tu o, con mat quy
-A1. 371 chuoi trong 3 file; ky tu Inter thieu: ""; co chu "KỸ NĂNG" (co dau): co
+A1. 406 chuoi trong 3 file; ky tu Inter thieu: ""; co chu "KỸ NĂNG" (co dau): co
 A2. cau noi chay bang node: rong=[]|ghi=1|doc=[8,7,3,2,4,5,6]|kho=[8,7,3,2,4,5,6]|dau=[Kỹ năng]|camdoc=[]|camghi=0|so=7
 A3. SachPhep.cs: khai bao + goi CD_DocChuoi co, CD_GhiChuoi co, chi tren WebGL co
 
 B. man Game 1566x574, ti le sach 0.531; nut CAI DAT (x:836.68, y:17.01, width:90.35, height:26.57), KY NANG (x:770.24, y:181.77, width:90.35, height:27.64)
-B1. xem truoc: XemTruoc = True, ky nang hien da mo / keo duoc 20/20; doi chung trong tran (con khoa) 0/20
-    do sang VANH hinh cot trai (xem truoc / doi chung khoa; ne o khoa giua hinh): 0:0.441/0.130(x3.40) 1:0.317/0.084(x3.78) 2:0.170/0.053(x3.22) 6:0.192/0.058(x3.29) 9:0.217/0.030(x7.26) 11:0.174/0.050(x3.50) 12:0.192/0.030(x6.33) -> thap nhat x3.22 tren 7 hang
+B1. xem truoc: XemTruoc = True, ky nang hien da mo / keo duoc 21/21; doi chung trong tran (con khoa) 2/21
+    do sang VANH hinh cot trai (xem truoc / doi chung khoa; ne o khoa giua hinh): 0:0.441/0.130(x3.40) 1:0.317/0.084(x3.78) 2:0.170/0.053(x3.22) 6:0.192/0.058(x3.29) 9:0.217/0.030(x7.26) 11:0.174/0.050(x3.50) 12:0.192/0.030(x6.32) -> thap nhat x3.22 tren 7 hang
     do sang hinh trong o: o1:x2.61 o2:x2.34 o3:x1.95 o4:x2.21 o6:x2.40 o7:x1.98 -> thap nhat x1.95
-B1b. bang bieu tuong dung chung: 20 o (so ky nang 20), o rong: khong co
-B1b2. sau khi cuon het cot, do sang VANH hinh nhom BI DONG: 16:0.288 17:0.336 18:0.296 19:0.352 -> thap nhat 0.288 tren 4 hang; moc cac ky nang khac cung khung hinh 0.227 (4 hang)
+B1b. bang bieu tuong dung chung: 21 o (so ky nang 21), o rong: khong co
+B1b2. sau khi cuon het cot, do sang VANH hinh nhom BI DONG: 16:0.294 17:0.330 18:0.296 19:0.352 20:0.360 -> thap nhat 0.294 tren 5 hang; moc cac ky nang khac cung khung hinh 0.229 (4 hang)
 B2. nhan vat mau o man chinh: PhuThuy_TrungBay; cau lua nang luong 10 / hoi 0.55 (prefab 10 / 0.55); thien thach nang luong 60 (prefab 60)
 B3. kho luu sau khi sap o sanh: vuong [8,7,3,2,4,5,6] (mong [8,7,3,2,4,5,6]), tron [0,1,2,3,4,5,8] (mong [0,1,2,3,4,5,8], cam ung bat True)
 B4. vao Act2 luc sach dang mo (True): sach con mo = False, thanh ky nang trong tran [8,7,3,2,4,5,6]

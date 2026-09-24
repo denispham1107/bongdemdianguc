@@ -154,11 +154,25 @@ def dau_phong(d, mau):
         d.line([(cx - S * 0.19, cy + dy), (cx + S * 0.10, cy + dy)], fill=mau, width=6)
 
 
+def dau_toc_do(d, mau):
+    """Toc do di chuyen (25/09/2026): hai mui ten gay (>>) lao sang phai + ba vet gio phia sau."""
+    cx, cy = S * 0.53, S * 0.52
+    for k, dx in enumerate((-S * 0.035, S * 0.085)):
+        a = S * 0.105
+        d.line([(cx + dx - a * 0.75, cy - a), (cx + dx + a * 0.25, cy), (cx + dx - a * 0.75, cy + a)],
+               fill=mau, width=15 if k == 1 else 12, joint="curve")
+    for dy, dai in ((-S * 0.085, 0.13), (0.0, 0.17), (S * 0.085, 0.13)):
+        x1 = cx - S * 0.14
+        d.line([(x1 - S * dai, cy + dy), (x1, cy + dy)], fill=mau, width=6)
+
+
 BO = [
     ("KhangLua",   (0.42, 0.14, 0.05), (1.00, 0.55, 0.20), dau_lua,   (255, 236, 205)),
     ("KhangBang",  (0.07, 0.22, 0.38), (0.55, 0.85, 1.00), dau_bang,  (226, 246, 255)),
     ("KhangSet",   (0.20, 0.13, 0.42), (0.70, 0.60, 1.00), dau_set,   (240, 234, 255)),
     ("KhangPhong", (0.22, 0.24, 0.22), (0.80, 0.82, 0.78), dau_phong, (246, 248, 244)),
+    # Toc do di chuyen (25/09/2026): mau nhom BI DONG trong Sach phep (0,72 0,90 0,66)
+    ("TocDo",      (0.14, 0.26, 0.10), (0.72, 0.90, 0.66), dau_toc_do, (240, 255, 232)),
 ]
 
 for ten, toi, sang, ve, mau_hieu in BO:

@@ -26,8 +26,9 @@ public static class CapDo
     public const int CapToiDa = 20;
     public const int CapKyNangToiDa = 5;
 
-    /// <summary>So hieu hai ky nang DUNG BINH (them 13/09/2026). Chung chi can mo
-    /// khoa (1 diem), khong nang cap duoc - cap toi da 1.</summary>
+    /// <summary>So hieu hai ky nang DUNG BINH (them 13/09/2026). Tu 25/09/2026 (nguoi dung): CO SAN CAP 1 luc
+    /// vao tran, khong can mo khoa; nang cap duoc toi <see cref="CapBinhToiDa"/> - moi cap binh mau hoi them
+    /// 75 mau, binh mana them 45 nang luong (PlayerController.MauBinhTheoCap / ManaBinhTheoCap).</summary>
     public const int KyBinhMau = 7;
     public const int KyBinhMana = 8;
 
@@ -69,8 +70,26 @@ public static class CapDo
     /// <summary>Khang Phong - so 19.</summary>
     public const int KyKhangPhong = 19;
 
-    /// <summary>Cap toi da cua TUNG ky nang: binh mau / binh mana la 1, con lai 5.</summary>
-    public static int CapToiDaCua(int ky) { return LaKyBinh(ky) ? 1 : CapKyNangToiDa; }
+    /// <summary>
+    /// Toc do di chuyen (bi dong, them 25/09/2026) - so 20, THEM O CUOI. Mo khoa cong 10% TOC DO GOC cua
+    /// nhan vat (toc do luc vao tran, chua tinh phan tang theo cap nhan vat), moi cap sau them 2,5% (cap 5 = 20%).
+    /// </summary>
+    public const int KyTocDo = 20;
+
+    /// <summary>Phan toc do goc duoc cong them o cap <paramref name="capKy"/> cua ky nang Toc do (0 = chua mo).</summary>
+    public static float TocThemTheoCap(int capKy)
+    {
+        return capKy <= 0 ? 0f : 0.10f + 0.025f * (Mathf.Min(capKy, CapKyNangToiDa) - 1);
+    }
+
+    /// <summary>Phan toc do goc cong them cua nhan vat tren may nay (doc cap ky nang Toc do).</summary>
+    public static float TocThemBiDong { get { return TocThemTheoCap(CapCuaKyNang(KyTocDo)); } }
+
+    /// <summary>Cap toi da cua binh mau / binh mana - nguoi dung chon 25/09/2026.</summary>
+    public const int CapBinhToiDa = 3;
+
+    /// <summary>Cap toi da cua TUNG ky nang: binh mau / binh mana la 3, con lai 5.</summary>
+    public static int CapToiDaCua(int ky) { return LaKyBinh(ky) ? CapBinhToiDa : CapKyNangToiDa; }
 
     public static bool LaKyBinh(int ky) { return ky == KyBinhMau || ky == KyBinhMana; }
 
@@ -80,7 +99,7 @@ public static class CapDo
     /// </summary>
     public static bool LaKyBiDong(int ky)
     {
-        return ky == KyKhangLua || ky == KyKhangBang || ky == KyKhangSet || ky == KyKhangPhong;
+        return ky == KyKhangLua || ky == KyKhangBang || ky == KyKhangSet || ky == KyKhangPhong || ky == KyTocDo;
     }
 
     /// <summary>
@@ -89,7 +108,7 @@ public static class CapDo
     /// nhat 5,98 m/giay). Dung o cap 10: x1,363 (~7,1 m/giay).
     /// </summary>
     public const int CapTangTocToiDa = 10;
-    public const int SoKyNang = 20;      // 7 phep + binh mau + binh mana + qua cau bang + gio loc + lua dia nguc + tang hinh + qua cau dien + hoa loc xoay + toc bien + 4 khang bi dong
+    public const int SoKyNang = 21;      // 7 phep + binh mau + binh mana + qua cau bang + gio loc + lua dia nguc + tang hinh + qua cau dien + hoa loc xoay + toc bien + 4 khang bi dong + toc do
 
     /// <summary>Giet mot nguoi choi khac duoc bao nhieu kinh nghiem.</summary>
     public const int KnGietNguoi = 250;
@@ -152,6 +171,9 @@ public static class CapDo
         SoBinhMau = 0;
         SoBinhMana = 0;
         for (int i = 0; i < SoKyNang; i++) capKyNang[i] = 0;
+        // Binh mau / binh mana CO SAN cap 1 (nguoi dung 25/09/2026) - khong ton diem ky nang
+        capKyNang[KyBinhMau] = 1;
+        capKyNang[KyBinhMana] = 1;
         if (KhiDoi != null) KhiDoi();
     }
 

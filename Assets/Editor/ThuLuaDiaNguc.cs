@@ -639,13 +639,14 @@ public static class ThuLuaDiaNguc
             demNho.TryGetValue(k, out int n); demTo.TryGetValue(k, out int t);
             Ghi("K1. nhom \"" + k + "\": xuyen duoc " + n + ", bi chan " + t);
         }
-        // Nhom cha cua Act2: BiaMo / Da / LoLua_Act2 phai XUYEN HET; Cay / NhaMo / HangRao phai CHAN HET
+        // Nhom cha cua Act2: BiaMo / Da phai XUYEN HET; Cay / NhaMo / HangRao / LoLua_Act2 phai CHAN HET
+        // (lo lua chan tu 25/09/2026 - nguoi dung: "nha, cay coi, lo lua... van cho va cham no")
         foreach (var k in new[] { "BiaMo", "Da" })
         {
             demTo.TryGetValue(k, out int t); demNho.TryGetValue(k, out int n);
             Kiem(n > 0 && t == 0, "nhom " + k + " co " + t + " cai KHONG xuyen duoc (phai xuyen het)");
         }
-        foreach (var k in new[] { "Cay", "NhaMo", "HangRao" })
+        foreach (var k in new[] { "Cay", "NhaMo", "HangRao", "LoLua_Act2" })
         {
             demTo.TryGetValue(k, out int t); demNho.TryGetValue(k, out int n);
             Kiem(t > 0 && n == 0, "nhom " + k + " co " + n + " cai XUYEN QUA duoc (phai chan het)");

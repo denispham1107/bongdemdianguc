@@ -7,7 +7,7 @@ C2. no xong: 2 vet lua duoc tha ra tan dan tai cho
 
 D. danh nga o cap 5 (30%, 1,5 giay)
 D1. xac suat nga tren qua cau THAT theo cap 1..5 = 0.00, 0.00, 0.00, 0.00, 0.30; nam 1.5 giay (hang: 0.3 tu cap 5, Thien thach nam 1.5 giay)
-D2. mot qua cap 5 no giua 400 bia: nga 119 -> 29.8% (mong 30%, sai so ngau nhien ~2,3 diem)
+D2. mot qua cap 5 no giua 400 bia: nga 124 -> 31.0% (mong 30%, sai so ngau nhien ~2,3 diem)
 D3. DOI CHUNG qua cau cap duoi 5 (xac suat 0) no giua 400 bia: nga 0 (phai 0)
 D4. (khong con nao con nga tu D2 - gieo tay mot con de do thoi gian nam)
 D5. sau 1,2 giay van nga True; sau 1,8 giay da day True

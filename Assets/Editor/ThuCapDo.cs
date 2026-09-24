@@ -187,12 +187,14 @@ public static class ThuCapDo
         Ghi("C. diem ky nang: mo khoa va nang cap");
 
         CapDo.BatDauTranMoi();
-        int soMo = 0;
-        for (int k = 0; k < CapDo.SoKyNang; k++) if (CapDo.DaMo(k)) soMo++;
+        // 25/09/2026: hai ky nang BINH co san cap 1 (nguoi dung) - moi ky nang khac con khoa
+        int soMo = 0, soMoKhacBinh = 0;
+        for (int k = 0; k < CapDo.SoKyNang; k++) if (CapDo.DaMo(k)) { soMo++; if (!CapDo.LaKyBinh(k)) soMoKhacBinh++; }
         Ghi("C1. vao tran: cap " + CapDo.Cap + ", diem " + CapDo.DiemKyNang
-            + ", so ky nang da mo " + soMo);
-        Kiem(CapDo.Cap == 1 && CapDo.DiemKyNang == 1 && soMo == 0,
-             "vao tran khong dung: phai la cap 1, mot diem, khong ky nang nao mo");
+            + ", so ky nang da mo " + soMo + " (binh mau cap " + CapDo.CapCuaKyNang(CapDo.KyBinhMau)
+            + ", binh mana cap " + CapDo.CapCuaKyNang(CapDo.KyBinhMana) + ")");
+        Kiem(CapDo.Cap == 1 && CapDo.DiemKyNang == 1 && soMoKhacBinh == 0 && soMo == 2,
+             "vao tran khong dung: phai la cap 1, mot diem, chi hai binh mo san");
 
         // Dung hai ky nang KHONG co dieu kien bac (Qua cau lua, Giut set): tu 19/09/2026 Sam set
         // doi Giut set cap 2 va Loc xoay doi Gio loc cap 2, lay chung thi truot vi dieu kien chu
@@ -301,10 +303,10 @@ public static class ThuCapDo
         CapDo.BatDauTranMoi();
         yield return null;
         int soMo = 0;
-        for (int k = 0; k < CapDo.SoKyNang; k++) if (CapDo.DaMo(k)) soMo++;
+        for (int k = 0; k < CapDo.SoKyNang; k++) if (CapDo.DaMo(k) && !CapDo.LaKyBinh(k)) soMo++;   // binh co san cap 1
         Ghi("D1. vao tran: cap " + CapDo.Cap + ", mau toi da " + mau.maxHealth.ToString("F0")
             + ", nang luong toi da " + pc.maxMana.ToString("F0")
-            + ", toc do " + pc.moveSpeed.ToString("F2") + ", ky nang da mo " + soMo);
+            + ", toc do " + pc.moveSpeed.ToString("F2") + ", ky nang da mo (tru hai binh co san) " + soMo);
         Kiem(CapDo.Cap == 1 && soMo == 0, "vao tran khong phai cap 1 / khong khoa het ky nang");
 
         // ---- D2. CHUA MO THI KHONG TUNG DUOC ----

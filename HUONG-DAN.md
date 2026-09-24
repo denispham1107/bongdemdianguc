@@ -8566,6 +8566,101 @@ Menu 74 thêm mục K, đo ở lượt thứ ba: **5/5 tia** quanh cầu dùng �
 ngang (đối chứng: tia mặc định không dùng ảnh). Menu 74 cả bài **0 lỗi**. Ảnh `quacaudien_2_ban_tia.png`: trước đây năm
 tia là một mảng trắng loá, nay thấy rõ từng tia lõi trắng viền xanh.
 
+### Thiên thạch đốt cháy bia mộ và nhà mồ y hệt cây (25/09/2026)
+
+Anh xin Thiên thạch "đốt cháy mọi thứ như đốt cháy cây, hiệu ứng giống y chang". Tôi hỏi lại vật nào và cháy xong ra
+sao. Anh chọn **bia mộ (452) và nhà mồ (5)**; đá và hàng rào không cháy. Cháy xong **y hệt cây**: lửa lan khắp bề mặt,
+vật đen dần, cháy rụi thì biến mất, 30 giây sau mọc lại.
+
+Dùng lại nguyên `CayChay`, không viết hiệu ứng mới. Hai việc phải làm thêm:
+
+- **Nhận ra bia và nhà.** Cây nhận ra theo tên (`TREE_...`), nhưng 452 tấm bia có tên đủ kiểu (`TS_round_0`,
+  `TS_shoulder_12`...) và 40 kiểu lưới khác nhau. Cái chung duy nhất là **nhóm cha** `BiaMo` / `NhaMo`, đúng nhóm mà
+  menu 72 vẫn dùng để phân loại vật cản.
+- **Điểm mồi lửa.** Lưới trong `map_luoi.fbx` tắt Read/Write, nên lúc chạy không đọc được bề mặt; không có điểm mồi
+  thì lửa chỉ rải lung tung trong khối bao. Menu 20 nay nướng luôn 40 lưới bia và 2 lưới nhà (51 bộ, 340 điểm mỗi bộ).
+  Chín bộ của cây nướng lại vẫn trùng từng byte, vì hạt ngẫu nhiên lấy từ tên lưới.
+
+Bia rất thấp (0,16–3,18 m), mà cây thì chiều cao bị kẹp tối thiểu 2,5 m, nên với bia hạ ngưỡng này xuống 0,8 m để
+đám lửa không to gấp mấy lần tấm bia. Bia và nhà dùng chung trần "tối đa 4 vật cháy cùng lúc" với cây, để máy
+điện thoại không bị quá tải hạt lửa.
+
+**Số đo** (menu 81 mới — **0 lỗi**; menu 18d cây cháy phép thật — **0 lỗi**):
+
+| Đo | Kết quả |
+|---|---|
+| Nhận diện | 452/452 bia, 5/5 nhà "cháy được"; 40 + 2 kiểu lưới đều có bộ điểm 340 điểm; **đối chứng đá**: 0/229 cháy được, 0 bộ điểm |
+| Tung Thiên thạch thật vào bia `TS_round_0` | bắt lửa, 340 điểm mồi, cháy 4,7 s, lửa lan 100%, độ sáng 0,697 → 0,162 (**×0,23**), mất hình + tắt va chạm, 30 s sau mọc lại đúng 0,697 |
+| Tung vào nhà mồ `MAUS_A_001_682` | như trên: đen ×0,23, biến mất, mọc lại nguyên màu |
+| Cùng lúc | nhiều nhất 3 vật cháy (trần 4); vật không phải cây / bia / nhà bị đốt: 0 |
+
+Ảnh: `PlayTestShots/thienthach_bia_1_BiaMo.png`, `thienthach_bia_2_NhaMo.png`.
+
+### Tầm Giựt sét bằng Sấm sét, Quỷ cây đánh xa hơn, Thiên thạch rơi dồn hơn (25/09/2026)
+
+Anh xin ba việc. Tôi gửi số hiện tại và hỏi lại trước khi làm:
+- Thiên thạch: khoảng chờ giữa hai quả là 0,7 giây, **anh chọn 0,35 giây**.
+- Giựt sét 20 m, Sấm sét 12 m: "bằng nhau" theo hướng nào, **anh chọn Giựt sét giảm còn 12 m**.
+- Tia của Quỷ cây vốn đã cùng kiểu Giựt sét từ lần vẽ lại, **anh chọn giữ màu xanh lá**.
+
+**Quỷ cây đánh xa thêm 20%.** Nó dừng lại phóng sét ở 9,6 m (trước 8 m), tia bay tới 12 m (trước 10 m, thêm trường
+`EnemyAI.tamTiaSet`). Chỗ dễ sai: Quỷ cây trong game sinh ra từ **prefab `Enemy_QuyCay`** do AssetBaker nướng, và prefab
+ghi sẵn `attackRange: 8`. Chỉ sửa trong `EnemyFactory` thì con quái thật vẫn đánh ở 8 m (đúng cái bẫy "prefab đè giá trị
+code"). Nên phải sửa cả prefab, và phép thử sinh **Quỷ cây thật từ kho quái** chứ không dựng tay.
+
+**Số đo** (menu 69 và menu 62 — **0 lỗi**):
+
+| Đo | Kết quả |
+|---|---|
+| Tầm Giựt sét | 12 m, bằng `boltRange` của Sấm sét đọc từ nhân vật; bia mặt ở 11,9 m trúng, mặt ở 12,4 m không trúng |
+| Bắn 4 tia / tia lan / choáng | vẫn 4 tia × 75, tia lan 64, choáng 14,2% / 12,8% (160 lần) — các bia xếp lại trong tầm 12 m |
+| Quỷ cây thật | tầm đánh 9,60, tầm tia 12,00; tự đi tới rồi dừng phóng ở **9,53 m**; tia màu xanh lá, dùng ảnh Giựt sét, sống 0,6 s |
+| Thiên thạch cấp 5 | 5 quả chạm đất cách nhau 0,38 · 0,34 · 0,29 · 0,40 → trung bình **0,354 s**; cả loạt 1,42 s (trước 2,8 s) |
+
+Ảnh: `PlayTestShots/giatset_7_quy_cay.png`.
+
+### Sách phép: bình có sẵn và nâng cấp, quả cầu xuyên bia, băng dập lò, bị động Tốc độ (25/09/2026)
+
+Anh xin bốn việc. Tôi hỏi lại ba chỗ, anh chọn: bình **tối đa cấp 3**; **Lửa địa ngục cũng va vào lò** (một luật
+chung cho cả ba kỹ năng bay); icon Tốc độ **làm bằng script** như bốn icon Kháng.
+
+**1. Bình máu / Bình mana có sẵn cấp 1.** Vào trận là cả hai đã ở cấp 1, không tốn điểm. Mỗi lần nâng cấp tốn
+1 điểm: bình máu hồi thêm 75 (200 → 275 → 350), bình mana thêm 45 (75 → 120 → 165). Sách phép ghi "Cấp 2/3 · còn N
+bình" ở góc hàng, và nút ở dưới giờ là "NÂNG LÊN CẤP 3". Có một chỗ phải rút gọn: dòng tóm tắt cũ "Uống một bình,
+hồi tối đa 75 năng lượng" đè lên nhãn góc (nay dài hơn trước), nên đổi thành "Hồi tối đa 75 năng lượng".
+
+**2. Quả cầu lửa, Quả cầu băng bay xuyên bia mộ.** Dùng lại đúng luật "vật nhỏ" của Lửa địa ngục (cao < 4 m và
+ngang < 4 m). Có một điểm vướng: **lò lửa cao 2,33 m**, nên theo kích thước nó là vật nhỏ, và Lửa địa ngục vẫn bay
+xuyên lò từ trước tới giờ. Nay mọi thứ có `LoLuaDa` đều chặn. Đoạn tìm vật chặn đường gom thành
+`Fireball.VatCanChan`, dùng chung cho cả ba kỹ năng. Quả cầu lửa **của quái** không xuyên: chỉ đường tung của
+người chơi bật cờ.
+
+**3. Quả cầu băng, Mưa băng dập lửa lò.** Lò nằm trong vùng nổ của Quả cầu băng, hoặc trong vùng sát thương của tảng
+băng rơi, thì bị dập như khi Gió lốc lướt qua, 30 giây sau cháy lại.
+
+**4. Bị động mới "Tốc độ di chuyển"** (số hiệu 20, thêm ở cuối). Mở khoá cộng 10% **tốc độ gốc**, tức tốc độ lúc
+vào trận, chưa tính phần tăng khi lên cấp nhân vật. Mỗi cấp sau cộng thêm 2,5%, cấp 5 là 20%. Có một cái bẫy
+suýt dính: định chỉ cộng cho "nhân vật tự đọc phím" (`tuDocInput`), nhưng phép thử bơm input lại tắt đúng cờ ấy, nên
+sẽ đo trúng một nhân vật không bao giờ được cộng. Nay điều kiện là "không phải bản sao của máy khác".
+
+**Số đo** (menu 80 mới — **0 lỗi**; menu 65, 72, 68, 77, 66, 59, 60, 70 chạy lại cũng **0 lỗi**, sau khi sửa các
+phép kiểm còn theo luật cũ: "đầu trận không kỹ năng nào mở", "nhóm Bị động có 4", "20 icon", "lò phải xuyên hết"):
+
+| Đo | Kết quả | Đối chứng |
+|---|---|---|
+| Tốc độ, bơm input đi thẳng cùng một đoạn | cấp 0: 5,200 m/s · cấp 1: 5,720 (**×1,100**) · cấp 5: 6,214 (**×1,195**) | cấp 0 |
+| Bấm kỹ năng bị động | không niệm, năng lượng 250 → 250 | — |
+| Bình | đầu trận cấp 1/3, vẫn còn 1 điểm; uống hồi 200; nâng lên 3, lên 4 bị từ chối; cấp 3 hồi **350**, mana cấp 2 hồi **120** | — |
+| Đường tung thật | Quả cầu lửa và Quả cầu băng đều bật cờ xuyên | quả cầu lửa của quái: không |
+| Bắn vào bia 3 m | cả hai loại bay qua, đi 22 m | không bật cờ: nổ ở 8,4 m |
+| Bắn vào cây 8 m / lò lửa | nổ ở 8,3 / 8,4 m (vật cách 9 m) | — |
+| 10 lò thật trong Act2 | 0/10 collider bị coi là vật nhỏ | — |
+| Quả cầu băng nổ cạnh lò | lò tắt | nổ cách lò khác 6 m: vẫn cháy |
+| Tảng băng Mưa băng rơi cạnh lò | lò tắt | rơi cách lò khác 5 m: vẫn cháy |
+| 31,5 giây sau | hai lò cháy lại | — |
+
+Ảnh: `PlayTestShots/bonviec_1_binh_mau.png`, `bonviec_2_toc_do.png`.
+
 ### Act2: vòng đêm 4 phút → ngày 2 phút → chiều 2 phút, lặp tới hết trận (25/09/2026)
 
 Anh xin: vừa vào game là **ban đêm 4 phút**, rồi **ban ngày 2 phút**, rồi **buổi chiều 2 phút**, rồi lặp lại như

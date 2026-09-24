@@ -12,7 +12,8 @@ using UnityEngine;
 /// Nguoi dung xin (13/09/2026):
 ///   - Chu cot trai Sach phep to them 15%, chu phan chi tiet to them 20%; hai vung
 ///     cuon len xuong duoc.
-///   - Them hai ky nang Binh mau / Binh mana: mo khoa 1 diem, cap toi da 1; chi dung
+///   - Them hai ky nang Binh mau / Binh mana (25/09/2026: CO SAN cap 1, nang toi cap 3, +75 mau / +45 mana
+///     moi cap - truoc do mo khoa 1 diem, cap toi da 1); chi dung
 ///     khi da nhat binh; giet quai 10% ra binh mau, 10% ra binh mana; toi gan thi binh
 ///     tu bay vao nguoi; so binh hien tren o ky nang; 1 binh hoi toi da MauMoiBinh mau / ManaMoiBinh
 ///     nang luong; cho 0,5 giay. Choi nhieu nguoi binh la CUA CHUNG ca phong.
@@ -20,8 +21,8 @@ using UnityEngine;
 /// Do bang SO:
 ///   A. Ti le roi (3000 lan gieo) + quai that chet thi binh roi dung cho quai chet.
 ///   B. Nhat mot minh: ngoai ban kinh khong bay, trong ban kinh bay vao, so binh +1.
-///   C. Uong: khoa / het binh / day / hoi chieu / hoi DUNG BANG HANG (PlayerController.MauMoiBinh,
-///      ManaMoiBinh - 19/09/2026 nguoi dung doi thanh 200 / 75) / thieu it hoi dung phan thieu.
+///   C. Uong: co san cap 1 khong ton diem / nang cap toi 3 (cap 4 tu choi) / het binh / day / hoi chieu /
+///      hoi DUNG BANG HANG (PlayerController.MauBinhTheoCap, ManaBinhTheoCap) / thieu it hoi dung phan thieu.
 ///   D. So binh tren o: anh chup o binh DOI khi so binh doi, o doi chung khong doi.
 ///   E. Chu to (do be ngang net chu tren anh chup so voi chu doi chung ve o co cu /
 ///      co moi) va cuon phan than chi tiet (than doi, dau muc dung yen).
@@ -251,22 +252,39 @@ public static class ThuBinhMauMana
         Ghi("C. uong binh");
         // ⚠️ Doc thang tu HANG, khong chep tay con so: 19/09/2026 nguoi dung doi binh mau 100 -> 200
         // va binh mana 50 -> 75, phep thu chep tay se bao loi oan.
-        float motBinhMau = PlayerController.MauMoiBinh;
-        float motBinhMana = PlayerController.ManaMoiBinh;
+        // 25/09/2026 nguoi dung: binh CO SAN CAP 1 (khong mo khoa), nang toi cap 3, moi cap +75 mau / +45 mana.
         float max = mau.maxHealth;
-        mau.health = max - (motBinhMau + 50f);         // thieu HON mot binh de uong khong bi kep
+        int diemDau = CapDo.DiemKyNang;
+        float binhCap1 = PlayerController.MauBinhTheoCap(1);
+        mau.health = max - (binhCap1 + 50f);
         float hoi = pc.UongBinh(CapDo.KyBinhMau);
-        Ghi("C1. CHUA MO KHOA, co 1 binh: hoi " + hoi + ", con " + CapDo.SoBinhMau + " binh");
-        Kiem(hoi == 0f && CapDo.SoBinhMau == 1, "chua mo khoa ma van uong duoc binh");
+        Ghi(string.Format("C1. vua vao tran: binh mau cap {0}/{1}, binh mana cap {2}/{3}, diem ky nang {4} (khong ton diem nao); uong 1 binh (thieu {5}): hoi {6}, con {7} binh",
+            CapDo.CapCuaKyNang(CapDo.KyBinhMau), CapDo.CapToiDaCua(CapDo.KyBinhMau), CapDo.CapCuaKyNang(CapDo.KyBinhMana),
+            CapDo.CapToiDaCua(CapDo.KyBinhMana), diemDau, binhCap1 + 50f, hoi, CapDo.SoBinhMau));
+        Kiem(CapDo.CapCuaKyNang(CapDo.KyBinhMau) == 1 && CapDo.CapCuaKyNang(CapDo.KyBinhMana) == 1, "vao tran ma binh chua o cap 1");
+        Kiem(diemDau == 1, "binh co san ma van tru diem ky nang (dau tran phai con 1 diem)");
+        Kiem(Mathf.Abs(hoi - 200f) < 0.01f && CapDo.SoBinhMau == 0, "binh cap 1 khong uong duoc / khong hoi dung 200");
+        yield return new WaitForSeconds(0.6f);
 
-        CapDo.Them(100 + 135);                     // cap 3 = 3 diem
-        CapDo.MoCaDuongChoPhepThu(CapDo.KyBinhMau); CapDo.MoCaDuongChoPhepThu(CapDo.KyBinhMana);
-        bool nangDuoc = CapDo.NangCapDuoc(CapDo.KyBinhMau);
-        Ghi("C2. mo khoa: cap binh mau " + CapDo.CapCuaKyNang(CapDo.KyBinhMau) + "/" + CapDo.CapToiDaCua(CapDo.KyBinhMau)
-            + ", con " + CapDo.DiemKyNang + " diem, nang cap tiep duoc = " + nangDuoc);
-        Kiem(CapDo.DaMo(CapDo.KyBinhMau) && !nangDuoc, "binh mau phai mo khoa duoc va KHONG nang cap duoc (cap toi da 1)");
+        // Nang cap: 3 diem - binh mau len cap 3, binh mana len cap 2
+        CapDo.Them(100 + 135);                     // cap 3 -> co 3 diem
+        bool len2 = CapDo.NangCap(CapDo.KyBinhMau), len3 = CapDo.NangCap(CapDo.KyBinhMau);
+        bool len4 = CapDo.NangCapDuoc(CapDo.KyBinhMau);
+        bool mana2 = CapDo.NangCap(CapDo.KyBinhMana);
+        Ghi(string.Format("C2. nang cap: binh mau -> cap 2 {0}, cap 3 {1}, cap 4 {2} (phai False); binh mana -> cap 2 {3}; binh mau cap 3 hoi {4}, binh mana cap 2 hoi {5}",
+            len2, len3, len4, mana2, PlayerController.MauBinhTheoCap(3), PlayerController.ManaBinhTheoCap(2)));
+        Kiem(len2 && len3 && !len4 && CapDo.CapCuaKyNang(CapDo.KyBinhMau) == 3, "binh mau khong nang duoc toi dung cap 3");
+        Kiem(mana2 && CapDo.CapCuaKyNang(CapDo.KyBinhMana) == 2, "binh mana khong nang cap duoc");
+        Kiem(Mathf.Abs(PlayerController.MauBinhTheoCap(3) - 350f) < 0.01f && Mathf.Abs(PlayerController.ManaBinhTheoCap(2) - 120f) < 0.01f,
+             "cong thuc binh theo cap khong phai +75 mau / +45 mana moi cap");
 
-        CapDo.ThemBinh(CapDo.KyBinhMau); CapDo.ThemBinh(CapDo.KyBinhMau);      // 3 binh
+        // Tu day do voi binh DA NANG: mau cap 3, mana cap 2
+        float motBinhMau = PlayerController.MauBinhTheoCap(CapDo.CapCuaKyNang(CapDo.KyBinhMau));
+        float motBinhMana = PlayerController.ManaBinhTheoCap(CapDo.CapCuaKyNang(CapDo.KyBinhMana));
+        max = mau.maxHealth;                       // len cap lam tran mau tang
+        mau.health = max - (motBinhMau + 50f);
+
+        CapDo.ThemBinh(CapDo.KyBinhMau); CapDo.ThemBinh(CapDo.KyBinhMau); CapDo.ThemBinh(CapDo.KyBinhMau);      // 3 binh
         float truoc = mau.health;
         hoi = pc.UongBinh(CapDo.KyBinhMau);
         Ghi("C3. thieu " + (motBinhMau + 50f) + " mau: hoi " + hoi + " (mau " + truoc + " -> " + mau.health + "), con " + CapDo.SoBinhMau + " binh");

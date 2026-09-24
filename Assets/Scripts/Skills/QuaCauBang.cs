@@ -52,6 +52,15 @@ public class QuaCauBang : MonoBehaviour
 
     public float impactDamage = SatThuongGoc;
     public float blastRadius = BanKinhNo;
+
+    /// <summary>
+    /// Bay XUYEN vat nho (bia mo, da) - nguoi dung 25/09/2026, giong Qua cau lua; nha, cay, lo lua van chan
+    /// (Fireball.LaVatNho). Chi ky nang nguoi choi tung ra qua cau bang nen mac dinh BAT.
+    /// </summary>
+    public bool xuyenVatNho = true;
+
+    /// <summary>Dem cho phep thu: so lo lua qua cau bang da dap tat.</summary>
+    public static int SoLoDapTat;
     public float giayCham = GiayCham;
     public float giayDongBang = GiayDongBang;
     public LayerMask hitMask;
@@ -124,12 +133,7 @@ public class QuaCauBang : MonoBehaviour
         float ganNhat = float.MaxValue;
         Vector3 choNo = Vector3.zero;
 
-        RaycastHit hit;
-        if (Physics.SphereCast(from, bodyRadius, dir, out hit, step + 0.05f, hitMask, QueryTriggerInteraction.Collide))
-        {
-            ganNhat = hit.distance;
-            choNo = hit.point - dir * bodyRadius * 0.5f;
-        }
+        Fireball.VatCanChan(from, bodyRadius, dir, step + 0.05f, hitMask, xuyenVatNho, ref ganNhat, ref choNo);
 
         float denVom;
         if (Khieng.DanChamVom(from, dir, step + 0.05f, bodyRadius, damageMask, boQua, out denVom) && denVom < ganNhat)
@@ -173,6 +177,8 @@ public class QuaCauBang : MonoBehaviour
         if (capKyNang >= TangBangNo.CapNo) TangBangNo.Gan(tangBang, damageMask, boQua);
         NoBang(transform.position, blastRadius, impactDamage, damageMask, giayCham, giayDongBang, boQua);
         Khieng.NoTrungKhieng(transform.position, blastRadius, impactDamage, damageMask, boQua);
+        // Trung LO LUA thi dap tat lua nhu Gio loc (nguoi dung 25/09/2026) - lo nam trong vung no
+        SoLoDapTat += LoLuaDa.DapTatTrongVung(transform.position, blastRadius, GioLoc.GiayLoChayLai);
 
         CameraShake.Shake(0.2f, 0.12f);
         Destroy(gameObject);

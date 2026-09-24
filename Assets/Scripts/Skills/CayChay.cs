@@ -2,7 +2,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// MOT CAI CAY BI THIEN THACH DOT CHAY.
+/// MOT CAI CAY BI THIEN THACH DOT CHAY - va tu 25/09/2026 ca BIA MO, NHA MO cua Act2 (nguoi dung: "them vao kha nang
+/// dot chay moi thu nhu dot chay cay, hieu ung giong y chang" - chon bia mo + nha mo, chay rui roi moc lai y het cay).
+/// Nhan ra bang NHOM CHA (<see cref="LaBiaNha"/>); diem moi lua nuong san nhu cay (menu 20).
 ///
 /// Thien thach roi trung thi cay bat lua o goc, roi lua LAN DAN ra khap cay -
 /// than, canh lon, canh nho, chum la - cho toi khi khong con bo phan nao chua
@@ -201,6 +203,24 @@ public class CayChay : MonoBehaviour
         return false;
     }
 
+    /// <summary>Ten nhom cha cua bia mo / nha mo trong Act2 (map_luoi.fbx) - menu 72 cung phan loai theo nhom nay.</summary>
+    public const string NhomBiaMo = "BiaMo", NhomNhaMo = "NhaMo";
+
+    /// <summary>
+    /// Vat nay co phai mot BIA MO / NHA MO cua Act2 khong (nguoi dung 25/09/2026: Thien thach dot chay ca hai).
+    /// Theo NHOM CHA chu khong theo ten: 452 bia ten "TS_round_0", "TS_shoulder_12"... gom 40 kieu luoi khac nhau,
+    /// con nhom cha thi chi co mot ten. Chi con TRUC TIEP cua nhom - khong phai chinh cai nhom.
+    /// </summary>
+    public static bool LaBiaNha(GameObject go)
+    {
+        if (go == null || go.transform.parent == null) return false;
+        string cha = go.transform.parent.name;
+        return cha == NhomBiaMo || cha == NhomNhaMo;
+    }
+
+    /// <summary>Cay, bia mo hay nha mo - moi thu Thien thach dot chay duoc.</summary>
+    public static bool ChayDuoc(GameObject go) { return LaCay(go) || LaBiaNha(go); }
+
     static bool LaSo(string s, int tu)
     {
         if (s.Length <= tu) return false;
@@ -220,7 +240,7 @@ public class CayChay : MonoBehaviour
     {
         while (t != null)
         {
-            if (LaCay(t.gameObject)) return t;
+            if (ChayDuoc(t.gameObject)) return t;
             t = t.parent;
         }
         return null;
@@ -258,7 +278,7 @@ public class CayChay : MonoBehaviour
     public static CayChay Dot(GameObject cay, LayerMask damageMask, float satThuongMoiGiay,
                               Damageable keDot = null)
     {
-        if (cay == null || !LaCay(cay)) return null;
+        if (cay == null || !ChayDuoc(cay)) return null;
         if (cay.GetComponent<CayChay>() != null) return null;          // dang chay roi
         if (cay.GetComponent<VatTheBiCuon>() != null) return null;     // dang bi loc cuon
         if (dangChay >= ToiDaCungLuc) return null;
@@ -405,7 +425,8 @@ public class CayChay : MonoBehaviour
         GetComponentsInChildren(true, vaCham);
 
         var bao = KhoiBao();
-        cao = Mathf.Clamp(bao.size.y, 2.5f, 20f);
+        // Bia mo thap (0,16 - 3,18 m): kep toi thieu 2,5 m nhu cay thi dam lua va tan lua to gap may lan tam bia
+        cao = Mathf.Clamp(bao.size.y, LaBiaNha(gameObject) ? 0.8f : 2.5f, 20f);
         chanCay = new Vector3(bao.center.x, bao.min.y, bao.center.z);
 
         // Hai ban kinh khac nhau, va phai khac nhau:
