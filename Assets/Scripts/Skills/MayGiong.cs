@@ -47,6 +47,7 @@ public class MayGiong : MonoBehaviour
     int daDanh;
     float dongHo, nhipNgang;
     GameObject hinh;
+    LoeSangMay roiSang;
 
     static readonly Collider[] bo = new Collider[64];
     readonly List<Damageable> ds = new List<Damageable>();
@@ -70,6 +71,7 @@ public class MayGiong : MonoBehaviour
     void Start()
     {
         hinh = VfxFactory.MayGiongHinh(transform.position, BanKinh, CaoMay, GiayTuMay + ThoiGian + 0.3f);
+        roiSang = hinh != null ? hinh.GetComponent<LoeSangMay>() : null;
         CameraShake.Shake(0.2f, 0.05f);
         nhipNgang = 0.2f;
     }
@@ -112,6 +114,9 @@ public class MayGiong : MonoBehaviour
         Vector2 lech = Random.insideUnitCircle * (BanKinh * 0.45f);
         Vector3 tu = transform.position + new Vector3(lech.x, CaoMay, lech.y);
         VfxFactory.TiaMayGiong(tu, cho, muc != null ? muc.transform : null);
+        // May giong DEN (nguoi dung 25/09/2026 toi): set roi sang MANG may cho tia phat ra + ca dam loe nhe
+        VfxFactory.MangSangTrongMay(tu + Vector3.up * 0.6f);
+        if (roiSang != null) roiSang.Chop(Random.Range(0.75f, 1f));
         SoTiaDaDanh++;
 
         ds.Clear();

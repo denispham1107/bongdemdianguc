@@ -8603,6 +8603,33 @@ châm cả bia mộ / nhà mồ (tính năng sáng nay), đầy trần "4 vật 
 
 Ảnh: `PlayTestShots/maygiong_1_dem_can.png`, `maygiong_2_chay_den.png`, `maygiong_3_ngay_goc_choi.png`.
 
+### Mây giông đen thật, sét rọi sáng từng mảng; quầng sát đất to hơn (25/09/2026, khuya)
+
+Anh chơi thử trên điện thoại rồi xin: quầng mây sát đất **to thêm 15%, dày thêm 10%**, và **toàn bộ mây tối đen hơn cho giống
+mây giông thật**. Anh chọn "dày" là **cả đặc hơn lẫn cao hơn**, và độ tối "**xám đen, sét rọi sáng**".
+
+**Màu.** Mọi lớp mây (mây trên cao hai tầng, cột khói, khói cuộn, quầng sát đất, cụm mây thấp) nhân màu cũ với **0,26**
+(`HeSoToiMay`); shader hạt là ảnh × màu, nên độ sáng hiện ra giảm đúng chừng ấy. Tầng xám dưới đáy mây vốn tối hơn nên vẫn tối hơn đỉnh.
+
+**Sét rọi sáng.** Bản đầu em cho cả đám mây sáng bừng ×2,8 mỗi tia và mỗi tia ngang, tắt trong 0,22 s — nhưng 4 tia/giây cộng tia
+ngang thì mây sáng gần như liên tục, mất cái tối vừa làm. Đổi lại cho đúng ý "rọi sáng **từng mảng**": mỗi tia bật một **mảng sáng**
+(2 đám mây Blender cộng sáng, 3,5–5,5 m, 0,18–0,28 s) ngay chỗ tia phát ra; cả đám chỉ loé nhẹ ×1,8 và tắt trong 0,15 s. Loé ngẫu
+nhiên trong mây trước dùng ảnh ngôi sao (hợp với mây trắng) — trên mây đen nó thành những ngôi sao lấp lánh, nên đổi sang ảnh
+đám mây cộng sáng màu xanh.
+
+**Quầng sát đất.** Cỡ đám và vùng rải ×1,15, độ đặc ×1,10, cụm mây thấp to và cao ×1,10.
+
+| Đo (menu 83, 0 lỗi) | Kết quả |
+|---|---|
+| Độ sáng 6 lớp mây so với màu cũ | cả 6 lớp ×0,26; đáy mây 0,138 < đỉnh 0,254 |
+| Sét rọi sáng | loé cả đám cao nhất ×1,77; **48%** khung hình mây ở đúng màu tối gốc; 8 tia → 8 mảng sáng |
+| Quầng sát đất so với bản trước | cỡ ×1,150, rải ×1,150, cụm thấp rải ×1,150 · đặc ×1,100 · cụm thấp cỡ/cao ×1,100 |
+| Quầng lan xa | **3,45 m** (bản trước 3,13) |
+| Các mục cũ | 20 tia · 0,249 s/tia · bội số 125 · hất ngã 47,3% · cột chạm đất — không đổi |
+
+⚠️ Ban đêm mây xám đen lẫn nhiều vào nền tối (`maygiong_4_dem_goc_choi.png`): thấy chủ yếu nhờ tia và mảng sáng. Ban ngày
+cột mây đen nổi rõ (`maygiong_3_ngay_goc_choi.png`).
+
 ### Mây giông: tia xanh sẫm hơn, quầng mây mỏng sát đất (25/09/2026, tối)
 
 Anh gửi lại ảnh mẫu, xin **tia xanh dương đậm hơn** và **một quầng mây mỏng trên mặt đất** như dưới chân cột trong ảnh. Anh

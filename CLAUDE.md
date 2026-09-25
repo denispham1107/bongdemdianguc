@@ -188,7 +188,11 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
   thấy được từ đâu. **Lần ba (ảnh thứ ba)**: quầng tia **XANH SẪM HƠN** `VfxFactory.MauQuangMayGiong` (0,05 0,16 1), viền + hào quang
   dày ×1,2 (`LightningArc.heSoVien` — trường MỚI mỗi tia, mặc định `HeSoVienXanh` 1,10; Giựt sét / Quả cầu điện không đổi), lõi
   vẫn trắng; và **quầng mây mỏng sát đất** quanh chân cột ~3 m (ảnh Blender `SuongDat.png` 2×2, 5 đám nằm phẳng
-  HorizontalBillboard ở 0,3 m + 6 cụm mây thấp). Menu 83 kiểm; menu 61 có thêm Mây giông.
+  HorizontalBillboard ở 0,3 m + 6 cụm mây thấp). **Lần bốn (tối 25/09)**: quầng sát đất **rộng ×1,15** (lan ~3,45 m), **đặc + cao
+  ×1,10**; **toàn bộ mây XÁM ĐEN** (`VfxFactory.HeSoToiMay` 0,26 × màu cũ, đáy mây tối hơn đỉnh) — **sét rọi sáng TỪNG MẢNG**:
+  mỗi tia bật `VfxFactory.MangSangTrongMay` (2 đám mây Blender cộng sáng ở chỗ tia phát ra) và cả đám loé nhẹ ×1,8 trong 0,15 s
+  (`Vfx/LoeSangMay.cs`, MaterialPropertyBlock, không tạo vật liệu); loé trong mây đổi từ ảnh sao sang ảnh mây. ⚠️ Loé cả đám mạnh
+  (×2,8, 0,22 s, cả tia ngang) giữ mây sáng gần hết thời gian — bỏ. Menu 83 kiểm; menu 61 có thêm Mây giông.
 - **BỊ ĐỘNG TỐC ĐỘ DI CHUYỂN** (`CapDo.KyTocDo` = 20, 25/09/2026): mở khoá **+10% TỐC ĐỘ GỐC** (`PlayerController.TocGoc` = moveSpeed
   lúc Awake, trước mọi lần tăng theo cấp nhân vật), mỗi cấp +2,5% (`CapDo.TocThemTheoCap`, cấp 5 = +20%), CỘNG vào tốc độ đang có:
   `(moveSpeed + TocGoc × TocThemBiDong) × lội nước × băng × tàng hình`. Chỉ nhân vật của máy này — điều kiện là `!mauDoMayKhacQuyet`,
