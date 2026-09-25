@@ -57,7 +57,7 @@ public static class SachPhep
         new[] { 0, 4, CapDo.KyLuaDiaNguc },                       // Qua cau lua, Thien thach, Lua dia nguc
         new[] { CapDo.KyQuaCauBang, 1, CapDo.KyTangHinh },        // Qua cau bang, Mua bang, Tang hinh
         new[] { 6, 2, CapDo.KyCauDien },                          // Giut set, Sam set, Qua cau dien
-        new[] { CapDo.KyGioLoc, 3, CapDo.KyHoaLocXoay },          // Gio loc, Loc xoay, Hoa loc xoay
+        new[] { CapDo.KyGioLoc, 3, CapDo.KyHoaLocXoay, CapDo.KyMayGiong },          // Gio loc, Loc xoay, Hoa loc xoay
         new[] { CapDo.KyBinhMau, CapDo.KyBinhMana, 5, CapDo.KyTocBien },   // Binh mau, Binh mana, Khien, Toc bien
         // NHOM BI DONG (nguoi dung 19/09/2026): khong bam duoc, khong keo vao o - mo khoa / nang cap
         // la cong vinh vien vao thuoc tinh nhan vat.
@@ -322,6 +322,7 @@ public static class SachPhep
             case CapDo.KyKhangSet: return "KHÁNG SÉT";
             case CapDo.KyKhangPhong: return "KHÁNG PHONG";
             case CapDo.KyTocDo: return "TỐC ĐỘ DI CHUYỂN";
+            case CapDo.KyMayGiong: return "MÂY GIÔNG";
             default: return "";
         }
     }
@@ -353,6 +354,7 @@ public static class SachPhep
             case CapDo.KyKhangSet: return "Bị động — chịu ít sát thương hệ Sét";
             case CapDo.KyKhangPhong: return "Bị động — chịu ít sát thương hệ Phong";
             case CapDo.KyTocDo: return "Bị động — chạy nhanh hơn";
+            case CapDo.KyMayGiong: return "20 tia sét trong 5 giây, 45% hất ngã";
             default: return "";
         }
     }
@@ -535,6 +537,12 @@ public static class SachPhep
                      + "BỊ ĐỘNG: không bấm, không đặt vào ô kỹ năng — mở khoá là có tác dụng ngay và giữ suốt trận.\n\n"
                      + "Mở khoá giảm 25%, mỗi cấp sau giảm thêm 5% — lên cấp 5 là giảm 45%.\n\n"
                      + "Chỉ chặn đòn của NGƯỜI CHƠI KHÁC. Đòn của quái vật không bị giảm.";
+            case CapDo.KyMayGiong:
+                return "Gọi một đám MÂY GIÔNG xuống đúng chỗ bạn chọn (tầm bằng Sấm sét). Trong 5 giây, 20 tia sét "
+                     + "liên tục giáng xuống vùng mây rộng 6 m — tia sét ưu tiên đánh vào kẻ địch đứng trong vùng.\n\n"
+                     + "Mỗi tia gây 125 sát thương cho mọi kẻ địch trong 2 m quanh chỗ đánh, 45% khả năng HẤT NGÃ "
+                     + "trong 0,85 giây, và làm kẻ bị trúng CHÁY ĐEN toàn thân trong 3 giây (chỉ là hiệu ứng).\n\n"
+                     + "Tia sét của Mây giông thuộc hệ PHONG: Kháng Phong giảm sát thương này.";
             case CapDo.KyTocDo:
                 return "Đôi chân bạn nhẹ hẳn đi. Nhân vật chạy NHANH HƠN suốt trận.\n\n"
                      + "BỊ ĐỘNG: không bấm, không đặt vào ô kỹ năng — mở khoá là có tác dụng ngay và giữ suốt trận.\n\n"
@@ -588,6 +596,7 @@ public static class SachPhep
             case CapDo.KyHoaLocXoay: nangLuong = pc.hoaLocXoayCost; hoiChieu = pc.hoaLocXoayCooldown; niemChu = pc.hoaLocXoayCastTime; break;
             // Hoi chieu Toc bien GIAM theo cap - doc hoi chieu HIEN TAI chu khong phai truong cap 1
             case CapDo.KyTocBien: nangLuong = pc.tocBienCost; hoiChieu = pc.HoiChieuTocBien; niemChu = pc.tocBienCastTime; break;
+            case CapDo.KyMayGiong: nangLuong = pc.mayGiongCost; hoiChieu = pc.mayGiongCooldown; niemChu = pc.mayGiongCastTime; break;
         }
     }
 }

@@ -46,6 +46,8 @@ public static class IconKyNang
     public static Texture2D LuaDiaNguc() { return Ve("Icons/LuaDiaNguc", new Color(0.24f, 0.02f, 0.02f)); }
     // Tang hinh: dung trong Blender qua MCP (CongCu/Blender/tang_hinh.blend, 18/09/2026), nen xanh lo toi
     public static Texture2D TangHinh()   { return Ve("Icons/TangHinh",   new Color(0.03f, 0.13f, 0.16f)); }
+    /// <summary>May giong (25/09/2026): may + tia set, render bang Blender MCP (CongCu/Blender/may_giong.blend).</summary>
+    public static Texture2D MayGiong()   { return Ve("Icons/MayGiong",   new Color(0.05f, 0.08f, 0.16f)); }
     public static Texture2D CauDien()    { return Ve("Icons/CauDien",    new Color(0.02f, 0.08f, 0.20f)); }
     public static Texture2D HoaLocXoay() { return Ve("Icons/HoaLocXoay", new Color(0.10f, 0.09f, 0.07f)); }
     public static Texture2D TocBien()    { return Ve("Icons/TocBien",    new Color(0.09f, 0.04f, 0.15f)); }
@@ -91,6 +93,7 @@ public static class IconKyNang
         bo[CapDo.KyKhangSet]   = KhangSet();
         bo[CapDo.KyKhangPhong] = KhangPhong();
         bo[CapDo.KyTocDo]      = TocDo();
+        bo[CapDo.KyMayGiong]   = MayGiong();
         return bo;
     }
 

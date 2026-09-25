@@ -169,7 +169,8 @@ public static class ThuKinhNghiemKyNang
     // coroutine nem IndexOutOfRange, CHET GIUA CHUNG va Play mode ket lai mai (18/09/2026 dinh dung cai nay).
     static readonly string[] TenKyNang = { "Qua cau lua", "Mua bang", "Sam set", "Loc xoay", "Thien thach", "Khien", "Giut set",
                                             "Binh mau", "Binh mana", "Qua cau bang", "Gio loc", "Lua dia nguc",
-                                            "Tang hinh", "Qua cau dien", "Hoa loc xoay" };
+                                            "Tang hinh", "Qua cau dien", "Hoa loc xoay", "Toc bien", "Khang lua", "Khang bang",
+                                            "Khang set", "Khang phong", "Toc do", "May giong" };
     // Hoa loc xoay (14) KHONG nam trong danh sach thu o duoi: no can mot con Gio loc DANG BAY moi tung duoc,
     // tung le mot minh thi CastAt tu choi. Duong sat thuong cua no la Tornado (so 3) - da co trong danh sach.
 
@@ -198,10 +199,12 @@ public static class ThuKinhNghiemKyNang
         // ⚠️ Them ky nang vao danh sach thu ma quen cap them diem thi MoKhoa that bai,
         // CastAt tu choi im lang va muc do bao "phep khong giet duoc quai" - bao oan.
         CapDo.Them(CapDo.CanDeLenCap(CapDo.Cap));
-        foreach (int k in new[] { 0, 1, 2, 3, 4, 6, 9, 10, 11, 13 }) CapDo.MoCaDuongChoPhepThu(k);
+        // 21 = May giong (25/09/2026) - them mot cap nua cho diem thu MUOI MOT
+        CapDo.Them(CapDo.CanDeLenCap(CapDo.Cap));
+        foreach (int k in new[] { 0, 1, 2, 3, 4, 6, 9, 10, 11, 13, CapDo.KyMayGiong }) CapDo.MoCaDuongChoPhepThu(k);
         Ghi("chuan bi: cap " + CapDo.Cap + ", mo khoa " + CapDo.DaMo(0) + CapDo.DaMo(1) + CapDo.DaMo(2)
             + CapDo.DaMo(3) + CapDo.DaMo(4) + CapDo.DaMo(6) + CapDo.DaMo(9) + CapDo.DaMo(10) + CapDo.DaMo(11)
-            + CapDo.DaMo(CapDo.KyCauDien));
+            + CapDo.DaMo(CapDo.KyCauDien) + CapDo.DaMo(CapDo.KyMayGiong));
 
         // Moi con quai dang co: tat nao, don ra xa - khong de chung chen vao phep do
         if (QuaiSong().Count < 8) { dir.SinhDotQuanhNguoi(); yield return new WaitForSeconds(1f); }
@@ -219,7 +222,7 @@ public static class ThuKinhNghiemKyNang
         Ghi("A. tung tung ky nang that vao mot con quai mau 1");
 
         int dung = 0;
-        foreach (int k in new[] { 0, 1, 2, 3, 4, 6, 9, 10, 11, 13 })
+        foreach (int k in new[] { 0, 1, 2, 3, 4, 6, 9, 10, 11, 13, CapDo.KyMayGiong })
         {
             if (dung >= kho.Count) { Loi("het quai de thu"); break; }
             var q = kho[dung++];
@@ -391,6 +394,21 @@ public static class ThuKinhNghiemKyNang
             if (cay == null) Ghi("B4. khong tim thay cay nao de dot - bo qua");
             else
             {
+                // Tu 25/09/2026 Thien thach dot ca BIA MO: loat Thien thach o B3 chau bia quanh do, chiem het tran
+                // CayChay.ToiDaCungLuc (4) -> cay o B4 khong bat lua (bao nham 'khong nho ai dot'). Ghi ra roi cho lua tan bot.
+                var dangChayTruoc = new List<string>();
+                foreach (var c in Object.FindObjectsByType<CayChay>(FindObjectsSortMode.None)) if (c.SoDiemDangChay > 0) dangChayTruoc.Add(c.name);
+                // Cho toi khi KHONG CON VAT NAO DANG CHAY: tran dem ca vat vua cham chua kip co diem lua (SoDiemDangChay = 0) -
+                // dem theo diem lua thi thap hon tran that (lan chay thu 2: dem 3 < 4 ma van khong bat lua)
+                float hanT = Time.time + 12f; int conChay = dangChayTruoc.Count;
+                while (conChay > 0 && Time.time < hanT)
+                {
+                    yield return new WaitForSeconds(0.25f);
+                    conChay = 0;
+                    foreach (var c in Object.FindObjectsByType<CayChay>(FindObjectsSortMode.None)) if (c.SoDiemDangChay > 0) conChay++;
+                }
+                yield return new WaitForSeconds(0.5f);
+                Ghi("B4. truoc khi dot: " + dangChayTruoc.Count + " vat dang chay (" + string.Join(", ", dangChayTruoc) + "); cho con " + conChay);
                 var cc = CayChay.Dot(cay, maskQuai, 10f, toi);
                 Ghi("B4. dot cay " + cay.name + ": bat lua " + (cc != null) + ", nho ke dot " + (cc != null && cc.keDot == toi));
                 Kiem(cc != null && cc.keDot == toi, "cay chay khong nho ai dot - quai chet vi cay chay thanh vo danh");

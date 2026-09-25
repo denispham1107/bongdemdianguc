@@ -76,6 +76,10 @@ public static class CapDo
     /// </summary>
     public const int KyTocDo = 20;
 
+    /// <summary>Ky nang 21 - MAY GIONG (nhom PHONG, 25/09/2026): vung may giong 6 m, 20 tia set trong 5 giay.
+    /// Nguoi dung chon KHONG CAN dieu kien mo khoa.</summary>
+    public const int KyMayGiong = 21;
+
     /// <summary>Phan toc do goc duoc cong them o cap <paramref name="capKy"/> cua ky nang Toc do (0 = chua mo).</summary>
     public static float TocThemTheoCap(int capKy)
     {
@@ -108,7 +112,7 @@ public static class CapDo
     /// nhat 5,98 m/giay). Dung o cap 10: x1,363 (~7,1 m/giay).
     /// </summary>
     public const int CapTangTocToiDa = 10;
-    public const int SoKyNang = 21;      // 7 phep + binh mau + binh mana + qua cau bang + gio loc + lua dia nguc + tang hinh + qua cau dien + hoa loc xoay + toc bien + 4 khang bi dong + toc do
+    public const int SoKyNang = 22;      // 7 phep + binh mau + binh mana + qua cau bang + gio loc + lua dia nguc + tang hinh + qua cau dien + hoa loc xoay + toc bien + 4 khang bi dong + toc do + may giong
 
     /// <summary>Giet mot nguoi choi khac duoc bao nhieu kinh nghiem.</summary>
     public const int KnGietNguoi = 250;

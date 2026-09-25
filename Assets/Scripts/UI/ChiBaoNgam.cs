@@ -230,6 +230,7 @@ public class ChiBaoNgam : MonoBehaviour
             case CapDo.KyCauDien: return new Color(0.35f, 0.68f, 1.00f);      // qua cau dien - xanh lam
             case CapDo.KyHoaLocXoay: return new Color(0.82f, 0.78f, 0.62f);   // hoa loc xoay - xam cat nhu Loc xoay
             case CapDo.KyTocBien: return new Color(0.78f, 0.45f, 1.00f);      // toc bien - tim
+            case CapDo.KyMayGiong: return new Color(0.80f, 0.88f, 1.00f);     // may giong - trang xanh
             default: return new Color(0.40f, 0.95f, 1.00f);
         }
     }

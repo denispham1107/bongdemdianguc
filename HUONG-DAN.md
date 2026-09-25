@@ -8566,6 +8566,43 @@ Menu 74 thêm mục K, đo ở lượt thứ ba: **5/5 tia** quanh cầu dùng �
 ngang (đối chứng: tia mặc định không dùng ảnh). Menu 74 cả bài **0 lỗi**. Ảnh `quacaudien_2_ban_tia.png`: trước đây năm
 tia là một mảng trắng loá, nay thấy rõ từng tia lõi trắng viền xanh.
 
+### Kỹ năng mới MÂY GIÔNG — nhóm Phong (25/09/2026)
+
+Anh gửi ảnh một đám mây trắng sáng từ bên trong với nhiều tia sét trắng xanh rẽ nhánh, xin kỹ năng "Mây giông": vùng mây ngay
+chỗ chọn, tầm bằng Sấm sét, 5 giây 20 tia, mỗi tia 125 ở cấp 1, 45% hất ngã 0,85 giây, kẻ trúng cháy đen toàn thân, hồi chiêu 7
+giây, mọi hình dựng bằng Blender. Tôi hỏi thêm bốn điều, anh chọn: **50 năng lượng, niệm 0,5 giây**; **vùng 6 m, ưu tiên kẻ
+địch** như Sấm sét; **không cần điều kiện mở khoá**; **cháy đen chỉ là hình, 3 giây**.
+
+**Hình (Blender MCP, `CongCu/Blender/may_giong.blend`).** Bốn đám mây bồng (lưới 2×2) — bản đầu tròn nhoè như quả bóng, đổi
+sang "nhiễu trừ khoảng cách rồi cắt mềm" thì mép mây lồi lõm từng cụm, lõi sáng trắng xanh; ảnh loé chạm đất hình sao; lớp
+than đen liền mạch (Voronoi 4D trên hình xuyến) với vết nứt âm ỉ màu lửa — bản đầu nứt dày và cam như gạch lát, chỉnh cho gần
+đen tuyền; icon mây + tia sét trên nền đen. Tia sét dùng lại ảnh Blender của Giựt sét, 4–6 nhánh. Trong game: hai tầng mây
+(sáng trên, xám dưới), loé sáng và đèn nhấp nháy trong mây, tia ngang lách tách trong lòng mây, khói đen bốc từ người cháy.
+
+**Cháy đen** phủ thêm một lớp vật liệu lên MỌI renderer kể cả `SkinnedMeshRenderer` (bài học vỏ băng), và lúc gỡ chỉ bỏ đúng
+lớp của mình — không trả nguyên mảng cũ như vỏ băng — nên chồng với đóng băng vẫn giữ vỏ băng.
+
+**Độ cao mây: 7 m chứ không 10 m** (con số tôi tự chọn): ảnh ở góc chơi thật cho thấy máy quay "3D tự do" chỉ nhìn tới
+~5,5 m ở chỗ cách 10–12 m, mây 10 m nằm hẳn trên mép màn hình.
+
+**Số đo** (menu 83 mới — **0 lỗi**):
+
+| Đo | Kết quả |
+|---|---|
+| Thông số | số hiệu 21, 22 kỹ năng; nhóm PHONG; 50 / 7 s / 0,5 s; tầm 12 m = Sấm sét; vùng 6 m; mở khoá không điều kiện |
+| Tung thật | tốn 50, hồi chiêu 7,00 s; mây hiện sau 0,33 s đúng chỗ ngắm (lệch 0,00 m); bấm lại lúc hồi chiêu → vẫn 1 đám mây |
+| Nhịp | 20 tia, tia đầu 0,36 s, cuối 5,11 s, cách nhau TB 0,250 s; 20/20 tia ảnh Blender ≥ 4 nhánh |
+| Sát thương | 81/81 lần bia mất máu là bội số 125; nhắm kẻ địch 65–75%; **đối chứng** vùng trống: 20 tia, 0 nhắm |
+| Hất ngã | 269–278 lần trúng → 41,6–45,0% (hai lần chạy); dài 0,85 s |
+| Cháy đen | bộ xương (SkinnedMesh) phủ 1/1, đậm 1,00, tự gỡ sau 3,03 s, trả đúng; chồng vỏ băng → gỡ xong vỏ băng còn |
+| Qua mạng · hình | phát lại được; mây 26 + 16 đám nằm ngang (lệch dọc 0,00 m), rộng 5,7 m; có đèn |
+
+Chạy lại các phép thử có đếm kỹ năng / icon: 60, 66 (bảng biểu tượng đủ 22 ô), 77, 80, 61 — đều **0 lỗi**. Menu 61 thêm Mây
+giông (giết quái, ghi đúng kẻ đánh, đủ kinh nghiệm). Mục B4 của menu 61 (châm cây) từng báo sai: loạt Thiên thạch ở B3 nay
+châm cả bia mộ / nhà mồ (tính năng sáng nay), đầy trần "4 vật cháy cùng lúc" nên cây không bắt lửa — phép thử nay chờ lửa tàn.
+
+Ảnh: `PlayTestShots/maygiong_1_dem_can.png`, `maygiong_2_chay_den.png`, `maygiong_3_ngay_goc_choi.png`.
+
 ### Lốc xoáy dựng lại bằng Blender theo ảnh mẫu (25/09/2026)
 
 Anh gửi hai ảnh cơn lốc xám trắng với nhiều tia sét trắng xanh và xin "dựng lại giống như trên hình 100%, lốc cuốn lên chỉ

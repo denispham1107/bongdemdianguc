@@ -90,10 +90,10 @@ thì lệnh MCP hết giờ.
 > `EditorSceneManager.OpenScene("Assets/Scenes/Act2.unity", Single)` trả lại ngay — không thì
 > người dùng quay lại Unity thấy màn của mình biến mất.
 
-**Menu `Diablo 2.5D`** trong Unity (83 mục): 1 nướng asset + dựng màn, 3 tự kiểm tra,
+**Menu `Diablo 2.5D`** trong Unity (84 mục): 1 nướng asset + dựng màn, 3 tự kiểm tra,
 4 chạy thử & chụp hình, 14 chống ô vuông đen, 15–17 ảnh vỏ cây / đá mộ / sứt mẻ bia,
 18–18d chạy thử cây cháy, 19 hồi sinh sau lốc, 20 nướng điểm mồi lửa (cây · bia mộ · nhà mồ), 21 nút khoá góc nhìn,
-22 thanh kỹ năng bản PC, **26 chạy thử mạng (sảnh phòng), 27 chạy thử khoá tài khoản, 28 chụp màn đăng nhập·sảnh, 29 xuất bản WebGL, 30/30b bơm input Act2·Act1 (bước 1), 31 dự đoán & hiệu chỉnh (bước 2), 32 nhiều người một cảnh (bước 3), 33 nội suy (bước 4), 34 PvP (bước 5), 35 ghép phòng cùng màn, 36 tự gắn bộ nối mạng, 37 kỹ năng qua mạng, 38 quái chung & bù trễ, 39 đòn của quái qua mạng, 40 máu khởi đầu, 41 nhịp bước qua mạng, 42 chế độ điều khiển, 43 kiểm toán bước 5, 44 sửa bước 5, 45 bốn người, 46 hiệu ứng qua mạng, 47 chế độ bốn bộ xương, 48 cài đặt đồ hoạ, 49 cầu lửa trúng người·khiên, 50 giao diện đăng nhập·sảnh·phòng, 51/51b/51c màn chính từ Act2 (dựng · chọn góc · chụp lò lửa), 52 tên trên đầu nhân vật, 53 HUD kinh dị trong trận, 54/54b/54c mười lò lửa Act2 (đặt · chạy thử · lốc xoáy cuốn lò), 55 kết trận (người sống sót cuối cùng), 56 đợt quái Act2 · chỗ xuất phát, 57 bàn phím ảo che ô nhập, 58 mưa băng·sấm sét (đóng băng, choáng), 59 sách phép (kéo thả ô kỹ năng), 60 cấp độ·kinh nghiệm·điểm kỹ năng, 61 kinh nghiệm theo từng kỹ năng, 62 thiên thạch đánh ngã, 63 đánh ngã người chơi khác qua mạng, 64 quái vòng ngoài truy lùng sau 60 giây, 65 bình máu · bình mana (rơi, nhặt, uống, mạng), 66 nút KỸ NĂNG ở sảnh (Sách phép xem trước) · con mắt quỷ, 67 Mưa băng đóng băng người chơi khác (qua mạng), 68 Quả cầu băng, 69 Giựt sét (12 m · 75 · 4 tia · 15% choáng · Quỷ cây), 70 Quả cầu lửa (85 · vệt lửa mới), 71/71b Gió lốc (chạy thử · chụp ảnh), 72 Lửa địa ngục, 73 Tàng hình, 74 Quả cầu điện, 75 Hoá lốc xoáy · Gió lốc hồi mana, 76 Tốc biến, 77 Kháng hệ (nhóm bị động), 78 cụm nút kỹ năng cảm ứng, 79 ánh sáng vòng đêm → ngày → chiều lặp lại (Act2), 80 bốn việc Sách phép (bình cấp 1–3 · quả cầu xuyên bia · băng dập lò · bị động Tốc độ), 81 Thiên thạch đốt bia mộ · nhà mồ, 82 Lốc xoáy hình Blender (một chiều, cuốn lên) · Gió lốc hất tung 80%**.
+22 thanh kỹ năng bản PC, **26 chạy thử mạng (sảnh phòng), 27 chạy thử khoá tài khoản, 28 chụp màn đăng nhập·sảnh, 29 xuất bản WebGL, 30/30b bơm input Act2·Act1 (bước 1), 31 dự đoán & hiệu chỉnh (bước 2), 32 nhiều người một cảnh (bước 3), 33 nội suy (bước 4), 34 PvP (bước 5), 35 ghép phòng cùng màn, 36 tự gắn bộ nối mạng, 37 kỹ năng qua mạng, 38 quái chung & bù trễ, 39 đòn của quái qua mạng, 40 máu khởi đầu, 41 nhịp bước qua mạng, 42 chế độ điều khiển, 43 kiểm toán bước 5, 44 sửa bước 5, 45 bốn người, 46 hiệu ứng qua mạng, 47 chế độ bốn bộ xương, 48 cài đặt đồ hoạ, 49 cầu lửa trúng người·khiên, 50 giao diện đăng nhập·sảnh·phòng, 51/51b/51c màn chính từ Act2 (dựng · chọn góc · chụp lò lửa), 52 tên trên đầu nhân vật, 53 HUD kinh dị trong trận, 54/54b/54c mười lò lửa Act2 (đặt · chạy thử · lốc xoáy cuốn lò), 55 kết trận (người sống sót cuối cùng), 56 đợt quái Act2 · chỗ xuất phát, 57 bàn phím ảo che ô nhập, 58 mưa băng·sấm sét (đóng băng, choáng), 59 sách phép (kéo thả ô kỹ năng), 60 cấp độ·kinh nghiệm·điểm kỹ năng, 61 kinh nghiệm theo từng kỹ năng, 62 thiên thạch đánh ngã, 63 đánh ngã người chơi khác qua mạng, 64 quái vòng ngoài truy lùng sau 60 giây, 65 bình máu · bình mana (rơi, nhặt, uống, mạng), 66 nút KỸ NĂNG ở sảnh (Sách phép xem trước) · con mắt quỷ, 67 Mưa băng đóng băng người chơi khác (qua mạng), 68 Quả cầu băng, 69 Giựt sét (12 m · 75 · 4 tia · 15% choáng · Quỷ cây), 70 Quả cầu lửa (85 · vệt lửa mới), 71/71b Gió lốc (chạy thử · chụp ảnh), 72 Lửa địa ngục, 73 Tàng hình, 74 Quả cầu điện, 75 Hoá lốc xoáy · Gió lốc hồi mana, 76 Tốc biến, 77 Kháng hệ (nhóm bị động), 78 cụm nút kỹ năng cảm ứng, 79 ánh sáng vòng đêm → ngày → chiều lặp lại (Act2), 80 bốn việc Sách phép (bình cấp 1–3 · quả cầu xuyên bia · băng dập lò · bị động Tốc độ), 81 Thiên thạch đốt bia mộ · nhà mồ, 82 Lốc xoáy hình Blender (một chiều, cuốn lên) · Gió lốc hất tung 80%, 83 Mây giông**.
 Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
 
 ## Quy tắc làm việc (rút ra từ những lần đã sai)
@@ -134,8 +134,8 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
 - ⚠️ **Chế độ chạy thử "bốn bộ xương" (chỉ còn Act1) đang BẬT** (`GameDirector.CheDoBonBoXuong = true`, hằng số
   trong code): vào màn chỉ 4 bộ xương, giết hết đợi 30 giây ra 4 con mới. Menu 47 kiểm.
   **Tắt trước khi phát hành** — không thì game chỉ còn bốn con bộ xương.
-- **Hai mươi mốt kỹ năng**: Cầu lửa, Mưa băng, Sấm sét, Lốc xoáy, Thiên thạch, Khiên, Giựt sét (0–6) + **Bình máu (7), Bình mana (8)**
-  (13/09/2026) + **Quả cầu băng (9)** + **Gió lốc (10)** (16/09/2026) + **Lửa địa ngục (11)** (17/09/2026) + **Tàng hình (12)** + **Quả cầu điện (13)** + **Hoá lốc xoáy (14)** + **Tốc biến (15)** (18/09/2026) + **4 kỹ năng BỊ ĐỘNG: Kháng Lửa (16), Kháng Băng (17), Kháng Sét (18), Kháng Phong (19)** (19/09/2026) + **bị động Tốc độ di chuyển (20)** (25/09/2026). Vẫn **7 ô** (người dùng chọn) — kỹ năng không có sẵn ô phải kéo vào ô trong Sách phép.
+- **Hai mươi hai kỹ năng**: Cầu lửa, Mưa băng, Sấm sét, Lốc xoáy, Thiên thạch, Khiên, Giựt sét (0–6) + **Bình máu (7), Bình mana (8)**
+  (13/09/2026) + **Quả cầu băng (9)** + **Gió lốc (10)** (16/09/2026) + **Lửa địa ngục (11)** (17/09/2026) + **Tàng hình (12)** + **Quả cầu điện (13)** + **Hoá lốc xoáy (14)** + **Tốc biến (15)** (18/09/2026) + **4 kỹ năng BỊ ĐỘNG: Kháng Lửa (16), Kháng Băng (17), Kháng Sét (18), Kháng Phong (19)** (19/09/2026) + **bị động Tốc độ di chuyển (20)** (25/09/2026) + **Mây giông (21)** (25/09/2026, nhóm PHONG). Vẫn **7 ô** (người dùng chọn) — kỹ năng không có sẵn ô phải kéo vào ô trong Sách phép.
   ⚠️ Số hiệu mới luôn **thêm ở cuối**, không chèn: số hiệu đi qua gói tin và nằm trong thứ tự ô đã lưu của người chơi.
 - **Quả cầu băng** (`Skills/QuaCauBang.cs`, hình `Vfx/VfxQuaCauBang.cs`): 3 quả toé quạt như Quả cầu lửa (đường bay/va chạm chép
   `Fireball.Update`), sát thương gốc **65**, hồi chiêu **0,55 s**, 12 năng lượng, nổ vùng 3,4 m; trúng là **chậm 50% trong 2 s** và **40% ĐÓNG BĂNG 1,5 s**
@@ -171,6 +171,16 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
   Bị hất = khoá như ngã + **ngắt chiêu** (`PlayerController.NgatChieu`, `EnemyAI.NgatDon`). Bit mạng **`CoHatTung` = bit thứ 5**, mặt nạ gói
   người chơi và gói quái đã nới **0x1F** (còn trống bit 7 gói người chơi, bit 6–7 gói quái). Lướt qua lò lửa thì `DapTatRoiChayLai(30)`.
   Icon `python CongCu/Icon/sinh_gio_loc.py`. Menu 71 kiểm, 71b chụp ảnh.
+- **MÂY GIÔNG** (`CapDo.KyMayGiong` = 21, `Skills/MayGiong.cs`, hình `Vfx/VfxMayGiong.cs`, hiệu ứng `Combat/ChayDenToanThan.cs`,
+  25/09/2026, nhóm **PHONG**, người dùng gửi ảnh mẫu): vùng mây giông ngay chỗ ngắm, tầm **= Sấm sét** (`boltRange` 12), bán kính
+  **6 m**; **20 tia trong 5 giây** (0,35 s mây kết + 0,25 s/tia, đếm theo đồng hồ), **65% nhắm kẻ địch** trong vùng như Sấm sét;
+  mỗi tia **125** (cấp 1) cho mọi kẻ trong **2 m**, **45% hất ngã 0,85 s** (`ThienThach.GieoDanhNga` → `BiDanhNga`, khiên chặn,
+  +0,15 s/cấp), **cháy đen toàn thân 3 s — chỉ hình** (lớp than Blender phủ thêm lên MỌI Mesh + SkinnedMeshRenderer, khói đen,
+  gỡ chỉ đúng lớp của mình nên không mất vỏ băng; Tàng hình chặn). **50 năng lượng · niệm 0,5 · hồi chiêu 7 s**; **không điều kiện
+  mở khoá** (người dùng chọn). Tia hệ **PHONG** (`GhiKeDanh(boQua, HeSat.Phong)`). Hình **Blender MCP** (`CongCu/Blender/may_giong.blend`
+  → `Resources/KyNang/MayGiong/`: `MayGiong.png` 4 đám mây bồng 2×2, `ChopSet.png` loé chạm đất, `ChayDen.png` than đen liền mạch)
+  + icon `Resources/Icons/MayGiong.png` (Read/Write bật); tia dùng ảnh Blender của Giựt sét (`KieuTia`, 4–6 nhánh). Mây ở **7 m**
+  (10 m thì nằm trên mép màn hình ở góc chơi thật). Menu 83 kiểm; menu 61 có thêm Mây giông.
 - **BỊ ĐỘNG TỐC ĐỘ DI CHUYỂN** (`CapDo.KyTocDo` = 20, 25/09/2026): mở khoá **+10% TỐC ĐỘ GỐC** (`PlayerController.TocGoc` = moveSpeed
   lúc Awake, trước mọi lần tăng theo cấp nhân vật), mỗi cấp +2,5% (`CapDo.TocThemTheoCap`, cấp 5 = +20%), CỘNG vào tốc độ đang có:
   `(moveSpeed + TocGoc × TocThemBiDong) × lội nước × băng × tàng hình`. Chỉ nhân vật của máy này — điều kiện là `!mauDoMayKhacQuyet`,
@@ -348,7 +358,7 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
   bảng khớp cụm nút ngoài trận (menu 59 đo: lệch 0,00%).
   ⚠️ **Cột danh sách xếp theo NHÓM HỆ** (người dùng chốt 18/09/2026), không theo số hiệu nữa: LỬA (Cầu lửa · Thiên thạch ·
   Lửa địa ngục) → BĂNG (Quả cầu băng · Mưa băng · Tàng hình) → SÉT (Giựt sét · Sấm sét · Quả cầu điện) → PHONG (Gió lốc ·
-  Lốc xoáy · Hoá lốc xoáy) → HỖ TRỢ (Bình máu · Bình mana · Khiên · Tốc biến) → **BỊ ĐỘNG** (Kháng Lửa · Kháng Băng ·
+  Lốc xoáy · Hoá lốc xoáy · Mây giông) → HỖ TRỢ (Bình máu · Bình mana · Khiên · Tốc biến) → **BỊ ĐỘNG** (Kháng Lửa · Kháng Băng ·
   Kháng Sét · Kháng Phong, 19/09/2026). Bảng ở `SachPhep.KyNangTheoNhom` / `TenNhom` / `MauNhom`; mỗi nhóm có một
   dòng tiêu đề thấp hơn hàng thường, nên **mọi chỗ tính vị trí phải đi qua `CuaSoSachPhep.YCuaDong` / `CaoDong`**, không được
   nhân "chỉ số × chiều cao hàng" (phép thử menu 59 hỏi `CuaSoSachPhep.VungHangKyNang`). Số hiệu kỹ năng KHÔNG đổi.

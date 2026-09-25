@@ -159,7 +159,7 @@ public static class ThuBonViecSachPhep
         Ghi(string.Format("A1. ky nang so {0} '{1}': nhom '{2}' co no {3}, la bi dong {4}; icon {5} diem sang (Khang Phong {6}); so ky nang co ten {7}/{8}",
             ky, SachPhep.Ten(ky), SachPhep.TenNhom[SachPhep.TenNhom.Length - 1], trongNhom, CapDo.LaKyBiDong(ky), diemSang,
             diemSangKhang, SachPhep.SoKyNangCoTen(), CapDo.SoKyNang));
-        Kiem(ky == 20 && CapDo.SoKyNang == 21 && SachPhep.SoKyNangCoTen() == CapDo.SoKyNang, "so hieu / so ky nang sai");
+        Kiem(ky == 20 && CapDo.SoKyNang >= 21 && SachPhep.SoKyNangCoTen() == CapDo.SoKyNang, "so hieu / so ky nang sai");
         Kiem(trongNhom && CapDo.LaKyBiDong(ky), "Toc do khong nam trong nhom BI DONG");
         Kiem(diemSang > 2000, "icon Toc do trong / khong co hinh");
 

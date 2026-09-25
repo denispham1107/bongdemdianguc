@@ -1,16 +1,16 @@
 [ban 1] binh cap 1..3, qua cau xuyen bia, dap lo bang bang, bi dong toc do
 
-A1. ky nang so 20 'TỐC ĐỘ DI CHUYỂN': nhom 'BỊ ĐỘNG' co no True, la bi dong True; icon 34076 diem sang (Khang Phong 29572); so ky nang co ten 21/21
+A1. ky nang so 20 'TỐC ĐỘ DI CHUYỂN': nhom 'BỊ ĐỘNG' co no True, la bi dong True; icon 34076 diem sang (Khang Phong 29572); so ky nang co ten 22/22
 A1b. bam ky nang bi dong: dang niem False, mana 250 -> 250 (phai khong doi gi)
-A2. di thang 1,2 giay cung doan duong: cap 0 5.200 m/s | cap 1 5.720 m/s (x1.100, mong 1,100) | cap 5 6.214 m/s (x1.195, mong 1,200); toc goc 5.20, moveSpeed 5.20
+A2. di thang 1,2 giay cung doan duong: cap 0 5.200 m/s | cap 1 5.720 m/s (x1.100, mong 1,100) | cap 5 6.215 m/s (x1.195, mong 1,200); toc goc 5.20, moveSpeed 5.20
 
 B1. tung that: Qua cau lua co qua True, xuyen True; Qua cau bang co qua True, xuyen True; doi chung Fireball.Spawn tran (qua cua quai) xuyen False
 B2. Qua cau lua vao bia 1,4 x 3,0 x 1,0: con song True, di xa 21.9 m (vat cach 9 m)
     doi chung (khong bat xuyen): con song False, di xa 8.4 m
 B2. Qua cau lua vao cay cao 8 m: con song False, di xa 8.3 m (vat cach 9 m)
 B2. Qua cau lua vao LO LUA 1,0 x 2,33 x 1,0: con song False, di xa 8.4 m (vat cach 9 m)
-B2. Qua cau bang vao bia 1,4 x 3,0 x 1,0: con song True, di xa 22.0 m (vat cach 9 m)
-    doi chung (khong bat xuyen): con song False, di xa 8.0 m
+B2. Qua cau bang vao bia 1,4 x 3,0 x 1,0: con song True, di xa 21.8 m (vat cach 9 m)
+    doi chung (khong bat xuyen): con song False, di xa 8.4 m
 B2. Qua cau bang vao cay cao 8 m: con song False, di xa 8.3 m (vat cach 9 m)
 B2. Qua cau bang vao LO LUA 1,0 x 2,33 x 1,0: con song False, di xa 8.4 m (vat cach 9 m)
 B3. 10 lo that, 10 collider - bi coi la vat nho (xuyen duoc) 0 (phai 0)
