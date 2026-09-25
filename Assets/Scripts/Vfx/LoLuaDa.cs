@@ -42,6 +42,8 @@ public class LoLuaDa : MonoBehaviour
 
     /// <summary>Moc Time.time se tu nhom lua lai (Gio loc dap tat). 0 = khong hen.</summary>
     float henChayLai;
+    /// <summary>Luc (Time.time) lo hen chay lai, 0 = khong hen - phep thu doc (menu 83).</summary>
+    public float HenChayLai { get { return henChayLai; } }
 
     /// <summary>Bao nhieu giay tinh tu luc lua tat.</summary>
     public float GiayTuLucTat { get { return Time.time - tatLuc; } }

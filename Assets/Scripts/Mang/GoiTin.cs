@@ -365,7 +365,9 @@ public static class GoiTin
     //  VIET
     // ================================================================
 
-    static short NenToaDo(float met)
+    /// <summary>Nen toa do vao goi tin. PUBLIC de May giong tinh HUONG BAY tu diem ngam DA NEN - may tung (diem that) va
+    /// may nhan (diem da nen) ra cung mot so, nen cung mot huong ma khong ton byte nao (26/09/2026).</summary>
+    public static short NenToaDo(float met)
     {
         float v = met / DonViMet;
         if (v > short.MaxValue) v = short.MaxValue;

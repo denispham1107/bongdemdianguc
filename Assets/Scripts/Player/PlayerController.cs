@@ -110,9 +110,12 @@ public class PlayerController : MonoBehaviour
     public float cauDienCastTime = 0.62f;
 
     [Header("May giong (ky nang 21) - 20 tia set trong 5 giay, vung 6 m")]
-    public float mayGiongCost = MayGiong.NangLuong;         // 50
-    public float mayGiongCooldown = MayGiong.HoiChieu;      // 7 giay
-    public float mayGiongCastTime = MayGiong.NiemChu;       // 0,5 giay
+    // May giong: doc THANG hang so (thuoc tinh, khong phai truong luu duoc). 26/09/2026 doi hoi chieu 7 -> 5,5 thi Play van ra
+    // 7: ban prefab Unity giu trong bo nho nap luc truong moi co mac dinh 7 va giu qua moi lan bien dich (prefab tren dia khong
+    // co truong nay) - ban build WebGL cung lay tu do. Cung ly do voi binh mau / mana (HoiChieuBinh la hang).
+    public float mayGiongCost { get { return MayGiong.NangLuong; } }        // 50
+    public float mayGiongCooldown { get { return MayGiong.HoiChieu; } }     // 5,5 giay
+    public float mayGiongCastTime { get { return MayGiong.NiemChu; } }      // 0,5 giay
 
     [Header("Hoa loc xoay (ky nang 14) - doi Gio loc dang bay thanh Loc xoay")]
     public float hoaLocXoayCost = HoaLocXoay.NangLuong;         // 45

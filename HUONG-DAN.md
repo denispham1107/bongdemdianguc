@@ -8603,6 +8603,38 @@ châm cả bia mộ / nhà mồ (tính năng sáng nay), đầy trần "4 vật 
 
 Ảnh: `PlayTestShots/maygiong_1_dem_can.png`, `maygiong_2_chay_den.png`, `maygiong_3_ngay_goc_choi.png`.
 
+### Mây giông: hồi chiêu 5,5 s, bỏ cột khói, mây to hơn, mưa dập lò, mây tự bay 4 giây (26/09/2026)
+
+Anh chơi thử rồi xin: hồi chiêu **5,5 giây**; **bỏ cột mây và quầng mây dưới đất**; đám mây **to hơn 15%**; **mưa rơi trúng lò lửa
+thì tắt lửa**; và **hết 5 giây mây không tan mà tự bay theo hướng ngẫu nhiên 4 giây nữa, vừa bay vừa mưa vừa giựt sét**. Anh chọn:
+to 15% **chỉ hình** (vùng mưa / ướt / sét giữ 6 m), bay **1,5 m/s** (~6 m), sét khi bay **như cũ 4 tia/giây**, lò **cháy lại sau 30 giây**
+như Gió lốc.
+
+**Hướng bay "ngẫu nhiên" mà mọi máy phải thấy như nhau.** Mây được phát lại trên từng máy; mỗi máy tự `Random` thì mỗi người thấy mây
+bay một ngả và sét đánh một nơi. Em băm hướng từ **toạ độ ngắm đã nén đúng như gói tin** (`GoiTin.NenToaDo`, đơn vị 0,01 m): máy tung
+dùng điểm thật, máy nhận dùng điểm đã nén, cả hai ra cùng một số nguyên — không thêm byte nào. Đo: 40 chỗ ngắm ngẫu nhiên, **40/40
+khớp** giữa điểm thật và điểm qua gói tin; hướng chia bốn góc 14/7/12/7.
+
+**Mây bay được** thì các lớp mây phải mô phỏng **Local** (World thì đám mây ở lại chỗ cũ, chỉ mưa đi theo) và luôn mô phỏng
+(Local + ngoài khung thì Unity dừng mô phỏng). Mây bám đất bằng tia **chỉ lớp Ground** (bài học Gió lốc trèo mái nhà).
+
+**Bẫy: hồi chiêu vẫn 7 giây.** Code đổi hằng 7 → 5,5 mà Play vẫn ra 7, dù prefab và scene trên đĩa **không có** trường này: bản prefab
+Unity giữ trong bộ nhớ đã nạp lúc trường còn mặc định 7 và giữ nguyên qua mọi lần biên dịch — bản build WebGL cũng lấy từ đó.
+Ba thông số của Mây giông nay là **thuộc tính đọc thẳng hằng số**, như bình máu.
+
+**Phép thử bắt thêm:** mục K xoá mây sớm nhưng phần hình (mây, mưa) là vật riêng nên vẫn mưa tiếp ở chỗ cũ tới hết giờ — nay mây bị
+xoá giữa chừng thì xoá luôn phần hình.
+
+| Đo (menu 83, 0 lỗi) | Kết quả |
+|---|---|
+| Hồi chiêu | **5,50 s** (Sách phép 5,5) |
+| Tia | **36** (20 đứng yên + 16 khi bay), cách nhau TB 0,250–0,253 s, tia cuối 9,12–9,22 s (hai lần chạy) |
+| Bay | 16 tia khi bay, **0** tia rơi ngoài vùng 6 m quanh chỗ mây ĐANG Ở; đi **5,79–5,97 m**, lệch hướng 0,0°; lệch mặt đất 0,000 m |
+| Mây to | cỡ đám + bán kính rải **×1,150** cả hai tầng; vùng mưa vẫn 6 m; mô phỏng Local |
+| Bỏ cột / quầng | còn **0** lớp (CotMay, KhoiCot, SuongDat, MayThap) |
+| Mưa dập lò | lò cách mây 3 m tắt sau **0,36 s** (mưa bắt đầu 0,35 s), hẹn cháy lại **30,0 s**; lò đối chứng cách 22 m vẫn cháy |
+| Các mục cũ | ướt / +50% (×1,500 cả bốn) / cháy xém 36 vết / cháy đen cả khi ướt — đều đạt |
+
 ### Mây giông: mưa làm "Bị ướt", sét +50% lên kẻ ướt, cháy xém mặt đất; cột khói chạm đất THẬT (25/09/2026, khuya)
 
 Anh xin bốn điều: cột mây **rộng thêm 20%**; **mưa rơi liên tục** từ mây xuống đất; mưa không gây sát thương nhưng **100% làm

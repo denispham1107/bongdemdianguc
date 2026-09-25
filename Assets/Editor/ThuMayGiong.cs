@@ -30,6 +30,9 @@ using UnityEngine;
 ///   H (them). Quang may mong sat dat: 5 dam nam phang, cao < 0,6 m, lan ~3 m (kem phan anh thay duoc doc tu PNG).
 ///   ⚠️ H do cot khoi / quang sat dat bang HINH VE THAT (ParticleSystemRenderer.BakeMesh): hat Vertical/HorizontalBillboard ve
 ///      chi bang 0,7071 kich thuoc dat - ban truoc doc kich thuoc DAT nen bao "cot cham dat" trong khi chan cot lo lung ~0,9 m.
+///   ⚠️ 26/09/2026: hoi chieu 5,5 s; BO cot khoi + quang may sat dat (H kiem khong con); may to x1,15 (chi hinh); het 5 giay may
+///      TU BAY 4 giay 1,5 m/s huong "ngau nhien" GIONG NHAU moi may (bam tu diem ngam da nen nhu goi tin), vua bay vua mua +
+///      set (tong 36 tia) - C do quang duong / huong / bam dat / tia roi quanh cho may DANG O; K: mua dap tat lo lua, 30 s chay lai.
 ///   J. MUA (nguoi dung 25/09/2026 khuya): vet mua roi va cham dat that (vong nuoc nam dung mat dat do bang tia Ground); moi doi
 ///      thu trong vung 6 m BI UOT (nguoi tung khong, ngoai vung khong), het mua / ra khoi vung thi uot them 5 giay; hinh uot tren
 ///      quai co SkinnedMesh; +50% cho Giut set / Sam set / Qua cau dien / tia May giong len ke uot (so voi ke kho cung don),
@@ -267,8 +270,8 @@ public static class ThuMayGiong
         Kiem(SachPhep.Ten(K) == "MÂY GIÔNG" && trongPhong, "ten / nhom PHONG sai");
         Kiem(mt.Contains("125") && mt.Contains("45%") && mt.Contains("0,85") && mt.Contains("3 giây") && mt.Contains("20 tia") && mt.Contains("5 giây") && mt.Contains("ƯỚT") && mt.Contains("50%"), "mo ta Sach phep thieu con so / thieu mua uot");
         Kiem(bo != null && bo.Length == CapDo.SoKyNang && bo[K] != null, "thieu icon May giong");
-        Kiem(Mathf.Approximately(toi.mayGiongCost, 50f) && Mathf.Approximately(toi.mayGiongCooldown, 7f) && Mathf.Approximately(toi.mayGiongCastTime, 0.5f)
-             && Mathf.Approximately(nl, 50f) && Mathf.Approximately(hc, 7f), "nang luong / hoi chieu / niem sai");
+        Kiem(Mathf.Approximately(toi.mayGiongCost, 50f) && Mathf.Approximately(toi.mayGiongCooldown, 5.5f) && Mathf.Approximately(toi.mayGiongCastTime, 0.5f)
+             && Mathf.Approximately(nl, 50f) && Mathf.Approximately(hc, 5.5f), "nang luong / hoi chieu 5,5 / niem sai");
         Kiem(Mathf.Approximately(toi.TamNgam(K), toi.TamNgam(2)) && Mathf.Abs(toi.TamNgam(K) - 12f) < 0.01f, "tam khong bang Sam set (12 m)");
         Kiem(Mathf.Approximately(toi.BanKinhSatThuong(K), 6f), "vung ngam khong phai 6 m");
         Kiem(CapDo.DuBacDeMo(K) && PlayerController.KyGaySatThuong(K), "May giong can dieu kien mo khoa / khong tinh la ky nang gay sat thuong");
@@ -316,9 +319,32 @@ public static class ThuMayGiong
         float lucMay = Time.time;
         var mauTruoc = new float[5]; for (int i = 0; i < 5; i++) mauTruoc[i] = bia[i].health;
         bool daChup = false;
-        float hanC = Time.time + 6.2f;
+        float hanC = Time.time + MayGiong.GiayHetMay + 0.6f;
+        // Pha BAY: vi tri luc bat dau / luc cuoi, bam dat, moi tia khi bay roi trong vung quanh cho may DANG O
+        Vector3 viTriDauBay = Vector3.zero, viTriCuoiBay = Vector3.zero; bool coDauBay = false;
+        int tiaDaThay = MayGiong.SoTiaDaDanh, tiaKhiBay = 0, tiaBayNgoaiVung = 0; float lechDatBay = 0f;
         while (Time.time < hanC)
         {
+            if (may != null)
+            {
+                float tuoiMay = may.DongHo;   // dong ho CUA MAY (lucTung con tinh ca 0,5 s niem)
+                if (!coDauBay && tuoiMay >= MayGiong.GiayTuMay + MayGiong.ThoiGian) { coDauBay = true; viTriDauBay = may.transform.position; }
+                if (coDauBay)
+                {
+                    viTriCuoiBay = may.transform.position;
+                    lechDatBay = Mathf.Max(lechDatBay, Mathf.Abs(may.transform.position.y - GioLoc.MatDatY(may.transform.position, may.transform.position.y)));
+                }
+                if (MayGiong.SoTiaDaDanh != tiaDaThay)
+                {
+                    tiaDaThay = MayGiong.SoTiaDaDanh;
+                    if (coDauBay)
+                    {
+                        tiaKhiBay++;
+                        Vector3 v = MayGiong.DiemTiaCuoi - may.transform.position; v.y = 0f;
+                        if (v.magnitude > MayGiong.BanKinh + 0.05f) tiaBayNgoaiVung++;
+                    }
+                }
+            }
             foreach (var mm in Object.FindObjectsByType<MayGiong>(FindObjectsInactive.Exclude)) if (!mayCu.Contains(mm)) mayDaThay.Add(mm);
             foreach (var a in Object.FindObjectsByType<LightningArc>(FindObjectsInactive.Exclude))
             {
@@ -349,18 +375,42 @@ public static class ThuMayGiong
         // Cum bia dung giua mua nen deu BI UOT truoc tia dau (mua quet truoc tia trong cung khung) -> moi tia 125 x 1,5 = 187,5
         int boiSo125 = 0; foreach (var m in buocMat) { float k = m / (125f * BiUot.HeSoSetDien); if (Mathf.Abs(k - Mathf.Round(k)) < 0.01f && Mathf.Round(k) >= 1f) boiSo125++; }
         float khoangTB = lucTia.Count > 1 ? (lucTia[lucTia.Count - 1] - lucTia[0]) / (lucTia.Count - 1) : 0f;
-        Ghi(string.Format("B. ton {0} nang luong, hoi chieu ngay sau {1:F2} s; bam lai ngay khi dang hoi chieu -> suot 6 giay chi {2} dam may; may hien sau {3:F2} s, lech cho ngam {4:F2} m",
+        Ghi(string.Format("B. ton {0} nang luong, hoi chieu ngay sau {1:F2} s; bam lai ngay khi dang hoi chieu -> suot 10 giay chi {2} dam may; may hien sau {3:F2} s, lech cho ngam {4:F2} m",
             manaTon, hoiNgaySau, mayDaThay.Count, lucThay, lechCho));
         Ghi(string.Format("C. {0} tia (bo dem {1}); tia dau {2:F2} s, tia cuoi {3:F2} s, cach nhau TB {4:F3} s; anh Blender {5}, cung mot kieu {6}",
             lucTia.Count, soTia, lucTia.Count > 0 ? lucTia[0] : -1f, lucTia.Count > 0 ? lucTia[lucTia.Count - 1] : -1f, khoangTB, anhBlender, cungKieu));
         Ghi(string.Format("D. {0} lan bia mat mau, boi so 125: {1}; tia nham ke dich {2}/{3} ({4:P0}, mong ~65%)",
             buocMat.Count, boiSo125, soNham, soTia, soTia > 0 ? soNham / (float)soTia : 0f));
         Ghi("D. (cum bia dung giua mua -> deu BI UOT: moi lan mat mau phai la boi so 187,5 = 125 x 1,5)");
-        Kiem(Mathf.Abs(manaTon - 50f) < 0.01f && Mathf.Abs(hoiNgaySau - 7f) < 0.05f, "khong ton 50 / hoi chieu 7");
+        Kiem(Mathf.Abs(manaTon - 50f) < 0.01f && Mathf.Abs(hoiNgaySau - 5.5f) < 0.05f, "khong ton 50 / hoi chieu 5,5");
+
+        // HUONG BAY giong nhau moi may: diem ngam that va diem da qua goi tin (nen 0,01 m) ra cung huong; 40 cho ngam trai deu 4 goc
+        {
+            int khop = 0; var goc4 = new int[4];
+            for (int i = 0; i < 40; i++)
+            {
+                Vector3 p = goc + new Vector3(Random.Range(-40f, 40f), 0f, Random.Range(-40f, 40f));
+                Vector3 quaMang = new Vector3(GoiTin.NenToaDo(p.x) * 0.01f, p.y, GoiTin.NenToaDo(p.z) * 0.01f);
+                Vector3 h1 = MayGiong.HuongBay(p), h2 = MayGiong.HuongBay(quaMang);
+                if (Vector3.Angle(h1, h2) < 0.01f) khop++;
+                goc4[(int)(Mathf.Repeat(Mathf.Atan2(h1.z, h1.x), Mathf.PI * 2f) / (Mathf.PI * 0.5f)) % 4]++;
+            }
+            Ghi(string.Format("B. huong bay: 40 cho ngam - {0}/40 khop giua diem that va diem qua goi tin; chia 4 goc phan tu {1}/{2}/{3}/{4}", khop, goc4[0], goc4[1], goc4[2], goc4[3]));
+            Kiem(khop == 40, "huong bay khac nhau giua may tung va may nhan");
+            Kiem(goc4[0] >= 4 && goc4[1] >= 4 && goc4[2] >= 4 && goc4[3] >= 4, "huong bay khong ngau nhien (don vao mot phia)");
+        }
         Kiem(thayMay && lechCho >= 0f && lechCho < 0.3f, "may khong hien dung cho ngam");
         Kiem(mayDaThay.Count == 1, "bam lai khi dang hoi chieu van ra may moi");
-        Kiem(lucTia.Count == 20 && soTia == 20, "khong dung 20 tia");
-        Kiem(lucTia.Count == 20 && lucTia[0] > 0.2f && lucTia[0] < 0.6f && lucTia[19] < 5.6f && Mathf.Abs(khoangTB - 0.25f) < 0.03f, "20 tia khong trai deu trong 5 giay");
+        Kiem(lucTia.Count == MayGiong.SoTiaTong && soTia == MayGiong.SoTiaTong && MayGiong.SoTiaTong == 36, "khong dung 36 tia (20 dung yen + 16 khi bay)");
+        Kiem(lucTia.Count == 36 && lucTia[0] > 0.2f && lucTia[0] < 0.6f && lucTia[19] < 5.6f && lucTia[35] < 9.6f && Mathf.Abs(khoangTB - 0.25f) < 0.03f, "36 tia khong trai deu 4 tia/giay suot 9 giay");
+        // Pha bay: quang duong ~6 m (1,5 m/s x 4 s), dung huong HuongBay(diem ngam), bam mat dat, tia roi quanh cho may dang o
+        Vector3 diBay = viTriCuoiBay - viTriDauBay; diBay.y = 0f;
+        Vector3 huongMong = MayGiong.HuongBay(aim);
+        Ghi(string.Format("C. BAY: {0} tia khi bay ({1} tia roi ngoai vung 6 m quanh cho may dang o); di {2:F2} m (mong ~6), lech huong HuongBay(diem ngam) {3:F1} do; lech mat dat Ground toi da {4:F3} m",
+            tiaKhiBay, tiaBayNgoaiVung, diBay.magnitude, diBay.sqrMagnitude > 0.01f ? Vector3.Angle(diBay, huongMong) : -1f, lechDatBay));
+        Kiem(coDauBay && tiaKhiBay == MayGiong.SoTiaKhiBay && tiaBayNgoaiVung == 0, "khi bay khong du 16 tia / tia roi ngoai vung may dang o");
+        Kiem(diBay.magnitude > 5.6f && diBay.magnitude < 6.2f && Vector3.Angle(diBay, huongMong) < 3f, "may khong bay ~6 m theo HuongBay");
+        Kiem(lechDatBay < 0.05f, "may bay khong bam mat dat (lop Ground)");
         Kiem(anhBlender == lucTia.Count && cungKieu == lucTia.Count, "tia khong cung mot kieu anh Blender");
         Kiem(buocMat.Count >= 10 && boiSo125 == buocMat.Count, "moi tia len bia UOT khong gay dung 187,5 (125 x 1,5)");
         Kiem(soTia > 0 && soNham / (float)soTia > 0.4f && soNham / (float)soTia < 0.9f, "ti le nham ke dich khong quanh 65%");
@@ -371,9 +421,9 @@ public static class ThuMayGiong
         yield return new WaitForSeconds(0.3f);
         tia0 = MayGiong.SoTiaDaDanh; nham0 = MayGiong.SoTiaNhamKeDich;
         var mayTrong = MayGiong.Spawn(goc + huong * 12f, maskEnemy, mauToi);
-        yield return new WaitForSeconds(5.8f);
+        yield return new WaitForSeconds(MayGiong.GiayHetMay + 0.4f);
         Ghi(string.Format("D2. DOI CHUNG vung trong: {0} tia, nham ke dich {1}", MayGiong.SoTiaDaDanh - tia0, MayGiong.SoTiaNhamKeDich - nham0));
-        Kiem(MayGiong.SoTiaDaDanh - tia0 == 20 && MayGiong.SoTiaNhamKeDich - nham0 == 0, "DOI CHUNG: vung trong van nham ke dich / thieu tia");
+        Kiem(MayGiong.SoTiaDaDanh - tia0 == MayGiong.SoTiaTong && MayGiong.SoTiaNhamKeDich - nham0 == 0, "DOI CHUNG: vung trong van nham ke dich / thieu tia");
 
         // ================= E. HAT NGA =================
         Ghi("");
@@ -384,13 +434,14 @@ public static class ThuMayGiong
             float giayNgaDo = -1f;
             for (int lan = 0; lan < 3; lan++)
             {
-                MayGiong.Spawn(goc + huong * 12f, maskEnemy, mauToi);
+                var mE = MayGiong.Spawn(goc + huong * 12f, maskEnemy, mauToi);
                 float hanE = Time.time + 5.7f;
                 while (Time.time < hanE)
                 {
                     if (giayNgaDo < 0f) foreach (var b in cum) { var n = b.GetComponent<BiDanhNga>(); if (n != null) { giayNgaDo = n.thoiGian; break; } }
                     yield return null;
                 }
+                if (mE != null) Object.Destroy(mE.gameObject);   // chi do pha dung yen tren cum bia (pha bay roi cum)
             }
             int trung = MayGiong.SoLanTrung - trung0, nga = MayGiong.SoLanNga - nga0;
             float tile = trung > 0 ? nga / (float)trung : 0f;
@@ -506,10 +557,12 @@ public static class ThuMayGiong
                     if (ps.name != "MaySang" && ps.name != "MayXam") continue;
                     var hat = new ParticleSystem.Particle[ps.main.maxParticles]; int n = ps.GetParticles(hat);
                     if (ps.name == "MaySang") sang = n; else xam = n;
+                    bool laLocal = ps.main.simulationSpace == ParticleSystemSimulationSpace.Local;   // may bay: lop may mo phong Local
                     for (int i = 0; i < n; i++)
                     {
-                        lechY = Mathf.Max(lechY, Mathf.Abs(hat[i].position.y - ps.transform.position.y));
-                        xaNgang = Mathf.Max(xaNgang, new Vector2(hat[i].position.x - hinh.transform.position.x, hat[i].position.z - hinh.transform.position.z).magnitude);
+                        Vector3 wp = laLocal ? ps.transform.TransformPoint(hat[i].position) : hat[i].position;
+                        lechY = Mathf.Max(lechY, Mathf.Abs(wp.y - ps.transform.position.y));
+                        xaNgang = Mathf.Max(xaNgang, new Vector2(wp.x - hinh.transform.position.x, wp.z - hinh.transform.position.z).magnitude);
                     }
                 }
                 den = hinh.GetComponentsInChildren<Light>().Length;
@@ -517,97 +570,39 @@ public static class ThuMayGiong
             Ghi(string.Format("H. may: dam sang {0}, dam xam {1}; lech doc toi da {2:F2} m (nam NGANG), xa tam toi da {3:F2} m (vung 6); den {4}; cao day may {5} m",
                 sang, xam, lechY, xaNgang, den, MayGiong.CaoMay));
             Kiem(sang == 26 && xam == 16 && den >= 1, "thieu dam may / den");
-            Kiem(lechY < 0.3f && xaNgang > 3f && xaNgang < 6.5f, "may khong nam ngang trai tren vung 6 m");
+            Kiem(lechY < 0.3f && xaNgang > 3f && xaNgang < 7.2f, "may khong nam ngang trai tren vung 6 m (x1,15)");
 
-            // Cot khoi: do HINH VE THAT (BakeMesh) - chan, dinh, be ngang theo truc ngang man hinh; doc thang PNG xem khoi chay toi dau
-            int soCot = 0, soKhoiCot = 0; bool dungThang = false; float chanHat = 99f, dinhHat = -99f, rongCot = 0f;
-            float matDat = hinh != null ? hinh.transform.position.y : 0f;
-            float xDatMin = 0f, xDatMax = 0f, kepCo = -1f;
-            if (hinh != null)
-                foreach (var ps in hinh.GetComponentsInChildren<ParticleSystem>())
-                {
-                    if (ps.name == "KhoiCot") soKhoiCot = ps.particleCount;
-                    if (ps.name != "CotMay") continue;
-                    soCot = ps.particleCount;
-                    dungThang = ps.GetComponent<ParticleSystemRenderer>().renderMode == ParticleSystemRenderMode.VerticalBillboard;
-                    xDatMin = ps.main.startSizeX.constantMin; xDatMax = ps.main.startSizeX.constantMax;
-                    kepCo = ps.GetComponent<ParticleSystemRenderer>().maxParticleSize;
-                    var cacTam = TamVeThat(ps, cam);
-                    foreach (var t4 in cacTam)
-                    {
-                        float yMin = 99f, yMax = -99f, rMin = 99f, rMax = -99f;
-                        foreach (var v in t4) { yMin = Mathf.Min(yMin, v.y); yMax = Mathf.Max(yMax, v.y); float rr = Vector3.Dot(v, cam.transform.right); rMin = Mathf.Min(rMin, rr); rMax = Mathf.Max(rMax, rr); }
-                        chanHat = Mathf.Min(chanHat, yMin - matDat); dinhHat = Mathf.Max(dinhHat, yMax - matDat);
-                        rongCot += (rMax - rMin) / Mathf.Max(1, cacTam.Count);
-                    }
-                }
-            // Hang diem anh thap nhat con khoi (alpha > 0,25) trong 4 o anh -> do cao khoi thay duoc o chan cot
-            float tiLeChanAnh = TiLeChanKhoi("Assets/Resources/KyNang/MayGiong/CotMay.png");
-            float chanThay = chanHat + tiLeChanAnh * (dinhHat - chanHat);
-            Ghi(string.Format("H. cot khoi (HINH VE THAT, BakeMesh): {0} lop dung thang {1}, rong ve TB {2:F2} m; tu {3:F2} m toi {4:F2} m tren mat dat (day may {5:F1} m); anh: khoi bat dau o {6:P1} chieu cao -> khoi thay duoc tu {7:F2} m; khoi cuon doc cot {8} hat",
-                soCot, dungThang, rongCot, chanHat, dinhHat, MayGiong.CaoMay - 0.5f, tiLeChanAnh, chanThay, soKhoiCot));
-            // Rong x1,2 (nguoi dung khuya 25/09): be ngang DAT 4,5-5,5 (ban truoc, chep tay) -> 5,4-6,6
-            Ghi(string.Format("H. cot khoi be ngang DAT {0:F2}-{1:F2} (ban truoc 4,50-5,50: x{2:F3}); ve that ban truoc 5 x 0,7071 = 3,54 m -> nay TB {3:F2} m (x{4:F2})",
-                xDatMin, xDatMax, xDatMax / 5.5f, rongCot, rongCot / 3.5355f));
-        Ghi(string.Format("H. cot khoi maxParticleSize {0} (mac dinh Unity 0,5 = nua man hinh: cot 12 m bi ep nho lai khi may quay gan)", kepCo));
-            Kiem(soCot == VfxFactory.SoLopCotMay && dungThang, "thieu cot khoi / cot khong dung thang");
-            Kiem(Mathf.Abs(xDatMin / 4.5f - 1.2f) < 0.005f && Mathf.Abs(xDatMax / 5.5f - 1.2f) < 0.005f, "cot khoi khong rong x1,2");
-            Kiem(rongCot > 3.5355f * 1.2f * 0.88f && rongCot < 3.5355f * 1.2f * 1.12f, "be ngang VE THAT cua cot khong ~4,24 m");
-            Kiem(dinhHat >= MayGiong.CaoMay - 0.5f, "cot khoi khong vao toi day may");
-            Kiem(tiLeChanAnh >= 0f && chanThay <= 0.3f && chanThay >= -0.6f, "cot khoi khong cham mat dat (hinh ve that)");
-            Kiem(soKhoiCot >= 5, "khong co khoi cuon doc cot");
+            // 26/09/2026 nguoi dung BO cot khoi + quang may sat dat: khong con lop nao trong 4 lop cu
+            int conLopCu = 0;
+            if (hinh != null) foreach (var ten in new[] { "CotMay", "KhoiCot", "SuongDat", "MayThap" }) if (hinh.transform.Find(ten) != null) conLopCu++;
+            Ghi("H. cot khoi + quang may sat dat (da bo): con " + conLopCu + " lop");
+            Kiem(hinh != null && conLopCu == 0, "van con cot khoi / quang may sat dat");
 
-            // Quang may mong sat dat: dam nam PHANG, sat dat, lan ra ~3 m (tinh ca phan anh thay duoc - doc thang PNG)
-            int soSuong = 0, soMayThap = 0; bool nam = false; float caoSuong = -1f, xaSuong = 0f;
-            float tiLeSuong = TiLeBanKinhAnh("Assets/Resources/KyNang/MayGiong/SuongDat.png");
-            if (hinh != null)
-                foreach (var ps in hinh.GetComponentsInChildren<ParticleSystem>())
-                {
-                    var hat = new ParticleSystem.Particle[ps.main.maxParticles]; int n = ps.GetParticles(hat);
-                    if (ps.name == "MayThap") soMayThap = n;
-                    if (ps.name != "SuongDat") continue;
-                    soSuong = n;
-                    nam = ps.GetComponent<ParticleSystemRenderer>().renderMode == ParticleSystemRenderMode.HorizontalBillboard;
-                    for (int i = 0; i < n; i++) caoSuong = Mathf.Max(caoSuong, hat[i].position.y - matDat);
-                    // HINH VE THAT: tam moi dam + nua canh (goc -> tam / can 2) x phan anh con suong
-                    foreach (var t4 in TamVeThat(ps, cam))
-                    {
-                        Vector3 tm4 = (t4[0] + t4[1] + t4[2] + t4[3]) * 0.25f;
-                        float nuaCanh = Vector3.Distance(t4[0], tm4) / 1.41421f;
-                        float xa = new Vector2(tm4.x - hinh.transform.position.x, tm4.z - hinh.transform.position.z).magnitude;
-                        xaSuong = Mathf.Max(xaSuong, xa + nuaCanh * tiLeSuong);
-                    }
-                }
-            Ghi(string.Format("H. quang may sat dat (HINH VE THAT): {0} dam nam phang {1}, cao {2:F2} m tren dat; anh: suong toi {3:P0} nua o -> lan xa tam {4:F2} m; cum may thap {5}",
-                soSuong, nam, caoSuong, tiLeSuong, xaSuong, soMayThap));
-            Kiem(soSuong == VfxFactory.SoDamSuongDat && nam, "thieu quang may sat dat / khong nam phang");
-            Kiem(caoSuong >= 0f && caoSuong < 0.6f, "quang may khong sat mat dat");
-            // Ban truoc bao 3,45 m la tinh theo kich thuoc DAT; ve that nho hon (x0,7071 phan dam) - xem tieu de
-            Kiem(xaSuong > 2.2f && xaSuong < 3.9f, "quang may khong lan ~3 m (hinh ve that)");
-            Kiem(soMayThap >= 4, "thieu cum may thap");
-
-            // Nguoi dung 25/09 toi: quang sat dat RONG x1,15, DAC + CAO x1,10 - so voi thong so ban truoc (3d312bd, chep tay o day)
+            // May TO x1,15 (chi hinh): co dam + ban kinh rai so voi ban truoc (chep tay: sang 4,2-7,5 / r 5,1; xam 5-8,5 / r 5,7)
             if (hinh != null)
             {
-                var sd = hinh.transform.Find("SuongDat"); var trMt = hinh.transform.Find("MayThap");
-                if (sd != null && trMt != null)
+                var pSang = hinh.transform.Find("MaySang"); var pXam = hinh.transform.Find("MayXam");
+                if (pSang != null && pXam != null)
                 {
-                    var psSd = sd.GetComponent<ParticleSystem>(); var psMt = trMt.GetComponent<ParticleSystem>();
-                    float rongCo = psSd.main.startSize.constantMax / 5.0f, rongRai = psSd.shape.radius / 1.6f, rongThap = psMt.shape.radius / 2.2f;
-                    float dacSd = sd.GetComponent<ParticleSystemRenderer>().sharedMaterial.GetColor("_TintColor").a / 0.85f;
-                    float dacMt = trMt.GetComponent<ParticleSystemRenderer>().sharedMaterial.GetColor("_TintColor").a / 0.45f;
-                    float caoCo = psMt.main.startSize.constantMax / 2.0f, caoDat = trMt.localPosition.y / 0.45f;
-                    Ghi(string.Format("H. so voi ban truoc: rong co dam x{0:F3}, rai x{1:F3}, cum thap rai x{2:F3} | dac suong x{3:F3}, dac cum thap x{4:F3} | cum thap co x{5:F3}, cao x{6:F3}",
-                        rongCo, rongRai, rongThap, dacSd, dacMt, caoCo, caoDat));
-                    Kiem(Mathf.Abs(rongCo - 1.15f) < 0.005f && Mathf.Abs(rongRai - 1.15f) < 0.005f && Mathf.Abs(rongThap - 1.15f) < 0.005f, "quang sat dat khong rong x1,15");
-                    Kiem(Mathf.Abs(dacSd - 1.10f) < 0.005f && Mathf.Abs(dacMt - 1.10f) < 0.005f && Mathf.Abs(caoCo - 1.10f) < 0.005f && Mathf.Abs(caoDat - 1.10f) < 0.005f, "quang sat dat khong dac/cao x1,10");
+                    var a = pSang.GetComponent<ParticleSystem>(); var b = pXam.GetComponent<ParticleSystem>();
+                    float k1 = a.main.startSize.constantMax / 7.5f, k2 = a.main.startSize.constantMin / 4.2f, k3 = a.shape.radius / 5.1f;
+                    float k4 = b.main.startSize.constantMax / 8.5f, k5 = b.main.startSize.constantMin / 5f, k6 = b.shape.radius / 5.7f;
+                    bool local = a.main.simulationSpace == ParticleSystemSimulationSpace.Local && b.main.simulationSpace == ParticleSystemSimulationSpace.Local;
+                    Ghi(string.Format("H. may to: sang co x{0:F3}/x{1:F3} rai x{2:F3} | xam co x{3:F3}/x{4:F3} rai x{5:F3}; mo phong Local (bay theo) {6}; vung mua van {7} m",
+                        k1, k2, k3, k4, k5, k6, local, MayGiong.BanKinh));
+                    Kiem(Mathf.Abs(k1 - 1.15f) < 0.005f && Mathf.Abs(k2 - 1.15f) < 0.005f && Mathf.Abs(k3 - 1.15f) < 0.005f
+                         && Mathf.Abs(k4 - 1.15f) < 0.005f && Mathf.Abs(k5 - 1.15f) < 0.005f && Mathf.Abs(k6 - 1.15f) < 0.005f, "dam may khong to x1,15");
+                    Kiem(local, "lop may khong mo phong Local (may bay thi dam may o lai)");
+                    Kiem(Mathf.Approximately(MayGiong.BanKinh, 6f), "vung mua / set bi doi (nguoi dung chon chi hinh)");
                 }
-                else Kiem(false, "khong tim thay lop SuongDat / MayThap");
+                else Kiem(false, "khong tim thay MaySang / MayXam");
+            }
 
+            if (hinh != null)
+            {
                 // May giong DEN: do sang (luminance) mau tung lop so voi mau ban truoc (chep tay) ~0,26; day may toi hon dinh
-                string[] tenLop = { "MaySang", "MayXam", "CotMay", "KhoiCot", "SuongDat", "MayThap" };
-                Color[] mauCu = { new Color(0.95f, 0.97f, 1f), new Color(0.50f, 0.53f, 0.60f), new Color(0.80f, 0.84f, 0.92f),
-                               new Color(0.70f, 0.74f, 0.82f), new Color(0.80f, 0.84f, 0.92f), new Color(0.70f, 0.74f, 0.82f) };
+                string[] tenLop = { "MaySang", "MayXam" };
+                Color[] mauCu = { new Color(0.95f, 0.97f, 1f), new Color(0.50f, 0.53f, 0.60f) };
                 var sbT = new StringBuilder(); int toiDung = 0; float lumSang = 0f, lumXam = 0f;
                 for (int i = 0; i < tenLop.Length; i++)
                 {
@@ -637,7 +632,7 @@ public static class ThuMayGiong
                 int soMang = VfxFactory.SoMangSangMay - mang0, soTiaB = MayGiong.SoTiaDaDanh - tia0b;
                 Ghi(string.Format("H. set roi sang: {0} lop may, he so loe cao nhat x{1:F2}, {2}/{3} khung may o mau toi goc ({4:P0}); {5} tia -> {6} mang sang",
                     boLoe != null ? boLoe.SoRenderer : 0, kMax, khungToi, soKhung, soKhung > 0 ? khungToi / (float)soKhung : 0f, soTiaB, soMang));
-                Kiem(boLoe != null && boLoe.SoRenderer == 6, "thieu bo set roi sang tren 6 lop may");
+                Kiem(boLoe != null && boLoe.SoRenderer == 2, "thieu bo set roi sang tren 2 lop may");
                 Kiem(kMax > 1.5f, "set khong roi sang dam may");
                 Kiem(soKhung > 0 && khungToi / (float)soKhung > 0.25f, "may sang gan het thoi gian - khong con toi");
                 Kiem(soTiaB >= 5 && soMang == soTiaB, "moi tia khong co mot mang sang");
@@ -651,16 +646,19 @@ public static class ThuMayGiong
             vatLieuGocQ.Clear();
             Vector3 ngang = Vector3.Cross(Vector3.up, huong).normalized;
             Vector3 tamJ = goc + huong * 11f; tamJ.y = VfxFactory.GroundY(tamJ);
-            var A = TaoBia("TAM_UotA", tamJ + ngang * 2f);
-            var B = TaoBia("TAM_UotB", tamJ - ngang * 4f);
-            var C = TaoBia("TAM_UotC", tamJ + huong * 5.5f);
-            var ngoai = TaoBia("TAM_UotNgoai", tamJ + ngang * 7.5f);
-            var diRa = TaoBia("TAM_UotDiRa", tamJ - huong * 3f);
-            var nguoiTung = TaoBia("TAM_UotNguoiTung", tamJ - ngang * 1f);     // dung giua vung, la boQua
+            // May se BAY 6 m theo HuongBay(tamJ): bia A dat theo huong bay (con trong mua toi het), bia 'kho' va bia 'di ra' dat
+            // PHIA NGUOC huong bay - may khong mang mua toi chung
+            Vector3 hb = MayGiong.HuongBay(tamJ), hbNgang = Vector3.Cross(Vector3.up, hb).normalized;
+            var A = TaoBia("TAM_UotA", tamJ + hb * 2f);
+            var B = TaoBia("TAM_UotB", tamJ + hbNgang * 4f);
+            var C = TaoBia("TAM_UotC", tamJ - hbNgang * 5.5f);
+            var ngoai = TaoBia("TAM_UotNgoai", tamJ - hb * 7.5f);
+            var diRa = TaoBia("TAM_UotDiRa", tamJ - hb * 3f);
+            var nguoiTung = TaoBia("TAM_UotNguoiTung", tamJ + hbNgang * 1f);     // dung giua vung, la boQua
             // Quai co SkinnedMesh de xem hinh uot
             GameObject pfJ = null;
             if (GameAssets.I != null) foreach (var pp in GameAssets.I.enemyPrefabs) if (pp != null && pp.GetComponentInChildren<SkinnedMeshRenderer>(true) != null) { pfJ = pp; break; }
-            Vector3 choQ = tamJ + huong * 2.5f + ngang * 2.5f; choQ.y = VfxFactory.GroundY(choQ);
+            Vector3 choQ = tamJ + hb * 1.5f + hbNgang * 2f; choQ.y = VfxFactory.GroundY(choQ);
             var quaiJ = pfJ != null ? Object.Instantiate(pfJ, choQ, Quaternion.identity) : null;
             Damageable dQ = null;
             if (quaiJ != null)
@@ -703,7 +701,7 @@ public static class ThuMayGiong
 
             // 1,5 s: bia diRa ra khoi vung
             while (Time.time - t0 < 1.5f) { demChayXem(); yield return null; }
-            diRa.transform.position = tamJ - huong * 9.5f + Vector3.up * (VfxFactory.GroundY(tamJ - huong * 9.5f) - tamJ.y); Physics.SyncTransforms();
+            diRa.transform.position = tamJ - hb * 9.5f + Vector3.up * (VfxFactory.GroundY(tamJ - hb * 9.5f) - tamJ.y); Physics.SyncTransforms();
             float lucDiRa = Time.time;
             // Theo doi luc het uot SONG SONG (cac phep thu sat thuong phia sau chiem vai giay)
             hetUotA = -1f; hetUotR = -1f;
@@ -749,7 +747,7 @@ public static class ThuMayGiong
             yield return Chup("maygiong_5_mua");
 
             // Doi may tan (5,35 s) roi moi thu sat thuong (tia May giong khong danh chen vao)
-            while (mayJ != null && Time.time - t0 < 8f)
+            while (mayJ != null && Time.time - t0 < MayGiong.GiayHetMay + 2f)
             {
                 demChayXem();
                 if (!coChongLop && dQ != null && dQ.GetComponent<BiUot>() != null && dQ.GetComponent<ChayDenToanThan>() != null) coChongLop = HaiLopPhu(quaiJ);
@@ -762,7 +760,7 @@ public static class ThuMayGiong
             int soChayXem = 0; foreach (var g in chayXem) if (!chayXemCu.Contains(g)) soChayXem++;
             int uotTrung = MayGiong.SoLanTrungUot - uot0;
             Ghi(string.Format("J. {0} tia May giong -> {1} vet chay xem SetChayDen; {2} lan tia trung ke UOT", soTiaJ, soChayXem, uotTrung));
-            Kiem(soTiaJ == 20 && soChayXem == 20, "moi tia May giong khong de dung mot vet chay xem");
+            Kiem(soTiaJ == MayGiong.SoTiaTong && soChayXem == MayGiong.SoTiaTong, "moi tia May giong khong de dung mot vet chay xem");
             Kiem(uotTrung >= 5, "tia May giong khong trung ke uot lan nao");
 
             // DOI CHUNG chay xem: tia Sam set THAT (LightningStrike) cung de dung MOT SetChayDen
@@ -814,20 +812,22 @@ public static class ThuMayGiong
             Kiem(gqKho > 0f && Mathf.Abs(gqUot / gqKho - 1f) < 0.01f, "Giut set cua QUAI cung duoc +50% (sai)");
             Kiem(adKho > 0f && Mathf.Abs(adUot / adKho - 1f) < 0.01f, "sat thuong khong phai he SET cung duoc +50% (sai)");
 
-            // -- Qua cau dien: dat canh A, doc tung don dau tien len A (uot) va len ngoai (kho) - moi tia 155,52 x cap
+            // -- Qua cau dien: MOI BIA MOT QUA RIENG dat canh bia (bia kho nam nguoc huong bay, cach bia uot 9,5 m > tam 9 m cua
+            //    qua cau) - doc don DAU TIEN len bia ay. Moi tia 155,52 (Giut set cap 5), bia uot phai x1,5
             {
                 var lanDau = new Dictionary<Damageable, float>();
-                var truoc = new Dictionary<Damageable, float>();
-                foreach (var d in new[] { A, ngoai }) truoc[d] = d.health;
-                Vector3 giua = (A.transform.position + ngoai.transform.position) * 0.5f;
-                var qc = QuaCauDien.Spawn(giua, maskEnemy, nguoiTung);
-                for (float h = Time.time + 2.5f; Time.time < h && lanDau.Count < 2; )
+                foreach (var d in new[] { A, ngoai })
                 {
-                    foreach (var d in new[] { A, ngoai })
-                        if (!lanDau.ContainsKey(d) && d.health < truoc[d] - 0.01f) lanDau[d] = truoc[d] - d.health;
-                    yield return null;
+                    float truoc = d.health;
+                    var qc = QuaCauDien.Spawn(d.transform.position, maskEnemy, nguoiTung);
+                    for (float h = Time.time + 2.5f; Time.time < h && !lanDau.ContainsKey(d); )
+                    {
+                        if (d.health < truoc - 0.01f) lanDau[d] = truoc - d.health;
+                        yield return null;
+                    }
+                    if (qc != null) Object.Destroy(qc.gameObject);
+                    yield return new WaitForSeconds(0.2f);
                 }
-                if (qc != null) Object.Destroy(qc.gameObject);
                 float qUot = lanDau.ContainsKey(A) ? lanDau[A] : 0f, qKho = lanDau.ContainsKey(ngoai) ? lanDau[ngoai] : 0f;
                 Ghi(string.Format("J. +50%: Qua cau dien don dau len uot {0:F2} / kho {1:F2} (x{2:F3}; tia goc {3:F2})", qUot, qKho, qKho > 0 ? qUot / qKho : 0f, QuaCauDien.SatThuongTia));
                 Kiem(qKho > 0f && Mathf.Abs(qUot / qKho - 1.5f) < 0.01f, "Qua cau dien khong +50% len ke uot");
@@ -838,6 +838,7 @@ public static class ThuMayGiong
             float hetA = hetUotA, hetR = hetUotR;
             Ghi(string.Format("J. het uot: sau khi may tan {0:F2} s (bia A), sau khi ra khoi vung {1:F2} s (mong ~5, lan lam moi cuoi tre toi 0,2 s)", hetA, hetR));
             Kiem(hetA > 4.4f && hetA < 5.3f, "het mua ma khong uot them ~5 giay");
+            // (A dat theo huong bay: con trong mua toi luc may tan)
             Kiem(hetR > 4.7f && hetR < 5.3f, "ra khoi vung ma khong uot them ~5 giay");
 
             // Quai vua uot vua chay den: het ca hai thi moi renderer tro ve DUNG mang vat lieu goc (moi hieu ung go dung lop minh)
@@ -861,6 +862,37 @@ public static class ThuMayGiong
             if (quaiJ != null) Object.Destroy(quaiJ);
             if (rig != null) rig.enabled = true;
             yield return new WaitForSeconds(0.5f);
+        }
+
+        // ================= K. MUA DAP TAT LO LUA (nguoi dung 26/09/2026) =================
+        {
+            Ghi("");
+            LoLuaDa loGan = null, loXa = null; float xaNhat = 0f;
+            var cacLo = Object.FindObjectsByType<LoLuaDa>(FindObjectsInactive.Exclude);
+            foreach (var lo in cacLo) if (lo.DangChay && (loGan == null || Vector3.Distance(lo.transform.position, goc) < Vector3.Distance(loGan.transform.position, goc))) loGan = lo;
+            if (loGan != null)
+                foreach (var lo in cacLo) { float d = Vector3.Distance(lo.transform.position, loGan.transform.position); if (lo.DangChay && d > 20f && (loXa == null || d < xaNhat)) { loXa = lo; xaNhat = d; } }
+            if (loGan == null) { Ghi("[LOI] K: khong co lo lua nao dang chay de thu"); loi++; }
+            else
+            {
+                // May dat LECH 3 m khoi lo, NGUOC huong bay (lo nam trong vung 6 m ngay tu dau)
+                Vector3 choK = loGan.transform.position - MayGiong.HuongBay(loGan.transform.position) * 3f;
+                // HuongBay tinh tu cho ngam - lap lai 1 lan de huong khop cho ngam that
+                choK = loGan.transform.position - MayGiong.HuongBay(choK) * 3f;
+                int dap0 = MayGiong.SoLoDapTat;
+                var mK = MayGiong.Spawn(choK, maskEnemy, mauToi);
+                float tK = Time.time, lucTat = -1f;
+                for (float h = Time.time + 1.5f; Time.time < h && lucTat < 0f; ) { if (!loGan.DangChay) lucTat = Time.time - tK; yield return null; }
+                float henLai = loGan.HenChayLai - Time.time;
+                bool xaVanChay = loXa == null || loXa.DangChay;
+                Ghi(string.Format("K. lo cach may {0:F1} m: tat sau {1:F2} s (mua bat dau o {2:F2} s); hen chay lai sau {3:F1} s (mong ~30); dem dap {4}; lo DOI CHUNG cach {5:F0} m van chay {6}",
+                    Vector3.Distance(new Vector3(loGan.transform.position.x, 0f, loGan.transform.position.z), new Vector3(choK.x, 0f, choK.z)), lucTat, MayGiong.GiayTuMay, henLai, MayGiong.SoLoDapTat - dap0, xaNhat, xaVanChay));
+                Kiem(lucTat > 0f && lucTat < MayGiong.GiayTuMay + 0.4f, "mua khong dap tat lo lua");
+                Kiem(henLai > 28f && henLai < 30.5f, "lo khong hen chay lai sau 30 giay");
+                Kiem(xaVanChay, "lo ngoai vung mua cung bi tat (DOI CHUNG)");
+                if (mK != null) Object.Destroy(mK.gameObject);
+                loGan.Chay();   // tra lo ve nhu cu cho cac muc sau
+            }
         }
 
         // ================= I. TIA GIONG Y GIUT SET =================

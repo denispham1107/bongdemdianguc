@@ -176,7 +176,8 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
   **6 m**; **20 tia trong 5 giây** (0,35 s mây kết + 0,25 s/tia, đếm theo đồng hồ), **65% nhắm kẻ địch** trong vùng như Sấm sét;
   mỗi tia **125** (cấp 1) cho mọi kẻ trong **2 m**, **45% hất ngã 0,85 s** (`ThienThach.GieoDanhNga` → `BiDanhNga`, khiên chặn,
   +0,15 s/cấp), **cháy đen toàn thân 3 s — chỉ hình** (lớp than Blender phủ thêm lên MỌI Mesh + SkinnedMeshRenderer, khói đen,
-  gỡ chỉ đúng lớp của mình nên không mất vỏ băng; Tàng hình chặn). **50 năng lượng · niệm 0,5 · hồi chiêu 7 s**; **không điều kiện
+  gỡ chỉ đúng lớp của mình nên không mất vỏ băng; Tàng hình chặn). **50 năng lượng · niệm 0,5 · hồi chiêu 5,5 s** (26/09/2026, trước 7 — ⚠️ ba số này là THUỘC TÍNH đọc
+  hằng `MayGiong.*`, không phải trường: đổi hằng mà Play vẫn ra 7 vì prefab trong bộ nhớ giữ mặc định cũ); **không điều kiện
   mở khoá** (người dùng chọn). Tia hệ **PHONG** (`GhiKeDanh(boQua, HeSat.Phong)`). Hình **Blender MCP** (`CongCu/Blender/may_giong.blend`
   → `Resources/KyNang/MayGiong/`: `MayGiong.png` 4 đám mây bồng 2×2, `ChopSet.png` loé chạm đất, `ChayDen.png` than đen liền mạch)
   + icon `Resources/Icons/MayGiong.png` (Read/Write bật). Mây ở **7 m** (10 m thì nằm trên mép màn hình ở góc chơi thật).
@@ -202,7 +203,12 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
   cấm open_mainfile). ⚠️ Hai bẫy đã vấp: (1) **hạt Vertical/HorizontalBillboard vẽ 0,707×** VÀ **`maxParticleSize` 0,5 ép hạt to**
   khi máy quay gần — cột khói trước đây thật ra lơ lửng (vẽ 2,04 → 5,81 m) dù phép thử đọc cỡ đặt báo "chạm đất"; nay bù chiều cao
   /0,7071, `maxParticleSize` 10, đo bằng `BakeMesh` trong Play; (2) lớp phủ **chỉ xét vật liệu GỐC** (ô đầu) khi bỏ renderer trong
-  suốt — xét cả mảng thì kẻ đang ướt (lớp bóng trong suốt) KHÔNG BAO GIỜ cháy đen. Menu 83 kiểm; menu 61 có thêm Mây giông.
+  suốt — xét cả mảng thì kẻ đang ướt (lớp bóng trong suốt) KHÔNG BAO GIỜ cháy đen. **Lần sáu (26/09)**: **BỎ cột khói + quầng mây
+  sát đất**; mây **to ×1,15 chỉ hình** (`HeSoToMay`, vùng mưa/ướt/sét giữ 6 m); **mưa dập lò lửa** (`LoLuaDa.DapTatTrongVung`, 30 s
+  cháy lại); ⚠️ **hết 5 s mây KHÔNG tan mà TỰ BAY 4 s** (`ThoiGianBay`, 1,5 m/s ≈ 6 m, bám đất bằng `GioLoc.MatDatY`), vừa bay vừa
+  mưa + sét 4 tia/giây (thêm 16, **tổng 36**, `SoTiaTong`); hướng "ngẫu nhiên" **giống nhau mọi máy**: `MayGiong.HuongBay` băm từ
+  toạ độ ngắm **đã nén** như gói tin (`GoiTin.NenToaDo`, nay public) — không tốn byte nào. Lớp mây mô phỏng **Local** (bay theo gốc)
+  + `AlwaysSimulate`. `MayGiong.OnDestroy` xoá luôn phần hình nếu bị xoá giữa chừng. Menu 83 kiểm; menu 61 có thêm Mây giông.
 - **BỊ ĐỘNG TỐC ĐỘ DI CHUYỂN** (`CapDo.KyTocDo` = 20, 25/09/2026): mở khoá **+10% TỐC ĐỘ GỐC** (`PlayerController.TocGoc` = moveSpeed
   lúc Awake, trước mọi lần tăng theo cấp nhân vật), mỗi cấp +2,5% (`CapDo.TocThemTheoCap`, cấp 5 = +20%), CỘNG vào tốc độ đang có:
   `(moveSpeed + TocGoc × TocThemBiDong) × lội nước × băng × tàng hình`. Chỉ nhân vật của máy này — điều kiện là `!mauDoMayKhacQuyet`,

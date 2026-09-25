@@ -354,7 +354,7 @@ public static class SachPhep
             case CapDo.KyKhangSet: return "Bị động — chịu ít sát thương hệ Sét";
             case CapDo.KyKhangPhong: return "Bị động — chịu ít sát thương hệ Phong";
             case CapDo.KyTocDo: return "Bị động — chạy nhanh hơn";
-            case CapDo.KyMayGiong: return "20 tia sét, mưa làm ướt, 45% hất ngã";
+            case CapDo.KyMayGiong: return "36 tia sét, mưa làm ướt, mây trôi";
             default: return "";
         }
     }
@@ -539,12 +539,13 @@ public static class SachPhep
                      + "Chỉ chặn đòn của NGƯỜI CHƠI KHÁC. Đòn của quái vật không bị giảm.";
             case CapDo.KyMayGiong:
                 return "Gọi một đám MÂY GIÔNG xuống đúng chỗ bạn chọn (tầm bằng Sấm sét). Trong 5 giây, 20 tia sét "
-                     + "liên tục giáng xuống vùng mây rộng 6 m — tia sét ưu tiên đánh vào kẻ địch đứng trong vùng.\n\n"
+                     + "liên tục giáng xuống vùng mây rộng 6 m — tia sét ưu tiên đánh vào kẻ địch đứng trong vùng. Hết 5 giây mây "
+                     + "không tan mà TRÔI theo một hướng thêm 4 giây, vừa trôi vừa mưa và giáng thêm 16 tia sét.\n\n"
                      + "Mỗi tia gây 125 sát thương cho mọi kẻ địch trong 2 m quanh chỗ đánh, 45% khả năng HẤT NGÃ "
                      + "trong 0,85 giây, và làm kẻ bị trúng CHÁY ĐEN toàn thân trong 3 giây (chỉ là hiệu ứng).\n\n"
                      + "MƯA rơi khắp vùng mây: kẻ địch đứng trong mưa BỊ ƯỚT — còn đứng trong là còn ướt, ra khỏi "
                      + "vùng thì ướt thêm 5 giây. Kẻ bị ướt chịu thêm 50% sát thương từ Giựt sét, Sấm sét, Quả cầu điện "
-                     + "và từ chính tia sét của Mây giông.\n\n"
+                     + "và từ chính tia sét của Mây giông. Mưa rơi trúng lò lửa thì dập tắt lửa (30 giây sau cháy lại).\n\n"
                      + "Tia sét của Mây giông thuộc hệ PHONG: Kháng Phong giảm sát thương này.";
             case CapDo.KyTocDo:
                 return "Đôi chân bạn nhẹ hẳn đi. Nhân vật chạy NHANH HƠN suốt trận.\n\n"
