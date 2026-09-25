@@ -57,52 +57,52 @@ Giết một con quái to đúng lúc sắp lên cấp thì **nhảy được ha
 
 | Đối tượng | Kinh nghiệm | Vì sao |
 |---|---:|---|
-| Bộ xương | 24 (gốc 18) | quái thường, đông nhất |
-| Xác sống | 27 (gốc 20) | |
-| Quỷ lùn | 30 (gốc 22) | |
-| Quỷ cây | 41 (gốc 30) | chạy rất nhanh, bắn tia sét |
-| Mụ phù thủy | 43 (gốc 32) | đánh từ xa, khó tới gần |
-| Quỷ dữ | 54 (gốc 40) | gọi thiên thạch từ trên trời |
-| Quỷ khổng lồ | 95 (gốc 70) | to và khoẻ nhất |
+| Bộ xương | 29 (gốc 18) | quái thường, đông nhất |
+| Xác sống | 32 (gốc 20) | |
+| Quỷ lùn | 36 (gốc 22) | |
+| Quỷ cây | 49 (gốc 30) | chạy rất nhanh, bắn tia sét |
+| Mụ phù thủy | 52 (gốc 32) | đánh từ xa, khó tới gần |
+| Quỷ dữ | 65 (gốc 40) | gọi thiên thạch từ trên trời |
+| Quỷ khổng lồ | 113 (gốc 70) | to và khoẻ nhất |
 | **Người chơi khác** | **250** | một mạng người đáng giá hơn cả một đợt quái |
 
-**26/09/2026: kinh nghiệm giết QUÁI +35%** (anh yêu cầu). Mức gốc giữ trong `CapDo.KnGocCuaQuai`, `KnCuaQuai` = gốc × **1,35**
-(`CapDo.HeSoKnQuai`) làm tròn nửa lên — cả bảng tăng ×1,353 (232 → 314). Hạ người chơi khác **không đổi** (250).
+**26/09/2026: kinh nghiệm giết QUÁI +35%, rồi cùng ngày +20% nữa TRÊN MỨC ĐÓ** (anh chọn) → gốc × **1,62**
+(`CapDo.HeSoKnQuai` = 1,35 × 1,20). Mức gốc giữ trong `CapDo.KnGocCuaQuai`, làm tròn nửa lên — cả bảng ×1,621 (232 → 376).
+Hạ người chơi khác **không đổi** (250).
 
 ### Nhịp lên cấp trong thực tế (Act2)
 
 Mỗi đợt ở Act2 gồm (luật 13/09/2026, số quái vòng ngoài đổi 26/09/2026):
 
-- quanh **từng người chơi** bốn con: bộ xương + phù thủy + quỷ cây + quỷ dữ = **162 kinh nghiệm** (trước +35%: 120);
-- từ đợt hai trở đi cộng dồn thêm quái bất kì (+1, +3, +6, +10…), trung bình ~40,5 kinh nghiệm một con;
+- quanh **từng người chơi** bốn con: bộ xương + phù thủy + quỷ cây + quỷ dữ = **195 kinh nghiệm** (gốc 120);
+- từ đợt hai trở đi cộng dồn thêm quái bất kì (+1, +3, +6, +10…), trung bình ~48,75 kinh nghiệm một con;
 - ở vòng ngoài, cách người chơi gần nhất 20–25 m: **20 con + 10 con cho MỖI người chơi thêm** (26/09/2026, anh yêu cầu —
   trước là cố định 20 cho cả phòng): 1 người 20, 2 người 30, 3 người 40, 4 người 50 (`GameDirector.SoQuaiXaCho`, đếm người
-  CÒN SỐNG lúc ra đợt). Một mình: 20 con ≈ **810 kinh nghiệm** nếu giết hết.
+  CÒN SỐNG lúc ra đợt). Một mình: 20 con ≈ **975 kinh nghiệm** nếu giết hết.
 
-Chơi **một mình**, giết hết cả đợt (sau +35%):
+Chơi **một mình**, giết hết cả đợt (×1,62):
 
 | Sau đợt | Kinh nghiệm đợt ấy | Cộng dồn | Cấp đạt |
 |---|---:|---:|---|
-| 1 | 162 + 810 = 972 | 972 | 5 |
-| 2 | 1 012 | 1 984 | 7 |
-| 3 | 1 094 | 3 078 | 9 |
-| 4 | 1 215 | 4 293 | **10** |
-| 5 | 1 377 | 5 670 | 11 |
-| 6 | 1 580 | 7 250 | 12 |
-| 7 | 1 822 | 9 072 | 13 |
-| 8 | 2 106 | 11 178 | 14 |
-| 9 | 2 430 | 13 608 | 15 |
-| 10 | 2 794 | 16 402 | 16 |
-| 11 | 3 200 | 19 602 | 17 |
-| 12 | 3 645 | 23 247 | 18 |
-| 13 | 4 131 | 27 378 | 19 |
-| 14 | 4 658 | 32 036 | **20** |
+| 1 | 195 + 975 = 1 170 | 1 170 | 6 |
+| 2 | 1 219 | 2 389 | 8 |
+| 3 | 1 316 | 3 705 | 9 |
+| 4 | 1 462 | 5 168 | **10** |
+| 5 | 1 658 | 6 825 | 12 |
+| 6 | 1 901 | 8 726 | 13 |
+| 7 | 2 194 | 10 920 | 14 |
+| 8 | 2 535 | 13 455 | 15 |
+| 9 | 2 925 | 16 380 | 16 |
+| 10 | 3 364 | 19 744 | 17 |
+| 11 | 3 851 | 23 595 | 18 |
+| 12 | 4 388 | 27 982 | 19 |
+| 13 | 4 972 | 32 955 | **20** |
 
-(Mỗi đợt = 162 quanh mình + 40,5 × số quái cộng dồn + 810 của 20 con vòng ngoài.)
+(Mỗi đợt = 195 quanh mình + 48,75 × số quái cộng dồn + 975 của 20 con vòng ngoài.)
 
-Nghĩa là: chơi một mình, giết hết thì khoảng **4 đợt** chạm cấp 10 và khoảng **14 đợt** chạm cấp 20 (trước +35%: 5 và 16).
+Nghĩa là: chơi một mình, giết hết thì khoảng **4 đợt** chạm cấp 10 và khoảng **13 đợt** chạm cấp 20 (gốc: 5 và 16; sau +35%: 4 và 14).
 Chơi nhiều người thì vòng ngoài đông lên theo số người (4 người: 50 con), mỗi người vẫn chia nhau phần vòng ngoài
-(~12 con một người khi bốn người) cộng phần 162 quanh mình. Hạ được một người chơi khác (250) vẫn đáng giá hơn phần
+(~12 con một người khi bốn người) cộng phần 195 quanh mình. Hạ được một người chơi khác (250) vẫn đáng giá hơn phần
 quái quanh mình trong một đợt.
 
 ⚠️ Nếu thấy lên cấp **quá nhanh** khi chơi một mình, chỗ chỉnh là bảng kinh nghiệm ở mục 2 hoặc giá từng loại quái

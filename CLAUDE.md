@@ -126,8 +126,9 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
   **Mỗi đợt thêm 20 con vòng ngoài + 10 con cho MỖI người chơi thêm** (26/09/2026, người dùng; trước cố định 20 cho cả phòng:
   1 người 20 · 2 người 30 · 3 người 40 · 4 người 50 — `GameDirector.SoQuaiXaCho(số người CÒN SỐNG)`, `SoQuaiXaThemMoiNguoi`),
   loại ngẫu nhiên, cách người chơi GẦN NHẤT **20–25 m** (13/09/2026 đổi từ 10 con ở 55–65 m); không đủ chỗ thì thả gần khoảng
-  nhất có thể và đếm vào `SoQuaiXaDungKhoang`. ⚠️ **Kinh nghiệm giết QUÁI +35%** (26/09/2026, `CapDo.HeSoKnQuai` × `KnGocCuaQuai`,
-  bộ xương 18 → 24 … quỷ khổng lồ 70 → 95; hạ người chơi vẫn 250) — chơi một mình lên cấp 10 sau ~4 đợt, cấp 20 sau ~14 đợt
+  nhất có thể và đếm vào `SoQuaiXaDungKhoang`. ⚠️ **Kinh nghiệm giết QUÁI ×1,62 so với gốc** (26/09/2026: +35% rồi +20% trên mức
+  đó, `CapDo.HeSoKnQuai` = 1,35 × 1,20 nhân `KnGocCuaQuai`; bộ xương 18 → 29 … quỷ khổng lồ 70 → 113; hạ người chơi vẫn 250) — chơi
+  một mình lên cấp 10 sau ~4 đợt, cấp 20 sau ~13 đợt
   (`kinhnghiem.md`). Menu 60, 56 (2 người → 30 con), 64 kiểm.
   **Sau 60 giây con vòng ngoài nào còn sống tự truy lùng người gần nhất** (`EnemyAI.HenTruyLung`, bỏ giới hạn
   `aggroRange` 14 m); đang truy lùng mà kẹt thì vòng vật cản, kẹt mãi thì đổi chỗ sang 10–14 m cạnh người chơi,

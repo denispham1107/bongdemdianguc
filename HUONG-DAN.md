@@ -8622,6 +8622,10 @@ giống cách game đếm "4 con quanh mỗi người" — người đã chết 
 | Menu 56 (2 người) | mỗi đợt đúng **30** con vòng ngoài, 30/30 nằm trong 20–25 m, 0 lơ lửng, 0 dưới nước; tổng đợt 1 = 38; 0 lỗi |
 | Menu 64 (1 người) | đợt đầu đúng **20** con vòng ngoài; 0 lỗi |
 
+**Cùng ngày anh xin thêm +20%**, chọn "trên mức hiện tại": hệ số thành 1,35 × 1,20 = **1,62** so với gốc — bộ xương 29, xác sống 32,
+quỷ lùn 36, quỷ cây 49, phù thủy 52, quỷ dữ 65, quỷ khổng lồ 113 (cả bảng ×1,621, 232 → 376). Một mình: cấp 10 sau ~4 đợt, cấp 20
+sau ~13 đợt. Menu 60 so với bảng gốc chép tay: 7/7 đúng, giết quái thật nhận đúng số mới, 0 lỗi.
+
 ### Tàng hình 90 giây, vòng phép nổ lúc hiện hình (26/09/2026)
 
 Anh gửi ảnh một vòng phép xanh dưới chân (hai vòng tròn, sao năm cánh, ký hiệu, đuôi mũi tên) và xin: tàng hình **90 giây**; **lúc kết
