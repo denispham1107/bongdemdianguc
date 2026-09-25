@@ -32,6 +32,14 @@ using UnityEngine;
 ///      khong phai chi cu trung dau tien (neu vay ti le se la 1,03 va 1,20).
 ///   L. Co "don dau tang hinh" di qua goi phep: viet-doc lai dung; ban sao phat lai phep theo goi co co thi x2; goi
 ///      minh gui di khi danh don dau co mang co.
+///   ⚠️ 26/09/2026: tang hinh 90 GIAY; hoi chieu 10 giay dem tu luc HIEN HINH (dang tang hinh bam lai bi tu choi, o ky nang giu
+///      day); het tang hinh (het gio HOAC don dau) no VONG PHEP 5 m: 100 + 10% mau TOI DA, +4%/cap.
+///   V. Vong phep: bia co mau toi da khac nhau, mau hien tai chi con mot nua (phan biet "mau toi da" voi "mau hien tai"), mot bia
+///      NGOAI 5 m, nguoi tung dung giua -> moi bia trong vong mat DUNG 100 + 10% mau toi da, bia ngoai 0, nguoi tung 0; hinh:
+///      co tam vong phep, vong ngoai cua anh dung 5 m (do khung bao luoi that); cap 5 (tung THAT) -> 100 + 26%; tan do DON DAU
+///      (Qua cau lua) cung no vong; het tang hinh -> hoi chieu 10 giay bat dau dem.
+///   W. Ban sao nguoi khac: het tang hinh -> vong no tren may nay; bit "tang hinh" CU con tre trong goi tin ngay sau do khong
+///      tao lai tang hinh (khong co vong thu hai).
 ///   I. Qua mang: minh tang hinh -> goi trang thai mang bit CoTangHinh (mat na goi len 0x3F); ban sao nhan bit -> co TangHinh,
 ///      dung yen thi renderer tat, di chuyen thi bat lai.
 ///
@@ -197,9 +205,10 @@ public static class ThuTangHinh
             bo != null && bo.Length > K && bo[K] != null ? "co" : "KHONG", tIcon != null ? tIcon.width + "x" + tIcon.height : "KHONG"));
         Kiem(K == 12 && CapDo.SoKyNang == SachPhep.SoKyNangCoTen(), "so hieu sai, hoac co ky nang khong co ten");
         Kiem(Mathf.Approximately(toi.tangHinhCost, 30f) && Mathf.Approximately(nl, 30f), "nang luong khong phai 30");
-        Kiem(Mathf.Approximately(toi.tangHinhCooldown, 30f) && Mathf.Approximately(hc, 30f), "hoi chieu khong phai 30 giay");
-        Kiem(Mathf.Approximately(TangHinh.ThoiGian, 20f) && Mathf.Approximately(TangHinh.HeSoToc, 1.2f) && Mathf.Approximately(TangHinh.NhanDonDau, 2f),
-             "hang so tang hinh sai (20 s / 1,2 / x2)");
+        Kiem(Mathf.Approximately(toi.tangHinhCooldown, 10f) && Mathf.Approximately(hc, 10f), "hoi chieu khong phai 10 giay");
+        Kiem(Mathf.Approximately(TangHinh.ThoiGian, 90f) && Mathf.Approximately(TangHinh.HeSoToc, 1.2f) && Mathf.Approximately(TangHinh.NhanDonDau, 2f),
+             "hang so tang hinh sai (90 s / 1,2 / x2)");
+        Kiem(SachPhep.MoTa(K).Contains("90 giây") && SachPhep.MoTa(K).Contains("VÒNG PHÉP") && SachPhep.MoTa(K).Contains("10 giây"), "Sach phep chua ghi 90 giay / vong phep / hoi chieu 10");
         Kiem(bo != null && bo.Length == CapDo.SoKyNang && bo[K] != null && tIcon != null, "thieu icon Tang hinh");
         Kiem(SachPhep.Ten(K) == "TÀNG HÌNH" && SachPhep.MoTa(K).Length > 100, "Sach phep thieu chu Tang hinh");
 
@@ -223,16 +232,34 @@ public static class ThuTangHinh
         float manaTon = manaTruoc - toi.mana;      // doc NGAY: doi 0,6 giay thi nang luong da hoi lai mot it (lan dau do ra 24,5)
         yield return new WaitForSeconds(0.6f);
         var tg = toi.GetComponent<TangHinh>();
+        float conLaiNgay = tg != null ? tg.conLai : -1f;   // doc NGAY 0,6 s sau khi tung (anh vong phep phia duoi cho them vai giay)
         float hoiNgaySau = toi.HoiChieuGiay(K);
         int shaderSau = DemShaderTangHinh(toi.gameObject);
         yield return Chup("tanghinh_1_dang_tang_hinh");
+        // Anh vong phep o GOC CHOI THAT luc canh con SACH (anh muc V chup sau nhieu muc thu - khoi / hieu ung sot che mat nua xa)
+        {
+            Vector3 choAnh = toi.transform.position + huong * 7f; choAnh.y = VfxFactory.GroundY(choAnh);
+            VfxFactory.VongPhepTangHinh(choAnh, TangHinh.BanKinhVong);
+            yield return new WaitForSeconds(0.35f);
+            yield return Chup("tanghinh_6_vong_phep_goc_choi");
+            yield return new WaitForSeconds(1.8f);
+        }
+        // Dang tang hinh bam lai: bi tu choi, khong ton nang luong; o ky nang giu DAY 10 giay
+        toi.mana = toi.maxMana;
+        int sLai = soPhep; float manaLai = toi.mana;
+        toi.CastAt(K, toi.transform.position);
+        bool tuChoiKhiDang = soPhep == sLai && Mathf.Approximately(toi.mana, manaLai);
+        yield return new WaitForSeconds(1.0f);
+        float hoiSau1s = toi.HoiChieuGiay(K);
+        Ghi(string.Format("B. dang tang hinh bam lai -> tu choi {0}; hoi chieu giu day: ngay sau {1:F2} s, 1 giay sau van {2:F2} s (mong 10)", tuChoiKhiDang, hoiNgaySau, hoiSau1s));
+        Kiem(tuChoiKhiDang, "dang tang hinh ma van tung lai duoc");
+        Kiem(Mathf.Abs(hoiNgaySau - 10f) < 0.05f && Mathf.Abs(hoiSau1s - 10f) < 0.05f, "dang tang hinh ma hoi chieu khong giu day 10 giay");
         Ghi(string.Format("B. khoa -> tu choi {0}; mo khoa -> tung {1}, co trang thai TangHinh {2} (con {3:F1} s), ton {4} nang luong, hoi chieu ngay sau {5:F1} s",
-            tuChoiKhoa, soPhep == s0 + 1 && kyVua == K, tg != null, tg != null ? tg.conLai : -1f, manaTon, hoiNgaySau));
+            tuChoiKhoa, soPhep == s0 + 1 && kyVua == K, tg != null, conLaiNgay, manaTon, hoiNgaySau));
         Ghi(string.Format("C. renderer dung shader tang hinh: truoc khi bat {0}, sau khi bat {1}", shaderTruoc, shaderSau));
         Kiem(tuChoiKhoa, "ky nang khoa ma van tung duoc");
-        Kiem(tg != null && tg.conLai > 18f, "tung xong khong vao trang thai tang hinh 20 giay");
+        Kiem(tg != null && conLaiNgay > 88f, "tung xong khong vao trang thai tang hinh 90 giay");
         Kiem(Mathf.Abs(manaTon - 30f) < 0.01f, "khong ton dung 30 nang luong");
-        Kiem(hoiNgaySau > 28f, "hoi chieu khong phai 30 giay");
         Kiem(shaderTruoc == 0 && shaderSau > 0, "than nguoi khong doi sang shader tang hinh");
 
         // ================= E. MIEN HIEU UNG (dang tang hinh) =================
@@ -621,6 +648,137 @@ public static class ThuTangHinh
             Kiem(Mathf.Abs(song - 1.2f) < 0.15f, "tang hinh khong tu tan dung han");
         }
 
+        // ================= V. VONG PHEP LUC HET TANG HINH =================
+        Ghi("");
+        {
+            var tc0 = toi.GetComponent<TangHinh>(); if (tc0 != null) tc0.Tat();
+            yield return new WaitForSeconds(1.8f);
+            Vector3 ngang = Vector3.Cross(Vector3.up, huong).normalized;
+            Vector3 tamV = toi.transform.position;
+            float[] mauMax = { 600f, 1000f, 300f };
+            float[] xa = { 2f, 4f, 4.8f };
+            var biaV = new List<Damageable>();
+            for (int i = 0; i < 3; i++)
+            {
+                Vector3 h = Quaternion.AngleAxis(i * 110f + 20f, Vector3.up) * huong;
+                var b = TaoBia("TAM_VongPhep" + i, tamV + h * xa[i]);
+                b.maxHealth = mauMax[i]; b.health = mauMax[i] * 0.5f;       // mau HIEN TAI chi mot nua -> tach "toi da" / "hien tai"
+                biaV.Add(b);
+            }
+            var biaNgoai = TaoBia("TAM_VongPhepNgoai", tamV + ngang * 5.6f);
+            biaNgoai.maxHealth = 800f; biaNgoai.health = 800f;
+            yield return null;
+            var truoc = new float[3]; for (int i = 0; i < 3; i++) truoc[i] = biaV[i].health;
+            float truocNgoai = biaNgoai.health, truocToi = mauToi.health;
+            int vong0 = TangHinh.SoLanNoVong, hinh0 = VfxFactory.SoVongPhepDaBat;
+            // Cap 1: bat bang tay (khong qua CastAt) - cap mac dinh 1
+            var tv = TangHinh.Bat(mauToi, 30f);
+            int capV1 = tv != null ? tv.capKyNang : -1;
+            yield return new WaitForSeconds(0.3f);
+            // Ket thuc DONG BO roi doc mau ngay trong CUNG khung: cho het gio thi quai / chay trong canh chen don vao nguoi tung
+            // (lan chay thu hai: nguoi tung mat 22 trong luc cho). Duong "tu het gio" do o phan cap 5 ben duoi.
+            for (int i = 0; i < 3; i++) truoc[i] = biaV[i].health;
+            truocNgoai = biaNgoai.health; truocToi = mauToi.health;
+            if (tv != null) tv.Tat();
+            float matToiNgay = truocToi - mauToi.health;
+            var matNgay = new float[3]; for (int i = 0; i < 3; i++) matNgay[i] = truoc[i] - biaV[i].health;
+            float matNgoaiNgay = truocNgoai - biaNgoai.health;
+            yield return new WaitForSeconds(0.3f);             // qua pha hien + phong to 0,18 s
+            // Hinh: tam vong phep that, khung bao luoi (vong ngoai trong anh o 0,40 cua o) va do sang
+            GameObject vongGo = null;
+            foreach (var t in Object.FindObjectsByType<VongPhepSang>(FindObjectsInactive.Exclude)) vongGo = t.gameObject;
+            float banKinhVongThat = -1f, doSang = -1f, lechDatMax = -1f; int soDinhVong = 0;
+            if (vongGo != null)
+            {
+                // Luoi bam dat dung yen (xoay / phong to lam tren uv): canh = khung luoi theo X, vong ngoai = 0,40 / 0,5 nua canh.
+                // Va luoi phai BAM DAT: moi dinh cach mat dat that (tia CHI lop Ground, doc lap voi code dung luoi) ~6 cm
+                var lv = vongGo.GetComponent<MeshFilter>().sharedMesh;
+                banKinhVongThat = lv.bounds.size.x * 0.5f * (VfxFactory.BanKinhVongTrongAnh / 0.5f) * vongGo.GetComponent<VongPhepSang>().HeSoTo;
+                var dv = lv.vertices; lechDatMax = 0f; int soDinhDo = 0;
+                for (int i = 0; i < dv.Length; i++)
+                {
+                    Vector3 wv = vongGo.transform.TransformPoint(dv[i]);
+                    if (Physics.Raycast(wv + Vector3.up * 3f, Vector3.down, out RaycastHit hd, 8f, LayerMask.GetMask("Ground"), QueryTriggerInteraction.Ignore))
+                    { lechDatMax = Mathf.Max(lechDatMax, Mathf.Abs(wv.y - hd.point.y - VfxFactory.NangVongPhep)); soDinhDo++; }
+                }
+                soDinhVong = soDinhDo;
+                doSang = vongGo.GetComponent<VongPhepSang>().DoSang;
+            }
+            var camV = Camera.main; var rigV = camV != null ? camV.GetComponentInParent<CameraRig>() : null;
+            if (rigV != null) rigV.enabled = false;
+            if (camV != null) { camV.transform.position = tamV - huong * 9f + Vector3.up * 7f; camV.transform.LookAt(tamV); }
+            yield return null;
+            yield return Chup("tanghinh_5_vong_phep");
+            if (rigV != null) rigV.enabled = true;
+            var sb = new StringBuilder(); int dung = 0;
+            for (int i = 0; i < 3; i++)
+            {
+                float mat = matNgay[i], mong = 100f + 0.10f * mauMax[i];
+                sb.Append(string.Format("bia {0} m (toi da {1}, hien tai {2}): mat {3:F2} / mong {4:F2}; ", xa[i], mauMax[i], truoc[i], mat, mong));
+                if (Mathf.Abs(mat - mong) < 0.01f) dung++;
+            }
+            float matNgoai = matNgoaiNgay, matToi = matToiNgay;
+            Ghi("V. cap " + capV1 + ": " + sb);
+            Ghi(string.Format("V. bia NGOAI 5,6 m mat {0:F2}; nguoi tung mat {1:F2}; vong no {2} lan, hinh {3}; vong ngoai cua anh ve that ban kinh {4:F2} m (mong 5); do sang ngay sau {5:F2}",
+                matNgoai, matToi, TangHinh.SoLanNoVong - vong0, VfxFactory.SoVongPhepDaBat - hinh0, banKinhVongThat, doSang));
+            Kiem(capV1 == 1 && dung == 3, "sat thuong vong phep khong dung 100 + 10% MAU TOI DA");
+            Kiem(Mathf.Abs(matNgoai) < 0.01f && Mathf.Abs(matToi) < 0.01f, "vong phep danh ca bia ngoai 5 m / danh chinh minh");
+            Kiem(TangHinh.SoLanNoVong - vong0 == 1 && VfxFactory.SoVongPhepDaBat - hinh0 == 1 && vongGo != null, "het tang hinh khong no dung MOT vong phep");
+            Kiem(Mathf.Abs(banKinhVongThat - TangHinh.BanKinhVong) < 0.3f && doSang > 0.5f, "hinh vong phep sai co / khong sang");
+            Ghi(string.Format("V. luoi vong phep BAM DAT: {0} dinh do duoc, lech khoi (mat dat that + 6 cm) toi da {1:F3} m", soDinhVong, lechDatMax));
+            Kiem(soDinhVong > 400 && lechDatMax < 0.02f, "vong phep khong bam mat dat (dat go ghe se che mat vong)");
+
+            // Hoi chieu bat dau dem khi het tang hinh (tang hinh bat bang tay khong dat hoi chieu -> dung CastAt o duoi)
+            // Cap 5 TUNG THAT: cap di vao TangHinh qua Release
+            CapDo.ThemDiemChoPhepThu(4);
+            for (int i = 0; i < 4; i++) CapDo.NangCap(K);
+            int capNay = CapDo.CapCuaKyNang(K);
+            // 70% (khong phai 50%): cap 5 danh 100 + 26% - bia 300 mau con 150 thi CHET giua phep do (lan dau: mat 150, bia bi xoa,
+            // ngoai le lam chet coroutine, Play ket)
+            foreach (var b in biaV) b.health = b.maxHealth * 0.7f;
+            for (int i = 0; i < 3; i++) truoc[i] = biaV[i].health;
+            yield return new WaitForSeconds(10.5f);          // qua hoi chieu cua lan tung that o muc B
+            toi.mana = toi.maxMana;
+            toi.CastAt(K, toi.transform.position);
+            yield return new WaitForSeconds(0.6f);
+            var t5 = toi.GetComponent<TangHinh>();
+            int capT5 = t5 != null ? t5.capKyNang : -1;
+            if (t5 != null) t5.conLai = 0.05f;
+            for (float h = Time.time + 2f; Time.time < h && toi.GetComponent<TangHinh>() != null; ) yield return null;
+            float hoi0 = toi.HoiChieuGiay(K);
+            yield return new WaitForSeconds(1.0f);
+            float hoi1 = toi.HoiChieuGiay(K);
+            var sb5 = new StringBuilder(); int dung5 = 0;
+            for (int i = 0; i < 3; i++)
+            {
+                float mat = truoc[i] - biaV[i].health, mong = 100f + 0.26f * mauMax[i];
+                sb5.Append(string.Format("mat {0:F2} / mong {1:F2}; ", mat, mong));
+                if (Mathf.Abs(mat - mong) < 0.01f) dung5++;
+            }
+            Ghi(string.Format("V. cap {0} tung THAT (TangHinh.capKyNang {1}): {2}", capNay, capT5, sb5));
+            Ghi(string.Format("V. het tang hinh -> hoi chieu ngay luc het {0:F2} s, 1 giay sau {1:F2} s (mong 10 roi dem xuong)", hoi0, hoi1));
+            Kiem(capNay == 5 && capT5 == 5 && dung5 == 3, "cap 5 khong ra 100 + 26% mau toi da");
+            Kiem(hoi0 > 9.8f && hoi0 <= 10.01f && Mathf.Abs((hoi0 - hoi1) - 1f) < 0.1f, "het tang hinh ma hoi chieu 10 giay khong bat dau dem");
+
+            // Tan do DON DAU (Qua cau lua) cung no vong
+            yield return new WaitForSeconds(9.5f);
+            CapDo.MoCaDuongChoPhepThu(0);
+            toi.mana = toi.maxMana;
+            toi.CastAt(K, toi.transform.position);
+            yield return new WaitForSeconds(0.6f);
+            int vongD0 = TangHinh.SoLanNoVong;
+            toi.mana = toi.maxMana;
+            toi.CastAt(0, toi.transform.position + huong * 8f);
+            for (float h = Time.time + 2f; Time.time < h && toi.GetComponent<TangHinh>() != null; ) yield return null;
+            yield return new WaitForSeconds(0.2f);
+            Ghi(string.Format("V. tan do don dau (Qua cau lua): con tang hinh {0}, vong no them {1}", toi.GetComponent<TangHinh>() != null, TangHinh.SoLanNoVong - vongD0));
+            Kiem(toi.GetComponent<TangHinh>() == null && TangHinh.SoLanNoVong - vongD0 == 1, "tan do don dau ma khong no vong phep");
+
+            foreach (var b in biaV) if (b != null) Object.Destroy(b.gameObject);
+            if (biaNgoai != null) Object.Destroy(biaNgoai.gameObject);
+            yield return new WaitForSeconds(0.5f);
+        }
+
         // ================= I. QUA MANG =================
         Ghi("");
         TranHienTai.DangChoiMang = true;
@@ -782,9 +940,41 @@ public static class ThuTangHinh
             }
 
             var tkia = kia.GetComponent<TangHinh>(); if (tkia != null) tkia.Tat();
+
             Object.DestroyImmediate(goDb);
+
             if (kia != null) Object.Destroy(kia.gameObject);
         }
+        // ================= W. VONG PHEP CUA BAN SAO =================
+        Ghi("");
+            // W. BAN SAO MOI TINH (ban sao cua muc I con mang goi phep Tang hinh gia lap cu - bi bat lai 90 giay giua chung, lan chay 4): het tang hinh -> vong no tren may nay; bit cu tre sau do KHONG tao lai tang hinh (khong vong thu hai)
+            {
+                var kiaW = NguoiChoiKhac.Sinh("uid-tanghinh-w", "Người W", toi.transform.position + vuong * 6f);
+                var dk = kiaW != null ? kiaW.GetComponent<Damageable>() : null;
+                if (dk == null) { Ghi("[LOI] W: khong sinh duoc ban sao moi"); loi++; }
+                else {   // (khong yield break: bo qua Ket thi Play ket mai)
+                // TAT MOI bo dong bo tran con song (ngoai goDb con bo tu gan khi DangChoiMang): chung ap lai co 'dang tang hinh'
+                // cua goi cuoi moi goi -> tang hinh ban sao khong bao gio het (lan chay 2 va 3 bao sai). W tu dong vai goi tin.
+                var dbTat = new List<DongBoTran>();
+                foreach (var dbW in Object.FindObjectsByType<DongBoTran>(FindObjectsInactive.Exclude)) if (dbW.enabled) { dbW.enabled = false; dbTat.Add(dbW); }
+                var tkCu = kiaW.GetComponent<TangHinh>(); if (tkCu != null) tkCu.Tat();
+                yield return new WaitForSeconds(TangHinh.GiayBoQuaBitCu + 0.2f);   // qua khoang bo qua bit cu cua lan Tat o tren
+                int w0 = TangHinh.SoLanNoVong;
+                TangHinh.ApTuMang(dk, 0.3f);
+                bool coTH = kiaW.GetComponent<TangHinh>() != null;
+                for (float h = Time.time + 2f; Time.time < h && kiaW.GetComponent<TangHinh>() != null; ) yield return null;
+                int w1 = TangHinh.SoLanNoVong;
+                TangHinh.ApTuMang(dk, 0.3f);                     // goi tin tre van mang bit "dang tang hinh"
+                bool taoLai = kiaW.GetComponent<TangHinh>() != null;
+                yield return new WaitForSeconds(0.6f);
+                int w2 = TangHinh.SoLanNoVong;
+                Ghi(string.Format("W. ban sao: nhan bit -> tang hinh {0}; het -> vong no {1}; bit cu tre ngay sau -> tao lai tang hinh {2}, vong them {3}", coTH, w1 - w0, taoLai, w2 - w1));
+                Kiem(coTH && w1 - w0 == 1, "ban sao het tang hinh ma khong no vong phep tren may nay");
+                Kiem(!taoLai && w2 == w1, "bit tang hinh cu lam ban sao no vong phep thu hai");
+                foreach (var dbW in dbTat) if (dbW != null) dbW.enabled = true;
+                }
+                if (kiaW != null) Object.Destroy(kiaW.gameObject);
+            }
         TranHienTai.DangChoiMang = false;
 
         var tCuoi = toi.GetComponent<TangHinh>(); if (tCuoi != null) tCuoi.Tat();

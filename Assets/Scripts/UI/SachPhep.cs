@@ -345,7 +345,7 @@ public static class SachPhep
             case CapDo.KyQuaCauBang: return "Ba quả băng, 40% đóng băng";
             case CapDo.KyGioLoc: return "Một cơn lốc, 80% hất tung";
             case CapDo.KyLuaDiaNguc: return "Năm quả lửa tự đuổi kẻ địch";
-            case CapDo.KyTangHinh: return "Trong suốt 20 giây, đòn sau gấp đôi";
+            case CapDo.KyTangHinh: return "Trong suốt 90 giây, hiện hình nổ vòng phép";
             case CapDo.KyCauDien: return "Cầu điện bắn 10 lượt, mỗi lượt 5 tia";
             case CapDo.KyHoaLocXoay: return "Hoá Gió lốc đang bay thành Lốc xoáy";
             case CapDo.KyTocBien: return "Dịch chuyển tức thời trong 15 m";
@@ -505,13 +505,16 @@ public static class SachPhep
             case CapDo.KyTangHinh:
                 return "Cả thân người hoá trong suốt: quái vật KHÔNG THẤY và không đánh bạn nữa. Người chơi khác chỉ thấy "
                      + "vài đường nét mờ khi bạn DI CHUYỂN; bạn đứng yên thì họ không thấy gì.\n\n"
-                     + "Trong 20 giây tàng hình, bạn MIỄN mọi hiệu ứng (đóng băng, làm chậm, choáng, ngã, hất tung, thiêu đốt) — "
+                     + "Trong 90 giây tàng hình, bạn MIỄN mọi hiệu ứng (đóng băng, làm chậm, choáng, ngã, hất tung, thiêu đốt) — "
                      + "các hiệu ứng đang dính cũng bị xoá — và đi nhanh hơn 20%. Vẫn mất máu nếu bị đánh trúng.\n\n"
                      + "Kỹ năng GÂY SÁT THƯƠNG đầu tiên bạn tung ra mạnh GẤP ĐÔI — TOÀN BỘ sát thương của kỹ năng ấy, "
                      + "nghĩa là mọi vệt Mưa băng rơi xuống, mọi quả cầu trong chùm, cả sát thương cháy theo sau. Ngay lúc "
                      + "tung ra, tàng hình tan. Khiên, bình máu và bình mana không làm tan tàng hình.\n\n"
                      + "Hai giây cuối, thân bạn NHẤP NHÁY để bạn biết sắp hiện hình — chỉ mình bạn thấy dấu hiệu này.\n\n"
-                     + "Hồi chiêu 30 giây.";
+                     + "Lúc HIỆN HÌNH (hết giờ hoặc tan vì đòn đầu tiên), một VÒNG PHÉP sáng xanh bùng lên dưới chân, gây "
+                     + "sát thương MỘT LẦN cho mọi kẻ địch trong 5 m: 100 + " + (int)Mathf.Round(100f * (TangHinh.PhanTramMauCap1 + TangHinh.PhanTramMoiCap * (CapHienThi(CapDo.KyTangHinh) - 1)))
+                     + "% máu tối đa của kẻ ấy (cấp 1 là 10%, mỗi cấp thêm 4%). Vòng phép thuộc hệ BĂNG: Kháng Băng giảm sát thương này.\n\n"
+                     + "Hồi chiêu 10 giây, bắt đầu đếm khi bạn HIỆN HÌNH — đang tàng hình thì không dùng lại được.";
             case CapDo.KyKhangLua:
                 return "Da thịt bạn quen với lửa. Mọi sát thương từ kỹ năng hệ LỬA của người chơi khác — "
                      + "Quả cầu lửa, Thiên thạch, Lửa địa ngục, và cả vệt cháy chúng để lại — đều nhẹ bớt.\n\n"

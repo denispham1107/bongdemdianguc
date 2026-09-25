@@ -8603,6 +8603,44 @@ châm cả bia mộ / nhà mồ (tính năng sáng nay), đầy trần "4 vật 
 
 Ảnh: `PlayTestShots/maygiong_1_dem_can.png`, `maygiong_2_chay_den.png`, `maygiong_3_ngay_goc_choi.png`.
 
+### Tàng hình 90 giây, vòng phép nổ lúc hiện hình (26/09/2026)
+
+Anh gửi ảnh một vòng phép xanh dưới chân (hai vòng tròn, sao năm cánh, ký hiệu, đuôi mũi tên) và xin: tàng hình **90 giây**; **lúc kết
+thúc** phát vòng sáng ấy (dựng bằng Blender MCP) và gây sát thương **một lần** cho kẻ địch: **100 + 10% máu** ở cấp 1, **mỗi cấp +4%**.
+Anh chọn: nổ khi kết thúc **bằng cả hai cách** (hết giờ, hoặc tan do đòn đầu); **máu tối đa**; vòng **5 m**; hồi chiêu **đang tàng hình
+không bấm lại được, hiện hình xong đếm 10 giây** (trước 30 giây từ lúc bấm).
+
+**Ảnh (Blender MCP, `tang_hinh_vong_phep.blend`).** 54 đường cong phát sáng (vòng đôi, sao, vòng nhỏ ở đỉnh, trăng khuyết, ký hiệu chạc
+ba, đuôi mũi tên) + đĩa sương mờ xanh; compositor **Fog Glow** (Blender 5.2: `scene.compositing_node_group`, Render Layers → Glare →
+Group Output). Nền **đen** để dùng cộng sáng. Quầng sáng loang tới tận mép ảnh (3–17/255) nên trong game hiện một **ô vuông mờ** quanh
+vòng — trừ mức nền và cho mờ dần về 0 ngoài bán kính vòng (xử lý ngay trong Blender).
+
+**Vòng phép phải BÁM ĐẤT.** Bản đầu là một tấm phẳng ở độ cao chân nhân vật; ảnh ở góc chơi thật cho thấy chỗ đất Act2 cao hơn **che
+mất cả nửa vòng** (ảnh chụp sau nhiều mục thử còn trông như "mảng đen"). Nay là lưới 24 × 24 ô, mỗi đỉnh bắn tia **chỉ lớp Ground**
+rồi nâng 6 cm; xoay và phóng to làm trên toạ độ ảnh (đổi UV mỗi khung) để lưới đứng yên trên đất.
+
+**Sát thương** là loại "vật lý" nhưng ghi hệ **BĂNG** cho Kháng Băng (Tàng hình thuộc nhóm Băng): quái có kháng băng ±25%, dùng loại
+băng thì con số "100 + 10%" lệch theo từng con.
+
+**Hai lỗi thật phép thử bắt được:**
+1. **Người khác hiện hình rồi mà trên máy mình vẫn tàng hình thêm cả chục giây.** Bản sao nhận bit "đang tàng hình" thì tạo trạng thái
+   mới — trường thời gian còn lại khai báo sẵn bằng `ThoiGian` — rồi lấy `Max` với 0,35 s: ra **20 s** (nay sẽ là 90 s). Cùng loại bẫy
+   "AddComponent mang giá trị mặc định" đã ghi. Sửa: trạng thái mới đặt đúng 0,35 s.
+2. **Vòng phép thứ hai:** ngay sau khi vòng nổ trên bản sao, gói tin trễ vẫn còn bit "đang tàng hình" → tạo lại tàng hình → hết giờ →
+   nổ thêm một vòng. Nay bỏ qua bit ấy 1,5 s sau khi nổ.
+
+| Đo (menu 73, 0 lỗi) | Kết quả |
+|---|---|
+| Thời gian · hồi chiêu | tàng hình 90 s; đang tàng hình bấm lại → từ chối, ô giữ **10,00 s**; hiện hình → **9,93 s** rồi 8,93 s sau 1 giây |
+| Cấp 1 | bia tối đa 600 / 1000 / 300 (máu hiện tại còn một nửa) mất **160 / 200 / 130** = 100 + 10% máu TỐI ĐA |
+| Cấp 5 (tung thật) | **256 / 360 / 178** = 100 + 26% |
+| Ngoài vùng · chính mình | bia 5,6 m mất 0; người tung mất 0 |
+| Tan do đòn đầu (Quả cầu lửa) | nổ thêm đúng 1 vòng |
+| Hình | vòng ngoài vẽ thật bán kính **5,00 m**; 625 đỉnh lưới lệch khỏi (mặt đất thật + 6 cm) **0,000 m** |
+| Bản sao | hết tàng hình → nổ 1 vòng trên máy này; bit cũ trễ → không tạo lại, không vòng thứ hai |
+
+Ảnh: `PlayTestShots/tanghinh_6_vong_phep_goc_choi.png` (góc chơi, cảnh sạch).
+
 ### Mây giông: hồi chiêu 5,5 s, bỏ cột khói, mây to hơn, mưa dập lò, mây tự bay 4 giây (26/09/2026)
 
 Anh chơi thử rồi xin: hồi chiêu **5,5 giây**; **bỏ cột mây và quầng mây dưới đất**; đám mây **to hơn 15%**; **mưa rơi trúng lò lửa

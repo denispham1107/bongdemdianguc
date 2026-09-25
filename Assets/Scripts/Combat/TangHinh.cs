@@ -8,14 +8,37 @@ using UnityEngine;
 /// DUONG NET khi minh DI CHUYEN, minh dung yen thi ho khong thay gi; mien MOI hieu ung; di nhanh hon 20%; keo 20 giay;
 /// don danh dau tien bang mot ky nang gay sat thuong an GAP DOI sat thuong va lam tan tang hinh; hoi chieu 30 giay.
 ///
+/// 26/09/2026 (nguoi dung, kem anh vong phep xanh): keo 90 GIAY; KET THUC (het gio HOAC tan do don dau - chon "ca hai") thi
+/// NO VONG PHEP duoi chan (<see cref="VfxFactory.VongPhepTangHinh"/>, anh Blender) va gay sat thuong MOT LAN cho moi doi thu
+/// trong 5 m: 100 + 10% MAU TOI DA (chon "mau toi da"), moi cap them 4% (cap 5: 26%). Hoi chieu: dang tang hinh khong bam lai
+/// duoc, HIEN HINH XONG moi dem 10 giay (nguoi dung doi tu 30). He BANG (nhom cua Tang hinh): Khang Bang giam; loai sat thuong
+/// Physical de khang bang +-25% cua quai khong lam lech con so "100 + 10%".
+/// Qua mang: phep Tang hinh duoc phat lai tren may kia kem CAP nguoi tung (capKyNang) -> ban sao cung het gio / tan do don dau
+/// -> vong no tren moi may, moi may tinh sat thuong theo luat trong tai nhu cac phep khac.
+///
 /// Hinh: thay TOAN BO vat lieu cua model bang <see cref="Mats.TangHinhShader"/> (giu ban goc de tra lai) - khac
 /// <see cref="FrozenEffect"/> (chi PHU THEM mot lop vo bang). Phu them thi than nguoi van hien nguyen, khong the "trong suot".
 /// </summary>
 [DisallowMultipleComponent]
 public class TangHinh : MonoBehaviour
 {
-    public const float ThoiGian = 20f;
-    public const float HoiChieu = 30f;
+    public const float ThoiGian = 90f;
+    /// <summary>Hoi chieu - dem tu luc HIEN HINH (PlayerController giu day suot luc tang hinh).</summary>
+    public const float HoiChieu = 10f;
+    /// <summary>Vong phep luc het tang hinh: ban kinh, sat thuong goc, % mau toi da o cap 1, % them moi cap.</summary>
+    public const float BanKinhVong = 5f, SatThuongVongGoc = 100f, PhanTramMauCap1 = 0.10f, PhanTramMoiCap = 0.04f;
+
+    /// <summary>Sat thuong vong phep len mot doi thu co <paramref name="mauToiDa"/> mau, cap ky nang <paramref name="cap"/>.</summary>
+    public static float SatThuongVong(float mauToiDa, int cap)
+    {
+        cap = Mathf.Clamp(cap, 1, CapDo.CapKyNangToiDa);
+        return SatThuongVongGoc + mauToiDa * (PhanTramMauCap1 + PhanTramMoiCap * (cap - 1));
+    }
+
+    /// <summary>Cap Tang hinh cua NGUOI TUNG (ban sao lay tu goi phep) - quyet dinh % mau cua vong phep.</summary>
+    public int capKyNang = 1;
+    bool daNoVong;
+    public static int SoLanNoVong, SoKeTrungVong;
     public const float HeSoToc = 1.2f;
     /// <summary>Don dau tien nhan doi sat thuong (nguoi dung chon "gap 2 lan").</summary>
     public const float NhanDonDau = 2f;
@@ -93,23 +116,68 @@ public class TangHinh : MonoBehaviour
     public static void ApTuMang(Damageable d, float giuSong)
     {
         if (d == null || d.IsDead) return;
+        float lucNo;
+        if (lucNoVong.TryGetValue(d, out lucNo) && Time.time - lucNo < GiayBoQuaBitCu) return;   // bit cu tre sau khi vong da no
         var t = d.GetComponent<TangHinh>();
         if (t == null)
         {
             t = d.gameObject.AddComponent<TangHinh>();
             t.conDonDau = false;
+            // Component MOI mang conLai MAC DINH = ThoiGian (90 s): lay Max voi giuSong la ban sao tang hinh them 90 giay sau khi
+            // nguoi ay da hien hinh (truoc 26/09/2026 la 20 s) - menu 73 muc W bat duoc. Dat DUNG giuSong.
+            t.conLai = giuSong;
         }
         t.tuMang = true;
         t.conLai = Mathf.Max(t.conLai, giuSong);
     }
 
-    /// <summary>Tan tang hinh ngay (danh don dau, hoac het gio).</summary>
+    /// <summary>Tan tang hinh ngay (danh don dau, hoac het gio) - no vong phep.</summary>
     public void Tat()
     {
         conLai = 0f;
         TraVatLieu();
+        NoVong();
         Destroy(this);
     }
+
+    /// <summary>
+    /// VONG PHEP luc het tang hinh: hinh + sat thuong MOT LAN cho moi doi thu (tru chinh minh) trong BanKinhVong (tinh mat ngang).
+    /// Chi goi tu Tat() (het gio / don dau) - chet hay roi tran (OnDestroy) thi khong no.
+    /// </summary>
+    void NoVong()
+    {
+        if (daNoVong) return;
+        daNoVong = true;
+        var toi = GetComponent<Damageable>();
+        if (toi == null || toi.IsDead) return;
+        var pc = GetComponent<PlayerController>();
+        LayerMask mask = pc != null ? pc.MatNaKeThu : LayerMask.GetMask("Enemy");
+        Vector3 tam = transform.position;
+        SoLanNoVong++;
+        lucNoVong[toi] = Time.time;
+        VfxFactory.VongPhepTangHinh(tam, BanKinhVong);
+        CameraShake.Shake(0.18f, 0.06f);
+
+        int n = Physics.OverlapSphereNonAlloc(tam + Vector3.up, BanKinhVong + 2f, boVong, mask, QueryTriggerInteraction.Collide);
+        dsVong.Clear();
+        for (int i = 0; i < n; i++)
+        {
+            var d = boVong[i].GetComponentInParent<Damageable>();
+            if (d == null || d == toi || d.IsDead || dsVong.Contains(d)) continue;
+            Vector3 v = d.transform.position - tam; v.y = 0f;
+            if (v.magnitude > BanKinhVong) continue;
+            dsVong.Add(d);
+            d.GhiKeDanh(toi, HeSat.Bang);          // TRUOC TakeDamage (kinh nghiem, bang diem); he BANG: Khang Bang giam
+            d.TakeDamage(SatThuongVong(d.maxHealth, capKyNang), DamageType.Physical, d.transform.position + Vector3.up);
+            SoKeTrungVong++;
+        }
+    }
+    /// <summary>Luc vong phep vua no cua tung nguoi - ban sao bo qua bit "dang tang hinh" con tre trong goi tin ngay sau do,
+    /// khong thi no tao lai tang hinh roi het gio them lan nua: VONG PHEP THU HAI tren may kia.</summary>
+    static readonly Dictionary<Damageable, float> lucNoVong = new Dictionary<Damageable, float>();
+    public const float GiayBoQuaBitCu = 1.5f;
+    static readonly Collider[] boVong = new Collider[64];
+    static readonly List<Damageable> dsVong = new List<Damageable>();
 
     public static void XoaHieuUngDangDinh(GameObject go)
     {

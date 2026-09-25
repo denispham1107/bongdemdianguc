@@ -101,7 +101,8 @@ public class PlayerController : MonoBehaviour
 
     [Header("Tang hinh (ky nang 12)")]
     public float tangHinhCost = 30f;
-    public float tangHinhCooldown = TangHinh.HoiChieu;      // 30 giay
+    // Doc THANG hang (thuoc tinh, khong luu duoc): doi 30 -> 10 ma de truong public thi prefab trong bo nho giu 30 (bay May giong)
+    public float tangHinhCooldown { get { return TangHinh.HoiChieu; } }   // 10 giay, dem tu luc HIEN HINH
     public float tangHinhCastTime = 0.38f;
 
     [Header("Qua cau dien (ky nang 13) - 10 luot x 5 tia")]
@@ -426,7 +427,9 @@ public class PlayerController : MonoBehaviour
         if (quaCauBangTimer > 0f) quaCauBangTimer -= dt;
         if (gioLocTimer > 0f) gioLocTimer -= dt;
         if (luaDiaNgucTimer > 0f) luaDiaNgucTimer -= dt;
-        if (tangHinhTimer > 0f) tangHinhTimer -= dt;
+        // Tang hinh: dang tang hinh thi GIU DAY hoi chieu (khong bam lai duoc), hien hinh xong moi dem 10 giay (26/09/2026)
+        if (TangHinh.Dang(this)) tangHinhTimer = tangHinhCooldown;
+        else if (tangHinhTimer > 0f) tangHinhTimer -= dt;
         if (cauDienTimer > 0f) cauDienTimer -= dt;
         if (mayGiongTimer > 0f) mayGiongTimer -= dt;
         if (hoaLocXoayTimer > 0f) hoaLocXoayTimer -= dt;
@@ -1380,7 +1383,9 @@ public class PlayerController : MonoBehaviour
         }
         else if (castingSkill == CapDo.KyTangHinh)
         {
-            TangHinh.Bat(health, TangHinh.ThoiGian);
+            var tgMoi = TangHinh.Bat(health, TangHinh.ThoiGian);
+            // Cap cua NGUOI TUNG (ban sao: tu goi phep) - quyet dinh % mau cua vong phep luc het tang hinh
+            if (tgMoi != null) tgMoi.capKyNang = capPhepDangTung;
         }
         else if (castingSkill == CapDo.KyTocBien)
         {
