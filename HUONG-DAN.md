@@ -8603,6 +8603,37 @@ châm cả bia mộ / nhà mồ (tính năng sáng nay), đầy trần "4 vật 
 
 Ảnh: `PlayTestShots/maygiong_1_dem_can.png`, `maygiong_2_chay_den.png`, `maygiong_3_ngay_goc_choi.png`.
 
+### Mây giông: cột khói xuống tận mặt đất, tia sét y như Giựt sét (25/09/2026, chiều)
+
+Anh gửi thêm một ảnh: đám mây có **cột khói rủ thẳng xuống tận mặt đất**, tia sét đan quanh cột; và xin **tia giống hệt tia
+Giựt sét**. Anh chọn "một cột khói giữa vùng" và "đúng y Giựt sét".
+
+**Cột khói (Blender MCP, `may_giong.blend`, vật liệu `MG_Cot`).** Bốn cột trong một ảnh 2×2 (`CotMay.png`, mỗi ô 512×1024):
+đường tâm uốn chữ S, thân rộng dần lên chỗ nhập vào mây, chân loe nhẹ; mép lồi lõm theo nhiễu 4D, bên trong có sợi dọc và mảng
+sáng tối. Bản đầu mép thẳng như cái đồng hồ cát; bản hai bồng bềnh nhưng vào game **gần như không thấy** (ở góc chơi chỉ là
+một vệt xám nhạt sau lò lửa) — bản ba đặc hơn, thân rộng hơn, màu sáng hơn thì hiện rõ cả ngày lẫn đêm. Trong game: 3 lớp hạt
+**dựng đứng** (VerticalBillboard — luôn quay về máy quay nhưng không nghiêng), rộng 5 m, từ 0,35 m dưới đất tới 1,2 m trong
+mây, cộng khói cuộn nhỏ trôi dọc cột.
+
+**Tia sét.** Bản trước dùng chung hàm vẽ tia của Giựt sét nhưng tự đặt thông số riêng: dày ×1,7, quầng xanh nhạt mặc định,
+sống 0,30–0,42 s, 4–6 nhánh, thêm loé hình sao chạm đất. Nay gọi đúng như Giựt sét: bề ngang ×1, quầng xanh đậm của người
+chơi, sống 0,6 s, 2 nhánh; bỏ loé hình sao (Giựt sét đã có cụm điện bùng ở đầu tia).
+
+**Phép kiểm độc lập.** Không so tia Mây giông với các hằng số trong code (sai chung thì vẫn "khớp"). Menu 83 mục I **tung
+Giựt sét thật** từ nhân vật rồi chụp thông số tia bay ra. Lần đầu nó bắt nhầm **tia loé phụ lúc niệm** ở tay (sống 0,08–0,11 s,
+không có ảnh Blender) — nên phép thử nay ghi hết mọi kiểu tia bay ra và chỉ so với tia chính.
+
+| Đo (menu 83, 0 lỗi) | Kết quả |
+|---|---|
+| Tia chính Giựt sét thật | ảnh Blender · bề ngang 0,700 · lõi 0,160 · quầng 0,420 · quầng (0,14 0,34 1) · 0,60 s · 2 nhánh · bùng 0,45/1,20 |
+| Tia Mây giông | **y hệt từng số**; 20/20 tia cùng một kiểu |
+| Cột khói | 3 lớp dựng đứng, rộng 5,3 m; hạt từ −0,35 m tới 8,20 m (đáy mây 6,5 m) |
+| Chân khói thấy được | đọc thẳng file PNG: khói bắt đầu ở 2,7% chiều cao ô → **−0,12 m**, tức chạm đất |
+| Khói cuộn dọc cột | 13 hạt |
+| Các mục cũ | 20 tia · 0,250 s/tia · mọi lần trúng là bội số 125 · hất ngã 39,8–49,4% qua ba lần chạy (~260 lần trúng mỗi lần; độ lệch chuẩn ≈ 3,1% quanh 45%) · cháy đen 3,02 s — không đổi |
+
+Ảnh: `PlayTestShots/maygiong_3_ngay_goc_choi.png`, `maygiong_4_dem_goc_choi.png` (mới — ban đêm ở góc chơi thật).
+
 ### Lốc xoáy dựng lại bằng Blender theo ảnh mẫu (25/09/2026)
 
 Anh gửi hai ảnh cơn lốc xám trắng với nhiều tia sét trắng xanh và xin "dựng lại giống như trên hình 100%, lốc cuốn lên chỉ

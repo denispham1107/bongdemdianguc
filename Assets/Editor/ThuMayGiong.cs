@@ -16,13 +16,16 @@ using UnityEngine;
 ///   A. Thong so: so hieu 21, 22 ky nang, ten / tom tat / mo ta co dau, nhom PHONG, icon, 50 / 7 / 0,5, tam = Sam set (12),
 ///      vung ngam 6 m, khong dieu kien mo khoa, tinh la ky nang gay sat thuong (Tang hinh x2).
 ///   B. Tung that: ton 50, hoi chieu 7, may hien DUNG cho ngam; bam lai -> tu choi. Ngam 25 m -> may o 12 m (kep tam).
-///   C. Nhip: dung 20 tia trong ~5 giay (tia dau ~0,35 s, cach nhau 0,25 s), moi tia anh Blender nhieu nhanh.
+///   C. Nhip: dung 20 tia trong ~5 giay (tia dau ~0,35 s, cach nhau 0,25 s); moi tia cung MOT kieu (chup thong so).
 ///   D. Sat thuong: moi lan mat mau cua bia la BOI SO 125 (cap 1); ti le tia nham ke dich ~65%. DOI CHUNG vung trong: 0 tia nham.
 ///   E. Hat nga: ti le ~45% tren nhieu lan trung; do dai 0,85 s (cap 1).
 ///   F. Chay den: quai THAT (co SkinnedMeshRenderer) bi trung -> phu lop than den len MOI renderer; dam ~1; het 3 giay go SACH
 ///      (mang vat lieu tra lai dung nhu cu); chong voi vo bang thi go xong vo bang VAN CON.
 ///   G. Qua mang: TungPhepTheoMang(21) phat lai duoc.
-///   H. Hinh: may nam NGANG tren cao ~10 m, du dam may sang + xam, den; anh chup dem + ngay.
+///   H. Hinh: may nam NGANG tren cao 7 m, du dam may sang + xam, den; COT KHOI dung thang tu trong may xuong TAN MAT DAT
+///      (hat + do thang anh CotMay.png: hang diem anh thap nhat con khoi); khoi cuon doc cot; anh chup dem + ngay o goc choi.
+///   I. Tia GIONG Y GIUT SET (nguoi dung 25/09/2026): tung Giut set THAT tu nhan vat, chup thong so tia cua no, so voi tia
+///      May giong - khong so voi hang so trong code (phep kiem doc lap).
 ///
 /// Ket qua: PlayTestShots/maygiong.txt, anh maygiong_*.png.
 /// </summary>
@@ -35,6 +38,39 @@ public static class ThuMayGiong
     static bool truocBat;
     static EnterPlayModeOptions truocOpt;
     const int K = CapDo.KyMayGiong;
+    const int KyGiatSet = 6;
+    static string kieuMayGiong;
+
+    /// <summary>Thong so HINH cua mot tia (bo qua duong di/so khuc - hai thu ay theo do dai tia).</summary>
+    static string KieuTia(LightningArc a)
+    {
+        return string.Format("anhBlender {0} | beNgang {1:F3} | loi {2:F3} | quang {3:F3} | mauLoi {4} | mauQuang {5} | song {6:F2} s | nhanh {7} x {8:F2} | bung {9:F2}/{10:F2} | haoQuang {11:F3}",
+            a.anhBlender, a.beNgang, a.coreWidth, a.glowWidth, a.coreColor, a.glowColor, a.lifetime, a.branches, a.branchLength,
+            a.coBungDau, a.coBungCuoi, a.heSoHaoQuang);
+    }
+
+    /// <summary>Doc thang file PNG: hang diem anh THAP NHAT (tinh tu duoi o anh) con alpha > 0,25, lay o thap nhat trong 4 o.
+    /// Tra ve ti le 0..1 theo chieu cao o; -1 neu khong doc duoc.</summary>
+    static float TiLeChanKhoi(string duong)
+    {
+        if (!File.Exists(duong)) return -1f;
+        var t = new Texture2D(2, 2, TextureFormat.RGBA32, false);
+        if (!t.LoadImage(File.ReadAllBytes(duong))) return -1f;
+        int w = t.width / 2, h = t.height / 2; float tot = 1f;
+        var px = t.GetPixels32();
+        for (int o = 0; o < 4; o++)
+        {
+            int x0 = (o % 2) * w, y0 = (o / 2) * h;
+            for (int y = 0; y < h; y++)
+            {
+                bool co = false;
+                for (int x = 0; x < w && !co; x++) if (px[(y0 + y) * t.width + x0 + x].a > 64) co = true;
+                if (co) { tot = Mathf.Min(tot, y / (float)h); break; }
+            }
+        }
+        Object.DestroyImmediate(t);
+        return tot;
+    }
 
     [MenuItem("Diablo 2.5D/83. Chay thu MAY GIONG (ky nang moi)", false, 172)]
     public static void Chay()
@@ -45,7 +81,7 @@ public static class ThuMayGiong
             return;
         }
         Directory.CreateDirectory("PlayTestShots");
-        bao.Length = 0; loi = 0; daBatDau = false;
+        bao.Length = 0; loi = 0; daBatDau = false; kieuMayGiong = null;
         Ghi("[ban 1] May giong");
         canhCu = EditorSceneManager.GetActiveScene().path;
         if (canhCu != "Assets/Scenes/Act2.unity") EditorSceneManager.OpenScene("Assets/Scenes/Act2.unity");
@@ -202,7 +238,7 @@ public static class ThuMayGiong
 
         // C. dem tia + thoi diem, D. buoc mat mau tung bia moi khung
         var tiaCu = new HashSet<LightningArc>(Object.FindObjectsByType<LightningArc>(FindObjectsInactive.Exclude));
-        var lucTia = new List<float>(); int anhBlender = 0, nhieuNhanh = 0;
+        var lucTia = new List<float>(); int anhBlender = 0, cungKieu = 0;
         float lucMay = Time.time;
         var mauTruoc = new float[5]; for (int i = 0; i < 5; i++) mauTruoc[i] = bia[i].health;
         bool daChup = false;
@@ -215,7 +251,9 @@ public static class ThuMayGiong
                 if (!tiaCu.Add(a) || a.name != "TiaMayGiong") continue;
                 lucTia.Add(Time.time - lucMay);
                 if (a.anhBlender) anhBlender++;
-                if (a.branches >= 4) nhieuNhanh++;
+                string kieu = KieuTia(a);
+                if (kieuMayGiong == null) kieuMayGiong = kieu;
+                if (kieu == kieuMayGiong) cungKieu++;
             }
             for (int i = 0; i < 5; i++)
             {
@@ -238,8 +276,8 @@ public static class ThuMayGiong
         float khoangTB = lucTia.Count > 1 ? (lucTia[lucTia.Count - 1] - lucTia[0]) / (lucTia.Count - 1) : 0f;
         Ghi(string.Format("B. ton {0} nang luong, hoi chieu ngay sau {1:F2} s; bam lai ngay khi dang hoi chieu -> suot 6 giay chi {2} dam may; may hien sau {3:F2} s, lech cho ngam {4:F2} m",
             manaTon, hoiNgaySau, mayDaThay.Count, lucThay, lechCho));
-        Ghi(string.Format("C. {0} tia (bo dem {1}); tia dau {2:F2} s, tia cuoi {3:F2} s, cach nhau TB {4:F3} s; anh Blender {5}, >= 4 nhanh {6}",
-            lucTia.Count, soTia, lucTia.Count > 0 ? lucTia[0] : -1f, lucTia.Count > 0 ? lucTia[lucTia.Count - 1] : -1f, khoangTB, anhBlender, nhieuNhanh));
+        Ghi(string.Format("C. {0} tia (bo dem {1}); tia dau {2:F2} s, tia cuoi {3:F2} s, cach nhau TB {4:F3} s; anh Blender {5}, cung mot kieu {6}",
+            lucTia.Count, soTia, lucTia.Count > 0 ? lucTia[0] : -1f, lucTia.Count > 0 ? lucTia[lucTia.Count - 1] : -1f, khoangTB, anhBlender, cungKieu));
         Ghi(string.Format("D. {0} lan bia mat mau, boi so 125: {1}; tia nham ke dich {2}/{3} ({4:P0}, mong ~65%)",
             buocMat.Count, boiSo125, soNham, soTia, soTia > 0 ? soNham / (float)soTia : 0f));
         Kiem(Mathf.Abs(manaTon - 50f) < 0.01f && Mathf.Abs(hoiNgaySau - 7f) < 0.05f, "khong ton 50 / hoi chieu 7");
@@ -247,7 +285,7 @@ public static class ThuMayGiong
         Kiem(mayDaThay.Count == 1, "bam lai khi dang hoi chieu van ra may moi");
         Kiem(lucTia.Count == 20 && soTia == 20, "khong dung 20 tia");
         Kiem(lucTia.Count == 20 && lucTia[0] > 0.2f && lucTia[0] < 0.6f && lucTia[19] < 5.6f && Mathf.Abs(khoangTB - 0.25f) < 0.03f, "20 tia khong trai deu trong 5 giay");
-        Kiem(anhBlender == lucTia.Count && nhieuNhanh == lucTia.Count, "tia khong phai kieu anh Blender nhieu nhanh");
+        Kiem(anhBlender == lucTia.Count && cungKieu == lucTia.Count, "tia khong cung mot kieu anh Blender");
         Kiem(buocMat.Count >= 10 && boiSo125 == buocMat.Count, "moi tia khong gay dung 125 (cap 1)");
         Kiem(soTia > 0 && soNham / (float)soTia > 0.4f && soNham / (float)soTia < 0.9f, "ti le nham ke dich khong quanh 65%");
 
@@ -401,7 +439,77 @@ public static class ThuMayGiong
                 sang, xam, lechY, xaNgang, den, MayGiong.CaoMay));
             Kiem(sang == 26 && xam == 16 && den >= 1, "thieu dam may / den");
             Kiem(lechY < 0.3f && xaNgang > 3f && xaNgang < 6.5f, "may khong nam ngang trai tren vung 6 m");
+
+            // Cot khoi: hat dung thang, chan duoi dat, dinh trong may; do THANG anh xem khoi thuc su chay toi dau
+            int soCot = 0, soKhoiCot = 0; bool dungThang = false; float chanHat = 99f, dinhHat = -99f, rongCot = 0f;
+            float matDat = hinh != null ? hinh.transform.position.y : 0f;
+            if (hinh != null)
+                foreach (var ps in hinh.GetComponentsInChildren<ParticleSystem>())
+                {
+                    var hat = new ParticleSystem.Particle[ps.main.maxParticles]; int n = ps.GetParticles(hat);
+                    if (ps.name == "KhoiCot") soKhoiCot = n;
+                    if (ps.name != "CotMay") continue;
+                    soCot = n;
+                    dungThang = ps.GetComponent<ParticleSystemRenderer>().renderMode == ParticleSystemRenderMode.VerticalBillboard;
+                    for (int i = 0; i < n; i++)
+                    {
+                        Vector3 c3 = hat[i].GetCurrentSize3D(ps);
+                        chanHat = Mathf.Min(chanHat, hat[i].position.y - c3.y * 0.5f - matDat);
+                        dinhHat = Mathf.Max(dinhHat, hat[i].position.y + c3.y * 0.5f - matDat);
+                        rongCot = Mathf.Max(rongCot, c3.x);
+                    }
+                }
+            // Hang diem anh thap nhat con khoi (alpha > 0,25) trong 4 o anh -> do cao khoi thay duoc o chan cot
+            float tiLeChanAnh = TiLeChanKhoi("Assets/Resources/KyNang/MayGiong/CotMay.png");
+            float chanThay = chanHat + tiLeChanAnh * (dinhHat - chanHat);
+            Ghi(string.Format("H. cot khoi: {0} lop dung thang {1}, rong {2:F1} m; hat tu {3:F2} m toi {4:F2} m tren mat dat (day may {5:F1} m); anh: khoi bat dau o {6:P1} chieu cao -> khoi thay duoc tu {7:F2} m; khoi cuon doc cot {8} hat",
+                soCot, dungThang, rongCot, chanHat, dinhHat, MayGiong.CaoMay - 0.5f, tiLeChanAnh, chanThay, soKhoiCot));
+            Kiem(soCot == VfxFactory.SoLopCotMay && dungThang, "thieu cot khoi / cot khong dung thang");
+            Kiem(dinhHat >= MayGiong.CaoMay - 0.5f, "cot khoi khong vao toi day may");
+            Kiem(tiLeChanAnh >= 0f && chanThay <= 0.3f && chanThay >= -0.6f, "cot khoi khong cham mat dat");
+            Kiem(soKhoiCot >= 5, "khong co khoi cuon doc cot");
             if (m2 != null) Object.Destroy(m2.gameObject);
+        }
+
+        // ================= I. TIA GIONG Y GIUT SET =================
+        {
+            CapDo.MoCaDuongChoPhepThu(KyGiatSet);
+            yield return new WaitForSeconds(0.8f);
+            var cuI = new HashSet<LightningArc>(Object.FindObjectsByType<LightningArc>(FindObjectsInactive.Exclude));
+            toi.mana = toi.maxMana;
+            toi.CastAt(KyGiatSet, toi.transform.position + huong * 8f);
+            string kieuGiatSet = null; int soTiaGS = 0; var cacKieu = new List<string>();
+            for (float h = Time.time + 1.5f; Time.time < h; )
+            {
+                foreach (var a in Object.FindObjectsByType<LightningArc>(FindObjectsInactive.Exclude))
+                {
+                    if (!cuI.Add(a) || a.name == "TiaMayGiong" || a.name == "TiaNgangMayGiong") continue;
+                    if (Vector3.Distance(a.start, toi.transform.position) > 3f) continue;   // chi tia ra tu tay nhan vat
+                    soTiaGS++;
+                    string kk = KieuTia(a);
+                    if (!cacKieu.Contains(kk)) cacKieu.Add(kk);
+                    // Tia CHINH cua Giut set la tia ve bang anh Blender; con lai la tia loe phu luc niem o tay (song 0,11 s)
+                    if (kieuGiatSet == null && a.anhBlender) kieuGiatSet = kk;
+                }
+                yield return null;
+            }
+            foreach (var kk in cacKieu) Ghi("I. moi kieu tia bay ra khi tung Giut set: " + kk);
+            Ghi("I. tia CHINH Giut set THAT (" + soTiaGS + " tia): " + kieuGiatSet);
+            Ghi("I. tia May giong:              " + kieuMayGiong);
+            Kiem(kieuGiatSet != null, "tung Giut set khong ra tia de so");
+            Kiem(kieuGiatSet != null && kieuGiatSet == kieuMayGiong, "tia May giong KHAC tia Giut set");
+        }
+
+        // Anh ban dem o goc choi that (cot khoi phai thay tu may xuong dat)
+        if (rig != null) rig.enabled = true;
+        yield return new WaitForSeconds(0.6f);
+        {
+            Vector3 truocD = cam != null ? Vector3.ProjectOnPlane(cam.transform.forward, Vector3.up).normalized : huong;
+            var mDem = MayGiong.Spawn(toi.transform.position + truocD * 10f, maskEnemy, mauToi);
+            yield return new WaitForSeconds(2.2f);
+            yield return Chup("maygiong_4_dem_goc_choi");
+            if (mDem != null) Object.Destroy(mDem.gameObject);
+            yield return new WaitForSeconds(0.5f);
         }
 
         // Anh ban ngay o goc choi that

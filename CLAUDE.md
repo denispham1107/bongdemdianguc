@@ -179,8 +179,13 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
   gỡ chỉ đúng lớp của mình nên không mất vỏ băng; Tàng hình chặn). **50 năng lượng · niệm 0,5 · hồi chiêu 7 s**; **không điều kiện
   mở khoá** (người dùng chọn). Tia hệ **PHONG** (`GhiKeDanh(boQua, HeSat.Phong)`). Hình **Blender MCP** (`CongCu/Blender/may_giong.blend`
   → `Resources/KyNang/MayGiong/`: `MayGiong.png` 4 đám mây bồng 2×2, `ChopSet.png` loé chạm đất, `ChayDen.png` than đen liền mạch)
-  + icon `Resources/Icons/MayGiong.png` (Read/Write bật); tia dùng ảnh Blender của Giựt sét (`KieuTia`, 4–6 nhánh). Mây ở **7 m**
-  (10 m thì nằm trên mép màn hình ở góc chơi thật). Menu 83 kiểm; menu 61 có thêm Mây giông.
+  + icon `Resources/Icons/MayGiong.png` (Read/Write bật). Mây ở **7 m** (10 m thì nằm trên mép màn hình ở góc chơi thật).
+  ⚠️ **Chiều 25/09/2026 người dùng gửi ảnh thứ hai**: **CỘT KHÓI rủ từ đáy mây xuống TẬN MẶT ĐẤT** (chọn "một cột khói giữa
+  vùng") — ảnh Blender `CotMay.png` (4 cột 2×2, uốn chữ S, mép lồi lõm, loe lên mây) vẽ bằng hạt **VerticalBillboard** 3 lớp,
+  rộng `VfxFactory.BeNgangCotMay` 5 m, cao −0,35 → cao mây + 1,2 m, kèm khói cuộn dọc cột (`KhoiCot`); và **tia ĐÚNG Y GIỰT SÉT**
+  (chọn "đúng y"): `GiatSet.KieuTia` bề ngang ×1, quầng `MauQuangNguoiChoi`, sống `GiayTiaHien` 0,6 s, 2 nhánh, bỏ loé hình sao
+  chạm đất. Menu 83 mục I tung Giựt sét THẬT rồi so từng thông số tia (không so với hằng số); mục H đọc thẳng PNG để biết khói
+  thấy được từ đâu. Menu 83 kiểm; menu 61 có thêm Mây giông.
 - **BỊ ĐỘNG TỐC ĐỘ DI CHUYỂN** (`CapDo.KyTocDo` = 20, 25/09/2026): mở khoá **+10% TỐC ĐỘ GỐC** (`PlayerController.TocGoc` = moveSpeed
   lúc Awake, trước mọi lần tăng theo cấp nhân vật), mỗi cấp +2,5% (`CapDo.TocThemTheoCap`, cấp 5 = +20%), CỘNG vào tốc độ đang có:
   `(moveSpeed + TocGoc × TocThemBiDong) × lội nước × băng × tàng hình`. Chỉ nhân vật của máy này — điều kiện là `!mauDoMayKhacQuyet`,
