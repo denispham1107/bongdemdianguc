@@ -158,7 +158,8 @@ public static class ThuQuaiTruyLung
         }
         Ghi("dot " + dir.Wave + " ra o giay " + Time.timeSinceLevelLoad.ToString("F1") + ": " + vongNgoai.Count
             + " con vong ngoai, giet " + daGiet + " con quanh nguoi de do rieng");
-        Kiem(vongNgoai.Count == GameDirector.SoQuaiXaMoiDot, "dot dau khong du " + GameDirector.SoQuaiXaMoiDot + " con vong ngoai");
+        int mongNgoai = GameDirector.SoQuaiXaCho(1);     // phep thu nay choi MOT nguoi
+        Kiem(vongNgoai.Count == mongNgoai, "dot dau khong du " + mongNgoai + " con vong ngoai");
 
         // ---- A. hen gio ----
         int henDung = 0; float lechMax = 0f;

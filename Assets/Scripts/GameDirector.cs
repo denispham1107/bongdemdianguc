@@ -310,6 +310,12 @@ public class GameDirector : MonoBehaviour
     /// len 5% moi dot nhu moi con khac, va van tinh vao "giet het moi sang dot".
     /// </summary>
     public const int SoQuaiXaMoiDot = 20;
+    /// <summary>
+    /// Moi NGUOI CHOI THEM trong phong thi vong ngoai them 10 con (nguoi dung 26/09/2026): 1 nguoi 20, 2 nguoi 30, 3 nguoi 40,
+    /// 4 nguoi 50. Dem nguoi CON SONG luc ra dot - nhu 4 con quanh moi nguoi (nguoi da chet khong can them quai).
+    /// </summary>
+    public const int SoQuaiXaThemMoiNguoi = 10;
+    public static int SoQuaiXaCho(int soNguoi) { return SoQuaiXaMoiDot + SoQuaiXaThemMoiNguoi * Mathf.Max(0, soNguoi - 1); }
     public const float QuaiXaGanNhat = 20f;
     public const float QuaiXaXaNhat = 25f;
 
@@ -435,7 +441,7 @@ public class GameDirector : MonoBehaviour
             SinhQuanhNguoi(BonLoaiMoiNguoi[Random.Range(0, BonLoaiMoiNguoi.Length)], t, heSo);
         }
 
-        // SoQuaiXaMoiDot con o vong ngoai, loai ngau nhien
+        // SoQuaiXaCho(so nguoi con song) con o vong ngoai, loai ngau nhien
         SinhQuaiXa(heSo);
 
         Debug.Log("[GameDirector] Dot " + Wave + ": " + soNguoi + " nguoi x 4 con + "
@@ -496,7 +502,8 @@ public class GameDirector : MonoBehaviour
         var ban = BanDo();
         int lopCan = LayerMask.GetMask("Default", "Enemy");
 
-        for (int k = 0; k < SoQuaiXaMoiDot; k++)
+        int soQuaiXa = SoQuaiXaCho(nguoi.Count);
+        for (int k = 0; k < soQuaiXa; k++)
         {
             Vector3 chon = Vector3.zero;
             float lechTot = float.MaxValue;

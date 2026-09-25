@@ -8603,6 +8603,25 @@ châm cả bia mộ / nhà mồ (tính năng sáng nay), đầy trần "4 vật 
 
 Ảnh: `PlayTestShots/maygiong_1_dem_can.png`, `maygiong_2_chay_den.png`, `maygiong_3_ngay_goc_choi.png`.
 
+### Kinh nghiệm quái +35%, quái vòng ngoài đông theo số người chơi (26/09/2026)
+
+Anh xin: **kinh nghiệm giết quái +35%**, và **mỗi người chơi thêm trong phòng thì vòng ngoài thêm 10 quái**.
+
+**Kinh nghiệm.** Mức gốc giữ nguyên trong `CapDo.KnGocCuaQuai`; `KnCuaQuai` nhân **1,35** rồi làm tròn nửa lên (hàm làm tròn sẵn
+của Unity làm tròn về số chẵn: 40,5 → 40, nên tự viết). Bộ xương 18 → 24, xác sống 20 → 27, quỷ lùn 22 → 30, quỷ cây 30 → 41,
+phù thủy 32 → 43, quỷ dữ 40 → 54, quỷ khổng lồ 70 → 95 — cả bảng ×1,353. Hạ người chơi khác giữ 250 (anh chỉ nói quái). Kinh nghiệm
+vẫn đi đúng đường cũ (chủ phòng chia qua gói 4 byte), chỉ con số đổi. Một mình: cấp 10 sau ~4 đợt, cấp 20 sau ~14 đợt (trước 5 và 16)
+— bảng đầy đủ ở `kinhnghiem.md`.
+
+**Quái vòng ngoài** = 20 + 10 × (số người − 1): 1 người 20, 2 người 30, 3 người 40, 4 người 50. Đếm người **còn sống** lúc ra đợt,
+giống cách game đếm "4 con quanh mỗi người" — người đã chết không cần thêm quái.
+
+| Đo | Kết quả |
+|---|---|
+| Menu 60 | bảng mới so với bảng gốc chép tay: 7/7 loại đúng ×1,35 làm tròn, tổng 232 → 314 (×1,353); giết quái thật nhận đúng số mới; 0 lỗi |
+| Menu 56 (2 người) | mỗi đợt đúng **30** con vòng ngoài, 30/30 nằm trong 20–25 m, 0 lơ lửng, 0 dưới nước; tổng đợt 1 = 38; 0 lỗi |
+| Menu 64 (1 người) | đợt đầu đúng **20** con vòng ngoài; 0 lỗi |
+
 ### Tàng hình 90 giây, vòng phép nổ lúc hiện hình (26/09/2026)
 
 Anh gửi ảnh một vòng phép xanh dưới chân (hai vòng tròn, sao năm cánh, ký hiệu, đuôi mũi tên) và xin: tàng hình **90 giây**; **lúc kết

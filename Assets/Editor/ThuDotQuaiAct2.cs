@@ -167,7 +167,10 @@ public static class ThuDotQuaiAct2
             + " m: " + dungKhoang + "/" + so
             + " (code tu bao " + dir.SoQuaiXaDungKhoang + "), lo lung " + loLung + " (chenh voi dat lon nhat "
             + chenhMax.ToString("F2") + " m), duoi nuoc " + duoiNuoc);
-        Kiem(so == GameDirector.SoQuaiXaMoiDot, "moi dot phai co dung " + GameDirector.SoQuaiXaMoiDot + " con quai vong ngoai, dang co " + so);
+        int soSong = 0; foreach (var t in dir.moiNguoi) { if (t == null) continue; var mm = t.GetComponent<Damageable>(); if (mm == null || !mm.IsDead) soSong++; }
+        int mongXa = GameDirector.SoQuaiXaCho(soSong);
+        Ghi(nhan + ". " + soSong + " nguoi con song -> mong " + mongXa + " con vong ngoai (20 + 10 moi nguoi them)");
+        Kiem(so == mongXa, "moi dot phai co dung " + mongXa + " con quai vong ngoai (" + soSong + " nguoi), dang co " + so);
         Kiem(loLung == 0, "co quai xa khong dung tren mat dat");
         Kiem(duoiNuoc == 0, "co quai xa nam duoi nuoc");
         Kiem(dungKhoang == dir.SoQuaiXaDungKhoang, "code bao so con dung khoang KHAC voi do that");
@@ -315,9 +318,9 @@ public static class ThuDotQuaiAct2
         int tong1;
         DemTheoLoai(out tong1);
         var dem1 = DemQuanhNguoi(dir);
-        int mong1 = 8 + GameDirector.SoQuaiXaMoiDot;
+        int mong1 = 8 + GameDirector.SoQuaiXaCho(2);     // 2 nguoi: 20 + 10 = 30 con vong ngoai
         Ghi("B2. dot " + dir.Wave + ": tong " + tong1 + " con (phai " + mong1 + " = 2 nguoi x 4 loai + "
-            + GameDirector.SoQuaiXaMoiDot + " con vong ngoai)"
+            + GameDirector.SoQuaiXaCho(2) + " con vong ngoai)"
             + " | quanh nguoi: " + ViDem(dem1));
         Kiem(tong1 == mong1, "dot dau phai la " + mong1 + " con, dang co " + tong1);
         foreach (var loai in new[] { MonsterType.Skeleton, MonsterType.Witch, MonsterType.QuyCay, MonsterType.QuyDu })
@@ -351,7 +354,8 @@ public static class ThuDotQuaiAct2
         Ghi("C. cac dot sau");
 
         // 8 + 1, + 3, + 6 (cong don), cong SoQuaiXaMoiDot con vong ngoai moi dot
-        int[] mongDoi = { 9 + GameDirector.SoQuaiXaMoiDot, 11 + GameDirector.SoQuaiXaMoiDot, 14 + GameDirector.SoQuaiXaMoiDot };
+        int xa2 = GameDirector.SoQuaiXaCho(2);
+        int[] mongDoi = { 9 + xa2, 11 + xa2, 14 + xa2 };
         for (int dot = 2; dot <= 4; dot++)
         {
             GietSach();

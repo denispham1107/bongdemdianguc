@@ -1,25 +1,26 @@
 [ban 1] quai vong ngoai tu truy lung sau 60 giay
 Act2, che do dot quanh nguoi = True, nhan vat o (0.0, 3.2, -10.5)
-D0. doi chung: 2 con bo xuong khong hen truy lung, cach 41.2 / 43.4 m
+D0. doi chung: 2 con bo xuong khong hen truy lung, cach 38.6 / 43.1 m
 dot 1 ra o giay 30.0: 20 con vong ngoai, giet 4 con quanh nguoi de do rieng
 A1. hen truy lung dung 60 giay tu luc sinh: 20/20 (lech lon nhat 0.000 giay)
 
 B. truoc 60 giay
-B1. 11 con tu gap nguoi choi (lang thang vao 14 m); 9 con chua gap - khoang cach giay 0 -> giay 57 (m): 23->23 24->30 24->21 21->27 25->29 21->24 24->24 24->23 23->17
-B2. trung binh tien lai -1.1 m (tien nhieu nhat 5.6 m)
+B1. 9 con tu gap nguoi choi (lang thang vao 14 m); 11 con chua gap - khoang cach giay 0 -> giay 57 (m): 23->28 21->28 21->22 25->40 24->32 20->28 23->34 24->34 25->24 21->26 23->31
+B2. trung binh tien lai -7.2 m (tien nhieu nhat 0.2 m)
 
 C. sau 60 giay (theo doi den giay 90)
 C0. bi ket phai vong vat can 1 lan; phai doi cho gan nguoi choi 0 lan (0 con)
-C1. 20/20 con vao duoc tam phat hien 14 m; 20/20 con thuc su ra don vao nguoi choi
-C2. mat bao lau sau giay 60 de vao 14 m: nhanh nhat 0.5 giay, cham nhat 6.1 giay, trung vi 1.6 giay
-C3. ra don 20 + bi chen sat vong vay 0 = 20/20
+C1. 20/20 con vao duoc tam phat hien 14 m; 19/20 con thuc su ra don vao nguoi choi
+C2. mat bao lau sau giay 60 de vao 14 m: nhanh nhat 1.6 giay, cham nhat 7.8 giay, trung vi 5.2 giay
+    KHONG RA DON: Enemy_BoXuong (Skeleton, can chien) cach nguoi choi 3.0 m, tam tay 3.2 m, 6 con dung sat hon, di 0.0 m trong 5 giay cuoi -> BI CHEN ngoai dam dong
+C3. ra don 19 + bi chen sat vong vay 1 = 20/20
 
-D1. TAM_DoiChung_0: cach 41.2 m, gan nhat trong 90 giay 31.9 m, ra don False
-D1. TAM_DoiChung_1: cach 43.4 m, gan nhat trong 90 giay 41.0 m, ra don False
+D1. TAM_DoiChung_0: cach 38.6 m, gan nhat trong 90 giay 35.9 m, ra don False
+D1. TAM_DoiChung_1: cach 43.1 m, gan nhat trong 90 giay 42.0 m, ra don False
 
 E0. dung duoc 2 ca quai bi vat can chan thang (tia thang tu quai toi nguoi choi trung vat can)
 E1. TAM_CaKet_0 sau TREE_oakC_727: cach 20.4 m -> gan nhat trong 25 giay 2.4 m; vong vat can 1 lan, doi cho 0 lan
 E1. TAM_CaKet_1 sau MAUS_A_001_682: cach 19.9 m -> gan nhat trong 25 giay 2.4 m; vong vat can 1 lan, doi cho 0 lan
-E1. TAM_CaNhot (bon buc tuong): cach 21.3 m -> gan nhat trong 25 giay 2.4 m; vong vat can 6 lan, doi cho 1 lan
+E1. TAM_CaNhot (bon buc tuong): cach 21.7 m -> gan nhat trong 25 giay 2.4 m; vong vat can 6 lan, doi cho 1 lan
 
 so loi ghi nhan = 0

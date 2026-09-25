@@ -8,24 +8,28 @@ A3. bon cho: (27.0, -0.4, -6.3) (-30.5, -0.1, -27.1) (23.2, -0.5, -28.2) (-31.6,
 A4. bon cho: lo lung 0, duoi nuoc 0, vuong vat can 0
 
 B. Act2 - dot dau
-B0. vao tran 1.0 giay: dot hien tai 0, con 29.0 giay nua -> tong cho 30.0 giay (phai 30)
+B0. vao tran 1.0 giay: dot hien tai 0, con 28.9 giay nua -> tong cho 30.0 giay (phai 30)
 che do dot quanh nguoi choi: True
 B1. so nguoi choi trong canh: 2
-B2. dot 1: tong 28 con (phai 28 = 2 nguoi x 4 loai + 20 con vong ngoai) | quanh nguoi: QuyDu=2 Witch=2 Skeleton=2 QuyCay=2
-B3. con quai xa nguoi choi nhat: 12.2 m (dat trong 7-13 m), so con xa qua: 0
-B5. quai xa: 20 con, cach nguoi gan nhat 20.4 - 24.6 m, dung khoang 20-25 m: 20/20 (code tu bao 20), lo lung 0 (chenh voi dat lon nhat 0.15 m), duoi nuoc 0
+B2. dot 1: tong 38 con (phai 38 = 2 nguoi x 4 loai + 30 con vong ngoai) | quanh nguoi: QuyDu=2 QuyCay=2 Witch=2 Skeleton=2
+B3. con quai xa nguoi choi nhat: 12.6 m (dat trong 7-13 m), so con xa qua: 0
+B5. quai xa: 30 con, cach nguoi gan nhat 20.2 - 25.0 m, dung khoang 20-25 m: 30/30 (code tu bao 30), lo lung 0 (chenh voi dat lon nhat 0.15 m), duoi nuoc 0
+B5. 2 nguoi con song -> mong 30 con vong ngoai (20 + 10 moi nguoi them)
 B4. bo xuong dot 1: mau 70.0, sat thuong 12.0
 
 C. cac dot sau
-C2. dot 2: tong 29 con (mong doi 29) - QuyDu=7 QuyCay=10 Witch=7 Skeleton=5
+C2. dot 2: tong 39 con (mong doi 39) - QuyDu=12 Skeleton=9 Witch=10 QuyCay=8
      bo xuong: mau 73.5 (x1.050), sat thuong 12.6 (x1.050), mong doi x1.050
-     C2x. quai xa: 20 con, cach nguoi gan nhat 20.2 - 24.7 m, dung khoang 20-25 m: 20/20 (code tu bao 20), lo lung 0 (chenh voi dat lon nhat 0.15 m), duoi nuoc 0
-C3. dot 3: tong 31 con (mong doi 31) - Witch=7 Skeleton=8 QuyDu=10 QuyCay=6
+     C2x. quai xa: 30 con, cach nguoi gan nhat 20.4 - 24.9 m, dung khoang 20-25 m: 30/30 (code tu bao 30), lo lung 0 (chenh voi dat lon nhat 0.15 m), duoi nuoc 0
+     C2x. 2 nguoi con song -> mong 30 con vong ngoai (20 + 10 moi nguoi them)
+C3. dot 3: tong 41 con (mong doi 41) - QuyCay=8 QuyDu=13 Skeleton=9 Witch=11
      bo xuong: mau 77.2 (x1.103), sat thuong 13.2 (x1.103), mong doi x1.103
-     C3x. quai xa: 20 con, cach nguoi gan nhat 20.1 - 24.1 m, dung khoang 20-25 m: 20/20 (code tu bao 20), lo lung 0 (chenh voi dat lon nhat 0.15 m), duoi nuoc 0
-C4. dot 4: tong 34 con (mong doi 34) - Witch=10 QuyCay=7 QuyDu=8 Skeleton=9
+     C3x. quai xa: 30 con, cach nguoi gan nhat 20.1 - 25.0 m, dung khoang 20-25 m: 30/30 (code tu bao 30), lo lung 0 (chenh voi dat lon nhat 0.15 m), duoi nuoc 0
+     C3x. 2 nguoi con song -> mong 30 con vong ngoai (20 + 10 moi nguoi them)
+C4. dot 4: tong 44 con (mong doi 44) - QuyDu=13 Skeleton=8 Witch=11 QuyCay=12
      bo xuong: mau 81.0 (x1.158), sat thuong 13.9 (x1.158), mong doi x1.158
-     C4x. quai xa: 20 con, cach nguoi gan nhat 20.4 - 24.6 m, dung khoang 20-25 m: 20/20 (code tu bao 20), lo lung 0 (chenh voi dat lon nhat 0.15 m), duoi nuoc 0
+     C4x. quai xa: 30 con, cach nguoi gan nhat 20.2 - 25.0 m, dung khoang 20-25 m: 30/30 (code tu bao 30), lo lung 0 (chenh voi dat lon nhat 0.15 m), duoi nuoc 0
+     C4x. 2 nguoi con song -> mong 30 con vong ngoai (20 + 10 moi nguoi them)
 
 D. Act1 giu nguyen luat cu
 D1. Act1: che do dot quanh nguoi = False (phai la False), quai dang co: 4 - Skeleton=4

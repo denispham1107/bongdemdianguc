@@ -217,10 +217,20 @@ public static class CapDo
         }
     }
 
+    /// <summary>Kinh nghiem giet QUAI nhan them (nguoi dung 26/09/2026: "tang them 35%") - giet nguoi choi khong doi.</summary>
+    public const float HeSoKnQuai = 1.35f;
+
     /// <summary>
-    /// Kinh nghiem moi con quai. Con nao khoe hoac phien hon thi dang gia hon.
+    /// Kinh nghiem moi con quai = muc goc x HeSoKnQuai, lam tron nua len (Mathf.RoundToInt lam tron ve so CHAN: 40,5 -> 40).
+    /// Con nao khoe hoac phien hon thi dang gia hon.
     /// </summary>
     public static int KnCuaQuai(MonsterType loai)
+    {
+        return Mathf.FloorToInt(KnGocCuaQuai(loai) * HeSoKnQuai + 0.5f);
+    }
+
+    /// <summary>Muc kinh nghiem GOC (truoc 26/09/2026) - chi de nhan he so.</summary>
+    public static int KnGocCuaQuai(MonsterType loai)
     {
         switch (loai)
         {

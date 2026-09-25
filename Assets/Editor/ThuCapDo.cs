@@ -141,6 +141,22 @@ public static class ThuCapDo
             + ", quy du " + CapDo.KnCuaQuai(MonsterType.QuyDu)
             + ", quy khong lo " + CapDo.KnCuaQuai(MonsterType.Brute)
             + " | nguoi choi " + CapDo.KnGietNguoi);
+        // +35% kinh nghiem giet quai (26/09/2026): so voi bang GOC chep tay (khong doc lai ham trong code)
+        {
+            var loaiK = new[] { MonsterType.Skeleton, MonsterType.Ghoul, MonsterType.Fallen, MonsterType.QuyCay, MonsterType.Witch, MonsterType.QuyDu, MonsterType.Brute };
+            int[] gocK = { 18, 20, 22, 30, 32, 40, 70 };
+            var sbK = new System.Text.StringBuilder(); int dungK = 0; int tongGoc = 0, tongMoi = 0;
+            for (int i = 0; i < loaiK.Length; i++)
+            {
+                int moi = CapDo.KnCuaQuai(loaiK[i]);
+                tongGoc += gocK[i]; tongMoi += moi;
+                sbK.Append(loaiK[i] + " " + gocK[i] + "->" + moi + "; ");
+                if (moi == Mathf.FloorToInt(gocK[i] * 1.35f + 0.5f)) dungK++;
+            }
+            Ghi("A6b. kinh nghiem quai x1,35: " + sbK + "tong " + tongGoc + " -> " + tongMoi + " (x" + (tongMoi / (float)tongGoc).ToString("F3") + ")");
+            Kiem(dungK == loaiK.Length && Mathf.Abs(tongMoi / (float)tongGoc - 1.35f) < 0.01f, "kinh nghiem quai khong tang 35%");
+            Kiem(CapDo.KnGietNguoi > 0, "kinh nghiem giet nguoi choi mat");
+        }
         int motDot = CapDo.KnCuaQuai(MonsterType.Skeleton) + CapDo.KnCuaQuai(MonsterType.Witch)
                    + CapDo.KnCuaQuai(MonsterType.QuyCay) + CapDo.KnCuaQuai(MonsterType.QuyDu);
         Ghi("    mot dot Act2 (4 con quanh minh) = " + motDot + " kinh nghiem"
