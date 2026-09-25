@@ -53,7 +53,9 @@ public class ChayDenToanThan : MonoBehaviour
             if (mats == null || mats.Length == 0) continue;
             // Bo renderer TRONG SUOT (vom khien, hat, tia set con gan vao nguoi) - boc than len chung chi ra mot dam mo
             bool trongSuot = false;
-            for (int k = 0; k < mats.Length; k++) if (mats[k] == null || mats[k].renderQueue >= 3000) trongSuot = true;
+            // Chi xet vat lieu GOC (o dau): cac lop PHU THEM (bong uot, chay den, vo bang) deu trong suot - xet ca mang thi
+            // ke dang uot khong bao gio chay den (menu 83 bat duoc 25/09/2026: mua lam uot TRUOC tia dau)
+            if (mats[0] == null || mats[0].renderQueue >= 3000) trongSuot = true;
             if (trongSuot) continue;
             var moi = new Material[mats.Length + 1];
             for (int k = 0; k < mats.Length; k++) moi[k] = mats[k];

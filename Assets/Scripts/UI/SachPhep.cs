@@ -354,7 +354,7 @@ public static class SachPhep
             case CapDo.KyKhangSet: return "Bị động — chịu ít sát thương hệ Sét";
             case CapDo.KyKhangPhong: return "Bị động — chịu ít sát thương hệ Phong";
             case CapDo.KyTocDo: return "Bị động — chạy nhanh hơn";
-            case CapDo.KyMayGiong: return "20 tia sét trong 5 giây, 45% hất ngã";
+            case CapDo.KyMayGiong: return "20 tia sét, mưa làm ướt, 45% hất ngã";
             default: return "";
         }
     }
@@ -542,6 +542,9 @@ public static class SachPhep
                      + "liên tục giáng xuống vùng mây rộng 6 m — tia sét ưu tiên đánh vào kẻ địch đứng trong vùng.\n\n"
                      + "Mỗi tia gây 125 sát thương cho mọi kẻ địch trong 2 m quanh chỗ đánh, 45% khả năng HẤT NGÃ "
                      + "trong 0,85 giây, và làm kẻ bị trúng CHÁY ĐEN toàn thân trong 3 giây (chỉ là hiệu ứng).\n\n"
+                     + "MƯA rơi khắp vùng mây: kẻ địch đứng trong mưa BỊ ƯỚT — còn đứng trong là còn ướt, ra khỏi "
+                     + "vùng thì ướt thêm 5 giây. Kẻ bị ướt chịu thêm 50% sát thương từ Giựt sét, Sấm sét, Quả cầu điện "
+                     + "và từ chính tia sét của Mây giông.\n\n"
                      + "Tia sét của Mây giông thuộc hệ PHONG: Kháng Phong giảm sát thương này.";
             case CapDo.KyTocDo:
                 return "Đôi chân bạn nhẹ hẳn đi. Nhân vật chạy NHANH HƠN suốt trận.\n\n"

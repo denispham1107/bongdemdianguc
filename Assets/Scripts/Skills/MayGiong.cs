@@ -29,6 +29,8 @@ public class MayGiong : MonoBehaviour
     public const float GiayNga = 0.85f;
     public const float GiayChayDen = 3f;
     public const float NhamKeDich = 0.65f;
+    /// <summary>Mua lam uot: bao lau quet vung mot lan (con dung trong mua la con lam moi BiUot.GiayMacDinh).</summary>
+    public const float NhipLamUot = 0.2f;
     /// <summary>
     /// Do cao day may (chan tia set) tren mat dat. 7 m chu khong 10: may quay "3D tu do" (sau lung 7,5 m, cui 22 do, goc nhin
     /// 55 do) o cho cach nhan vat 10 - 12 m chi thay toi ~5,5 m - may o 10 m nam han tren mep man hinh (anh ban ngay dau tien).
@@ -53,7 +55,8 @@ public class MayGiong : MonoBehaviour
     readonly List<Damageable> ds = new List<Damageable>();
 
     // Dem cho phep thu (menu 83)
-    public static int SoTiaDaDanh, SoLanTrung, SoLanNga, SoTiaNhamKeDich;
+    public static int SoTiaDaDanh, SoLanTrung, SoLanNga, SoTiaNhamKeDich, SoLanTrungUot;
+    float nhipUot;
 
     public static MayGiong Spawn(Vector3 tam, LayerMask damageMask, Damageable boQua, float heSoSatThuong = 1f, float themGiay = 0f)
     {
@@ -79,6 +82,14 @@ public class MayGiong : MonoBehaviour
     void Update()
     {
         dongHo += Time.deltaTime;
+
+        // MUA lam UOT (nguoi dung 25/09/2026 khuya): suot luc mua (GiayTuMay .. GiayTuMay + ThoiGian) moi 0,2 s quet vung 6 m.
+        // Lam TRUOC khi danh tia trong cung khung: tia dau roi dung luc mua bat dau, ke dung trong vung phai kip uot.
+        if (dongHo >= GiayTuMay && dongHo <= GiayTuMay + ThoiGian)
+        {
+            nhipUot -= Time.deltaTime;
+            if (nhipUot <= 0f) { nhipUot = NhipLamUot; LamUotTrongVung(); }
+        }
 
         // Tia thu i giang o moc GiayTuMay + i x 0,25 s - dem theo DONG HO, khong theo khung: khung giat van du 20 tia dung gio
         while (daDanh < SoTia && dongHo >= GiayTuMay + daDanh * NhipTia)
@@ -114,6 +125,10 @@ public class MayGiong : MonoBehaviour
         Vector2 lech = Random.insideUnitCircle * (BanKinh * 0.45f);
         Vector3 tu = transform.position + new Vector3(lech.x, CaoMay, lech.y);
         VfxFactory.TiaMayGiong(tu, cho, muc != null ? muc.transform : null);
+        // Cho set cham dat CHAY XEM + boc khoi, NAM DEN vat quanh do - dung y nhu tia Sam set (LightningStrike.Strike,
+        // nguoi dung 25/09/2026 khuya "giong nhu cac tia set trong skill Sam set")
+        VfxFactory.SetChayDen(cho, BanKinhTia * 0.72f, 0.45f);
+        VfxFactory.NamChuongNgai(cho, BanKinhTia, VfxFactory.LopChuongNgai);
         // May giong DEN (nguoi dung 25/09/2026 toi): set roi sang MANG may cho tia phat ra + ca dam loe nhe
         VfxFactory.MangSangTrongMay(tu + Vector3.up * 0.6f);
         if (roiSang != null) roiSang.Chop(Random.Range(0.75f, 1f));
@@ -133,12 +148,32 @@ public class MayGiong : MonoBehaviour
             var d = ds[i];
             // GhiKeDanh TRUOC TakeDamage (kinh nghiem, bang diem - menu 61); he PHONG: Khang Phong chan
             d.GhiKeDanh(boQua, HeSat.Phong);
-            d.TakeDamage(satThuong, DamageType.Lightning, d.transform.position + Vector3.up);
+            // Ke dang UOT an them 50% (BiUot - nguoi dung chon ca tia May giong)
+            float heSoUot = BiUot.HeSo(d);
+            if (heSoUot > 1f) SoLanTrungUot++;
+            d.TakeDamage(satThuong * heSoUot, DamageType.Lightning, d.transform.position + Vector3.up);
             SoLanTrung++;
             ChayDenToanThan.Apply(d, GiayChayDen);
         }
         // 45% hat nga - moi ke gieo rieng, bo qua nguoi tung / ke da chet / ke co khien (ThienThach.GieoDanhNga)
         SoLanNga += ThienThach.GieoDanhNga(cho + Vector3.up, BanKinhTia, damageMask, boQua, XacSuatNga, giayNga);
+    }
+
+    /// <summary>Moi doi thu (tru nguoi tung) dung trong vung 6 m (tinh theo mat ngang) bi UOT them BiUot.GiayMacDinh giay.</summary>
+    void LamUotTrongVung()
+    {
+        int n = Physics.OverlapSphereNonAlloc(transform.position + Vector3.up, BanKinh + 2f, bo, damageMask, QueryTriggerInteraction.Collide);
+        ds.Clear();
+        for (int i = 0; i < n; i++)
+        {
+            var d = bo[i].GetComponentInParent<Damageable>();
+            if (d == null || d.IsDead || ds.Contains(d)) continue;
+            if (boQua != null && d == boQua) continue;
+            Vector3 v = d.transform.position - transform.position; v.y = 0f;
+            if (v.magnitude > BanKinh) continue;
+            ds.Add(d);
+            BiUot.Apply(d, BiUot.GiayMacDinh);
+        }
     }
 
     /// <summary>Mot ke dich con song ngau nhien trong vung may (tru nguoi tung).</summary>

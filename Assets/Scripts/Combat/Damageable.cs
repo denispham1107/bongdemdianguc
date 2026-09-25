@@ -368,7 +368,8 @@ public static class CombatUtil
 
             // Ghi ke danh truoc - xem ghi chu o AreaFreeze (Sam set cung sot dong nay)
             d.GhiKeDanh(boQua);
-            d.TakeDamage(damage * falloff, DamageType.Lightning, d.transform.position + Vector3.up * 1f);
+            // Ke BI UOT (mua May giong) an them 50% - AreaShock chi Sam set cua nguoi choi goi (LightningStrike)
+            d.TakeDamage(damage * falloff * BiUot.HeSo(d), DamageType.Lightning, d.transform.position + Vector3.up * 1f);
             hits++;
 
             if (d.IsDead) continue;

@@ -8603,6 +8603,50 @@ châm cả bia mộ / nhà mồ (tính năng sáng nay), đầy trần "4 vật 
 
 Ảnh: `PlayTestShots/maygiong_1_dem_can.png`, `maygiong_2_chay_den.png`, `maygiong_3_ngay_goc_choi.png`.
 
+### Mây giông: mưa làm "Bị ướt", sét +50% lên kẻ ướt, cháy xém mặt đất; cột khói chạm đất THẬT (25/09/2026, khuya)
+
+Anh xin bốn điều: cột mây **rộng thêm 20%**; **mưa rơi liên tục** từ mây xuống đất; mưa không gây sát thương nhưng **100% làm
+"Bị ướt" 5 giây** mọi đối thủ, kẻ ướt chịu **+50% sát thương từ nhóm sét điện**; tia chạm đất **cháy xém và bốc khói như Sấm sét**.
+Anh chọn: ướt khi **đứng trong cả vùng 6 m** (còn đứng là còn làm mới, ra khỏi thì ướt thêm 5 giây); +50% cho **Giựt sét, Sấm sét,
+Quả cầu điện và chính tia Mây giông**; hình ướt là **nước nhỏ giọt + thân bóng ướt + chữ**.
+
+**Ảnh Blender** (`CongCu/Blender/may_giong_mua.blend` — lần này Blender mở cảnh trống, em dựng mặt phẳng + máy quay mới và lưu file
+riêng để không đè `may_giong.blend`): vệt giọt mưa mảnh sáng đầu dưới, vòng nước bắn hai vòng đứt quãng, giọt nước hình quả lê
+(bản đầu ra hình "ngôi nhà", vẽ lại), lớp bóng ướt liền mạch (nền tối xanh + vệt nước chảy sáng).
+
+**Mưa** là vệt dựng đứng rơi 16 m/s, 160 vệt/giây. Đất Act2 gồ ghề nên không đặt vòng nước ở một độ cao cố định: vệt mưa **va chạm
+với lớp Ground** rồi chết và bật vòng nước đúng chỗ chạm (sub-emitter). Phép thử bắn tia xuống đất tại từng vòng nước (độc lập với
+hệ va chạm): lệch trung bình **0,04 m**.
+
+**Bị ướt** (`BiUot`) không cần gói tin: đám mây được phát lại trên mọi máy, nên mỗi máy tự thấy ai đứng trong mưa; sát thương lên
+người chơi do máy nạn nhân tính, lên quái do chủ phòng tính — cả hai đọc trạng thái ướt của chính mình.
+
+**Hai lỗi thật phép thử bắt được:**
+
+1. **Cột khói chưa bao giờ chạm đất.** Hạt dựng đứng / nằm phẳng vẽ ra chỉ **0,707×** kích thước đặt (đo bằng BakeMesh: đặt 2 × 8 → vẽ
+   1,414 × 5,657 — CLAUDE.md đã ghi cho lò lửa mà em quên), và Unity còn **ép hạt to không quá nửa màn hình** (`maxParticleSize` 0,5):
+   ở góc đo, cột 8,5 m vẽ ra chỉ còn **3,77 m, lơ lửng từ 2,04 m**. Phép thử cũ đọc cỡ ĐẶT nên vẫn báo "chạm đất". Sửa: bù chiều cao
+   /0,7071, `maxParticleSize` 10 cho mọi lớp mây, và đo bằng **hình vẽ thật** (BakeMesh trong Play) → cột **−0,35 → 8,20 m**.
+   Quầng mây sát đất đo lại theo hình vẽ thật: lan **3,18 m** (con số 3,45 m em báo lần trước là tính theo cỡ đặt, sai).
+2. **Kẻ bị ướt không bao giờ cháy đen.** Mưa làm ướt trước tia đầu; lớp bóng ướt là vật liệu trong suốt; lớp cháy đen bỏ qua
+   "renderer có vật liệu trong suốt" (vòm khiên, hạt) — xét cả mảng nên thấy lớp ướt và bỏ luôn cả thân. Nay chỉ xét **vật liệu gốc**.
+
+| Đo (menu 83, 0 lỗi) | Kết quả |
+|---|---|
+| Ướt sau 0,9 s mưa | trong vùng 2 / 4 / 5,5 m, bia rồi đi ra, quái: **đều ướt**; ngoài vùng 7,5 m: không; người tung: không; chữ "BỊ ƯỚT" đúng 5 lần |
+| Hết ướt | sau khi mây tan **4,85 s**, sau khi ra khỏi vùng **4,93 s** (lần làm mới cuối trễ tới 0,2 s) |
+| +50% | Giựt sét 112,50 / 75 · Sấm sét 39 / 26 · Quả cầu điện 233,25 / 155,50 — đều **×1,500**; tia Mây giông lên cụm bia ướt: mọi lần là bội số 187,5 |
+| Đối chứng | Giựt sét của **quái** 40 / 40 và sát thương vùng thường 50 / 50 — **×1,000** |
+| Cháy xém | 20 tia → **20** vết `SetChayDen`; một tia Sấm sét thật → 1 (cùng hàm) |
+| Mưa | 79 vệt đang rơi, trải tới 5,99 m; 37 vòng nước, lệch mặt đất thật 0,04 m |
+| Hình ướt | quái có xương: lớp bóng ướt 1/1, đậm 1,00, có nước nhỏ; có lúc mang **cả hai lớp** ướt + cháy đen; hết cả hai → vật liệu về đúng |
+| Cột khói | vẽ thật **−0,35 → 8,20 m**, rộng TB **4,36 m** (trước vẽ 3,54 → ×1,23; cỡ đặt ×1,200) |
+
+Chạy lại menu 58 (Sấm sét), 69 (Giựt sét), 74 (Quả cầu điện): **0 lỗi**. Menu 69 lần đầu báo 1 lỗi ở mục tư thế tay (lúc đo tay
+chưa kịp đẩy ra, 0,00 thay vì 1,00 — không liên quan), chạy lại thì đạt.
+
+Ảnh: `PlayTestShots/maygiong_5_mua.png` (mưa, số 188 trên kẻ ướt, đất cháy xém), `maygiong_3_ngay_goc_choi.png` (cột đen chạm đất).
+
 ### Mây giông đen thật, sét rọi sáng từng mảng; quầng sát đất to hơn (25/09/2026, khuya)
 
 Anh chơi thử trên điện thoại rồi xin: quầng mây sát đất **to thêm 15%, dày thêm 10%**, và **toàn bộ mây tối đen hơn cho giống

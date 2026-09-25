@@ -1,26 +1,39 @@
 [ban 1] May giong
 
-A. so hieu 21, so ky nang 22; ten "MÂY GIÔNG", tom tat "20 tia sét trong 5 giây, 45% hất ngã", nhom PHONG True; icon True; nang luong 50 / hoi chieu 7 / niem 0.5 (Sach phep 50/7/0.5)
-A. tam ngam 12 m (Sam set 12 m); vung ngam 6 m; mo khoa khong dieu kien True; gay sat thuong (Tang hinh x2) True; mo ta 431 ky tu
+A. so hieu 21, so ky nang 22; ten "MÂY GIÔNG", tom tat "20 tia sét, mưa làm ướt, 45% hất ngã", nhom PHONG True; icon True; nang luong 50 / hoi chieu 7 / niem 0.5 (Sach phep 50/7/0.5)
+A. tam ngam 12 m (Sam set 12 m); vung ngam 6 m; mo khoa khong dieu kien True; gay sat thuong (Tang hinh x2) True; mo ta 653 ky tu
 
 B. ton 50 nang luong, hoi chieu ngay sau 7.00 s; bam lai ngay khi dang hoi chieu -> suot 6 giay chi 1 dam may; may hien sau 0.33 s, lech cho ngam 0.00 m
-C. 20 tia (bo dem 20); tia dau 0.36 s, tia cuoi 5.10 s, cach nhau TB 0.249 s; anh Blender 20, cung mot kieu 20
-D. 80 lan bia mat mau, boi so 125: 80; tia nham ke dich 15/20 (75 %, mong ~65%)
+C. 20 tia (bo dem 20); tia dau 0.36 s, tia cuoi 5.11 s, cach nhau TB 0.250 s; anh Blender 20, cung mot kieu 20
+D. 71 lan bia mat mau, boi so 125: 71; tia nham ke dich 14/20 (70 %, mong ~65%)
+D. (cum bia dung giua mua -> deu BI UOT: moi lan mat mau phai la boi so 187,5 = 125 x 1,5)
 D2. DOI CHUNG vung trong: 20 tia, nham ke dich 0
 
-E. 3 dam may x 20 tia vao cum 6 bia: 262 lan trung, 124 lan hat nga (47.3 %, mong 45%); thoi gian nga do duoc 0.85 s (mong 0,85)
+E. 3 dam may x 20 tia vao cum 6 bia: 268 lan trung, 111 lan hat nga (41.4 %, mong 45%); thoi gian nga do duoc 0.85 s (mong 0,85)
 
 F. quai 'Enemy_BoXuong': 1 renderer mo (1 SkinnedMesh); bi tia that trung -> chay den (ap dung +1); phu lop than den 1/1, do dam 1.00; tu go sau ~3.03 s (mong 3); vat lieu tra lai dung 1/1
 F2. bang 6 s + chay den 0,6 s: sau khi chay den go -> lop vo bang con 1, lop chay den con 0
 
 G. TungPhepTheoMang(21): may 0 -> 1
-H. may: dam sang 26, dam xam 16; lech doc toi da 0.00 m (nam NGANG), xa tam toi da 5.68 m (vung 6); den 1; cao day may 7 m
-H. cot khoi: 3 lop dung thang True, rong 5.1 m; hat tu -0.35 m toi 8.20 m tren mat dat (day may 6.5 m); anh: khoi bat dau o 2.7 % chieu cao -> khoi thay duoc tu -0.12 m; khoi cuon doc cot 13 hat
-H. quang may sat dat: 5 dam nam phang True, cao 0.30 m tren dat; anh: suong toi 77 % nua o -> lan xa tam 3.45 m (mong ~3,45; ban 3 m do 3,13); cum may thap 6
+H. may: dam sang 26, dam xam 16; lech doc toi da 0.00 m (nam NGANG), xa tam toi da 5.44 m (vung 6); den 1; cao day may 7 m
+H. cot khoi (HINH VE THAT, BakeMesh): 3 lop dung thang True, rong ve TB 4.36 m; tu -0.35 m toi 8.20 m tren mat dat (day may 6.5 m); anh: khoi bat dau o 2.7 % chieu cao -> khoi thay duoc tu -0.12 m; khoi cuon doc cot 13 hat
+H. cot khoi be ngang DAT 5.40-6.60 (ban truoc 4,50-5,50: x1.200); ve that ban truoc 5 x 0,7071 = 3,54 m -> nay TB 4.36 m (x1.23)
+H. cot khoi maxParticleSize 10 (mac dinh Unity 0,5 = nua man hinh: cot 12 m bi ep nho lai khi may quay gan)
+H. quang may sat dat (HINH VE THAT): 5 dam nam phang True, cao 0.30 m tren dat; anh: suong toi 77 % nua o -> lan xa tam 3.18 m; cum may thap 6
 H. so voi ban truoc: rong co dam x1.150, rai x1.150, cum thap rai x1.150 | dac suong x1.100, dac cum thap x1.100 | cum thap co x1.100, cao x1.100
 H. may DEN - do sang mau tung lop: MaySang 0.254 (x0.26); MayXam 0.138 (x0.26); CotMay 0.218 (x0.26); KhoiCot 0.192 (x0.26); SuongDat 0.218 (x0.26); MayThap 0.192 (x0.26); 
-H. set roi sang: 6 lop may, he so loe cao nhat x1.77, 40/83 khung may o mau toi goc (48 %); 8 tia -> 8 mang sang
-I. moi kieu tia bay ra khi tung Giut set: anhBlender False | beNgang 1.100 | loi 0.066 | quang 0.315 | mauLoi RGBA(1.000, 1.000, 1.000, 1.000) | song 0.09 s | nhanh 0 x 0.34 | bung 0.85/1.70
+H. set roi sang: 6 lop may, he so loe cao nhat x1.76, 34/77 khung may o mau toi goc (44 %); 8 tia -> 8 mang sang
+
+J. sau 0,9 s mua: uot trong vung A(2 m) True B(4 m) True C(5,5 m) True dung-roi-di-ra(3 m) True quai(3,5 m) True | ngoai vung(7,5 m) False | nguoi tung False | chu "BỊ ƯỚT" bay len 5 lan
+J. hinh uot tren quai (1 SkinnedMesh): phu lop bong uot 1 renderer, do dam 1.00, nho nuoc True
+J. mua: 79 vet mua dang roi (trai xa tam toi 5.99 m, vung 6), 37 vong nuoc cham dat - lech mat dat that TB 0.04 m (37 vong do duoc)
+J. 20 tia May giong -> 20 vet chay xem SetChayDen; 18 lan tia trung ke UOT
+J. DOI CHUNG: mot tia Sam set that -> 1 vet chay xem SetChayDen
+J. +50%: Giut set uot 112.50 / kho 75.00 (x1.500) | Sam set uot 39.00 / kho 26.00 (x1.500) | DOI CHUNG Giut set cua quai uot 40.00 / kho 40.00 (x1.000), sat thuong vung thuong uot 50.00 / kho 50.00 (x1.000)
+J. +50%: Qua cau dien don dau len uot 233.25 / kho 155.50 (x1.500; tia goc 155.52)
+J. het uot: sau khi may tan 4.85 s (bia A), sau khi ra khoi vung 4.93 s (mong ~5, lan lam moi cuoi tre toi 0,2 s)
+J. quai co luc mang CA HAI lop phu (bong uot + than den) tren moi renderer True; het ca hai -> 1/1 renderer ve dung so lop, khong con lop phu
+I. moi kieu tia bay ra khi tung Giut set: anhBlender False | beNgang 1.100 | loi 0.066 | quang 0.315 | mauLoi RGBA(1.000, 1.000, 1.000, 1.000) | song 0.11 s | nhanh 0 x 0.34 | bung 0.85/1.70
 I. moi kieu tia bay ra khi tung Giut set: anhBlender False | beNgang 1.100 | loi 0.066 | quang 0.315 | mauLoi RGBA(1.000, 1.000, 1.000, 1.000) | song 0.08 s | nhanh 0 x 0.34 | bung 0.85/1.70
 I. moi kieu tia bay ra khi tung Giut set: anhBlender True | beNgang 0.700 | loi 0.160 | quang 0.420 | mauLoi RGBA(1.000, 1.000, 1.000, 1.000) | song 0.60 s | nhanh 2 x 0.34 | bung 0.45/1.20
 I. moi kieu tia bay ra khi tung Giut set: anhBlender False | beNgang 1.100 | loi 0.066 | quang 0.315 | mauLoi RGBA(1.000, 1.000, 1.000, 1.000) | song 0.12 s | nhanh 0 x 0.34 | bung 0.85/1.70

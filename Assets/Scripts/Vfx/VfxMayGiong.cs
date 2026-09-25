@@ -43,11 +43,18 @@ public static partial class VfxFactory
     }
 
     /// <summary>
-    /// Dam MAY GIONG tren vung <paramref name="banKinh"/> m, day may o <paramref name="cao"/> m, song <paramref name="song"/> giay:
-    /// tang may SANG (loi trang xanh) + tang may XAM ben duoi cho day, loe sang chop trong may, den nhap nhay. Tu tan.
+    /// Hat VerticalBillboard / HorizontalBillboard VE RA chi bang 0,7071 kich thuoc dat (co quanh tam) - do bang BakeMesh
+    /// 25/09/2026: dat 2 x 8 -> ve 1,414 x 5,657; Billboard thuong ve dung 2 x 8. (CLAUDE.md da ghi cho lo lua, toi quen
+    /// o cot khoi: chan cot lo lung ~0,9 m ma phep thu cu doc kich thuoc DAT nen van bao "cham dat".)
     /// </summary>
-    /// <summary>Be ngang cot khoi (m) - o anh rong 512 px, than cot chiem ~45% nen than thay ~2,3 m, mieng tren loe ~4 m.</summary>
-    public const float BeNgangCotMay = 5f;
+    public const float VeThatBillboardPhang = 0.7071f;
+    /// <summary>
+    /// Be ngang DAT cua cot khoi (m). Nguoi dung 25/09/2026 khuya: "phan may trong hinh chu nhat do be ngang tang them 20%"
+    /// -> 5 x 1,2 = 6 (ve that 6 x 0,7071 = 4,24 m, truoc 3,54). Chieu cao thi bu /0,7071 de cot cham dat that.
+    /// </summary>
+    public const float BeNgangCotMay = 6f;
+    /// <summary>Mua: so vet mua moi giay, toc do roi (m/s), be ngang / dai vet thay duoc (m).</summary>
+    public const float VetMuaMoiGiay = 160f, TocDoMua = 16f, BeNgangVetMua = 0.22f;
     /// <summary>So lop anh cot chong len nhau (moi lop mot o anh khac nhau).</summary>
     public const int SoLopCotMay = 3;
     /// <summary>Quang xanh cua tia May giong - dam hon Giut set (0,14 0,34 1): do/luc thap thi tam khong nga trang.</summary>
@@ -118,7 +125,7 @@ public static partial class VfxFactory
             m.startSpeed = 0f;
             m.startSize3D = true;
             m.startSizeX = new ParticleSystem.MinMaxCurve(BeNgangCotMay * 0.9f, BeNgangCotMay * 1.1f);
-            m.startSizeY = caoCot; m.startSizeZ = 1f;
+            m.startSizeY = caoCot / VeThatBillboardPhang; m.startSizeZ = 1f;   // bu: ve that dung caoCot, quanh tam
             m.simulationSpace = ParticleSystemSimulationSpace.World;
             m.maxParticles = 4;
             var em = ps.emission; em.rateOverTime = 0f;
@@ -145,7 +152,7 @@ public static partial class VfxFactory
             km.simulationSpace = ParticleSystemSimulationSpace.World;
             km.maxParticles = 40;
             var ke = k.emission; ke.rateOverTime = 20f;
-            var ks = k.shape; ks.shapeType = ParticleSystemShapeType.Box; ks.scale = new Vector3(1.4f, cao, 1.4f);
+            var ks = k.shape; ks.shapeType = ParticleSystemShapeType.Box; ks.scale = new Vector3(1.68f, cao, 1.68f);   // theo cot rong x1,2
             var kv = k.velocityOverLifetime; kv.enabled = true; kv.space = ParticleSystemSimulationSpace.World;
             kv.x = new ParticleSystem.MinMaxCurve(-0.35f, 0.35f); kv.y = new ParticleSystem.MinMaxCurve(-0.6f, -0.2f);
             kv.z = new ParticleSystem.MinMaxCurve(-0.35f, 0.35f);
@@ -154,6 +161,58 @@ public static partial class VfxFactory
             var kr = k.rotationOverLifetime; kr.enabled = true; kr.z = new ParticleSystem.MinMaxCurve(-0.4f, 0.4f);
             var kz = k.sizeOverLifetime; kz.enabled = true;
             kz.size = new ParticleSystem.MinMaxCurve(1f, new AnimationCurve(new Keyframe(0f, 0.7f), new Keyframe(1f, 1.25f)));
+        }
+
+        // ---- MUA ROI tu trong may xuong mat dat (nguoi dung 25/09/2026 khuya) - vet mua anh Blender GiotMua, dung thang,
+        //      roi 16 m/s; VA CHAM VOI LOP GROUND thi chet va bat VONG NUOC (anh Blender VongNuoc) dung cho cham - dia hinh Act2
+        //      go ghe, vong nuoc dat o mot do cao co dinh se lo lung / chim. Ai dung trong vung bi UOT: MayGiong + BiUot. ----
+        {
+            var matM = VatLieuMayGiong("GiotMua", ThuMucMayGiong, "GiotMua", new Color(0.70f, 0.78f, 0.92f, 0.6f), false);
+            var mua = NewPS("MuaRoi", root.transform, new Vector3(0f, cao - 0.2f, 0f), matM, ParticleSystemRenderMode.VerticalBillboard);
+            var mm = mua.main;
+            mm.startDelay = 0.35f;
+            mm.duration = Mathf.Max(0.5f, song - 0.65f); mm.loop = false;
+            mm.startLifetime = (cao + 3f) / TocDoMua;          // du lau de cham dat; va cham giet hat
+            mm.startSpeed = 0f;
+            mm.startSize3D = true;
+            mm.startSizeX = BeNgangVetMua / VeThatBillboardPhang;
+            mm.startSizeY = new ParticleSystem.MinMaxCurve(1.0f / VeThatBillboardPhang, 1.5f / VeThatBillboardPhang);
+            mm.startSizeZ = 1f;
+            mm.simulationSpace = ParticleSystemSimulationSpace.World;
+            mm.maxParticles = 300;
+            var me = mua.emission; me.rateOverTime = VetMuaMoiGiay;
+            var ms = mua.shape; ms.shapeType = ParticleSystemShapeType.Circle; ms.radius = banKinh; ms.rotation = new Vector3(90f, 0f, 0f);
+            // Ca ba truc CUNG kieu Constant - lech kieu la Unity bo ca mo-dun (memory van-toc-hat-lech-kieu-bi-bo-qua)
+            var mv = mua.velocityOverLifetime; mv.enabled = true; mv.space = ParticleSystemSimulationSpace.World;
+            mv.x = new ParticleSystem.MinMaxCurve(0f); mv.y = new ParticleSystem.MinMaxCurve(-TocDoMua); mv.z = new ParticleSystem.MinMaxCurve(0f);
+            var mc = mua.colorOverLifetime; mc.enabled = true;
+            mc.color = new ParticleSystem.MinMaxGradient(Grad(Color.white, 0f, Color.white, 0.5f, Color.white, 1f, 0f, 1f, 1f, 1f));
+            var va = mua.collision; va.enabled = true;
+            va.type = ParticleSystemCollisionType.World; va.mode = ParticleSystemCollisionMode.Collision3D;
+            va.collidesWith = LayerMask.GetMask("Ground");
+            va.quality = ParticleSystemCollisionQuality.Medium;
+            va.lifetimeLoss = 1f; va.bounce = 0f; va.radiusScale = 0.05f;
+
+            var matV = VatLieuMayGiong("VongNuoc", ThuMucMayGiong, "VongNuoc", new Color(0.75f, 0.82f, 0.95f, 0.75f), false);
+            var vong = NewPS("VongNuoc", mua.transform, Vector3.zero, matV, ParticleSystemRenderMode.HorizontalBillboard);
+            // He con cua sub-emitter khong tu phat - bo PlayOnStart, khong thi no bat mot vong nuoc giua troi luc dau
+            Object.Destroy(vong.GetComponent<PlayOnStart>());
+            var vm = vong.main;
+            vm.loop = false; vm.duration = 1f;
+            vm.startLifetime = new ParticleSystem.MinMaxCurve(0.35f, 0.5f);
+            vm.startSpeed = 0f;
+            vm.startSize = new ParticleSystem.MinMaxCurve(0.9f / VeThatBillboardPhang, 1.3f / VeThatBillboardPhang);
+            vm.startRotation = new ParticleSystem.MinMaxCurve(0f, Mathf.PI * 2f);
+            vm.simulationSpace = ParticleSystemSimulationSpace.World;
+            vm.maxParticles = 150;
+            var ve = vong.emission; ve.rateOverTime = 0f; ve.SetBursts(new[] { new ParticleSystem.Burst(0f, (short)1) });
+            var vsh = vong.shape; vsh.enabled = false;
+            var vc = vong.colorOverLifetime; vc.enabled = true;
+            vc.color = new ParticleSystem.MinMaxGradient(Grad(Color.white, 0f, Color.white, 0.5f, Color.white, 1f, 1f, 1f, 0.5f, 0f));
+            var vz = vong.sizeOverLifetime; vz.enabled = true;
+            vz.size = new ParticleSystem.MinMaxCurve(1f, new AnimationCurve(new Keyframe(0f, 0.25f), new Keyframe(1f, 1f)));
+            var sub = mua.subEmitters; sub.enabled = true;
+            sub.AddSubEmitter(vong, ParticleSystemSubEmitterType.Collision, ParticleSystemSubEmitterProperties.InheritNothing);
         }
 
         // ---- QUANG MAY MONG SAT DAT quanh chan cot (anh Blender SuongDat 2x2, nam phang) + vai cum may thap ----
@@ -240,6 +299,10 @@ public static partial class VfxFactory
         }
         root.AddComponent<LoeSangMay>().Gan(cacLop.ToArray());
 
+        // KHONG EP CO HAT: mac dinh Unity maxParticleSize 0,5 = hat khong duoc to qua nua chieu cao man hinh - cot khoi cao 8,5 m,
+        // dam may 4 - 8,5 m bi ep nho lai quanh tam khi may quay gan (menu 83 do hinh ve that: cot con 3,77 m, lo lung tu 2,04 m).
+        foreach (var r in root.GetComponentsInChildren<ParticleSystemRenderer>(true)) r.maxParticleSize = 10f;
+
         AutoDestroy.Add(root, song + 0.4f);
         return root;
     }
@@ -265,6 +328,28 @@ public static partial class VfxFactory
         return arc;
     }
 
+    /// <summary>
+    /// NUOC NHO TU NGUOI BI UOT (BiUot): giot nuoc anh Blender NhoNuoc roi tu than xuong dat, bam theo nguoi (he hat World
+    /// nen giot da roi thi o lai sau khi nguoi chay di).
+    /// </summary>
+    public static GameObject NhoNuocTuNguoi(Transform nguoi)
+    {
+        var mat = VatLieuMayGiong("NhoNuoc", ThuMucMayGiong, "NhoNuoc", new Color(0.80f, 0.88f, 1f, 0.9f), false);
+        var ps = NewPS("NhoNuoc", nguoi, new Vector3(0f, 1.0f, 0f), mat, ParticleSystemRenderMode.Billboard);
+        var m = ps.main;
+        m.startLifetime = new ParticleSystem.MinMaxCurve(0.45f, 0.75f);
+        m.startSpeed = 0f;
+        m.startSize = new ParticleSystem.MinMaxCurve(0.10f, 0.16f);
+        m.simulationSpace = ParticleSystemSimulationSpace.World;
+        m.gravityModifier = 1f;
+        m.maxParticles = 20;
+        var em = ps.emission; em.rateOverTime = 12f;
+        var sh = ps.shape; sh.shapeType = ParticleSystemShapeType.Box; sh.scale = new Vector3(0.55f, 1.3f, 0.55f);
+        var col = ps.colorOverLifetime; col.enabled = true;
+        col.color = new ParticleSystem.MinMaxGradient(Grad(Color.white, 0f, Color.white, 0.5f, Color.white, 1f, 0f, 1f, 0.7f, 0f));
+        return ps.gameObject;
+    }
+
     /// <summary>Dem cho phep thu: so mang sang da bat (moi tia giang mot mang).</summary>
     public static int SoMangSangMay;
 
@@ -277,6 +362,7 @@ public static partial class VfxFactory
         SoMangSangMay++;
         var mat = VatLieuMayGiong("MangSang", ThuMucMayGiong, "MayGiong", new Color(0.62f, 0.72f, 1f, 1f), true, 1.3f);
         var ps = NewPS("MangSangMay", null, diem, mat, ParticleSystemRenderMode.Billboard);
+        ps.GetComponent<ParticleSystemRenderer>().maxParticleSize = 10f;   // mang 3,5 - 5,5 m: khong ep nho khi may quay gan
         LuoiAnh2x2(ps);
         var m = ps.main;
         m.duration = 0.3f; m.loop = false;

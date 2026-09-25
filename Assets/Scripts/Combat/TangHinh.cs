@@ -119,6 +119,7 @@ public class TangHinh : MonoBehaviour
         var ng = go.GetComponent<BiDanhNga>(); if (ng != null) Destroy(ng);
         var ht = go.GetComponent<BiHatTung>(); if (ht != null) Destroy(ht);
         var ch = go.GetComponent<BurningEffect>(); if (ch != null) Destroy(ch);
+        var uot = go.GetComponent<BiUot>(); if (uot != null) Destroy(uot);
     }
 
     void Start()

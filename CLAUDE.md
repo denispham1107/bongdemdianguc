@@ -192,7 +192,17 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
   ×1,10**; **toàn bộ mây XÁM ĐEN** (`VfxFactory.HeSoToiMay` 0,26 × màu cũ, đáy mây tối hơn đỉnh) — **sét rọi sáng TỪNG MẢNG**:
   mỗi tia bật `VfxFactory.MangSangTrongMay` (2 đám mây Blender cộng sáng ở chỗ tia phát ra) và cả đám loé nhẹ ×1,8 trong 0,15 s
   (`Vfx/LoeSangMay.cs`, MaterialPropertyBlock, không tạo vật liệu); loé trong mây đổi từ ảnh sao sang ảnh mây. ⚠️ Loé cả đám mạnh
-  (×2,8, 0,22 s, cả tia ngang) giữ mây sáng gần hết thời gian — bỏ. Menu 83 kiểm; menu 61 có thêm Mây giông.
+  (×2,8, 0,22 s, cả tia ngang) giữ mây sáng gần hết thời gian — bỏ. **Lần năm (khuya 25/09)**: cột khói **rộng ×1,2**; **MƯA** rơi khắp
+  vùng 6 m (vệt `GiotMua` Blender, 160 vệt/s, 16 m/s, **va chạm lớp Ground** rồi bật `VongNuoc` đúng chỗ chạm — sub-emitter);
+  ⚠️ **BỊ ƯỚT** (`Combat/BiUot.cs`): mọi đối thủ đứng trong vùng (quét 0,2 s, trừ người tung, Tàng hình chặn) ướt, ra khỏi vùng /
+  hết mưa còn **5 s**; kẻ ướt ăn **+50%** (`BiUot.HeSo`) từ **Giựt sét** (chỉ của người chơi, `GiatSet.tangKhiUot`), **Sấm sét**
+  (`AreaShock`), **Quả cầu điện** và **tia Mây giông** (125 → 187,5); hình: nước nhỏ giọt `NhoNuoc` + lớp `UotBong` + chữ "BỊ ƯỚT";
+  không cần bit mạng (mây phát lại trên mọi máy, sát thương do máy nạn nhân / chủ phòng tính). Tia chạm đất **cháy xém + khói y
+  Sấm sét** (`SetChayDen` + `NamChuongNgai`). Ảnh Blender ở `CongCu/Blender/may_giong_mua.blend` (file RIÊNG — Blender mở cảnh trống,
+  cấm open_mainfile). ⚠️ Hai bẫy đã vấp: (1) **hạt Vertical/HorizontalBillboard vẽ 0,707×** VÀ **`maxParticleSize` 0,5 ép hạt to**
+  khi máy quay gần — cột khói trước đây thật ra lơ lửng (vẽ 2,04 → 5,81 m) dù phép thử đọc cỡ đặt báo "chạm đất"; nay bù chiều cao
+  /0,7071, `maxParticleSize` 10, đo bằng `BakeMesh` trong Play; (2) lớp phủ **chỉ xét vật liệu GỐC** (ô đầu) khi bỏ renderer trong
+  suốt — xét cả mảng thì kẻ đang ướt (lớp bóng trong suốt) KHÔNG BAO GIỜ cháy đen. Menu 83 kiểm; menu 61 có thêm Mây giông.
 - **BỊ ĐỘNG TỐC ĐỘ DI CHUYỂN** (`CapDo.KyTocDo` = 20, 25/09/2026): mở khoá **+10% TỐC ĐỘ GỐC** (`PlayerController.TocGoc` = moveSpeed
   lúc Awake, trước mọi lần tăng theo cấp nhân vật), mỗi cấp +2,5% (`CapDo.TocThemTheoCap`, cấp 5 = +20%), CỘNG vào tốc độ đang có:
   `(moveSpeed + TocGoc × TocThemBiDong) × lội nước × băng × tàng hình`. Chỉ nhân vật của máy này — điều kiện là `!mauDoMayKhacQuyet`,

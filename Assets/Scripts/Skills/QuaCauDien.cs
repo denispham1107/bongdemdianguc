@@ -179,7 +179,7 @@ public class QuaCauDien : MonoBehaviour
 
             // GhiKeDanh TRUOC TakeDamage - khong thi ke giet vo danh, mat kinh nghiem (menu 61)
             d.GhiKeDanh(boQua);
-            d.TakeDamage(satThuongTia, DamageType.Lightning, den);
+            d.TakeDamage(satThuongTia * BiUot.HeSo(d), DamageType.Lightning, den);   // ke BI UOT an them 50%
             SoTiaDaBan++;
             SoLanTrung++;
             daBanRa++;

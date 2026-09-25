@@ -98,6 +98,9 @@ public class GiatSet : MonoBehaviour
     /// khi choi doi khang, luc do lop Player nam trong damageMask.</summary>
     public Damageable boQua;
 
+    /// <summary>Ke BI UOT (mua May giong) an them 50% - chi Giut set cua NGUOI CHOI; PhongCuaQuai tat.</summary>
+    public bool tangKhiUot = true;
+
     [Header("Mau tia")]
     [Tooltip("Loi tia - sang gan nhu trang")]
     public Color mauLoi = Color.white;
@@ -155,6 +158,7 @@ public class GiatSet : MonoBehaviour
         gs.soTiaDau = 1;
         // Choang 15% la cua KY NANG nguoi choi - don cua quai giu nguyen nhu cu
         gs.xacSuatChoang = 0f;
+        gs.tangKhiUot = false;
         return gs;
     }
 
@@ -217,7 +221,7 @@ public class GiatSet : MonoBehaviour
             // Khieng do tron don thi khong dinh choang (luat chung cua CombatUtil.AreaDamage)
             bool khiengDo = muc.khieng != null && muc.khieng.DangBat;
             muc.GhiKeDanh(boQua);
-            muc.TakeDamage(sat, DamageType.Lightning, den);
+            muc.TakeDamage(tangKhiUot ? sat * BiUot.HeSo(muc) : sat, DamageType.Lightning, den);
             daTrung.Add(muc);
 
             // 15% CHOANG moi cu trung, gieo RIENG tung cu - ca tia dau lan tia lan.
