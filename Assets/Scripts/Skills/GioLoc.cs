@@ -29,7 +29,7 @@ using UnityEngine;
 public class GioLoc : MonoBehaviour
 {
     public const float SatThuongGoc = 75f;
-    public const float XacSuatHatTung = 0.55f;
+    public const float XacSuatHatTung = 0.80f;
     /// <summary>Vung trung 2,42 m (nguoi dung 17/09/2026: toan bo ban kinh loc to them 10% - ca hinh lan vung trung; truoc 2,2).</summary>
     public const float BanKinhTrung = 2.42f;
     /// <summary>Loc tu tan sau 4,5 giay (nguoi dung 17/09/2026, truoc do 3,5).</summary>

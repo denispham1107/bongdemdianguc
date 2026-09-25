@@ -2154,10 +2154,27 @@ public static partial class VfxFactory
     /// </summary>
     public const float LocNoNgang = 1.20f;
 
+    /// <summary>
+    /// NUA DUOI THAN LOC NO THEM 20% (nguoi dung 25/09/2026, khoanh phan than that hep tu mat dat len giua than; chon
+    /// "nua duoi +20%, nhat dan len" va "vung hut no theo hinh"): tu chan toi nua chieu cao nhan <see cref="NoThanDuoi"/>,
+    /// roi giam MUOT ve 1 o mieng loe tren cung - mieng loe va may giong giu nguyen co.
+    /// </summary>
+    public const float NoThanDuoi = 1.20f;
+
+    /// <summary>Chieu cao than loc (dinh mieng loe) khi scale = 1.</summary>
+    public const float CaoThanLoc = 12.6f;
+
+    /// <summary>He so no ngang o do cao ti le <paramref name="tCao"/> (0 = chan, 1 = mieng loe).</summary>
+    public static float HeSoNoThanLoc(float tCao)
+    {
+        float k = Mathf.Clamp01((tCao - 0.5f) / 0.5f);
+        return Mathf.Lerp(NoThanDuoi, 1f, k * k * (3f - 2f * k));
+    }
+
     static Vector2[] FunnelProfile(float scale)
     {
         float r = scale * LocNoNgang;
-        return new Vector2[]
+        var p = new Vector2[]
         {
             new Vector2(0.85f * r,  0.0f),
             new Vector2(0.95f * r,  1.2f * scale),
@@ -2166,8 +2183,10 @@ public static partial class VfxFactory
             new Vector2(2.20f * r,  7.4f * scale),
             new Vector2(3.10f * r,  9.4f * scale),
             new Vector2(4.40f * r, 11.2f * scale),
-            new Vector2(6.20f * r, 12.6f * scale),
+            new Vector2(6.20f * r, CaoThanLoc * scale),
         };
+        for (int i = 0; i < p.Length; i++) p[i].x *= HeSoNoThanLoc(p[i].y / (CaoThanLoc * scale));
+        return p;
     }
 
     /// <summary>
@@ -2177,20 +2196,34 @@ public static partial class VfxFactory
     /// </summary>
     public static GameObject BuildTornado(float scale)
     {
+        // 25/09/2026: hinh dung bang Blender MCP theo anh mau nguoi dung - xem VfxLocXoay.cs
+        return BuildLocXoay(scale);
+    }
+
+    /// <summary>Hinh Loc xoay CU dung bang code - chi con dung khi thieu Resources/KyNang/LocXoay/LocXoay.fbx.</summary>
+    static GameObject BuildTornadoCu(float scale)
+    {
         var root = new GameObject("Tornado");
 
         // ---- Ba lop vo cuon ----
         // Mau XAM TRANG (truoc day nau dat). Toc do truot doc (so thu hai) da tang
         // manh: day chinh la thu lam hoa tiet chay tu duoi len, thay ro dang cuon.
+        //
+        // MOT CHIEU (nguoi dung 25/09/2026: "cac duong vien trang dam chi cuon dung 1 huong theo chieu cuon cua loc"):
+        // ban cu vo 1 va 3 quay DUONG (+320, +140), vo 2 quay AM (-210) -> van trang xoay hai chieu nguoc nhau. Nay ca ba
+        // quay theo ChieuQuayGioLoc = AM: goc atan2(z,x) TANG, dung chieu quai/vat bi cuon bay (WhirledEffect: angle +=
+        // spinDegreesPerSecond) va dung chieu Gio loc. Truot u cung dau: tren luoi Revolve u tang = goc tang, truot u
+        // DUONG keo van ve phia goc GIAM - nen truot u cung phai AM, khong thi van tren vo chay nguoc voi vo.
         BuildFunnelShell(root.transform, scale * 0.82f, new Color(0.80f, 0.82f, 0.86f, 0.95f),
-                         320f, new Vector2(1.5f, -2.10f), 4f);
+                         ChieuQuayGioLoc * 320f, new Vector2(ChieuQuayGioLoc * 1.5f, -2.10f), 4f);
         BuildFunnelShell(root.transform, scale * 1.00f, new Color(0.90f, 0.92f, 0.95f, 0.72f),
-                         -210f, new Vector2(-1.1f, -1.55f), 3f);
+                         ChieuQuayGioLoc * 210f, new Vector2(ChieuQuayGioLoc * 1.1f, -1.55f), 3f);
         BuildFunnelShell(root.transform, scale * 1.22f, new Color(0.96f, 0.97f, 1f, 0.40f),
-                         140f, new Vector2(0.7f, -1.10f), 2.2f);
+                         ChieuQuayGioLoc * 140f, new Vector2(ChieuQuayGioLoc * 0.7f, -1.10f), 2.2f);
 
-        // ---- Nhung dai bui quan xoan quanh than, boc tu chan len ngon ----
-        BuildSpiralRibbons(root.transform, scale);
+        // ---- (DA BO) ba dai bui quan xoan quanh than ----
+        // Nguoi dung 25/09/2026 ve do / xanh len anh chup: "bo cac duong vien trang uon eo" - chinh la ba dai
+        // BuildSpiralRibbons (DaiXoan0-2, 2,35 vong tu chan len ngon). Giu ham lai phong khi can, khong goi nua.
 
         // ---- Bui dat cuon tung mu o chan loc ----
         var dust = NewPS("Dust", root.transform, new Vector3(0f, 0.15f, 0f), SmokeMat,
@@ -2206,11 +2239,13 @@ public static partial class VfxFactory
         var dem = dust.emission; dem.rateOverTime = 110f;
         var dsh = dust.shape;
         dsh.shapeType = ParticleSystemShapeType.Circle;
-        dsh.radius = 1.6f * scale * LocNoNgang;
+        dsh.radius = 1.6f * scale * LocNoNgang * NoThanDuoi;              // chan loc: no them 20%
         var dvel = dust.velocityOverLifetime;
         dvel.enabled = true;
         dvel.space = ParticleSystemSimulationSpace.Local;
-        dvel.orbitalY = new ParticleSystem.MinMaxCurve(5.5f, 9f);      // cuon quanh truc
+        dvel.orbitalX = new ParticleSystem.MinMaxCurve(0f, 0f);
+        dvel.orbitalY = new ParticleSystem.MinMaxCurve(ChieuQuyDaoGioLoc * 5.5f, ChieuQuyDaoGioLoc * 9f);   // cuon quanh truc, CUNG chieu than loc
+        dvel.orbitalZ = new ParticleSystem.MinMaxCurve(0f, 0f);
         dvel.radial = new ParticleSystem.MinMaxCurve(-0.6f, 0.3f);
         // Xam trang. Rieng bui o chan KHONG con nhuom theo mau dat nua - no la mot
         // phan cua "than loc" ma than loc phai la xam trang. Manh vun van doi mau
@@ -2241,7 +2276,7 @@ public static partial class VfxFactory
         var rem = rise.emission; rem.rateOverTime = 85f;
         var rsh = rise.shape;
         rsh.shapeType = ParticleSystemShapeType.Circle;
-        rsh.radius = 1.0f * scale * LocNoNgang;
+        rsh.radius = 1.0f * scale * LocNoNgang * NoThanDuoi;
         rsh.radiusThickness = 0.35f;                   // rai quanh vanh, khong dung mot vong
 
         // TIA PHAI BAM THEO THAN LOC, khong xoe ngang.
@@ -2259,7 +2294,7 @@ public static partial class VfxFactory
         rvel.enabled = true;
         rvel.space = ParticleSystemSimulationSpace.Local;
         rvel.orbitalX = new ParticleSystem.MinMaxCurve(0f, 0f);
-        rvel.orbitalY = new ParticleSystem.MinMaxCurve(5.5f, 8f);   // quay quanh truc
+        rvel.orbitalY = new ParticleSystem.MinMaxCurve(ChieuQuyDaoGioLoc * 5.5f, ChieuQuyDaoGioLoc * 8f);   // quay quanh truc, cung chieu than
         rvel.orbitalZ = new ParticleSystem.MinMaxCurve(0f, 0f);
         rvel.radial = new ParticleSystem.MinMaxCurve(0.15f, 0.5f);  // loe rat nhe
         rvel.x = new ParticleSystem.MinMaxCurve(0f, 0f);
@@ -2283,11 +2318,17 @@ public static partial class VfxFactory
         // bang ca cai bia mo bay lo lung quanh than loc, nhin ra manh giay den
         // cat roi chu khong ra dat da. Da bo han; gio chi con hat li ti, con
         // phan "loc boc thu gi len" duoc the hien bang khoi bui phia sau.
-        BuildDebrisSwarm(root.transform, scale, "Grit", 0.05f, 0.20f, 160f, 340,
+        BuildDebrisSwarm(root.transform, scale * NoThanDuoi, "Grit", 0.05f, 0.20f, 160f, 340,
                          2.4f * LocNoNgang, 6.5f * LocNoNgang);
+        // Dat dau cung chieu cho dong bo - NHUNG hien mo-dun van toc cua Grit bi Unity bo qua han ("Particle Velocity curves
+        // must all be in the same mode": BuildDebrisSwarm de truc X/Z mot hang so, Y hai hang so) nen hat cat KHONG quay,
+        // chi vang ra theo startSpeed - o ca Loc xoay lan Gio loc (menu 82 do 25/09/2026, chua sua: doi ca hinh Gio loc)
+        var gritLoc = root.transform.Find("Grit").GetComponent<ParticleSystem>().velocityOverLifetime;
+        gritLoc.orbitalY = new ParticleSystem.MinMaxCurve(ChieuQuyDaoGioLoc * 7f, ChieuQuyDaoGioLoc * 12f);
 
         // ---- Khoi bui den keo dai phia sau duong loc di ----
-        BuildKhoiBuiLoc(root.transform, scale);
+        var khoiLoc = BuildKhoiBuiLoc(root.transform, scale).velocityOverLifetime;
+        khoiLoc.orbitalY = new ParticleSystem.MinMaxCurve(ChieuQuyDaoGioLoc * 2.2f, ChieuQuyDaoGioLoc * 4.0f);
 
         // ---- May den un un o dinh loc ----
         var cloud = NewPS("Cloud", root.transform, new Vector3(0f, 12.4f * scale, 0f), StormCloudMat,
@@ -2513,9 +2554,11 @@ public static partial class VfxFactory
     ///
     /// Day la thu lam nguoi choi nhin phat la thay "loc dang cuon tu duoi len".
     /// Meo o cho chieu quan: goc quay GIAM dan khi len cao (dai thuan tay trai),
-    /// nen khi ca khoi quay theo chieu duong thi mat nhin thay van xoan chay
+    /// nen khi ca khoi quay lam goc TANG thi mat nhin thay van xoan chay
     /// nguoc len tren - dung nhu con oc van vao go.
     /// Quay nguoc chieu hoac quan nguoc tay thi se thanh chay tut xuong.
+    /// Transform.Rotate quanh +Y voi do DUONG lam goc atan2(z,x) GIAM (do o Gio loc, menu 71) - ban cu quay +230 tuong
+    /// la "chay len" nhung that ra van xoan TUT XUONG va nguoc chieu vo 2. Nay quay AM (ChieuQuayGioLoc), 25/09/2026.
     /// </summary>
     static void BuildSpiralRibbons(Transform parent, float scale)
     {
@@ -2584,7 +2627,7 @@ public static partial class VfxFactory
 
             var spin = go.AddComponent<Spin>();
             spin.axis = Vector3.up;
-            spin.degreesPerSecond = 230f + s * 55f;    // DUONG: hop voi chieu quan de thay chay len
+            spin.degreesPerSecond = ChieuQuayGioLoc * (230f + s * 55f);    // AM: goc tang, hop chieu quan -> van chay len
 
             var scroll = go.AddComponent<ScrollUV>();
             scroll.speed = new Vector2(-1.4f - s * 0.4f, 0f);
@@ -2638,7 +2681,7 @@ public static partial class VfxFactory
     /// <summary>
     /// Tia set lach tach trong than loc. Moi nhip phat HAI tia khac kieu nhau.
     /// </summary>
-    public static void TornadoBolt(Vector3 basePos, float scale)
+    static void TornadoBoltCu(Vector3 basePos, float scale)
     {
         var prof = FunnelProfile(scale);
 

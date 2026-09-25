@@ -1,19 +1,19 @@
 [ban 1] Hoa loc xoay + Gio loc hoi mana
 
-A. so hieu 14, so ky nang 15; nang luong 45, hoi chieu 0.5 s, niem 0.38 s; Sach phep doc 45/0.5/0.38
-A. ten "HOÁ LỐC XOÁY", tom tat "Hoá Gió lốc đang bay thành Lốc xoáy", mo ta 615 ky tu; HUD 15 icon, icon so 14 co; icon file 256x256; Gio loc hoi 10 mana moi lan trung
+A. so hieu 14, so ky nang 21; nang luong 45, hoi chieu 0.5 s, niem 0.38 s; Sach phep doc 45/0.5/0.38
+A. ten "HOÁ LỐC XOÁY", tom tat "Hoá Gió lốc đang bay thành Lốc xoáy", mo ta 615 ky tu; HUD 21 icon, icon so 14 co; icon file 256x256; Gio loc hoi 10 mana moi lan trung
 
 C. nang luong Gio loc: cap 1=20.0  cap 2=22.0  cap 3=24.2  cap 4=26.6  cap 5=25.0  (cap 5 ban cu la 58.6)
 
-B. (0 quai da don) mot con Gio loc quet 3 bia: trung 3 lan -> hoi 30 mana (mong 30); mana 151.3 -> 146.1 -> 197.9
+B. (0 quai da don) mot con Gio loc quet 3 bia: trung 3 lan -> hoi 30 mana (mong 30); mana 151.3 -> 155.1 -> 197.4
 B. DOI CHUNG ban vao cho trong (khong co ai): hoi 0 mana (phai la 0)
 
 F. khong co Gio loc nao dang bay -> tu choi True, mana 302.5 -> 302.5, hoi chieu 0.00 s (phai 0)
 
-D. truoc khi hoa co 1 con Gio loc; sau khi hoa con 0 Gio loc, co Loc xoay True (lech cho 0.00 m); ton -13 mana
-D. Loc xoay hoa ra: toc do 9.5 m/s (Gio loc 9.5, Loc xoay goc 3,4), song 6.0 s, don cham mot lan 75.0 (mong 75.0), sat thuong moi giay 20.0
+D. truoc khi hoa co 1 con Gio loc; sau khi hoa con 0 Gio loc, co Loc xoay True (lech cho 0.00 m); ton -14 mana
+D. Loc xoay hoa ra: toc do 9.5 m/s (Gio loc 9.5, Loc xoay goc 3,4), song 6.0 s, don cham mot lan 90.0 (mong 90.0), sat thuong moi giay 41.5
 D. TO DAN: ti le hinh ngay sau khi hoa 0.42 -> sau 0.55 giay 1.00
-E. bia dung yen mat 388 mau (don cham 75 + sat thuong moi giay cua Loc xoay)
+E. bia dung yen mat 533 mau (don cham 90 + sat thuong moi giay cua Loc xoay)
 
 G. Gio loc cap 5: tung ra 2 con; mot lan bam Hoa loc xoay -> hoa 2 con, tren canh co 2 Loc xoay, con 0 Gio loc
 

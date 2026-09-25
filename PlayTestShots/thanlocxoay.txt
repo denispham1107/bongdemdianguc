@@ -1,0 +1,24 @@
+[ban 3] Loc xoay hinh Blender (dai khoi troi len) + Gio loc hat tung 80%
+
+A. con dau 'LocXoayHinh' (8 con chau), 5 lop hinh (luoi tu FBX 5), quang sang True, bui chan True, den True; thu da bo con sot: khong
+B. cao 15.72 m (mong 15,4), mieng vo chinh 6.80 m (mong ~6,8), chan 1.30 m; ti le be ngang mieng / cao 0.87 - anh mau ~0,9
+F. catchRadius 5.184 (giu 5,184); quy dao ke bi cuon o 7 m 2.33 = 0,9 x vo chinh 2.59
+
+C1. bia bi cuon quay +57.0 do trong 12 khung -> chieu cuon: goc atan2(z,x) TANG
+C2. LOC XOAY: 6/6 muc cung chieu cuon; Vo0 +210 Vo1 +165 Vo2 +130 Vo3 +100 Vanh +120 BuiChan 100 % cung chieu (69 hat)
+
+D0. (do o Editor) luoi Vo2: u tang -> goc TANG 2520 cap, GIAM 0 cap; anh GioVo2 1024x512: song dai manh nhat N = 8; di het mot vong u, pha dai doi +1.00 vong (mot vong lech dung mot dai = +-1)
+D1. tiling u -1; dai di len thi goc GIAM -> quay theo chieu cuon: dai CUON LEN
+D2. DOI CHUNG tiling +1 (khong lat): dai di len thi goc TANG -> dai TROI XUONG
+
+I0. (do o Editor) luoi Vo2: v o chan 0.00, o dinh 1.00; mau dinh alpha chan 0.00, giua 1.00 (5040 mau). GioVo0: mep tren-duoi 0.0077 (hai hang giua 0.0086); GioVo1: mep tren-duoi 0.0152 (hai hang giua 0.0174); GioVo2: mep tren-duoi 0.0166 (hai hang giua 0.0262); GioVo3: mep tren-duoi 0.0114 (hai hang giua 0.0116); 
+I1. toc do dai khoi di len (tu doi offset anh x chieu cao than 15 m): Vo0 +3.00 m/s Vo1 +2.40 m/s Vo2 +1.95 m/s Vo3 +1.50 m/s; vanh +0.00 m/s
+C3. DOI CHUNG (dao chieu Vo1): 5/6 muc cung chieu cuon; Vo0 +210 Vo1 -165 Vo2 +130 Vo3 +100 Vanh +120 BuiChan 100 % cung chieu (49 hat)
+I2. DOI CHUNG dao truot Vo2: Vo2 -1.95 m/s (phai AM = troi xuong), Vo1 +2.40
+
+E1. 1,2 giay: 8 tia moi (3 con song luc dem), kieu anh Blender 3, >= 3 nhanh 3, nhanh TB 3.7
+E2. doi loc 2,00 m -> dau tia doi 2.00 m
+
+G. Gio loc: XacSuatHatTung 0.80; Sach phep tom tat "Một cơn lốc, 80% hất tung"; mo ta co "80%": True
+
+so loi ghi nhan = 0

@@ -342,7 +342,7 @@ public static class SachPhep
             case CapDo.KyBinhMau: return "Hồi tối đa " + Mathf.RoundToInt(PlayerController.MauBinhTheoCap(CapHienThi(ky))) + " máu";
             case CapDo.KyBinhMana: return "Hồi tối đa " + Mathf.RoundToInt(PlayerController.ManaBinhTheoCap(CapHienThi(ky))) + " năng lượng";
             case CapDo.KyQuaCauBang: return "Ba quả băng, 40% đóng băng";
-            case CapDo.KyGioLoc: return "Một cơn lốc, 55% hất tung";
+            case CapDo.KyGioLoc: return "Một cơn lốc, 80% hất tung";
             case CapDo.KyLuaDiaNguc: return "Năm quả lửa tự đuổi kẻ địch";
             case CapDo.KyTangHinh: return "Trong suốt 20 giây, đòn sau gấp đôi";
             case CapDo.KyCauDien: return "Cầu điện bắn 10 lượt, mỗi lượt 5 tia";
@@ -469,7 +469,7 @@ public static class SachPhep
                      + "XUYÊN QUA mọi vật cản và người chơi, rồi tự tan sau 4,5 giây.\n\n"
                      + "Trong lòng lốc luôn lóe hai tia sét đánh từ đỉnh xuống (chỉ là hiệu ứng, không gây thêm sát thương).\n\n"
                      + "Lốc lướt qua một kẻ địch thì gây 75 sát thương — mỗi kẻ chỉ bị đánh một lần.\n\n"
-                     + "Mỗi lần trúng có 55% khả năng HẤT TUNG kẻ địch lên khỏi mặt đất trong 0,5 giây: không "
+                     + "Mỗi lần trúng có 80% khả năng HẤT TUNG kẻ địch lên khỏi mặt đất trong 0,5 giây: không "
                      + "đi, không đánh được, và chiêu đang niệm dở bị NGẮT NGAY.\n\n"
                      + "Lốc lướt qua lò lửa thì dập tắt lửa, 30 giây sau lò cháy lại.\n\n"
                      + "CẤP 5: phóng cùng lúc HAI cơn lốc song song, cách nhau 4 m — kẻ đứng giữa bị cả hai quét qua thì trúng hai lần — "

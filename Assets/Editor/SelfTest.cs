@@ -144,9 +144,11 @@ public static class SelfTest
             var funnel = VfxFactory.BuildTornado(1f);
             if (funnel.GetComponentsInChildren<MeshFilter>().Length < 3)
                 Fail("Con loc thieu lop vo.");
-            if (funnel.GetComponentsInChildren<ParticleSystem>().Length < 3)
-                Fail("Con loc thieu bui / manh vun.");
-            VfxFactory.TornadoBolt(new Vector3(16f, 0f, 0f), 1f);
+            // Hinh Blender 25/09/2026: hai he hat (quang sang mieng + bui xam chan), bo may / khoi den / manh vun
+            if (funnel.GetComponentsInChildren<ParticleSystem>().Length < 2)
+                Fail("Con loc thieu quang sang / bui chan.");
+            funnel.transform.position = new Vector3(16f, 0f, 0f);
+            VfxFactory.TornadoBolt(funnel.transform, 1f);
             VfxFactory.HitBurst(Vector3.zero, Color.red);
             DamagePopup.Spawn(Vector3.up, 42, DamageType.Fire, false);
 

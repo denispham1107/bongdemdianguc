@@ -90,10 +90,10 @@ thì lệnh MCP hết giờ.
 > `EditorSceneManager.OpenScene("Assets/Scenes/Act2.unity", Single)` trả lại ngay — không thì
 > người dùng quay lại Unity thấy màn của mình biến mất.
 
-**Menu `Diablo 2.5D`** trong Unity (82 mục): 1 nướng asset + dựng màn, 3 tự kiểm tra,
+**Menu `Diablo 2.5D`** trong Unity (83 mục): 1 nướng asset + dựng màn, 3 tự kiểm tra,
 4 chạy thử & chụp hình, 14 chống ô vuông đen, 15–17 ảnh vỏ cây / đá mộ / sứt mẻ bia,
 18–18d chạy thử cây cháy, 19 hồi sinh sau lốc, 20 nướng điểm mồi lửa (cây · bia mộ · nhà mồ), 21 nút khoá góc nhìn,
-22 thanh kỹ năng bản PC, **26 chạy thử mạng (sảnh phòng), 27 chạy thử khoá tài khoản, 28 chụp màn đăng nhập·sảnh, 29 xuất bản WebGL, 30/30b bơm input Act2·Act1 (bước 1), 31 dự đoán & hiệu chỉnh (bước 2), 32 nhiều người một cảnh (bước 3), 33 nội suy (bước 4), 34 PvP (bước 5), 35 ghép phòng cùng màn, 36 tự gắn bộ nối mạng, 37 kỹ năng qua mạng, 38 quái chung & bù trễ, 39 đòn của quái qua mạng, 40 máu khởi đầu, 41 nhịp bước qua mạng, 42 chế độ điều khiển, 43 kiểm toán bước 5, 44 sửa bước 5, 45 bốn người, 46 hiệu ứng qua mạng, 47 chế độ bốn bộ xương, 48 cài đặt đồ hoạ, 49 cầu lửa trúng người·khiên, 50 giao diện đăng nhập·sảnh·phòng, 51/51b/51c màn chính từ Act2 (dựng · chọn góc · chụp lò lửa), 52 tên trên đầu nhân vật, 53 HUD kinh dị trong trận, 54/54b/54c mười lò lửa Act2 (đặt · chạy thử · lốc xoáy cuốn lò), 55 kết trận (người sống sót cuối cùng), 56 đợt quái Act2 · chỗ xuất phát, 57 bàn phím ảo che ô nhập, 58 mưa băng·sấm sét (đóng băng, choáng), 59 sách phép (kéo thả ô kỹ năng), 60 cấp độ·kinh nghiệm·điểm kỹ năng, 61 kinh nghiệm theo từng kỹ năng, 62 thiên thạch đánh ngã, 63 đánh ngã người chơi khác qua mạng, 64 quái vòng ngoài truy lùng sau 60 giây, 65 bình máu · bình mana (rơi, nhặt, uống, mạng), 66 nút KỸ NĂNG ở sảnh (Sách phép xem trước) · con mắt quỷ, 67 Mưa băng đóng băng người chơi khác (qua mạng), 68 Quả cầu băng, 69 Giựt sét (12 m · 75 · 4 tia · 15% choáng · Quỷ cây), 70 Quả cầu lửa (85 · vệt lửa mới), 71/71b Gió lốc (chạy thử · chụp ảnh), 72 Lửa địa ngục, 73 Tàng hình, 74 Quả cầu điện, 75 Hoá lốc xoáy · Gió lốc hồi mana, 76 Tốc biến, 77 Kháng hệ (nhóm bị động), 78 cụm nút kỹ năng cảm ứng, 79 ánh sáng vòng đêm → ngày → chiều lặp lại (Act2), 80 bốn việc Sách phép (bình cấp 1–3 · quả cầu xuyên bia · băng dập lò · bị động Tốc độ), 81 Thiên thạch đốt bia mộ · nhà mồ**.
+22 thanh kỹ năng bản PC, **26 chạy thử mạng (sảnh phòng), 27 chạy thử khoá tài khoản, 28 chụp màn đăng nhập·sảnh, 29 xuất bản WebGL, 30/30b bơm input Act2·Act1 (bước 1), 31 dự đoán & hiệu chỉnh (bước 2), 32 nhiều người một cảnh (bước 3), 33 nội suy (bước 4), 34 PvP (bước 5), 35 ghép phòng cùng màn, 36 tự gắn bộ nối mạng, 37 kỹ năng qua mạng, 38 quái chung & bù trễ, 39 đòn của quái qua mạng, 40 máu khởi đầu, 41 nhịp bước qua mạng, 42 chế độ điều khiển, 43 kiểm toán bước 5, 44 sửa bước 5, 45 bốn người, 46 hiệu ứng qua mạng, 47 chế độ bốn bộ xương, 48 cài đặt đồ hoạ, 49 cầu lửa trúng người·khiên, 50 giao diện đăng nhập·sảnh·phòng, 51/51b/51c màn chính từ Act2 (dựng · chọn góc · chụp lò lửa), 52 tên trên đầu nhân vật, 53 HUD kinh dị trong trận, 54/54b/54c mười lò lửa Act2 (đặt · chạy thử · lốc xoáy cuốn lò), 55 kết trận (người sống sót cuối cùng), 56 đợt quái Act2 · chỗ xuất phát, 57 bàn phím ảo che ô nhập, 58 mưa băng·sấm sét (đóng băng, choáng), 59 sách phép (kéo thả ô kỹ năng), 60 cấp độ·kinh nghiệm·điểm kỹ năng, 61 kinh nghiệm theo từng kỹ năng, 62 thiên thạch đánh ngã, 63 đánh ngã người chơi khác qua mạng, 64 quái vòng ngoài truy lùng sau 60 giây, 65 bình máu · bình mana (rơi, nhặt, uống, mạng), 66 nút KỸ NĂNG ở sảnh (Sách phép xem trước) · con mắt quỷ, 67 Mưa băng đóng băng người chơi khác (qua mạng), 68 Quả cầu băng, 69 Giựt sét (12 m · 75 · 4 tia · 15% choáng · Quỷ cây), 70 Quả cầu lửa (85 · vệt lửa mới), 71/71b Gió lốc (chạy thử · chụp ảnh), 72 Lửa địa ngục, 73 Tàng hình, 74 Quả cầu điện, 75 Hoá lốc xoáy · Gió lốc hồi mana, 76 Tốc biến, 77 Kháng hệ (nhóm bị động), 78 cụm nút kỹ năng cảm ứng, 79 ánh sáng vòng đêm → ngày → chiều lặp lại (Act2), 80 bốn việc Sách phép (bình cấp 1–3 · quả cầu xuyên bia · băng dập lò · bị động Tốc độ), 81 Thiên thạch đốt bia mộ · nhà mồ, 82 Lốc xoáy hình Blender (một chiều, cuốn lên) · Gió lốc hất tung 80%**.
 Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
 
 ## Quy tắc làm việc (rút ra từ những lần đã sai)
@@ -164,7 +164,7 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
   Blender MCP** (17/09/2026, `CongCu/Blender/gio_loc.blend` → `Resources/KyNang/GioLoc/`: `LocNho.fbx` 3 vỏ + dải gió cao 5 m, ảnh gió liền mạch
   `GioDai`/`GioSoi`, flipbook `BuiDenCuon`; chân ×1,68 so với gốc, nhỏ dần về 0 ở 2,3 m; toàn bộ bề ngang ×1,1 lúc chạy `HeSoBanKinhGioLoc`), xám trắng như Lốc xoáy, **xoáy MỘT chiều đi lên** (mọi lớp quay âm quanh +Y + UV trượt âm — chiều
   chọn bằng số đo trên lưới, `VfxFactory.ChieuQuayGioLoc`), khói bụi đen cuộn quanh thân + vệt phía sau, **2 tia sét luôn đánh từ đỉnh xuống trong lòng lốc** mỗi 0,45 s như Lốc xoáy, bề dày ×5/15,37, **bám theo lốc** (`LightningArc.BamTheo` — tia ghim toạ độ thế giới bị bỏ lại 1,2–2,7 m), hai tia đối diện cách ~1,2 m ở đỉnh, thu vào theo vỏ trong cùng ở chân (`VfxFactory.GioLocSetTrongLoc`, chỉ hình; tia khi trúng đối thủ đã bỏ). Bay **9,5 m/s**
-  (người dùng chốt 17/09/2026) **xuyên mọi vật cản / người** — bám mặt đất bằng `GioLoc.MatDatY` (CHỈ lớp Ground; `GroundY` gồm cả Default làm lốc trèo lên mái nhà), tan sau 4,5 s; **cấp 5: 2 lốc song song cách 4 m, tốn gấp đôi năng lượng** (`GioLoc.SoLocTheoCap` theo cấp NGƯỜI TUNG); mỗi lốc trúng mỗi mục tiêu **một lần** 75, vùng 2,42 m, **55% hất tung** 0,5 s cao 1,5 m (mỗi lốc gieo riêng, khiên chặn); 20 năng lượng · hồi chiêu 0,4 · niệm 0,38.
+  (người dùng chốt 17/09/2026) **xuyên mọi vật cản / người** — bám mặt đất bằng `GioLoc.MatDatY` (CHỈ lớp Ground; `GroundY` gồm cả Default làm lốc trèo lên mái nhà), tan sau 4,5 s; **cấp 5: 2 lốc song song cách 4 m, tốn gấp đôi năng lượng** (`GioLoc.SoLocTheoCap` theo cấp NGƯỜI TUNG); mỗi lốc trúng mỗi mục tiêu **một lần** 75, vùng 2,42 m, **80% hất tung** (25/09/2026, trước 55%) 0,5 s cao 1,5 m (mỗi lốc gieo riêng, khiên chặn); 20 năng lượng · hồi chiêu 0,4 · niệm 0,38.
   ⚠️ 18/09/2026 người dùng đổi: **mỗi lần trúng kẻ địch hồi 10 mana** (`ManaHoiMoiLanTrung`, cố định cả 5 cấp — chỉ cộng trên máy
   của chính người tung, `pc.tuDocInput`, không thì bản sao mạng cũng cộng) và **cấp 5 chỉ tốn 25 năng lượng** (`NangLuongCan`,
   con số cố định thay cho 20 × 1,1⁴ × 2 = 58,6 — cấp 4 tốn 26,6 nên cấp 5 lại rẻ hơn, đúng ý người dùng).
@@ -200,6 +200,26 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
   (`WhirledEffect`) thì chịu. ⚠️ Đo thử đừng dính cháy chung với đóng băng: `BurningEffect.Start` gọi `frozen.Thaw()` nên
   lửa nuốt mất cái đóng băng trước khi đo (menu 76 mục G tách riêng).
   Đổi `transform.position` phải **tắt `CharacterController` rồi bật lại**. Icon Blender MCP. Menu 76 kiểm.
+- ⚠️ **LỐC XOÁY DỰNG LẠI BẰNG BLENDER MCP THEO ẢNH MẪU** (người dùng 25/09/2026: "giống như trên hình 100%, lốc cuốn lên
+  chỉ quay xoay theo trục 1 chiều"; chọn cao 15,4 m dáng theo ảnh · bỏ mây giông + khói đen · tia kiểu Giựt sét nhiều nhánh ·
+  vùng hút giữ 5,184). `CongCu/Blender/loc_xoay.blend` → `Resources/KyNang/LocXoay/`: `LocXoay.fbx` (4 vỏ phễu `Vo0–3`
+  ×0,70/0,84/1,00/1,13 + vành cuộn `Vanh`; vỏ chính r = 1,3 + 5,5·t^1,9, thân 15 m + vành → 15,72 m), ảnh gió `GioVo0–3`,
+  `GioVanh` (dải xoắn ốc, mỗi vòng u lệch đúng một dải → **liền mạch theo u**, render mặt phẳng UV trực giao, `filter_width`
+  0,01 — bộ lọc 1,5 px làm lệch mép 10 lần), `HaoQuangDinh`, `BuiXam` (2×2). Code `Vfx/VfxLocXoayBlender.cs`
+  (`BuildLocXoay`, `BanKinhLocXoay`, `TornadoBolt(Transform, scale)`); `BuildTornado` gọi nó, hình cũ còn ở `BuildTornadoCu`
+  (chỉ khi thiếu FBX). Mọi thứ nằm dưới MỘT con `LocXoayHinh` → Hoá lốc xoáy phình cả cơn (trước chỉ phình vỏ đầu).
+  **Một chiều + cuốn lên**: mọi lớp quay `ChieuQuayGioLoc` (góc atan2 TĂNG = chiều vật bị cuốn); trên lưới đã nhập u tăng thì
+  góc TĂNG, dải trong ảnh đi lên thì u tăng → quay thế thì dải TRÔI XUỐNG, nên vật liệu **lật u** (`LatUAnhLocXoay` −1).
+  **Dải khói TRÔI LÊN THẬT** (người dùng duyệt 25/09/2026 trong 4 phương án "cuộn từ dưới lên"): ảnh `GioVo0–3` liền mạch
+  **cả theo v** (nhiễu 4D trên hình xuyến), phần mờ chân/miệng + xám dưới chân chuyển sang **MÀU ĐỈNH** của FBX (xuất
+  `colors_type='LINEAR'`, shader nhân thẳng) nên không trôi theo ảnh; `ScrollUV` v âm `TruotLenLocXoay` 0,20/0,16/0,13/0,10
+  (= 3,0/2,4/1,95/1,5 m/s); vành không trượt.
+  Tia sét: 2 tia/nhịp `GiatSet.KieuTia` 3–5 nhánh, bám hai đầu vào lốc; tia vào kẻ bị cuốn cũng kiểu Giựt sét.
+  `FunnelRadiusAt` = 0,9 × vỏ chính. Lúc tan tắt MỌI hệ hạt + đèn (trước chỉ của `visual`, loc prefab thì null).
+  ⚠️ Nướng prefab bằng **menu 13**; `AssetBaker.SaveMeshes` nay **bỏ qua lưới đã là asset** (lưới FBX — CreateAsset trên nó là lỗi).
+  ⚠️ Menu 13 cũ sinh ảnh trùng `Tex_*_N.png` và trỏ vật liệu sang; trả về bằng git rồi **ImportAsset ForceUpdate mọi prefab dùng
+  vật liệu ấy** — không thì prefab trong bộ nhớ giữ vật liệu đã xoá và khói nổ / quả cầu lửa ra MÀU HỒNG (người dùng đã gặp).
+  ⚠️ Hạt cát `Grit` của **Gió lốc** không quay (trục vận tốc lệch kiểu, Unity bỏ qua mô-đun) — chưa sửa. Menu 82 kiểm.
 - **Hoá lốc xoáy** (`Skills/HoaLocXoay.cs`, 18/09/2026): bấm là cơn **Gió lốc đang bay của LẦN TUNG GẦN NHẤT** (mỗi cơn mang
   `GioLoc.lucTung`; cấp 5 hai cơn cùng mốc → hoá cả hai) **phình to thành Lốc xoáy** — `PhinhToThanhLoc` chỉ đổi tỉ lệ HÌNH
   0,42 → 1,00 trong 0,55 s, không đụng sức hút/sát thương. Cơn lốc mới giữ **tốc độ 9,5 m/s của Gió lốc** (Lốc xoáy gốc 3,4),

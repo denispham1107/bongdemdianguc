@@ -8566,6 +8566,123 @@ Menu 74 thêm mục K, đo ở lượt thứ ba: **5/5 tia** quanh cầu dùng �
 ngang (đối chứng: tia mặc định không dùng ảnh). Menu 74 cả bài **0 lỗi**. Ảnh `quacaudien_2_ban_tia.png`: trước đây năm
 tia là một mảng trắng loá, nay thấy rõ từng tia lõi trắng viền xanh.
 
+### Lốc xoáy dựng lại bằng Blender theo ảnh mẫu (25/09/2026)
+
+Anh gửi hai ảnh cơn lốc xám trắng với nhiều tia sét trắng xanh và xin "dựng lại giống như trên hình 100%, lốc cuốn lên chỉ
+quay theo trục một chiều". Tôi hỏi lại ba điều, anh chọn: **cao 15,4 m, dáng theo ảnh** (chân hẹp, loe dần lên miệng),
+**bỏ mây giông đen và vệt khói đen** (ảnh chỉ có quầng sáng trên miệng và bụi xám nhạt dưới chân), **tia sét kiểu Giựt sét
+nhiều nhánh**. Vùng hút và sát thương giữ nguyên. Mục "thân nở 20%" ngay dưới đây vì thế không còn áp dụng — dáng mới
+theo ảnh.
+
+**Dựng trong Blender (qua MCP, `CongCu/Blender/loc_xoay.blend`).** Bốn lớp vỏ phễu lồng nhau (bán kính ×0,70 / 0,84 / 1,00 /
+1,13; vỏ chính r = 1,3 + 5,5·t^1,9 m, miệng 6,8 m) và một vành cuộn ở miệng. Ảnh gió làm bằng shader node: dải khói xoắn ốc,
+mỗi vòng quanh thân lệch đúng một dải nên **ảnh khép vòng**, quay mãi không lộ đường nối; sợi mảnh chạy dọc dải; lõi xám đậm,
+lớp ngoài mảnh và mờ. Tôi render thử cả cơn lốc bảy lần để chỉnh (bản đầu là hình nón thẳng, mép lởm chởm như bậc thang;
+bản sau như phễu thuỷ tinh đục; vành miệng từng phẳng như cái đĩa). Xuất ảnh bằng cách render mặt phẳng UV qua máy quay trực
+giao. Hai lỗi bắt được bằng số: bộ lọc điểm ảnh 1,5 px của Cycles trộn nền trong suốt vào cột mép (mép trái–phải lệch 0,04–0,05
+so với 0,003 giữa ảnh); và nhiễu sợi gió lấy toạ độ theo dải nghiêng nên không khép vòng. Sửa cả hai: mép còn lệch 0,002–0,004.
+
+**Một chiều mà vẫn cuốn lên.** Mọi lớp quay cùng chiều vật bị cuốn bay. Đo trên lưới đã nhập vào Unity: u tăng thì góc quanh
+trục tăng; đo trên ảnh: đi lên thì dải lệch về phía u tăng — nên quay như thế thì dải **trôi xuống**. Lật u của ảnh (tiling −1)
+thì dải cuốn lên mà chiều quay không đổi.
+
+**Số đo** (menu 82 viết lại — **0 lỗi**):
+
+| Đo | Kết quả |
+|---|---|
+| Cấu trúc | một con `LocXoayHinh`: 5 lớp (lưới từ FBX Blender 5/5), quầng sáng, bụi chân, đèn; 0 thứ cũ còn sót (mây, khói, dải xoắn, hạt cát) |
+| Kích thước | cao 15,72 m (thân 15 + vành), miệng vỏ chính 6,80 m, chân 1,30 m; bề ngang miệng / cao 0,87 (ảnh mẫu ~0,9) |
+| Một chiều | 6/6 mục cùng chiều bia bị cuốn (5 lớp +210…+100 °/s, bụi 100% hạt); **đối chứng** đảo một lớp → bắt đúng 1 lớp ngược |
+| Cuốn lên | ảnh: tần số dải mạnh nhất N = 8, hết một vòng u pha dải đổi **+1,00 vòng** (đúng công thức); lưới: 2520/2520 cặp u tăng → góc tăng; tiling −1 → **cuốn lên**; **đối chứng** tiling +1 → trôi xuống |
+| Tia sét | kiểu ảnh Blender, 3–5 nhánh (TB 4,0); dời lốc 2,00 m → đầu tia dời 2,00 m |
+| Vùng hút | giữ 5,184; quỹ đạo kẻ bị cuốn = 0,9 × vỏ chính |
+
+Bẫy khi đo độ nghiêng dải: bản đầu dùng tương quan hai hàng ảnh, ra "lên 3 px dịch 3 px" — sợi gió nằm ngang lấn át dải
+nghiêng (công thức cho 48 px). Đúng dấu nhưng là may; đổi sang đo **pha** dải theo từng cột thì ra đúng +1,00 vòng.
+
+Hai sửa phụ: `AssetBaker.SaveMeshes` bỏ qua lưới đã là asset (lưới FBX); lúc lốc tan, tắt **mọi** hệ hạt và đèn (trước chỉ
+tắt những gì trong `visual`, mà lốc từ prefab thì `visual` rỗng — quầng sáng lơ lửng thêm 2,5 giây). Hoá lốc xoáy giờ phình cả
+cơn lốc (trước chỉ phình lớp vỏ đầu tiên).
+
+Chạy lại, đều **0 lỗi**: menu 75 (hình phình 0,42 → 1,00), 54c (lửa tắt 0,60 s, lò mọc lại), 19 (9/9 vật hiện lại sau 30 s).
+
+Ảnh: `PlayTestShots/thanlocxoay_0_dem_can.png` (đêm, nhìn từ dưới lên như ảnh mẫu), `thanlocxoay_1_ngay_goc_choi.png`;
+ảnh render Blender: `CongCu/Blender/loc_xoay_render/xem_truoc_1…8.png`.
+
+**Sau đó cùng ngày — dải khói trôi lên thật.** Anh khen hình lốc và xin "hiệu ứng cuộn từ dưới lên nhiều và chi tiết
+hơn", bảo tôi đề xuất để duyệt. Tôi đưa bốn phương án (dải khói trôi lên thật · vệt gió xoắn ốc bay lên · mảnh vụn bị hút
+xoáy lên · khói bụi cuộn ở chân bốc lên), anh chọn **dải khói trôi lên thật** — không thêm hạt nào.
+
+Trước đó dải xoắn chỉ QUAY (trông như đi lên nhờ ảo giác cột đèn cắt tóc). Để ảnh trượt được theo chiều dọc mà không lộ
+đường nối, tôi vẽ lại bốn ảnh gió trong Blender với nhiễu 4D trải trên **hình xuyến** (cos/sin theo u và theo v), dải xoắn
+N dải nguyên nên khép vòng cả hai chiều; phần mờ ở chân / miệng và phần xám đậm dưới chân không thể nằm trong ảnh nữa (nó
+sẽ trôi theo) nên chuyển sang **màu đỉnh** của lưới FBX. Bản render Blender bằng chính ảnh PNG × màu đỉnh giống hệt bản cũ.
+
+**Số đo** (menu 82, dấu vết `[ban 3]` — **0 lỗi**):
+
+| Đo | Kết quả |
+|---|---|
+| Ảnh liền mạch theo chiều dọc | mép trên–dưới lệch 0,008 / 0,015 / 0,017 / 0,011, ngang hai hàng cạnh nhau giữa ảnh (0,009 / 0,017 / 0,026 / 0,012) |
+| Màu đỉnh trên lưới đã nhập | alpha chân 0,00, giữa 1,00; xám chân 0,40–0,65 → giữa 0,90–0,94; v từ chân 0,00 lên đỉnh 1,00 |
+| Tốc độ dải khói đi lên (đo trong Play) | **+3,00 / +2,40 / +1,95 / +1,50 m/s** (lớp trong nhanh hơn); vành 0 |
+| **Đối chứng** đảo chiều trượt một lớp | lớp ấy đo ra −1,95 m/s (trôi xuống), lớp bên cạnh vẫn +2,40 |
+
+
+### Thân Lốc xoáy nở 20% ở nửa dưới, mọi vệt trắng cuốn một chiều; Gió lốc hất tung 80% (25/09/2026)
+
+Anh khoanh phần thân thắt hẹp của Lốc xoáy (từ mặt đất lên giữa thân) và xin **rộng thêm 20%**, và các **đường viền trắng
+đậm chỉ cuốn đúng một hướng** — lúc đó nhiều vệt cuốn theo các chiều khác nhau. Tôi hỏi lại hai điều, anh chọn: **nửa dưới
++20% rồi nhạt dần lên** (miệng loe trên cùng và mây giông giữ nguyên cỡ) và **vùng hút nở theo hình**. Kèm Gió lốc: hất
+tung **55% → 80%**.
+
+**Vì sao vệt trắng xoáy hai chiều.** Thân lốc có ba lớp vỏ và ba dải xoắn. Lớp vỏ giữa quay −210°/s, hai lớp kia +320 và
++140, ba dải xoắn +230…+340. Trong Unity, xoay dương quanh trục đứng làm góc nhìn từ trên xuống **giảm** — ngược với chiều
+quái bị cuốn bay (góc **tăng**). Nên vỏ giữa quay đúng chiều cuốn, còn năm lớp kia quay ngược. Comment cũ ở dải xoắn ghi
+"quay dương để vân xoắn chạy lên", nhưng tính ra với chiều thật thì vân xoắn đang **tụt xuống**. Nay mọi lớp quay theo
+đúng chiều của Gió lốc (đã đo ở menu 71). Trượt ảnh ngang trên vỏ cùng dấu với chiều quay, các hệ hạt (bụi chân, vệt vút
+lên, khói) cũng quỹ đạo cùng chiều.
+
+**Nở thân.** Một hàm `HeSoNoThanLoc`: ×1,20 từ chân tới nửa chiều cao, giảm mượt về ×1,00 ở miệng loe. Hàm được nhân
+thẳng vào đường viền phễu nên vỏ, dải xoắn, tia sét trong lòng lốc đều theo; quỹ đạo kẻ bị cuốn và vùng hút
+(`catchRadius` 4,32 → 5,184) cũng theo. Số này nằm trong **prefab** `Skill_LocXoay` nên phải nướng lại bằng menu 13. Lần
+nướng ấy sinh thêm bốn ảnh `Tex_*_3.png` giống hệt từng byte ảnh `_2` đang dùng và trỏ vật liệu sang đó — tôi trả vật liệu
+về và xoá ảnh trùng, để bản web không nặng thêm vô ích.
+
+**Phát hiện thêm, chưa sửa:** hạt cát `Grit` quanh chân lốc (cả Lốc xoáy lẫn Gió lốc) **không quay chút nào**. Hàm dựng
+nó đặt trục đứng bằng hai hằng số còn hai trục kia một hằng số; Unity báo "velocity curves must all be in the same mode"
+và bỏ qua cả mô-đun vận tốc, nên hạt chỉ văng ra theo tốc độ ban đầu. Nó là hạt đất nhỏ màu sẫm, không phải vệt trắng; sửa
+thì đổi luôn hình Gió lốc nên để anh quyết.
+
+**Số đo** (menu 82 mới — **0 lỗi**):
+
+| Đo | Kết quả |
+|---|---|
+| Bán kính thật trên lưới 3 lớp vỏ, so với đường viền CŨ chép tay trong phép thử | 4 vòng dưới ×1,200; rồi ×1,184 · ×1,102 · ×1,025; miệng loe ×1,000 (vỏ ngoài 9,08 m như cũ) |
+| Vùng hút | `catchRadius` 5,184; bia cách 4,8 m **bị cuốn**, đối chứng 5,9 m không |
+| Chiều cuốn thật (bia đang bay quanh lốc) | góc tăng |
+| Lốc xoáy mới | **9/9** mục cùng chiều: vỏ +455 · +342 · +255 °/s (quay + trượt), dải xoắn +230 · +285 · +340, bụi 99–100%, vệt vút 100%, khói 100% hạt |
+| **Đối chứng** dựng lại đúng cấu hình cũ | 1/9 mục cùng chiều — phép đo bắt được đúng cái anh thấy |
+| Vân dải xoắn | lên cao 1,87 m thì góc −117°, quay theo chiều cuốn → vân **chạy lên** như Gió lốc |
+| Gió lốc hất tung (menu 71, 190 lần trúng) | **80,5%** (153 lần), đếm độc lập khớp bộ đếm trong code |
+
+Chạy lại, đều **0 lỗi**: menu 54c (lửa tắt sau 0,59 s thay vì 0,80 — vùng hút rộng hơn nên chạm lò sớm hơn), 75, 19 (cuốn
+9 vật thay vì 8, 30 s sau hiện lại 9/9).
+
+Ảnh: `PlayTestShots/thanlocxoay_1_ngay_goc_choi.png`, `thanlocxoay_2_ngay_goc_choi_sau.png`, `thanlocxoay_3_can_than.png`.
+
+**Sau đó cùng ngày — bỏ hẳn ba dải xoắn.** Anh chơi thử, vẽ nét đỏ và xanh lên ảnh chụp những "đường viền trắng uốn éo"
+quấn quanh thân lốc và xin bỏ đi. Đó là ba dải `DaiXoan0–2` (dựng bằng `BuildSpiralRibbons`, quấn 2,35 vòng từ chân lên
+miệng) — thứ duy nhất trên thân lốc có dạng một đường xoắn liền. Nay không dựng nữa (hàm vẫn giữ). Menu 82 đếm cả theo tên
+vật lẫn tên lưới: **0 dải xoắn**; chiều quay còn 6/6 mục cùng chiều cuốn (3 vỏ, bụi, vệt vút, khói), đối chứng cấu hình cũ
+1/6. Menu 75 vẫn 0 lỗi. Ảnh ban đêm nhìn từ dưới lên như ảnh anh gửi: `PlayTestShots/thanlocxoay_0_dem_can.png`.
+
+**Và một lỗi tôi gây ra giữa chừng: khói nổ, quả cầu lửa MÀU HỒNG.** Anh chơi thấy những khối hồng khổng lồ. Menu 13 (nướng
+lại prefab Lốc xoáy) sinh thêm ảnh trùng và trỏ 9 vật liệu sang đó; tôi trả vật liệu về bằng git và xoá ảnh trùng — file trên
+đĩa đúng hoàn toàn, nhưng Unity nạp lại vật liệu thành đối tượng MỚI trong khi các prefab đang trong bộ nhớ (`Vfx_NoLua`,
+`Skill_QuaCauLua`, `Vfx_SetChamDat`, `Vfx_VungGiong`, `Skill_LocXoay`) vẫn giữ con trỏ tới đối tượng cũ đã bị xoá → vật liệu
+null → hồng. Sửa: nạp lại (ImportAsset ForceUpdate) các vật liệu và cả năm prefab; quét 62 prefab + cảnh: 0 ô hỏng; hai lần
+Play liên tiếp sinh vụ nổ + quả cầu lửa + Lốc xoáy: 0/21 hỏng, cả cảnh 0/1002. Bản web không dính (build từ commit trước).
+
 ### Thiên thạch đốt cháy bia mộ và nhà mồ y hệt cây (25/09/2026)
 
 Anh xin Thiên thạch "đốt cháy mọi thứ như đốt cháy cây, hiệu ứng giống y chang". Tôi hỏi lại vật nào và cháy xong ra

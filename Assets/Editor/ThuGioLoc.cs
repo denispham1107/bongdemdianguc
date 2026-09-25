@@ -836,7 +836,7 @@ public static class ThuGioLoc
             Ghi(string.Format("G. {0} lan loc trung bia; dem doc lap {1} lan bia co BiHatTung ({2:P1}), bo dem trong code {3}; do cao hinh lon nhat {4:F2} m; bay trung binh {5:F2} s ({6} lan do)",
                 soTrung, soHat, tile, GioLoc.SoLanHat - hat0, caoMax, soDoGiay > 0 ? tongGiay / soDoGiay : 0f, soDoGiay));
             Kiem(soTrung == 190, "khong du 190 lan trung (19 bia x 10 loc)");
-            Kiem(tile > 0.47f && tile < 0.63f, "ti le hat tung khong quanh 55%");
+            Kiem(Mathf.Abs(tile - GioLoc.XacSuatHatTung) < 0.08f, "ti le hat tung khong quanh GioLoc.XacSuatHatTung");
             Kiem(soHat == GioLoc.SoLanHat - hat0, "dem doc lap khac bo dem trong code");
             Kiem(Mathf.Abs(caoMax - 1.5f) < 0.08f, "do cao hat tung khong phai 1,5 m");
             Kiem(soDoGiay > 50 && Mathf.Abs(tongGiay / soDoGiay - 0.5f) < 0.06f, "thoi gian bay khong phai 0,5 giay");

@@ -25,7 +25,9 @@ public class Tornado : MonoBehaviour
     // 3,6 x 1,20 = 4,32 - no ngang cung mot he so voi than loc, xem
     // VfxFactory.LocNoNgang. De nguyen 3,6 thi vung hut hep hon cai vo nhin
     // thay: quai dung ngay trong than loc ma khong bi cuon.
-    public float catchRadius = 4.32f;
+    // 25/09/2026: nua duoi than loc no them 20% (VfxFactory.NoThanDuoi) -> vung hut o chan no theo: 4,32 x 1,2 = 5,184
+    // (nguoi dung chon "no theo hinh"). So nay nam trong PREFAB Skill_LocXoay - nuong lai bang menu 13.
+    public float catchRadius = 5.184f;
     public float liftHeight = 7f;
     public float spinDegreesPerSecond = 230f;
 
@@ -329,8 +331,8 @@ public class Tornado : MonoBehaviour
     /// </summary>
     public float FunnelRadiusAt(float h)
     {
-        float k = Mathf.Clamp01(h / Mathf.Max(0.01f, 12.6f * scale));
-        return Mathf.Lerp(0.9f, 4.4f, k * k) * scale * VfxFactory.LocNoNgang;
+        // Hinh Blender 25/09/2026: bay sat MAT TRONG vo chinh (0,9 ban kinh Vo2) - cung cong thuc voi luoi trong loc_xoay.blend
+        return VfxFactory.BanKinhLocXoay(h, scale) * 0.9f;
     }
 
     // ================================================================
@@ -339,7 +341,7 @@ public class Tornado : MonoBehaviour
 
     void Zap()
     {
-        VfxFactory.TornadoBolt(transform.position, scale);
+        VfxFactory.TornadoBolt(transform, scale);
 
         // Thinh thoang giat thang vao mot ke dang bi cuon
         CleanCaught();
@@ -351,10 +353,11 @@ public class Tornado : MonoBehaviour
         var d = victim.GetComponent<Damageable>();
         if (d == null || d.IsDead) return;
 
-        var top = transform.position + Vector3.up * 12.6f * scale;
-        var arc = LightningArc.Create(top, d.transform.position + Vector3.up * 0.9f, 0.9f, 0.22f);
-        arc.segments = 14;
-        arc.branches = 1;
+        // Tu mieng loc (hinh Blender 25/09/2026 cao 15 m) giang xuong ke bi cuon - cung kieu tia Giut set nhu tia tren than
+        var top = transform.position + Vector3.up * 14.4f * scale;
+        var arc = LightningArc.Create(top, d.transform.position + Vector3.up * 0.9f, 1f, 0.3f);
+        GiatSet.KieuTia(arc, 1.2f, transform, d.transform);
+        arc.branches = 3;
 
         // He PHONG chu khong phai SET: tia nay la mot phan cua Loc xoay / Gio loc, ma hai ky nang ay
         // nam nhom PHONG trong Sach phep - nguoi dung chot 19/09/2026 la Khang Phong chan no.
@@ -380,13 +383,13 @@ public class Tornado : MonoBehaviour
             if (vatCuon[i] != null) vatCuon[i].TanBien();
         vatCuon.Clear();
 
-        // De hat bui bay not roi moi xoa han
-        if (visual != null)
-        {
-            var ps = visual.GetComponentsInChildren<ParticleSystem>();
-            for (int i = 0; i < ps.Length; i++)
-                ps[i].Stop(true, ParticleSystemStopBehavior.StopEmitting);
-        }
+        // De hat bui bay not roi moi xoa han. Lay TU CA con loc chu khong tu 'visual': loc tu prefab thi visual = null,
+        // ban cu de quang sang / den / bui chay tiep 2,5 giay lo lung sau khi than loc da an.
+        var ps = GetComponentsInChildren<ParticleSystem>();
+        for (int i = 0; i < ps.Length; i++)
+            ps[i].Stop(true, ParticleSystemStopBehavior.StopEmitting);
+        var den = GetComponentsInChildren<Light>();
+        for (int i = 0; i < den.Length; i++) den[i].enabled = false;
 
         var mr = GetComponentsInChildren<MeshRenderer>();
         for (int i = 0; i < mr.Length; i++) mr[i].enabled = false;

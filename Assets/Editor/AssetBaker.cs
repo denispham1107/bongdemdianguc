@@ -874,6 +874,9 @@ public static class AssetBaker
         {
             var m = filters[i].sharedMesh;
             if (m == null) continue;
+            // Luoi DA LA ASSET (vd lay tu FBX Blender - Loc xoay 25/09/2026): prefab tro thang vao do. CreateAsset tren
+            // no se bao loi va con doi ten sub-asset cua FBX.
+            if (EditorUtility.IsPersistent(m)) continue;
 
             Mesh saved;
             if (meshMap.TryGetValue(m, out saved))
