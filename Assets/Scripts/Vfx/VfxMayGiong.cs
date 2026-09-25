@@ -12,6 +12,10 @@ using UnityEngine;
 /// Tia set DUNG Y GIUT SET (nguoi dung 25/09/2026: "tia set giong nhu tia set trong skill Giut set"; chon "dung y"): cung
 /// GiatSet.KieuTia, be ngang x1, loi trang + quang XANH DAM GiatSet.MauQuangNguoiChoi, hien GiatSet.GiayTiaHien 0,6 s, 2 nhanh.
 /// Ban dau (truoc 25/09 chieu) tia day x1,7, quang xanh nhat mac dinh, song 0,30-0,42 s, 4-6 nhanh + loe hinh sao cham dat.
+/// Lan ba (nguoi dung, anh thu ba): "tia set mau xanh duong DAM HON" (chon "xanh dam hon, van loi trang") -> quang
+/// MauQuangMayGiong (0,05 0,16 1) thay (0,14 0,34 1), vien + hao quang day x1,2; loi trang, hinh dang van y Giut set.
+/// Va "mot quang may giong mong o tren mat dat" (chon "quanh chan cot ~3 m"):
+///   SuongDat.png   bon dam suong mong nhin tu tren xuong 2x2 - soi xoay, lo thung, mem dan ra mep; nam PHANG sat dat.
 /// Khoi den tu ke bi chay dung anh bui Blender cua Loc xoay (BuiXam) to toi.
 /// </summary>
 public static partial class VfxFactory
@@ -46,6 +50,14 @@ public static partial class VfxFactory
     public const float BeNgangCotMay = 5f;
     /// <summary>So lop anh cot chong len nhau (moi lop mot o anh khac nhau).</summary>
     public const int SoLopCotMay = 3;
+    /// <summary>Quang xanh cua tia May giong - dam hon Giut set (0,14 0,34 1): do/luc thap thi tam khong nga trang.</summary>
+    public static readonly Color MauQuangMayGiong = new Color(0.05f, 0.16f, 1f, 1f);
+    /// <summary>Vien xanh + hao quang cua tia May giong day hon Giut set bao nhieu lan.</summary>
+    public const float HeSoQuangMayGiong = 1.2f;
+    /// <summary>Quang may mong sat dat quanh chan cot: ban kinh (m), so dam, do cao tren mat dat.</summary>
+    public const float BanKinhSuongDat = 3f;
+    public const int SoDamSuongDat = 5;
+    public const float CaoSuongDat = 0.3f;
 
     public static GameObject MayGiongHinh(Vector3 chan, float banKinh, float cao, float song)
     {
@@ -136,6 +148,52 @@ public static partial class VfxFactory
             kz.size = new ParticleSystem.MinMaxCurve(1f, new AnimationCurve(new Keyframe(0f, 0.7f), new Keyframe(1f, 1.25f)));
         }
 
+        // ---- QUANG MAY MONG SAT DAT quanh chan cot (anh Blender SuongDat 2x2, nam phang) + vai cum may thap ----
+        // 0,3 m tren dat: dia hinh Act2 go ghe, nam thap hon thi mot phan dam suong chui xuong dat.
+        {
+            var mat = VatLieuMayGiong("SuongDat", ThuMucMayGiong, "SuongDat", new Color(0.80f, 0.84f, 0.92f, 0.85f), false);
+            var ps = NewPS("SuongDat", root.transform, new Vector3(0f, CaoSuongDat, 0f), mat, ParticleSystemRenderMode.HorizontalBillboard);
+            LuoiAnh2x2(ps);
+            var m = ps.main;
+            m.duration = song; m.loop = false;
+            m.startLifetime = song;
+            m.startSpeed = 0f;
+            // dam 3,8 - 5,0 m (phan thay duoc ~77% anh, doc tu PNG), rai trong 1,6 m -> mep ngoai ~3 m (menu 83 do)
+            m.startSize = new ParticleSystem.MinMaxCurve(3.8f, 5.0f);
+            m.startRotation = new ParticleSystem.MinMaxCurve(0f, Mathf.PI * 2f);
+            m.simulationSpace = ParticleSystemSimulationSpace.World;
+            m.maxParticles = 8;
+            var em = ps.emission; em.rateOverTime = 0f;
+            em.SetBursts(new[] { new ParticleSystem.Burst(0f, (short)SoDamSuongDat) });
+            var sh = ps.shape; sh.shapeType = ParticleSystemShapeType.Circle; sh.radius = 1.6f; sh.rotation = new Vector3(90f, 0f, 0f);
+            var col = ps.colorOverLifetime; col.enabled = true;
+            float hien = 0.6f / song, tat = 1f - 0.7f / song;
+            var g = new Gradient();
+            g.SetKeys(new[] { new GradientColorKey(Color.white, 0f), new GradientColorKey(Color.white, 1f) },
+                      new[] { new GradientAlphaKey(0f, 0f), new GradientAlphaKey(1f, hien), new GradientAlphaKey(1f, tat), new GradientAlphaKey(0f, 1f) });
+            col.color = new ParticleSystem.MinMaxGradient(g);
+            var rot = ps.rotationOverLifetime; rot.enabled = true; rot.z = new ParticleSystem.MinMaxCurve(-0.18f, 0.18f);
+            var sz = ps.sizeOverLifetime; sz.enabled = true;
+            sz.size = new ParticleSystem.MinMaxCurve(1f, new AnimationCurve(new Keyframe(0f, 0.75f), new Keyframe(0.15f, 1f), new Keyframe(1f, 1.1f)));
+
+            // Vai cum may THAP (anh may Blender) de lop suong co do day khi nhin xien
+            var matT = VatLieuMayGiong("MayThap", ThuMucMayGiong, "MayGiong", new Color(0.70f, 0.74f, 0.82f, 0.45f), false);
+            var t = NewPS("MayThap", root.transform, new Vector3(0f, 0.45f, 0f), matT, ParticleSystemRenderMode.Billboard);
+            LuoiAnh2x2(t);
+            var tm = t.main;
+            tm.duration = song; tm.loop = false;
+            tm.startLifetime = song;
+            tm.startSpeed = 0f;
+            tm.startSize = new ParticleSystem.MinMaxCurve(1.2f, 2.0f);
+            tm.startRotation = new ParticleSystem.MinMaxCurve(0f, Mathf.PI * 2f);
+            tm.simulationSpace = ParticleSystemSimulationSpace.World;
+            tm.maxParticles = 10;
+            var te = t.emission; te.rateOverTime = 0f; te.SetBursts(new[] { new ParticleSystem.Burst(0f, (short)6) });
+            var ts = t.shape; ts.shapeType = ParticleSystemShapeType.Circle; ts.radius = 2.2f; ts.rotation = new Vector3(90f, 0f, 0f);
+            var tc = t.colorOverLifetime; tc.enabled = true; tc.color = new ParticleSystem.MinMaxGradient(g);
+            var tr = t.rotationOverLifetime; tr.enabled = true; tr.z = new ParticleSystem.MinMaxCurve(-0.15f, 0.15f);
+        }
+
         // ---- Loe sang chop trong may (anh chop Blender, cong) ----
         var matLoe = VatLieuMayGiong("LoeMay", ThuMucMayGiong, "ChopSet", new Color(0.75f, 0.85f, 1f, 1f), true, 1.2f);
         var loe = NewPS("LoeTrongMay", root.transform, new Vector3(0f, cao, 0f), matLoe, ParticleSystemRenderMode.Billboard);
@@ -168,8 +226,8 @@ public static partial class VfxFactory
     }
 
     /// <summary>
-    /// Mot tia set May giong tu day may xuong dat - DUNG Y tia Giut set (cung ham, be ngang, mau, thoi gian song, so nhanh):
-    /// giong <c>GiatSet.VeTia</c> voi day = 1. Chi them chop den cho mat dat sang len.
+    /// Mot tia set May giong tu day may xuong dat - HINH DANG y tia Giut set (cung ham, be ngang, thoi gian song, so nhanh:
+    /// giong <c>GiatSet.VeTia</c> voi day = 1), rieng quang XANH DAM HON va day x1,2. Them chop den cho mat dat sang len.
     /// </summary>
     public static LightningArc TiaMayGiong(Vector3 tu, Vector3 den, Transform bamCuoi)
     {
@@ -177,8 +235,10 @@ public static partial class VfxFactory
         var arc = LightningArc.Create(tu, cham, 1f, GiatSet.GiayTiaHien);
         arc.name = "TiaMayGiong";
         arc.coreColor = Color.white;
-        arc.glowColor = GiatSet.MauQuangNguoiChoi;
+        arc.glowColor = MauQuangMayGiong;
         GiatSet.KieuTia(arc, 1f, null, bamCuoi);
+        arc.heSoVien = LightningArc.HeSoVienXanh * HeSoQuangMayGiong;
+        arc.heSoHaoQuang *= HeSoQuangMayGiong;
 
         var sang = new GameObject("ChopDenMayGiong");
         sang.transform.position = cham + Vector3.up * 1.2f;
@@ -195,8 +255,10 @@ public static partial class VfxFactory
         var arc = LightningArc.Create(p1, p2, 1f, Random.Range(0.18f, 0.3f));
         arc.name = "TiaNgangMayGiong";
         arc.coreColor = Color.white;
-        arc.glowColor = GiatSet.MauQuangNguoiChoi;
+        arc.glowColor = MauQuangMayGiong;
         GiatSet.KieuTia(arc, 1f, null, null);
+        arc.heSoVien = LightningArc.HeSoVienXanh * HeSoQuangMayGiong;
+        arc.heSoHaoQuang *= HeSoQuangMayGiong;
     }
 
     /// <summary>Khoi den boc len tu nguoi dang chay den (anh bui Blender BuiXam to toi), bam theo nguoi.</summary>

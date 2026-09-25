@@ -65,6 +65,9 @@ public class LightningArc : MonoBehaviour
     /// on, cho vien xanh sang va day hon 10%" - truoc day hai lop dung chung mot luoi nen noi vien la noi ca loi.
     /// </summary>
     public const float HeSoVienXanh = 1.10f;
+    /// <summary>He so vien xanh CUA TIA NAY (mac dinh HeSoVienXanh). May giong dat rieng x1,2 (nguoi dung 25/09/2026:
+    /// "tia set mau xanh duong dam hon") - Giut set / Qua cau dien giu nguyen.</summary>
+    public float heSoVien = HeSoVienXanh;
 
     Mesh coreMesh, glowMesh, auraMesh;
     Material coreMat, glowMat, auraMat;
@@ -320,7 +323,7 @@ public class LightningArc : MonoBehaviour
         gocBungCuoi = Random.Range(0f, Mathf.PI * 2f); oBungCuoi = Random.Range(0, 4);
 
         DungLuoiAnh(mesh, path, 1f);
-        if (glowMesh != null && glowMesh != mesh) DungLuoiAnh(glowMesh, path, HeSoVienXanh);
+        if (glowMesh != null && glowMesh != mesh) DungLuoiAnh(glowMesh, path, heSoVien);
     }
 
     struct NhanhAnh { public Vector3[] pts; public int dai; public float u; public bool lat; }

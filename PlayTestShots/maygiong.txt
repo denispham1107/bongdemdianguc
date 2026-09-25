@@ -4,23 +4,26 @@ A. so hieu 21, so ky nang 22; ten "MÂY GIÔNG", tom tat "20 tia sét trong 5 gi
 A. tam ngam 12 m (Sam set 12 m); vung ngam 6 m; mo khoa khong dieu kien True; gay sat thuong (Tang hinh x2) True; mo ta 431 ky tu
 
 B. ton 50 nang luong, hoi chieu ngay sau 7.00 s; bam lai ngay khi dang hoi chieu -> suot 6 giay chi 1 dam may; may hien sau 0.33 s, lech cho ngam 0.00 m
-C. 20 tia (bo dem 20); tia dau 0.39 s, tia cuoi 5.11 s, cach nhau TB 0.248 s; anh Blender 20, cung mot kieu 20
-D. 71 lan bia mat mau, boi so 125: 71; tia nham ke dich 13/20 (65 %, mong ~65%)
+C. 20 tia (bo dem 20); tia dau 0.36 s, tia cuoi 5.11 s, cach nhau TB 0.250 s; anh Blender 20, cung mot kieu 20
+D. 50 lan bia mat mau, boi so 125: 50; tia nham ke dich 10/20 (50 %, mong ~65%)
 D2. DOI CHUNG vung trong: 20 tia, nham ke dich 0
 
-E. 3 dam may x 20 tia vao cum 6 bia: 264 lan trung, 105 lan hat nga (39.8 %, mong 45%); thoi gian nga do duoc 0.85 s (mong 0,85)
+E. 3 dam may x 20 tia vao cum 6 bia: 238 lan trung, 115 lan hat nga (48.3 %, mong 45%); thoi gian nga do duoc 0.85 s (mong 0,85)
 
-F. quai 'Enemy_BoXuong': 1 renderer mo (1 SkinnedMesh); bi tia that trung -> chay den (ap dung +1); phu lop than den 1/1, do dam 1.00; tu go sau ~3.03 s (mong 3); vat lieu tra lai dung 1/1
+F. quai 'Enemy_BoXuong': 1 renderer mo (1 SkinnedMesh); bi tia that trung -> chay den (ap dung +1); phu lop than den 1/1, do dam 1.00; tu go sau ~3.04 s (mong 3); vat lieu tra lai dung 1/1
 F2. bang 6 s + chay den 0,6 s: sau khi chay den go -> lop vo bang con 1, lop chay den con 0
 
 G. TungPhepTheoMang(21): may 0 -> 1
-H. may: dam sang 26, dam xam 16; lech doc toi da 0.00 m (nam NGANG), xa tam toi da 5.48 m (vung 6); den 1; cao day may 7 m
-H. cot khoi: 3 lop dung thang True, rong 5.3 m; hat tu -0.35 m toi 8.20 m tren mat dat (day may 6.5 m); anh: khoi bat dau o 2.7 % chieu cao -> khoi thay duoc tu -0.12 m; khoi cuon doc cot 13 hat
-I. moi kieu tia bay ra khi tung Giut set: anhBlender False | beNgang 1.100 | loi 0.066 | quang 0.315 | mauLoi RGBA(1.000, 1.000, 1.000, 1.000) | mauQuang RGBA(0.450, 0.700, 1.000, 1.000) | song 0.07 s | nhanh 0 x 0.34 | bung 0.85/1.70 | haoQuang 0.605
-I. moi kieu tia bay ra khi tung Giut set: anhBlender False | beNgang 1.100 | loi 0.066 | quang 0.315 | mauLoi RGBA(1.000, 1.000, 1.000, 1.000) | mauQuang RGBA(0.450, 0.700, 1.000, 1.000) | song 0.09 s | nhanh 0 x 0.34 | bung 0.85/1.70 | haoQuang 0.605
-I. moi kieu tia bay ra khi tung Giut set: anhBlender True | beNgang 0.700 | loi 0.160 | quang 0.420 | mauLoi RGBA(1.000, 1.000, 1.000, 1.000) | mauQuang RGBA(0.140, 0.340, 1.000, 1.000) | song 0.60 s | nhanh 2 x 0.34 | bung 0.45/1.20 | haoQuang 0.605
-I. moi kieu tia bay ra khi tung Giut set: anhBlender False | beNgang 1.100 | loi 0.066 | quang 0.315 | mauLoi RGBA(1.000, 1.000, 1.000, 1.000) | mauQuang RGBA(0.450, 0.700, 1.000, 1.000) | song 0.12 s | nhanh 0 x 0.34 | bung 0.85/1.70 | haoQuang 0.605
-I. tia CHINH Giut set THAT (5 tia): anhBlender True | beNgang 0.700 | loi 0.160 | quang 0.420 | mauLoi RGBA(1.000, 1.000, 1.000, 1.000) | mauQuang RGBA(0.140, 0.340, 1.000, 1.000) | song 0.60 s | nhanh 2 x 0.34 | bung 0.45/1.20 | haoQuang 0.605
-I. tia May giong:              anhBlender True | beNgang 0.700 | loi 0.160 | quang 0.420 | mauLoi RGBA(1.000, 1.000, 1.000, 1.000) | mauQuang RGBA(0.140, 0.340, 1.000, 1.000) | song 0.60 s | nhanh 2 x 0.34 | bung 0.45/1.20 | haoQuang 0.605
+H. may: dam sang 26, dam xam 16; lech doc toi da 0.00 m (nam NGANG), xa tam toi da 5.52 m (vung 6); den 1; cao day may 7 m
+H. cot khoi: 3 lop dung thang True, rong 5.2 m; hat tu -0.35 m toi 8.20 m tren mat dat (day may 6.5 m); anh: khoi bat dau o 2.7 % chieu cao -> khoi thay duoc tu -0.12 m; khoi cuon doc cot 13 hat
+H. quang may sat dat: 5 dam nam phang True, cao 0.30 m tren dat; anh: suong toi 77 % nua o -> lan xa tam 3.13 m (mong ~3); cum may thap 6
+I. moi kieu tia bay ra khi tung Giut set: anhBlender False | beNgang 1.100 | loi 0.066 | quang 0.315 | mauLoi RGBA(1.000, 1.000, 1.000, 1.000) | song 0.09 s | nhanh 0 x 0.34 | bung 0.85/1.70
+I. moi kieu tia bay ra khi tung Giut set: anhBlender False | beNgang 1.100 | loi 0.066 | quang 0.315 | mauLoi RGBA(1.000, 1.000, 1.000, 1.000) | song 0.08 s | nhanh 0 x 0.34 | bung 0.85/1.70
+I. moi kieu tia bay ra khi tung Giut set: anhBlender True | beNgang 0.700 | loi 0.160 | quang 0.420 | mauLoi RGBA(1.000, 1.000, 1.000, 1.000) | song 0.60 s | nhanh 2 x 0.34 | bung 0.45/1.20
+I. moi kieu tia bay ra khi tung Giut set: anhBlender False | beNgang 1.100 | loi 0.066 | quang 0.315 | mauLoi RGBA(1.000, 1.000, 1.000, 1.000) | song 0.07 s | nhanh 0 x 0.34 | bung 0.85/1.70
+I. moi kieu tia bay ra khi tung Giut set: anhBlender False | beNgang 1.100 | loi 0.066 | quang 0.315 | mauLoi RGBA(1.000, 1.000, 1.000, 1.000) | song 0.13 s | nhanh 0 x 0.34 | bung 0.85/1.70
+I. tia CHINH Giut set THAT (5 tia): anhBlender True | beNgang 0.700 | loi 0.160 | quang 0.420 | mauLoi RGBA(1.000, 1.000, 1.000, 1.000) | song 0.60 s | nhanh 2 x 0.34 | bung 0.45/1.20
+I. tia May giong:              anhBlender True | beNgang 0.700 | loi 0.160 | quang 0.420 | mauLoi RGBA(1.000, 1.000, 1.000, 1.000) | song 0.60 s | nhanh 2 x 0.34 | bung 0.45/1.20
+I. quang Giut set RGBA(0.140, 0.340, 1.000, 1.000) vien 1.100 hao quang 0.605 | May giong RGBA(0.050, 0.160, 1.000, 1.000) vien 1.320 hao quang 0.726 (ti le 1.20 / 1.20)
 
 so loi ghi nhan = 0

@@ -8603,6 +8603,30 @@ châm cả bia mộ / nhà mồ (tính năng sáng nay), đầy trần "4 vật 
 
 Ảnh: `PlayTestShots/maygiong_1_dem_can.png`, `maygiong_2_chay_den.png`, `maygiong_3_ngay_goc_choi.png`.
 
+### Mây giông: tia xanh sẫm hơn, quầng mây mỏng sát đất (25/09/2026, tối)
+
+Anh gửi lại ảnh mẫu, xin **tia xanh dương đậm hơn** và **một quầng mây mỏng trên mặt đất** như dưới chân cột trong ảnh. Anh
+chọn "xanh đậm hơn, vẫn lõi trắng" (chỉ Mây giông, Giựt sét giữ nguyên) và "quanh chân cột, ~3 m".
+
+**Tia.** Quầng xanh từ (0,14 0,34 1) của Giựt sét xuống **(0,05 0,16 1)** — hạ kênh đỏ/lục chứ không tăng độ sáng, vì bài
+học cũ: quầng sáng lên mà đỏ/lục còn cao thì tâm tia ngả trắng. Viền xanh và hào quang **dày ×1,2** để màu thấy rõ. Trước đây
+viền xanh là một hằng số dùng chung mọi tia, nên em thêm trường `heSoVien` cho từng tia (mặc định vẫn 1,10) — Giựt sét và Quả
+cầu điện không bị kéo theo.
+
+**Quầng mây sát đất (Blender, vật liệu `MG_SuongDat`).** Bốn đám sương nhìn từ trên xuống: tròn mềm dần ra mép, mép lồi lõm,
+bên trong là sợi xoáy và lỗ thủng (nhiễu 4D có vặn méo). Trong game 5 đám **nằm phẳng** (HorizontalBillboard) ở 0,3 m trên đất
+— thấp hơn thì chỗ đất gồ ghề của Act2 xuyên qua đám sương — xoay chậm, cộng 6 cụm mây thấp đứng để lớp sương có độ dày khi nhìn xiên.
+Độ lan đo bằng cách đọc thẳng file PNG (sương thấy được tới 77% nửa ô) nhân với cỡ hạt thật: lần đầu 2,62 m, nới hai lần (cỡ
+3,2–4,4 → 3,8–5,0 m, rải 1,1 → 1,6 m) được **3,13 m**.
+
+| Đo (menu 83, 0 lỗi) | Kết quả |
+|---|---|
+| Quầng Giựt sét thật | (0,14 0,34 1), viền 1,100, hào quang 0,605 — **không đổi** |
+| Quầng Mây giông | (0,05 0,16 1), viền 1,320, hào quang 0,726 → **×1,20 / ×1,20** so với tia Giựt sét thật |
+| Hình dạng tia | vẫn y hệt Giựt sét (bề ngang, lõi, thời gian sống, nhánh, cụm bùng) |
+| Quầng mây sát đất | 5 đám nằm phẳng, cao 0,30 m, lan 3,13 m; 6 cụm mây thấp |
+| Các mục cũ | 20 tia · 0,250 s · mọi lần trúng bội số 125 · hất ngã 48,3% · cột khói chạm đất (−0,12 m) — không đổi |
+
 ### Mây giông: cột khói xuống tận mặt đất, tia sét y như Giựt sét (25/09/2026, chiều)
 
 Anh gửi thêm một ảnh: đám mây có **cột khói rủ thẳng xuống tận mặt đất**, tia sét đan quanh cột; và xin **tia giống hệt tia

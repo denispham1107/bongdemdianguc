@@ -185,7 +185,10 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
   rộng `VfxFactory.BeNgangCotMay` 5 m, cao −0,35 → cao mây + 1,2 m, kèm khói cuộn dọc cột (`KhoiCot`); và **tia ĐÚNG Y GIỰT SÉT**
   (chọn "đúng y"): `GiatSet.KieuTia` bề ngang ×1, quầng `MauQuangNguoiChoi`, sống `GiayTiaHien` 0,6 s, 2 nhánh, bỏ loé hình sao
   chạm đất. Menu 83 mục I tung Giựt sét THẬT rồi so từng thông số tia (không so với hằng số); mục H đọc thẳng PNG để biết khói
-  thấy được từ đâu. Menu 83 kiểm; menu 61 có thêm Mây giông.
+  thấy được từ đâu. **Lần ba (ảnh thứ ba)**: quầng tia **XANH SẪM HƠN** `VfxFactory.MauQuangMayGiong` (0,05 0,16 1), viền + hào quang
+  dày ×1,2 (`LightningArc.heSoVien` — trường MỚI mỗi tia, mặc định `HeSoVienXanh` 1,10; Giựt sét / Quả cầu điện không đổi), lõi
+  vẫn trắng; và **quầng mây mỏng sát đất** quanh chân cột ~3 m (ảnh Blender `SuongDat.png` 2×2, 5 đám nằm phẳng
+  HorizontalBillboard ở 0,3 m + 6 cụm mây thấp). Menu 83 kiểm; menu 61 có thêm Mây giông.
 - **BỊ ĐỘNG TỐC ĐỘ DI CHUYỂN** (`CapDo.KyTocDo` = 20, 25/09/2026): mở khoá **+10% TỐC ĐỘ GỐC** (`PlayerController.TocGoc` = moveSpeed
   lúc Awake, trước mọi lần tăng theo cấp nhân vật), mỗi cấp +2,5% (`CapDo.TocThemTheoCap`, cấp 5 = +20%), CỘNG vào tốc độ đang có:
   `(moveSpeed + TocGoc × TocThemBiDong) × lội nước × băng × tàng hình`. Chỉ nhân vật của máy này — điều kiện là `!mauDoMayKhacQuyet`,
