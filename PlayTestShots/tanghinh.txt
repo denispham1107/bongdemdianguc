@@ -17,15 +17,15 @@ E2. bat tang hinh luc dang dinh 3 hieu ung -> con lai 0
 D. 24 quai that: nham minh truoc khi tang hinh 24, sau khi tang hinh 0; GameDirector.GanNhat: truoc Player, sau null
 
 G. (mo khoa Qua cau lua: True) chum Qua cau lua: sat thuong GHI TREN QUA binh thuong 85.00 (3 qua), dang tang hinh 170.00 (3 qua) -> x2.00 (mong 2,00); bo dem don dau +1; sau don do con tang hinh False; tung KHIEN thi con tang hinh True
-G2. (tham khao) mau bia mat: 170.3 va 340.8 - KHONG kiem so nay vi so qua trung bia moi lan mot khac
+G2. (tham khao) mau bia mat: 166.7 va 333.4 - KHONG kiem so nay vi so qua trung bia moi lan mot khac
 
-J. do hien cua than minh: luc con > 2 giay 1.00..1.00 (dung yen, khong nhap nhay); trong 2 giay cuoi 0.12..1.00, doi sang/toi 17 lan trong 53 khung (nhip 0.22 s)
+J. do hien cua than minh: luc con > 2 giay 1.00..1.00 (dung yen, khong nhap nhay); trong 2 giay cuoi 0.12..1.00, doi sang/toi 18 lan trong 79 khung (nhip 0.22 s)
 J. hai tam anh cung mot nhip: nua sang do hien 1.00, nua mo 0.12
 
-K1. MUA BANG (22 quai da don): sat thuong GHI TREN TUNG VET roi - binh thuong 34 vet, 60.22..60.22; dang tang hinh 33 vet, 120.43..120.43 -> x2.00 (mong 2,00; neu chi vet dau x2 thi vet thu hai tro di van la 60.22)
-K1. mau bia that su mat: binh thuong 2669 qua 42 lan tut (63.6/lan); dang tang hinh 4992 qua 43 lan (116.1/lan) -> moi lan trung x1.83. TONG khong tron 2,00 (x1.87) vi so vet TRUNG bia moi con bao moi khac va sat thuong vung giam dan tu tam ra ria
+K1. MUA BANG (23 quai da don): sat thuong GHI TREN TUNG VET roi - binh thuong 36 vet, 60.22..60.22; dang tang hinh 35 vet, 120.43..120.43 -> x2.00 (mong 2,00; neu chi vet dau x2 thi vet thu hai tro di van la 60.22)
+K1. mau bia that su mat: binh thuong 2459 qua 41 lan tut (60.0/lan); dang tang hinh 4370 qua 40 lan (109.2/lan) -> moi lan trung x1.82. TONG khong tron 2,00 (x1.78) vi so vet TRUNG bia moi con bao moi khac va sat thuong vung giam dan tu tam ra ria
 K2. QUA CAU BANG cap 5: sat thuong GHI TREN TUNG QUA - binh thuong 5 qua, 134.78..134.78; dang tang hinh 5 qua, 269.57..269.57 -> x2.00 (mong 2,00; neu chi qua dau x2 thi qua thu hai tro di van la 134.78)
-K2b. (tham khao) tong mau bia mat: binh thuong 514.4, tang hinh 884.7 - KHONG kiem so nay vi so qua trung bia moi lan mot khac
+K2b. (tham khao) tong mau bia mat: binh thuong 442.4, tang hinh 884.6 - KHONG kiem so nay vi so qua trung bia moi lan mot khac
 
 H. dat 1,2 giay -> tu tan sau 1.24 giay
 
@@ -33,13 +33,13 @@ V. cap 1: bia 2 m (toi da 600, hien tai 300): mat 160.00 / mong 160.00; bia 4 m 
 V. bia NGOAI 5,6 m mat 0.00; nguoi tung mat 0.00; vong no 1 lan, hinh 1; vong ngoai cua anh ve that ban kinh 5.00 m (mong 5); do sang ngay sau 1.00
 V. luoi vong phep BAM DAT: 625 dinh do duoc, lech khoi (mat dat that + 6 cm) toi da 0.000 m
 V. cap 5 tung THAT (TangHinh.capKyNang 5): mat 256.00 / mong 256.00; mat 360.00 / mong 360.00; mat 178.00 / mong 178.00; 
-V. het tang hinh -> hoi chieu ngay luc het 9.93 s, 1 giay sau 8.93 s (mong 10 roi dem xuong)
+V. het tang hinh -> hoi chieu ngay luc het 9.94 s, 1 giay sau 8.91 s (mong 10 roi dem xuong)
 V. tan do don dau (Qua cau lua): con tang hinh False, vong no them 1
 
 I. minh tang hinh -> goi trang thai co bit CoTangHinh: True (byte co = 32); ban sao nhan bit: co trang thai True, renderer hien khi DUNG YEN 0, khi DI CHUYEN 1; ban sao nhap nhay False (phai la False)
 L1. goi phep viet-doc: khong co co -> cap 5 don False; co co -> cap 5 don True
 L2. nguoi KIA tung Qua cau lua qua mang: sat thuong GHI TREN QUA - goi khong co co 85.00 (3 qua), goi co co don tang hinh 170.00 (3 qua) -> x2.00 (mong 2,00)
-L2b. (tham khao) tong mau bia mat: 190.8 va 402.4 - KHONG kiem so nay vi so qua trung bia moi lan mot khac
+L2b. (tham khao) tong mau bia mat: 191.1 va 402.9 - KHONG kiem so nay vi so qua trung bia moi lan mot khac
 L3. minh danh don dau trong tang hinh -> goi phep gui di: co goi True, mang co don tang hinh True
 
 W. ban sao: nhan bit -> tang hinh True; het -> vong no 1; bit cu tre ngay sau -> tao lai tang hinh False, vong them 0

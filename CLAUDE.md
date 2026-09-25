@@ -294,7 +294,7 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
   hệ BĂNG cho Kháng Băng (`GhiKeDanh(toi, HeSat.Bang)`) nhưng loại `Physical` để kháng băng ±25% của quái không làm lệch số.
   **Hồi chiêu 10 s đếm từ lúc HIỆN HÌNH** (đang tàng hình ô kỹ năng giữ đầy, bấm lại bị từ chối); `tangHinhCooldown` nay là THUỘC TÍNH đọc
   hằng. Hình: ảnh Blender MCP `CongCu/Blender/tang_hinh_vong_phep.blend` (đường cong + compositor Fog Glow, nền ĐEN → cộng sáng; nền mờ đã trừ
-  + mờ dần ra mép, không thì hiện ô vuông) → `Resources/KyNang/TangHinh/VongPhep.png`; `Vfx/VfxVongPhepTangHinh.cs` dựng **LƯỚI 24×24 BÁM
+  + mờ dần ra mép, không thì hiện ô vuông; cùng ngày người dùng **bỏ 4 đuôi mũi tên + lớp sương trong vòng: CHỈ NÉT SÁNG**, cắt ngưỡng 0,13) → `Resources/KyNang/TangHinh/VongPhep.png`; `Vfx/VfxVongPhepTangHinh.cs` dựng **LƯỚI 24×24 BÁM
   ĐẤT** (tia chỉ lớp Ground, +6 cm) — tấm phẳng thì đất gồ ghề che mất nửa vòng; xoay / phóng to làm trên UV (`VongPhepSang`). Qua mạng: cấp đi
   theo gói phép (`capKyNang`); `ApTuMang` bỏ qua bit cũ trễ 1,5 s sau khi nổ (không nổ vòng thứ hai). ⚠️ **Lỗi cũ đã sửa**: bản sao nhận bit
   tạo component MỚI mang `conLai` mặc định = `ThoiGian` rồi `Max` → người khác hiện hình rồi vẫn tàng hình trên máy mình 20 s (nay 90 s).

@@ -2,7 +2,8 @@ using UnityEngine;
 
 /// <summary>
 /// VONG PHEP khi HET TANG HINH (nguoi dung 26/09/2026, kem anh mau: vong phep xanh lam duoi chan - hai vong tron, sao nam canh,
-/// ky hieu, duoi mui ten cong ra ngoai, suong xanh phu trong vong). Anh dung bang BLENDER MCP
+/// ky hieu). Cung ngay nguoi dung BO 4 duoi mui ten va lop suong xanh trong vong: "chi hien thi noi bat cac vien sang, phan ben trong
+/// khong can sang" - anh chi con NET sang, long vong den (nen cat nguong 0,13 cho quang toa sang loang cung mat). Anh dung bang BLENDER MCP
 /// (CongCu/Blender/tang_hinh_vong_phep.blend -> Resources/KyNang/TangHinh/VongPhep.png): nen DEN, net + toa sang (compositor
 /// Fog Glow) -> dung vat lieu CONG SANG, den = khong ve.
 ///

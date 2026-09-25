@@ -8641,6 +8641,11 @@ băng thì con số "100 + 10%" lệch theo từng con.
 
 Ảnh: `PlayTestShots/tanghinh_6_vong_phep_goc_choi.png` (góc chơi, cảnh sạch).
 
+**Chỉnh ngay sau đó (anh khoanh trên ảnh):** bỏ **4 đuôi mũi tên** và **lớp sương xanh trong lòng vòng** — "chỉ cần hiển thị nổi bật các
+viền sáng, phần bên trong không cần sáng". Trong Blender xoá 12 đường cong mũi tên + đĩa sương, render lại; quầng Fog Glow vẫn loang vào
+lòng vòng 13–30/255 nên cắt ngưỡng nền 0,13: tâm vòng 0, giữa vòng 0–6/255, nét sáng giữ nguyên 255. Menu 73 chạy lại 0 lỗi (bán kính
+vẽ thật 5,00 m, lưới bám đất lệch 0,000 m).
+
 ### Mây giông: hồi chiêu 5,5 s, bỏ cột khói, mây to hơn, mưa dập lò, mây tự bay 4 giây (26/09/2026)
 
 Anh chơi thử rồi xin: hồi chiêu **5,5 giây**; **bỏ cột mây và quầng mây dưới đất**; đám mây **to hơn 15%**; **mưa rơi trúng lò lửa
