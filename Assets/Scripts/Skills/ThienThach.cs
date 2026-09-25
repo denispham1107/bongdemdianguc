@@ -217,7 +217,7 @@ public class ThienThach : MonoBehaviour
     /// <summary>Loi gieo danh nga - public de phep thu (menu 62) gieo nghin lan.</summary>
     /// <returns>So muc tieu bi danh nga.</returns>
     public static int GieoDanhNga(Vector3 tam, float banKinh, LayerMask mask, Damageable boQua,
-                                  float xacSuat, float giay)
+                                  float xacSuat, float giay, System.Collections.Generic.HashSet<Damageable> boRa = null)
     {
         var cols = Physics.OverlapSphere(tam, banKinh, mask, QueryTriggerInteraction.Collide);
         var daXet = new System.Collections.Generic.HashSet<Damageable>();
@@ -227,6 +227,7 @@ public class ThienThach : MonoBehaviour
             var d = cols[i].GetComponentInParent<Damageable>();
             if (d == null || d.IsDead || !daXet.Add(d)) continue;
             if (boQua != null && d == boQua) continue;
+            if (boRa != null && boRa.Contains(d)) continue;      // qua NAY: ke da trung vu no truoc khong gieo lai
             if (d.khieng != null && d.khieng.DangBat) continue;
             if (Random.value < xacSuat) { BiDanhNga.Apply(d, giay); so++; }
         }

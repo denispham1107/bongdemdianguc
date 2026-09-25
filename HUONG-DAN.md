@@ -8603,6 +8603,42 @@ châm cả bia mộ / nhà mồ (tính năng sáng nay), đầy trần "4 vật 
 
 Ảnh: `PlayTestShots/maygiong_1_dem_can.png`, `maygiong_2_chay_den.png`, `maygiong_3_ngay_goc_choi.png`.
 
+### Quả cầu lửa · Quả cầu băng nảy sang kẻ thứ hai; Gió lốc hình quạt (26/09/2026)
+
+Anh xin: **quả cầu lửa và quả cầu băng trúng kẻ địch thì nảy sang kẻ gần bên**; **Gió lốc cấp 1–4 ra 3 lốc hình quạt, cấp 5 ra 5
+lốc**. Anh chọn: nảy **một lần**, **100%** sát thương, trong **6 m**; lốc cách nhau **15°**; năng lượng **giữ nguyên** (20, cấp 5 là
+25); Hoá lốc xoáy **chỉ hoá lốc giữa** (ba–năm Lốc xoáy cùng lúc quá nặng cho điện thoại).
+
+**Quả nảy.** Quả nổ xong, nếu vụ nổ có trúng ai, tìm kẻ địch gần chỗ nổ nhất mà vụ nổ chưa chạm (`Fireball.TimKeNay`, 6 m), sinh một
+quả mới chép mọi thông số của quả gốc, tự dí mục tiêu. Kẻ đã trúng đi theo quả nảy trong `khongCham`: không ăn sát thương lần hai,
+không bị gieo đánh ngã / đóng băng lần hai. Quả nảy không nảy tiếp (`soLanNay` giảm về 0). Quả của quái và của Lửa địa ngục không nảy.
+
+**Cái bẫy tìm ra khi đo.** Lần chạy đầu, quả cầu băng nảy "nổ ngay tại chỗ": mặt nạ vật cản của người chơi có cả lớp **Enemy** (thân
+quái là vật cản, để quả nổ khi chạm quái), nên quả nảy sinh sát thân kẻ vừa trúng đâm luôn vào nó. Quả cầu lửa trong phép thử đầu
+tiên KHÔNG lộ lỗi này chỉ vì phép thử để `xuyenVatNho` tắt — nhánh ấy dùng `SphereCast` một vật, mà `SphereCast` bỏ qua vật bắt
+đầu BÊN TRONG hình cầu; quả thật của người chơi thì bật xuyên vật nhỏ và sẽ dính y hệt. Sửa: `VatCanChan(..., boRa)` bỏ qua thân
+các kẻ trong `khongCham`, quả nảy xuất phát lệch 0,5 m về phía kẻ mới; phép thử bật `xuyenVatNho` như quả thật.
+
+**Gió lốc.** `SpawnChum` toả `SoLocTheoCap(cap)` lốc cách nhau `GocQuat`; cấp đi theo gói tin nên máy kia phát lại đúng 3 / 5 lốc.
+Mọi lốc cùng một mốc `lucTung`, lốc giữa mang `laLocGiua` — Hoá lốc xoáy chỉ nhận lốc ấy.
+
+| Đo (menu 84, 71, 75) | Kết quả |
+|---|---|
+| Quả cầu lửa nảy | A mất 69,63, B (sau A 3,9 m) mất 71,25 sau 0,33 s — **B/A 1,023**; C cách 7 m: 0 |
+| Quả cầu băng nảy | A 53,25, B 54,94 sau 0,16 s — **B/A 1,032** |
+| Đối chứng | bia một mình: 0 quả nảy; `soLanNay` 0: B mất 0 — cả hai quả |
+| Tung thật | 3/3 quả của người chơi mang `soLanNay` 1 (cả lửa lẫn băng) |
+| Gió lốc cấp 1 / cấp 4 | 3 lốc, hướng bay −15 · 0 · 15; tốn 20,00 / 26,62 (không nhân số lốc) |
+| Gió lốc cấp 5 | 5 lốc −30 · −15 · 0 · 15 · 30; góc tính từ **quãng đường thật đã bay** (không đọc biến hướng) khớp 5/5; tốn 25,00 |
+| Bia trên đường lốc giữa (cấp 5) | 468 = 3 cú × 155,52 — lốc giữa + hai lốc 15°, mỗi lốc một lần |
+| Qua mạng | gói Gió lốc cấp 1 → máy kia ra 3 lốc; gói cấp 5 → 5 lốc |
+| Hoá lốc xoáy | cấp 1: 3 → 2 Gió lốc + 1 Lốc xoáy đúng chỗ lốc giữa (lệch 0,00 m); cấp 5: 5 → 4 + 1 |
+
+Chạy lại 68, 70, 72 (quả cầu băng · lửa · Lửa địa ngục) đều 0 lỗi — menu 68 phải sửa cách đếm "3 quả mỗi lần tung" để không tính
+quả nảy. Menu 71 và 75 viết lại phần đếm lốc cho luật mới; menu 71 lộ thêm một phép đo cũ chập chờn (tia sét bám lốc "trôi 0,27 m ở
+tuổi 0,000 s": lần đọc đầu của vòng đo rơi vào GIỮA khung, trước khi tia kịp bám theo, lần sau ở cuối cùng khung đó) — nay chờ cuối
+khung mới vào vòng, đo ra trôi 0,000 m, đối chứng tia không bám theo vẫn bị bỏ lại 2,51 m. Cả 71, 75, 84: **0 lỗi**.
+
 ### Kinh nghiệm quái +35%, quái vòng ngoài đông theo số người chơi (26/09/2026)
 
 Anh xin: **kinh nghiệm giết quái +35%**, và **mỗi người chơi thêm trong phòng thì vòng ngoài thêm 10 quái**.

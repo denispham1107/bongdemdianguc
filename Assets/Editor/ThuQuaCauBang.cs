@@ -210,7 +210,8 @@ public static class ThuQuaCauBang
         Object.Destroy(tex); Object.Destroy(cat);
     }
 
-    static int DemQua() { return Object.FindObjectsByType<QuaCauBang>(FindObjectsInactive.Exclude).Length; }
+    /// <summary>So qua PHONG RA dang bay - khong dem qua NAY (26/09/2026: qua trung ke dich thi nay sang ke ke ben, mang khongCham).</summary>
+    static int DemQua() { int n = 0; foreach (var q in Object.FindObjectsByType<QuaCauBang>(FindObjectsInactive.Exclude)) if (q.khongCham == null) n++; return n; }
 
     static IEnumerator KichBan()
     {

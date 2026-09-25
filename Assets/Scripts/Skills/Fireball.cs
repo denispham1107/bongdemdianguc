@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -42,6 +43,18 @@ public class Fireball : MonoBehaviour
     /// cay coi va nha van chan nhu cu. Qua cau lua thuong de TAT.
     /// </summary>
     public bool xuyenVatNho;
+
+    /// <summary>
+    /// QUA NAY (nguoi dung 26/09/2026, Qua cau lua + Qua cau bang): no ma TRUNG it nhat mot ke dich thi bat MOT qua moi bay sang
+    /// ke dich GAN NHAT chua bi vu no ay trung, trong TamNay m quanh cho no - 100% sat thuong va hieu ung (chon: 1 lan, 100%, 6 m).
+    /// Chi qua cua NGUOI CHOI (Qua cau lua: soLanNay = 1 o PlayerController); quai va Lua dia nguc = 0.
+    /// </summary>
+    public int soLanNay;
+    public const float TamNay = 6f;
+    /// <summary>Qua NAY: cac ke da bi vu no truoc trung - khong cham / khong nhan lai (con khong thi qua no ngay tren ke cu).</summary>
+    public HashSet<Damageable> khongCham;
+    /// <summary>Dem cho phep thu: so qua nay da bat ra.</summary>
+    public static int SoLanNay;
 
     [Header("Danh nga (Qua cau lua cap 5)")]
     /// <summary>Xac suat danh nga moi ke trong vung no. 0 = TAT - mac dinh, va qua cau cua quai di duong nay.</summary>
@@ -88,10 +101,12 @@ public class Fireball : MonoBehaviour
     /// neu gan hon). <paramref name="xuyen"/> = bo qua vat nho (<see cref="LaVatNho"/>). Dung chung cho Qua cau lua,
     /// Lua dia nguc va Qua cau bang.
     /// </summary>
+    /// <param name="boRa">Qua NAY: bo qua than cac ke da trung - mat na vat can cua nguoi choi CO lop Enemy (than quai la "vat can"),
+    /// qua nay sinh sat ke vua trung thi no ngay tren than ke ay (menu 84 26/09/2026).</param>
     public static void VatCanChan(Vector3 from, float banKinh, Vector3 huong, float dai, LayerMask mask, bool xuyen,
-                                  ref float ganNhat, ref Vector3 choNo)
+                                  ref float ganNhat, ref Vector3 choNo, HashSet<Damageable> boRa = null)
     {
-        if (!xuyen)
+        if (!xuyen && boRa == null)
         {
             RaycastHit hit;
             if (Physics.SphereCast(from, banKinh, huong, out hit, dai, mask, QueryTriggerInteraction.Collide)
@@ -109,7 +124,12 @@ public class Fireball : MonoBehaviour
         for (int i = 0; i < vc.Length; i++)
         {
             if (vc[i].distance >= ganNhat) continue;
-            if (LaVatNho(vc[i].collider)) continue;
+            if (xuyen && LaVatNho(vc[i].collider)) continue;
+            if (boRa != null)
+            {
+                var dv = vc[i].collider.GetComponentInParent<Damageable>();
+                if (dv != null && boRa.Contains(dv)) continue;
+            }
             ganNhat = vc[i].distance;
             // Sinh ra NGAY BEN TRONG vat can thi SphereCastAll tra distance 0 va point (0,0,0) -
             // lay thang diem ay la vu no nhay ve goc toa do ban do.
@@ -132,7 +152,7 @@ public class Fireball : MonoBehaviour
     /// muc tieu (17 m/s va 360 do/giay la ban kinh queo 2,7 m). Muc tieu chet / mat thi tim ke con song gan qua nhat.
     /// </summary>
     /// <summary>Do cao "an toan" tren mat dat tai mot cho: mat dat + 1,3 m (thap hon thi qua cham suon doc luc uon cong).</summary>
-    static float CaoAnToan(Vector3 cho, int lopDat)
+    public static float CaoAnToan(Vector3 cho, int lopDat)
     {
         RaycastHit h;
         if (Physics.Raycast(cho + Vector3.up * 20f, Vector3.down, out h, 60f, lopDat, QueryTriggerInteraction.Ignore))
@@ -223,7 +243,7 @@ public class Fireball : MonoBehaviour
                                  LayerMask damageMask, Damageable boQua = null,
                                  int soQua = 3, float gocToe = 11f,
                                  float heSoSatThuong = 1f, float themGiayChay = 0f,
-                                 float ngaXacSuat = 0f, float ngaGiay = 1.5f, bool xuyenVatNho = false)
+                                 float ngaXacSuat = 0f, float ngaGiay = 1.5f, bool xuyenVatNho = false, int soLanNay = 0)
     {
         Vector3 huong = direction.normalized;
 
@@ -243,6 +263,7 @@ public class Fireball : MonoBehaviour
                 qua.ngaXacSuat = ngaXacSuat;
                 qua.ngaGiay = ngaGiay;
                 qua.xuyenVatNho = xuyenVatNho;
+                qua.soLanNay = soLanNay;
             }
         }
     }
@@ -283,7 +304,7 @@ public class Fireball : MonoBehaviour
         float ganNhat = float.MaxValue;
         Vector3 choNo = Vector3.zero;
 
-        VatCanChan(from, bodyRadius, dir, step + 0.05f, hitMask, xuyenVatNho, ref ganNhat, ref choNo);
+        VatCanChan(from, bodyRadius, dir, step + 0.05f, hitMask, xuyenVatNho, ref ganNhat, ref choNo, khongCham);
 
         // KHIENG CUA NGUOI KHAC CHAN QUA CAU. hitMask cua qua cau nguoi choi
         // khong co lop Khieng (xem PlayerController.obstacleMask), nen truoc day
@@ -320,6 +341,7 @@ public class Fireball : MonoBehaviour
         {
             var d = cham[i].collider.GetComponentInParent<Damageable>();
             if (d == null || d == boQua || d.IsDead) continue;
+            if (khongCham != null && khongCham.Contains(d)) continue;
             if (cham[i].distance >= ganNhat) continue;
 
             // No o cho vua cham chu khong o cho da bay toi
@@ -345,22 +367,81 @@ public class Fireball : MonoBehaviour
         exploded = true;
 
         VfxFactory.ThaDuoiLua(transform);
+        // Ai dang trong vung no (TRUOC khi tru mau: ke chet vi vu no van tinh la "da trung") - de qua nay khong quay lai ho
+        HashSet<Damageable> daTrungNo = soLanNay > 0 ? KeTrongVung(transform.position, blastRadius, damageMask, boQua) : null;
         VfxFactory.FireExplosion(transform.position, blastRadius);
+        // Qua NAY: khongCham = ke da trung vu no truoc - khong an lai o vu no nay
         CombatUtil.AreaDamage(transform.position, blastRadius, impactDamage, damageMask,
-                              DamageType.Fire, burnSeconds, boQua);
+                              DamageType.Fire, burnSeconds, boQua, khongCham);
 
         // DANH NGA (Qua cau lua cap 5). Gieo RIENG tung muc tieu bang chinh loi gieo cua Thien thach -
         // no da bo qua nguoi tung, ke da chet va ke dang con khien. Goi SAU sat thuong: ke chet vi vu no
         // thi khong nga nua.
         if (ngaXacSuat > 0f)
-            ThienThach.GieoDanhNga(transform.position, blastRadius, damageMask, boQua, ngaXacSuat, ngaGiay);
+            ThienThach.GieoDanhNga(transform.position, blastRadius, damageMask, boQua, ngaXacSuat, ngaGiay, khongCham);
 
         // Don no NGAY TREN MAT KHIENG thi tru mau khieng. AreaDamage o tren
         // khong lo duoc viec nay: no chi tim Damageable trong ban kinh, ma chu
         // khieng dung o TAM vom - xa hon ban kinh no. Xem Khieng.NoTrungKhieng.
         Khieng.NoTrungKhieng(transform.position, blastRadius, impactDamage, damageMask, boQua);
 
+        // QUA NAY: vu no trung it nhat mot ke dich -> bay sang ke gan nhat chua bi trung
+        if (daTrungNo != null && daTrungNo.Count > 0)
+        {
+            if (khongCham != null) daTrungNo.UnionWith(khongCham);
+            var ke = TimKeNay(transform.position, damageMask, boQua, daTrungNo);
+            if (ke != null)
+            {
+                Vector3 den = ke.transform.position + Vector3.up;
+                Vector3 h = den - transform.position; h = h.sqrMagnitude > 0.01f ? h.normalized : dir;
+                // Xuat phat LECH khoi diem no 0,5 m ve phia ke moi: no vi cham vat can thi dat ngay trong vat ay - qua nay no luon
+                Vector3 tu = transform.position + h * 0.5f + Vector3.up * 0.2f;
+                var q = Spawn(tu, h, hitMask, damageMask);
+                q.impactDamage = impactDamage; q.blastRadius = blastRadius; q.burnSeconds = burnSeconds;
+                q.boQua = boQua; q.ngaXacSuat = ngaXacSuat; q.ngaGiay = ngaGiay; q.xuyenVatNho = xuyenVatNho;
+                q.speed = speed; q.lifetime = 1.5f;
+                // Dui theo ke dich (no chay thi van trung) - dung lai co che tu di cua Lua dia nguc
+                q.mucTieu = ke; q.tocQueo = 540f; q.giayBatDauDi = 0f; q.tamTim = TamNay;
+                q.soLanNay = soLanNay - 1;
+                q.khongCham = daTrungNo;
+                SoLanNay++;
+            }
+        }
+
         CameraShake.Shake(0.25f, 0.16f);
         Destroy(gameObject);
+    }
+
+    static readonly Collider[] boNay = new Collider[64];
+
+    /// <summary>Moi Damageable con song (tru boQua) trong vung cau - dung chung cho Qua cau lua / Qua cau bang.</summary>
+    public static HashSet<Damageable> KeTrongVung(Vector3 tam, float banKinh, LayerMask mask, Damageable boQua)
+    {
+        var ra = new HashSet<Damageable>();
+        int n = Physics.OverlapSphereNonAlloc(tam, banKinh, boNay, mask, QueryTriggerInteraction.Collide);
+        for (int i = 0; i < n; i++)
+        {
+            var d = boNay[i].GetComponentInParent<Damageable>();
+            if (d == null || d.IsDead || d == boQua) continue;
+            ra.Add(d);
+        }
+        return ra;
+    }
+
+    /// <summary>Ke dich con song GAN NHAT (mat ngang) trong TamNay m quanh <paramref name="tam"/>, khong nam trong <paramref name="boRa"/>.</summary>
+    public static Damageable TimKeNay(Vector3 tam, LayerMask mask, Damageable boQua, HashSet<Damageable> boRa)
+    {
+        int n = Physics.OverlapSphereNonAlloc(tam, TamNay + 1.5f, boNay, mask, QueryTriggerInteraction.Collide);
+        Damageable tot = null; float ganNhat = float.MaxValue;
+        for (int i = 0; i < n; i++)
+        {
+            var d = boNay[i].GetComponentInParent<Damageable>();
+            if (d == null || d.IsDead || d == boQua || (boRa != null && boRa.Contains(d))) continue;
+            Vector3 v = d.transform.position - tam; v.y = 0f;
+            float kc = v.magnitude;
+            if (kc > TamNay || kc >= ganNhat) continue;
+            ganNhat = kc; tot = d;
+        }
+        return tot;
     }
 }

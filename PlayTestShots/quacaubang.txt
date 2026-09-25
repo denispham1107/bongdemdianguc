@@ -8,30 +8,30 @@ D. bia tren duong bay (8 m) mat 96.0 mau; bia lech 7 m khoi duong bay mat 0.0
 G. luc bay: dung luoi Blender True, tam hop bao lech theo huong bay -0.451 m -> duoi gai phia SAU True; luong khi lanh dang phat True, vet bang True, anh sang True; sau khi no: 3 luong khi lanh con o lai tan dan
 
 E. no tai tam bia: trung 3 muc tieu; mat mau: tam 65.00 (mong 65), 1 m 56.00, 2,5 m 43.00, 5 m 0.00 (ngoai ban kinh 3,4)
-F. 1000 lan no: bi cham 100.0% (mong 100%), DONG BANG 40.6% (mong 40%); slow 0.5..0.5 (mong 0,5), thoi gian cham 2.00..2.00 giay (mong 2); dong cung 1.50..1.50 giay (mong 1,50); qua cau cap 3: cham 2.30 giay (mong 2,30), dong bang 1.80 giay (mong 1,80)
+F. 1000 lan no: bi cham 100.0% (mong 100%), DONG BANG 40.9% (mong 40%); slow 0.5..0.5 (mong 0,5), thoi gian cham 2.00..2.00 giay (mong 2); dong cung 1.50..1.50 giay (mong 1,50); qua cau cap 3: cham 2.30 giay (mong 2,30), dong bang 1.80 giay (mong 1,80)
 
 H. goi ky nang so 9 tu nguoi kia -> may minh phat lai 3 qua (mong 3); minh tung -> goi gui di mang kyNang = 9: True
 
-J. cum gai bang duoi dat (lon nhat trong 0,8 giay): Mua bang (tang bang that): rong 5.58 m, cao 2.79 m | Qua cau bang (vu no that): rong 5.61 m, cao 2.81 m | doi chung co cu IceImpact 1,7 m: rong 3.74 m, cao 1.87 m
-    Mua bang / Qua cau bang: rong x0.99, cao x0.99; doi chung co cu / Qua cau bang: rong x0.67
+J. cum gai bang duoi dat (lon nhat trong 0,8 giay): Mua bang (tang bang that): rong 5.60 m, cao 2.80 m | Qua cau bang (vu no that): rong 5.61 m, cao 2.81 m | doi chung co cu IceImpact 1,7 m: rong 3.74 m, cao 1.87 m
+    Mua bang / Qua cau bang: rong x1.00, cao x1.00; doi chung co cu / Qua cau bang: rong x0.67
 
 K. Mua bang that: vat dang roi cung luc toi da 8; da xet 33 qua: KHONG co luoi (khoi cau) 33 (doi chung qua cua ky nang Qua cau bang: 1 luoi); vet sao bang (anh VetSaoBang, keo gian) 33; hao quang dang phat 33, manh bang dang phat 33, luong khi lanh dang phat 33, co vet 33, co den rieng 0; tang bang cu (con "Tang") 0
-    do dai vet lon nhat moi qua (34 qua): ngan nhat 3.84 m, trung binh 7.13 m, dai nhat 14.41 m; rong dau vet trung binh ~0.56 m -> dai / rong x12.7
-    be rong dau vet that: nho nhat 0.464 m, lon nhat 0.660 m (cho phep 0.462..0.660; ban truoc 0,55 -> x1,2 = 0,66); tam dau vet (giot mui nhon) 33/33, dung co + mui trung huong roi + quay ve camera 33 (cos mui-huong roi nho nhat 1.0000, cos mat-camera nho nhat 1.0000)
+    do dai vet lon nhat moi qua (34 qua): ngan nhat 3.33 m, trung binh 7.23 m, dai nhat 14.21 m; rong dau vet trung binh ~0.56 m -> dai / rong x12.9
+    be rong dau vet that: nho nhat 0.464 m, lon nhat 0.653 m (cho phep 0.462..0.660; ban truoc 0,55 -> x1,2 = 0,66); tam dau vet (giot mui nhon) 33/33, dung co + mui trung huong roi + quay ve camera 33 (cos mui-huong roi nho nhat 1.0000, cos mat-camera nho nhat 1.0000)
     anh PNG tren dia: vet - alpha lon nhat cot dau (u=0) 0.000, cot u=0,1 1.000 (DOI CHUNG anh cu cot dau 1.000); dau - dom 1.000, mep 0.004, be ngang o dom 39 diem anh / gan mui (y 0,45) 4 diem anh, so rang cua 3 (DOI CHUNG anh dom tron cu: 0 rang)
-    bia giua vung mat 805 mau, bi cham/dong cung True; tong so hat cung luc toi da 2618
+    bia giua vung mat 815 mau, bi cham/dong cung True; tong so hat cung luc toi da 2812
     roi THANG DUNG: 33/33 qua (lech ngang lon nhat so voi diem roi 0.000 m, truc bay chi thang xuong)
 
 L. don 0 quai that quanh cho thu (quai song trong 1,7 m se lam moc cum gai)
 L. dat trong (khong vat, khong ke dich): cum gai dang bat 0, cac phan no khac dang bat 8, bo dem co gai +0
-L. bia mo TS_slab_237 cach 1,0 m (co va cham lop Default trong 1,7 m: co): cum gai dang bat 0, cac phan no khac dang bat 8, bo dem co gai +0
+L. bia mo TS_round_3 cach 1,0 m (co va cham lop Default trong 1,7 m: co): cum gai dang bat 0, cac phan no khac dang bat 8, bo dem co gai +0
 L. quai vat (bia do don lop Enemy) cach 1,0 m, DONG BANG chac chan: cum gai dang bat 8, cac phan no khac dang bat 16, bo dem co gai +1
 L. bia mo cach 2,6 m (ngoai 1,7 m): cum gai dang bat 0, cac phan no khac dang bat 8, bo dem co gai +0
 L. NGUOI CHOI KHAC (lop Player, mask Enemy+Player) cach 1,0 m, DONG BANG chac chan: cum gai dang bat 8, cac phan no khac dang bat 16, bo dem co gai +1
 L. chinh NGUOI TUNG (lop Player, boQua) cach 1,0 m, mask Enemy+Player: cum gai dang bat 0, cac phan no khac dang bat 8, bo dem co gai +0
 L. quai vat cach 1,0 m nhung KHONG dong bang duoc (xac suat 0): cum gai dang bat 0, cac phan no khac dang bat 8, bo dem co gai +0
-L. Mua bang that o cho trong (bia do don giua vung): 35 qua cham dat, 16 qua co cum gai (trung bia do don), 19 qua khong gai
-L. Mua bang that KHONG co ke dich: 36 qua cham dat, 0 qua co cum gai, 36 qua khong gai; dem doc lap theo diem roi: 13/36 qua co do vat trong 1,7 m
+L. Mua bang that o cho trong (bia do don giua vung): 36 qua cham dat, 15 qua co cum gai (trung bia do don), 21 qua khong gai
+L. Mua bang that KHONG co ke dich: 36 qua cham dat, 0 qua co cum gai, 36 qua khong gai; dem doc lap theo diem roi: 12/36 qua co do vat trong 1,7 m
     (chan doan) Damageable song tren damageMask trong 1,7 m quanh cac diem roi: khong co
 
 M. cap 4 (DOI CHUNG): 3 qua; cap 5: 5 qua (mong 3 va 5)
@@ -39,7 +39,7 @@ M. nguoi choi bi dong bang 1,5 s: he so toc 1.00 -> 0.00, bi khoa cung False -> 
 
 N. Mua bang CAP 4 (doi chung): 0 vu no; bia tai cho mat 0.0 mau, bia 3,0 m mat 0.0
 N. Mua bang CAP 5: 1 tang bang co luat no, 1 vu no; bia tai cho (0.00 m) mat 100.0, bia 3.00 m mat 60.0, bia 4.00 m mat 0.0 (ban kinh no 3.4 m, sat thuong 100)
-N. Qua cau bang CAP 5: 1 tang bang co luat no, 1 vu no; bia mat them 86.0 mau sau khi qua cau da no xong
-I. BoIcon 21 hinh, hinh so 9 co; ten "QUẢ CẦU BĂNG", tom tat "Ba quả băng, 40% đóng băng"; mo ta 895 ky tu
+N. Qua cau bang CAP 5: 2 tang bang co luat no, 2 vu no; bia mat them 141.0 mau sau khi qua cau da no xong
+I. BoIcon 22 hinh, hinh so 9 co; ten "QUẢ CẦU BĂNG", tom tat "Ba quả băng, 40% đóng băng"; mo ta 1009 ky tu
 
 so loi ghi nhan = 0

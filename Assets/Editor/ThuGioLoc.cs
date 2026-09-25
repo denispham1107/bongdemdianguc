@@ -289,7 +289,9 @@ public static class ThuGioLoc
         Ghi(string.Format("A. luoi Vo1: ban kinh chan {0:F3} m (goc {1:F3}, x{2:F3}); o 2,5 m {3:F3} m (goc {4:F3}, x{5:F3})",
             rChanVo1, rChanGoc, rChanVo1 / rChanGoc, rGiuaVo1, rGiuaGoc, rGiuaVo1 / rGiuaGoc));
         Kiem(Mathf.Abs(rChanVo1 / rChanGoc - 1.68f) < 0.01f, "chan loc khong to x1,68 so ban goc (40% roi them 20%)");
-        Kiem(GioLoc.SoLocMoiLan == 1 && Mathf.Approximately(GioLoc.ThoiGianSong, 4.5f), "khong phai 1 loc / 4,5 giay");
+        // 26/09/2026: hinh quat - cap 1-4 ba loc, cap 5 nam loc, 15 do giua hai loc
+        Kiem(GioLoc.SoLocTheoCap(1) == 3 && GioLoc.SoLocTheoCap(4) == 3 && GioLoc.SoLocTheoCap(5) == 5 && Mathf.Approximately(GioLoc.GocQuat, 15f)
+             && Mathf.Approximately(GioLoc.ThoiGianSong, 4.5f), "khong phai 3 loc (cap 5: 5) / 15 do / 4,5 giay");
         Kiem(Mathf.Abs(rGiuaVo1 / rGiuaGoc - 1f) < 0.01f, "phan than tren bi doi kich thuoc");
         Kiem(Mathf.Abs(GioLoc.TocDo - 9.5f) < 0.001f && Mathf.Abs(GioLoc.BanKinhTrung - 2.42f) < 0.001f, "toc do loc khong phai 9,5 m/s / vung trung khong phai 2,42 m");
         // 17/09/2026: tia set quay lai nhung CHI HIEU UNG - mo ta phai noi ro, va khong con con so 15 cu
@@ -341,7 +343,7 @@ public static class ThuGioLoc
         Ghi(string.Format("B. khoa -> tu choi {0}; mo khoa -> tung {1}, {2} loc bay, ton {3} nang luong; hoi chieu ngay sau khi tung {4:F2} s; bam lai moi khung -> duoc nhan sau {5:F3} s (thay nhac hoi chieu: {6}); bia truoc mat mat {7:F0} mau, ke danh cuoi la nguoi tung {8}",
             tuChoiKhoa, daTung, soLocBay, manaTon, hoiNgaySau, lucNhan, thayNhacHoi, mauB - biaB.health, biaB.keDanhCuoi == mauToi));
         Kiem(tuChoiKhoa, "ky nang khoa ma van tung duoc");
-        Kiem(daTung && soLocBay == 1, "tung Gio loc khong ra dung 1 loc");
+        Kiem(daTung && soLocBay == 3, "tung Gio loc cap 1 khong ra dung 3 loc");
         Kiem(Mathf.Abs(manaTon - 20f) < 0.01f, "khong ton dung 20 nang luong");
         Kiem(tuChoiHoiChieu && tungLai, "hoi chieu 0,4 giay khong dung");
         Kiem(biaB.keDanhCuoi == mauToi, "trung bia ma khong ghi ke danh (mat kinh nghiem)");
@@ -528,6 +530,9 @@ public static class ThuGioLoc
             var lechBanDau = new Dictionary<LightningArc, Vector3>();
             float troiMax = 0f, tuoiTroiMax = 0f; var lucThay = new Dictionary<LightningArc, float>();
             System.Func<Transform, float> ngang = tr => loc == null ? 0f : new Vector2(tr.position.x - loc.transform.position.x, tr.position.z - loc.transform.position.z).magnitude;
+            // Vao vong o CUOI khung: lan dau vong chay giua khung (truoc LateUpdate cho tia bam theo), lan sau o cuoi CUNG khung ay
+            // -> tia co san luc vao vong bi lay moc sai, do ra troi 0,27 m 'o tuoi 0,000 s' (26/09/2026, chap chon)
+            yield return new WaitForEndOfFrame();
             float hanS = Time.time + 3.6f;
             while (Time.time < hanS && loc != null)
             {
@@ -1043,11 +1048,11 @@ public static class ThuGioLoc
                 var b = GoiTin.TuChuoi(s); GoiTin.MotPhep p;
                 if (b != null && GoiTin.LoaiCuaGoi(b) == GoiTin.LoaiKyNang && GoiTin.DocKyNang(b, out p) && p.kyNang == K) goi10 = true;
             }
-            Ghi(string.Format("I1. goi ky nang so 10 tu nguoi kia -> may minh phat lai {0} loc (mong 1); minh tung -> goi mang kyNang = 10: {1}", maxLoc, goi10));
-            Kiem(maxLoc == 1, "may minh khong phat lai Gio loc cua nguoi kia (1 loc)");
+            Ghi(string.Format("I1. goi ky nang so 10 tu nguoi kia -> may minh phat lai {0} loc (mong 3); minh tung -> goi mang kyNang = 10: {1}", maxLoc, goi10));
+            Kiem(maxLoc == 3, "may minh khong phat lai Gio loc cua nguoi kia (3 loc)");
             Kiem(goi10, "goi ky nang khong mang so 10");
 
-            // I1b. nguoi kia tung Gio loc CAP 5 (cap di kem goi) -> may minh ra 2 loc song song
+            // I1b. nguoi kia tung Gio loc CAP 5 (cap di kem goi) -> may minh ra 5 loc hinh quat
             XoaLoc();
             yield return new WaitForSeconds(0.5f);
             int truocMang5 = DemLoc(), maxLoc5 = 0;
@@ -1055,8 +1060,8 @@ public static class ThuGioLoc
             { chiSo = 1, kyNang = (byte)K, capKyNang = 5, soThuTu = 950, diemNgam = kia.transform.position + vuongI * 10f })));
             float hanI5 = Time.time + 1f;
             while (Time.time < hanI5) { maxLoc5 = Mathf.Max(maxLoc5, DemLoc() - truocMang5); nhetCo(0); yield return null; }
-            Ghi(string.Format("I1b. goi ky nang cap 5 tu nguoi kia -> may minh phat lai {0} loc (mong 2; goi cap 1 o tren ra 1)", maxLoc5));
-            Kiem(maxLoc5 == 2, "may minh khong phat lai 2 loc cua nguoi kia cap 5");
+            Ghi(string.Format("I1b. goi ky nang cap 5 tu nguoi kia -> may minh phat lai {0} loc (mong 5; goi cap 1 o tren ra 3)", maxLoc5));
+            Kiem(maxLoc5 == 5, "may minh khong phat lai 5 loc cua nguoi kia cap 5");
             XoaLoc();
             yield return new WaitForSeconds(0.3f);
             XoaLoc();
@@ -1150,7 +1155,7 @@ public static class ThuGioLoc
             Kiem(tat25 && chay31, "lo lua khong chay lai dung sau 30 giay");
         }
 
-        // ================= M. CAP 5: HAI LOC SONG SONG =================
+        // ================= M. HINH QUAT: CAP 4 BA LOC, CAP 5 NAM LOC =================
         Ghi("");
         {
             XoaLoc();
@@ -1165,68 +1170,87 @@ public static class ThuGioLoc
             Vector3 hM = HuongTrong(toi);
             toi.transform.rotation = Quaternion.LookRotation(hM);
             Vector3 gM = toi.transform.position;
-            // cap 4: doi chung 1 loc
+            // cap 4: doi chung 3 loc, nang luong thuong
             toi.mana = toi.maxMana; float mn4 = toi.mana;
             var truoc4 = new HashSet<GioLoc>(Object.FindObjectsByType<GioLoc>(FindObjectsInactive.Exclude));
             toi.CastAt(K, gM + hM * 10f);
             float ton4 = mn4 - toi.mana;
-            yield return new WaitForSeconds(0.6f);
-            int soLoc4 = 0;
-            foreach (var l in Object.FindObjectsByType<GioLoc>(FindObjectsInactive.Exclude)) if (!truoc4.Contains(l)) soLoc4++;
+            var bon = new List<GioLoc>();
+            float han4 = Time.time + 1.2f;
+            while (Time.time < han4 && bon.Count < 3)
+            {
+                foreach (var l in Object.FindObjectsByType<GioLoc>(FindObjectsInactive.Exclude)) if (!truoc4.Contains(l) && !bon.Contains(l)) bon.Add(l);
+                yield return null;
+            }
+            yield return new WaitForSeconds(0.2f);
+            foreach (var l in Object.FindObjectsByType<GioLoc>(FindObjectsInactive.Exclude)) if (!truoc4.Contains(l) && !bon.Contains(l)) bon.Add(l);
+            string goc4 = GocCacLoc(bon, hM);
             XoaLoc();
             yield return new WaitForSeconds(0.3f);
             if (CapDo.DiemKyNang <= 0) CapDo.Them(CapDo.CanDeLenCap(CapDo.Cap));
             CapDo.NangCap(K);
             int cap5 = CapDo.CapCuaKyNang(K);
-            // bia dung giua hai duong bay (lech 0 m), 6 m truoc mat
-            var biaM = TaoBia("TAM_BiaGiuaHaiLoc", gM + hM * 7f);
+            // bia dung ngay tren duong bay cua loc GIUA, 7 m truoc mat: loc giua trung chac chan; hai loc +-15 do di qua cach
+            // tam bia 7 x sin15 = 1,81 m < vung trung 2,42 nen cung trung; hai loc +-30 do cach 3,5 m - tuy be ngang bia
+            var biaM = TaoBia("TAM_BiaGiuaQuat", gM + hM * 7f);
             yield return new WaitForFixedUpdate();
             float mauM = biaM.health;
             toi.mana = toi.maxMana; float mn5 = toi.mana;
             var truoc5 = new HashSet<GioLoc>(Object.FindObjectsByType<GioLoc>(FindObjectsInactive.Exclude));
             toi.CastAt(K, gM + hM * 10f);
             float ton5 = mn5 - toi.mana;
-            var hai = new List<GioLoc>();
+            var nam = new List<GioLoc>();
             float hanM = Time.time + 1.2f;
-            while (Time.time < hanM && hai.Count < 2)
+            while (Time.time < hanM && nam.Count < 5)
             {
-                foreach (var l in Object.FindObjectsByType<GioLoc>(FindObjectsInactive.Exclude)) if (!truoc5.Contains(l) && !hai.Contains(l)) hai.Add(l);
+                foreach (var l in Object.FindObjectsByType<GioLoc>(FindObjectsInactive.Exclude)) if (!truoc5.Contains(l) && !nam.Contains(l)) nam.Add(l);
                 yield return null;
             }
-            yield return null;
-            float cach0 = -1f, cach1 = -1f, dotHuong = 0f, lechDoc = 99f;
-            if (hai.Count == 2 && hai[0] != null && hai[1] != null)
+            yield return new WaitForSeconds(0.2f);
+            foreach (var l in Object.FindObjectsByType<GioLoc>(FindObjectsInactive.Exclude)) if (!truoc5.Contains(l) && !nam.Contains(l)) nam.Add(l);
+            string goc5 = GocCacLoc(nam, hM);
+            // Doi chung doc lap: goc tinh tu QUANG DUONG loc that su di trong 0,35 s (khong doc dir) - loc phai that su toe ra
+            var viTriDau = new Dictionary<GioLoc, Vector3>();
+            foreach (var l in nam) if (l != null) viTriDau[l] = l.transform.position;
+            yield return new WaitForSeconds(0.35f);
+            string gocViTri = "";
+            int dungGocViTri = 0;
+            var gocMong5 = new List<float> { -30f, -15f, 0f, 15f, 30f };
+            var gocDo = new List<float>();
+            foreach (var l in nam)
             {
-                Vector3 d = hai[1].transform.position - hai[0].transform.position; d.y = 0f;
-                cach0 = d.magnitude;
-                lechDoc = Mathf.Abs(Vector3.Dot(d, hM));             // theo huong bay ~0 = xep ngang
-                dotHuong = Vector3.Dot(hai[0].dir.normalized, hai[1].dir.normalized);
-                yield return new WaitForSeconds(0.35f);
-                yield return Chup("gioloc_4_cap5_hai_loc");
-                yield return new WaitForSeconds(0.65f);
-                if (hai[0] != null && hai[1] != null)
-                {
-                    Vector3 d1 = hai[1].transform.position - hai[0].transform.position; d1.y = 0f;
-                    cach1 = d1.magnitude;
-                }
+                if (l == null) continue;
+                if (!viTriDau.ContainsKey(l)) continue;
+                Vector3 d = l.transform.position - viTriDau[l]; d.y = 0f;
+                gocDo.Add(Vector3.SignedAngle(hM, d, Vector3.up));
             }
+            gocDo.Sort();
+            for (int i = 0; i < gocDo.Count; i++)
+            {
+                gocViTri += gocDo[i].ToString("F1") + " ";
+                if (i < gocMong5.Count && Mathf.Abs(gocDo[i] - gocMong5[i]) < 1.5f) dungGocViTri++;
+            }
+            yield return Chup("gioloc_4_cap5_nam_loc_quat");
             yield return new WaitForSeconds(1.2f);
             float matM = mauM - biaM.health;
+            float moiCu = 75f * Mathf.Pow(1.2f, 4);            // 155,52 moi lan trung o cap 5
+            int soCu = Mathf.RoundToInt(matM / moiCu);
             // CAP 5 nay ton DUNG 25 nang luong (nguoi dung doi 18/09/2026; truoc do 20 x 1,1^4 x 2 = 58,56)
-            float mongTon4 = 20f * Mathf.Pow(1.1f, 3), mongTon5 = GioLoc.NangLuongCap5, mongMat = 75f * Mathf.Pow(1.2f, 4) * 2f;
-            Ghi(string.Format("M. cap 4 (doi chung): {0} loc, ton {1:F2} nang luong (mong {2:F2}); cap {3}: {4} loc, ton {5:F2} (mong {6:F2} - con so CO DINH nguoi dung chot 18/09/2026, ban cu 58,56)",
-                soLoc4, ton4, mongTon4, cap5, hai.Count, ton5, mongTon5));
-            Ghi(string.Format("M. hai loc: tam cach nhau luc sinh {0:F2} m, sau 1 s {1:F2} m; lech theo huong bay {2:F3} m (0 = xep ngang); cos hai huong bay {3:F4}; bia giua hai duong bay mat {4:F1} (mong {5:F1} = trung ca hai)",
-                cach0, cach1, lechDoc, dotHuong, matM, mongMat));
-            Kiem(soLoc4 == 1 && Mathf.Abs(ton4 - mongTon4) < 0.05f, "doi chung cap 4 khong phai 1 loc / nang luong thuong");
-            Kiem(cap5 == 5 && hai.Count == 2, "cap 5 khong ra dung 2 loc");
+            float mongTon4 = 20f * Mathf.Pow(1.1f, 3), mongTon5 = GioLoc.NangLuongCap5;
+            Ghi(string.Format("M. cap 4 (doi chung): {0} loc, huong bay {1}(mong -15 0 15), ton {2:F2} nang luong (mong {3:F2} - nang luong KHONG nhan theo so loc)",
+                bon.Count, goc4, ton4, mongTon4));
+            Ghi(string.Format("M. cap {0}: {1} loc, huong bay {2}(mong -30 -15 0 15 30), goc tinh tu quang duong da bay 0,35 s: {3}(khop {4}/5); ton {5:F2} (mong {6:F2} - con so CO DINH nguoi dung chot 18/09/2026)",
+                cap5, nam.Count, goc5, gocViTri, dungGocViTri, ton5, mongTon5));
+            Ghi(string.Format("M. bia tren duong loc giua mat {0:F1} = {1} cu x {2:F2} (moi loc trung mot lan; mong 3-5 cu: giua + hai loc 15 do chac chan)",
+                matM, soCu, moiCu));
+            Kiem(bon.Count == 3 && goc4 == "-15 0 15 " && Mathf.Abs(ton4 - mongTon4) < 0.05f, "doi chung cap 4 khong phai 3 loc hinh quat 15 do / nang luong thuong");
+            Kiem(cap5 == 5 && nam.Count == 5 && goc5 == "-30 -15 0 15 30 ", "cap 5 khong ra dung 5 loc hinh quat 15 do");
+            Kiem(dungGocViTri == 5, "vi tri loc sau khi bay khong toe dung hinh quat");
             Kiem(Mathf.Abs(ton5 - mongTon5) < 0.05f, "cap 5 khong ton dung 25 nang luong");
-            Kiem(Mathf.Abs(cach0 - 4f) < 0.05f && Mathf.Abs(cach1 - 4f) < 0.05f && lechDoc < 0.05f && dotHuong > 0.9999f, "hai loc khong song song cach nhau 4 m");
-            // bia co 10 000 000 mau: so thuc float o do lon nay chi chinh xac toi 1 don vi, moi cu tru 155,52 thanh 156 -> hai loc 312
-            Kiem(Mathf.Abs(matM - mongMat) < 1.1f, "bia giua khong bi ca hai loc trung");
+            // bia co 10 000 000 mau: float o do lon nay chi chinh xac toi 1 don vi, moi cu 155,52 thanh 156
+            Kiem(soCu >= 3 && soCu <= 5 && Mathf.Abs(matM - soCu * moiCu) < 0.6f * soCu, "bia giua khong bi dung so loc di qua trung (moi loc mot lan)");
             Object.Destroy(biaM.gameObject);
             XoaLoc();
-
         }
 
         toi.DaTungPhep -= dem;
@@ -1234,6 +1258,17 @@ public static class ThuGioLoc
         Ghi("");
         Ghi("so loi ghi nhan = " + loi);
         Ket();
+    }
+
+    /// <summary>Goc (do, lam tron) giua huong bay cua tung loc va huong ngam, xep tang dan, cach nhau dau cach.</summary>
+    static string GocCacLoc(List<GioLoc> ds, Vector3 huong)
+    {
+        var g = new List<int>();
+        foreach (var l in ds) if (l != null) g.Add(Mathf.RoundToInt(Vector3.SignedAngle(huong, l.dir, Vector3.up)));
+        g.Sort();
+        string kq = "";
+        foreach (int x in g) kq += x + " ";
+        return kq;
     }
 
     static void TraLaiCanh()

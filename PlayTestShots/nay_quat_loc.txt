@@ -1,0 +1,19 @@
+[ban 1] qua nay + gio loc hinh quat
+
+A. Qua cau lua: A mat 69.63 (1 lan), B (sau A 3,9 m) mat 71.25 (1 lan, sau A 0.33 s), C (cach A 7 m) mat 0.00; qua nay 1; B/A = 1.023
+A. DOI CHUNG bia dung mot minh: A mat 69.63, qua nay 0
+A. DOI CHUNG soLanNay 0: A mat 69.63, B mat 0.00, qua nay 0
+
+   (chan doan qua nay bang) sinh o (0.0, 1.0, -0.4), tat o (0.0, 0.8, 3.0) sau 0.20 s; B o (0.0, -0.3, 3.4); A o (0.0, -0.5, -0.5); muc tieu (da tat)
+B. Qua cau bang: A mat 53.25 (1 lan), B (sau A 3,9 m) mat 54.94 (1 lan, sau A 0.16 s), C (cach A 7 m) mat 0.00; qua nay 1; B/A = 1.032
+B. DOI CHUNG bia dung mot minh: A mat 53.25, qua nay 0
+B. DOI CHUNG soLanNay 0: A mat 53.25, B mat 0.00, qua nay 0
+
+A. tung THAT Qua cau lua: 3 qua cua nguoi choi, mang soLanNay 1: 3
+B. tung THAT Qua cau bang: 3 qua cua nguoi choi, mang soLanNay 1: 3
+
+C. cap 1: 3 loc (mong 3); goc so voi huong ngam: -15.0 0.0 15.0 ; cung moc True; loc giua 1 (goc 0.0); ton 20.00 nang luong (mong 20.00)
+C. cap 5: 5 loc (mong 5); goc so voi huong ngam: -30.0 -15.0 0.0 15.0 30.0 ; cung moc True; loc giua 1 (goc 0.0); ton 25.00 nang luong (mong 25.00)
+D. Hoa loc xoay: 1 Loc xoay moi (cach cho loc giua luc bam 6.50 m, loc bay 9,5 m/s trong 0,7 s + niem); con 4 Gio loc
+
+so loi ghi nhan = 0

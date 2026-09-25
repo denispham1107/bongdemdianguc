@@ -47,7 +47,8 @@ public static class HoaLocXoay
         {
             // Cung mot LAN BAM thi cung moc thoi gian (cap 5 ra hai con cung luc)
             if (loc == null || loc.boQua != nguoiTung) continue;
-            if (Mathf.Abs(loc.lucTung - moiNhat) < 0.05f) ra.Add(loc);
+            // Chi loc GIUA hinh quat (26/09/2026) - ba / nam Loc xoay cung luc qua nang cho dien thoai
+            if (Mathf.Abs(loc.lucTung - moiNhat) < 0.05f && loc.laLocGiua) ra.Add(loc);
         }
         return ra;
     }

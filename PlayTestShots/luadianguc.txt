@@ -1,23 +1,23 @@
 [ban 1] Lua dia nguc
 (chuan bi) tat tam 143 va cham lop Default trong 26 m quanh nhan vat (bat lai cuoi phep thu)
 
-A. so hieu 11, so ky nang 21; nhan vat: nang luong 31, hoi chieu 0.5 s, niem 0.38 s; Sach phep doc 31/0.5/0.38
-A. sat thuong goc 176.26 = qua cau lua PREFAB 85 x 1,2^4 (176.26); ten "LỬA ĐỊA NGỤC", tom tat "Năm quả lửa tự đuổi kẻ địch", mo ta 576 ky tu; HUD 21 icon, icon so 11 co; icon file 256x256
+A. so hieu 11, so ky nang 22; nhan vat: nang luong 31, hoi chieu 0.5 s, niem 0.38 s; Sach phep doc 31/0.5/0.38
+A. sat thuong goc 176.26 = qua cau lua PREFAB 85 x 1,2^4 (176.26); ten "LỬA ĐỊA NGỤC", tom tat "Năm quả lửa tự đuổi kẻ địch", mo ta 576 ky tu; HUD 22 icon, icon so 11 co; icon file 256x256
 
-B. khoa -> tu choi True; mo khoa -> tung True, 5 qua dia nguc bay, ton 31 nang luong; bam lai moi khung -> duoc nhan sau 0.504 s
+B. khoa -> tu choi True; mo khoa -> tung True, 5 qua dia nguc bay, ton 31 nang luong; bam lai moi khung -> duoc nhan sau 0.501 s
 
 C. 5 bia ngoai hinh quat (lech 60/-60/120/-120/180 do, 9-12 m) + bia 25 m (co). DOI CHUNG chum Qua cau lua thuong: so bia trung 0
 C. Lua dia nguc: 5 qua; luc sinh gan 5 muc tieu khac nhau (5 qua gan vao 5 bia gan); qua trung moi bia: 1,1,1,1,1,0; bia mat mau 5/5; bia 25 m mat 0
 
 D. mot bia lech 100 do 10 m: 5/5 qua gan vao no, 5/5 qua trung no
 
-E. bia chay ngang 5 m/s: mat 736 mau (5 qua ~ 485-881), con qua dang bay 0
+E. bia chay ngang 5 m/s: mat 751 mau (5 qua ~ 485-881), con qua dang bay 0
 
-F. bia A (9 m) nhan 4 qua luc sinh, bi giet sau 0,15 s (chet True); qua trung B 5/5, B mat 740
+F. bia A (9 m) nhan 4 qua luc sinh, bi giet sau 0,15 s (chet True); qua trung B 5/5, B mat 738
 
 G. khong ai: 5 qua, sau 0,4 s con 5, huong doi lon nhat 0.00 do; goc giua hai qua ke nhau 18.0-18.0 do
 
-H. mot qua Qua cau lua CAP 5 that trung bia mat 137.09; mot qua Lua dia nguc CAP 1 (impactDamage 176.26) cung cho mat 139.73 -> ti le 1.019; bia dang bi thieu dot True; cap 3 se la 253.81 (x1,44)
+H. mot qua Qua cau lua CAP 5 that trung bia mat 137.09; mot qua Lua dia nguc CAP 1 (impactDamage 176.26) cung cho mat 138.70 -> ti le 1.012; bia dang bi thieu dot True; cap 3 se la 253.81 (x1,44)
 
 I. ti le xanh la / do cua hat: qua cau lua thuong 1.000, lua dia nguc 1.000 -> x1.000 (mong 1,000 - nguoi dung 17/09/2026 xin mau giong het)
 
@@ -33,11 +33,11 @@ K1. nhom "LoLua_Act2": xuyen duoc 0, bi chan 10
 K1. nhom "NhaMo": xuyen duoc 0, bi chan 5
 K1. nhom "World": xuyen duoc 0, bi chan 1
 K1b. mat dat (TerrainCollider) xuyen duoc = False (phai False)
-K2. bia thu cao 3,0 m: qua Lua dia nguc con song True, di xa 20.2 m; DOI CHUNG qua cau lua thuong con song False, di xa 8.4 m
+K2. bia thu cao 3,0 m: qua Lua dia nguc con song True, di xa 20.1 m; DOI CHUNG qua cau lua thuong con song False, di xa 8.4 m
 K3. cay thu cao 8 m: qua Lua dia nguc con song False, di xa 8.3 m (phai no ngay truoc cay, ~8 m tinh tu cho ban)
 K3b. nha thu 5 x 4,5 x 5 m: qua con song False, di xa 6.4 m
-K4. BIA THAT [TS_round_7] cao 1.75 m: qua Lua dia nguc con song True di xa 17.0 m; DOI CHUNG qua thuong con song False di xa 3.3 m
-K5. CAY THAT [TREE_dead_738] cao 11.83 m, tam cach cho ban 9.0 m: qua con song False, di xa 8.3 m
+K4. BIA THAT [TS_round_48] cao 1.34 m: qua Lua dia nguc con song True di xa 16.9 m; DOI CHUNG qua thuong con song False di xa 1.7 m
+K5. CAY THAT [TREE_oakC_bare_718] cao 9.79 m, tam cach cho ban 9.0 m: qua con song False, di xa 8.3 m
 K6. duong tung that: 5 qua Lua dia nguc, 5 cai bat xuyen vat nho; 3 qua cau lua thuong, 0 cai bat (phai 0)
 
 so loi ghi nhan = 0

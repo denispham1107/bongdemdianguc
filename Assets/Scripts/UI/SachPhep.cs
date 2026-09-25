@@ -343,7 +343,7 @@ public static class SachPhep
             case CapDo.KyBinhMau: return "Hồi tối đa " + Mathf.RoundToInt(PlayerController.MauBinhTheoCap(CapHienThi(ky))) + " máu";
             case CapDo.KyBinhMana: return "Hồi tối đa " + Mathf.RoundToInt(PlayerController.ManaBinhTheoCap(CapHienThi(ky))) + " năng lượng";
             case CapDo.KyQuaCauBang: return "Ba quả băng, 40% đóng băng";
-            case CapDo.KyGioLoc: return "Một cơn lốc, 80% hất tung";
+            case CapDo.KyGioLoc: return "Ba cơn lốc hình quạt, 80% hất tung";
             case CapDo.KyLuaDiaNguc: return "Năm quả lửa tự đuổi kẻ địch";
             case CapDo.KyTangHinh: return "Trong suốt 90 giây, hiện hình nổ vòng phép";
             case CapDo.KyCauDien: return "Cầu điện bắn 10 lượt, mỗi lượt 5 tia";
@@ -376,7 +376,8 @@ public static class SachPhep
                      + "Đây là đòn rẻ nhất và hồi nhanh nhất — thứ để dùng liên tục "
                      + "giữa hai lần tung phép lớn.\n\n"
                      + "Lên CẤP 5: mỗi quả nổ có 30% khả năng ĐÁNH NGÃ kẻ trúng đòn 1,5 giây — "
-                     + "kẻ bị ngã không đi được, không đánh được, không tung phép được.";
+                     + "kẻ bị ngã không đi được, không đánh được, không tung phép được.\n\n"
+                     + "Quả nổ trúng kẻ địch thì NẢY sang kẻ địch gần nhất chưa trúng (trong 6 m) và nổ thêm một lần nữa, mạnh y như cũ.";
             case 1:
                 return "Gọi một cơn bão lạnh phủ xuống khu vực đã chọn: tuyết rơi, sương "
                      + "lạnh là đất, và từng tảng băng lớn liên tiếp rơi xuống.\n\n"
@@ -463,19 +464,20 @@ public static class SachPhep
                      + "CẤP 5: mỗi lần tung ra NĂM quả cầu băng thay vì ba, và tảng băng mọc lên "
                      + "sau vụ nổ đến lúc tan thì NỔ TUNG, giáng thêm 100 sát thương lên mọi kẻ "
                      + "ở gần trong 3,4 mét.\n\n"
+                     + "Quả nổ trúng kẻ địch thì NẢY sang kẻ địch gần nhất chưa trúng (trong 6 m) và nổ thêm một lần nữa, mạnh y như cũ.\n\n"
                      + "Hồi chiêu nhanh như Quả cầu lửa — đổi sức thiêu đốt lấy khả năng ghìm "
                      + "chân kẻ địch.";
             case CapDo.KyGioLoc:
-                return "Một cơn lốc xoáy phóng thẳng về phía trước. Gió cuộn một chiều từ "
+                return "BA cơn lốc xoáy cùng phóng ra, toè thành hình quạt về phía trước. Gió cuộn một chiều từ "
                      + "chân lên miệng lốc, kéo theo khói bụi đen xoáy bốc lên và để lại vệt bụi phía sau. Lốc đi "
                      + "XUYÊN QUA mọi vật cản và người chơi, rồi tự tan sau 4,5 giây.\n\n"
                      + "Trong lòng lốc luôn lóe hai tia sét đánh từ đỉnh xuống (chỉ là hiệu ứng, không gây thêm sát thương).\n\n"
-                     + "Lốc lướt qua một kẻ địch thì gây 75 sát thương — mỗi kẻ chỉ bị đánh một lần.\n\n"
+                     + "Mỗi cơn lốc lướt qua một kẻ địch thì gây 75 sát thương — mỗi cơn chỉ đánh mỗi kẻ một lần, "
+                     + "kẻ bị nhiều cơn quét qua thì trúng nhiều lần.\n\n"
                      + "Mỗi lần trúng có 80% khả năng HẤT TUNG kẻ địch lên khỏi mặt đất trong 0,5 giây: không "
                      + "đi, không đánh được, và chiêu đang niệm dở bị NGẮT NGAY.\n\n"
                      + "Lốc lướt qua lò lửa thì dập tắt lửa, 30 giây sau lò cháy lại.\n\n"
-                     + "CẤP 5: phóng cùng lúc HAI cơn lốc song song, cách nhau 4 m — kẻ đứng giữa bị cả hai quét qua thì trúng hai lần — "
-                     + "nhưng tốn GẤP ĐÔI năng lượng.";
+                     + "CẤP 5: phóng cùng lúc NĂM cơn lốc hình quạt.";
             case CapDo.KyTocBien:
                 return "Nhân vật tan đi ở chỗ đang đứng và hiện ra ngay tại nơi bạn ngắm, xa nhất 15 m. Đi được XUYÊN QUA tường, bia mộ và mọi vật cản — chỉ cần chỗ đến đứng được.\n\n"
                      + "Ngắm vào chỗ không đứng được thì bạn dừng ở điểm trống gần nơi ngắm nhất trên đường thẳng. Bấm là đi ngay, không có động tác niệm, nên dùng để né đòn đang bay tới.\n\n"
@@ -489,7 +491,7 @@ public static class SachPhep
                      + "Sát thương cộng cả hai: kẻ địch chạm vào ăn ngay đòn 75 của Gió lốc (một lần mỗi kẻ), rồi bị cuốn "
                      + "lên và tiếp tục chịu 20 sát thương mỗi giây cùng những tia sét trong lòng lốc. Mỗi phần mạnh theo "
                      + "CẤP HIỆN TẠI của kỹ năng tương ứng.\n\n"
-                     + "Gió lốc cấp 5 phóng hai cơn thì một lần bấm hoá cả hai. Cơn lốc mới sống 6 giây.\n\n"
+                     + "Gió lốc phóng ra nhiều cơn hình quạt thì chỉ cơn Ở GIỮA hoá thành Lốc xoáy. Cơn lốc mới sống 6 giây.\n\n"
                      + "Không có cơn Gió lốc nào đang bay thì kỹ năng không tung ra và KHÔNG tốn năng lượng.\n\n"
                      + "Tốn 45 năng lượng, hồi chiêu 0,5 giây.";
             case CapDo.KyCauDien:

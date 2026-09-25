@@ -35,18 +35,20 @@ public class GioLoc : MonoBehaviour
     /// <summary>Loc tu tan sau 4,5 giay (nguoi dung 17/09/2026, truoc do 3,5).</summary>
     public const float ThoiGianSong = 4.5f;
 
-    /// <summary>Tung ky nang ra bao nhieu loc: 1 (nguoi dung 17/09/2026, truoc do 3).</summary>
-    public const int SoLocMoiLan = 1;
-
-    /// <summary>Ky nang CAP 5 (cap toi da): 2 loc SONG SONG, tam cach nhau 4 m, TON GAP DOI nang luong (nguoi dung 17/09/2026;
-    /// chon: moi loc tinh rieng - dung giua bi ca hai quet la trung hai lan).</summary>
+    /// <summary>Cap ky nang tu do tung NAM loc thay vi ba (va ton co dinh NangLuongCap5). Moi loc tinh rieng:
+    /// dung o cho hai loc cung quet qua la trung hai lan.</summary>
     public const int CapHaiLoc = 5;
-    public const float KhoangCachHaiLoc = 4f;
 
-    public static int SoLocTheoCap(int capKy) { return capKy >= CapHaiLoc ? 2 : SoLocMoiLan; }
+    /// <summary>
+    /// HINH QUAT (nguoi dung 26/09/2026): cap 1-4 tung BA loc, cap 5 tung NAM loc cung luc, toe GocQuat do giua hai loc (chon 15)
+    /// quanh huong ngam. Truoc do: 1 loc, cap 5 hai loc song song cach 4 m.
+    /// </summary>
+    public static int SoLocTheoCap(int capKy) { return capKy >= CapHaiLoc ? 5 : 3; }
+    public const float GocQuat = 15f;
 
-    /// <summary>Nhan them vao nang luong (sau he so cap chung): so loc tung ra.</summary>
-    public static float HeSoNangLuongTheoCap(int capKy) { return SoLocTheoCap(capKy); }
+    /// <summary>Nhan them vao nang luong (sau he so cap chung). Nay = 1: nguoi dung giu nang luong NHU CU khi doi sang hinh quat
+    /// (truoc la nhan theo so loc - 3 loc la gap ba). Cap 5 van co dinh NangLuongCap5.</summary>
+    public static float HeSoNangLuongTheoCap(int capKy) { return 1f; }
 
     /// <summary>CAP 5 chi ton 25 nang luong - con so CO DINH, khong nhan he so cap va khong nhan so loc
     /// (nguoi dung chot 18/09/2026). Truoc do cap 5 ton 20 x 1,4641 x 2 = 58,6.</summary>
@@ -112,6 +114,8 @@ public class GioLoc : MonoBehaviour
     /// <summary>Time.time luc NGUOI CHOI BAM ra con loc nay. Ky nang "Hoa Loc Xoay" (14) tim lan tung
     /// GAN NHAT cua nguoi ay theo con so nay - cap 5 ra hai loc thi ca hai mang cung mot moc.</summary>
     public float lucTung;
+    /// <summary>Loc o GIUA hinh quat - chi con nay duoc Hoa loc xoay bien thanh Loc xoay (nguoi dung 26/09/2026, nhe cho dien thoai).</summary>
+    public bool laLocGiua = true;
     public Vector3 dir = Vector3.forward;
 
     /// <summary>Bu tre mang: tua nhanh cho kip cho nguoi tung nhin thay (nhu QuaCauBang).</summary>
@@ -147,7 +151,7 @@ public class GioLoc : MonoBehaviour
         return g;
     }
 
-    /// <summary>Mot chum loc toe hinh quat quanh truc DUNG - xem QuaCauBang.SpawnChum. Nguoi choi tung <see cref="SoLocMoiLan"/> loc.</summary>
+    /// <summary>Mot chum loc toe hinh quat quanh truc DUNG - xem QuaCauBang.SpawnChum. Nguoi choi tung <see cref="SoLocTheoCap"/> loc, cach nhau <see cref="GocQuat"/> do.</summary>
     public static void SpawnChum(Vector3 chan, Vector3 huong, LayerMask damageMask, Damageable boQua,
                                  int soLoc = 3, float gocToe = 11f,
                                  float heSoSatThuong = 1f, float themGiay = 0f)
@@ -156,11 +160,14 @@ public class GioLoc : MonoBehaviour
         if (huong.sqrMagnitude < 0.001f) huong = Vector3.forward;
         huong.Normalize();
         float giua = (soLoc - 1) * 0.5f;
+        float luc = Time.time;
         for (int i = 0; i < soLoc; i++)
         {
             Vector3 h = Quaternion.AngleAxis((i - giua) * gocToe, Vector3.up) * huong;
             var loc = Spawn(chan, h, damageMask);
             loc.boQua = boQua;
+            loc.lucTung = luc;                            // cung MOT moc: Hoa loc xoay tim lan tung gan nhat theo so nay
+            loc.laLocGiua = Mathf.Abs(i - giua) < 0.01f;  // Hoa loc xoay chi hoa loc GIUA (nguoi dung 26/09/2026)
             loc.tuaTruoc = BuTre.TuaTruocGiay;
             loc.damage *= heSoSatThuong;
             loc.giayHatTung += themGiay;     // luat chung: hieu ung +0,15 s moi cap ky nang

@@ -14,16 +14,16 @@ using UnityEngine;
 ///   - Hoa loc xoay: doi con Gio loc dang bay cua LAN TUNG GAN NHAT thanh Loc xoay (to dan), giu toc do bay
 ///     cua Gio loc va moi hieu ung cuon cua Loc xoay; sat thuong = cap hien tai Gio loc + cap hien tai Loc xoay;
 ///     45 nang luong, hoi chieu 0,5 giay. Khong co loc nao dang bay -> tu choi, khong ton mana.
-///     Gio loc cap 5 ra hai con -> hoa ca hai.
+///     26/09/2026: Gio loc tung HINH QUAT (3 con, cap 5 nam con) -> chi hoa con GIUA.
 ///
 ///   A. Thong so: so hieu 14, 15 ky nang; 45 nang luong, hoi chieu 0,5; ten co dau; HUD 15 icon; icon file.
-///   B. Gio loc hoi mana: ban mot loc vao 3 bia -> hoi dung 3 x 10 mana (DOI CHUNG: khong trung ai thi hoi 0).
+///   B. Gio loc hoi mana: ban chum loc vao 3 bia -> hoi dung (so lan trung) x 10 mana (DOI CHUNG: khong trung ai thi hoi 0).
 ///   C. Nang luong Gio loc theo cap: cap 1..4 tinh theo cong thuc cu, CAP 5 = dung 25.
-///   D. Hoa that: tung Gio loc roi bam Hoa loc xoay -> con Gio loc BIEN MAT, co Loc xoay moi ngay cho do,
+///   D. Hoa that: tung Gio loc roi bam Hoa loc xoay -> con Gio loc GIUA BIEN MAT (hai con hai ben bay tiep), co Loc xoay moi ngay cho do,
 ///      toc do bay = 9,5 (cua Gio loc), song 6 giay, va hinh TO DAN (do ti le hinh hai thoi diem).
 ///   E. Sat thuong cong ca hai: bia dung yen -> an don cham 75 x cap Gio loc, roi mat mau tiep theo giay.
 ///   F. Khong co loc nao dang bay -> tu choi, KHONG tru mana, KHONG vao hoi chieu.
-///   G. Gio loc cap 5 (hai loc) -> mot lan bam hoa CA HAI.
+///   G. Gio loc cap 5 (nam loc hinh quat) -> mot lan bam chi hoa MOT con (con giua), bon con con lai bay tiep.
 ///
 /// Ket qua: PlayTestShots/hoalocxoay.txt, anh hoalocxoay_*.png.
 /// </summary>
@@ -177,7 +177,7 @@ public static class ThuHoaLocXoay
                 sb.Append("cap ").Append(c).Append("=").Append(ton.ToString("F1")).Append("  ");
             }
             float ton5 = GioLoc.NangLuongCan(5, toi.gioLocCost, CapDo.ManaTheoCap(5));
-            float cu5 = toi.gioLocCost * CapDo.ManaTheoCap(5) * GioLoc.HeSoNangLuongTheoCap(5);
+            float cu5 = toi.gioLocCost * CapDo.ManaTheoCap(5) * 2f;   // ban truoc 18/09/2026: hai loc ton gap doi
             Ghi("C. nang luong Gio loc: " + sb.ToString().Trim() + string.Format("  (cap 5 ban cu la {0:F1})", cu5));
             Kiem(Mathf.Abs(ton5 - 25f) < 0.01f, "cap 5 khong ton dung 25 nang luong");
         }
@@ -218,9 +218,9 @@ public static class ThuHoaLocXoay
 
             int soTrung = GioLoc.SoLanTrung - trung0;
             float hoiDuoc = GioLoc.ManaDaHoi - hoi0;
-            Ghi(string.Format("B. ({0} quai da don) mot con Gio loc quet 3 bia: trung {1} lan -> hoi {2:F0} mana (mong {3:F0}); mana {4:F1} -> {5:F1} -> {6:F1}",
+            Ghi(string.Format("B. ({0} quai da don) chum 3 Gio loc quet 3 bia xep doc duong loc giua: trung {1} lan (loc giua 3 + loc hai ben quet toi dau thi trung day) -> hoi {2:F0} mana (mong {3:F0}); mana {4:F1} -> {5:F1} -> {6:F1}",
                 quaiDon, soTrung, hoiDuoc, soTrung * GioLoc.ManaHoiMoiLanTrung, mana0, manaSauTru, toi.mana));
-            Kiem(soTrung == 3, "con loc khong quet trung ca 3 bia");
+            Kiem(soTrung >= 3 && soTrung <= 9, "chum loc khong quet trung du 3 bia (moi loc toi da mot lan moi bia)");
             Kiem(Mathf.Abs(hoiDuoc - soTrung * GioLoc.ManaHoiMoiLanTrung) < 0.01f, "khong hoi dung 10 mana moi lan trung");
 
             // DOI CHUNG: ban ra cho trong, khong trung ai -> khong hoi mana
@@ -270,6 +270,9 @@ public static class ThuHoaLocXoay
 
             var locTruoc = Object.FindObjectsByType<GioLoc>(FindObjectsInactive.Exclude);
             int soGioLocTruoc = locTruoc.Length;
+            GioLoc locGiua = null;
+            foreach (var l in locTruoc) if (l.laLocGiua) locGiua = l;
+            bool coGiua = locGiua != null;   // doc NGAY: hoa xong con giua bi xoa, locGiua thanh null
 
             float mauB0 = bia.health;
             float manaTruocHoa = toi.mana;
@@ -278,7 +281,7 @@ public static class ThuHoaLocXoay
             // Con Gio loc BAY 9,5 m/s nen vi tri cua no doi tung khung: phai theo doi den TAN LUC HOA,
             // khong duoc doc mot lan roi so sanh (lan chay dau bao oan "lech 5,12 m" - dung bang quang
             // duong loc bay trong 0,55 giay niem chieu).
-            Vector3 choLocCuoi = soGioLocTruoc > 0 ? locTruoc[0].transform.position : Vector3.zero;
+            Vector3 choLocCuoi = locGiua != null ? locGiua.transform.position : Vector3.zero;
             Vector3 choLocKhiHoa = Vector3.zero, choXoayLucDau = Vector3.zero;
             bool daThayXoay = false;
             float coNhoNhat = 9f, coLonNhat = -9f;
@@ -286,8 +289,7 @@ public static class ThuHoaLocXoay
             float hanHoa = Time.time + 1.2f;
             while (Time.time < hanHoa)
             {
-                var gl = Object.FindAnyObjectByType<GioLoc>();
-                if (gl != null) choLocCuoi = gl.transform.position;
+                if (locGiua != null) choLocCuoi = locGiua.transform.position;   // con giua: bi xoa (== null) dung luc hoa
 
                 var tn = Object.FindAnyObjectByType<Tornado>();
                 if (tn != null)
@@ -313,6 +315,9 @@ public static class ThuHoaLocXoay
             Vector3 choLoc = choLocKhiHoa;
 
             int soGioLocSau = Object.FindObjectsByType<GioLoc>(FindObjectsInactive.Exclude).Length;
+            int soXoayD = Object.FindObjectsByType<Tornado>(FindObjectsInactive.Exclude).Length;
+            bool conGiuaSau = false;
+            foreach (var l in Object.FindObjectsByType<GioLoc>(FindObjectsInactive.Exclude)) if (l.laLocGiua) conGiuaSau = true;
             if (xoay == null) xoay = Object.FindAnyObjectByType<Tornado>();
             float tocDo = xoay != null ? xoay.moveSpeed : -1f;
             float song = xoay != null ? xoay.duration : -1f;
@@ -334,15 +339,15 @@ public static class ThuHoaLocXoay
             float capGioLoc = CapDo.SatThuongTheoCap(Mathf.Max(1, CapDo.CapCuaKyNang(CapDo.KyGioLoc)));
             float donMong = GioLoc.SatThuongGoc * capGioLoc;
 
-            Ghi(string.Format("D. truoc khi hoa co {0} con Gio loc; sau khi hoa con {1} Gio loc, co Loc xoay {2} (lech cho {3:F2} m); ton {4:F0} mana",
-                soGioLocTruoc, soGioLocSau, xoay != null, lechCho, manaTruocHoa - toi.mana));
+            Ghi(string.Format("D. truoc khi hoa co {0} con Gio loc (co con giua {5}); sau khi hoa con {1} Gio loc (con giua con {6}), {7} Loc xoay (lech cho so voi con GIUA {3:F2} m); co Loc xoay {2}; ton {4:F0} mana",
+                soGioLocTruoc, soGioLocSau, xoay != null, lechCho, manaTruocHoa - toi.mana, coGiua, conGiuaSau, soXoayD));
             Ghi(string.Format("D. Loc xoay hoa ra: toc do {0:F1} m/s (Gio loc {1}, Loc xoay goc 3,4), song {2:F1} s, don cham mot lan {3:F1} (mong {4:F1}), sat thuong moi giay {5:F1}",
                 tocDo, GioLoc.TocDo, song, donCham, donMong, dps));
             Ghi(string.Format("D. TO DAN: ti le hinh ngay sau khi hoa {0:F2} -> sau {1} giay {2:F2}", coDau, HoaLocXoay.GiayPhongTo, coSau));
             Ghi(string.Format("E. bia dung yen mat {0:F0} mau (don cham {1:F0} + sat thuong moi giay cua Loc xoay)", mat, donMong));
 
-            Kiem(soGioLocTruoc > 0, "doi chung hong: khong co con Gio loc nao de hoa");
-            Kiem(soGioLocSau == 0 && xoay != null, "hoa xong ma van con Gio loc / khong co Loc xoay");
+            Kiem(soGioLocTruoc == 3 && coGiua, "doi chung hong: khong co du 3 con Gio loc (co con giua) de hoa");
+            Kiem(soGioLocSau == 2 && !conGiuaSau && soXoayD == 1 && xoay != null, "hoa xong khong phai: con giua thanh 1 Loc xoay, hai con hai ben bay tiep");
             Kiem(lechCho >= 0f && lechCho < 2f, "Loc xoay khong hien ra ngay cho con Gio loc");
             Kiem(Mathf.Abs(tocDo - GioLoc.TocDo) < 0.01f, "Loc xoay hoa ra khong giu toc do bay cua Gio loc");
             Kiem(Mathf.Abs(donCham - donMong) < 0.5f, "don cham mot lan khong bang sat thuong Gio loc cap hien tai");
@@ -352,7 +357,7 @@ public static class ThuHoaLocXoay
             DonLoc();
         }
 
-        // ================= G. CAP 5 HOA CA HAI CON =================
+        // ================= G. CAP 5: NAM CON, CHI HOA CON GIUA =================
         Ghi("");
         {
             DonLoc();
@@ -377,8 +382,8 @@ public static class ThuHoaLocXoay
 
             Ghi(string.Format("G. Gio loc cap {0}: tung ra {1} con; mot lan bam Hoa loc xoay -> hoa {2} con, tren canh co {3} Loc xoay, con {4} Gio loc",
                 capGL, soLocRa, daHoa, soXoay, conGioLoc));
-            Kiem(capGL == 5 && soLocRa == 2, "doi chung hong: cap 5 khong ra hai con Gio loc");
-            Kiem(daHoa == 2 && soXoay >= 2 && conGioLoc == 0, "mot lan bam khong hoa ca hai con");
+            Kiem(capGL == 5 && soLocRa == 5, "doi chung hong: cap 5 khong ra nam con Gio loc");
+            Kiem(daHoa == 1 && soXoay == 1 && conGioLoc == 4, "mot lan bam khong chi hoa dung con giua (phai: 1 Loc xoay, con 4 Gio loc)");
             DonLoc();
         }
 

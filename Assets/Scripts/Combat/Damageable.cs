@@ -238,8 +238,10 @@ public static class CombatUtil
     /// choi doi khang thi lop Player nam trong mask, va qua cau lua no ngay
     /// duoi chan se giet chinh nguoi vua bam phim.
     /// </summary>
+    /// <param name="boRa">Bo qua cac ke nay (qua NAY cua Qua cau lua: ke da trung vu no truoc khong an lai).</param>
     public static int AreaDamage(Vector3 center, float radius, float damage, LayerMask mask,
-                                 DamageType type, float statusSeconds, Damageable boQua = null)
+                                 DamageType type, float statusSeconds, Damageable boQua = null,
+                                 System.Collections.Generic.HashSet<Damageable> boRa = null)
     {
         int n = Physics.OverlapSphereNonAlloc(center, radius, buffer, mask, QueryTriggerInteraction.Collide);
         int hits = 0;
@@ -249,6 +251,7 @@ public static class CombatUtil
             var d = buffer[i].GetComponentInParent<Damageable>();
             if (d == null || d.IsDead) continue;
             if (boQua != null && d == boQua) continue;
+            if (boRa != null && boRa.Contains(d)) continue;
 
             // Sat thuong giam dan tu tam ra ria
             float dist = Vector3.Distance(center, d.transform.position);

@@ -1378,7 +1378,7 @@ public class PlayerController : MonoBehaviour
             Fireball.SpawnChum(origin, dir.normalized, obstacleMask, enemyMask, health,
                                3, 11f, manhHon, themGiay,
                                capPhep >= Fireball.CapDanhNga ? Fireball.NgaXacSuatCap5 : 0f,
-                               ThienThach.NgaGiayNguoiChoi, true);
+                               ThienThach.NgaGiayNguoiChoi, true, 1);      // soLanNay 1: vu no trung ke dich thi nay sang ke ke ben (26/09/2026)
             CameraShake.Shake(0.12f, 0.05f);
         }
         else if (castingSkill == CapDo.KyTangHinh)
@@ -1440,15 +1440,16 @@ public class PlayerController : MonoBehaviour
         }
         else if (castingSkill == CapDo.KyGioLoc)
         {
-            // MOT loc (nguoi dung 17/09/2026, truoc do ba loc toe quat) sinh o mat dat ngay truoc mat, bay thang huong ngam
+            // Chum loc sinh o mat dat ngay truoc mat, toe quat quanh huong ngam, bay thang
             // xuyen moi vat can. Cap ky nang tang sat thuong va keo dai hat tung +0,15 s moi cap.
             Vector3 dir = castAim - transform.position;
             dir.y = 0f;
             if (dir.sqrMagnitude < 0.01f) dir = transform.forward;
             dir.Normalize();
             Vector3 chan = transform.position + dir * 1.2f;
-            // Cap 5: 2 loc song song cach 4 m. capPhep la cap cua NGUOI TUNG (di qua goi tin) nen moi may ra cung so loc.
-            GioLoc.SpawnSongSong(chan, dir, enemyMask, health, GioLoc.SoLocTheoCap(capPhep), GioLoc.KhoangCachHaiLoc, manhHon, themGiay);
+            // HINH QUAT (nguoi dung 26/09/2026): cap 1-4 ba loc, cap 5 nam loc, 15 do giua hai loc. capPhep la cap cua NGUOI TUNG
+            // (di qua goi tin) nen moi may ra cung so loc.
+            GioLoc.SpawnChum(chan, dir, enemyMask, health, GioLoc.SoLocTheoCap(capPhep), GioLoc.GocQuat, manhHon, themGiay);
         }
         else if (castingSkill == 1)
         {
