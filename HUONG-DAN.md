@@ -8603,6 +8603,61 @@ châm cả bia mộ / nhà mồ (tính năng sáng nay), đầy trần "4 vật 
 
 Ảnh: `PlayTestShots/maygiong_1_dem_can.png`, `maygiong_2_chay_den.png`, `maygiong_3_ngay_goc_choi.png`.
 
+### Xác nằm trên vũng máu; dấu "+" nâng cấp ngay trên ô kỹ năng (26/09/2026)
+
+Anh xin hai việc: **quái và người chơi khác bị giết thì thấy xác nằm dưới đất kèm một vũng máu nhỏ, xác đè lên vũng máu**; và **có điểm
+kỹ năng mới thì ô kỹ năng (vuông bản máy tính, tròn bản cảm ứng) hiện dấu "+" nhỏ phía trên, bấm vào là nâng cấp, không được tràn đè ô
+khác**. Anh chọn: xác quái nằm **20 giây rồi chìm dần**; xác người chơi nằm **tới hết trận**; dấu "+" có cả ở ô **còn khoá** (đủ bậc để
+mở); trên nút tròn thì "+" ở **đỉnh nút, lấn nửa vào viền**.
+
+**Trước đây.** Quái gục xuống (cúi người, lún hông) rồi biến mất sau 5–6 giây; người chơi gục ngồi mãi. Không có máu.
+
+**Nằm.** Cùng cách với "bị đánh ngã": lật **model con** −90° quanh trục X của gốc (xác nằm ngửa, đầu về phía sau lưng), còn va chạm ở gốc
+đã tắt từ lúc chết. Các bộ hoạt hình thấy xác đang nằm thì bỏ tư thế gục — cúi người 58° mà nằm ngửa thì thành ngồi dậy giữa đất.
+
+**Vũng máu.** Vẽ bằng Blender MCP (`CongCu/Blender/vung_mau.blend`): nhiễu 4D làm mép vũng thành thuỳ tròn như chất lỏng, vài giọt bắn quanh
+viền, tâm sẫm hơn, vệt bóng ướt nhẹ; 4 biến thể, nền trong suốt, mép ảnh alpha 0 (loang bằng cách thu UV nên mép ảnh phải trống, không
+thì kéo thành vệt). Đĩa bám **chỉ lớp Ground** (không treo lên bia mộ), xoay ngẫu nhiên, loang từ nhỏ ra đủ trong 2,4 s. Trong suốt nên
+vẽ sau xác, xác tự nhiên đè lên.
+
+**Ba lần đi sai đường khi đo.**
+- **Cỡ thân lấy từ `rig.bodyHeight` thì sai**: bộ xương 2,36 m, quỷ cây 2,89 m trong khi hình thật cao 1,67 / 1,69 m (đo bằng BakeMesh) —
+  vũng máu to gấp rưỡi. Nay đo từ xương thật lúc chết.
+- **Quỷ cây chui nửa người xuống đất** (57,6% đỉnh dưới mặt đất): xoay quanh gốc chỉ đúng khi gốc nằm ở chân. Nay trong lúc ngã đo xương
+  thấp nhất so với đất rồi nhấc lên, ngã xong chốt một con số (còn 11,7%, là cặp sừng lớn cắm xuống đất).
+- **Màu máu**: bản đầu dùng shader không nhận sáng như vết cháy → giữa đêm đỏ chói như phát sáng. Đổi sang shader NHẬN sáng → ánh trăng
+  xanh làm máu đen kịt, không còn thấy vũng máu. Quay về shader không nhận sáng nhưng nhân 0,6: đỏ sẫm, thấy rõ mà không chói.
+
+Phép thử cũng sai một lần: đo "đã nằm" bằng bề cao cả hình thì Quỷ cây trượt (cặp sừng + tay giơ lên khi nằm ngửa → hình vẫn cao 1,31 m),
+dù ảnh toàn cảnh cho thấy nó nằm hẳn. Nay đo bằng **xương Head / Hips**: đầu hạ sát đất và ngang hông.
+
+| Đo (menu 85) | Bộ xương | Phù thuỷ | Quỷ dữ | Quỷ cây |
+|---|---|---|---|---|
+| Xương đầu: đứng → nằm | 1,41 → 0,26 m | 1,42 → 0,22 | 1,35 → 0,23 | 1,35 → 0,47 |
+| Bán kính vũng máu | 0,64 m | 0,63 | 0,59 | 0,61 |
+| Đỉnh xác nằm TRONG vũng máu | 72% | 88% | 60% | 66% |
+| Đỉnh chui dưới mặt máu | 0,0% | 1,2% | 0,0% | 11,7% |
+
+Máu có sau 0,56 s từ lúc chết, loang 0,45 → 1,00. Mốc thời gian: 15 s cả bốn xác **còn** (bản cũ đã mất sau 5–6 s), 21 s đang chìm,
+23 s đã xoá cả xác lẫn vũng máu. Chết lúc đang bị đánh ngã: qua mốc chống dậy 1,5 s vẫn nằm; chết lúc đang bị hất tung: máu chỉ loang sau
+khi rơi xuống (0,74 s). Người chơi chết: nằm trên vũng máu, 24 giây sau vẫn nằm nguyên chỗ. Chết khi đang **đóng băng hoàn toàn** thì vẫn
+vỡ tan như cũ, không có xác.
+
+**Dấu "+".** Hiện đúng khi `MoKhoaDuoc || NangCapDuoc` — y hệt nút trong Sách phép, và bấm gọi đúng hai hàm ấy. Đầu trận (1 điểm): Cầu lửa
+(khoá, không cần bậc) có; Thiên thạch (cần Cầu lửa cấp 2) không; bình máu (cấp 1/3) có; ô trống không. Bấm → Cầu lửa mở, hết điểm → mọi
+dấu tắt. Cầu lửa lên cấp 2 → Thiên thạch hiện dấu; tối đa cấp 5 / bình cấp 3 thì mất dấu.
+
+| Hình học | Kết quả |
+|---|---|
+| Nút tròn: khe hẹp nhất từ huy hiệu tới nút KHÁC | 13,7 đơn vị (vùng chạm ×1,2: 9,7) — không chạm nút nào |
+| Nút tròn: chạm giữa huy hiệu / giữa nút | đúng ô 7/7 / vẫn tung kỹ năng 7/7 |
+| Ô vuông: huy hiệu 28,6 × 28,6, khe tới ô khác | 39,7; nằm trong bề ngang ô mình 7/7 |
+| Chuột trên huy hiệu không kéo nhân vật chạy đi | 7/7 (giữa ô thì không chặn) |
+
+Chưa thử được cú bấm chuột / chạm THẬT (Unity không cho giả lập sự kiện IMGUI từ phép thử): thứ tự "nút + gọi trước ô" và "cảm ứng xét
++ trước nút" kiểm bằng đọc mã. Ảnh: `PlayTestShots/xacnam_*.png`. Chạy lại 61, 62, 63, 65, 56, 47, 78 — 0 lỗi; menu 55 còn một lỗi CŨ
+(phép thử tìm quái có sẵn trong Act2 ở giây 1,5, mà Act2 đã bỏ quái rải sẵn từ trước).
+
 ### Quả cầu lửa · Quả cầu băng nảy sang kẻ thứ hai; Gió lốc hình quạt (26/09/2026)
 
 Anh xin: **quả cầu lửa và quả cầu băng trúng kẻ địch thì nảy sang kẻ gần bên**; **Gió lốc cấp 1–4 ra 3 lốc hình quạt, cấp 5 ra 5

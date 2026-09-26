@@ -454,6 +454,8 @@ public class ModelHoatHinh : MonoBehaviour
         // cuoi cua clip di bo. Tra ve tu the chuan truoc roi moi do nguoi xuong,
         // khong thi cai xac nam do voi mot chan van dang buoc.
         TraVeTuTheChuan();
+        // XAC NAM (XacNam lat ca model nam ngua): bo tu the guc - cui nguoi 58 do ma nam ngua thi thanh ngoi day
+        if (XacNam.LaXac(this)) return;
 
         float k = Mathf.SmoothStep(0f, 1f, nghiengChet);
 

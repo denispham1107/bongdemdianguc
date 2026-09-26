@@ -387,6 +387,14 @@ public partial class GameHUD : MonoBehaviour
                 ngonNut.Add(t.fingerId);
                 continue;
             }
+            // DAU CONG nang cap: xet TRUOC nut ky nang - no lan nua vao vien nut, cham vao do la nang cap chu khong ban
+            int oCong = DauCongTronTaiDiem(t.position, s);
+            if (oCong >= 0)
+            {
+                BamDauCong(SachPhep.OTron[oCong]);
+                ngonNut.Add(t.fingerId);
+                continue;
+            }
 
             int o = NutTaiDiem(t.position, s);
             if (o >= 0)
@@ -447,6 +455,10 @@ public partial class GameHUD : MonoBehaviour
                 else if (BamNutSachPhep(pos, s))
                 {
                     // da mo sach phep ngay luc bam
+                }
+                else if (DauCongTronTaiDiem(pos, s) >= 0)
+                {
+                    BamDauCong(SachPhep.OTron[DauCongTronTaiDiem(pos, s)]);
                 }
                 else
                 {
@@ -1032,7 +1044,7 @@ public partial class GameHUD : MonoBehaviour
     /// </summary>
     const float Le = 109.296f;
 
-    float BanKinhNut(float s) { return 65.5776f * s; }
+    public float BanKinhNut(float s) { return 65.5776f * s; }
 
     /// <summary>
     /// Tam cua nut ky nang thu <paramref name="i"/>, tinh theo GOC PHAI DUOI.
@@ -1044,7 +1056,7 @@ public partial class GameHUD : MonoBehaviour
     /// Toa do tra ve dem tu DUOI len, giong Input.mousePosition - de so thang
     /// voi diem cham ma khong phai doi truc.
     /// </summary>
-    Vector2 TamNut(int i, float s)
+    public Vector2 TamNut(int i, float s)
     {
         // Hai cung dong tam quanh goc phai duoi, moi cung ba nut.
         //
@@ -1257,7 +1269,118 @@ public partial class GameHUD : MonoBehaviour
         }
         GUI.color = cu;
 
+        if (CoTheBamDauCong())
+            for (int o = 0; o < SoNut; o++)
+                if (CoDauCong(SachPhep.OTron[o]))
+                {
+                    Vector2 tc = TamDauCongTron(o, s);
+                    float rb = BanKinhNut(s) * DauCongTronBanKinh;
+                    VeDauCong(new Rect(tc.x - rb, Screen.height - tc.y - rb, rb * 2f, rb * 2f));
+                }
+
         // Thanh mau khieng khong ve o day - no da co dai rieng tren bang trang thai
+    }
+
+    // ================================================================
+    //  DAU CONG NANG CAP (nguoi dung 26/09/2026)
+    // ================================================================
+    //
+    // Co diem ky nang thi o nao mo khoa / nang cap duoc hien mot dau "+" nho o PHIA TREN, bam vao la mo khoa /
+    // nang cap ngay (y het nut trong Sach phep: CapDo.MoKhoa / NangCap). Nguoi dung chon: CA o con khoa (du bac
+    // de mo) lan o da mo; ky nang da toi da hoac chua du bac thi khong hien. Binh mau / mana (toi cap 3) cung co.
+    //
+    // KHONG DE LEN O KHAC (nguoi dung dan): nut tron - huy hieu ban kinh 0,30r, tam cao 0,90r tren tam nut, lan
+    // nua vao vien chinh nut ay; khe gap nhat toi nut ben canh 13 don vi (tinh cho 7 nut, menu 85 do lai).
+    // O vuong - huy hieu nam GIUA canh tren o, rong 0,34 canh o (28,6) trong khi o rong 84: khong toi o ben.
+
+    public const float DauCongTronBanKinh = 0.30f;
+    public const float DauCongTronCao = 0.90f;
+    public const float DauCongVuongCo = 0.34f;
+
+    public static bool CoDauCong(int ky)
+    {
+        if (ky < 0 || ky == SachPhep.Trong || ky >= CapDo.SoKyNang) return false;
+        return CapDo.MoKhoaDuoc(ky) || CapDo.NangCapDuoc(ky);
+    }
+
+    /// <summary>Mo khoa (con khoa) hoac nang cap mot cap. Tra ve true neu da tieu diem.</summary>
+    public static bool BamDauCong(int ky)
+    {
+        if (CapDo.MoKhoaDuoc(ky)) return CapDo.MoKhoa(ky);
+        if (CapDo.NangCapDuoc(ky)) return CapDo.NangCap(ky);
+        return false;
+    }
+
+    bool CoTheBamDauCong()
+    {
+        if (CuaSoSachPhep.DangMo || KetTran.DaXong) return false;
+        if (director != null && director.PlayerDead) return false;
+        return CapDo.DiemKyNang > 0;
+    }
+
+    /// <summary>Tam huy hieu tren nut tron thu o, toa do CHAM (y tu duoi len).</summary>
+    public Vector2 TamDauCongTron(int o, float s)
+    {
+        Vector2 t = TamNut(o, s);
+        return new Vector2(t.x, t.y + BanKinhNut(s) * DauCongTronCao);
+    }
+
+    /// <summary>O tron co dau cong nao chua diem nay (toa do cham)? Vung bam rong 1,2 lan hinh cho de cham.</summary>
+    public int DauCongTronTaiDiem(Vector2 diem, float s)
+    {
+        if (!CoTheBamDauCong()) return -1;
+        float rb = BanKinhNut(s) * DauCongTronBanKinh * 1.2f;
+        for (int o = 0; o < SoNut; o++)
+            if (CoDauCong(SachPhep.OTron[o]) && Vector2.Distance(diem, TamDauCongTron(o, s)) <= rb) return o;
+        return -1;
+    }
+
+    /// <summary>O vuong thu o (toa do GUI, y tu tren xuong) - cung hinh hoc voi DrawSkillBar.</summary>
+    public static Rect RectOVuong(int o, float s)
+    {
+        int n = SachPhep.SoOVuong;
+        float slot = 84f * s, gap = 12f * s;
+        float total = slot * n + gap * (n - 1);
+        float x = (Screen.width - total) * 0.5f;
+        float y = Screen.height - slot - 22f * s;
+        return new Rect(x + (slot + gap) * o, y, slot, slot);
+    }
+
+    /// <summary>Huy hieu tren o vuong: giua canh tren, nua tren nho ra ngoai o (toa do GUI).</summary>
+    public static Rect VungDauCongVuong(int o, float s)
+    {
+        Rect r = RectOVuong(o, s);
+        float d = r.width * DauCongVuongCo;
+        return new Rect(r.center.x - d * 0.5f, r.y - d * 0.5f, d, d);
+    }
+
+    /// <summary>Con tro (toa do Input, y tu duoi len) dang tren mot dau cong cua thanh o vuong - DocInput hoi
+    /// de cu bam nang cap khong keo nhan vat chay ve phia do.</summary>
+    public static bool ConTroTrenDauCongVuong(Vector2 chuot)
+    {
+        if (CapDo.DiemKyNang <= 0) return false;
+        float s = Screen.height / Ref;
+        var p = new Vector2(chuot.x, Screen.height - chuot.y);
+        for (int o = 0; o < SachPhep.SoOVuong; o++)
+            if (CoDauCong(SachPhep.OVuong[o]) && VungDauCongVuong(o, s).Contains(p)) return true;
+        return false;
+    }
+
+    /// <summary>Ve mot huy hieu "+": dia do sam, vanh vang, dau cong vang sang ve bang hai thanh (khong dung chu).</summary>
+    void VeDauCong(Rect o)
+    {
+        var cu = GUI.color;
+        GUI.color = new Color(0f, 0f, 0f, 0.45f);
+        GUI.DrawTexture(new Rect(o.x + o.width * 0.06f, o.y + o.height * 0.10f, o.width, o.height), vongNum, ScaleMode.StretchToFill, true);
+        GUI.color = new Color(0.30f, 0.03f, 0.02f, 0.97f);
+        GUI.DrawTexture(o, vongNum, ScaleMode.StretchToFill, true);
+        GUI.color = new Color(1f, 0.80f, 0.36f, 1f);
+        GUI.DrawTexture(o, vanhNut, ScaleMode.StretchToFill, true);
+        float dai = o.width * 0.56f, day = Mathf.Max(2f, o.width * 0.16f);
+        GUI.color = new Color(1f, 0.92f, 0.60f, 1f);
+        GUI.DrawTexture(new Rect(o.center.x - dai * 0.5f, o.center.y - day * 0.5f, dai, day), Texture2D.whiteTexture);
+        GUI.DrawTexture(new Rect(o.center.x - day * 0.5f, o.center.y - dai * 0.5f, day, dai), Texture2D.whiteTexture);
+        GUI.color = cu;
     }
 
     float HoiChieu01(int skill)
@@ -1301,6 +1424,7 @@ public partial class GameHUD : MonoBehaviour
         float total = slot * n + gap * (n - 1);
         float x = (Screen.width - total) * 0.5f;
         float y = Screen.height - slot - 22f * s;
+        // Hinh hoc nay chep o RectOVuong (dau cong + DocInput dung) - sua mot cho thi sua ca hai
 
         var icon = BoIcon();
         var bo = SachPhep.OVuong;
@@ -1308,6 +1432,14 @@ public partial class GameHUD : MonoBehaviour
         // Phim tat cua tung O (khong phai cua tung ky nang): nguoi choi keo
         // Sam set sang o mot thi bam so 1 phai ra Sam set. Xem DocInput.
         string[] phim = { "1/Z", "2/X", "3/V", "4/B", "5/N", "6/M", "7/G" };
+
+        // DAU CONG: nut bam goi TRUOC o ky nang ben duoi - IMGUI cho nut goi truoc gianh cu bam, khong thi
+        // cu bam vao phan dau cong lan tren o se thanh mot phat tung ky nang
+        bool coCong = CoTheBamDauCong();
+        if (coCong)
+            for (int o = 0; o < n; o++)
+                if (CoDauCong(bo[o]) && GUI.Button(VungDauCongVuong(o, s), GUIContent.none, GUIStyle.none))
+                    BamDauCong(bo[o]);
 
         for (int o = 0; o < n; o++)
         {
@@ -1323,6 +1455,9 @@ public partial class GameHUD : MonoBehaviour
                           player != null && player.SelectedSkill == ky, s);
             VeSoBinh(r, ky, s, false);
         }
+        if (coCong)
+            for (int o = 0; o < n; o++)
+                if (CoDauCong(bo[o])) VeDauCong(VungDauCongVuong(o, s));
 
         // Mau khieng KHONG ve o day nua - no da co dai rieng tren bang trang
         // thai goc trai. Ve ca hai cho thi cung mot con so hien hai lan, ma cho

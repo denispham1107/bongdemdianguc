@@ -232,6 +232,21 @@ public class ProceduralAnimator : MonoBehaviour
         deathTimer += dt;
         float t = Mathf.Clamp01(deathTimer / 1.1f);
         float e = 1f - Mathf.Pow(1f - t, 3f);
+        // XAC NAM (XacNam lat ca model nam ngua): chi con dang nam thang, chan hoi co, tay dang ra
+        if (XacNam.LaXac(this))
+        {
+            Rot(rig.legL, bLegL, new Vector3(-8f * e, 0f, 0f));
+            Rot(rig.legR, bLegR, new Vector3(-4f * e, 0f, 0f));
+            Rot(rig.shinL, bShinL, new Vector3(14f * e, 0f, 0f));
+            Rot(rig.shinR, bShinR, new Vector3(8f * e, 0f, 0f));
+            Rot(rig.spine, bSpine, Vector3.zero);
+            Rot(rig.chest, bChest, Vector3.zero);
+            Rot(rig.neck, bNeck, new Vector3(0f, 0f, 12f * e));
+            Rot(rig.armL, bArmL, new Vector3(0f, 0f, -35f * e));
+            Rot(rig.armR, bArmR, new Vector3(0f, 0f, 35f * e));
+            if (rig.root != null) { rig.root.localRotation = Quaternion.identity; rig.root.localPosition = Vector3.zero; }
+            return;
+        }
 
         Rot(rig.legL, bLegL, new Vector3(-70f * e, 0f, 0f));
         Rot(rig.legR, bLegR, new Vector3(-62f * e, 0f, 0f));

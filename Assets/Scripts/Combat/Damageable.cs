@@ -36,6 +36,7 @@ public class Damageable : MonoBehaviour
 
     [Header("Khac")]
     public bool isPlayer = false;
+    /// <summary>KHONG DUNG NUA (26/09/2026): xac nam theo XacNam (quai 20 giay roi chim). Giu truong vi prefab con ghi.</summary>
     public float corpseSeconds = 6f;
 
     public CharacterRig rig;
@@ -221,7 +222,8 @@ public class Damageable : MonoBehaviour
 
         if (onDeath != null) onDeath(this);
 
-        if (!isPlayer) Destroy(gameObject, corpseSeconds);
+        // Xac nga nam han tren vung mau; quai nam 20 giay roi chim dan va tu xoa, nguoi choi nam toi het tran
+        XacNam.Gan(this);
     }
 }
 

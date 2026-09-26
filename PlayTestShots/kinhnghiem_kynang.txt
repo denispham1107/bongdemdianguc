@@ -3,26 +3,26 @@ chuan bi: cap 11, mo khoa TrueTrueTrueTrueTrueTrueTrueTrueTrueTrueTrue
 quai dung de thu: 24 con
 
 A. tung tung ky nang that vao mot con quai mau 1
-A0. Qua cau lua -> QuyDu: chet True, ke danh cuoi la minh True, kinh nghiem +40 (gia 40)
-A1. Mua bang -> QuyDu: chet True, ke danh cuoi la minh True, kinh nghiem +40 (gia 40)
-A2. Sam set -> Witch: chet True, ke danh cuoi la minh True, kinh nghiem +32 (gia 32)
-A3. Loc xoay -> Witch: chet True, ke danh cuoi la minh True, kinh nghiem +32 (gia 32)
-A4. Thien thach -> QuyCay: chet True, ke danh cuoi la minh True, kinh nghiem +30 (gia 30)
-A6. Giut set -> Skeleton: chet True, ke danh cuoi la minh True, kinh nghiem +18 (gia 18)
-A9. Qua cau bang -> QuyCay: chet True, ke danh cuoi la minh True, kinh nghiem +30 (gia 30)
-A10. Gio loc -> Witch: chet True, ke danh cuoi la minh True, kinh nghiem +32 (gia 32)
-A11. Lua dia nguc -> Witch: chet True, ke danh cuoi la minh True, kinh nghiem +32 (gia 32)
-    (chan doan) co thay qua cau True; khoang cach cau-quai gan nhat 2.12 m, xa nhat 2.12 m (ban trong 9 m)
-A13. Qua cau dien -> QuyDu: chet True, ke danh cuoi la minh True, kinh nghiem +40 (gia 40)
-A21. May giong -> QuyCay: chet True, ke danh cuoi la minh True, kinh nghiem +30 (gia 30)
+A0. Qua cau lua -> QuyDu: chet True, ke danh cuoi la minh True, kinh nghiem +65 (gia 65)
+A1. Mua bang -> QuyDu: chet True, ke danh cuoi la minh True, kinh nghiem +65 (gia 65)
+A2. Sam set -> QuyDu: chet True, ke danh cuoi la minh True, kinh nghiem +65 (gia 65)
+A3. Loc xoay -> QuyCay: chet True, ke danh cuoi la minh True, kinh nghiem +49 (gia 49)
+A4. Thien thach -> QuyCay: chet True, ke danh cuoi la minh True, kinh nghiem +49 (gia 49)
+A6. Giut set -> QuyCay: chet True, ke danh cuoi la minh True, kinh nghiem +49 (gia 49)
+A9. Qua cau bang -> QuyCay: chet True, ke danh cuoi la minh True, kinh nghiem +49 (gia 49)
+A10. Gio loc -> QuyDu: chet True, ke danh cuoi la minh True, kinh nghiem +65 (gia 65)
+A11. Lua dia nguc -> Skeleton: chet True, ke danh cuoi la minh True, kinh nghiem +29 (gia 29)
+    (chan doan) co thay qua cau True; khoang cach cau-quai gan nhat 2.17 m, xa nhat 2.17 m (ban trong 9 m)
+A13. Qua cau dien -> Witch: chet True, ke danh cuoi la minh True, kinh nghiem +52 (gia 52)
+A21. May giong -> Witch: chet True, ke danh cuoi la minh True, kinh nghiem +52 (gia 52)
 
 B. chet vi hieu ung cham (khong co don truc tiep ghi ke danh truoc)
 B1. chet vi chay: co bi chay True, chet True, ke danh cuoi la minh True
 B2. chet vi bi loc cuon: chet True, ke danh cuoi la minh True
 B2b. chet vi VU NO CUA TANG BANG: chet True, ke danh cuoi la minh True
 B3. vung lua cua thien thach: co vung lua True, biet nguoi tung True
-B4. truoc khi dot: 2 vat dang chay (TS_slab_206, MAUS_A_001_682); cho con 6
-B4. dot cay TREE_oakA_bare_701: bat lua True, nho ke dot True
+B4. truoc khi dot: 4 vat dang chay (TS_slab_206, TS_ledger_396, MAUS_A_001_682, TS_shoulder_93); cho con 7
+B4. dot cay TREE_oakC_726: bat lua True, nho ke dot True
 
 C. don cua NGUOI CHOI KHAC trung nhan vat cua may nay
 C. Mua bang trung minh -> ke danh cuoi la nguoi kia: True

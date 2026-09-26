@@ -56,6 +56,10 @@ public class BiDanhNga : MonoBehaviour
     Transform hinh;
     Vector3 posGoc;
     Quaternion rotGoc;
+    /// <summary>Tu the dung goc cua model - XacNam doc khi chet luc dang nga.</summary>
+    public Vector3 PosGoc { get { return posGoc; } }
+    public Quaternion RotGoc { get { return rotGoc; } }
+    public bool CoGoc { get { return hinh != null; } }
     Damageable target;
 
     /// <summary>

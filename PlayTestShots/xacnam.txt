@@ -1,0 +1,20 @@
+[ban 1] xac nam tren vung mau + dau cong nang cap
+
+A. Skeleton: nga NGUA, xuong Head cao 1.41 m luc dung -> 0.26 m luc nam (Hips 0.16 m), nam dai 1.70 m x day 0.90 m, nang chong lun 0.11 m, cao than do tu xuong 1.77 m; dinh hinh tren dat luc dung 1.67 m -> luc nam 0.87 m (x0.52); vung mau True (ban kinh 0.64 m, co sau 0.56 s tu luc chet), loang 0,25 s 0.45 -> 2.50 s 1.00; 72 % dinh xac nam TRONG vung mau, tam xac cach tam mau 0.24 m; 0.0 % dinh chui duoi mat mau; hang doi mau 3000 > xac 2000
+A. Witch: nga NGUA, xuong Head cao 1.42 m luc dung -> 0.22 m luc nam (Hips 0.17 m), nam dai 1.63 m x day 0.62 m, nang chong lun 0.07 m, cao than do tu xuong 1.76 m; dinh hinh tren dat luc dung 1.65 m -> luc nam 0.54 m (x0.33); vung mau True (ban kinh 0.63 m, co sau 0.56 s tu luc chet), loang 0,25 s 0.45 -> 2.50 s 1.00; 88 % dinh xac nam TRONG vung mau, tam xac cach tam mau 0.10 m; 1.2 % dinh chui duoi mat mau; hang doi mau 3000 > xac 2000
+A. QuyDu: nga NGUA, xuong Head cao 1.35 m luc dung -> 0.23 m luc nam (Hips 0.19 m), nam dai 1.59 m x day 0.46 m, nang chong lun 0.00 m, cao than do tu xuong 1.63 m; dinh hinh tren dat luc dung 1.58 m -> luc nam 0.44 m (x0.28); vung mau True (ban kinh 0.59 m, co sau 0.56 s tu luc chet), loang 0,25 s 0.45 -> 2.50 s 1.00; 60 % dinh xac nam TRONG vung mau, tam xac cach tam mau 0.26 m; 0.0 % dinh chui duoi mat mau; hang doi mau 3000 > xac 2000
+A. QuyCay: nga NGUA, xuong Head cao 1.35 m luc dung -> 0.47 m luc nam (Hips 0.62 m), nam dai 1.82 m x day 1.53 m, nang chong lun 0.43 m, cao than do tu xuong 1.70 m; dinh hinh tren dat luc dung 1.69 m -> luc nam 1.31 m (x0.78); vung mau True (ban kinh 0.61 m, co sau 0.56 s tu luc chet), loang 0,25 s 0.45 -> 2.50 s 1.00; 66 % dinh xac nam TRONG vung mau, tam xac cach tam mau 0.21 m; 11.7 % dinh chui duoi mat mau; hang doi mau 3000 > xac 2000
+
+B. chet luc dang NGA: 1,85 s sau khi bi nga (qua moc chong day 1,5 s) dinh hinh 0.87 m, con BiDanhNga False, co mau True
+B. chet luc dang BAY (hat tung 0,5 s): mau loang sau khi bi hat 0.74 s (phai >= 0,5 - cho roi xuong), dinh hinh cuoi 0.87 m
+
+D. dau tran (1 diem): Cau lua (khoa, khong can bac) True; Thien thach (can Cau lua cap 2) False; Binh mau (cap 1/3) True; o trong False
+D. bam + Cau lua -> True, da mo True, cap 1, con 0 diem; het diem -> khong o nao con dau cong True
+D. Cau lua cap 2 -> Thien thach hien dau cong True; bam tiep -> Cau lua cap 5 (toi da 5) dau cong False; Binh mau cap 3 (toi da 3) dau cong False
+D. nut TRON (7/7 o co dau cong): khe hep nhat tu huy hieu toi nut KHAC 13.7 (vung bam x1,2: 9.7) don vi 1080; cach mep man 142.2; cham giua huy hieu -> dung o 7/7; cham giua nut -> van la tung ky nang 7/7
+D. o VUONG: huy hieu 28.6 x 28.6, khe toi o khac 39.7; nam trong be ngang o minh 7/7; chuot tren huy hieu duoc chan (khong keo nhan vat) va giua o thi khong 7/7
+A. moc thoi gian (ban cu xac mat sau 5-6 giay): Skeleton: 15 s con True, 21 s dang chim True, 23 s xoa True (mau xoa True); Witch: 15 s con True, 21 s dang chim True, 23 s xoa True (mau xoa True); QuyDu: 15 s con True, 21 s dang chim True, 23 s xoa True (mau xoa True); QuyCay: 15 s con True, 21 s dang chim True, 23 s xoa True (mau xoa True); 
+
+C. nguoi choi chet: la xac nguoi choi True; dinh hinh 1.69 m -> 0.46 m; vung mau True; 24 giay sau van nam nguyen cho, khong chim True
+
+so loi ghi nhan = 0

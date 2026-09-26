@@ -6,7 +6,7 @@ A2. giet that 24 con: roi 6 binh, nam dung cho quai chet (<= 1 m) 6/6
 
 B. nhat binh (choi mot minh)
 B1. binh cach 6 m (ban kinh hut 3.5 m) sau 1 giay: van nam yen = True
-B2. dua binh vao 2,5 m: bay vao nguoi sau 0.32 giay, so binh mau = 1
+B2. dua binh vao 2,5 m: bay vao nguoi sau 0.33 giay, so binh mau = 1
 
 C. uong binh
 C1. vua vao tran: binh mau cap 1/3, binh mana cap 1/3, diem ky nang 1 (khong ton diem nao); uong 1 binh (thieu 250): hoi 200, con 0 binh
@@ -20,20 +20,20 @@ C8. thieu 20 nang luong: hoi 20, con 0 binh
 C9. HET binh mana: hoi 0
 
 D. so binh hien tren o ky nang
-D1. sach phep (may tinh): 3 binh -> 12 binh, o binh doi 0.0499, o doi chung doi 0.0000
-D1. sach phep (cam ung): 3 binh -> 12 binh, o binh doi 0.0412, o doi chung doi 0.0000
+D1. sach phep (may tinh): 3 binh -> 12 binh, o binh doi 0.0466, o doi chung doi 0.0000
+D1. sach phep (cam ung): 3 binh -> 12 binh, o binh doi 0.0424, o doi chung doi 0.0000
 
 E. sach phep: chu to va cuon
-E1. ten ky nang cot trai: net that 65 diem; doi chung co cu 54, co moi (x1.15) 65 -> that / cu = 1.204
-E2. dong cap phan than chi tiet: net that 184 diem; doi chung co cu 167, co moi (x1.2) 185 -> that / cu = 1.102
-E3. than chi tiet: noi dung cao 128 / vung 111 diem; dat cuon 100000 -> kep con 22 (toi da 22); anh doi: than 0.1089, dau muc 0.0001
-E4. man 844x390: cot trai cao 268, 9 hang can 562 -> phai cuon True (vua 9 hang)
-E4. man 640x300: cot trai cao 206, 9 hang can 433 -> phai cuon True (vua 9 hang)
+E1. ten ky nang cot trai: net that 70 diem; doi chung co cu 60, co moi (x1.15) 70 -> that / cu = 1.167
+E2. dong cap phan than chi tiet: net that 203 diem; doi chung co cu 167, co moi (x1.2) 204 -> that / cu = 1.216
+E3. than chi tiet: noi dung cao 141 / vung 124 diem; dat cuon 100000 -> kep con 22 (toi da 22); anh doi: than 0.1130, dau muc 0.0000
+E4. man 844x390: cot trai cao 268, 9 hang can 589 -> phai cuon True (vua 9 hang)
+E4. man 640x300: cot trai cao 206, 9 hang can 453 -> phai cuon True (vua 9 hang)
 
 F. binh chung ca phong qua mang (bo dong bo that + kenh gia lap)
 F1. may KHACH nhan 3 goi 'roi binh' 501 (lap): hien 1 binh; toi gan -> gui 3 goi xin (so hieu 501, ghe 0); chua duoc giao thi chua bay = True, so binh 0
 F1b. chu phong giao 501 cho ghe 0 (minh, goi lap 3 lan): binh con = False, so binh mau = 1
-F2. binh 502 giao cho ghe 1 (nguoi khac): bien mat = True, lan cuoi cach ho 0.29 m, so binh mana cua minh = 0
+F2. binh 502 giao cho ghe 1 (nguoi khac): bien mat = True, lan cuoi cach ho 0.20 m, so binh mana cua minh = 0
 F3. goi 'thuoc ve ghe 0' den truoc goi 'roi ra' (binh 503 o 8 m): so binh mau = 2
 F4. may CHU PHONG gieo binh 1: gui 3 goi 'roi binh' (lap 3 lan); ghe 1 xin truoc, ghe 2 xin sau -> gui 'thuoc ghe 1' 3 lan, 'thuoc ghe khac' 0 lan; binh dang bay ve ghe 1
 F5. chu phong dung gan binh 2: so binh mau 2 -> 3, bao ca phong 'thuoc ghe 0' 3 lan, goi xin tu gui 0

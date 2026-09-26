@@ -2,7 +2,7 @@
 quai dung de thu: 24
 
 A. xac suat danh nga
-A1. 1000 lan gieo -> danh nga 40.3% (mong doi 40%)
+A1. 1000 lan gieo -> danh nga 37.9% (mong doi 40%)
 A2. thien thach mac dinh (cua Quy du): xac suat nga 0 (phai 0)
 
 B. tung thien thach that
@@ -11,26 +11,26 @@ B1. qua thien thach cua nguoi choi: danh nga 40% trong 1.5 giay
 C. con quai bi danh nga (hinh that)
     xuong dau tim duoc: Head
 C1. hat len: hinh cao toi da 1.01 m (phai ~0,5-0,9)
-C2. luc nam: dau cach dat 0.21 m (dung thang: 1.38 m), dau nam ve sau lung 1.42 m (phai > 0 = NGUA)
-C3. trong 1,35 giay: van dang nga True, di chuyen 0.00 m, mau nguoi choi mat 3
-C4. sau 1,95 giay: het nga True, dau cao 1.35 m (dung thang 1.38)
+C2. luc nam: dau cach dat 0.29 m (dung thang: 1.33 m), dau nam ve sau lung 1.35 m (phai > 0 = NGUA)
+C3. trong 1,35 giay: van dang nga True, di chuyen 0.00 m, mau nguoi choi mat 0
+C4. sau 1,95 giay: het nga True, dau cao 1.33 m (dung thang 1.33)
 
 D. nguoi choi bi nga
 D1. DangBiKhoaCung True, day can 0,6 giay di 0.00 m, bam phep -> bay ra 0, loi nhac: BẠN ĐANG BỊ HẤT NGÃ!
 
 F. tung thien thach that 10 lan vao mot con quai that
-    lan 1: tung True, trung True (mat 374 mau), bi nga True
-    lan 2: tung True, trung True (mat 412 mau), bi nga True
-    lan 3: tung True, trung True (mat 320 mau), bi nga True
-    lan 4: tung True, trung True (mat 376 mau), bi nga True
-    lan 5: tung True, trung True (mat 325 mau), bi nga False
-    lan 6: tung True, trung True (mat 381 mau), bi nga False
-    lan 7: tung True, trung True (mat 363 mau), bi nga True
-    lan 8: tung True, trung True (mat 350 mau), bi nga False
-    lan 9: tung True, trung True (mat 365 mau), bi nga True
-    lan 10: tung True, trung True (mat 335 mau), bi nga True
+    lan 1: tung True, trung True (mat 213 mau), bi nga True
+    lan 2: tung True, trung True (mat 224 mau), bi nga False
+    lan 3: tung True, trung True (mat 217 mau), bi nga True
+    lan 4: tung True, trung True (mat 223 mau), bi nga True
+    lan 5: tung True, trung True (mat 230 mau), bi nga True
+    lan 6: tung True, trung True (mat 220 mau), bi nga False
+    lan 7: tung True, trung True (mat 232 mau), bi nga True
+    lan 8: tung True, trung True (mat 224 mau), bi nga False
+    lan 9: tung True, trung True (mat 204 mau), bi nga True
+    lan 10: tung True, trung True (mat 225 mau), bi nga True
 F1. tung 10/10, trung 10/10, bi nga 7/10 (moi lan 3 qua x 40% -> mong doi ~78% so lan co it nhat mot lan nga)
-F2. dau hieu vong sao + chu NGA tren dau: hien 256/260 khung hinh dang nga (98%)
+F2. dau hieu vong sao + chu NGA tren dau: hien 246/251 khung hinh dang nga (98%)
 
 E. qua mang
 E1. may chu so huu doc co: dang nga = True
@@ -39,6 +39,6 @@ E2. ban sao: tu gieo False (phai False), goi toi -> nga True, goi ngung 1 giay -
 G. so qua moi loat theo cap ky nang
 G1. so qua theo cap 1..5 = 3, 3, 3, 3, 5  (hang: SoQuaThuong 3, SoQuaCap5 5 tu cap 5)
 G2. doi chung SoQuaTheoCap(1..5) = 3, 3, 3, 3, 5
-G3. cap 5: 5 qua cham dat, khoang cach giua hai lan cham dat: 0.38 0.34 0.29 0.40 -> trung binh 0.354 giay (mong 0.35; cu 0,70); ca loat 1.42 giay
+G3. cap 5: 5 qua cham dat, khoang cach giua hai lan cham dat: 0.38 0.26 0.43 0.36 -> trung binh 0.358 giay (mong 0.35; cu 0,70); ca loat 1.43 giay
 
 so loi ghi nhan = 0

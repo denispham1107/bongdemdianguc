@@ -50,6 +50,9 @@ public class BiHatTung : MonoBehaviour
     Transform hinh;
     Vector3 posGoc;
     bool coPosGoc;
+    /// <summary>Vi tri dung goc cua model - XacNam doc khi chet giua luc bay.</summary>
+    public Vector3 PosGoc { get { return posGoc; } }
+    public bool CoPosGoc { get { return coPosGoc; } }
 
     /// <summary>
     /// Hat tung mot muc tieu. Ban sao mang tu bo qua - may chu so huu gieo va bao qua bit CoHatTung

@@ -586,6 +586,8 @@ public class NguoiChoiHoatHinh : MonoBehaviour
     void TuTheChet()
     {
         TraVeTuTheChuan();
+        // XAC NAM (XacNam lat ca model nam ngua): bo tu the guc, nam thang tren vung mau
+        if (XacNam.LaXac(this)) return;
 
         float k = Mathf.SmoothStep(0f, 1f, nghiengChet);
 

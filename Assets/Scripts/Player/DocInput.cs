@@ -150,6 +150,8 @@ public class DocInput : MonoBehaviour
     {
         // Thanh ky nang nam duoi day man hinh - khong di chuyen khi bam vao do
         if (Input.mousePosition.y < Screen.height * 0.09f) return true;
+        // Dau "+" nang cap nho len tren canh o ky nang - bam vao do khong duoc keo nhan vat chay di
+        if (GameHUD.ConTroTrenDauCongVuong(Input.mousePosition)) return true;
 
         // Nut SACH PHEP o goc phai tren: bam vao no ma khong chan o day thi
         // nhan vat vua mo sach vua chay ve phia goc man hinh.

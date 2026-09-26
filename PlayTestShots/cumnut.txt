@@ -26,7 +26,7 @@ D. khoang cach toi can joystick (goc trai duoi) - can da to them 10% nen cho ho 
     dien thoai ngang 2340x1080: cho ho gan nhat 1327.0 px (can joystick ban kinh 189.8)
     may bang ngang 1180x820: cho ho gan nhat 410.9 px (can joystick ban kinh 144.1)
 
-E. anh chup HUD cam ung o man 1566x574
+E. anh chup HUD cam ung o man 1682x640
 E2. dang ve ban cam ung: CamUng.DangDung = True
 
 so loi ghi nhan = 0
