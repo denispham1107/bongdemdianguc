@@ -4,25 +4,25 @@ quai dung de thu: 24 con
 
 A. tung tung ky nang that vao mot con quai mau 1
 A0. Qua cau lua -> QuyDu: chet True, ke danh cuoi la minh True, kinh nghiem +65 (gia 65)
-A1. Mua bang -> QuyDu: chet True, ke danh cuoi la minh True, kinh nghiem +65 (gia 65)
-A2. Sam set -> QuyDu: chet True, ke danh cuoi la minh True, kinh nghiem +65 (gia 65)
+A1. Mua bang -> Skeleton: chet True, ke danh cuoi la minh True, kinh nghiem +29 (gia 29)
+A2. Sam set -> Witch: chet True, ke danh cuoi la minh True, kinh nghiem +52 (gia 52)
 A3. Loc xoay -> QuyCay: chet True, ke danh cuoi la minh True, kinh nghiem +49 (gia 49)
-A4. Thien thach -> QuyCay: chet True, ke danh cuoi la minh True, kinh nghiem +49 (gia 49)
+A4. Thien thach -> QuyDu: chet True, ke danh cuoi la minh True, kinh nghiem +65 (gia 65)
 A6. Giut set -> QuyCay: chet True, ke danh cuoi la minh True, kinh nghiem +49 (gia 49)
-A9. Qua cau bang -> QuyCay: chet True, ke danh cuoi la minh True, kinh nghiem +49 (gia 49)
-A10. Gio loc -> QuyDu: chet True, ke danh cuoi la minh True, kinh nghiem +65 (gia 65)
-A11. Lua dia nguc -> Skeleton: chet True, ke danh cuoi la minh True, kinh nghiem +29 (gia 29)
-    (chan doan) co thay qua cau True; khoang cach cau-quai gan nhat 2.17 m, xa nhat 2.17 m (ban trong 9 m)
-A13. Qua cau dien -> Witch: chet True, ke danh cuoi la minh True, kinh nghiem +52 (gia 52)
-A21. May giong -> Witch: chet True, ke danh cuoi la minh True, kinh nghiem +52 (gia 52)
+A9. Qua cau bang -> QuyDu: chet True, ke danh cuoi la minh True, kinh nghiem +65 (gia 65)
+A10. Gio loc -> Witch: chet True, ke danh cuoi la minh True, kinh nghiem +52 (gia 52)
+A11. Lua dia nguc -> QuyCay: chet True, ke danh cuoi la minh True, kinh nghiem +49 (gia 49)
+    (chan doan) co thay qua cau True; khoang cach cau-quai gan nhat 2.35 m, xa nhat 2.35 m (ban trong 9 m)
+A13. Qua cau dien -> QuyDu: chet True, ke danh cuoi la minh True, kinh nghiem +65 (gia 65)
+A21. May giong -> Skeleton: chet True, ke danh cuoi la minh True, kinh nghiem +29 (gia 29)
 
 B. chet vi hieu ung cham (khong co don truc tiep ghi ke danh truoc)
 B1. chet vi chay: co bi chay True, chet True, ke danh cuoi la minh True
 B2. chet vi bi loc cuon: chet True, ke danh cuoi la minh True
 B2b. chet vi VU NO CUA TANG BANG: chet True, ke danh cuoi la minh True
 B3. vung lua cua thien thach: co vung lua True, biet nguoi tung True
-B4. truoc khi dot: 4 vat dang chay (TS_slab_206, TS_ledger_396, MAUS_A_001_682, TS_shoulder_93); cho con 7
-B4. dot cay TREE_oakC_726: bat lua True, nho ke dot True
+B4. truoc khi dot: 4 vat dang chay (TS_shoulder_93, TS_shoulder_94, MAUS_A_001_682, TS_slab_206); cho con 6
+B4. dot cay TREE_oakA_bare_698: bat lua True, nho ke dot True
 
 C. don cua NGUOI CHOI KHAC trung nhan vat cua may nay
 C. Mua bang trung minh -> ke danh cuoi la nguoi kia: True

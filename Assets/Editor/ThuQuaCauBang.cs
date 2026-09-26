@@ -1050,6 +1050,61 @@ public static class ThuQuaCauBang
             yield return new WaitForSeconds(0.4f);
         }
 
+        // ================= N2. GAI BANG CON NGUYEN LUC NO (26/09/2026) =================
+        // Nguoi dung: "khoi bang o duoi dat bien mat mot luc roi moi no". Do MOI KHUNG: so cum gai con hien va do dac
+        // (alpha) cua chung, so voi luc no. DOI CHUNG cap 4 (khong gan luat no): gai tu mo roi mat nhu cu.
+        Ghi("");
+        foreach (bool capNam in new[] { false, true })
+        {
+            Vector3 cho = goc + huong * 7f;
+            var tang = VfxFactory.IceImpact(cho, 1.7f, true);
+            TangBangNo luat = capNam ? TangBangNo.Gan(tang, 0, null) : null;
+            float mocGai = luat != null ? luat.MocGaiTan : -1f;
+            var alphaDau = new System.Collections.Generic.Dictionary<Renderer, float>();
+            float t0 = Time.time;
+            var gai = new System.Collections.Generic.List<Renderer>();
+            foreach (var rr in tang.GetComponentsInChildren<Renderer>(true))
+                if (rr.name.StartsWith("CumGai") || rr.name.StartsWith("Spike")) gai.Add(rr);
+            int ban = gai.Count, no0 = TangBangNo.SoLanNo;
+            float lucMatGaiDau = -1f, lucNo = -1f, alphaMin = 9f;
+            for (float h = Time.time + 5f; Time.time < h; )
+            {
+                int con = 0;
+                foreach (var rr in gai)
+                {
+                    if (rr == null || !rr.gameObject.activeInHierarchy) continue;
+                    con++;
+                    var m = rr.material;
+                    if (lucNo < 0f && m != null)
+                    {
+                        float a = m.HasProperty("_TintColor") ? m.GetColor("_TintColor").a : m.HasProperty("_Color") ? m.color.a : 1f;
+                        float a0; if (!alphaDau.TryGetValue(rr, out a0)) { alphaDau[rr] = a; a0 = a; }
+                        alphaMin = Mathf.Min(alphaMin, a0 > 0.001f ? a / a0 : 1f);     // so voi ALPHA LUC DAU cua chinh cum ay
+                    }
+                }
+                if (con < ban && lucMatGaiDau < 0f) lucMatGaiDau = Time.time - t0;
+                if (lucNo < 0f && TangBangNo.SoLanNo > no0) lucNo = Time.time - t0;
+                if (tang == null && (lucNo >= 0f || !capNam)) break;
+                yield return null;
+            }
+            if (tang != null) Object.Destroy(tang);
+            if (!capNam)
+            {
+                Ghi(string.Format("N2. DOI CHUNG cap 4 (khong luat no): {0} cum gai, cum dau tien mat o {1:F2} s, vu no {2}; do dac thap nhat {3:F2} x luc dau (gai mo dan - phep do bat duoc)",
+                    ban, lucMatGaiDau, lucNo >= 0f ? "CO" : "khong", alphaMin));
+                Kiem(ban > 3 && lucMatGaiDau > 1f && lucMatGaiDau < 3f && lucNo < 0f && alphaMin < 0.5f, "doi chung hong: gai cap 4 khong tu mo / tan nhu cu");
+            }
+            else
+            {
+                float cach = lucMatGaiDau - lucNo;
+                Ghi(string.Format("N2. CAP 5: {0} cum gai, moc gai tan {1:F2} s; NO o {2:F2} s, cum gai dau tien mat o {3:F2} s (mat SAU khi no {4:F3} s - am la mat truoc); do dac gai thap nhat truoc khi no {5:F2} x luc dau",
+                    ban, mocGai, lucNo, lucMatGaiDau, cach, alphaMin));
+                Kiem(ban > 3 && lucNo > 0.5f && cach >= 0f && cach < 0.1f, "tang bang cap 5: gai bien mat truoc khi no / con lai sau khi no");
+                Kiem(alphaMin > 0.95f, "tang bang cap 5: gai mo dan truoc khi no");
+            }
+            yield return new WaitForSeconds(0.3f);
+        }
+
         // ================= I. HUD / SACH PHEP =================
         var hud = GameHUD.Ban;
         var bo = hud != null ? hud.BoIcon() : null;

@@ -161,8 +161,10 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
   phải gieo xác suất xong mới biết ai bị đóng băng. Tỉ lệ có tảng băng ≈ xác suất đóng băng 35% (menu 68 mục L đo 10/36).
   ⚠️ **CẤP 5: tảng băng hết giờ thì NỔ**, +100 cố định trong 3,4 m (`Combat/TangBangNo.cs`, hình `Vfx/VfxTangBangNo.cs`) —
   cho CẢ Mưa băng lẫn Quả cầu băng (Quả cầu băng vẫn mọc tảng băng mọi lần nổ, không cần đóng băng được ai). Cấp đi theo
-  NGƯỜI TUNG: `IceStorm.capKyNang` → `FallingShard.capKyNang`, `QuaCauBang.capKyNang`. `TangBangNo` nổ sớm hơn `AutoDestroy`
-  của tảng **0,12 s**, không thì có lần vật bị xoá trước khi `Update` kịp chạy và vụ nổ mất im lặng. ⚠️ Vụ nổ **không được**
+  NGƯỜI TUNG: `IceStorm.capKyNang` → `FallingShard.capKyNang`, `QuaCauBang.capKyNang`. ⚠️ **Nổ ĐÚNG LÚC cụm gai tan** (sửa 26/09/2026 — người dùng
+  thấy "khối băng biến mất một lúc rồi mới nổ"): mỗi cụm gai có `ExpandFade` riêng 1,6–2,6 s mờ rồi tự xoá, còn vụ nổ từng hẹn theo
+  `AutoDestroy` 4 s của cả tảng → trống 1,3–2,3 s. Nay `TangBangNo.Gan` kéo mọi cụm gai tới CÙNG một mốc (cụm sống lâu nhất), TẮT mờ dần,
+  co đường cong mọc để giữ tốc độ trồi lên, và nổ sớm hơn mốc ấy **0,12 s** (`NoSomHon`) rồi xoá cả tảng. Menu 68 mục N2 đo từng khung. ⚠️ Vụ nổ **không được**
   gọi `VfxFactory.NoQuaCauBang` (hàm ấy gọi `IceImpact` → tảng băng nổ ra tảng băng, vô tận). Menu 68 mục L + N, menu 61 ca B2b.
 - **Gió lốc** (`Skills/GioLoc.cs`, hình `Vfx/VfxGioLoc.cs`, hiệu ứng `Combat/BiHatTung.cs`, 16/09/2026): ⚠️ **HÌNH QUẠT: cấp 1–4 tung 3 lốc, cấp 5 tung 5 lốc**, cách nhau `GioLoc.GocQuat` **15°** quanh hướng ngắm (26/09/2026; trước đó 1 lốc, cấp 5 hai lốc song song cách 4 m). Năng lượng **không** nhân theo số lốc (20; cấp 5 vẫn 25). **Hình dựng bằng
   Blender MCP** (17/09/2026, `CongCu/Blender/gio_loc.blend` → `Resources/KyNang/GioLoc/`: `LocNho.fbx` 3 vỏ + dải gió cao 5 m, ảnh gió liền mạch

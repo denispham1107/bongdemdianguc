@@ -8603,6 +8603,26 @@ châm cả bia mộ / nhà mồ (tính năng sáng nay), đầy trần "4 vật 
 
 Ảnh: `PlayTestShots/maygiong_1_dem_can.png`, `maygiong_2_chay_den.png`, `maygiong_3_ngay_goc_choi.png`.
 
+### Tảng băng cấp 5 biến mất rồi mới nổ (26/09/2026)
+
+Anh báo: ở Mưa băng và Quả cầu băng, **khối băng dưới đất biến mất một lúc rồi mới nổ và gây sát thương**.
+
+**Nguyên nhân.** Vụ nổ cấp 5 (`TangBangNo`) hẹn giờ theo đời của CẢ tảng băng — `AutoDestroy` 4 giây, nổ ở 3,88 s. Nhưng mỗi cụm gai
+bên trong có bộ phóng-mờ riêng (`ExpandFade`) 1,6–2,6 s: mờ dần rồi tự xoá. Vậy gai đã tan hết ở khoảng 2 s, mặt đất trống trơn 1,3–2,3 s
+rồi vụ nổ mới xảy ra ở chỗ không còn gì.
+
+**Sửa.** Lúc gắn luật nổ, kéo mọi cụm gai (và quầng dưới chân) tới cùng một mốc — cụm sống lâu nhất — và tắt mờ dần: gai đứng đặc tới
+cuối. Vụ nổ hẹn sớm hơn mốc ấy 0,12 s rồi xoá cả tảng, nên gai tan cùng khung với vụ nổ. Kéo dài thời lượng thì đường cong "trồi lên" (tính
+theo tỉ lệ thời lượng) sẽ chậm đi, nên đường cong được co lại tương ứng để gai vẫn trồi lên nhanh như cũ. Cấp 1–4 không đổi. Vụ nổ nay xảy
+ra ở khoảng 2,5 s (trước 3,9 s) — đúng lúc tảng băng lẽ ra tan.
+
+| Đo (menu 68 mục N2, từng khung) | Kết quả |
+|---|---|
+| Đối chứng cấp 4 | 8 cụm gai, cụm đầu tiên mất ở 1,97 s; độ đặc xuống 0,00 × lúc đầu (phép đo bắt được mờ dần); không nổ |
+| Cấp 5 | mốc gai tan 2,59 s; **nổ 2,49 s**; cụm gai đầu tiên mất 2,51 s (sau vụ nổ 0,018 s); độ đặc trước khi nổ **1,00** × lúc đầu |
+| Mưa băng / Quả cầu băng cấp 5 tung thật (mục N) | vẫn nổ, tâm 100, 3 m còn 60, 4 m 0 |
+| Menu 61 ca B2b | chết vì vụ nổ tảng băng vẫn ghi đúng kẻ đánh |
+
 ### Sách phép: kéo được kỹ năng còn khoá; dấu "+" vẽ lại kiểu kinh dị (26/09/2026)
 
 Anh xin: **kỹ năng chưa mở khoá vẫn kéo thả được vào ô** trong Sách phép, và **vẽ lại dấu "+"** trên ô kỹ năng cho hợp phong cách kinh dị
