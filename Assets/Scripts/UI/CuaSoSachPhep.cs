@@ -109,6 +109,13 @@ public static class CuaSoSachPhep
     /// <summary>Ky nang hien nhu DA MO (khong o khoa, keo tha duoc): that su da mo, hoac
     /// dang xem truoc o sanh. Public cho menu 66 hoi.</summary>
     public static bool HienDaMo(int ky) { return xemTruoc || CapDo.DaMo(ky); }
+
+    /// <summary>
+    /// Ky nang o cot trai keo vao o duoc khong. KE CA KY NANG CON KHOA (nguoi dung 26/09/2026 - truoc do bi chan): xep san
+    /// vao o, o hien toi + o khoa, cham khong tung (GameHUD.NutTaiDiem / CastAt bo qua), co diem thi dau "+" tren o mo khoa
+    /// ngay ngoai tran. Chi KY NANG BI DONG khong keo duoc (nguoi dung chot 19/09/2026): no tu chay, khong chiem o.
+    /// </summary>
+    public static bool KeoDuocTuKho(int ky) { return ky >= 0 && ky < CapDo.SoKyNang && !CapDo.LaKyBiDong(ky); }
     public static void DaoTrangThai() { if (DangMo) Dong(); else Mo(); }
 
     static void HuyKeo() { keoTuKho = -1; keoTuO = -1; dangKeo = false; dangCuon = false; }
@@ -301,11 +308,7 @@ public static class CuaSoSachPhep
             if (hang >= 0)
             {
                 ChonKyNang(hang);
-                // KY NANG CON KHOA THI KHONG KEO DUOC: keo duoc thi no nam tren
-                // thanh ky nang nhu mot nut that, bam vao chi hien ra loi tu choi.
-                // KY NANG BI DONG cung khong keo duoc (nguoi dung chot 19/09/2026): no tu chay,
-                // khong bam duoc, nen khong duoc chiem mot trong bay o.
-                keoTuKho = (HienDaMo(hang) && !CapDo.LaKyBiDong(hang)) ? hang : -1;
+                keoTuKho = KeoDuocTuKho(hang) ? hang : -1;
             }
             else
             {

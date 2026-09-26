@@ -8603,6 +8603,27 @@ châm cả bia mộ / nhà mồ (tính năng sáng nay), đầy trần "4 vật 
 
 Ảnh: `PlayTestShots/maygiong_1_dem_can.png`, `maygiong_2_chay_den.png`, `maygiong_3_ngay_goc_choi.png`.
 
+### Sách phép: kéo được kỹ năng còn khoá; dấu "+" vẽ lại kiểu kinh dị (26/09/2026)
+
+Anh xin: **kỹ năng chưa mở khoá vẫn kéo thả được vào ô** trong Sách phép, và **vẽ lại dấu "+"** trên ô kỹ năng cho hợp phong cách kinh dị
+(bản trước vẽ bằng hai thanh vàng trên đĩa đỏ — "quá sơ sài").
+
+**Kéo thả.** Trước đây cột trái chặn kéo kỹ năng còn khoá ("kéo được thì nó nằm trên thanh như một nút thật, bấm chỉ hiện lời từ chối").
+Nay có dấu "+" nên xếp sẵn kỹ năng chưa mở vào ô là có ích: ô hiện tối + ổ khoá, chạm không tung, có điểm thì bấm "+" mở khoá ngay trong
+trận. Nhóm bị động vẫn không kéo được (nó tự chạy, không chiếm ô). Một hàm `CuaSoSachPhep.KeoDuocTuKho` cho phép thử hỏi thẳng.
+
+**Dấu "+".** Vẽ bằng Blender MCP (`CongCu/Blender/dau_cong.blend`, 256 × 256, nền trong suốt): dấu "+" máu tươi cạnh lởm chởm như vết chém,
+viền đen, ba giọt máu chảy xuống, vệt bóng ướt; nền đĩa nứt đỏ rực như dung nham; vành xương cũ với mười gai; quầng đỏ mờ. Hình (cả gai)
+nằm gọn trong khung huy hiệu cũ nên khe tới ô khác, vùng bấm không đổi. Ở cỡ thật (khoảng 29 điểm ảnh bản máy tính) đọc rõ là dấu "+" máu
+trên đĩa vành xương; giọt máu và vết nứt chỉ thấy khi nhìn kỹ.
+
+| Đo (menu 85, mục D) | Kết quả |
+|---|---|
+| Kỹ năng còn khoá kéo được | 15/15 |
+| Kỹ năng bị động kéo được | 0/5 |
+| Đặt Thiên thạch (khoá, chưa đủ bậc) vào ô 1 | được |
+| Ảnh huy hiệu | 256 × 256, mép alpha 0 |
+
 ### Xác nằm ngẫu nhiên: ngửa, sấp, nghiêng (26/09/2026)
 
 Anh xin: **xác mọi quái và người chơi nằm ngẫu nhiên các tư thế nằm ngửa, nằm sấp, nằm nghiêng**, vẫn trên vũng máu.

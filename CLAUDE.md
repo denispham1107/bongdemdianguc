@@ -371,7 +371,9 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
   toàn** thì vẫn **vỡ tan** như cũ, không có xác. Menu 85 kiểm (đo bằng BakeMesh + xương Head/Hips, không đọc biến của XacNam).
 - ⚠️ **DẤU "+" NÂNG CẤP TRÊN Ô KỸ NĂNG** (người dùng 26/09/2026, `GameHUD.CoDauCong/BamDauCong`): có điểm kỹ năng thì ô nào **mở khoá hoặc
   nâng cấp được** (y nút trong Sách phép: `CapDo.MoKhoaDuoc || NangCapDuoc` — ô khoá mà đủ bậc cũng có, bình máu/mana tới cấp 3 cũng có) hiện
-  huy hiệu "+" nhỏ; bấm là mở khoá / nâng ngay. Ô VUÔNG: giữa cạnh trên, 0,34 cạnh ô (28,6), khe tới ô khác 39,7; nút `GUI.Button` của
+  huy hiệu "+" nhỏ; bấm là mở khoá / nâng ngay. Hình là **ảnh Blender MCP** `Resources/GiaoDien/DauCong.png`
+  (`CongCu/Blender/dau_cong.blend`, 26/09/2026 — người dùng chê bản vẽ bằng hai thanh "sơ sài"): "+" máu tươi cạnh lởm chởm, ba giọt
+  chảy, vệt bóng ướt, đĩa nứt đỏ như dung nham, vành xương mười gai — nằm GỌN trong khung cũ, hình học / vùng bấm không đổi. Ô VUÔNG: giữa cạnh trên, 0,34 cạnh ô (28,6), khe tới ô khác 39,7; nút `GUI.Button` của
   "+" gọi **TRƯỚC** ô bên dưới (IMGUI cho nút gọi trước giành cú bấm), `DocInput.ConTroTrenThanhKyNang` chặn chuột trên "+". Nút TRÒN:
   bán kính 0,30r, tâm cao 0,90r trên tâm nút, lấn nửa vào viền chính nút ấy (người dùng chọn); khe hẹp nhất tới nút khác **13,7** (vùng
   chạm ×1,2: 9,7); cảm ứng xét "+" **trước** `NutTaiDiem` — chạm giữa nút vẫn là tung kỹ năng. Ẩn khi Sách phép mở / đã chết / hết trận.
@@ -422,6 +424,8 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
   và dòng "Bị … hạ" chỉ đọc `Damageable.keDanhCuoi`. 13/09/2026 sót ở 6 chỗ (Mưa băng, Sấm sét, lốc cuốn, cháy, vũng lửa
   Thiên thạch, cây cháy) → giết bằng chúng không ai được gì. Thêm kỹ năng / hiệu ứng gây sát thương mới thì **chạy menu 61**.
 - **SÁCH PHÉP** (`SachPhep.cs` + `CuaSoSachPhep.cs`, 12/09/2026): người chơi tự kéo thả kỹ năng vào các ô.
+  ⚠️ **Kỹ năng CÒN KHOÁ vẫn kéo thả vào ô được** (người dùng 26/09/2026, `CuaSoSachPhep.KeoDuocTuKho`; trước đó bị chặn) — ô hiện
+  tối + ổ khoá, chạm không tung, có điểm thì dấu "+" trên ô mở khoá ngay; chỉ nhóm BỊ ĐỘNG không kéo được. Menu 85 mục D kiểm.
   `SachPhep` chỉ giữ **bản đồ ô → số hiệu kỹ năng**; số hiệu KHÔNG đổi (nó là thứ đi qua mạng và vào
   `PlayerController.CastAt`), chỉ chỗ ngồi đổi. **Hai bộ ô riêng**: `OTron` (cảm ứng) và `OVuong` (máy tính) —
   bảy nút tròn xếp hai cung không có "thứ tự trái sang phải" dùng chung được với hàng ô vuông. Lưu trong

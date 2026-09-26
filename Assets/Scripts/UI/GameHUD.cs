@@ -27,6 +27,7 @@ public partial class GameHUD : MonoBehaviour
     Texture2D vongNen, vongNum, vanhNut;
     // Anh quyen sach phep ve san (CongCu/Icon/sinh_sach_phep.py)
     Texture2D anhSachPhep;
+    Texture2D anhDauCong;      // huy hieu "+" nang cap - anh Blender MCP (CongCu/Blender/dau_cong.blend)
     Texture2D anhMatQuy, anhMatQuyKhoa;      // nut khoa goc nhin - anh con mat quy
     GUIStyle kieuChuSachPhep, kieuBongChuSachPhep;
 
@@ -200,6 +201,7 @@ public partial class GameHUD : MonoBehaviour
         boIcon = IconKyNang.BoDayDu();
         vongNen = VongTron(96, new Color(1f, 1f, 1f, 1f), 0.86f, 0.10f);
         anhSachPhep = Resources.Load<Texture2D>("GiaoDien/SachPhep");
+        anhDauCong = Resources.Load<Texture2D>("GiaoDien/DauCong");
         anhMatQuy = Resources.Load<Texture2D>("GiaoDien/MatQuy");
         anhMatQuyKhoa = Resources.Load<Texture2D>("GiaoDien/MatQuyKhoa");
 
@@ -1366,9 +1368,19 @@ public partial class GameHUD : MonoBehaviour
         return false;
     }
 
-    /// <summary>Ve mot huy hieu "+": dia do sam, vanh vang, dau cong vang sang ve bang hai thanh (khong dung chu).</summary>
+    /// <summary>
+    /// Ve mot huy hieu "+". Anh Blender MCP (<c>Resources/GiaoDien/DauCong</c>, nguoi dung 26/09/2026 che ban ve bang hai thanh
+    /// "qua so sai"): dau + bang MAU TUOI canh lom chom nhu vet chem, ba giot mau chay xuong, vet bong uot; nen dia nut ne do
+    /// ruc nhu dung nham, vanh xuong cu voi muoi gai, quang do mo. Hinh (ca gai) nam GON trong khung cu nen khong tran sang o
+    /// khac - hinh hoc / vung bam khong doi. Thieu anh thi ve ban cu.
+    /// </summary>
     void VeDauCong(Rect o)
     {
+        if (anhDauCong != null)
+        {
+            GUI.DrawTexture(o, anhDauCong, ScaleMode.StretchToFill, true);
+            return;
+        }
         var cu = GUI.color;
         GUI.color = new Color(0f, 0f, 0f, 0.45f);
         GUI.DrawTexture(new Rect(o.x + o.width * 0.06f, o.y + o.height * 0.10f, o.width, o.height), vongNum, ScaleMode.StretchToFill, true);

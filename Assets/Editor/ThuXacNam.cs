@@ -541,6 +541,28 @@ public static class ThuXacNam
             Kiem(dungO == 7 && giuaNutLaTung == 7, "vung bam dau cong nut tron sai");
             Kiem(heVuong > 0f && trongO == 7 && chuotDung == 7, "dau cong o vuong de len o khac / khong chan chuot");
 
+            // Sach phep: ky nang CON KHOA keo duoc vao o (nguoi dung 26/09/2026), bi dong thi khong
+            CapDo.BatDauTranMoi();
+            int khoaKeo = 0, khoa = 0, biDongKeo = 0, biDong = 0;
+            for (int ky = 0; ky < CapDo.SoKyNang; ky++)
+            {
+                if (CapDo.LaKyBiDong(ky)) { biDong++; if (CuaSoSachPhep.KeoDuocTuKho(ky)) biDongKeo++; }
+                else if (!CapDo.DaMo(ky)) { khoa++; if (CuaSoSachPhep.KeoDuocTuKho(ky)) khoaKeo++; }
+            }
+            SachPhep.DatVaoO(0, 4);      // Thien thach con khoa, can bac -> van dat duoc vao o
+            bool datDuoc = SachPhep.BoDangDung[0] == 4 && !CapDo.DaMo(4);
+            Ghi(string.Format("D. Sach phep: ky nang con khoa keo duoc {0}/{1}; bi dong keo duoc {2}/{3} (phai 0); dat Thien thach (khoa) vao o 1: {4}",
+                khoaKeo, khoa, biDongKeo, biDong, datDuoc));
+            Kiem(khoa > 5 && khoaKeo == khoa && biDong >= 5 && biDongKeo == 0 && datDuoc, "Sach phep: ky nang khoa khong keo duoc / bi dong keo duoc");
+            CapDo.ThemDiemChoPhepThu(30);
+            for (int o = 0; o < 7; o++) { SachPhep.OVuong[o] = boThu[o]; SachPhep.OTron[o] = boThu[o]; }
+
+            // Anh huy hieu "+" (Blender): co, nen trong suot, mep alpha 0 (khong ve o vuong quanh huy hieu)
+            var anhCong = Resources.Load<Texture2D>("GiaoDien/DauCong");
+            bool anhOn = anhCong != null && anhCong.width >= 128;
+            Ghi("D. anh huy hieu + (Resources/GiaoDien/DauCong): " + (anhCong != null ? anhCong.width + "x" + anhCong.height : "KHONG CO"));
+            Kiem(anhOn, "thieu anh huy hieu + ve bang Blender");
+
             // Anh: ban may tinh roi ban cam ung
             if (rig != null) rig.enabled = true;
             cam.transform.position = camCu; cam.transform.rotation = camRotCu;
@@ -552,6 +574,7 @@ public static class ThuXacNam
             yield return Chup("xacnam_4_dau_cong_cam_ung");
             hud.epCamUng = false;
             for (int o = 0; o < 7; o++) { SachPhep.OVuong[o] = oVCu[o]; SachPhep.OTron[o] = oTCu[o]; }
+            SachPhep.Luu();     // DatVaoO o tren da ghi thu tu o thu xuong may - ghi lai thu tu cu cua nguoi choi
         }
 
         // ---- A (tiep). moc thoi gian cua xac quai ----
