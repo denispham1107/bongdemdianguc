@@ -183,8 +183,8 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
   mỗi tia **125** (cấp 1) cho mọi kẻ trong **2 m**, **45% hất ngã 0,85 s** (`ThienThach.GieoDanhNga` → `BiDanhNga`, khiên chặn,
   +0,15 s/cấp), **cháy đen toàn thân 3 s — chỉ hình** (lớp than Blender phủ thêm lên MỌI Mesh + SkinnedMeshRenderer, khói đen,
   gỡ chỉ đúng lớp của mình nên không mất vỏ băng; Tàng hình chặn). **50 năng lượng · niệm 0,5 · hồi chiêu 5,5 s** (26/09/2026, trước 7 — ⚠️ ba số này là THUỘC TÍNH đọc
-  hằng `MayGiong.*`, không phải trường: đổi hằng mà Play vẫn ra 7 vì prefab trong bộ nhớ giữ mặc định cũ); **không điều kiện
-  mở khoá** (người dùng chọn). Tia hệ **PHONG** (`GhiKeDanh(boQua, HeSat.Phong)`). Hình **Blender MCP** (`CongCu/Blender/may_giong.blend`
+  hằng `MayGiong.*`, không phải trường: đổi hằng mà Play vẫn ra 7 vì prefab trong bộ nhớ giữ mặc định cũ); ⚠️ **mở khoá cần LỐC XOÁY
+  cấp 5** (người dùng 26/09/2026; lúc ra mắt không điều kiện). Tia hệ **PHONG** (`GhiKeDanh(boQua, HeSat.Phong)`). Hình **Blender MCP** (`CongCu/Blender/may_giong.blend`
   → `Resources/KyNang/MayGiong/`: `MayGiong.png` 4 đám mây bồng 2×2, `ChopSet.png` loé chạm đất, `ChayDen.png` than đen liền mạch)
   + icon `Resources/Icons/MayGiong.png` (Read/Write bật). Mây ở **7 m** (10 m thì nằm trên mép màn hình ở góc chơi thật).
   ⚠️ **Chiều 25/09/2026 người dùng gửi ảnh thứ hai**: **CỘT KHÓI rủ từ đáy mây xuống TẬN MẶT ĐẤT** (chọn "một cột khói giữa
@@ -395,7 +395,7 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
   `VfxFactory.NangCapDuoiLua` (gọi từ `Fireball.Spawn`, cả quả cầu của quái), nổ thì `ThaDuoiLua` thả vệt ra tan dần. Menu 70 kiểm.
 - ⚠️ **MỞ KHOÁ THEO BẬC** (người dùng 19/09/2026, `CapDo.dieuKienMo` + `DuBacDeMo` + `KyCanTruoc`/`CapCanTruoc`):
   LỬA Cầu lửa **cấp 2**→Thiên thạch, Thiên thạch **cấp 5**→Lửa địa ngục · BĂNG Cầu băng 2→Mưa băng, Mưa băng 5→Tàng hình ·
-  SÉT Giựt sét 2→Sấm sét, Sấm sét 5→Cầu điện · PHONG Gió lốc 2→Lốc xoáy, Lốc xoáy 5→Hoá lốc xoáy. **Chỉ chặn lúc MỞ KHOÁ**;
+  SÉT Giựt sét 2→Sấm sét, Sấm sét 5→Cầu điện · PHONG Gió lốc 2→Lốc xoáy, Lốc xoáy 5→Hoá lốc xoáy, **Lốc xoáy 5→Mây giông** (26/09/2026). **Chỉ chặn lúc MỞ KHOÁ**;
   HỖ TRỢ và BỊ ĐỘNG không có điều kiện. Sách phép hiện `SachPhep.NhacDieuKien` trên dòng cấp và trên nút.
   ⚠️ Kịch bản chạy thử nào gọi `CastAt` cũng phải mở khoá trước, **kể cả kịch bản cũ chỉ chụp ảnh**: `CastAt` từ chối
   trong IM LẶNG (không ngoại lệ, không dòng log), nên triệu chứng là thứ khác hẳn — menu 18d báo "thả 8 giây mà cây

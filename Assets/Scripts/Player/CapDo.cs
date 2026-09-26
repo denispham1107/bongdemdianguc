@@ -324,6 +324,7 @@ public static class CapDo
         new[] { KyCauDien, 2, 5 },                          // Qua cau dien <- Sam set cap 5
         new[] { 3, KyGioLoc, 2 },                           // Loc xoay     <- Gio loc cap 2
         new[] { KyHoaLocXoay, 3, 5 },                       // Hoa loc xoay <- Loc xoay cap 5
+        new[] { KyMayGiong, 3, 5 },                         // May giong    <- Loc xoay cap 5 (nguoi dung 26/09/2026; truoc do khong dieu kien)
     };
 
     /// <summary>Ky nang phai co truoc moi mo duoc <paramref name="ky"/>; -1 neu khong doi gi.</summary>

@@ -467,6 +467,7 @@ public static class ThuCapDo
                 new[] { 1, CapDo.KyQuaCauBang, 2 }, new[] { CapDo.KyTangHinh, 1, 5 },
                 new[] { 2, 6, 2 }, new[] { CapDo.KyCauDien, 2, 5 },
                 new[] { 3, CapDo.KyGioLoc, 2 }, new[] { CapDo.KyHoaLocXoay, 3, 5 },
+                new[] { CapDo.KyMayGiong, 3, 5 },         // 26/09/2026: May giong can Loc xoay cap 5
             };
             bool tatCaDung = true;
             for (int i = 0; i < luat.Length; i++)
@@ -498,7 +499,7 @@ public static class ThuCapDo
                     SachPhep.Ten(ky), SachPhep.Ten(can), capCan, truotKhiChuaCo, capDangCo, truotKhiThieuCap, moDuoc));
                 if (i == 0) Ghi("    (Sach phep nhac) " + nhac);
             }
-            Kiem(tatCaDung, "tam luat mo khoa theo bac khong chay dung");
+            Kiem(tatCaDung, "chin luat mo khoa theo bac khong chay dung");
 
             // DOI CHUNG: ky nang KHONG co dieu kien thi mo duoc ngay
             CapDo.BatDauTranMoi();

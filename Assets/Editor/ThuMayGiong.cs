@@ -264,8 +264,23 @@ public static class ThuMayGiong
         Ghi(string.Format("A. so hieu {0}, so ky nang {1}; ten \"{2}\", tom tat \"{3}\", nhom PHONG {4}; icon {5}; nang luong {6} / hoi chieu {7} / niem {8} (Sach phep {9}/{10}/{11})",
             K, CapDo.SoKyNang, SachPhep.Ten(K), SachPhep.TomTat(K), trongPhong, bo != null && bo.Length > K && bo[K] != null,
             toi.mayGiongCost, toi.mayGiongCooldown, toi.mayGiongCastTime, nl, hc, nc));
-        Ghi(string.Format("A. tam ngam {0} m (Sam set {1} m); vung ngam {2} m; mo khoa khong dieu kien {3}; gay sat thuong (Tang hinh x2) {4}; mo ta {5} ky tu",
+        Ghi(string.Format("A. tam ngam {0} m (Sam set {1} m); vung ngam {2} m; du bac de mo ngay dau tran {3} (phai False - can Loc xoay cap 5); gay sat thuong (Tang hinh x2) {4}; mo ta {5} ky tu",
             toi.TamNgam(K), toi.TamNgam(2), toi.BanKinhSatThuong(K), CapDo.DuBacDeMo(K), PlayerController.KyGaySatThuong(K), mt.Length));
+        // 26/09/2026: mo khoa CAN LOC XOAY CAP 5 (truoc do khong dieu kien)
+        CapDo.BatDauTranMoi();
+        CapDo.ThemDiemChoPhepThu(30);
+        bool chanDauTran = !CapDo.MoKhoaDuoc(K);
+        CapDo.MoCaDuongChoPhepThu(3);
+        for (int i = 0; i < 3; i++) CapDo.NangCap(3);                // Loc xoay cap 4
+        bool chanCap4 = CapDo.CapCuaKyNang(3) == 4 && !CapDo.MoKhoaDuoc(K);
+        string nhac = SachPhep.NhacDieuKien(K);
+        CapDo.NangCap(3);                                            // cap 5
+        bool moCap5 = CapDo.CapCuaKyNang(3) == 5 && CapDo.MoKhoa(K);
+        Ghi(string.Format("A. mo khoa: dau tran (co diem) bi chan {0}; Loc xoay cap 4 bi chan {1} (nhac \"{2}\"); Loc xoay cap 5 mo duoc {3}",
+            chanDauTran, chanCap4, nhac, moCap5));
+        Kiem(chanDauTran && chanCap4 && moCap5 && nhac != null && nhac.Contains("LỐC XOÁY") && nhac.Contains("cấp 5"),
+             "May giong khong doi Loc xoay cap 5 moi mo khoa");
+        CapDo.BatDauTranMoi();
         Kiem(K == 21 && CapDo.SoKyNang == 22 && SachPhep.SoKyNangCoTen() == CapDo.SoKyNang, "so hieu / so ky nang sai");
         Kiem(SachPhep.Ten(K) == "MÂY GIÔNG" && trongPhong, "ten / nhom PHONG sai");
         Kiem(mt.Contains("125") && mt.Contains("45%") && mt.Contains("0,85") && mt.Contains("3 giây") && mt.Contains("20 tia") && mt.Contains("5 giây") && mt.Contains("ƯỚT") && mt.Contains("50%"), "mo ta Sach phep thieu con so / thieu mua uot");
@@ -274,7 +289,7 @@ public static class ThuMayGiong
              && Mathf.Approximately(nl, 50f) && Mathf.Approximately(hc, 5.5f), "nang luong / hoi chieu 5,5 / niem sai");
         Kiem(Mathf.Approximately(toi.TamNgam(K), toi.TamNgam(2)) && Mathf.Abs(toi.TamNgam(K) - 12f) < 0.01f, "tam khong bang Sam set (12 m)");
         Kiem(Mathf.Approximately(toi.BanKinhSatThuong(K), 6f), "vung ngam khong phai 6 m");
-        Kiem(CapDo.DuBacDeMo(K) && PlayerController.KyGaySatThuong(K), "May giong can dieu kien mo khoa / khong tinh la ky nang gay sat thuong");
+        Kiem(PlayerController.KyGaySatThuong(K), "May giong khong tinh la ky nang gay sat thuong");
 
         // ================= B + C + D. TUNG THAT, NHIP, SAT THUONG =================
         Ghi("");

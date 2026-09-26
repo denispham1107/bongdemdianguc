@@ -8603,6 +8603,17 @@ châm cả bia mộ / nhà mồ (tính năng sáng nay), đầy trần "4 vật 
 
 Ảnh: `PlayTestShots/maygiong_1_dem_can.png`, `maygiong_2_chay_den.png`, `maygiong_3_ngay_goc_choi.png`.
 
+### Mây giông cần Lốc xoáy cấp 5 mới mở khoá (26/09/2026)
+
+Anh xin: **mở khoá Mây giông phải có Lốc xoáy cấp 5** (lúc ra mắt Mây giông không có điều kiện). Thêm một dòng vào bảng bậc
+`CapDo.dieuKienMo` — cùng bậc với Hoá lốc xoáy. Sách phép tự nhắc "Cần LỐC XOÁY cấp 5 mới mở được (đang cấp …)", dấu "+" trên ô tự ẩn khi
+chưa đủ bậc (cùng đọc `DuBacDeMo`).
+
+| Đo | Kết quả |
+|---|---|
+| Menu 60 mục F (chín luật bậc) | Mây giông: chưa có Lốc xoáy → trượt; Lốc xoáy cấp 4 → trượt; cấp 5 → mở được; tám luật cũ vẫn đúng; đối chứng kỹ năng không điều kiện mở ngay |
+| Menu 83 | đầu trận có điểm vẫn bị chặn; cấp 4 bị chặn kèm câu nhắc; cấp 5 mở được; phần tung thật 0 lỗi |
+
 ### Tảng băng cấp 5 biến mất rồi mới nổ (26/09/2026)
 
 Anh báo: ở Mưa băng và Quả cầu băng, **khối băng dưới đất biến mất một lúc rồi mới nổ và gây sát thương**.

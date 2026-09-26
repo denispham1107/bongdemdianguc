@@ -42,6 +42,7 @@ F. SẤM SÉT <- GIỰT SÉT cap 2: chua co -> truot True; GIỰT SÉT cap 1 -> 
 F. QUẢ CẦU ĐIỆN <- SẤM SÉT cap 5: chua co -> truot True; SẤM SÉT cap 4 -> truot True; du cap 5 -> mo duoc True
 F. LỐC XOÁY <- GIÓ LỐC cap 2: chua co -> truot True; GIÓ LỐC cap 1 -> truot True; du cap 2 -> mo duoc True
 F. HOÁ LỐC XOÁY <- LỐC XOÁY cap 5: chua co -> truot True; LỐC XOÁY cap 4 -> truot True; du cap 5 -> mo duoc True
+F. MÂY GIÔNG <- LỐC XOÁY cap 5: chua co -> truot True; LỐC XOÁY cap 4 -> truot True; du cap 5 -> mo duoc True
 F. DOI CHUNG ky nang khong dieu kien mo ngay: Khien True, Giựt sét True, Cầu lửa True, Cầu băng True, Gió lốc True, Kháng Lửa True, Tốc biến True
 
 G. uong binh THAT: hoi 200 mau (hang MauMoiBinh 200), hoi 75 nang luong (hang ManaMoiBinh 75)
