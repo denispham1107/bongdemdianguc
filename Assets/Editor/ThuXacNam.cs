@@ -24,6 +24,11 @@ using UnityEngine;
 ///      va vung bam KHONG cham nut / o nao khac, cham giua nut van la tung ky nang; chup ban may tinh + cam ung.
 ///   C. Nguoi choi chet: xac nam, co vung mau, 23 giay sau VAN nam (khong chim).
 ///
+///   T. (26/09/2026, nguoi dung xin tu the NGAU NHIEN: nam ngua / sap / nghieng) - ep lan luot SAP, NGHIENG TRAI, NGHIENG PHAI
+///      cho ca bon loai quai: HUONG MAT do bang xuong that Head -> headfront (ngua: mat len troi, sap: mat xuong dat, nghieng:
+///      mat nam ngang), dau ha sat dat, than trong vung mau, it dinh chui dat; muc A chay voi NGUA. Ti le chon tu the tren
+///      6000 hat giong (~1/3 moi kieu); cung so hieu mang -> cung tu the (hai may thay giong nhau).
+///
 /// Ket qua: PlayTestShots/xacnam.txt, anh xacnam_*.png.
 /// </summary>
 public static class ThuXacNam
@@ -142,6 +147,36 @@ public static class ThuXacNam
         return -1f;
     }
 
+    static Transform TimXuong(GameObject go, string ten)
+    {
+        if (go == null) return null;
+        foreach (var smr in go.GetComponentsInChildren<SkinnedMeshRenderer>())
+            foreach (var b in smr.bones)
+                if (b != null && b.name == ten) return b;
+        return null;
+    }
+
+    /// <summary>Thanh phan THANG DUNG cua huong mat (Head -> headfront): +1 mat len troi, -1 up xuong dat, 0 nhin ngang.</summary>
+    static float HuongMatY(GameObject go)
+    {
+        var dau = TimXuong(go, "Head"); var mat = TimXuong(go, "headfront");
+        if (dau == null || mat == null) return 9f;
+        Vector3 v = mat.position - dau.position;
+        return v.sqrMagnitude < 1e-8f ? 9f : v.normalized.y;
+    }
+
+    /// <summary>Xuong THAN thap nhat (Hips / Spine / neck / Head) so voi dat - than lun thi am.</summary>
+    static float ThanThapNhat(GameObject go, float datY)
+    {
+        float m = 99f;
+        if (go == null) return m;
+        foreach (var smr in go.GetComponentsInChildren<SkinnedMeshRenderer>())
+            foreach (var b in smr.bones)
+                if (b != null && (b.name == "Hips" || b.name == "Head" || b.name.Contains("Spine") || b.name.Contains("neck")))
+                    m = Mathf.Min(m, b.position.y - datY);
+        return m;
+    }
+
     static float DinhTren(GameObject go, float datY)
     {
         float m = -99f;
@@ -176,9 +211,115 @@ public static class ThuXacNam
         Vector3 huong = toi.transform.forward; huong.y = 0f; huong.Normalize();
         Vector3 ngang = Vector3.Cross(Vector3.up, huong).normalized;
 
-        // ================= A. BON LOAI QUAI =================
-        Ghi("");
         var loai = new[] { MonsterType.Skeleton, MonsterType.Witch, MonsterType.QuyDu, MonsterType.QuyCay };
+
+        // ================= T. TU THE NGAU NHIEN: SAP, NGHIENG TRAI, NGHIENG PHAI =================
+        Ghi("");
+        {
+            // Ti le va tinh xac dinh cua cach chon (khong can Play)
+            int[] dem = new int[4];
+            for (uint h = 0; h < 6000; h++) dem[(int)XacNam.ChonTuThe(h)]++;
+            bool giongNhau = true;
+            for (uint h = 0; h < 200; h++) if (XacNam.ChonTuThe(h * 37u) != XacNam.ChonTuThe(h * 37u)) giongNhau = false;
+            int doiLienTiep = 0;
+            for (uint h = 1; h < 300; h++) if (XacNam.ChonTuThe(h) != XacNam.ChonTuThe(h - 1)) doiLienTiep++;
+            Ghi(string.Format("T. 6000 hat giong: ngua {0}, sap {1}, nghieng trai {2}, nghieng phai {3} (mong ~2000 / 2000 / 1000 / 1000); cung hat -> cung tu the {4}; so hieu lien tiep doi tu the {5}/299 lan",
+                dem[0], dem[1], dem[2], dem[3], giongNhau, doiLienTiep));
+            Kiem(Mathf.Abs(dem[0] - 2000) < 150 && Mathf.Abs(dem[1] - 2000) < 150 && Mathf.Abs(dem[2] - 1000) < 120 && Mathf.Abs(dem[3] - 1000) < 120,
+                 "ti le tu the khong deu 1/3 ngua - 1/3 sap - 1/3 nghieng");
+            Kiem(giongNhau && doiLienTiep > 150, "chon tu the khong xac dinh / so hieu lien tiep ra cung tu the");
+
+            // Hai con quai cung SO HIEU MANG (nhu tren may chu phong va may khach) -> cung tu the, khong ep
+            int giongMang = 0;
+            for (ushort id = 11; id < 17; id++)
+            {
+                var kieu = new List<XacNam.KieuNam>();
+                for (int k = 0; k < 2; k++)
+                {
+                    Vector3 p = goc - huong * 6f + ngang * (k * 3f - 1.5f); p.y = DatY(p);
+                    var go = EnemyFactory.Spawn(MonsterType.Skeleton, p, null, toi.transform);
+                    go.GetComponent<EnemyAI>().enabled = false;
+                    var nd = go.GetComponent<NhanDangQuai>(); if (nd == null) nd = go.AddComponent<NhanDangQuai>();
+                    nd.id = id;
+                    go.GetComponent<Damageable>().Die();
+                    kieu.Add(go.GetComponent<XacNam>().TuThe);
+                    Object.Destroy(go);
+                }
+                if (kieu[0] == kieu[1]) giongMang++;
+            }
+            Ghi(string.Format("T. cung so hieu mang (6 so, moi so hai con) -> cung tu the {0}/6", giongMang));
+            Kiem(giongMang == 6, "cung mot con quai ma hai may ra hai tu the khac nhau");
+            yield return null;
+
+            var cacKieu = new[] { XacNam.KieuNam.Sap, XacNam.KieuNam.NghiengTrai, XacNam.KieuNam.NghiengPhai };
+            foreach (var kieu in cacKieu)
+            {
+                XacNam.EpTuThe = kieu;
+                var nhom = new List<MotXac>();
+                for (int i = 0; i < loai.Length; i++)
+                {
+                    Vector3 p = goc + huong * 9f + ngang * ((i - 1.5f) * 4.5f);
+                    p.y = DatY(p);
+                    var go = EnemyFactory.Spawn(loai[i], p, null, toi.transform);
+                    if (go == null) continue;
+                    go.GetComponent<EnemyAI>().enabled = false;
+                    nhom.Add(new MotXac { ten = loai[i].ToString(), d = go.GetComponent<Damageable>(), go = go, datY = p.y });
+                }
+                yield return new WaitForSeconds(0.8f);
+                foreach (var x in nhom) { x.dauDung = CaoXuong(x.go, "Head", x.datY); x.d.GhiKeDanh(mauToi); x.d.Die(); }
+                XacNam.EpTuThe = null;
+                yield return new WaitForSeconds(3.2f);
+                if (rig != null) rig.enabled = false;
+                var camT = Camera.main;
+                Vector3 giuaT = goc + huong * 9f;
+                camT.transform.position = giuaT - huong * 6.5f + Vector3.up * 6f;
+                camT.transform.rotation = Quaternion.LookRotation(giuaT + Vector3.up * 0.3f - camT.transform.position);
+                yield return null;
+                yield return Chup("xacnam_0_" + kieu);
+                foreach (var x in nhom)
+                {
+                    if (x.go == null || (x.ten != "Witch" && x.ten != "QuyDu")) continue;
+                    Vector3 t = x.go.transform.position;
+                    camT.transform.position = t - huong * 2.4f + ngang * 1.6f + Vector3.up * 2.4f;
+                    camT.transform.rotation = Quaternion.LookRotation(t + Vector3.up * 0.2f - camT.transform.position);
+                    yield return null;
+                    yield return Chup("xacnam_0_" + kieu + "_" + x.ten);
+                }
+                foreach (var x in nhom)
+                {
+                    var xn = x.go.GetComponent<XacNam>();
+                    float matY = HuongMatY(x.go);
+                    x.dauNam = CaoXuong(x.go, "Head", x.datY); x.hongNam = CaoXuong(x.go, "Hips", x.datY);
+                    var dinh = DinhHinh(x.go);
+                    int trong = 0, duoi = 0;
+                    foreach (var v in dinh)
+                    {
+                        if (xn != null && xn.vungMau != null && new Vector2(v.x - xn.TamVungMau.x, v.z - xn.TamVungMau.z).magnitude <= xn.BanKinhVungMau) trong++;
+                        if (v.y < x.datY + 0.01f) duoi++;
+                    }
+                    float tiTrong = dinh.Count > 0 ? trong / (float)dinh.Count : 0f, tiDuoi = dinh.Count > 0 ? duoi / (float)dinh.Count : 1f;
+                    bool matDung = kieu == XacNam.KieuNam.Sap ? matY < -0.6f : Mathf.Abs(matY) < 0.5f;
+                    Ghi(string.Format("T. {0} {1}: tu the that {2}; huong mat y {3:F2} ({4}); xuong Head {5:F2} -> {6:F2} m (Hips {7:F2}); nang chong lun {8:F2} (xuong {11}, them theo luoi {13:F2}; xuong than thap nhat {12:F2} m tren dat); {9:P0} dinh trong vung mau; {10:P1} dinh duoi dat",
+                        kieu, x.ten, xn != null ? xn.TuThe.ToString() : "?", matY, kieu == XacNam.KieuNam.Sap ? "mong < -0,6: up xuong" : "mong |y| < 0,5: nhin ngang",
+                        x.dauDung, x.dauNam, x.hongNam, xn != null ? xn.NangChongLun : -1f, tiTrong, tiDuoi, xn != null ? xn.XuongChong : "?", ThanThapNhat(x.go, x.datY), xn != null ? xn.NangTheoLuoi : -1f));
+                    Kiem(xn != null && xn.TuThe == kieu, kieu + " " + x.ten + ": khong nam dung tu the ep");
+                    Kiem(matDung, kieu + " " + x.ten + ": huong mat sai tu the (xuong Head -> headfront)");
+                    // Nam nghieng: dau cao bang NUA BE VAI (quy cay vai rong: 0,60 m) - nguong theo ti le luc dung, khong co dinh
+                    Kiem(x.dauNam >= 0f && x.dauNam < x.dauDung * 0.5f && Mathf.Abs(x.dauNam - x.hongNam) < 0.4f, kieu + " " + x.ten + ": xac khong nam han");
+                    Kiem(xn != null && xn.vungMau != null && tiTrong >= 0.45f, kieu + " " + x.ten + ": xac khong nam de len vung mau");
+                    // THAN khong duoc lun (xuong hong / song lung / co / dau tren mat dat); tay chan lun chut thi chap nhan - trong
+                    // nhu co duoi nguoi. So dinh duoi dat chi chan truong hop lun ca xac.
+                    Kiem(ThanThapNhat(x.go, x.datY) > -0.03f && tiDuoi < 0.2f, kieu + " " + x.ten + ": xac chui xuong dat");
+                }
+                foreach (var x in nhom) if (x.go != null) Object.Destroy(x.go);
+                if (rig != null) rig.enabled = true;
+                yield return new WaitForSeconds(0.3f);
+            }
+        }
+
+        // ================= A. BON LOAI QUAI (NAM NGUA) =================
+        Ghi("");
+        XacNam.EpTuThe = XacNam.KieuNam.Ngua;
         var xac = new List<MotXac>();
         for (int i = 0; i < loai.Length; i++)
         {
@@ -198,8 +339,10 @@ public static class ThuXacNam
             if (!x.d.IsDead) x.d.Die();
             x.lucChet = Time.time;
         }
+        XacNam.EpTuThe = null;
         // Theo doi moi khung toi 3 giay: luc co mau, do loang som / muon
-        for (float h = Time.time + 3.2f; Time.time < h; )
+        // Cua so do: toi khi MOI con da co mau du 2,6 s (Editor giat khung thi mau co cham - lan chay 0,84 s thay vi 0,56)
+        for (float h = Time.time + 6f; Time.time < h; )
         {
             foreach (var x in xac)
             {
@@ -210,6 +353,8 @@ public static class ThuXacNam
                 if (t >= 0.25f && x.loangSom < 0f) x.loangSom = xn.Loang01;
                 if (t >= XacNam.GiayLoangMau + 0.1f && x.loangMuon < 0f) x.loangMuon = xn.Loang01;
             }
+            bool du = true; foreach (var x in xac) if (x.loangMuon < 0f) du = false;
+            if (du) break;
             yield return null;
         }
         foreach (var x in xac)
@@ -269,21 +414,25 @@ public static class ThuXacNam
         {
             var xn = x.go.GetComponent<XacNam>();
             int qMau = xn != null && xn.vungMau != null ? xn.vungMau.GetComponent<Renderer>().sharedMaterial.renderQueue : -1;
-            Ghi(string.Format("A. {0}: nga {19}, xuong Head cao {20:F2} m luc dung -> {21:F2} m luc nam (Hips {22:F2} m), nam dai {15:F2} m x day {16:F2} m, nang chong lun {17:F2} m, cao than do tu xuong {18:F2} m; dinh hinh tren dat luc dung {1:F2} m -> luc nam {2:F2} m (x{3:F2}); vung mau {4} (ban kinh {5:F2} m, co sau {6:F2} s tu luc chet), loang 0,25 s {7:F2} -> {8:F2} s {9:F2}; {10:P0} dinh xac nam TRONG vung mau, tam xac cach tam mau {11:F2} m; {12:P1} dinh chui duoi mat mau; hang doi mau {13} > xac {14}",
+            Ghi(string.Format("A. {0}: nga {19}, xuong Head cao {20:F2} m luc dung -> {21:F2} m luc nam (Hips {22:F2} m), nam dai {15:F2} m x day {16:F2} m, nang chong lun {17:F2} m (xuong {23}), cao than do tu xuong {18:F2} m; dinh hinh tren dat luc dung {1:F2} m -> luc nam {2:F2} m (x{3:F2}); vung mau {4} (ban kinh {5:F2} m, co sau {6:F2} s tu luc chet), loang 0,25 s {7:F2} -> {8:F2} s {9:F2}; {10:P0} dinh xac nam TRONG vung mau, tam xac cach tam mau {11:F2} m; {12:P1} dinh chui duoi mat mau; hang doi mau {13} > xac {14}",
                 x.ten, x.caoDung, x.caoNam, x.caoNam / Mathf.Max(0.01f, x.caoDung), xn != null && xn.vungMau != null,
                 xn != null ? xn.BanKinhVungMau : -1f, x.lucCoMau >= 0f ? x.lucCoMau - x.lucChet : -1f, x.loangSom,
                 XacNam.GiayLoangMau + 0.1f, x.loangMuon, x.trongMau, x.kcTam, x.duoiDat, qMau, x.queueXac,
                 x.daiNam, x.dayNam, xn != null ? xn.NangChongLun : -1f, xn != null ? xn.caoThan : -1f,
-                "NGUA", x.dauDung, x.dauNam, x.hongNam));
+                "NGUA", x.dauDung, x.dauNam, x.hongNam, xn != null ? xn.XuongChong : "?"));
             Kiem(xn != null, x.ten + ": chet ma khong co XacNam");
+            float matNgua = HuongMatY(x.go);
+            Ghi(string.Format("A. {0}: huong mat y {1:F2} (NGUA - mong > 0,6: mat ngua len troi)", x.ten, matNgua));
+            Kiem(matNgua > 0.6f, x.ten + ": nam NGUA ma mat khong huong len troi");
             // NAM = xuong dau ha xuong sat dat va ngang hong (than nam ngang). Khong do bang be cao ca hinh: Quy cay co
             // cap sung lon + tay gio len khi nam ngua nen hinh van cao 1,31 m du than da nam han (anh xacnam_1).
-            Kiem(x.dauDung > 1.0f && x.dauNam >= 0f && x.dauNam < 0.6f && Mathf.Abs(x.dauNam - x.hongNam) < 0.4f && x.caoNam < x.caoDung * 0.8f,
+            Kiem(x.dauDung > 1.0f && x.dauNam >= 0f && x.dauNam < x.dauDung * 0.5f && Mathf.Abs(x.dauNam - x.hongNam) < 0.4f && x.caoNam < x.caoDung * 0.8f,
                  x.ten + ": xac khong nam han xuong dat");
             Kiem(xn != null && xn.vungMau != null && x.lucCoMau - x.lucChet < 1.5f, x.ten + ": khong co vung mau / co qua cham");
             Kiem(x.loangSom > 0f && x.loangSom < 0.8f && x.loangMuon > 0.99f, x.ten + ": vung mau khong loang tu nho ra du");
             Kiem(x.trongMau >= 0.5f && x.kcTam < (xn != null ? xn.BanKinhVungMau : 0f), x.ten + ": xac khong nam de len vung mau");
-            Kiem(x.duoiDat < 0.15f, x.ten + ": xac chui xuong duoi mat dat");
+            Kiem(ThanThapNhat(x.go, x.datY) > -0.03f && x.duoiDat < 0.2f, x.ten + ": xac chui xuong duoi mat dat");
+            Ghi(string.Format("A. {0}: xuong than thap nhat {1:F2} m tren dat", x.ten, ThanThapNhat(x.go, x.datY)));
             Kiem(qMau >= 3000 && x.queueXac < qMau, x.ten + ": vung mau khong ve sau xac (xac khong de len mau)");
         }
 
@@ -310,12 +459,15 @@ public static class ThuXacNam
                 yield return null;
             }
             float cao1 = DinhTren(g1, p1.y), cao2 = DinhTren(g2, p2.y);
+            float dau1 = CaoXuong(g1, "Head", p1.y), dau2 = CaoXuong(g2, "Head", p2.y), hong2 = CaoXuong(g2, "Hips", p2.y);
             bool conNga = g1.GetComponent<BiDanhNga>() != null;
             var xn2 = g2.GetComponent<XacNam>();
             Ghi(string.Format("B. chet luc dang NGA: 1,85 s sau khi bi nga (qua moc chong day 1,5 s) dinh hinh {0:F2} m, con BiDanhNga {1}, co mau {2}", cao1, conNga, g1.GetComponent<XacNam>() != null && g1.GetComponent<XacNam>().vungMau != null));
-            Ghi(string.Format("B. chet luc dang BAY (hat tung 0,5 s): mau loang sau khi bi hat {0:F2} s (phai >= 0,5 - cho roi xuong), dinh hinh cuoi {1:F2} m", lucMau2 >= 0f ? lucMau2 - lucHat : -1f, cao2));
-            Kiem(!conNga && cao1 < 1.0f, "chet luc dang nga: xac chong day / con BiDanhNga");
-            Kiem(lucMau2 - lucHat >= 0.5f && cao2 < 1.0f && xn2 != null && xn2.vungMau != null, "chet luc dang bay: mau loang giua khong trung / xac khong nam");
+            Ghi(string.Format("B. chet luc dang BAY (hat tung 0,5 s): mau loang sau khi bi hat {0:F2} s (phai >= 0,5 - cho roi xuong), dinh hinh cuoi {1:F2} m, tu the {2}, xuong Head {3:F2} m (Hips {4:F2}); con bi nga: tu the {5}, Head {6:F2} m",
+                lucMau2 >= 0f ? lucMau2 - lucHat : -1f, cao2, xn2 != null ? xn2.TuThe.ToString() : "?", dau2, hong2,
+                g1.GetComponent<XacNam>() != null ? g1.GetComponent<XacNam>().TuThe.ToString() : "?", dau1));
+            Kiem(!conNga && cao1 < 1.0f && g1.GetComponent<XacNam>().TuThe == XacNam.KieuNam.Ngua, "chet luc dang nga: xac chong day / con BiDanhNga / khong giu nam ngua");
+            Kiem(lucMau2 - lucHat >= 0.5f && dau2 >= 0f && dau2 < 0.7f && Mathf.Abs(dau2 - hong2) < 0.4f && xn2 != null && xn2.vungMau != null, "chet luc dang bay: mau loang giua khong trung / xac khong nam");
         }
 
         // ---- D. DAU CONG (lam trong luc cho moc 15 / 21 / 23 giay cua xac) ----
@@ -426,10 +578,12 @@ public static class ThuXacNam
         {
             float datToi = DatY(toi.transform.position);
             float caoDung = DinhTren(toi.gameObject, datToi);
+            float dauDungToi = CaoXuong(toi.gameObject, "Head", datToi);
             mauToi.Die();
             yield return new WaitForSeconds(3f);
             var xn = toi.GetComponent<XacNam>();
             float caoNam = DinhTren(toi.gameObject, datToi);
+            float dauNamToi = CaoXuong(toi.gameObject, "Head", datToi);
             bool coMau = xn != null && xn.vungMau != null;
             if (rig != null) rig.enabled = false;
             cam.transform.position = toi.transform.position - huong * 4f + ngang * 1.5f + Vector3.up * 3.2f;
@@ -442,7 +596,8 @@ public static class ThuXacNam
                        && Mathf.Abs(toi.transform.position.y - y0) < 0.05f && xn.vungMau != null;
             Ghi(string.Format("C. nguoi choi chet: la xac nguoi choi {0}; dinh hinh {1:F2} m -> {2:F2} m; vung mau {3}; 24 giay sau van nam nguyen cho, khong chim {4}",
                 xn != null && xn.laNguoiChoi, caoDung, caoNam, coMau, van));
-            Kiem(xn != null && xn.laNguoiChoi && caoNam < caoDung * 0.5f && coMau, "nguoi choi chet khong nam xuong vung mau");
+            Ghi(string.Format("C. tu the (ngau nhien) {0}; xuong Head {1:F2} -> {2:F2} m", xn != null ? xn.TuThe.ToString() : "?", dauDungToi, dauNamToi));
+            Kiem(xn != null && xn.laNguoiChoi && dauDungToi > 1f && dauNamToi < dauDungToi * 0.5f && coMau, "nguoi choi chet khong nam xuong vung mau");
             Kiem(van, "xac nguoi choi chim / mat (phai nam toi het tran)");
         }
 
@@ -461,6 +616,7 @@ public static class ThuXacNam
 
     static void Ket()
     {
+        XacNam.EpTuThe = null;
         File.WriteAllText("PlayTestShots/xacnam.txt", bao.ToString());
         var rac = GameObject.Find("TAM_XacNam");
         if (rac != null) Object.DestroyImmediate(rac);

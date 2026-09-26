@@ -11,9 +11,10 @@ using UnityEngine;
 /// Truoc day: quai guc (cui nguoi, lun hong) roi bien mat sau 5-6 giay (<c>Damageable.corpseSeconds</c>, nay
 /// khong dung nua); nguoi choi guc ngoi mai. Khong co mau.
 ///
-/// NGA: LAT MODEL CON, khong lat goc - y cach <see cref="BiDanhNga"/> (xoay -90 do quanh truc X CUA GOC, nhan
-/// ben trai rotGoc: dau nga ve SAU lung, nam ngua; nhan ben phai thi model Meshy xoay san 180 do se nam up).
-/// Dau ve phia -forward cua goc, nen tam vung mau lui ve phia do <see cref="TamMauTheoCao"/> x chieu cao than.
+/// NGA: LAT MODEL CON, khong lat goc - y cach <see cref="BiDanhNga"/> (xoay 90 do quanh mot truc CUA GOC, nhan
+/// ben trai rotGoc; nhan ben phai thi model Meshy xoay san 180 do se nga nguoc chieu).
+/// TU THE NGAU NHIEN (nguoi dung 26/09/2026): nam NGUA / nam SAP / nam NGHIENG (trai hoac phai), moi kieu 1/3 - xem
+/// <see cref="TuThe"/>. Dau nga ve phia nao thi tam vung mau lui ve phia ay <see cref="TamMauTheoCao"/> x chieu cao than.
 /// Cac bo hoat hinh (ModelHoatHinh, NguoiChoiHoatHinh, ProceduralAnimator) thay co XacNam thi bo tu the guc
 /// (cui nguoi 58 do + lun hong) - tu the ay nam ngua ra thanh ngoi day giua dat.
 ///
@@ -87,9 +88,76 @@ public class XacNam : MonoBehaviour
     /// thi chot mot con so (ca nang lan ha - xac lo lung cung sai).
     /// </summary>
     readonly List<Transform> xuong = new List<Transform>();
-    /// <summary>-90 = NGA NGUA (dau ve -forward cua goc) - moi loai deu nga ngua nhu BiDanhNga.</summary>
-    public const float GocNga = -90f;
+    /// <summary>
+    /// Chi XUONG THAN (hong, song lung, co, dau, dui): chong lun chi tinh nhung xuong nay. Da thu va bo:
+    ///   - tinh ca TAY: model Meshy dung tu the goc dang tay, nam nghieng thi tay duoi chong ca xac lo lung 0,5 m;
+    ///   - tinh BAN CHAN / DAU GOI: Animation dung o khung hinh buoc do, chan co ra sau chong quy cay nam ngua len 0,40 m;
+    ///   - DUOI THANG CHAN ve bind pose roi moi tinh: tu the goc DANG CHAN, nam nghieng chan duoi cam xuong dat, quy cay
+    ///     con bi nhac 0,57 m.
+    /// Tay chan lun chut xuong dat thi trong nhu co duoi nguoi - tu nhien hon ca xac treo (menu 85 ghi XuongChong).
+    /// </summary>
+    readonly List<Transform> xuongThan = new List<Transform>();
+    Transform xuongHong, xuongDau;
+
+    static bool LaXuongThan(string ten)
+    {
+        return ten == "Hips" || ten == "Head" || ten.Contains("Spine") || ten.Contains("neck") || ten.Contains("Neck") || ten.Contains("UpLeg");
+    }
+    public enum KieuNam { Ngua, Sap, NghiengTrai, NghiengPhai }
+
+    /// <summary>
+    /// Tu the nam cua xac nay. NGAU NHIEN nhung GIONG NHAU TREN MOI MAY: gieo tu so hieu mang cua quai (NhanDangQuai.id
+    /// - chu phong va khach cung mot so), nguoi choi thi tu ghe + ma phong - khong ton goi tin nao. Khong co ca hai
+    /// (choi mot minh, vat thu) thi Random.
+    /// </summary>
+    public KieuNam TuThe { get; private set; }
+    /// <summary>Phep thu ep mot tu the (null = ngau nhien nhu that).</summary>
+    public static KieuNam? EpTuThe;
+
+    /// <summary>Phep xoay (quanh truc cua goc) dua model tu dung sang nam theo tu the.</summary>
+    public static Quaternion XoayNam(KieuNam k)
+    {
+        switch (k)
+        {
+            case KieuNam.Sap: return Quaternion.Euler(90f, 0f, 0f);          // dau ve +forward, mat up xuong dat
+            case KieuNam.NghiengTrai: return Quaternion.Euler(0f, 0f, 90f);  // dau ve -right
+            case KieuNam.NghiengPhai: return Quaternion.Euler(0f, 0f, -90f); // dau ve +right
+            default: return Quaternion.Euler(-90f, 0f, 0f);                  // NGUA: dau ve -forward, mat ngua len troi
+        }
+    }
+
+    /// <summary>Chon tu the tu mot hat giong: 1/3 ngua, 1/3 sap, 1/3 nghieng (chia deu trai / phai).</summary>
+    public static KieuNam ChonTuThe(uint hat)
+    {
+        // Tron bit (murmur3 fmix32) - so hieu quai lien tiep 1, 2, 3... khong duoc ra tu the lien tiep nhau
+        hat ^= hat >> 16; hat *= 0x85ebca6bu; hat ^= hat >> 13; hat *= 0xc2b2ae35u; hat ^= hat >> 16;
+        uint k = hat % 6u;
+        return k < 2u ? KieuNam.Ngua : k < 4u ? KieuNam.Sap : k == 4u ? KieuNam.NghiengTrai : KieuNam.NghiengPhai;
+    }
+
+    /// <summary>Hat giong chung moi may: so hieu quai, hoac ghe + ma phong cua nguoi choi. false = khong co (dung Random).</summary>
+    static bool HatGiongChung(Damageable d, out uint hat)
+    {
+        hat = 0u;
+        var nd = d.GetComponent<NhanDangQuai>();
+        if (nd != null) { hat = 0x9E3779B9u ^ nd.id; return true; }
+        var pc = d.GetComponent<PlayerController>();
+        var db = pc != null ? Object.FindAnyObjectByType<DongBoTran>() : null;
+        if (db == null) return false;
+        for (byte g = 0; g < 8; g++)
+            if (db.NhanVatCuaGhe(g) == pc)
+            {
+                // Bam FNV-1a cua ma phong: string.GetHashCode khong chac giong nhau giua Editor va ban WebGL
+                uint h = 2166136261u;
+                string ma = TranHienTai.MaPhong ?? "";
+                for (int i = 0; i < ma.Length; i++) { h ^= ma[i]; h *= 16777619u; }
+                hat = h ^ (uint)(g * 7919 + 1);
+                return true;
+            }
+        return false;
+    }
     float nangChot = float.NaN;
+    bool chetLucDangNga;
     public float NangChongLun { get; private set; }
 
     static Texture2D[] anhMau;
@@ -102,6 +170,13 @@ public class XacNam : MonoBehaviour
         if (x != null) return x;
         x = d.gameObject.AddComponent<XacNam>();
         x.laNguoiChoi = d.isPlayer;
+        uint hat;
+        if (EpTuThe.HasValue) x.TuThe = EpTuThe.Value;
+        else if (HatGiongChung(d, out hat)) x.TuThe = ChonTuThe(hat);
+        else x.TuThe = ChonTuThe((uint)Random.Range(0, int.MaxValue));
+        // Chet luc DANG BI DANH NGA (da nam ngua): giu nam ngua - lat 180 do sang sap thi Slerp di qua tu the DUNG,
+        // trong nhu xac chong day roi nga lai
+        if (x.chetLucDangNga && !EpTuThe.HasValue) x.TuThe = KieuNam.Ngua;
         // Chieu cao than do tu XUONG THAT (dinh xuong cao nhat + chop dau): rig.bodyHeight lech xa hinh that - bo xuong
         // 2,36 / quy cay 2,89 m trong khi hinh cao 1,67 / 1,69 m (menu 85 do bang BakeMesh) -> vung mau to gap ruoi.
         float cao = x.xuong.Count > 0 ? x.XuongCaoNhat() - d.transform.position.y + ChopDau : 0f;
@@ -128,7 +203,13 @@ public class XacNam : MonoBehaviour
         var daCo = new HashSet<Transform>();
         foreach (var smr in hinh.GetComponentsInChildren<SkinnedMeshRenderer>())
             foreach (var b in smr.bones)
-                if (b != null && daCo.Add(b)) xuong.Add(b);
+                if (b != null && daCo.Add(b))
+                {
+                    xuong.Add(b);
+                    if (LaXuongThan(b.name)) xuongThan.Add(b);
+                    if (b.name == "Hips") xuongHong = b;
+                    else if (b.name == "Head") xuongDau = b;
+                }
 
         posDau = hinh.localPosition; rotDau = hinh.localRotation;
         posGoc = posDau; rotGoc = rotDau;
@@ -139,6 +220,7 @@ public class XacNam : MonoBehaviour
         if (nga != null && nga.CoGoc)
         {
             posGoc = nga.PosGoc; rotGoc = nga.RotGoc;
+            chetLucDangNga = true;
             Destroy(nga);          // xac nga tiep tu goc dang co, khong chong day
         }
     }
@@ -163,7 +245,7 @@ public class XacNam : MonoBehaviour
             // Nga nhanh dan (nhu roi tu do), khong em dan ve cuoi
             float u = Mathf.Clamp01(daTroi / GiayNga);
             u = u * u;
-            Quaternion rotNam = Quaternion.Euler(GocNga, 0f, 0f) * rotGoc;
+            Quaternion rotNam = XoayNam(TuThe) * rotGoc;
             hinh.localRotation = Quaternion.Slerp(rotDau, rotNam, u);
             Vector3 p = Vector3.Lerp(posDau, posGoc + Vector3.up * NangKhiNam, u);
             if (hat != null) p += Vector3.up * hat.CaoHienTai;     // chet giua luc bi hat: van roi het duong
@@ -172,12 +254,24 @@ public class XacNam : MonoBehaviour
             // Chong lun: dang nga thi chi nhac (khong de chui dat), nga xong chot mot lan (nhac hoac ha)
             if (float.IsNaN(nangChot))
             {
-                float datY, can = 0f;
-                if (xuong.Count > 0 && MatDat(transform.position, out datY))
+                float datY = transform.position.y, can = 0f;
+                bool coDat = MatDat(transform.position, out datY);
+                if (xuong.Count > 0 && coDat)
                     can = datY + DoDayLung - XuongThapNhat();
-                if (daTroi >= GiayNga && hat == null && GetComponent<RoiXuongDat>() == null)
+                bool chot = daTroi >= GiayNga && hat == null && GetComponent<RoiXuongDat>() == null;
+                if (chot)
+                {
                     nangChot = Mathf.Clamp(can, -0.3f, 1.2f);
+                    XuongChong = TenXuongThapNhat();
+                }
                 NangChongLun = float.IsNaN(nangChot) ? Mathf.Max(0f, can) : nangChot;
+                hinh.localPosition = p + Vector3.up * NangChongLun;
+                if (chot && coDat)
+                {
+                    NangTheoLuoi = NangThemTheoLuoi(datY);
+                    nangChot = Mathf.Clamp(nangChot + NangTheoLuoi, -0.3f, 1.2f);
+                    NangChongLun = nangChot;
+                }
             }
             hinh.localPosition = p + Vector3.up * NangChongLun;
         }
@@ -229,10 +323,55 @@ public class XacNam : MonoBehaviour
     /// <summary>Do sang nhan len anh mau (anh Blender da sam; 1,0 thi giua dem do choi nhu phat sang).</summary>
     public const float HeSoSangMau = 0.6f;
 
+    /// <summary>Phan nhac them theo LUOI THAT luc chot (m) - phep thu ghi ra.</summary>
+    public float NangTheoLuoi { get; private set; }
+    /// <summary>Chi de toi da ti le dinh nay duoi mat dat (tay chan lun chut duoc, than thi khong).</summary>
+    public const float TiLeDinhDuoiDatToiDa = 0.10f;
+    static Mesh luoiNuong;
+    static readonly List<Vector3> dinhNuong = new List<Vector3>();
+    static readonly List<float> caoDinh = new List<float>();
+
+    /// <summary>
+    /// NHAC THEO LUOI THAT, MOT LAN luc nga xong: chong lun bang XUONG thieu voi con quai lung day - xuong than quy cay nam
+    /// ngua cach dat 0,10 m ma 51% dinh chui duoi dat, chi con sung va tay chan troi len (anh xacnam_2_can_QuyCay). Nuong
+    /// luoi (BakeMesh, lay mau 1/4 dinh - model 10-20 nghin dinh), tim muc de chi <see cref="TiLeDinhDuoiDatToiDa"/> so dinh
+    /// nam duoi dat, nhac len chung ay (khong bao gio ha). Chi mot lan moi xac nen khong dang ke.
+    /// </summary>
+    float NangThemTheoLuoi(float datY)
+    {
+        if (hinh == null) return 0f;
+        if (luoiNuong == null) luoiNuong = new Mesh { name = "XacNamNuong" };
+        caoDinh.Clear();
+        foreach (var smr in hinh.GetComponentsInChildren<SkinnedMeshRenderer>())
+        {
+            if (!smr.enabled || smr.sharedMesh == null) continue;
+            smr.BakeMesh(luoiNuong, true);
+            luoiNuong.GetVertices(dinhNuong);
+            var m = Matrix4x4.TRS(smr.transform.position, smr.transform.rotation, Vector3.one);
+            for (int i = 0; i < dinhNuong.Count; i += 4) caoDinh.Add(m.MultiplyPoint3x4(dinhNuong[i]).y - datY);
+        }
+        if (caoDinh.Count < 20) return 0f;
+        caoDinh.Sort();
+        float muc = caoDinh[Mathf.Clamp(Mathf.FloorToInt(caoDinh.Count * TiLeDinhDuoiDatToiDa), 0, caoDinh.Count - 1)];
+        return Mathf.Max(0f, -muc);
+    }
+
+    /// <summary>Xuong thap nhat luc chot chong lun - phep thu ghi ra de biet cai gi chong xac len.</summary>
+    public string XuongChong { get; private set; }
+
+    string TenXuongThapNhat()
+    {
+        var ds = xuongThan.Count > 0 ? xuongThan : xuong;
+        Transform t = null;
+        for (int i = 0; i < ds.Count; i++) if (ds[i] != null && (t == null || ds[i].position.y < t.position.y)) t = ds[i];
+        return t != null ? t.name : "";
+    }
+
     float XuongThapNhat()
     {
+        var ds = xuongThan.Count > 0 ? xuongThan : xuong;
         float m = float.MaxValue;
-        for (int i = 0; i < xuong.Count; i++) if (xuong[i] != null) m = Mathf.Min(m, xuong[i].position.y);
+        for (int i = 0; i < ds.Count; i++) if (ds[i] != null) m = Mathf.Min(m, ds[i].position.y);
         return m;
     }
 
@@ -252,18 +391,22 @@ public class XacNam : MonoBehaviour
         return false;
     }
 
-    /// <summary>Tam vung mau: lui ve phia DAU - nga ngua dau ve -forward cua goc, nga sap ve +forward.</summary>
-    public static Vector3 TamMauCho(Transform goc, float caoThan, float gocNga)
+    /// <summary>Tam vung mau: lui ve phia DAU. Dau (0, cao, 0) cua goc sau phep xoay nam nam o dau thi mau o day.</summary>
+    public static Vector3 TamMauCho(Transform goc, float caoThan, KieuNam k)
     {
-        Vector3 f = goc.forward; f.y = 0f;
-        if (f.sqrMagnitude < 1e-4f) f = Vector3.forward;
+        Vector3 f = goc.TransformDirection(XoayNam(k) * Vector3.up); f.y = 0f;
+        if (f.sqrMagnitude < 1e-4f) f = -goc.forward;
         f.Normalize();
-        return goc.position + f * (Mathf.Sign(gocNga) * TamMauTheoCao * caoThan);
+        return goc.position + f * (TamMauTheoCao * caoThan);
     }
 
     void TaoVungMau(float datY)
     {
-        Vector3 tam = TamMauCho(transform, caoThan, GocNga);
+        // Tam vung mau = GIUA XUONG HONG VA XUONG DAU sau khi nam (duoi nguc / bung): theo cong thuc 0,4 x chieu cao tu chan
+        // thi Quy du (chan dai) co mau duoi dui, nguc va dau nam ngoai vung mau (anh xacnam_0_Sap_QuyDu)
+        Vector3 tam = xuongHong != null && xuongDau != null
+                    ? (xuongHong.position + xuongDau.position) * 0.5f
+                    : TamMauCho(transform, caoThan, TuThe);
         tam.y = datY;
         TamVungMau = tam;
         BanKinhVungMau = BanKinhMauTheoCao * caoThan;

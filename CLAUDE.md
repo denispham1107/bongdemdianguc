@@ -355,8 +355,13 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
   cầu bắn mỗi 0,4 s). Menu 74 mục K kiểm. ⚠️ Vật liệu static tạo lúc Play **bị xoá khi thoát Play** — kiểm bằng null của Unity, đừng
   dùng cờ "đã nạp" (tia từng âm thầm quay về kiểu cũ). Menu 69 mục G kiểm (có đối chứng từng mục).
 - ⚠️ **XÁC NẰM TRÊN VŨNG MÁU** (người dùng 26/09/2026, `Combat/XacNam.cs`, gắn trong `Damageable.Die`): quái và người chơi chết thì
-  **ngã ngửa nằm hẳn** (lật MODEL CON −90° quanh trục X của gốc như `BiDanhNga`; các bộ hoạt hình thấy `XacNam.LaXac` thì bỏ tư thế gục —
-  cúi 58° mà nằm ngửa thành ngồi dậy) và **loang một vũng máu nhỏ** dưới lưng trong 2,4 s (ảnh **Blender MCP** `CongCu/Blender/vung_mau.blend`
+  **nằm hẳn theo tư thế NGẪU NHIÊN: ngửa / sấp / nghiêng trái / nghiêng phải** (1/3 ngửa · 1/3 sấp · 1/3 nghiêng, `XacNam.KieuNam`,
+  `ChonTuThe`) — lật MODEL CON 90° quanh trục của gốc như `BiDanhNga` (`XoayNam`); các bộ hoạt hình thấy `XacNam.LaXac` thì bỏ tư thế
+  gục. ⚠️ "Ngẫu nhiên" **giống nhau trên mọi máy, 0 byte gói tin**: gieo từ `NhanDangQuai.id` (quái) hoặc ghế + mã phòng (người chơi,
+  băm FNV — không dùng `string.GetHashCode`); chết lúc đang bị đánh ngã thì giữ nằm ngửa (lật 180° đi qua tư thế đứng). Tâm vũng máu =
+  giữa xương Hips và Head sau khi nằm. **Chống lún hai bước**: xương THÂN (hông, sống lưng, cổ, đầu, đùi — không tay, bàn chân, đầu
+  mút: tay dang của tư thế gốc / chân bước dở lúc chết chống cả xác lơ lửng) rồi **BakeMesh một lần** lúc ngã xong, nhấc để ≤ 10% đỉnh
+  dưới đất (Quỷ cây lưng dày: chỉ theo xương thì 51% đỉnh chìm, thân biến mất). Đã thử và BỎ: duỗi chân về bind pose (tư thế gốc dạng chân). **Vũng máu nhỏ** loang dưới thân trong 2,4 s (ảnh **Blender MCP** `CongCu/Blender/vung_mau.blend`
   → `Resources/KyNang/Mau/VungMau0–3`, 4 biến thể, mép alpha 0; đĩa `GroundRing.BuildDisc` bám CHỈ lớp Ground, xoay ngẫu nhiên). Người dùng
   chọn: **xác QUÁI nằm 20 s rồi chìm 2 s và xoá** (cả vũng máu) — trước đó `corpseSeconds` 5–6 s, nay **không dùng nữa**; **xác NGƯỜI
   CHƠI nằm tới hết trận**. Cỡ thân đo từ **XƯƠNG THẬT** (`rig.bodyHeight` sai: bộ xương 2,36, quỷ cây 2,89 m trong khi hình cao 1,67/1,69);

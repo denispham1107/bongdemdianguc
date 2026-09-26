@@ -8603,6 +8603,41 @@ châm cả bia mộ / nhà mồ (tính năng sáng nay), đầy trần "4 vật 
 
 Ảnh: `PlayTestShots/maygiong_1_dem_can.png`, `maygiong_2_chay_den.png`, `maygiong_3_ngay_goc_choi.png`.
 
+### Xác nằm ngẫu nhiên: ngửa, sấp, nghiêng (26/09/2026)
+
+Anh xin: **xác mọi quái và người chơi nằm ngẫu nhiên các tư thế nằm ngửa, nằm sấp, nằm nghiêng**, vẫn trên vũng máu.
+
+**Ngẫu nhiên mà mọi máy giống nhau.** Chọn bằng một số gieo chung: quái lấy số hiệu mạng (`NhanDangQuai.id` — chủ phòng và khách cùng một
+số), người chơi lấy ghế + mã phòng (băm FNV; `string.GetHashCode` không chắc giống nhau giữa Editor và bản WebGL). Không tốn byte gói tin
+nào. Tỉ lệ: 1/3 ngửa, 1/3 sấp, 1/3 nghiêng (chia đều trái / phải). Chết lúc đang bị đánh ngã (đã nằm ngửa) thì giữ ngửa — lật 180° sang
+sấp thì phép nội suy đi qua tư thế đứng, trông như xác chống dậy rồi ngã lại.
+
+**Ba lần đi sai đường, cùng một chỗ: cái gì chống xác lên khỏi đất.**
+1. Chống lún theo MỌI xương: nằm nghiêng thì cánh tay dưới (tư thế gốc của model Meshy dang tay) chống cả xác lơ lửng 0,5 m. Ghi tên
+   xương chống ra thì thấy tiếp: bàn chân, ngón chân (Animation dừng ở khung bước dở, một chân co ra sau) và đầu mút mặt `headfront`.
+2. Duỗi thẳng chân về tư thế gốc (bind pose) rồi mới đo: tư thế gốc **dạng chân**, nằm nghiêng thì chân dưới cắm xuống đất — Quỷ cây bị nhấc
+   tới 0,57 m. Bỏ.
+3. Chỉ theo xương THÂN (hông, sống lưng, cổ, đầu, đùi): thân nằm sát đất, nhưng Quỷ cây lưng dày nên 51% đỉnh chìm, chỉ còn sừng và tay
+   chân trồi lên. Nay thêm bước hai: ngã xong **nướng lưới một lần** (BakeMesh, mẫu 1/4 đỉnh — model 10–20 nghìn đỉnh) và nhấc để tối đa 10%
+   đỉnh dưới đất; tay chân lún chút thì trông như co dưới người.
+
+Tâm vũng máu cũng đổi: 0,4 × chiều cao từ chân thì Quỷ dữ (chân dài) có máu dưới đùi, ngực và đầu nằm ngoài. Nay là giữa xương hông và
+xương đầu sau khi nằm.
+
+| Đo (menu 85, mục T — 4 loại quái × 3 tư thế ép, mục A — ngửa) | Kết quả |
+|---|---|
+| Hướng mặt (xương Head → headfront) | ngửa +1,00 · sấp −1,00 · nghiêng ±0,04 — đúng cả 16 xác |
+| Xương đầu lúc nằm | 0,10–0,51 m (đứng 1,35–1,42) — ngang xương hông |
+| Xương thân thấp nhất | 0,10–0,40 m trên đất (không lún) |
+| Đỉnh dưới mặt đất | 0,4–14,6% (trước khi nhấc theo lưới: Quỷ cây ngửa 51%) |
+| Đỉnh trong vũng máu | 66–82% |
+| Tỉ lệ trên 6000 số gieo | ngửa 1988 · sấp 1992 · nghiêng trái 1007 · phải 1013 |
+| Cùng số hiệu mạng → cùng tư thế | 6/6 |
+
+Phép thử cũng sửa hai chỗ tự nó sai: ngưỡng "đầu dưới 0,6 m" chỉ hợp nằm ngửa (nằm nghiêng đầu cao bằng nửa bề vai — nay so với nửa chiều
+cao đầu lúc đứng), và cửa sổ đo loang máu cố định 3,2 s bị trượt khi Editor giật khung (máu có sau 0,84 s thay vì 0,56 — nay đo theo lúc
+có máu). Ảnh: `PlayTestShots/xacnam_0_*.png`.
+
 ### Xác nằm trên vũng máu; dấu "+" nâng cấp ngay trên ô kỹ năng (26/09/2026)
 
 Anh xin hai việc: **quái và người chơi khác bị giết thì thấy xác nằm dưới đất kèm một vũng máu nhỏ, xác đè lên vũng máu**; và **có điểm
