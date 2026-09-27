@@ -8603,6 +8603,48 @@ châm cả bia mộ / nhà mồ (tính năng sáng nay), đầy trần "4 vật 
 
 Ảnh: `PlayTestShots/maygiong_1_dem_can.png`, `maygiong_2_chay_den.png`, `maygiong_3_ngay_goc_choi.png`.
 
+### Ô vuông, ô chữ nhật sáng chắp vá dưới mặt đất khi kỹ năng phát sáng (28/09/2026)
+
+**Người dùng thấy (6 ảnh):** quái hay người chơi đánh kỹ năng phát sáng thì dưới mặt đất hiện rõ các ô vuông, ô chữ nhật chắp
+vá. Khắp bản đồ đều bị.
+
+**Nguyên nhân:**
+- Unity vẽ Terrain thành **nhiều mảnh** và chia đèn cho **từng mảnh** như cho một vật riêng.
+- Mỗi vật chỉ được `pixelLightCount` đèn tính theo điểm ảnh: mức Cao 2, Trung bình 1, **Yếu và Rất yếu 0**. Mức mặc định là Yếu.
+- Đèn vượt suất bị hạ xuống đèn đỉnh / SH, tính **một lần cho cả vật**. Với bia, đá, cây thì không ai thấy. Nhưng một mảnh đất
+  rộng hàng chục mét sáng đều một màu thì lộ thành ô.
+- Quanh người chơi luôn có đèn nhân vật và 14 lò lửa chiếm suất, nên kể cả mức Cao cũng lộ.
+
+**Cách sửa — đèn sinh đôi cho mặt đất** (`Vfx/DenMatDat.cs`):
+- Mọi đèn điểm / đèn chiếu có thêm một đèn con `ForcePixel` (luôn tính theo điểm ảnh, không tính vào suất), **chỉ chiếu lớp
+  Ground**. Lớp Ground chỉ có Terrain. Đèn gốc thôi chiếu Ground; bia, cây, đá vẫn nhận đèn gốc rẻ như cũ.
+- Đèn con được tạo trong `Camera.onPreCull`, trước khi Unity chia đèn của chính khung hình ấy, nên vụ nổ không lộ ô dù một
+  khung. Màu, độ sáng, tầm được chép lại mỗi khung (lửa nhấp nháy, đèn loé).
+- Đèn con là con của đèn gốc nên đi theo, tắt theo, bị xoá theo.
+
+**Đã thử và bỏ:** nâng `pixelLightCount` lên 8 cho mọi mức. Hết ô vuông, nhưng lò lửa và đèn nhân vật thành đèn điểm ảnh trên
+mọi bia, cây, đá trong tầm. Ở mức Yếu với 6 đèn, số lượt vẽ (SetPass) tăng **455 → 922**, quá nặng cho điện thoại. Đèn sinh
+đôi chỉ **457 → 607**. Số suất mỗi mức nay đặt rõ trong `CaiDatDoHoa.DenDiemAnhTheoMuc` (giữ 2 / 1 / 0 / 0).
+
+**Đo (menu 89 mới):**
+- Camera game chỉ vẽ lớp Terrain, chụp hai ảnh: không đèn thêm (A) và có đèn thêm (B).
+- D = B − A. Chia D cho A để khử vân đất, gộp thành ô 4×4 điểm ảnh.
+- **"Đường nối" N2** = chỗ một ô lệch khỏi độ dốc của hai ô hai bên. Sườn sáng mượt thì gần 0, cạnh ô vuông thì lớn.
+- Đo ở 3 điểm cố định × 4 mức × (1 đèn, 6 đèn). Mỗi ô đo cả đối chứng (tắt đèn sinh đôi) và bản sửa.
+- Đèn lò lửa được tạm tắt nhấp nháy trong lúc đo. Bản đầu có chạy lệch nhau vì nhấp nháy và vì điểm đo đổi theo chỗ xuất phát
+  ngẫu nhiên.
+
+| | N2 (ngưỡng 0,12) |
+|---|---|
+| Đối chứng mức Yếu, 6 đèn (3 điểm) | 0,152 · 0,225 · 0,819 |
+| Bản sửa, mọi mức, mọi điểm | 0,043 – 0,095 (phần còn lại là gò đất thật) |
+
+- Ảnh `den_matdat_d*_6den_cu.png` (ô chữ nhật rõ) so với `…_sua.png` (vũng sáng tròn).
+- `den_matdat_that_cu/sua.png`: 3 quả cầu lửa + 1 tia sét thật, camera game, mức Yếu.
+- Chạy lại menu 54b (14/14 lò có đèn), 79, 48: đều 0 lỗi.
+
+⚠️ Phép thử nào đếm đèn con của một vật (`GetComponentsInChildren<Light>`) nay đếm thêm đèn `DenMatDat` trong lúc Play.
+
 ### Xoá vĩnh viễn Act1 (Đấu trường) — chỉ còn Nghĩa địa (27/09/2026)
 
 **Người dùng xin:** xoá vĩnh viễn toàn bộ Act1, không giữ ở đâu nữa, không được ảnh hưởng Act2, và cập nhật sảnh tạo phòng.
@@ -11217,6 +11259,9 @@ Lần chạy đầu phép thử báo cả 10 con "lơ lửng": tia chiếu từ 
 | **72. Chay thu LUA DIA NGUC (ky nang moi)** | Thông số (số hiệu 11, năng lượng 31/hồi chiêu/niệm, sát thương gốc = prefab Quả cầu lửa × 1,2⁴, chữ Sách phép, icon); tung thật 5 quả; tự dí 5 bia ngoài hình quạt (đối chứng Quả cầu lửa thường 0 bia), 1 bia, bia chạy ngang, mục tiêu chết giữa đường, không có ai bay thẳng 18°; sát thương so với Quả cầu lửa cấp 5 thật + thiêu đốt; màu giống hệt Quả cầu lửa; qua mạng + kẻ đánh. Tạm tắt va chạm đồ vật 26 m (Act2 không có chỗ trống). Số đo `luadianguc.txt`. |
 | **70. Chay thu QUA CAU LUA (85 sat thuong, vet lua moi)** | Sát thương đọc thẳng prefab và trên quả cầu thật khi tung; quả cầu sinh từ prefab bay vào bia (mất 85 × giảm theo khoảng cách); hạt `Flames` không còn ảnh tam giác mà là flipbook Blender, có vệt lửa dài `TrailRenderer`; nổ xong vệt được thả ra; chụp cận cảnh lúc bay. Chạy trên bản cũ ra 7 lỗi (đối chứng). Số đo `quacaulua.txt`. |
 | **86. Mo rong Act2 them 50% (rao moi + vanh dat + do dac)** | Chạy MỘT lần trên Act2 gốc: rào mới từ Blender (nửa cạnh 66,41 m), terrain 134,63 m (vùng cũ chép nguyên), thêm 100 bia · 13 cây · 51 đá · 2 nhà mồ · 4 lò · 6 vũng nước ở vành, `arenaRadius` 62. Báo cáo `PlayTestShots/mo_rong_act2.txt`. Terrain đã rộng thì tự bỏ qua. |
+| **87. Chay thu RA - VAO NHA MO (Act2)** | Nhân vật thật đi vào nhà mồ từ 8 hướng rồi thử đi ra 5 hướng (đầu tiên là quay lui đúng đường vào); lượt đối chứng tạm gắn lại lưới gốc (~20 phút cả hai lượt, `ThuRaKhoiNhaMo.BoQuaDoiChung` để bỏ). `ra_khoi_nha_mo.txt`. |
+| **88. Va cham hai mat cho nha mo (Act2)** | Dựng lưới va chạm hai mặt cho mỗi kiểu nhà mồ (`BlenderMaps/GraveyardAct2/VaCham/`) và gắn vào `MeshCollider` của 7 nhà. Chạy lại khi thêm nhà mồ / nhập lại bản đồ. |
+| **89. Chay thu O VUONG SANG tren mat dat (den ky nang)** | Chụp riêng lớp Terrain có / không đèn kỹ năng ở 3 điểm cố định × 4 mức đồ hoạ × 1 / 6 đèn, đo "đường nối" (ô vuông) trên D/A; đối chứng tắt đèn sinh đôi `DenMatDat`. Kèm ảnh vụ nổ thật. `den_mat_dat.txt`. |
 | **56. Chay thu DOT QUAI Act2 + cho xuat phat** | *(13/09/2026: thêm đo chờ 30 giây và 10 con xa 55–65 m)*  Kiểm chỗ xuất phát ngẫu nhiên (hai máy cùng mã phòng ra cùng danh sách, cách nhau ≥ 22 m, trên đất, ngoài nước, không vướng vật cản) và luật đợt quái Act2 (đợt 1 bốn con quanh mỗi người; đợt sau cộng dồn quái và mạnh thêm 5% máu · sát thương). Số đo `dotquai_act2.txt`. |
 | **55. Chay thu KET TRAN (nguoi song sot cuoi cung)** | Mở kênh giả lập như menu 45: kiểm gói tin kết trận/chết, máy chủ phòng phán quyết đúng lúc còn một người, bảng điểm cộng đúng người, máy khách không tự kết luận và hiện đúng kết quả nghe được, chết rồi camera chuyển sang người còn sống, chụp màn kết trận. Số đo `kettran.txt`, ảnh `kettran_*.png`. |
 | **54c. Chay thu LOC XOAY cuon lo lua** | Vào Play Act2, thả một cơn lốc đi thẳng vào lò: đo mốc thời gian lửa tắt / lò nhấc lên / lò biến mất / lò mọc lại, kiểm than trong chậu tắt bằng độ sáng trên ảnh, và kiểm vật có hệ hạt khác vẫn không bị cuốn. Ảnh `locxoay_*.png`, số đo `locxoay_lolua.txt`. |

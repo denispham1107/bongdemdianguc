@@ -1,0 +1,108 @@
+lop terrain = Ground, dong bang 14 den nhap nhay
+
+===== DIEM DO 1: (0.0, 0.1, -10.5) =====
+
+--- muc Cao (Unity High, pixelLightCount 2) ---
+ [doi chung: tat den sinh doi]
+  1 den: dinh D 0.699, DUONG NOI N2 (khu van dat) = 0.178, N = 0.119, J = 0.174, E = 7.4 %; den sinh doi 0; ca canh: 646 SetPass, 936 draw call
+  6 den: dinh D 0.708, DUONG NOI N2 (khu van dat) = 0.168, N = 0.224, J = 0.255, E = 6.5 %; den sinh doi 0; ca canh: 696 SetPass, 982 draw call
+ [ban sua: den sinh doi cho mat dat]
+  1 den: dinh D 0.712, DUONG NOI N2 (khu van dat) = 0.043, N = 0.121, J = 0.171, E = 6.8 %; den sinh doi 16; ca canh: 663 SetPass, 953 draw call
+  6 den: dinh D 0.953, DUONG NOI N2 (khu van dat) = 0.053, N = 0.117, J = 0.151, E = 4.2 %; den sinh doi 21; ca canh: 783 SetPass, 1069 draw call
+
+--- muc Trung bình (Unity Medium, pixelLightCount 1) ---
+ [doi chung: tat den sinh doi]
+  1 den: dinh D 0.361, DUONG NOI N2 (khu van dat) = 0.177, N = 0.247, J = 0.273, E = 13.5 %; den sinh doi 0; ca canh: 592 SetPass, 864 draw call
+  6 den: dinh D 0.376, DUONG NOI N2 (khu van dat) = 0.221, N = 0.262, J = 0.281, E = 10.7 %; den sinh doi 0; ca canh: 619 SetPass, 889 draw call
+ [ban sua: den sinh doi cho mat dat]
+  1 den: dinh D 0.712, DUONG NOI N2 (khu van dat) = 0.043, N = 0.121, J = 0.171, E = 6.8 %; den sinh doi 16; ca canh: 628 SetPass, 901 draw call
+  6 den: dinh D 0.953, DUONG NOI N2 (khu van dat) = 0.053, N = 0.117, J = 0.151, E = 4.2 %; den sinh doi 21; ca canh: 732 SetPass, 1002 draw call
+
+--- muc Yếu (Unity Low, pixelLightCount 0) ---
+ [doi chung: tat den sinh doi]
+  1 den: dinh D 0.342, DUONG NOI N2 (khu van dat) = 0.194, N = 0.262, J = 0.285, E = 14.1 %; den sinh doi 0; ca canh: 446 SetPass, 641 draw call
+  6 den: dinh D 0.376, DUONG NOI N2 (khu van dat) = 0.225, N = 0.262, J = 0.281, E = 9.5 %; den sinh doi 0; ca canh: 457 SetPass, 646 draw call
+ [ban sua: den sinh doi cho mat dat]
+  1 den: dinh D 0.712, DUONG NOI N2 (khu van dat) = 0.044, N = 0.120, J = 0.172, E = 6.8 %; den sinh doi 16; ca canh: 517 SetPass, 713 draw call
+  6 den: dinh D 0.953, DUONG NOI N2 (khu van dat) = 0.054, N = 0.116, J = 0.152, E = 4.2 %; den sinh doi 21; ca canh: 607 SetPass, 796 draw call
+
+--- muc Rất yếu (Unity Low, pixelLightCount 0) ---
+ [doi chung: tat den sinh doi]
+  1 den: dinh D 0.342, DUONG NOI N2 (khu van dat) = 0.194, N = 0.262, J = 0.285, E = 14.1 %; den sinh doi 0; ca canh: 401 SetPass, 447 draw call
+  6 den: dinh D 0.376, DUONG NOI N2 (khu van dat) = 0.225, N = 0.262, J = 0.281, E = 9.5 %; den sinh doi 0; ca canh: 412 SetPass, 452 draw call
+ [ban sua: den sinh doi cho mat dat]
+  1 den: dinh D 0.712, DUONG NOI N2 (khu van dat) = 0.044, N = 0.120, J = 0.172, E = 6.8 %; den sinh doi 16; ca canh: 473 SetPass, 519 draw call
+  6 den: dinh D 0.953, DUONG NOI N2 (khu van dat) = 0.054, N = 0.116, J = 0.152, E = 4.2 %; den sinh doi 21; ca canh: 562 SetPass, 602 draw call
+
+===== DIEM DO 2: (5.4, 0.5, -7.6) =====
+
+--- muc Cao (Unity High, pixelLightCount 2) ---
+ [doi chung: tat den sinh doi]
+  1 den: dinh D 0.534, DUONG NOI N2 (khu van dat) = 0.053, N = 0.163, J = 0.174, E = 7.5 %; den sinh doi 0; ca canh: 578 SetPass, 904 draw call
+  6 den: dinh D 0.602, DUONG NOI N2 (khu van dat) = 0.823, N = 0.840, J = 0.803, E = 5.7 %; den sinh doi 0; ca canh: 662 SetPass, 973 draw call
+ [ban sua: den sinh doi cho mat dat]
+  1 den: dinh D 0.582, DUONG NOI N2 (khu van dat) = 0.047, N = 0.156, J = 0.162, E = 5.8 %; den sinh doi 16; ca canh: 592 SetPass, 918 draw call
+  6 den: dinh D 0.798, DUONG NOI N2 (khu van dat) = 0.068, N = 0.143, J = 0.215, E = 5.9 %; den sinh doi 21; ca canh: 718 SetPass, 1029 draw call
+
+--- muc Trung bình (Unity Medium, pixelLightCount 1) ---
+ [doi chung: tat den sinh doi]
+  1 den: dinh D 0.301, DUONG NOI N2 (khu van dat) = 0.219, N = 0.301, J = 0.231, E = 9.5 %; den sinh doi 0; ca canh: 537 SetPass, 845 draw call
+  6 den: dinh D 0.300, DUONG NOI N2 (khu van dat) = 0.884, N = 0.882, J = 0.852, E = 8.2 %; den sinh doi 0; ca canh: 586 SetPass, 879 draw call
+ [ban sua: den sinh doi cho mat dat]
+  1 den: dinh D 0.582, DUONG NOI N2 (khu van dat) = 0.047, N = 0.156, J = 0.162, E = 5.8 %; den sinh doi 16; ca canh: 567 SetPass, 875 draw call
+  6 den: dinh D 0.798, DUONG NOI N2 (khu van dat) = 0.069, N = 0.143, J = 0.216, E = 5.9 %; den sinh doi 21; ca canh: 659 SetPass, 953 draw call
+
+--- muc Yếu (Unity Low, pixelLightCount 0) ---
+ [doi chung: tat den sinh doi]
+  1 den: dinh D 0.273, DUONG NOI N2 (khu van dat) = 0.246, N = 0.316, J = 0.252, E = 11.1 %; den sinh doi 0; ca canh: 415 SetPass, 640 draw call
+  6 den: dinh D 0.300, DUONG NOI N2 (khu van dat) = 0.819, N = 0.817, J = 0.790, E = 8.0 %; den sinh doi 0; ca canh: 440 SetPass, 650 draw call
+ [ban sua: den sinh doi cho mat dat]
+  1 den: dinh D 0.582, DUONG NOI N2 (khu van dat) = 0.046, N = 0.147, J = 0.163, E = 5.9 %; den sinh doi 16; ca canh: 470 SetPass, 695 draw call
+  6 den: dinh D 0.798, DUONG NOI N2 (khu van dat) = 0.069, N = 0.139, J = 0.215, E = 5.9 %; den sinh doi 21; ca canh: 539 SetPass, 749 draw call
+
+--- muc Rất yếu (Unity Low, pixelLightCount 0) ---
+ [doi chung: tat den sinh doi]
+  1 den: dinh D 0.273, DUONG NOI N2 (khu van dat) = 0.246, N = 0.316, J = 0.252, E = 11.1 %; den sinh doi 0; ca canh: 371 SetPass, 440 draw call
+  6 den: dinh D 0.300, DUONG NOI N2 (khu van dat) = 0.819, N = 0.817, J = 0.790, E = 8.0 %; den sinh doi 0; ca canh: 397 SetPass, 451 draw call
+ [ban sua: den sinh doi cho mat dat]
+  1 den: dinh D 0.582, DUONG NOI N2 (khu van dat) = 0.046, N = 0.147, J = 0.163, E = 5.9 %; den sinh doi 16; ca canh: 426 SetPass, 495 draw call
+  6 den: dinh D 0.798, DUONG NOI N2 (khu van dat) = 0.069, N = 0.139, J = 0.215, E = 5.9 %; den sinh doi 21; ca canh: 496 SetPass, 550 draw call
+
+===== DIEM DO 3: (-25.0, -1.1, 20.0) =====
+
+--- muc Cao (Unity High, pixelLightCount 2) ---
+ [doi chung: tat den sinh doi]
+  1 den: dinh D 0.557, DUONG NOI N2 (khu van dat) = 0.094, N = 0.114, J = 0.180, E = 5.3 %; den sinh doi 0; ca canh: 608 SetPass, 904 draw call
+  6 den: dinh D 0.747, DUONG NOI N2 (khu van dat) = 0.366, N = 0.356, J = 0.397, E = 7.3 %; den sinh doi 0; ca canh: 769 SetPass, 1021 draw call
+ [ban sua: den sinh doi cho mat dat]
+  1 den: dinh D 0.557, DUONG NOI N2 (khu van dat) = 0.094, N = 0.114, J = 0.180, E = 5.2 %; den sinh doi 16; ca canh: 612 SetPass, 908 draw call
+  6 den: dinh D 0.876, DUONG NOI N2 (khu van dat) = 0.081, N = 0.099, J = 0.169, E = 5.3 %; den sinh doi 21; ca canh: 890 SetPass, 1142 draw call
+
+--- muc Trung bình (Unity Medium, pixelLightCount 1) ---
+ [doi chung: tat den sinh doi]
+  1 den: dinh D 0.234, DUONG NOI N2 (khu van dat) = 0.209, N = 0.273, J = 0.276, E = 10.4 %; den sinh doi 0; ca canh: 558 SetPass, 810 draw call
+  6 den: dinh D 0.409, DUONG NOI N2 (khu van dat) = 0.161, N = 0.207, J = 0.259, E = 9.3 %; den sinh doi 0; ca canh: 644 SetPass, 869 draw call
+ [ban sua: den sinh doi cho mat dat]
+  1 den: dinh D 0.557, DUONG NOI N2 (khu van dat) = 0.094, N = 0.114, J = 0.180, E = 5.2 %; den sinh doi 16; ca canh: 583 SetPass, 841 draw call
+  6 den: dinh D 0.876, DUONG NOI N2 (khu van dat) = 0.081, N = 0.099, J = 0.169, E = 5.3 %; den sinh doi 21; ca canh: 803 SetPass, 1028 draw call
+
+--- muc Yếu (Unity Low, pixelLightCount 0) ---
+ [doi chung: tat den sinh doi]
+  1 den: dinh D 0.222, DUONG NOI N2 (khu van dat) = 0.228, N = 0.284, J = 0.255, E = 9.7 %; den sinh doi 0; ca canh: 402 SetPass, 602 draw call
+  6 den: dinh D 0.408, DUONG NOI N2 (khu van dat) = 0.152, N = 0.187, J = 0.257, E = 8.1 %; den sinh doi 0; ca canh: 457 SetPass, 620 draw call
+ [ban sua: den sinh doi cho mat dat]
+  1 den: dinh D 0.556, DUONG NOI N2 (khu van dat) = 0.095, N = 0.109, J = 0.179, E = 5.2 %; den sinh doi 16; ca canh: 472 SetPass, 672 draw call
+  6 den: dinh D 0.876, DUONG NOI N2 (khu van dat) = 0.081, N = 0.094, J = 0.166, E = 5.4 %; den sinh doi 21; ca canh: 660 SetPass, 823 draw call
+
+--- muc Rất yếu (Unity Low, pixelLightCount 0) ---
+ [doi chung: tat den sinh doi]
+  1 den: dinh D 0.222, DUONG NOI N2 (khu van dat) = 0.228, N = 0.284, J = 0.255, E = 9.7 %; den sinh doi 0; ca canh: 360 SetPass, 413 draw call
+  6 den: dinh D 0.408, DUONG NOI N2 (khu van dat) = 0.152, N = 0.187, J = 0.257, E = 8.1 %; den sinh doi 0; ca canh: 415 SetPass, 431 draw call
+ [ban sua: den sinh doi cho mat dat]
+  1 den: dinh D 0.556, DUONG NOI N2 (khu van dat) = 0.095, N = 0.109, J = 0.179, E = 5.2 %; den sinh doi 16; ca canh: 430 SetPass, 483 draw call
+  6 den: dinh D 0.876, DUONG NOI N2 (khu van dat) = 0.081, N = 0.094, J = 0.166, E = 5.4 %; den sinh doi 21; ca canh: 618 SetPass, 634 draw call
+anh that (Yếu, doi chung): den sinh doi 0 -> den_matdat_that_cu.png
+anh that (Yếu, ban sua): den sinh doi 19 -> den_matdat_that_sua.png
+
+tra lai muc dang chon: Trung bình, pixelLightCount 1
+so loi ghi nhan = 0

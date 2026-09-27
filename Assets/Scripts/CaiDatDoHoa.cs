@@ -72,6 +72,14 @@ public static class CaiDatDoHoa
     static readonly int[] TangBongTheoMuc = { 2, 1, 1, 1 };
     public static readonly float[] ChiTietXaTheoMuc = { 1f, 0.7f, 0.55f, 0.4f };
 
+    /// <summary>
+    /// So den DIEM ANH (pixel light) moi vat duoc nhan - moi muc tu dat (27/09/2026), bang dung bo goc cua High / Medium /
+    /// Low. Den vuot suat bi ha xuong den dinh / SH tinh MOT LAN CHO CA VAT - mat dat (Terrain, ve thanh nhieu manh) tung
+    /// lo "o vuong chap va"; nay mat dat duoc den sinh doi luon diem anh (<see cref="DenMatDat"/>), con vat nho thi van
+    /// theo suat nay. Da thu nang len 8 cho moi muc: het o vuong nhung muc Yeu 455 -> 922 SetPass (menu 89) - khong dung.
+    /// </summary>
+    public static readonly int[] DenDiemAnhTheoMuc = { 2, 1, 0, 0 };
+
     static int daDoc = -1;
 
 #if UNITY_WEBGL && !UNITY_EDITOR
@@ -149,9 +157,14 @@ public static class CaiDatDoHoa
     }
 
     /// <summary>Dat muc chat luong cua Unity theo muc dang dung.</summary>
-    public static void ApDung()
+    public static void ApDung() { ApDung(Muc); }
+
+    /// <summary>
+    /// Dat muc chat luong cua Unity theo mot muc CHO TRUOC, khong ghi xuong kho (phep thu dung de do tung muc
+    /// ma khong doi lua chon da luu cua nguoi choi; xong thi goi <see cref="ApDung()"/> tra lai).
+    /// </summary>
+    public static void ApDung(MucDoHoa m)
     {
-        var m = Muc;
         int lv = TimMucUnity(TenMucUnity[(int)m]);
         if (lv >= 0) QualitySettings.SetQualityLevel(lv, true);
 
@@ -165,6 +178,7 @@ public static class CaiDatDoHoa
         QualitySettings.shadowResolution = PhanGiaiBongTheoMuc[i];
         QualitySettings.shadowCascades = TangBongTheoMuc[i];
         QualitySettings.lodBias = ChiTietXaTheoMuc[i];
+        QualitySettings.pixelLightCount = DenDiemAnhTheoMuc[i];
 
         // GIU NHIP KHUNG HINH NHU CU. Muc High va Medium bat vSync, muc Low thi
         // tat - ma tat vSync thi tren WebGL Application.targetFrameRate = 120
