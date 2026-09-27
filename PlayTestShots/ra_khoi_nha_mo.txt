@@ -1,0 +1,20 @@
+[ban 2] ra - vao nha mo Act2 bang nhan vat that (doi chung luoi goc, roi luoi hai mat)
+nhan vat: CharacterController r 0.32 cao 2.06, stepOffset 0.55, slopeLimit 55
+nha mo dang dung luoi va cham hai mat (menu 88): 7/7
+
+1. DOI CHUNG - BO QUA lan nay (BoQuaDoiChung)
+
+2. LUOI HAI MAT (ban dang chay trong game):
+   MAUS_A_001_682: vao duoc duoi mai 0/8 huong (); KET 0
+   MAUS_A_001_683: vao duoc duoi mai 0/8 huong (); KET 0
+   MAUS_A_001_684: vao duoc duoi mai 0/8 huong (); KET 0
+   MAUS_B_685: vao duoc duoi mai 0/8 huong (); KET 0
+   MAUS_B_686: vao duoc duoi mai 3/8 huong (0° 45° 315°); KET 0
+      vao tu 45°: ra duoc 4/5 huong (lech tu duong lui: 0 45 -45 -90)
+      vao tu 315°: ra duoc 4/5 huong (lech tu duong lui: 0 45 -45 90)
+   MAUS_A_001_V001: vao duoc duoi mai 0/8 huong (); KET 0
+   MAUS_A_001_V002: vao duoc duoi mai 0/8 huong (); KET 0
+   => luoi hai mat: 54 lan thu vao, vao duoc duoi mai 3, KET 0
+
+TONG: luoi goc KET -1 lan; luoi hai mat KET 0 lan
+so loi ghi nhan = 0

@@ -8603,6 +8603,50 @@ châm cả bia mộ / nhà mồ (tính năng sáng nay), đầy trần "4 vật 
 
 Ảnh: `PlayTestShots/maygiong_1_dem_can.png`, `maygiong_2_chay_den.png`, `maygiong_3_ngay_goc_choi.png`.
 
+### Vào nhà mồ rồi kẹt không ra được; quái Act2 đợt đầu yếu đi 35% sát thương (27/09/2026)
+
+**1. Kẹt trong nhà mồ.**
+
+**Người dùng thấy:** người chơi vào được trong nhà mồ, nhưng đi ra thì kẹt.
+
+**Nguyên nhân (đo bằng menu 87 mới, nhân vật thật, bơm lệnh di chuyển):**
+- Lưới nhà mồ nhập từ Blender có nhiều mặt bị **lật pháp tuyến vào trong**. Bắn tia từ ngoài vào, tỉ lệ lần chạm đầu tiên là mặt lưng:
+  MAUS_A 15%, MAUS_B 32%; hàng rào (đối chứng) 0%.
+- `CharacterController` chỉ va chạm với **mặt thuận**. Vì thế nhân vật **đi xuyên tường** từ ngoài vào được, còn từ trong đi ra
+  thì đụng mặt thuận (pháp tuyến quay vào trong) và bị chặn, **kể cả quay lui đúng đường vừa vào**.
+- Với lưới gốc: 7/7 nhà đều kẹt, 18 lần vào được dưới mái thì kẹt cả 18.
+
+**Sửa (menu 88 `VaChamHaiMatNhaMo`):** mỗi kiểu nhà có một **lưới va chạm riêng**, lưu ở `BlenderMaps/GraveyardAct2/VaCham/`.
+- Lưới này giữ nguyên các đỉnh, mỗi tam giác có thêm một bản đảo chiều, nên chặn được từ cả hai phía.
+- Chỉ gắn vào `MeshCollider` của 7 nhà. Lưới hình, điểm mồi lửa (tính theo tên lưới hình) và khung bao giữ nguyên.
+- Cờ Read/Write của lưới bật sẵn, nên bản web dùng được.
+- Tôi không sửa pháp tuyến trong Blender vì phải xuất lại cả `map_luoi.fbx` (toàn bản đồ).
+
+| Đo (menu 87) | Lưới gốc | Lưới hai mặt |
+|---|---|---|
+| Vào được dưới mái (54 lần thử từ 8 hướng × 7 nhà) | 18 | 3 (chỉ mái hiên MAUS_B_686, khe giữa các cột) |
+| Kẹt: không hướng nào ra được, kể cả quay lui | **18** | **0** |
+| Tốc biến ngắm vào nhà (336 lần) | — | 0 lần đáp dưới mái (nền trong nhà cao hơn mặt đất) |
+
+- Menu 87 có sẵn lượt đối chứng (tạm gắn lại lưới gốc, chỉ trong Play) và phải thấy kẹt. Cả hai lượt mất khoảng 20 phút; đặt
+  `ThuRaKhoiNhaMo.BoQuaDoiChung` để chỉ đo bản đã sửa (~5 phút).
+- ⚠️ Lần đầu phép thử của tôi đã "quay lui" sai chiều (thật ra đi tiếp vào trong), nên chưa thử hướng thẳng ra. Đã sửa: hướng
+  đầu tiên luôn là ngược đúng đường vào.
+
+**2. Sát thương quái Act2.** Đợt đầu còn **65%** sát thương gốc, các đợt sau vẫn +5% mỗi đợt nhưng **tính từ mức 65% ấy**:
+đợt n = 0,65 × 1,05^(n−1) (`GameDirector.HeSoSatThuongDotDau`, `HeSoSatThuongDot`).
+- Máu quái không đổi. **Chỉ Act2** (người dùng chọn).
+- Giảm cả đòn cận chiến (`attackDamage`) lẫn đòn tầm xa (`satThuongCau`: cầu lửa, thiên thạch, tia sét). Phần cháy của cầu lửa
+  bằng 18% sát thương nổ nên giảm theo.
+- ⚠️ Trước đây `LamManhTheoDot` bỏ qua đợt 1 (hệ số = 1). Nay đợt 1 vẫn phải giảm sát thương.
+
+| Đo (menu 56, gốc sinh độc lập từ kho quái) | Đòn cận | Đòn xa | Máu |
+|---|---|---|---|
+| Bộ xương đợt 1 | 7,80 / 12 (×0,650) | 10,40 / 16 (×0,650) | 70 / 70 (×1,000) |
+| Phù thuỷ · Quỷ cây · Quỷ dữ đợt 1 | ×0,650 | ×0,650 | ×1,000 |
+| Bộ xương đợt 2 · 3 · 4 so với đợt 1 | ×1,050 · ×1,103 · ×1,158 | | ×1,050 · ×1,103 · ×1,158 |
+| Act1 (đối chứng) | 4/4 con giữ ×1,000 | | |
+
 ### Dấu "+" trên nút tròn to thêm 20%; nút MỞ KHOÁ trong Sách phép cao gấp 1,5 (27/09/2026)
 
 **Người dùng thấy:** trên điện thoại, dấu "+" trên nút tròn quá nhỏ, ngón tay không ấn trúng; nút MỞ KHOÁ trong Sách phép quá bé.
