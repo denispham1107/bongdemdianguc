@@ -1,11 +1,9 @@
-A. Player: 16 khuc xuong, than cao theo xuong 1.56 m / hinh that 1.66 m, 54 ngon lua, DO PHU 95 % (dai kem nhat 78 %; chan->dau: 78 % 100 % 88 % 100 % 100 %), 98 % ngon lua sat than (<0,3 m)
-A. TAM_Quai_Skeleton_moi: 16 khuc xuong, than cao theo xuong 1.56 m / hinh that 1.71 m, 59 ngon lua, DO PHU 98 % (dai kem nhat 94 %; chan->dau: 97 % 94 % 98 % 100 % 100 %), 98 % ngon lua sat than (<0,3 m)
-A. TAM_Quai_QuyCay_moi: 16 khuc xuong, than cao theo xuong 1.79 m / hinh that 1.82 m, 70 ngon lua, DO PHU 94 % (dai kem nhat 71 %; chan->dau: 71 % 92 % 100 % 99 % 98 %), 97 % ngon lua sat than (<0,3 m)
-A. DOI CHUNG hinh cu TAM_Quai_Skeleton_cu: 20 hat, do phu 84 % (dai kem nhat 0 %; chan->dau: 0 % 70 % 97 % 100 % 97 %), sat than 80 %
-A. DOI CHUNG hinh cu TAM_Quai_QuyCay_cu: 20 hat, do phu 55 % (dai kem nhat 0 %; chan->dau: 0 % 0 % 47 % 87 % 86 %), sat than 80 %
-B. so ngon lua theo thoi gian (s:hat): 0.25:-1 0.50:-1 0.75:-1 1.00:-1 1.25:-1 1.50:-1 1.75:-1 2.00:61 2.25:65 2.50:60 2.75:59 3.00:56 3.25:49 3.50:41 3.75:28 4.00:18 4.25:9 4.50:4 4.75:0 5.00:0 5.25:0 5.50:-1
-B. lan chay dai 4.00 s | chay manh (1,0 s -> 2.70 s) TB 60.5 hat co 0.31 m | 0,3 s cuoi TB 25.3 hat co 0.25 m | 0,05-0,2 s sau khi het 12.4 hat | ve 0 luc 4.63 s; vat hinh con: False
-C. go giua chung: 55 ngon lua -> 0,15 s sau 54 -> het ngon lua sau 1.27 s, vat hinh (cho khoi tan) xoa sau 1.89 s
-D. dang tat dan do manh 0.30 -> chay them 3 s: 1.00
-E. 2 s chay: mat 9.2 mau, 0 chum tia trung don | DOI CHUNG 1 don lua thuong: 1 chum
+A. Player: than cao theo xuong 1.56 m / hinh that 1.66 m; 6 khoi lua song, lech ngang toi da so voi Hips 0.26 m; khoi 1.67 x 2.70 m; PHU THAN (chan->dau) 100 % 100 % 100 % 100 % 100 %, dai kem nhat 100 %
+A. TAM_Quai_Skeleton: than cao theo xuong 1.56 m / hinh that 1.71 m; 4 khoi lua song, lech ngang toi da so voi Hips 0.27 m; khoi 1.68 x 2.71 m; PHU THAN (chan->dau) 99 % 95 % 97 % 100 % 100 %, dai kem nhat 95 %
+A. TAM_Quai_QuyCay: than cao theo xuong 1.79 m / hinh that 1.82 m; 6 khoi lua song, lech ngang toi da so voi Hips 0.31 m; khoi 1.92 x 3.10 m; PHU THAN (chan->dau) 98 % 100 % 100 % 100 % 100 %, dai kem nhat 98 %
+C1. het chay (4.00 s): khung dau khong con BurningEffect -> vat hinh lua con: False
+B. BAN SUA (cuc bo theo than): chay 6 m/s trong 1 s -> 6 khoi lua, tam khoi cach xuong Hips (ngang) trung binh 0.20 m
+B. DOI CHUNG mo phong the gioi (ban cu): chay 6 m/s trong 1 s -> 6 khoi lua, tam khoi cach xuong Hips (ngang) trung binh 3.36 m
+C2. go giua chung: truoc co lua True -> khung ke tiep con lua False
+E. 2 s chay: mat 9.3 mau, 0 chum tia trung don | DOI CHUNG 1 don lua thuong: 1 chum
 so loi ghi nhan = 0

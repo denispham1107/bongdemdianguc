@@ -4,8 +4,8 @@ using System.Collections.Generic;
 /// <summary>
 /// TRANG THAI BONG CHAY: quai bi lua bam vao nguoi, mat mau dan theo thoi gian.
 ///
-/// Hinh: <see cref="LuaToanThan"/> - lua chay khap than (28/09/2026). GiayTatDan giay cuoi thi lua nho dan, thua dan
-/// roi tat; bi go giua chung (Toc bien, Tang hinh, chet) thi lua tu tat dan chu khong bien mat mot phat.
+/// Hinh: <see cref="LuaToanThan"/> - mot khoi lua trum toan than, di theo nguoi (28/09/2026). Het chay / bi go (Toc bien,
+/// Tang hinh, chet) thi lua bien mat NGAY (nguoi dung: "bien mat luon, khong can mo dan").
 /// </summary>
 public class BurningEffect : MonoBehaviour
 {
@@ -65,13 +65,11 @@ public class BurningEffect : MonoBehaviour
             tick = 0f;
         }
 
-        if (vfx != null) vfx.DatDoManh(remaining / LuaToanThan.GiayTatDan);
         if (remaining <= 0f) Destroy(this);
     }
 
     void OnDestroy()
     {
-        // Khong xoa phat: lua tu tat dan (het gio thi do manh da ve ~0, bi go giua chung thi tat trong 0,6 s)
-        if (vfx != null) vfx.TatDan();
+        if (vfx != null) Destroy(vfx.gameObject);
     }
 }
