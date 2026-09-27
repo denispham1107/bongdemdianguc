@@ -8603,6 +8603,26 @@ châm cả bia mộ / nhà mồ (tính năng sáng nay), đầy trần "4 vật 
 
 Ảnh: `PlayTestShots/maygiong_1_dem_can.png`, `maygiong_2_chay_den.png`, `maygiong_3_ngay_goc_choi.png`.
 
+### Màn chính mất mặt đất sau khi mở rộng Act2 (27/09/2026)
+
+**Người dùng thấy:** sau khi Act2 rộng thêm 50%, nền nghĩa địa phía sau màn đăng nhập / sảnh không còn mặt đất.
+
+**Nguyên nhân:** menu 51 dựng Màn chính bằng cách chép nguyên vật `MatDat_Terrain` của Act2, nên hai cảnh **dùng chung một file
+`Act2_MatDat.asset`**. Menu 86 đổi file ấy thành 134,63 m với dải độ cao mới, nhưng vị trí terrain trong Màn chính vẫn là
+(−54,6; −1,63; −54,6) của bản cũ. Mặt đất bị lệch 12,7 m theo chiều ngang và sai độ cao. Tôi đã không kiểm cảnh nào khác dùng file này.
+
+**Sửa:** Màn chính có file mặt đất **riêng** `Assets/Terrain/ManChinh_MatDat.asset`, chép từng byte bản trước khi mở rộng
+(commit `74feb4b`). Cả `Terrain` lẫn `TerrainCollider` trỏ sang file ấy. Sửa Act2 từ nay không làm hỏng Màn chính nữa.
+⚠️ Nếu chạy lại menu 51, Màn chính sẽ lại dùng chung file với Act2.
+
+| Đo (gốc vật − mặt đất, trong Màn chính) | Hỏng | Sửa xong |
+|---|---|---|
+| 146 bia | TB 1,884 m, lớn nhất 3,99 | TB 0,134, lớn nhất 0,85 |
+| 17 cây | TB 2,173 m | 0,250 (đúng độ chôn gốc cây) |
+| 86 đá | TB 1,881 m | TB 0,122 |
+
+Ảnh chụp bằng máy quay của game trong Play: `PlayTestShots/manchinh_matdat.png`.
+
 ### Cổng rào dựng lại: vòm đá liền khối, hai cánh cổng sắt đóng kín (27/09/2026)
 
 **Người dùng thấy:** trên vòm cổng, các viên gạch bay lơ lửng giữa không trung (ảnh chụp trong trận).
