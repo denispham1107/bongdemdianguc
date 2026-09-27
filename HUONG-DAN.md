@@ -8603,6 +8603,26 @@ châm cả bia mộ / nhà mồ (tính năng sáng nay), đầy trần "4 vật 
 
 Ảnh: `PlayTestShots/maygiong_1_dem_can.png`, `maygiong_2_chay_den.png`, `maygiong_3_ngay_goc_choi.png`.
 
+### Dấu "+" trên nút tròn to thêm 20%; nút MỞ KHOÁ trong Sách phép cao gấp 1,5 (27/09/2026)
+
+**Người dùng thấy:** trên điện thoại, dấu "+" trên nút tròn quá nhỏ, ngón tay không ấn trúng; nút MỞ KHOÁ trong Sách phép quá bé.
+Người dùng chọn: "+" to thêm 15–20% mà không đè lên nút khác; nút MỞ KHOÁ cao gấp 1,5.
+
+**Sửa:**
+- `GameHUD.DauCongTronBanKinh` 0,30 → **0,36** × bán kính nút (+20%). Vùng chạm vẫn ×1,2 hình nên cũng to theo, tâm giữ 0,90r.
+- `CuaSoSachPhep.CaoNutHoc` 40 → **60**, `CoChuNutHoc` 17 → **20**. Chữ được xuống dòng: câu dài nhất ~70 ký tự vẫn nằm trong nút.
+  Nút vẫn cách đáy khung 10. Phần mô tả phía trên ngắn lại 20 và vẫn cuộn được.
+
+| Đo | Trước | Sau |
+|---|---|---|
+| Khe hẹp nhất từ "+" tới nút KHÁC (menu 85 mục D, đơn vị 1080) | 13,7 | 9,7 |
+| Khe tính theo vùng chạm ×1,2 | 9,7 | 5,0 (vẫn dương, không lấn nút khác) |
+| Chạm giữa "+" → đúng ô · chạm giữa nút → vẫn tung kỹ năng | 7/7 · 7/7 | 7/7 · 7/7 |
+| Nút MỞ KHOÁ trên điện thoại ngang cao 390 điểm | 14,4 điểm | 21,7 điểm |
+| Menu 59 (Sách phép, 16 trường hợp) | — | 0 lỗi |
+
+Ảnh: `PlayTestShots/xacnam_4_dau_cong_cam_ung.png`, `PlayTestShots/sachphep_2_bang_camung.png`.
+
 ### Màn chính mất mặt đất sau khi mở rộng Act2 (27/09/2026)
 
 **Người dùng thấy:** sau khi Act2 rộng thêm 50%, nền nghĩa địa phía sau màn đăng nhập / sảnh không còn mặt đất.

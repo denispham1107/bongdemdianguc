@@ -178,9 +178,10 @@ public static class CuaSoSachPhep
 
         b.caoHang = 64f * HeSoChuKho * s;       // chu to them 15% thi hang cao theo
 
-        // Dai nut MO KHOA / NANG CAP nam sat day khung chi tiet
-        b.nutHoc = new Rect(b.chiTiet.x + 14f * s, b.chiTiet.yMax - 50f * s,
-                            b.chiTiet.width - 28f * s, 40f * s);
+        // Dai nut MO KHOA / NANG CAP nam sat day khung chi tiet. Cao 60 (27/09/2026 nguoi dung: nut cu cao 40 qua be, kho an
+        // tren dien thoai - chon cao gap 1,5), van cach day 10.
+        b.nutHoc = new Rect(b.chiTiet.x + 14f * s, b.chiTiet.yMax - (CaoNutHoc + 10f) * s,
+                            b.chiTiet.width - 28f * s, CaoNutHoc * s);
 
         float yThan = b.chiTiet.y + CaoDauChiTiet(s);
         b.thanChiTiet = new Rect(b.chiTiet.x, yThan, b.chiTiet.width, Mathf.Max(20f * s, b.nutHoc.y - 8f * s - yThan));
@@ -778,6 +779,11 @@ public static class CuaSoSachPhep
     /// la "nang cap", het diem hoac da toi da thi ghi ro VI SAO khong bam duoc -
     /// nut xam khong noi gi chi lam nguoi choi bam mai.
     /// </summary>
+    /// <summary>Chieu cao nut MO KHOA / NANG CAP (don vi 1080) - 40 truoc 27/09/2026, nguoi dung chon x1,5.</summary>
+    public const float CaoNutHoc = 60f;
+    /// <summary>Co chu tren nut (don vi 1080) - 17 truoc 27/09/2026.</summary>
+    public const float CoChuNutHoc = 20f;
+
     static void VeNutHoc(BoCuc b, float s)
     {
         var r = b.nutHoc;
@@ -816,7 +822,8 @@ public static class CuaSoSachPhep
 
         var k = new GUIStyle(GiaoDien.KieuTieuDeNho);
         k.alignment = TextAnchor.MiddleCenter;
-        k.fontSize = Mathf.RoundToInt(17f * s);
+        k.fontSize = Mathf.RoundToInt(CoChuNutHoc * s);
+        k.wordWrap = true;              // chu 20 + cau dai nhat (~70 ky tu) co the xuong hai dong - nut cao 60 van vua
         k.normal.textColor = bamDuoc ? GiaoDien.MauGiay : GiaoDien.MauToi;
         GUI.Label(r, chu, k);
     }

@@ -1295,7 +1295,9 @@ public partial class GameHUD : MonoBehaviour
     // nua vao vien chinh nut ay; khe gap nhat toi nut ben canh 13 don vi (tinh cho 7 nut, menu 85 do lai).
     // O vuong - huy hieu nam GIUA canh tren o, rong 0,34 canh o (28,6) trong khi o rong 84: khong toi o ben.
 
-    public const float DauCongTronBanKinh = 0.30f;
+    // 27/09/2026 nguoi dung: "+" tren nut tron qua nho, ngon tay khong an duoc -> to them 20% (0,30 -> 0,36; vung cham x1,2 to theo).
+    // Tam giu nguyen 0,90r. Khe toi nut khac do lai bang menu 85 muc D.
+    public const float DauCongTronBanKinh = 0.36f;
     public const float DauCongTronCao = 0.90f;
     public const float DauCongVuongCo = 0.34f;
 

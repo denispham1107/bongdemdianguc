@@ -386,8 +386,8 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
   (`CongCu/Blender/dau_cong.blend`, 26/09/2026 — người dùng chê bản vẽ bằng hai thanh "sơ sài"): "+" máu tươi cạnh lởm chởm, ba giọt
   chảy, vệt bóng ướt, đĩa nứt đỏ như dung nham, vành xương mười gai — nằm GỌN trong khung cũ, hình học / vùng bấm không đổi. Ô VUÔNG: giữa cạnh trên, 0,34 cạnh ô (28,6), khe tới ô khác 39,7; nút `GUI.Button` của
   "+" gọi **TRƯỚC** ô bên dưới (IMGUI cho nút gọi trước giành cú bấm), `DocInput.ConTroTrenThanhKyNang` chặn chuột trên "+". Nút TRÒN:
-  bán kính 0,30r, tâm cao 0,90r trên tâm nút, lấn nửa vào viền chính nút ấy (người dùng chọn); khe hẹp nhất tới nút khác **13,7** (vùng
-  chạm ×1,2: 9,7); cảm ứng xét "+" **trước** `NutTaiDiem` — chạm giữa nút vẫn là tung kỹ năng. Ẩn khi Sách phép mở / đã chết / hết trận.
+  bán kính **0,36r** (27/09/2026 to thêm 20%, trước 0,30r — ngón tay không ấn trúng), tâm cao 0,90r trên tâm nút, lấn vào viền chính nút ấy; khe hẹp nhất tới nút khác **9,7** (vùng
+  chạm ×1,2: 5,0); cảm ứng xét "+" **trước** `NutTaiDiem` — chạm giữa nút vẫn là tung kỹ năng. Ẩn khi Sách phép mở / đã chết / hết trận.
   Menu 85 mục D.
 - ⚠️ **QUẢ CẦU LỬA và QUẢ CẦU BĂNG NẢY** (người dùng 26/09/2026, chọn 1 lần · 100% · 6 m): quả nổ mà trúng kẻ địch thì sinh
   **một quả nảy** bay sang kẻ địch gần chỗ nổ nhất CHƯA dính vụ nổ (`Fireball.TamNay` 6 m, `TimKeNay`), tự dí mục tiêu, sát thương
@@ -426,7 +426,7 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
   Vào trận ai cũng cấp 1, tối đa **cấp 20** (13/09/2026, trước là 10); **tính theo từng trận, không cất lại** (mỗi trận là một ván đấu riêng).
   Mỗi cấp: máu +15%, mana +10%, tốc độ +3,5% **chỉ tới cấp 10** (`CapTangTocToiDa`) (nhân dồn), và +1 điểm kỹ năng. Bảy kỹ năng **đều khoá lúc đầu**,
   cấp 1 có sẵn 1 điểm. Kỹ năng tối đa cấp 5: +20% sát thương, +10% mana, hiệu ứng +0,15 s mỗi cấp; riêng Khiên
-  +15% máu khiên. Mở/nâng trong **Sách phép** (chữ cột trái ×1,15, phần thân chi tiết ×1,20 và cuộn được bằng con lăn / vuốt — `CuaSoSachPhep.HeSoChuKho/HeSoChuThan`).
+  +15% máu khiên. Mở/nâng trong **Sách phép** (nút MỞ KHOÁ / NÂNG LÊN CẤP cao **60**, chữ 20 — `CuaSoSachPhep.CaoNutHoc`, 27/09/2026 người dùng xin to gấp 1,5) (chữ cột trái ×1,15, phần thân chi tiết ×1,20 và cuộn được bằng con lăn / vuốt — `CuaSoSachPhep.HeSoChuKho/HeSoChuThan`).
 - ⚠️ **Cấp kỹ năng đi kèm từng gói tung phép** (`GoiTin.MotPhep.capKyNang`, gói 17 byte): phép của người cấp 5
   phải mạnh đúng cấp 5 trên mọi máy. `PlayerController.capPhepDangTung` là cấp của NGƯỜI TUNG, không phải của
   người xem. Kinh nghiệm giết quái do **chủ phòng** chia (gói `LoaiKinhNghiem`, 4 byte) vì chỉ nó chạy AI quái;
