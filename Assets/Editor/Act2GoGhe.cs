@@ -75,6 +75,8 @@ public static class Act2GoGhe
 
     /// <summary>Ria ban do (do theo canh vuong): giu nguyen tu day tro ra.</summary>
     const float RiaBatDau = 44f, RiaHet = 51f;
+    /// <summary>Vanh dat moi (menu 86): bat dau 53, du 57-61,5, het 64,8 (rao moi o 65,8-66,4).</summary>
+    const float VanhBatDau = 53f, VanhDinhDau = 57f, VanhDinhCuoi = 61.5f, VanhHet = 64.8f, VanhBienDo = 0.6f;
 
     const string DuongNenPhang = "Assets/Terrain/Act2_DoCaoPhang.bytes";
     const string DuongToMauGoc = "Assets/Terrain/Act2_ToMauGoc.bytes";
@@ -215,7 +217,7 @@ public static class Act2GoGhe
     // ================================================================
 
     /// <summary>Ba tang Perlin, cung tan so voi Act1.</summary>
-    static float BaTang(float px, float pz)
+    internal static float BaTang(float px, float pz)
     {
         float doi = (Mathf.PerlinNoise(px * 0.035f + HatDoi, pz * 0.035f + HatDoiZ) - 0.5f) * DoiThoai;
         float go = (Mathf.PerlinNoise(px * 0.110f + HatGo, pz * 0.110f + HatGoZ) - 0.5f) * GoNho;
@@ -228,12 +230,21 @@ public static class Act2GoGhe
     /// khong theo vong tron: hang rao la mot khung vuong, tat theo vong tron thi
     /// bon goc rao van bi xe dich.
     /// </summary>
-    static float MatNaRia(float px, float pz)
+    internal static float MatNaRia(float px, float pz)
     {
         float m = Mathf.Max(Mathf.Abs(px), Mathf.Abs(pz));
-        if (m <= RiaBatDau) return 1f;
-        if (m >= RiaHet) return 0f;
-        return Mathf.SmoothStep(1f, 0f, (m - RiaBatDau) / (RiaHet - RiaBatDau));
+        float trong = m <= RiaBatDau ? 1f : m >= RiaHet ? 0f
+                    : Mathf.SmoothStep(1f, 0f, (m - RiaBatDau) / (RiaHet - RiaBatDau));
+        // VANH MOI (ban do mo rong 27/09/2026, menu 86): vung cu giu y mat na cu (khong xe dich vung dat / dam lay cu),
+        // vanh moi nhap nho nhe VanhBienDo lan bien do, tat ve 0 truoc chan rao moi (rao phai nam dung tren nen phang).
+        float vanh = 0f;
+        if (m > VanhBatDau && m < VanhHet)
+        {
+            float a = Mathf.SmoothStep(0f, 1f, (m - VanhBatDau) / (VanhDinhDau - VanhBatDau));
+            float b = Mathf.SmoothStep(0f, 1f, (VanhHet - m) / (VanhHet - VanhDinhCuoi));
+            vanh = VanhBienDo * Mathf.Min(a, b);
+        }
+        return Mathf.Max(trong, vanh);
     }
 
     struct Vung { public Vector2 tam; public float banKinh; }
@@ -499,7 +510,7 @@ public static class Act2GoGhe
     /// doc) - lam thang bang cua so vuong tren luoi 513x513 voi ban kinh 33 o
     /// la mot ty phep cong.
     /// </summary>
-    static float[,] ChenhSoVoiXungQuanh(TerrainData td, float banKinh)
+    internal static float[,] ChenhSoVoiXungQuanh(TerrainData td, float banKinh)
     {
         int N = td.heightmapResolution;
         var h = td.GetHeights(0, 0, N, N);

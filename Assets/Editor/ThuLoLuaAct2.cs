@@ -86,9 +86,11 @@ public static class ThuLoLuaAct2
         Ghi("A. vi tri (ngoai Play)");
         var lo = TimLo();
         Ghi("so lo trong nhom " + DatLoLuaAct2.TenNhom + ": " + lo.Count);
-        if (lo.Count != DatLoLuaAct2.SoLo) Loi("can " + DatLoLuaAct2.SoLo + " lo");
-
         var ter = Object.FindAnyObjectByType<Terrain>();
+        // Menu 86 (27/09/2026) mo rong ban do them 4 lo o vanh moi
+        int canLo = DatLoLuaAct2.SoLo + (ter.terrainData.size.x > 120f ? Act2MoRong.SoLoMoi : 0);
+        if (lo.Count != canLo) Loi("can " + canLo + " lo");
+
         Vector3 tamMap = ter.transform.position + ter.terrainData.size * 0.5f;
 
         // Va cham tam cho luoi nuoc - an, khong luu
@@ -208,7 +210,9 @@ public static class ThuLoLuaAct2
             // 5. Dau truong, va cham
             float tuTam = new Vector2(p.x - tamMap.x, p.z - tamMap.z).magnitude;
             sb.Append(" cach tam " + tuTam.ToString("F1") + " m");
-            if (tuTam > 50f) Loi(t.name + ": ngoai dau truong");
+            // Sau menu 86 rao la HINH VUONG nua canh Act2MoRong.NuaRaoMoi: lo phai cach mep rao >= 2 m
+            float sVuong = Mathf.Max(Mathf.Abs(p.x - tamMap.x), Mathf.Abs(p.z - tamMap.z));
+            if (ter.terrainData.size.x > 120f ? sVuong > Act2MoRong.NuaRaoMoi - 2f : tuTam > 50f) Loi(t.name + ": ngoai dau truong");
             if (t.GetComponent<CapsuleCollider>() == null) Loi(t.name + ": thieu va cham");
             if (t.GetComponent<LoLuaDa>() == null) Loi(t.name + ": thieu LoLuaDa (khong co lua)");
             for (int j = 0; j < i; j++)

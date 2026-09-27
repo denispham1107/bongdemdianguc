@@ -80,6 +80,10 @@ public static class DatLoLuaAct2
     static void Dat(StringBuilder bao)
     {
         var canh = EditorSceneManager.OpenScene(CanhAct2, OpenSceneMode.Single);
+        // Menu 86 (27/09/2026) da mo rong ban do va them 4 lo o vanh moi: dat lai o day se xoa ca 4 lo ay
+        var terCheck = Object.FindAnyObjectByType<Terrain>();
+        if (terCheck != null && terCheck.terrainData.size.x > 120f)
+            throw new System.Exception("Act2 da mo rong (menu 86) - dat lai 10 lo se xoa 4 lo o vanh moi; tra canh ve ban cu truoc");
         foreach (var g in canh.GetRootGameObjects())
             if (g.name == TenNhom) Object.DestroyImmediate(g);
         Physics.SyncTransforms();

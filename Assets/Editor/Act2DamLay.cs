@@ -123,6 +123,35 @@ public static class Act2DamLay
                 + " m, sau " + SauHo.ToString("F2") + " m) va " + soDam + " bai dam lay.");
     }
 
+    /// <summary>
+    /// DAO THEM vung dam lay vao ban do DA CO mat nuoc (mo rong Act2 27/09/2026, menu 86): cung ba viec dao - to bun -
+    /// ha do dac, mat nuoc them vao nhom MatNuoc co san, ten / luoi danh so tiep tu <paramref name="batDau"/> (khong ghi
+    /// de luoi cua vung cu). Ban kinh / do sau / meo bo boc nhu Dao().
+    /// </summary>
+    public static int DaoThem(Terrain terr, Transform world, IList<Vector2> tam, IList<float> banKinh, int batDau, int hat)
+    {
+        if (terr == null || world == null) return 0;
+        var cha = world.Find("MatNuoc");
+        var rnd = new System.Random(hat);
+        var vung = new List<Vung>();
+        for (int i = 0; i < tam.Count; i++)
+            vung.Add(new Vung
+            {
+                tam = tam[i],
+                banKinh = banKinh[i],
+                sau = Mathf.Lerp(SauDamMin, SauDamMax, (float)rnd.NextDouble()),
+                nuoc = NuocTrongDam,
+                lechGoc = (float)rnd.NextDouble() * 10f,
+                laHo = false
+            });
+        NoiChoDao(terr);
+        HaDoCao(terr, vung);
+        ToLopBun(terr, vung);
+        HaDoDac(terr, world, vung);
+        DungMatNuoc(terr, world, vung, cha, batDau, true);
+        return vung.Count;
+    }
+
     // ================================================================
     //  1. CHON CHO
     // ================================================================
@@ -384,22 +413,43 @@ public static class Act2DamLay
     //  6. MAT NUOC
     // ================================================================
 
-    static void DungMatNuoc(Terrain terr, Transform world, List<Vung> vung)
+    static void DungMatNuoc(Terrain terr, Transform world, List<Vung> vung, Transform chaCo = null, int batDau = 0,
+                            bool haTheoGoTran = false)
     {
         var vatLieu = LamVatLieuNuoc();
-        var cha = new GameObject("MatNuoc").transform;
-        cha.SetParent(world, false);
+        var cha = chaCo;
+        if (cha == null)
+        {
+            cha = new GameObject("MatNuoc").transform;
+            cha.SetParent(world, false);
+        }
 
         for (int i = 0; i < vung.Count; i++)
         {
             var v = vung[i];
+            int so = batDau + i;
 
             // Mat nuoc nam thap hon mep bo, nen no nam GON trong long chao
             float dayY = terr.SampleHeight(new Vector3(v.tam.x, 0f, v.tam.y))
                        + terr.transform.position.y;
             float mucNuoc = dayY + v.nuoc;
+            // Vung nuoc them sau (menu 86): ha muc nuoc duoi GO TRAN cua chau - huong thap nhat cua bo - de moi huong deu
+            // gap bo truoc ban kinh tran; khong thi phia dat doc xuong dia nuoc dung o ban kinh toi da va lo lung.
+            if (haTheoGoTran)
+            {
+                float goTran = 9e9f, gY = terr.transform.position.y;
+                for (int k = 0; k < 80; k++)
+                {
+                    float a = k / 80f * Mathf.PI * 2f, cao = -9e9f;
+                    for (float bk = 0.1f; bk <= v.banKinh * 1.45f; bk += 0.1f)
+                        cao = Mathf.Max(cao, terr.SampleHeight(new Vector3(v.tam.x + Mathf.Cos(a) * bk, 0f, v.tam.y + Mathf.Sin(a) * bk)) + gY);
+                    goTran = Mathf.Min(goTran, cao);
+                }
+                mucNuoc = Mathf.Min(mucNuoc, goTran - TranToiDa - 0.01f);
+                Debug.Log("[DamLay] " + so + ": do sau nuoc giua " + (mucNuoc - dayY).ToString("F3") + " m (mac dinh " + v.nuoc + ")");
+            }
 
-            var go = new GameObject(v.laHo ? "HoNuoc_TrungTam" : "DamLay_" + i);
+            var go = new GameObject(v.laHo ? "HoNuoc_TrungTam" : "DamLay_" + so);
             go.transform.SetParent(cha, false);
             go.transform.position = new Vector3(v.tam.x, mucNuoc, v.tam.y);
 
@@ -410,7 +460,7 @@ public static class Act2DamLay
             var boVe = DoBoNuoc(v, terr, mucNuoc + TranToiDa);
             var boLoi = DoBoNuoc(v, terr, mucNuoc);
 
-            go.AddComponent<MeshFilter>().sharedMesh = LamDia(v, i, terr, mucNuoc, boVe);
+            go.AddComponent<MeshFilter>().sharedMesh = LamDia(v, so, terr, mucNuoc, boVe);
             var r = go.AddComponent<MeshRenderer>();
             r.sharedMaterial = vatLieu;
             r.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;

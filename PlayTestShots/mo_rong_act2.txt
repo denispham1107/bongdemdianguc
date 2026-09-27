@@ -1,0 +1,10 @@
+Vung nuoc moi (57, -7): chenh cao trong 5.0 m = 0.151 m
+Vung nuoc moi (-31, -58): chenh cao trong 5.0 m = 0.152 m
+Vung nuoc moi (-60, -54): chenh cao trong 5.0 m = 0.160 m
+Vung nuoc moi (-2, -60): chenh cao trong 5.0 m = 0.207 m
+Vung nuoc moi (49, 61): chenh cao trong 5.0 m = 0.288 m
+Vung nuoc moi (-25, 57): chenh cao trong 5.0 m = 0.314 m
+terrain 134.63 m (cu 109,20), rao moi nua canh 66.41 m (cu 53,70), D 12.714 m, dien tich trong rao x1.530
+do dac moi: bia 100/100, cay 13/13, da 51/51, nha mo 2, lo lua 4, dam lay 6
+dat lai 192 vat, dich nhieu nhat -0.13 m; vung cu (3000 diem |x|,|z| <= 50): lech TB 0.0007 m, lon nhat 0.1395 m
+ban kinh cho xuat phat 62 m (cu 50); hang rao HangRaoRong

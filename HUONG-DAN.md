@@ -8603,6 +8603,74 @@ châm cả bia mộ / nhà mồ (tính năng sáng nay), đầy trần "4 vật 
 
 Ảnh: `PlayTestShots/maygiong_1_dem_can.png`, `maygiong_2_chay_den.png`, `maygiong_3_ngay_goc_choi.png`.
 
+### Act2 rộng thêm 50%: rào mới dựng lại trong Blender, vành đất mới có cây, bia, đá, nhà mồ, lò lửa và 6 vũng nước (27/09/2026)
+
+**Người dùng xin:** bản đồ rộng thêm 50%, phần mới phải nằm **trong** hàng rào; thêm cây cối, bia mộ và 6 vũng nước.
+Người dùng chọn: nới **đều cả 4 phía**, vành mới **thưa hơn một nửa** vùng cũ, rào **dựng lại trong Blender MCP**,
+thêm cả **đá rải rác, lò lửa, nhà mồ**.
+
+**Cách làm — menu 86** (`Assets/Editor/Act2MoRong.cs`, chạy MỘT lần; terrain đã rộng hơn 120 m thì tự bỏ qua):
+
+- **Rào**: trong Blender, cắt rào cũ thành bốn góc rồi đẩy mỗi góc ra ngoài D = 5 nhịp cột / 2 = **12,714 m**. Mỗi cạnh chèn
+  thêm 5 mô-đun cột + song sắt (chép từ đoạn rào ngay đó, chân nghiêng theo độ cao hai đầu), hàn đường nối (384 đỉnh, 0 cạnh hở).
+  Kết quả là `BlenderMaps/GraveyardAct2/hang_rao_rong.fbx` (bản Blender ở `CongCu/Blender/hang_rao_rong.blend`), nửa cạnh
+  53,7 → **66,41 m**, diện tích trong rào **×1,530**. Cổng mở duy nhất của rào cũ vẫn là cổng duy nhất, dời theo đoạn rào của nó.
+- **Đất**: terrain 109,2 → **134,63 m** (vẫn 513 điểm độ cao, 1024 điểm tô).
+  - Trong 51 m: **chép nguyên độ cao và nét tô thật** của bản cũ.
+  - Ở vành: dùng nền bát cũ nhưng **trượt theo đúng cách đã trượt rào**, nên chân rào mới đứng trên đúng cái nền nó đứng trước đây,
+    rồi cộng lớp gồ ghề của vành. Nối hai phần qua 3,5 m.
+  - Nét tô ở vành theo đúng luật cỏ / đất / sỏi dốc của Act2; vệt đường cũ trượt theo nên vẫn dẫn vào cổng.
+- **Đồ đạc**: đều là bản sao đồ đạc cũ, dùng cùng lưới, nên điểm mồi lửa nướng sẵn vẫn dùng được và Thiên thạch đốt cháy chúng
+  y hệt đồ cũ. Độ chôn chân của mỗi bản sao lấy theo đúng vật gốc của nó.
+
+  | | Trước | Thêm | Sau |
+  |---|---|---|---|
+  | Bia mộ | 452 | 100 | 552 |
+  | Cây | 58 | 13 | 71 |
+  | Đá | 229 | 51 | 280 |
+  | Nhà mồ | 5 | 2 | 7 |
+  | Lò lửa | 10 | 4 | 14 |
+  | Mặt nước | 11 | 6 | 17 |
+
+  Nhà mồ mới quay cửa vào trong bản đồ. Chỗ xuất phát và quái rải trong vòng `arenaRadius` **50 → 62 m**
+  (giữ tỉ lệ 50 / 53,7 so với rào).
+
+**Số đo** (`PlayTestShots/mo_rong_act2.txt`, ảnh `PlayTestShots/mo_rong_act2_*.png`):
+
+| Đo | Kết quả |
+|---|---|
+| Vùng cũ, 3000 điểm \|x\|,\|z\| ≤ 50 | lệch trung bình 0,0007 m, lớn nhất 0,14 m |
+| Đáy cột rào − mặt đất (đối chứng: rào cũ trên nền cũ) | mới: TB −0,625, lệch chuẩn **0,217** · cũ: TB −0,664, lệch chuẩn 0,256; 0 cột hở chân |
+| Mép nước của 17 mặt nước (80 đỉnh vòng ngoài mỗi vũng) | 0 đỉnh nổi trên đất quá 2 cm |
+| Lò có va chạm | 14/14 |
+| Menu 54b (lò cháy · có đèn · chặn người) | 14/14 · 14/14 · 14/14, 0 lỗi |
+| Menu 56, 64 | 0 lỗi |
+| Điểm mồi lửa cho vật mới | cây 13/13, bia 100/100, nhà mồ 2/2 (đối chứng vật cũ: 58/58 · 452/452 · 5/5) |
+
+**Những chỗ tôi đã đi sai:**
+
+1. **Lần chạy đầu tính lại cả bản đồ** bằng "nền + gồ ghề", nên vùng cũ lệch tới **0,96 m**. Lý do: lòng hồ và đầm lầy đã được đào
+   *sau* khi cộng lớp gồ ghề, nên công thức không còn tái tạo được chúng. Từ đó vùng cũ luôn chép từ dữ liệu thật.
+2. **Đổi toạ độ Blender → Unity sai dấu x.** Tôi dùng Unity x = Blender x, nhưng lưới rào nhập vào Unity bị **xoay 180°**:
+   Unity x = −Blender x, Unity z = −Blender y.
+   - Phát hiện nhờ cổng mở: Blender ở x −12,7, còn Unity quét khe thì thấy ở x +12,7.
+   - Chốt bằng chân 84 cột rào cũ trên nền cũ: cách đúng cho lệch chuẩn 0,256 m, cách sai cho 0,496 m.
+   - Hậu quả nếu để nguyên: đất vành dọc cạnh bắc / nam bị kéo ngược chiều với rào, và vệt đường cũ dẫn tới tường kín cách cổng thật 25 m.
+   - ⚠️ Phép so chân cột lúc đầu vẫn báo "khớp" vì so cả rào cũ lẫn rào mới bằng **cùng** phép đổi sai. Nền bát gần như đối xứng
+     nên số trung bình không đổi. Chỉ **độ lệch chuẩn** mới lộ ra.
+3. **4 lò mới không có va chạm**, người chơi đi xuyên qua. `CapsuleCollider` của lò được menu 54 gắn trong cảnh chứ không nằm trong
+   prefab, mà `CopySerialized` chỉ chép sang component đã có. Nay component nào thiếu thì thêm vào trước khi chép. Menu 54b bắt được lỗi này.
+4. **Vũng nước đặt ở chỗ cố định**: 2/6 vũng nằm trên dốc và đĩa nước lơ lửng ở phía thấp. Đổi sang chọn chỗ phẳng nhất thì
+   vẫn còn một vũng hở 0,118 m, lộ **viền tròn cứng**. "Phẳng" chưa đủ: mép đĩa nước là chỗ đất cao tới mực nước, nên phía đất
+   cứ thấp dần thì chậu không khép lại được.
+   - Nay khi chọn chỗ, chỉ nhận chỗ mà gờ tràn (hướng thấp nhất của vành ngoài vùng đào) không thấp hơn mực nước dự kiến.
+   - Khi đổ nước, hạ mực nước xuống dưới gờ tràn (`Act2DamLay.DungMatNuoc(..., haTheoGoTran)`, chỉ cho vũng thêm sau).
+   - Nước giữa vũng còn sâu 0,10–0,16 m, bản cũ là 0,20 m.
+
+⚠️ **Đừng chạy lại menu 54** trên bản đồ đã mở rộng. Nó xoá cả nhóm lò rồi đặt lại 10 lò trong vùng cũ, mất 4 lò ở vành;
+menu đã tự chặn trường hợp này. Muốn dựng lại từ đầu thì trả `Act2.unity` và ba file terrain về bản cũ, xoá
+`Act2_LuoiDamLay_11…16`, rồi chạy lại menu 86.
+
 ### Mây giông cần Lốc xoáy cấp 5 mới mở khoá (26/09/2026)
 
 Anh xin: **mở khoá Mây giông phải có Lốc xoáy cấp 5** (lúc ra mắt Mây giông không có điều kiện). Thêm một dòng vào bảng bậc
@@ -10963,10 +11031,11 @@ Lần chạy đầu phép thử báo cả 10 con "lơ lửng": tia chiếu từ 
 | **73. Chay thu TANG HINH (ky nang moi)** | Thông số (số hiệu 12, 30 năng lượng, hồi chiêu 30 s, 20 giây); thân đổi sang shader tàng hình rồi trả lại; miễn 6 hiệu ứng (đối chứng lúc thường dính đủ), xoá hiệu ứng đang dính, vẫn ăn sát thương; 24 quái thật mất dấu; tốc độ ×1,20 đo bằng quãng đường; đòn đầu ×2,00 rồi tan, Khiên không làm tan; hết giờ tự tan; qua mạng bit `CoTangHinh`, bản sao đứng yên tắt renderer; **nhấp nháy 2 giây cuối** (18 lần đổi sáng/tối, bản sao người khác không nháy) và hai ảnh hai pha; **đòn đầu ×2 cho TOÀN BỘ sát thương**: từng vệt Mưa băng 29,04 → 58,08, Quả cầu băng cấp 5 442,4 → 884,7; cờ đòn đầu đi qua gói phép (người kia tung qua mạng cũng ×2). Số đo `tanghinh.txt`. |
 | **72. Chay thu LUA DIA NGUC (ky nang moi)** | Thông số (số hiệu 11, năng lượng 31/hồi chiêu/niệm, sát thương gốc = prefab Quả cầu lửa × 1,2⁴, chữ Sách phép, icon); tung thật 5 quả; tự dí 5 bia ngoài hình quạt (đối chứng Quả cầu lửa thường 0 bia), 1 bia, bia chạy ngang, mục tiêu chết giữa đường, không có ai bay thẳng 18°; sát thương so với Quả cầu lửa cấp 5 thật + thiêu đốt; màu giống hệt Quả cầu lửa; qua mạng + kẻ đánh. Tạm tắt va chạm đồ vật 26 m (Act2 không có chỗ trống). Số đo `luadianguc.txt`. |
 | **70. Chay thu QUA CAU LUA (85 sat thuong, vet lua moi)** | Sát thương đọc thẳng prefab và trên quả cầu thật khi tung; quả cầu sinh từ prefab bay vào bia (mất 85 × giảm theo khoảng cách); hạt `Flames` không còn ảnh tam giác mà là flipbook Blender, có vệt lửa dài `TrailRenderer`; nổ xong vệt được thả ra; chụp cận cảnh lúc bay. Chạy trên bản cũ ra 7 lỗi (đối chứng). Số đo `quacaulua.txt`. |
+| **86. Mo rong Act2 them 50% (rao moi + vanh dat + do dac)** | Chạy MỘT lần trên Act2 gốc: rào mới từ Blender (nửa cạnh 66,41 m), terrain 134,63 m (vùng cũ chép nguyên), thêm 100 bia · 13 cây · 51 đá · 2 nhà mồ · 4 lò · 6 vũng nước ở vành, `arenaRadius` 62. Báo cáo `PlayTestShots/mo_rong_act2.txt`. Terrain đã rộng thì tự bỏ qua. |
 | **56. Chay thu DOT QUAI Act2 + cho xuat phat** | *(13/09/2026: thêm đo chờ 30 giây và 10 con xa 55–65 m)*  Kiểm chỗ xuất phát ngẫu nhiên (hai máy cùng mã phòng ra cùng danh sách, cách nhau ≥ 22 m, trên đất, ngoài nước, không vướng vật cản) và luật đợt quái Act2 (đợt 1 bốn con quanh mỗi người; đợt sau cộng dồn quái và mạnh thêm 5% máu · sát thương); kiểm Act1 không bị đổi. Số đo `dotquai_act2.txt`. |
 | **55. Chay thu KET TRAN (nguoi song sot cuoi cung)** | Mở kênh giả lập như menu 45: kiểm gói tin kết trận/chết, máy chủ phòng phán quyết đúng lúc còn một người, bảng điểm cộng đúng người, máy khách không tự kết luận và hiện đúng kết quả nghe được, chết rồi camera chuyển sang người còn sống, chụp màn kết trận. Số đo `kettran.txt`, ảnh `kettran_*.png`. |
 | **54c. Chay thu LOC XOAY cuon lo lua** | Vào Play Act2, thả một cơn lốc đi thẳng vào lò: đo mốc thời gian lửa tắt / lò nhấc lên / lò biến mất / lò mọc lại, kiểm than trong chậu tắt bằng độ sáng trên ảnh, và kiểm vật có hệ hạt khác vẫn không bị cuốn. Ảnh `locxoay_*.png`, số đo `locxoay_lolua.txt`. |
-| **54b. Chay thu lo lua Act2** | Kiểm 10 lò bằng cách khác lúc đặt (va chạm tạm cho lưới nước, tia chiếu lên tìm mái nhà, hộp bao bia, độ cao địa hình quanh chân); trong Play: lửa + đèn bật, nhân vật đi thẳng vào lò bị chặn; chụp `lolua_*.png` + bản đồ. Số đo `lolua_act2.txt`. |
+| **54b. Chay thu lo lua Act2** | Kiểm 10 lò (14 lò sau menu 86; lò vành mới phải cách mép rào vuông ≥ 2 m) bằng cách khác lúc đặt (va chạm tạm cho lưới nước, tia chiếu lên tìm mái nhà, hộp bao bia, độ cao địa hình quanh chân); trong Play: lửa + đèn bật, nhân vật đi thẳng vào lò bị chặn; chụp `lolua_*.png` + bản đồ. Số đo `lolua_act2.txt`. |
 | **53. Chay thu HUD KINH DI (mau, mana, thong bao)** | Ngoài Play: chạy hàm bố cục HUD với chữ dài nhất ở 11 cỡ màn hình × PC/cảm ứng — khung chữ không ra ngoài, không đè nhau hay đè nút; số máu/mana lọt thanh. Quét chuỗi 4 file HUD: đủ ký tự trong cmap Inter, không còn chữ không dấu cũ. Trong Play (Act2): bật cùng lúc mọi thông báo + máu thấp, đọc bố cục thật, chụp `hud_*.png`. Số đo `hudkinhdi.txt`. |
 | **52. Chay thu TEN TREN DAU nhan vat** | Vào Play ở Act2, gắn tên cho nhân vật của mình, sinh ba bản sao tên có dấu quanh mình; đo từng bảng tên: có vẽ, trong màn hình, ngay trên chóp mũ (đo độc lập bằng lưới bake) không quá 0,30 m, đúng màu, font Inter đủ 134 chữ có dấu (đọc cmap), ghép dấu rời đúng (252 cách gõ), nền trong suốt (đo trên ảnh chụp, có mẫu đối chứng nền đen), không đè nhau, người gục thì tên mờ. Gọi `GiaoDien.ChuanBi` như màn sảnh. Ảnh `bangten_*.png`, số đo `bangten.txt`. |
 | **51c. Chup nen man chinh (lo da, ngon lua)** | Vào Play, tắt giao diện, chụp toàn cảnh (thêm một ảnh `Camera.main` đúng 1920 × 1080), cận lò đá, cận ngọn lửa; đo từng tấm flipbook (khói đen, hai tấm lửa: số hạt, vật liệu, texture), tam giác, vật đổ bóng. Ảnh `nen_*.png`, số đo `nenmanchinh.txt`. |

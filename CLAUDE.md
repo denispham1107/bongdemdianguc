@@ -90,10 +90,10 @@ thì lệnh MCP hết giờ.
 > `EditorSceneManager.OpenScene("Assets/Scenes/Act2.unity", Single)` trả lại ngay — không thì
 > người dùng quay lại Unity thấy màn của mình biến mất.
 
-**Menu `Diablo 2.5D`** trong Unity (86 mục): 1 nướng asset + dựng màn, 3 tự kiểm tra,
+**Menu `Diablo 2.5D`** trong Unity (87 mục): 1 nướng asset + dựng màn, 3 tự kiểm tra,
 4 chạy thử & chụp hình, 14 chống ô vuông đen, 15–17 ảnh vỏ cây / đá mộ / sứt mẻ bia,
 18–18d chạy thử cây cháy, 19 hồi sinh sau lốc, 20 nướng điểm mồi lửa (cây · bia mộ · nhà mồ), 21 nút khoá góc nhìn,
-22 thanh kỹ năng bản PC, **26 chạy thử mạng (sảnh phòng), 27 chạy thử khoá tài khoản, 28 chụp màn đăng nhập·sảnh, 29 xuất bản WebGL, 30/30b bơm input Act2·Act1 (bước 1), 31 dự đoán & hiệu chỉnh (bước 2), 32 nhiều người một cảnh (bước 3), 33 nội suy (bước 4), 34 PvP (bước 5), 35 ghép phòng cùng màn, 36 tự gắn bộ nối mạng, 37 kỹ năng qua mạng, 38 quái chung & bù trễ, 39 đòn của quái qua mạng, 40 máu khởi đầu, 41 nhịp bước qua mạng, 42 chế độ điều khiển, 43 kiểm toán bước 5, 44 sửa bước 5, 45 bốn người, 46 hiệu ứng qua mạng, 47 chế độ bốn bộ xương, 48 cài đặt đồ hoạ, 49 cầu lửa trúng người·khiên, 50 giao diện đăng nhập·sảnh·phòng, 51/51b/51c màn chính từ Act2 (dựng · chọn góc · chụp lò lửa), 52 tên trên đầu nhân vật, 53 HUD kinh dị trong trận, 54/54b/54c mười lò lửa Act2 (đặt · chạy thử · lốc xoáy cuốn lò), 55 kết trận (người sống sót cuối cùng), 56 đợt quái Act2 · chỗ xuất phát, 57 bàn phím ảo che ô nhập, 58 mưa băng·sấm sét (đóng băng, choáng), 59 sách phép (kéo thả ô kỹ năng), 60 cấp độ·kinh nghiệm·điểm kỹ năng, 61 kinh nghiệm theo từng kỹ năng, 62 thiên thạch đánh ngã, 63 đánh ngã người chơi khác qua mạng, 64 quái vòng ngoài truy lùng sau 60 giây, 65 bình máu · bình mana (rơi, nhặt, uống, mạng), 66 nút KỸ NĂNG ở sảnh (Sách phép xem trước) · con mắt quỷ, 67 Mưa băng đóng băng người chơi khác (qua mạng), 68 Quả cầu băng, 69 Giựt sét (12 m · 75 · 4 tia · 15% choáng · Quỷ cây), 70 Quả cầu lửa (85 · vệt lửa mới), 71/71b Gió lốc (chạy thử · chụp ảnh), 72 Lửa địa ngục, 73 Tàng hình, 74 Quả cầu điện, 75 Hoá lốc xoáy · Gió lốc hồi mana, 76 Tốc biến, 77 Kháng hệ (nhóm bị động), 78 cụm nút kỹ năng cảm ứng, 79 ánh sáng vòng đêm → ngày → chiều lặp lại (Act2), 80 bốn việc Sách phép (bình cấp 1–3 · quả cầu xuyên bia · băng dập lò · bị động Tốc độ), 81 Thiên thạch đốt bia mộ · nhà mồ, 82 Lốc xoáy hình Blender (một chiều, cuốn lên) · Gió lốc hất tung 80%, 83 Mây giông, 84 quả cầu NẢY · Gió lốc hình quạt, 85 xác nằm trên vũng máu · dấu "+" nâng cấp trên ô kỹ năng**.
+22 thanh kỹ năng bản PC, **26 chạy thử mạng (sảnh phòng), 27 chạy thử khoá tài khoản, 28 chụp màn đăng nhập·sảnh, 29 xuất bản WebGL, 30/30b bơm input Act2·Act1 (bước 1), 31 dự đoán & hiệu chỉnh (bước 2), 32 nhiều người một cảnh (bước 3), 33 nội suy (bước 4), 34 PvP (bước 5), 35 ghép phòng cùng màn, 36 tự gắn bộ nối mạng, 37 kỹ năng qua mạng, 38 quái chung & bù trễ, 39 đòn của quái qua mạng, 40 máu khởi đầu, 41 nhịp bước qua mạng, 42 chế độ điều khiển, 43 kiểm toán bước 5, 44 sửa bước 5, 45 bốn người, 46 hiệu ứng qua mạng, 47 chế độ bốn bộ xương, 48 cài đặt đồ hoạ, 49 cầu lửa trúng người·khiên, 50 giao diện đăng nhập·sảnh·phòng, 51/51b/51c màn chính từ Act2 (dựng · chọn góc · chụp lò lửa), 52 tên trên đầu nhân vật, 53 HUD kinh dị trong trận, 54/54b/54c mười lò lửa Act2 (đặt · chạy thử · lốc xoáy cuốn lò), 55 kết trận (người sống sót cuối cùng), 56 đợt quái Act2 · chỗ xuất phát, 57 bàn phím ảo che ô nhập, 58 mưa băng·sấm sét (đóng băng, choáng), 59 sách phép (kéo thả ô kỹ năng), 60 cấp độ·kinh nghiệm·điểm kỹ năng, 61 kinh nghiệm theo từng kỹ năng, 62 thiên thạch đánh ngã, 63 đánh ngã người chơi khác qua mạng, 64 quái vòng ngoài truy lùng sau 60 giây, 65 bình máu · bình mana (rơi, nhặt, uống, mạng), 66 nút KỸ NĂNG ở sảnh (Sách phép xem trước) · con mắt quỷ, 67 Mưa băng đóng băng người chơi khác (qua mạng), 68 Quả cầu băng, 69 Giựt sét (12 m · 75 · 4 tia · 15% choáng · Quỷ cây), 70 Quả cầu lửa (85 · vệt lửa mới), 71/71b Gió lốc (chạy thử · chụp ảnh), 72 Lửa địa ngục, 73 Tàng hình, 74 Quả cầu điện, 75 Hoá lốc xoáy · Gió lốc hồi mana, 76 Tốc biến, 77 Kháng hệ (nhóm bị động), 78 cụm nút kỹ năng cảm ứng, 79 ánh sáng vòng đêm → ngày → chiều lặp lại (Act2), 80 bốn việc Sách phép (bình cấp 1–3 · quả cầu xuyên bia · băng dập lò · bị động Tốc độ), 81 Thiên thạch đốt bia mộ · nhà mồ, 82 Lốc xoáy hình Blender (một chiều, cuốn lên) · Gió lốc hất tung 80%, 83 Mây giông, 84 quả cầu NẢY · Gió lốc hình quạt, 85 xác nằm trên vũng máu · dấu "+" nâng cấp trên ô kỹ năng, 86 mở rộng Act2 thêm 50%**.
 Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
 
 ## Quy tắc làm việc (rút ra từ những lần đã sai)
@@ -116,7 +116,14 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
 
 ## Trạng thái hiện tại
 
-- Act2 sạch: **1011 vật thể**, 0 ô vật liệu hỏng, camera `near = 1.50`.
+- Act2 sạch: **1011 vật thể** (trước khi mở rộng), 0 ô vật liệu hỏng, camera `near = 1.50`.
+- ⚠️ **ACT2 ĐÃ RỘNG THÊM 50%** (người dùng 27/09/2026, **menu 86** `Act2MoRong.cs`, chạy MỘT lần): rào mới dựng lại bằng Blender MCP
+  (`hang_rao_rong.fbx`, nửa cạnh 53,7 → **66,41 m**, diện tích ×1,53, vẫn một cổng mở), terrain 109,2 → **134,63 m** (vùng |x|,|z| ≤ 51
+  chép nguyên), vành mới thưa hơn: +100 bia · 13 cây · 51 đá · 2 nhà mồ · 4 lò · 6 vũng nước → **552 bia · 71 cây · 280 đá · 7 nhà mồ ·
+  14 lò · 17 mặt nước**; `arenaRadius` 50 → **62** (GameDirector + GameBootstrap trong scene). ⚠️ Lưới rào Blender nhập vào Unity
+  **XOAY 180°: Unity x = −Blender x, z = −Blender y** (tôi từng lấy x = +Blender x — đất vành kéo ngược rào; so chân cột thì phải xem
+  **độ lệch chuẩn**, trung bình không lộ). ⚠️ **Đừng chạy lại menu 54** (xoá mất 4 lò vành — menu đã tự chặn). Vũng nước thêm sau hạ
+  mực dưới gờ tràn (`DungMatNuoc(..., haTheoGoTran)`) — đĩa nước không bao giờ nổi viền tròn. Menu 54b đếm 14 lò.
 - **Máu người chơi: 600** (12/09/2026 người dùng chốt; trước đó 30 000 để chạy thử). Con số nằm ở bốn chỗ —
   `GameBootstrap.playerMaxHealth`, hai scene, `Player_Sorceress.prefab` — và menu 40 kiểm cả bốn (kể cả bản sao
   người chơi khác, vì nó lấy máu thẳng từ prefab).
@@ -558,7 +565,7 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
   dựng/thiết kế phải qua Blender MCP). Lửa + khói đen: mô phỏng Mantaflow trong Blender qua MCP
   (`CongCu/Blender/lua_lo_da.blend`) → flipbook `LuaLo` / `KhoiDen`, ba tấm đứng yên mỗi lò, dựng lúc chạy
   bởi `LoLuaDa` → `VfxFactory.LuaLoDa`. ⚠️ `VerticalBillboard` vẽ tứ giác **0,707×** kích thước đặt — đã bù √2.
-- **Act2 có 10 lò lửa đá** (cùng prefab `LoLuaDa`, nhóm gốc `LoLua_Act2`, có va chạm) do **menu 54** đặt: lò giữa = chỗ
+- **Act2 có 10 lò lửa đá** (+4 ở vành mới do menu 86 = 14) (cùng prefab `LoLuaDa`, nhóm gốc `LoLua_Act2`, có va chạm) do **menu 54** đặt: lò giữa = chỗ
   đất khô gần tâm nhất (tâm là hồ nước), không dưới nước / trong nhà mồ / sát bia — đổi luật hay dựng lại Act2 thì chạy
   lại menu 54 rồi 54b, đừng kéo tay. **Lốc xoáy dập tắt lửa rồi cuốn cả lò đi, 30 giây sau lò mọc lại và cháy
   tiếp** (menu 54c) — `LoLuaDa.DapTat/Chay`, ngoại lệ duy nhất của luật "vật có hệ hạt thì không cuốn".
