@@ -8603,6 +8603,35 @@ châm cả bia mộ / nhà mồ (tính năng sáng nay), đầy trần "4 vật 
 
 Ảnh: `PlayTestShots/maygiong_1_dem_can.png`, `maygiong_2_chay_den.png`, `maygiong_3_ngay_goc_choi.png`.
 
+### Cổng rào dựng lại: vòm đá liền khối, hai cánh cổng sắt đóng kín (27/09/2026)
+
+**Người dùng thấy:** trên vòm cổng, các viên gạch bay lơ lửng giữa không trung (ảnh chụp trong trận).
+
+**Nguyên nhân:** lỗi có sẵn từ thiết kế rào gốc, không phải do lần mở rộng.
+- Vòm là 11 viên đá nhỏ rời nhau (0,46 × 0,10 × 0,14 m), đặt thưa theo một đường cong ở độ cao 3,7–4,4 m.
+- Các viên không chạm nhau, cũng không chạm cột.
+- Dưới vòm là bức tường thấp 1,1 m. Mặt đất ở lối cổng lại võng xuống (1,1 m ở chân cột, 0,55 m ở giữa), nên nhìn như tường bị lún.
+
+**Người dùng chọn:** vòm đá liền khối, hai cánh cổng sắt đóng. Ra khỏi rào là hết đất, nên cổng phải chặn.
+
+**Dựng lại bằng Blender MCP** (`CongCu/Blender/hang_rao_rong.blend` → `hang_rao_rong.fbx`):
+- Xoá 15 mảnh cũ: 11 viên đá vòm và bức tường thấp cùng nắp của nó.
+- **Vòm đá:** 11 viên hình nêm khít nhau trên cung tròn bán kính 4,88 / 5,30 m. Viên khoá ở đỉnh to và dày hơn.
+  Hai chân vòm cắm vào trong thân cột: chân vòm ở tâm cột, lưng vòm ở đó cao 3,56 m, thấp hơn đỉnh cột 3,71 m.
+- **Hai cánh cổng sắt:** khung đứng có đầu nhọn, song cách 0,15 m có mũi nhọn, thanh ngang giữa, hai thanh cong trên có vòng
+  trang trí, bản lề cắm vào cột, khoá ở giữa nối hai cánh.
+  - Đỉnh cánh cong lên giữa: 3,27 m ở bản lề, 3,62 m ở giữa; lòng vòm ở giữa cao 3,95 m.
+  - **Mỗi song cắm xuống đúng mặt đất tại chỗ nó đứng.** Độ cao đất đo trong Unity; lưới Blender nằm trong Unity **xoay 180°**,
+    nên Unity x = −Blender x. Thanh ngang dưới nghiêng theo rãnh đất, không chừa khe nào dưới cổng.
+
+**Số đo** (ảnh `PlayTestShots/cong_rao_*.png`):
+
+| Đo | Trước | Sau |
+|---|---|---|
+| Cụm mảnh không chạm cột / đất ở lối cổng (gom mảnh chạm nhau, xét cụm có cắm xuống đất không) | **7** (viên vòm ở 3,9–4,24 m) | **0** (242 mảnh → 1 cụm) |
+| Khối cầu r 0,45 m đi ra ngoài qua rào, bước 0,25 m trên cả 4 cạnh | lọt ở cổng (x 11,15–14,40) | 0 / 2096 |
+| Lưới rào trong Unity | 85 296 đỉnh | 89 960 đỉnh, khung bao giữ nguyên ±66,41 |
+
 ### Act2 rộng thêm 50%: rào mới dựng lại trong Blender, vành đất mới có cây, bia, đá, nhà mồ, lò lửa và 6 vũng nước (27/09/2026)
 
 **Người dùng xin:** bản đồ rộng thêm 50%, phần mới phải nằm **trong** hàng rào; thêm cây cối, bia mộ và 6 vũng nước.

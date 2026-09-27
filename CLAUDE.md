@@ -124,6 +124,8 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
   **XOAY 180°: Unity x = −Blender x, z = −Blender y** (tôi từng lấy x = +Blender x — đất vành kéo ngược rào; so chân cột thì phải xem
   **độ lệch chuẩn**, trung bình không lộ). ⚠️ **Đừng chạy lại menu 54** (xoá mất 4 lò vành — menu đã tự chặn). Vũng nước thêm sau hạ
   mực dưới gờ tràn (`DungMatNuoc(..., haTheoGoTran)`) — đĩa nước không bao giờ nổi viền tròn. Menu 54b đếm 14 lò.
+  **Cổng rào** (duy nhất, cạnh bắc Unity x ≈ +12,7) dựng lại bằng Blender MCP: vòm đá liền khối + hai cánh cổng sắt ĐÓNG (người dùng
+  chọn; trước là 11 viên đá vòm rời lơ lửng + tường thấp) — song cắm xuống đất từng chỗ, rào kín 0/2096 đường lọt.
 - **Máu người chơi: 600** (12/09/2026 người dùng chốt; trước đó 30 000 để chạy thử). Con số nằm ở bốn chỗ —
   `GameBootstrap.playerMaxHealth`, hai scene, `Player_Sorceress.prefab` — và menu 40 kiểm cả bốn (kể cả bản sao
   người chơi khác, vì nó lấy máu thẳng từ prefab).
