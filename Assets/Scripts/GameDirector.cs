@@ -340,6 +340,15 @@ public class GameDirector : MonoBehaviour
     /// <summary>Quai dot nay manh gap may lan dot dau.</summary>
     public float HeSoManhDot { get { return Mathf.Pow(1f + ManhThemMoiDot, Mathf.Max(0, Wave - 1)); } }
 
+    /// <summary>
+    /// SAT THUONG quai dot dau = 65% sat thuong goc (nguoi dung 27/09/2026: giam 35%, CHI Act2). Cac dot sau van +5% moi dot
+    /// nhung tinh tu muc 65% nay: dot n = 0,65 x 1,05^(n-1). MAU quai khong doi (van 1,05^(n-1)).
+    /// </summary>
+    public const float HeSoSatThuongDotDau = 0.65f;
+
+    /// <summary>Sat thuong quai dot nay gap may lan sat thuong GOC cua loai quai (menu 56 doc).</summary>
+    public float HeSoSatThuongDot { get { return HeSoSatThuongDotDau * HeSoManhDot; } }
+
     /// <summary>So hieu cap cho con quai ke tiep. Chi chu phong dung den.</summary>
     ushort soHieuKeTiep = 1;
 
@@ -633,23 +642,28 @@ public class GameDirector : MonoBehaviour
         }
     }
 
-    /// <summary>Nhan mau va sat thuong cua mot con quai theo he so cua dot.</summary>
+    /// <summary>
+    /// Nhan mau theo he so cua dot, sat thuong theo he so dot x <see cref="HeSoSatThuongDotDau"/>. Chi hai duong sinh quai
+    /// cua luat dot Act2 goi ham nay (quanh nguoi choi + vong ngoai) - Act1 giu nguyen sat thuong goc (nguoi dung chon).
+    /// </summary>
     void LamManhTheoDot(GameObject go, float heSo)
     {
-        if (go == null || heSo <= 1.0001f) return;
+        if (go == null) return;
 
         var d = go.GetComponent<Damageable>();
-        if (d != null)
+        if (d != null && heSo > 1.0001f)
         {
             d.maxHealth *= heSo;
             d.health = d.maxHealth;
         }
 
+        // KHONG bo qua o dot dau nhu truoc (heSo = 1): dot dau van phai giam con 65%
         var ai = go.GetComponent<EnemyAI>();
         if (ai != null)
         {
-            ai.attackDamage *= heSo;
-            ai.satThuongCau *= heSo;     // don danh xa: cau lua, thien thach, tia set
+            float heSoSat = heSo * HeSoSatThuongDotDau;
+            ai.attackDamage *= heSoSat;
+            ai.satThuongCau *= heSoSat;  // don danh xa: cau lua (ca chay - tinh theo sat thuong no), thien thach, tia set
         }
     }
 

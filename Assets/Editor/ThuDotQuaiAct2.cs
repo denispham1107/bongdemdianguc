@@ -190,6 +190,8 @@ public static class ThuDotQuaiAct2
     /// cua toi vo phai xac dot truoc nen dot 2 va 3 deu bao "manh x1,000" -
     /// bon loi oan.
     /// </summary>
+    static readonly MonsterType[] BonLoaiThu = { MonsterType.Skeleton, MonsterType.Witch, MonsterType.QuyCay, MonsterType.QuyDu };
+
     static void DoBoXuongDangSong(out float mau, out float sat)
     {
         mau = 0f; sat = 0f;
@@ -347,6 +349,36 @@ public static class ThuDotQuaiAct2
         DoBoXuongDangSong(out mauGoc, out satGoc);
         Ghi("B4. bo xuong dot 1: mau " + mauGoc.ToString("F1") + ", sat thuong " + satGoc.ToString("F1"));
 
+        // B4b. Dot 1: SAT THUONG = 65% GOC, MAU = GOC (nguoi dung 27/09/2026). "Goc" lay DOC LAP: sinh mot con moi thang tu
+        // kho quai (EnemyFactory, khong qua GameDirector) roi xoa ngay - khong chep tay con so nao, khong doc hang cua GameDirector.
+        foreach (var loai in BonLoaiThu)
+        {
+            NhanDangQuai song = null;
+            foreach (var n in Object.FindObjectsByType<NhanDangQuai>(FindObjectsSortMode.None))
+            {
+                var m = n.GetComponent<Damageable>();
+                if (n.loai == loai && m != null && !m.IsDead) { song = n; break; }
+            }
+            var goc = EnemyFactory.Spawn(loai, new Vector3(0f, -400f, 0f), null, null);
+            var aiGoc = goc != null ? goc.GetComponent<EnemyAI>() : null;
+            var mGoc = goc != null ? goc.GetComponent<Damageable>() : null;
+            if (song == null || aiGoc == null || mGoc == null)
+            {
+                Ghi("[LOI] B4b " + loai + ": khong co con dang song / khong sinh duoc con goc"); loi++;
+                if (goc != null) Object.DestroyImmediate(goc);
+                continue;
+            }
+            var aiSong = song.GetComponent<EnemyAI>();
+            float rDanh = aiSong.attackDamage / aiGoc.attackDamage;
+            float rCau = aiGoc.satThuongCau > 0f ? aiSong.satThuongCau / aiGoc.satThuongCau : 0f;
+            float rMau = song.GetComponent<Damageable>().maxHealth / mGoc.maxHealth;
+            Ghi(string.Format("B4b. {0} dot 1: don can {1:F2} / goc {2:F2} (x{3:F3}), don xa {4:F2} / goc {5:F2} (x{6:F3}), mau {7:F0} / goc {8:F0} (x{9:F3}) - mong doi sat thuong x0,650, mau x1,000",
+                loai, aiSong.attackDamage, aiGoc.attackDamage, rDanh, aiSong.satThuongCau, aiGoc.satThuongCau, rCau, song.GetComponent<Damageable>().maxHealth, mGoc.maxHealth, rMau));
+            Object.DestroyImmediate(goc);
+            Kiem(Mathf.Abs(rDanh - 0.65f) < 0.005f && Mathf.Abs(rCau - 0.65f) < 0.005f, loai + ": sat thuong dot 1 khong phai 65% goc");
+            Kiem(Mathf.Abs(rMau - 1f) < 0.005f, loai + ": mau dot 1 bi doi (chi giam SAT THUONG)");
+        }
+
         // ================================================================
         // C. DOT SAU: SO QUAI VA DO MANH
         // ================================================================
@@ -400,6 +432,28 @@ public static class ThuDotQuaiAct2
         Ghi("D1. Act1: che do dot quanh nguoi = " + (d1 != null && d1.CheDoDotQuanhNguoi)
             + " (phai la False), quai dang co: " + tongAct1 + " - " + ViDem(demAct1));
         Kiem(d1 != null && !d1.CheDoDotQuanhNguoi, "Act1 bi doi sang luat moi");
+
+        // D2. Doi chung: Act1 GIU NGUYEN sat thuong goc (nguoi dung chi giam 35% o Act2). Goc sinh doc lap tu kho quai.
+        int soSo = 0, soDung = 0;
+        foreach (var n in Object.FindObjectsByType<NhanDangQuai>(FindObjectsSortMode.None))
+        {
+            var ai = n.GetComponent<EnemyAI>(); var m = n.GetComponent<Damageable>();
+            if (ai == null || m == null || m.IsDead) continue;
+            var goc = EnemyFactory.Spawn(n.loai, new Vector3(0f, -400f, 0f), null, null);
+            var aiGoc = goc != null ? goc.GetComponent<EnemyAI>() : null;
+            if (aiGoc != null) { soSo++; if (Mathf.Abs(ai.attackDamage / aiGoc.attackDamage - 1f) < 0.005f) soDung++; }
+            if (goc != null) Object.DestroyImmediate(goc);
+        }
+        if (soSo == 0)
+            foreach (var ai in Object.FindObjectsByType<EnemyAI>(FindObjectsSortMode.None))
+            {
+                var goc = EnemyFactory.Spawn(MonsterType.Skeleton, new Vector3(0f, -400f, 0f), null, null);
+                var aiGoc = goc != null ? goc.GetComponent<EnemyAI>() : null;
+                if (aiGoc != null) { soSo++; if (Mathf.Abs(ai.attackDamage / aiGoc.attackDamage - 1f) < 0.005f) soDung++; }
+                if (goc != null) Object.DestroyImmediate(goc);
+            }
+        Ghi("D2. Act1: " + soDung + "/" + soSo + " con quai giu nguyen sat thuong goc (x1,000)");
+        Kiem(soSo > 0 && soDung == soSo, "Act1 sat thuong quai bi doi");
 
         Ghi("");
         Ghi("so loi ghi nhan = " + loi);
