@@ -8603,6 +8603,18 @@ châm cả bia mộ / nhà mồ (tính năng sáng nay), đầy trần "4 vật 
 
 Ảnh: `PlayTestShots/maygiong_1_dem_can.png`, `maygiong_2_chay_den.png`, `maygiong_3_ngay_goc_choi.png`.
 
+### Bình máu rơi 25%, bình mana rơi 15% (27/09/2026)
+
+Người dùng xin giết quái xong tỉ lệ rơi bình máu **25%**, bình mana **15%** (trước 10% / 10%). Đổi `QuanLyBinhRoi.TiLeRoiBinhMau`
+và `TiLeRoiBinhMana`. Hai lần gieo vẫn độc lập, nên một con quái có thể rơi cả hai (xác suất 3,75%). Vẫn do máy trọng tài quái gieo
+rồi báo cả phòng như cũ.
+
+Menu 65 mục A1 kiểm bằng **con số của người dùng viết thẳng trong phép thử**, không đọc lại hằng trong code (đọc hằng thì sửa sai hằng
+mà phép thử vẫn xanh). Biên cho phép ±3 độ lệch chuẩn:
+- 3 000 lần gieo: **24,0%** bình máu, **15,2%** bình mana;
+- giết thật 24 con: rơi 9 bình, 9/9 nằm đúng chỗ quái chết;
+- 0 lỗi.
+
 ### Vào nhà mồ rồi kẹt không ra được; quái Act2 đợt đầu yếu đi 35% sát thương (27/09/2026)
 
 **1. Kẹt trong nhà mồ.**

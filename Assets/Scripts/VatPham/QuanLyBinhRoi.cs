@@ -27,8 +27,9 @@ using UnityEngine.SceneManagement;
 /// </summary>
 public static class QuanLyBinhRoi
 {
-    public const float TiLeRoiBinhMau = 0.10f;
-    public const float TiLeRoiBinhMana = 0.10f;
+    // 27/09/2026 nguoi dung: binh mau 25%, binh mana 15% (truoc 10% / 10%). Hai lan gieo DOC LAP - mot con co the rot ca hai.
+    public const float TiLeRoiBinhMau = 0.25f;
+    public const float TiLeRoiBinhMana = 0.15f;
 
     /// <summary>Nhan vat vao trong ban kinh nay (met, tinh ngang) thi binh tu bay vao.</summary>
     public const float BanKinhHut = 3.5f;
@@ -90,7 +91,7 @@ public static class QuanLyBinhRoi
     //  1. GIEO (chi may trong tai quai)
     // ================================================================
 
-    /// <summary>Mot con quai vua chet o <paramref name="viTri"/>: gieo 10% binh mau, 10% binh mana.</summary>
+    /// <summary>Mot con quai vua chet o <paramref name="viTri"/>: gieo <see cref="TiLeRoiBinhMau"/> binh mau, <see cref="TiLeRoiBinhMana"/> binh mana.</summary>
     public static void GieoKhiQuaiChet(Vector3 viTri)
     {
         if (!GameDirector.LaTrongTaiCuaQuai) return;

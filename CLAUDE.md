@@ -421,7 +421,7 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
   đặt, không tốn điểm) và **nâng tới cấp 3** (`CapDo.CapBinhToiDa`, người dùng chọn): mỗi cấp +75 máu / +45 mana
   (`MauBinhTheoCap` 200/275/350, `ManaBinhTheoCap` 75/120/165); phép thử đếm "đầu trận không kỹ năng nào mở" phải trừ hai bình
   (menu 60, 66 đã sửa). Không niệm, không
-  đi qua gói kỹ năng. **Bình rơi CHUNG cả phòng** (`QuanLyBinhRoi` + `BinhRoi`): máy trọng tài quái gieo 10%/10% khi quái chết và
+  đi qua gói kỹ năng. **Bình rơi CHUNG cả phòng** (`QuanLyBinhRoi` + `BinhRoi`): máy trọng tài quái gieo **25% bình máu / 15% bình mana** (27/09/2026, trước 10%/10%; hai lần gieo độc lập — `QuanLyBinhRoi.TiLeRoiBinh*`) khi quái chết và
   gửi `LoaiBinhRoi`; máy nào có nhân vật tới gần 3,5 m thì xin (`LoaiXinBinh`); **chủ phòng giao cho người xin TRƯỚC**
   (`LoaiBinhThuoc`), mọi máy thấy bình bay vào đúng người, chỉ máy người ấy cộng số bình. Cả ba gói gửi lặp 3 lần (kênh
   như UDP). Menu 65 kiểm (tỉ lệ, nhặt, uống, số bình trên ô, 5 ca mạng).
