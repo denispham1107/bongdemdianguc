@@ -98,18 +98,19 @@ public class FallingShard : MonoBehaviour
                     Vector3 cho = d.transform.position;
                     cho.y = VfxFactory.GroundY(cho);
                     var tang = VfxFactory.IceImpact(cho, coHinh, true);
+                    VfxFactory.PhongManhVo(tang, VfxFactory.HeSoManhVoMuaBang);
                     SoLanCoGai++;
                     // CAP 5: tang bang het gio thi no tung, them 100 sat thuong quanh do
                     if (capKyNang >= TangBangNo.CapNo) TangBangNo.Gan(tang, damageMask, boQua);
                 }
                 // O cho roi van co chop sang / vong lanh / suong, chi khong co tang bang
                 if (dsDongBang.Count > 1 || Vector3.Distance(dsDongBang[0].transform.position, target) > 0.6f)
-                    VfxFactory.IceImpact(target, coHinh, false);
+                    VfxFactory.PhongManhVo(VfxFactory.IceImpact(target, coHinh, false), VfxFactory.HeSoManhVoMuaBang);
             }
             else
             {
                 // Khong dong bang duoc ai (ke ca khi co trung va gay sat thuong): no binh thuong, KHONG tang bang
-                VfxFactory.IceImpact(target, coHinh, false);
+                VfxFactory.PhongManhVo(VfxFactory.IceImpact(target, coHinh, false), VfxFactory.HeSoManhVoMuaBang);
             }
 
             // Qua cau bang roi (Mua bang): tha luong khi lanh + vet bang ra tan dan nhu qua cau cua ky nang

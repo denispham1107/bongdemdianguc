@@ -547,6 +547,9 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
   Bắt đầu đóng cứng thì chữ **"ĐÓNG BĂNG!"** bay lên (`FrozenEffect.BaoChuDongBang`, gọi ở `Apply` và `HieuUngQuaMang.ApCo`); vỏ băng
   phủ cả **SkinnedMeshRenderer** (14/09/2026 — trước chỉ `MeshRenderer`, model có xương không có vỏ), dày khi đóng cứng, mỏng khi
   chỉ chậm. Menu 67 kiểm qua đường mạng thật.
+- ⚠️ **Sấm sét hồi chiêu 4 giây** (28/09/2026 người dùng, trước 8): `PlayerController.boltCooldown` — số nằm ở BA chỗ: code,
+  `Player_Sorceress.prefab`, nhân vật đặt sẵn trong Act2. **Mảnh vỡ khi hạt băng Mưa băng chạm đất to hơn 10%**
+  (`VfxFactory.HeSoManhVoMuaBang` 1,1, `PhongManhVo` trong `FallingShard` — Quả cầu băng giữ cỡ cũ).
 - **Mưa băng và Sấm sét KHÔNG nhắm vào chính người tung** (`boQua`): khi chơi mạng `damageMask` có cả lớp
   `Player`, mà người tung luôn đứng giữa vùng mình nhắm nên gần như tảng nào cũng chọn anh ta. Menu 58 giữ sẵn
   mẫu đối chứng tái hiện lỗi này.

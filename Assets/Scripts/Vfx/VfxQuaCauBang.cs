@@ -312,6 +312,25 @@ public static partial class VfxFactory
         rot.z = new ParticleSystem.MinMaxCurve(-TocLonNhaoManhBang, TocLonNhaoManhBang);
     }
 
+    /// <summary>Mua bang: manh bang vo khi hat bang roi cham dat TO HON 10% (nguoi dung 28/09/2026). Qua cau bang giu nguyen.</summary>
+    public const float HeSoManhVoMuaBang = 1.1f;
+
+    /// <summary>Nhan co ban dau cua moi he hat manh vo (Manh3D, Shards) duoi mot goc vu no. Goi TRUOC nhip mo phong dau.</summary>
+    public static void PhongManhVo(GameObject goc, float k)
+    {
+        if (goc == null || Mathf.Abs(k - 1f) < 0.0001f) return;
+        foreach (var ps in goc.GetComponentsInChildren<ParticleSystem>(true))
+        {
+            if (ps.name != "Manh3D" && ps.name != "Shards") continue;
+            var m = ps.main;
+            var co = m.startSize;
+            if (co.mode == ParticleSystemCurveMode.TwoConstants)
+                m.startSize = new ParticleSystem.MinMaxCurve(co.constantMin * k, co.constantMax * k);
+            else if (co.mode == ParticleSystemCurveMode.Constant)
+                m.startSize = new ParticleSystem.MinMaxCurve(co.constant * k);
+        }
+    }
+
     /// <summary>Doi moi he hat manh (Manh3D, Shards) duoi mot goc vu no sang manh bang pha le.</summary>
     public static void DoiManhBangTrong(GameObject goc)
     {

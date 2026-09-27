@@ -8603,6 +8603,27 @@ châm cả bia mộ / nhà mồ (tính năng sáng nay), đầy trần "4 vật 
 
 Ảnh: `PlayTestShots/maygiong_1_dem_can.png`, `maygiong_2_chay_den.png`, `maygiong_3_ngay_goc_choi.png`.
 
+### Mưa băng: mảnh vỡ to hơn 10%; Sấm sét: hồi chiêu 4 giây (28/09/2026)
+
+**Người dùng:**
+- Mưa băng: khi hạt băng rơi xuống vỡ tung, mảnh băng vỡ ra to hơn 10%.
+- Sấm sét: hồi chiêu ("delay") còn 4 giây.
+
+**Mưa băng:** `FallingShard` (hạt băng rơi) gọi `IceImpact` ở ba chỗ. Sau mỗi lần gọi, `VfxFactory.PhongManhVo` nhân cỡ ban đầu của
+hai hệ mảnh (`Manh3D`, `Shards`) với `HeSoManhVoMuaBang` = 1,1. Chỉ trong `FallingShard`, nên Quả cầu băng (cùng dùng `IceImpact`)
+giữ cỡ cũ.
+
+**Sấm sét:** `boltCooldown` 8 → 4 ở cả ba chỗ (code, prefab `Player_Sorceress`, nhân vật trong Act2). Scene sửa trên đĩa rồi nạp lại
+trong Unity và đọc lại từ nhân vật: 4.
+
+| Đo trong Play | Kết quả |
+|---|---|
+| Mảnh vỡ Mưa băng (`Manh3D` / `Shards`) | 0,330–0,770 / 0,106–0,282 |
+| Đối chứng Quả cầu băng | 0,300–0,700 / 0,096–0,256 (×1,10 đúng) |
+| Sấm sét: bấm liên tục, khoảng cách giữa các lần tung được | 4,02 s và 4,04 s |
+| Sấm sét: Sách phép hiển thị hồi chiêu | 4 |
+| Menu 58 | 0 lỗi |
+
 ### Quả cầu chớp sáng của vụ nổ băng đổi thành vòng sương băng (28/09/2026)
 
 **Người dùng:** đồng ý đổi quả cầu chớp sáng trắng to lúc vụ nổ băng (cái "mái vòm" chói trong ảnh) thành **vòng sương băng** cho

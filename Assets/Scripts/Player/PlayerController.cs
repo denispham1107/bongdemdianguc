@@ -44,7 +44,7 @@ public class PlayerController : MonoBehaviour
     [Tooltip("Tam tha xa nhat, met. Ngam xa hon thi phep roi o MEP tam.")]
     public float boltRange = 12f;
     public float boltCost = 42f;
-    public float boltCooldown = 8f;
+    public float boltCooldown = 4f;   // 28/09/2026 nguoi dung: 8 -> 4 giay (so nay CON nam trong prefab Player_Sorceress + nhan vat trong Act2)
     public float boltCastTime = 0.62f;
 
     [Header("Ky nang 4 - Loc xoay")]

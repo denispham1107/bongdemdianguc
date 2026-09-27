@@ -858,7 +858,7 @@ MonoBehaviour:
   iceCastTime: 0.75
   boltRange: 12
   boltCost: 42
-  boltCooldown: 8
+  boltCooldown: 4
   boltCastTime: 0.62
   tornadoCost: 55
   tornadoCooldown: 2
