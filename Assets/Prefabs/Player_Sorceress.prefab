@@ -787,8 +787,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 360f592535894616bc8a273c7d40dc9f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Damageable
-  maxHealth: 600
-  health: 600
+  maxHealth: 10000
+  health: 10000
   mauDoMayKhacQuyet: 0
   fireResist: 0
   iceResist: 0
@@ -818,6 +818,8 @@ MonoBehaviour:
   tayTraiDuoi: {fileID: 277473670342371717}
   tayPhaiTren: {fileID: 7255710888584380993}
   tayPhaiDuoi: {fileID: 3256016126490651908}
+  banTayTrai: {fileID: 0}
+  banTayPhai: {fileID: 0}
   boPhat: {fileID: 4533935380707343352}
   tenClipDi: diBo
   vaCham: {fileID: 2777965627786422664}
@@ -881,6 +883,17 @@ MonoBehaviour:
   luaDiaNgucCost: 31
   luaDiaNgucCooldown: 0.5
   luaDiaNgucCastTime: 0.38
+  tangHinhCost: 30
+  tangHinhCastTime: 0.38
+  cauDienCost: 55
+  cauDienCooldown: 5
+  cauDienCastTime: 0.62
+  hoaLocXoayCost: 45
+  hoaLocXoayCooldown: 0.5
+  hoaLocXoayCastTime: 0.38
+  tocBienCost: 40
+  tocBienCooldown: 5
+  tocBienCastTime: 0.01
   rig: {fileID: 3732168720037933338}
   anim: {fileID: 0}
   hoatHinhRieng: {fileID: 4292490187337956294}
@@ -899,6 +912,7 @@ MonoBehaviour:
     laCamUng: 0
     coBamPhim: 0
   tuDocInput: 1
+  donTangHinhDangTung: 0
 --- !u!1 &4806059546236612452
 GameObject:
   m_ObjectHideFlags: 0

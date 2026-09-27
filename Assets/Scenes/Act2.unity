@@ -26910,21 +26910,6 @@ MonoBehaviour:
   player: {fileID: 1363908812757763462}
   arenaCenter: {x: 0, y: 0, z: 0}
   arenaRadius: 62
-  minSpawnDistance: 16
-  maxSpawnDistance: 34
-  startingCount: 7
-  waveDelay: 3
-  soPhuThuyRaiSan: 7
-  soBoXuongRaiSan: 7
-  raiSanCachXaNhat: 9
-  soQuyDuBanDau: 7
-  chuKyThemQuyDu: 120
-  soQuyDuMoiDot: 5
-  quyDuToiDa: 40
-  soQuyCayBanDau: 4
-  chuKyThemQuyCay: 240
-  soQuyCayMoiDot: 10
-  quyCayToiDa: 40
 --- !u!4 &462002754
 Transform:
   m_ObjectHideFlags: 0
@@ -36222,12 +36207,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameBootstrap
   arenaRadius: 62
-  worldSeed: 2024
-  playerMaxHealth: 600
+  playerMaxHealth: 10000
   playerMaxMana: 250
   useBloom: 1
   bloomIntensity: 0.9
-  buildWorldIfMissing: 1
 --- !u!4 &629984496
 Transform:
   m_ObjectHideFlags: 0

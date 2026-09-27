@@ -126,7 +126,8 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
   chọn; trước là 11 viên đá vòm rời lơ lửng + tường thấp) — song cắm xuống đất từng chỗ, rào kín 0/2096 đường lọt.
   ⚠️ **Nhà mồ dùng LƯỚI VA CHẠM HAI MẶT** (menu 88, `BlenderMaps/GraveyardAct2/VaCham/`): lưới Blender có mặt lật pháp tuyến vào
   trong, CharacterController xuyên tường vào được rồi KẸT (menu 87: 18/18 lần; nay 0). Thêm nhà mồ mới / nhập lại map → chạy lại menu 88.
-- **Máu người chơi: 600** (12/09/2026 người dùng chốt; trước đó 30 000 để chạy thử). Con số nằm ở ba chỗ —
+- ⚠️ **Máu người chơi ĐANG LÀ 10 000 ĐỂ CHẠY THỬ** (27/09/2026 người dùng xin; mức chơi thật đã chốt 12/09/2026 là **600** —
+  trả về 600 trước khi phát hành, sửa đủ cả ba chỗ và `ThuMauKhoiDau.MauMongDoi`). Con số nằm ở ba chỗ —
   `GameBootstrap.playerMaxHealth`, scene Act2, `Player_Sorceress.prefab` — và menu 40 kiểm cả ba (kể cả bản sao
   người chơi khác, vì nó lấy máu thẳng từ prefab).
 - **LUẬT ĐỢT QUÁI** (luật duy nhất của `GameDirector` từ khi xoá Act1): mỗi đợt sinh quanh **từng**

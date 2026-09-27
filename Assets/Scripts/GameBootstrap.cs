@@ -20,7 +20,8 @@ public class GameBootstrap : MonoBehaviour
     // Con so nay nam trong SCENE (Act2.unity) nua: Unity
     // luu gia tri cua component vao scene, va gia tri do DE LEN mac dinh viet
     // o day. Sua moi mot cho la khong doi gi ca.
-    public float playerMaxHealth = 600f;
+    // 27/09/2026 nguoi dung: 10 000 DE CHAY THU (muc choi that da chot la 600) - tra ve 600 truoc khi phat hanh.
+    public float playerMaxHealth = 10000f;
     public float playerMaxMana = 250f;
 
     [Header("Do hoa")]
