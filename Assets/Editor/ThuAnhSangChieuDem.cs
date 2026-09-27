@@ -314,15 +314,18 @@ public static class ThuAnhSangChieuDem
              "suong mu ban dem khong bang cu");
         Kiem(Mathf.Abs(SoTroi("_MoonStrength", -1f) - DemSangDia) < 0.01f, "dia trang ban dem khong bang cu");
 
-        // ================= F. CHI ACT2 =================
+        // ================= F. CHI TRONG TRAN, MAN CHINH GIU NGUYEN =================
+        // (Truoc 27/09/2026 doi chung la Act1 - Act1 da xoa han. Man chinh khong co GameBootstrap nen khong
+        // duoc co vong ngay dem, va roi tran thi co lo lua phai bat lai.)
         Ghi("");
-        UnityEngine.SceneManagement.SceneManager.LoadScene("Act1");
+        LoLuaDa.ChoPhepNhomLua = false;   // gia lap roi tran giua ban ngay
+        UnityEngine.SceneManagement.SceneManager.LoadScene("MainMenu");
         yield return new WaitForSeconds(2.5f);
         var o1 = Object.FindAnyObjectByType<ChuyenChieuSangDem>();
-        var den1 = DenHuong();
-        Ghi(string.Format("F. nap Act1: co ChuyenChieuSangDem = {0} (phai False); den Act1 {1} manh {2:F2}",
-            o1 != null, den1 != null ? den1.color.ToString() : "KHONG", den1 != null ? den1.intensity : -1f));
-        Kiem(o1 == null, "Act1 cung bi doi anh sang - nguoi dung chi xin cho Act2");
+        Ghi(string.Format("F. nap MainMenu: co ChuyenChieuSangDem = {0} (phai False); co nhom lua = {1} (phai True)",
+            o1 != null, LoLuaDa.ChoPhepNhomLua));
+        Kiem(o1 == null, "man chinh cung bi doi anh sang - chi trong tran moi co vong ngay dem");
+        Kiem(LoLuaDa.ChoPhepNhomLua, "roi tran ma co lo lua khong bat lai - hai lo man chinh se nguoi");
 
         Ghi("");
         Ghi("so loi ghi nhan = " + loi);

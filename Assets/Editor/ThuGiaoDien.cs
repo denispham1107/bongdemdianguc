@@ -169,8 +169,8 @@ public static class ThuGiaoDien
             var ds = new System.Collections.Generic.List<PhongMang.Phong>();
             var p1 = new PhongMang.Phong { ma = "gia1", ten = "Nghĩa địa không lối thoát", hostUid = "x",
                                            hostTen = "KẻĐiSănĐêmKhuya99", manChoi = "Act2", trangThai = "cho", soNguoi = 2, toiDa = 4 };
-            var p2 = new PhongMang.Phong { ma = "gia2", ten = "Đấu trường máu", hostUid = "y",
-                                           hostTen = "Bóng Ma", manChoi = "Act1", trangThai = "cho", soNguoi = 4, toiDa = 4 };
+            var p2 = new PhongMang.Phong { ma = "gia2", ten = "Hầm mộ máu", hostUid = "y",
+                                           hostTen = "Bóng Ma", manChoi = "Act2", trangThai = "cho", soNguoi = 4, toiDa = 4 };
             ds.Add(p1); ds.Add(p2);
             HoanHoiLai(sanh);
             yield return new WaitForSecondsRealtime(2.5f);     // cho luot hoi dang bay (neu co) ve het
@@ -193,7 +193,7 @@ public static class ThuGiaoDien
         sanh = sanhMoi;
 
         // ---- 4. Trong phong ----
-        yield return PhongMang.TaoPhong("", "Act2", (o, err) => { ok = o; e = err; });
+        yield return PhongMang.TaoPhong("", (o, err) => { ok = o; e = err; });
         Ghi("   tao phong: " + (ok ? "OK - " + PhongMang.PhongHienTai.ma + " \"" + PhongMang.PhongHienTai.ten + "\"" : "LOI - " + e));
         if (ok && sanh != null)
         {

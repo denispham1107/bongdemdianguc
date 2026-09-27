@@ -21,7 +21,7 @@ using UnityEngine;
 /// chung cho moi cai cay xai luoi do. Chin loai luoi cay Act2 gop lai chua toi
 /// mot phan nghin so dinh that.
 ///
-/// Cay Act1 thi khong can asset nay: luoi cua no dung bang code luc chay nen
+/// Luoi bat Read/Write thi khong can asset nay: luc chay
 /// doc thang duoc. Xem <see cref="CayChay.LayDiemMoi"/>.
 /// </summary>
 public class DiemLuaCay : ScriptableObject

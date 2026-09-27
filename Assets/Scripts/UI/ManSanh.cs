@@ -25,7 +25,6 @@ public class ManSanh : MonoBehaviour
 
     List<PhongMang.Phong> danhSach = new List<PhongMang.Phong>();
     string tenPhongMoi = "";
-    string manChoiMoi = "Act2";
     string bao = "";
     bool dangCho;
     bool daVaoTran;
@@ -125,10 +124,9 @@ public class ManSanh : MonoBehaviour
         if (PhongMang.LaHost)
             yield return PhongMang.DanhDauDangChoi(null);
 
-        // Man khong doc duoc thi ve man mac dinh chu khong goi LoadScene(null):
-        // LoadScene(null) nem loi va nguoi choi ket lai o MainMenu khong hieu vi sao.
-        string man = p.manChoi == "Act1" || p.manChoi == "Act2"
-                   ? p.manChoi : PhongMang.ManMacDinh;
+        // Chi con MOT man (Nghia dia - Act2; Act1 da xoa han 27/09/2026). Khong doc p.manChoi: phong cu
+        // tren Firebase co the con ghi "Act1" - scene ay khong con, LoadScene se nem loi va ket o MainMenu.
+        string man = PhongMang.ManMacDinh;
 
         // Giu lai thong tin phong de man choi biet minh dang o dau
         TranHienTai.MaPhong = ma;
@@ -138,9 +136,6 @@ public class ManSanh : MonoBehaviour
 
         SceneManager.LoadScene(man);
     }
-
-    /// <summary>Ten man choi de hien cho nguoi choi doc.</summary>
-    public static string TenMan(string man) { return man == "Act1" ? "Đấu trường" : "Nghĩa địa"; }
 
     // ================================================================
 
@@ -322,20 +317,11 @@ public class ManSanh : MonoBehaviour
         GiaoDien.Chu(new Rect(xx, kt.y + 18f * s, rr, 34f * s), "TẠO PHÒNG MỚI", GiaoDien.KieuTieuDeNho);
 
         float yh = kt.y + 70f * s, cao = 56f * s;
-        float rongTao = 210f * s, rongMan = 190f * s, khe = 12f * s;
-        float rongO = rr - rongTao - 2f * rongMan - 3f * khe;
+        float rongTao = 210f * s, khe = 12f * s;
+        float rongO = rr - rongTao - khe;
 
         tenPhongMoi = GiaoDien.ONhap(new Rect(xx, yh, rongO, cao), "o_tenphong", tenPhongMoi, 24,
                                      "Tên phòng (không bắt buộc)");
-
-        // Chon man: hai nut canh nhau, nut dang chon to mau do
-        float xm = xx + rongO + khe;
-        if (GiaoDien.Nut(new Rect(xm, yh, rongMan, cao), "Đấu trường",
-                         manChoiMoi == "Act1" ? GiaoDien.KieuNutMau : GiaoDien.KieuNutDa))
-            manChoiMoi = "Act1";
-        if (GiaoDien.Nut(new Rect(xm + rongMan + khe, yh, rongMan, cao), "Nghĩa địa",
-                         manChoiMoi == "Act2" ? GiaoDien.KieuNutMau : GiaoDien.KieuNutDa))
-            manChoiMoi = "Act2";
 
         GUI.enabled = !dangCho && !khoa;
         if (GiaoDien.Nut(new Rect(kt.xMax - le - rongTao, yh, rongTao, cao), "TẠO PHÒNG", GiaoDien.KieuNutMau))
@@ -413,7 +399,7 @@ public class ManSanh : MonoBehaviour
 
         GiaoDien.Chu(new Rect(xChu, r.y + 10f * s, rongChu, 36f * s), p.ten, GiaoDien.KieuTieuDeNho);
         GiaoDien.Chu(new Rect(xChu, r.y + 46f * s, rongChu, 28f * s),
-                     TenMan(p.manChoi) + "  ·  Chủ phòng: " + p.hostTen, GiaoDien.KieuChuMo);
+                     "Chủ phòng: " + p.hostTen, GiaoDien.KieuChuMo);
 
         // Bon o nguoi: o da co nguoi to do
         float xo = r.xMax - rongNut - 24f * s - rongCho;
@@ -447,11 +433,11 @@ public class ManSanh : MonoBehaviour
         float x = (Screen.width - rong) * 0.5f;
         float y = 22f * s;
 
-        // ---- Dau trang: ten phong, man, roi phong ----
+        // ---- Dau trang: ten phong, roi phong ----
         float rongNutRoi = 200f * s;
         GiaoDien.Chu(new Rect(x, y, rong - rongNutRoi - 20f * s, 44f * s), p.ten, GiaoDien.KieuTieuDe);
         GiaoDien.Chu(new Rect(x, y + 44f * s, rong - rongNutRoi - 20f * s, 28f * s),
-                     "Màn chơi: " + TenMan(p.manChoi) + (PhongMang.LaHost ? "  ·  Bạn là chủ phòng" : ""),
+                     PhongMang.LaHost ? "Bạn là chủ phòng" : "Chủ phòng: " + p.hostTen,
                      GiaoDien.KieuChuMo);
 
         if (GiaoDien.Nut(new Rect(x + rong - rongNutRoi, y + 10f * s, rongNutRoi, 50f * s),
@@ -462,25 +448,7 @@ public class ManSanh : MonoBehaviour
         GiaoDien.DuongKe(new Rect(x, y, rong, Mathf.Max(1f, 2f * s)), new Color(0.72f, 0.08f, 0.05f, 0.9f));
         y += 30f * s;
 
-        // ---- Chon man (chi chu phong) ----
         float le = 30f * s;
-        if (PhongMang.LaHost)
-        {
-            var km = new Rect(x, y, rong, 110f * s);
-            GiaoDien.Khung(km, s);
-            GiaoDien.Chu(new Rect(km.x + le, km.y + 16f * s, 400f * s, 34f * s), "CHỌN MÀN CHƠI", GiaoDien.KieuTieuDeNho);
-            GiaoDien.Chu(new Rect(km.x + le, km.y + 56f * s, 400f * s, 34f * s), "Chỉ chủ phòng đổi được", GiaoDien.KieuChuNho);
-            float rongMan = 210f * s;
-            float xm = km.xMax - le - 2f * rongMan - 12f * s;
-            float ym = km.y + (km.height - 56f * s) * 0.5f;
-            if (GiaoDien.Nut(new Rect(xm, ym, rongMan, 56f * s), "Đấu trường",
-                             p.manChoi == "Act1" ? GiaoDien.KieuNutMau : GiaoDien.KieuNutDa) && p.manChoi != "Act1")
-                StartCoroutine(PhongMang.DoiManChoi("Act1", null));
-            if (GiaoDien.Nut(new Rect(xm + rongMan + 12f * s, ym, rongMan, 56f * s), "Nghĩa địa",
-                             p.manChoi != "Act1" ? GiaoDien.KieuNutMau : GiaoDien.KieuNutDa) && p.manChoi == "Act1")
-                StartCoroutine(PhongMang.DoiManChoi("Act2", null));
-            y += 110f * s + 30f * s;
-        }
 
         // ---- Bon ghe - MOI NGUOI MOT HANG ----
         // Truoc day bon the xep thanh bon cot; nguoi dung xin xep theo hang
@@ -730,8 +698,7 @@ public class ManSanh : MonoBehaviour
     {
         dangCho = true; bao = "";
         bool ok = false; string loi = null;
-        yield return PhongMang.TaoPhong(tenPhongMoi.Trim(), manChoiMoi,
-                                        (o, e) => { ok = o; loi = e; });
+        yield return PhongMang.TaoPhong(tenPhongMoi.Trim(), (o, e) => { ok = o; loi = e; });
         dangCho = false;
         if (ok) { dangO = Cho.TrongPhong; daVaoTran = false; hoiLanSau = 0f; }
         else bao = loi ?? "Không tạo được phòng.";

@@ -104,7 +104,7 @@ public static class ChoXuatPhat
                              QueryTriggerInteraction.Ignore)) return false;
         y = hit.point.y;
         if (hit.collider is TerrainCollider) return true;
-        // Act1 dung bang code: mat dat co the la mot lop luoi thuong o lop Ground
+        // Mat dat cung co the la mot lop luoi thuong o lop Ground
         return hit.collider.gameObject.layer == LayerMask.NameToLayer("Ground");
     }
 

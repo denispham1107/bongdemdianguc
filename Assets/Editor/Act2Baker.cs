@@ -6,10 +6,8 @@ using UnityEngine;
 /// <summary>
 /// DUNG MAN CHOI ACT2 TU BAN DO VE TAY TRONG BLENDER.
 ///
-/// Khac han Act1: Act1 duoc sinh hoan toan bang code (dia hinh bang ham toan,
-/// cay da mo rai ngau nhien theo seed). Act2 thi LAY NGUYEN ban do nguoi dung
-/// dung tay trong Blender - tung ngoi mo, tung goc cay deu dung cho nguoi ta da
-/// dat, khong duoc xe dich.
+/// Act2 LAY NGUYEN ban do nguoi dung dung tay trong Blender - tung ngoi mo,
+/// tung goc cay deu dung cho nguoi ta da dat, khong duoc xe dich.
 ///
 /// BAN DO DUOC DUA VAO QUA HAI FILE:
 ///   map_luoi.fbx  - 27 luoi GOC, moi luoi dung mot lan
@@ -39,12 +37,6 @@ public static class Act2Baker
     /// <summary>Ban kinh vung choi. Hang rao bao quanh rong 107 m nen lay 50.</summary>
     const float BanKinhSan = 50f;
 
-    /// <summary>
-    /// So quai dot dau. Act1 la 5, Act2 GAP DOI theo yeu cau.
-    /// So nay con tu tang len theo tung dot trong GameDirector.
-    /// </summary>
-    const int SoQuaiDotDau = 7;
-    const float NghiGiuaDot = 3f;
 
     [MenuItem("Diablo 2.5D/9. Dung Act2 tu ban do Blender", false, 90)]
     public static void Dung()
@@ -98,7 +90,7 @@ public static class Act2Baker
         ThemVaoDanhSachBuild();
 
         Debug.Log("[Act2] Xong: dat " + soDat + " vat the tu ban do Blender vao "
-                  + DuongScene + ", moi dot " + SoQuaiDotDau + " quai.");
+                  + DuongScene + ".");
     }
 
     // ================================================================
@@ -441,7 +433,7 @@ public static class Act2Baker
     /// </summary>
     // Mau da duoc HA TOI mot bac so voi lan dau. Man choi la dem, chi co anh
     // trang xanh chieu vao; de mau nguyen ban (dat 0.52) thi mat dat sang bech
-    // len, nhin nhu ban ngay am u chu khong ra dem, va lech han tong voi Act1.
+    // len, nhin nhu ban ngay am u chu khong ra dem.
     static Dictionary<string, Material> LamVatLieu()
     {
         var bang = new Dictionary<string, Material>();
@@ -565,7 +557,6 @@ public static class Act2Baker
         var gameGo = new GameObject("GAME");
         var boot = gameGo.AddComponent<GameBootstrap>();
         boot.arenaRadius = BanKinhSan;
-        boot.worldSeed = 2024;
 
         kho.DienVao(gameGo.AddComponent<GameAssets>());
 
@@ -574,13 +565,6 @@ public static class Act2Baker
         var dir = dirGo.AddComponent<GameDirector>();
         dir.player = player.transform;
         dir.arenaRadius = BanKinhSan;
-        dir.startingCount = SoQuaiDotDau;
-        dir.waveDelay = NghiGiuaDot;
-
-        // Ban do rong hon Act1 (109 m so voi vung choi 83 m) nen day cho de quai
-        // ra xa hon mot chut, khong thi mo dau man da co quai dung ngay sau lung
-        dir.minSpawnDistance = 16f;
-        dir.maxSpawnDistance = 34f;
 
         // ---------- HUD ----------
         var hudGo = new GameObject("HUD");

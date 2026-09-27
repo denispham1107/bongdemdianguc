@@ -32,9 +32,9 @@ mọi quyết định về hiệu năng đều lấy nó làm chuẩn.
 ## Cấu trúc
 
 ```
-Assets/Scenes/     Act1.unity, Act2.unity, MainMenu.unity
+Assets/Scenes/     Act2.unity (man choi DUY NHAT), MainMenu.unity
 Assets/Scripts/
-   GameBootstrap   dung canh luc chay (Act1 kieu cu)
+   GameBootstrap   dat bau troi, nhan vat, camera, GameDirector, HUD khi vao tran
    GameDirector    rai quai, dem dot, thang/thua
    Player/         PlayerController (thi hanh), DocInput (doc phim), GoiInput,
                    NguoiChoiHoatHinh
@@ -60,14 +60,12 @@ Assets/Resources/  thu nap luc chay (DiemLua/ - diem moi lua cua cay)
 Assets/BlenderMaps/GraveyardAct2/   ban do Act2 dung trong Blender
 ```
 
-Hai màn dựng theo **hai cách khác hẳn nhau** — sửa gì cũng phải thử cả hai:
-
-| | Act1 | Act2 |
-|---|---|---|
-| Nguồn | dựng bằng code (`WorldFactory`), rồi **bake** vào scene | vẽ trong Blender, nhập qua `map_luoi.fbx` |
-| Một cái cây | 88 renderer con (`Trunk`, `Branch0`, `Leaves`…), lưới đọc được | 1 renderer, lưới **Read/Write TẮT** |
-| Tên cây | `CayXanh_19`, `CayChet_11` (trong scene) / `Tree7` (trong code) | `TREE_oakA_bare_701` |
-| Vật liệu vỏ cây | `M_Bark` (Standard) | `Act2_VoCay_SanSui` (`Diablo25D/BarkTriplanar`) |
+⚠️ **CHỈ CÒN MỘT MÀN CHƠI: Act2 (Nghĩa địa).** Act1 (Đấu trường dựng bằng code) **đã xoá vĩnh viễn** 27/09/2026 theo yêu cầu
+người dùng — scene, 138 tài nguyên riêng, code dựng màn (`TerrainFactory`, `DuongFactory`, `GraveFactory`, `LeuFactory`,
+`RockTexScale`, phần lớn `WorldFactory`), luật quái cũ + chế độ bốn bộ xương, menu 1/5/8/18b/30b/47. **Đừng dựng lại, đừng
+thêm nhánh "nếu là Act1"**. Sảnh không còn chọn màn: phòng nào cũng vào `PhongMang.ManMacDinh` ("Act2"); phòng cũ trên
+Firebase ghi "Act1" vẫn vào Act2. Cây Act2: 1 renderer, lưới **Read/Write TẮT**, tên `TREE_oakA_bare_701`, vật liệu
+`Act2_VoCay_SanSui` (`Diablo25D/BarkTriplanar`).
 
 ## Công cụ
 
@@ -90,10 +88,10 @@ thì lệnh MCP hết giờ.
 > `EditorSceneManager.OpenScene("Assets/Scenes/Act2.unity", Single)` trả lại ngay — không thì
 > người dùng quay lại Unity thấy màn của mình biến mất.
 
-**Menu `Diablo 2.5D`** trong Unity (89 mục): 1 nướng asset + dựng màn, 3 tự kiểm tra,
+**Menu `Diablo 2.5D`** trong Unity (83 mục — bỏ 1, 5, 8, 18b, 30b, 47 cùng Act1): 2 mở màn chơi, 3 tự kiểm tra,
 4 chạy thử & chụp hình, 14 chống ô vuông đen, 15–17 ảnh vỏ cây / đá mộ / sứt mẻ bia,
 18–18d chạy thử cây cháy, 19 hồi sinh sau lốc, 20 nướng điểm mồi lửa (cây · bia mộ · nhà mồ), 21 nút khoá góc nhìn,
-22 thanh kỹ năng bản PC, **26 chạy thử mạng (sảnh phòng), 27 chạy thử khoá tài khoản, 28 chụp màn đăng nhập·sảnh, 29 xuất bản WebGL, 30/30b bơm input Act2·Act1 (bước 1), 31 dự đoán & hiệu chỉnh (bước 2), 32 nhiều người một cảnh (bước 3), 33 nội suy (bước 4), 34 PvP (bước 5), 35 ghép phòng cùng màn, 36 tự gắn bộ nối mạng, 37 kỹ năng qua mạng, 38 quái chung & bù trễ, 39 đòn của quái qua mạng, 40 máu khởi đầu, 41 nhịp bước qua mạng, 42 chế độ điều khiển, 43 kiểm toán bước 5, 44 sửa bước 5, 45 bốn người, 46 hiệu ứng qua mạng, 47 chế độ bốn bộ xương, 48 cài đặt đồ hoạ, 49 cầu lửa trúng người·khiên, 50 giao diện đăng nhập·sảnh·phòng, 51/51b/51c màn chính từ Act2 (dựng · chọn góc · chụp lò lửa), 52 tên trên đầu nhân vật, 53 HUD kinh dị trong trận, 54/54b/54c mười lò lửa Act2 (đặt · chạy thử · lốc xoáy cuốn lò), 55 kết trận (người sống sót cuối cùng), 56 đợt quái Act2 · chỗ xuất phát, 57 bàn phím ảo che ô nhập, 58 mưa băng·sấm sét (đóng băng, choáng), 59 sách phép (kéo thả ô kỹ năng), 60 cấp độ·kinh nghiệm·điểm kỹ năng, 61 kinh nghiệm theo từng kỹ năng, 62 thiên thạch đánh ngã, 63 đánh ngã người chơi khác qua mạng, 64 quái vòng ngoài truy lùng sau 60 giây, 65 bình máu · bình mana (rơi, nhặt, uống, mạng), 66 nút KỸ NĂNG ở sảnh (Sách phép xem trước) · con mắt quỷ, 67 Mưa băng đóng băng người chơi khác (qua mạng), 68 Quả cầu băng, 69 Giựt sét (12 m · 75 · 4 tia · 15% choáng · Quỷ cây), 70 Quả cầu lửa (85 · vệt lửa mới), 71/71b Gió lốc (chạy thử · chụp ảnh), 72 Lửa địa ngục, 73 Tàng hình, 74 Quả cầu điện, 75 Hoá lốc xoáy · Gió lốc hồi mana, 76 Tốc biến, 77 Kháng hệ (nhóm bị động), 78 cụm nút kỹ năng cảm ứng, 79 ánh sáng vòng đêm → ngày → chiều lặp lại (Act2), 80 bốn việc Sách phép (bình cấp 1–3 · quả cầu xuyên bia · băng dập lò · bị động Tốc độ), 81 Thiên thạch đốt bia mộ · nhà mồ, 82 Lốc xoáy hình Blender (một chiều, cuốn lên) · Gió lốc hất tung 80%, 83 Mây giông, 84 quả cầu NẢY · Gió lốc hình quạt, 85 xác nằm trên vũng máu · dấu "+" nâng cấp trên ô kỹ năng, 86 mở rộng Act2 thêm 50%, 87 ra – vào nhà mồ (kẹt), 88 lưới va chạm hai mặt cho nhà mồ**.
+22 thanh kỹ năng bản PC, **26 chạy thử mạng (sảnh phòng), 27 chạy thử khoá tài khoản, 28 chụp màn đăng nhập·sảnh, 29 xuất bản WebGL, 30 bơm input (bước 1), 31 dự đoán & hiệu chỉnh (bước 2), 32 nhiều người một cảnh (bước 3), 33 nội suy (bước 4), 34 PvP (bước 5), 35 ghép phòng cùng màn, 36 tự gắn bộ nối mạng, 37 kỹ năng qua mạng, 38 quái chung & bù trễ, 39 đòn của quái qua mạng, 40 máu khởi đầu, 41 nhịp bước qua mạng, 42 chế độ điều khiển, 43 kiểm toán bước 5, 44 sửa bước 5, 45 bốn người, 46 hiệu ứng qua mạng, 48 cài đặt đồ hoạ, 49 cầu lửa trúng người·khiên, 50 giao diện đăng nhập·sảnh·phòng, 51/51b/51c màn chính từ Act2 (dựng · chọn góc · chụp lò lửa), 52 tên trên đầu nhân vật, 53 HUD kinh dị trong trận, 54/54b/54c mười lò lửa Act2 (đặt · chạy thử · lốc xoáy cuốn lò), 55 kết trận (người sống sót cuối cùng), 56 đợt quái Act2 · chỗ xuất phát, 57 bàn phím ảo che ô nhập, 58 mưa băng·sấm sét (đóng băng, choáng), 59 sách phép (kéo thả ô kỹ năng), 60 cấp độ·kinh nghiệm·điểm kỹ năng, 61 kinh nghiệm theo từng kỹ năng, 62 thiên thạch đánh ngã, 63 đánh ngã người chơi khác qua mạng, 64 quái vòng ngoài truy lùng sau 60 giây, 65 bình máu · bình mana (rơi, nhặt, uống, mạng), 66 nút KỸ NĂNG ở sảnh (Sách phép xem trước) · con mắt quỷ, 67 Mưa băng đóng băng người chơi khác (qua mạng), 68 Quả cầu băng, 69 Giựt sét (12 m · 75 · 4 tia · 15% choáng · Quỷ cây), 70 Quả cầu lửa (85 · vệt lửa mới), 71/71b Gió lốc (chạy thử · chụp ảnh), 72 Lửa địa ngục, 73 Tàng hình, 74 Quả cầu điện, 75 Hoá lốc xoáy · Gió lốc hồi mana, 76 Tốc biến, 77 Kháng hệ (nhóm bị động), 78 cụm nút kỹ năng cảm ứng, 79 ánh sáng vòng đêm → ngày → chiều lặp lại (Act2), 80 bốn việc Sách phép (bình cấp 1–3 · quả cầu xuyên bia · băng dập lò · bị động Tốc độ), 81 Thiên thạch đốt bia mộ · nhà mồ, 82 Lốc xoáy hình Blender (một chiều, cuốn lên) · Gió lốc hất tung 80%, 83 Mây giông, 84 quả cầu NẢY · Gió lốc hình quạt, 85 xác nằm trên vũng máu · dấu "+" nâng cấp trên ô kỹ năng, 86 mở rộng Act2 thêm 50%, 87 ra – vào nhà mồ (kẹt), 88 lưới va chạm hai mặt cho nhà mồ**.
 Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
 
 ## Quy tắc làm việc (rút ra từ những lần đã sai)
@@ -128,13 +126,13 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
   chọn; trước là 11 viên đá vòm rời lơ lửng + tường thấp) — song cắm xuống đất từng chỗ, rào kín 0/2096 đường lọt.
   ⚠️ **Nhà mồ dùng LƯỚI VA CHẠM HAI MẶT** (menu 88, `BlenderMaps/GraveyardAct2/VaCham/`): lưới Blender có mặt lật pháp tuyến vào
   trong, CharacterController xuyên tường vào được rồi KẸT (menu 87: 18/18 lần; nay 0). Thêm nhà mồ mới / nhập lại map → chạy lại menu 88.
-- **Máu người chơi: 600** (12/09/2026 người dùng chốt; trước đó 30 000 để chạy thử). Con số nằm ở bốn chỗ —
-  `GameBootstrap.playerMaxHealth`, hai scene, `Player_Sorceress.prefab` — và menu 40 kiểm cả bốn (kể cả bản sao
+- **Máu người chơi: 600** (12/09/2026 người dùng chốt; trước đó 30 000 để chạy thử). Con số nằm ở ba chỗ —
+  `GameBootstrap.playerMaxHealth`, scene Act2, `Player_Sorceress.prefab` — và menu 40 kiểm cả ba (kể cả bản sao
   người chơi khác, vì nó lấy máu thẳng từ prefab).
-- **Act2 dùng LUẬT ĐỢT QUÁI RIÊNG** (`GameDirector.CheDoDotQuanhNguoi`, bật theo tên scene): mỗi đợt sinh quanh **từng**
+- **LUẬT ĐỢT QUÁI** (luật duy nhất của `GameDirector` từ khi xoá Act1): mỗi đợt sinh quanh **từng**
   người chơi bốn con (bộ xương · phù thủy · quỷ cây · quỷ dữ), giết hết → 30 giây → đợt sau cộng dồn thêm quái bất kì
   (+1, +3, +6…) và mạnh thêm 5% máu · sát thương mỗi đợt. ⚠️ **Sát thương quái Act2 = 0,65 × 1,05^(đợt−1)** (27/09/2026 người dùng: đợt đầu −35%, máu giữ
-  nguyên, Act1 không đổi — `GameDirector.HeSoSatThuongDotDau`; menu 56 mục B4b đo cả 4 loại so với con sinh thẳng từ kho quái). **Vào trận chờ đúng 30 giây** mới ra đợt đầu (`GiayChoDotDau`).
+  nguyên — `GameDirector.HeSoSatThuongDotDau`; menu 56 mục B4b đo cả 4 loại so với con sinh thẳng từ kho quái). **Vào trận chờ đúng 30 giây** mới ra đợt đầu (`GiayChoDotDau`).
   **Mỗi đợt thêm 20 con vòng ngoài + 10 con cho MỖI người chơi thêm** (26/09/2026, người dùng; trước cố định 20 cho cả phòng:
   1 người 20 · 2 người 30 · 3 người 40 · 4 người 50 — `GameDirector.SoQuaiXaCho(số người CÒN SỐNG)`, `SoQuaiXaThemMoiNguoi`),
   loại ngẫu nhiên, cách người chơi GẦN NHẤT **20–25 m** (13/09/2026 đổi từ 10 con ở 55–65 m); không đủ chỗ thì thả gần khoảng
@@ -144,12 +142,9 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
   (`kinhnghiem.md`). Menu 60, 56 (2 người → 30 con), 64 kiểm.
   **Sau 60 giây con vòng ngoài nào còn sống tự truy lùng người gần nhất** (`EnemyAI.HenTruyLung`, bỏ giới hạn
   `aggroRange` 14 m); đang truy lùng mà kẹt thì vòng vật cản, kẹt mãi thì đổi chỗ sang 10–14 m cạnh người chơi,
-  quái đánh xa bị kẹt trong 1,5× tầm thì bắn tại chỗ. Quái thường KHÔNG có (menu 64 kiểm, có đối chứng). Act2 KHÔNG còn rải quái sẵn, không dòng quỷ dữ/quỷ cây riêng,
-  không chế độ bốn bộ xương. Menu 56 kiểm. Chỗ xuất phát của mỗi người: ngẫu nhiên theo **mã phòng** (`ChoXuatPhat.cs`),
+  quái đánh xa bị kẹt trong 1,5× tầm thì bắn tại chỗ. Quái thường KHÔNG có (menu 64 kiểm, có đối chứng). Không rải quái sẵn, không dòng quỷ dữ/quỷ cây riêng,
+  không chế độ bốn bộ xương (đã xoá cùng Act1). Menu 56 kiểm. Chỗ xuất phát của mỗi người: ngẫu nhiên theo **mã phòng** (`ChoXuatPhat.cs`),
   cách nhau ≥ 22 m — mọi máy tính ra cùng một danh sách nên không cần gói tin nào.
-- ⚠️ **Chế độ chạy thử "bốn bộ xương" (chỉ còn Act1) đang BẬT** (`GameDirector.CheDoBonBoXuong = true`, hằng số
-  trong code): vào màn chỉ 4 bộ xương, giết hết đợi 30 giây ra 4 con mới. Menu 47 kiểm.
-  **Tắt trước khi phát hành** — không thì game chỉ còn bốn con bộ xương.
 - **Hai mươi hai kỹ năng**: Cầu lửa, Mưa băng, Sấm sét, Lốc xoáy, Thiên thạch, Khiên, Giựt sét (0–6) + **Bình máu (7), Bình mana (8)**
   (13/09/2026) + **Quả cầu băng (9)** + **Gió lốc (10)** (16/09/2026) + **Lửa địa ngục (11)** (17/09/2026) + **Tàng hình (12)** + **Quả cầu điện (13)** + **Hoá lốc xoáy (14)** + **Tốc biến (15)** (18/09/2026) + **4 kỹ năng BỊ ĐỘNG: Kháng Lửa (16), Kháng Băng (17), Kháng Sét (18), Kháng Phong (19)** (19/09/2026) + **bị động Tốc độ di chuyển (20)** (25/09/2026) + **Mây giông (21)** (25/09/2026, nhóm PHONG). Vẫn **7 ô** (người dùng chọn) — kỹ năng không có sẵn ô phải kéo vào ô trong Sách phép.
   ⚠️ Số hiệu mới luôn **thêm ở cuối**, không chèn: số hiệu đi qua gói tin và nằm trong thứ tự ô đã lưu của người chơi.
@@ -330,8 +325,8 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
   **cây cối, nhà và LÒ LỬA vẫn chặn** (lò 2,33 m nhỏ hơn ngưỡng nhưng `LaVatNho` loại riêng mọi thứ có `LoLuaDa` — cả Lửa địa ngục,
   người dùng chọn). Cờ `Fireball.xuyenVatNho` (Lửa địa ngục + `SpawnChum(..., xuyenVatNho: true)` của Quả cầu lửa NGƯỜI CHƠI — quả
   cầu lửa của QUÁI không xuyên) và `QuaCauBang.xuyenVatNho` (mặc định bật); cả ba đi qua **`Fireball.VatCanChan`** dùng chung.
-  `Fireball.LaVatNho`: xuyên khi collider **cao < 4 m VÀ ngang < 4 m**, trừ mặt đất, mọi thứ có `Damageable` và lò lửa. Đo bằng **kích thước, không theo tên** (Act1 dựng bằng code, Act2 nhập từ Blender):
-  Act2 bia mộ 0,16–3,18 m · đá 0,12–1,31 · lò lửa 2,33 | cây 6,54–17,47 · nhà mồ 4,22–5,15 · hàng rào 4,77; Act1 vách đá 4,53–14,55 —
+  `Fireball.LaVatNho`: xuyên khi collider **cao < 4 m VÀ ngang < 4 m**, trừ mặt đất, mọi thứ có `Damageable` và lò lửa. Đo bằng **kích thước, không theo tên** (40 kiểu lưới bia, tên không nói lên cỡ):
+  Act2 bia mộ 0,16–3,18 m · đá 0,12–1,31 · lò lửa 2,33 | cây 6,54–17,47 · nhà mồ 4,22–5,15 · hàng rào 4,77 —
   khe trống giữa 3,18 và 4,22 rộng hơn 1 m. ⚠️ Phải quét **cả đoạn** (`SphereCastAll`) rồi lấy vật TO gần nhất: `SphereCast` chỉ
   trả một vật, mà vật ấy hay là cái bia chắn trước gốc cây — bỏ riêng nó thì quả xuyên luôn qua cây. Menu 72 mục K, menu 80 mục B.
   ⚠️ **Quả cầu băng và Mưa băng trúng LÒ LỬA thì DẬP TẮT như Gió lốc** (25/09/2026): `LoLuaDa.DapTatTrongVung(tâm, bán kính,

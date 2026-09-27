@@ -82,30 +82,7 @@ public static class SelfTest
                 if (meshes < 8) Fail("Quai " + types[i] + " chi co " + meshes + " mieng hinh - qua it.");
             }
 
-            var world = new GameObject("TEST_World");
-            WorldFactory.Build(world.transform, 20f, 7);
-
-            // Tham co phai thuc su moc ra chu khong duoc rong
-            var field = world.transform.Find("ThamCo");
-            if (field == null || field.childCount == 0)
-                Fail("Khong dung duoc tham co.");
-            else
-            {
-                int tufts = 0;
-                var filters = field.GetComponentsInChildren<MeshFilter>();
-                for (int i = 0; i < filters.Length; i++)
-                    if (filters[i].sharedMesh != null) tufts += filters[i].sharedMesh.vertexCount;
-                if (tufts < 2000) Fail("Tham co qua thua: chi co " + tufts + " dinh.");
-            }
-
-            var bush = WorldFactory.BuildBush(world.transform, Vector3.zero, 1);
-            if (bush.GetComponentInChildren<MeshFilter>() == null) Fail("Bui ram khong co hinh.");
-
-            var leafy = WorldFactory.BuildLeafyTree(world.transform, Vector3.zero, 1);
-            if (leafy.GetComponentsInChildren<MeshFilter>().Length < 3) Fail("Cay xanh thieu tan la.");
-
             Object.DestroyImmediate(holder);
-            Object.DestroyImmediate(world);
         }
         catch (System.Exception e)
         {

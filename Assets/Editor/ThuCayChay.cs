@@ -61,15 +61,6 @@ public static class ThuCayChay
     [MenuItem("Diablo 2.5D/18. Chay thu CAY CHAY - Act2", false, 100)]
     public static void Chay() { phepThat = false; Chay("Act2"); }
 
-    /// <summary>
-    /// Chay thu tren Act1 nua, vi hai man dung cay HOAN TOAN khac nhau:
-    /// Act2 mot renderer mot luoi dua tu Blender (Read/Write tat, phai dung bo
-    /// diem nuong san), con Act1 dung cay bang code thanh 88 manh con voi luoi
-    /// doc thang duoc.
-    /// </summary>
-    [MenuItem("Diablo 2.5D/18b. Chay thu CAY CHAY - Act1", false, 101)]
-    public static void ChayAct1() { phepThat = false; Chay("Act1"); }
-
     /// <summary>Nhu menu 18 nhung nguoi choi tu tung phep Thien thach.</summary>
     [MenuItem("Diablo 2.5D/18d. Chay thu CAY CHAY bang PHEP THAT - Act2", false, 104)]
     public static void ChayPhepThat() { phepThat = true; Chay("Act2"); }

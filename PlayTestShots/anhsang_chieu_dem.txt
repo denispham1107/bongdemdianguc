@@ -1,6 +1,6 @@
 [ban 3] Act2: vong 480 giay - dem 240 / ngay 120 / chieu 120, chuyen 30 giay
 
-A. vua vao tran (giay 1.02 trong vong, buoi 'dem'): den RGBA(0.520, 0.720, 0.980, 1.000) manh 0.880 goc 42.0; moi truong RGBA(0.085, 0.155, 0.190, 1.000); sao 1.00; lo dang chay 14/14
+A. vua vao tran (giay 1.04 trong vong, buoi 'dem'): den RGBA(0.520, 0.720, 0.980, 1.000) manh 0.880 goc 42.0; moi truong RGBA(0.085, 0.155, 0.190, 1.000); sao 1.00; lo dang chay 14/14
 
 B. ca vong 480 giay (dem 240 / ngay 120 / chieu 120, chuyen 30 giay cuoi moi buoi); lo tat o giay 220.90, nhom o giay 469.10
     giay    0.0 dem         : den sang 0.613 am -0.460 | moi truong 0.1426 | sao 1.00 | goc  42.0 | lo chay 14
@@ -41,10 +41,10 @@ B4. lo lua: dem chay du True; ngay + chieu tat het True; binh minh tat dung giay
 
 G. lo bi Gio loc dap, hen chay lai sau 1 giay: van dem -> chay lai True (doi chung, phai True); troi da sang ngay -> chay lai False (phai False)
 
-C. sau 6.01 giay that: giay trong vong 6.55 -> 12.56 (tang 6.01); buoi hien tai 'dem'
+C. sau 6.02 giay that: giay trong vong 6.39 -> 12.41 (tang 6.02); buoi hien tai 'dem'
 
 D. ban dem: den RGBA(0.520, 0.720, 0.980, 1.000) manh 0.880 bong 0.62 goc 42.0; moi truong RGBA(0.120, 0.205, 0.265, 1.000)/RGBA(0.085, 0.155, 0.190, 1.000)/RGBA(0.045, 0.085, 0.105, 1.000); suong RGBA(0.115, 0.175, 0.215, 1.000) dam 0.0105; sao 1.00; quang dia 0.90
 
-F. nap Act1: co ChuyenChieuSangDem = False (phai False); den Act1 RGBA(0.720, 0.740, 0.880, 1.000) manh 0.62
+F. nap MainMenu: co ChuyenChieuSangDem = False (phai False); co nhom lua = True (phai True)
 
 so loi ghi nhan = 0

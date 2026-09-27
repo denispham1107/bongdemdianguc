@@ -1,7 +1,7 @@
 /// <summary>
 /// MOT CHO DE NHO XEM DANG CHOI VAN NAO.
 ///
-/// Sanh o scene MainMenu, con tran o scene Act1/Act2 - hai scene khac nhau,
+/// Sanh o scene MainMenu, con tran o scene Act2 - hai scene khac nhau,
 /// nen phai co cho nao do song qua lan nap scene de man choi biet no dang o
 /// phong nao, ai la host.
 ///
@@ -20,7 +20,7 @@ public static class TranHienTai
     /// <summary>Ma phong tren Realtime Database.</summary>
     public static string MaPhong;
 
-    /// <summary>"Act1" hoac "Act2".</summary>
+    /// <summary>Ten scene cua tran - luon "Act2" (man duy nhat).</summary>
     public static string ManChoi;
 
     /// <summary>May nay co phai host khong - host la trong tai cua van dau.</summary>

@@ -38,14 +38,6 @@ public static class ThuBomInput
     [MenuItem("Diablo 2.5D/30. Chay thu BOM INPUT - Act2 (buoc 1)", false, 116)]
     public static void ChayAct2() { Canh = "Assets/Scenes/Act2.unity"; Chay(); }
 
-    /// <summary>
-    /// Act1 dung bang code luc chay (GameBootstrap), Act2 la scene da nuong
-    /// san - hai duong khac han nhau. Mot man chay dung khong chung minh duoc
-    /// man kia, nen phai do ca hai.
-    /// </summary>
-    [MenuItem("Diablo 2.5D/30b. Chay thu BOM INPUT - Act1 (buoc 1)", false, 117)]
-    public static void ChayAct1() { Canh = "Assets/Scenes/Act1.unity"; Chay(); }
-
     static void Chay()
     {
         Directory.CreateDirectory("PlayTestShots");
@@ -232,7 +224,7 @@ public static class ThuBomInput
 
     static void Ket()
     {
-        string ten = Canh.Contains("Act1") ? "bom_input_act1.txt" : "bom_input_act2.txt";
+        string ten = "bom_input_act2.txt";
         File.WriteAllText("PlayTestShots/" + ten, bao.ToString());
 
         var rac = GameObject.Find("TAM_BomInput");
@@ -246,7 +238,7 @@ public static class ThuBomInput
         // Tra lai canh nguoi dung dang mo truoc do.
         //
         // Khong dung delayCall: no dang ky trong luc con o Play mode va bi mat
-        // khi Unity thoat Play - da vap, canh Act1 nam lai tren man hinh nguoi
+        // khi Unity thoat Play - da vap, canh thu nam lai tren man hinh nguoi
         // dung. Phai bam vao EditorApplication.update va cho den khi that su
         // ra khoi Play roi moi mo.
         if (!string.IsNullOrEmpty(canhCu) && canhCu != Canh)

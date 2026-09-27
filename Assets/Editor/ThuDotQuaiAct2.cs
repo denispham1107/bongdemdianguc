@@ -23,7 +23,6 @@ using UnityEngine;
 ///      vat can khong.
 ///   B. Act2 vao man: dem tung loai quai quanh tung nguoi choi.
 ///   C. Dot sau: so quai va he so manh (mau, sat thuong) so voi dot truoc.
-///   D. Act1 KHONG bi doi luat.
 ///
 /// Ket qua ghi ra <c>PlayTestShots/dotquai_act2.txt</c>.
 /// </summary>
@@ -66,8 +65,8 @@ public static class ThuDotQuaiAct2
         if (GameObject.Find("TAM_DotQuai") != null) return;
         daBatDau = true;
         var go = new GameObject("TAM_DotQuai");
-        // PHAI giu qua lan nap canh: phan D nap Act1, khong giu thi kich ban
-        // chet giua chung va bao cao khong bao gio duoc ghi (da vap).
+        // Giu qua lan nap canh (truoc day phan D nap Act1 - khong giu thi kich ban
+        // chet giua chung va bao cao khong bao gio duoc ghi).
         Object.DontDestroyOnLoad(go);
         go.AddComponent<ChayThuMang>().batDau = KichBan();
     }
@@ -298,9 +297,6 @@ public static class ThuDotQuaiAct2
         Kiem(dir.Wave == 0, "vao tran chua toi 30 giay ma da ra dot quai");
         Kiem(Mathf.Abs(tongCho - GameDirector.GiayChoDotDau) < 1.0f, "dot dau khong doi dung 30 giay");
 
-        Ghi("che do dot quanh nguoi choi: " + dir.CheDoDotQuanhNguoi);
-        Kiem(dir.CheDoDotQuanhNguoi, "Act2 khong bat luat dot moi");
-
         // Them mot nguoi choi gia (nhu ban sao nguoi khac) de do "quanh MOI nguoi"
         var toi = Object.FindAnyObjectByType<PlayerController>();
         Kiem(toi != null, "khong tim thay nhan vat");
@@ -411,49 +407,6 @@ public static class ThuDotQuaiAct2
             if (mauGoc > 0f) Kiem(Mathf.Abs(mau / mauGoc - heSoMongDoi) < 0.01f, "mau khong tang 5% moi dot");
             if (satGoc > 0f) Kiem(Mathf.Abs(sat / satGoc - heSoMongDoi) < 0.01f, "sat thuong khong tang 5% moi dot");
         }
-
-        // ================================================================
-        // D. ACT1 GIU NGUYEN
-        // ================================================================
-        Ghi("");
-        Ghi("D. Act1 giu nguyen luat cu");
-        TranHienTai.Xoa();
-        if (kia != null) NguoiChoiKhac.Bo(kia);
-        UnityEngine.SceneManagement.SceneManager.LoadScene("Act1");
-        float hanAct1 = Time.time + 25f;
-        GameDirector d1 = null;
-        while ((d1 == null || UnityEngine.SceneManagement.SceneManager.GetActiveScene().name != "Act1")
-               && Time.time < hanAct1)
-        { d1 = Object.FindAnyObjectByType<GameDirector>(); yield return null; }
-        yield return new WaitForSeconds(2.5f);
-        if (d1 == null) d1 = Object.FindAnyObjectByType<GameDirector>();
-        int tongAct1;
-        var demAct1 = DemTheoLoai(out tongAct1);
-        Ghi("D1. Act1: che do dot quanh nguoi = " + (d1 != null && d1.CheDoDotQuanhNguoi)
-            + " (phai la False), quai dang co: " + tongAct1 + " - " + ViDem(demAct1));
-        Kiem(d1 != null && !d1.CheDoDotQuanhNguoi, "Act1 bi doi sang luat moi");
-
-        // D2. Doi chung: Act1 GIU NGUYEN sat thuong goc (nguoi dung chi giam 35% o Act2). Goc sinh doc lap tu kho quai.
-        int soSo = 0, soDung = 0;
-        foreach (var n in Object.FindObjectsByType<NhanDangQuai>(FindObjectsSortMode.None))
-        {
-            var ai = n.GetComponent<EnemyAI>(); var m = n.GetComponent<Damageable>();
-            if (ai == null || m == null || m.IsDead) continue;
-            var goc = EnemyFactory.Spawn(n.loai, new Vector3(0f, -400f, 0f), null, null);
-            var aiGoc = goc != null ? goc.GetComponent<EnemyAI>() : null;
-            if (aiGoc != null) { soSo++; if (Mathf.Abs(ai.attackDamage / aiGoc.attackDamage - 1f) < 0.005f) soDung++; }
-            if (goc != null) Object.DestroyImmediate(goc);
-        }
-        if (soSo == 0)
-            foreach (var ai in Object.FindObjectsByType<EnemyAI>(FindObjectsSortMode.None))
-            {
-                var goc = EnemyFactory.Spawn(MonsterType.Skeleton, new Vector3(0f, -400f, 0f), null, null);
-                var aiGoc = goc != null ? goc.GetComponent<EnemyAI>() : null;
-                if (aiGoc != null) { soSo++; if (Mathf.Abs(ai.attackDamage / aiGoc.attackDamage - 1f) < 0.005f) soDung++; }
-                if (goc != null) Object.DestroyImmediate(goc);
-            }
-        Ghi("D2. Act1: " + soDung + "/" + soSo + " con quai giu nguyen sat thuong goc (x1,000)");
-        Kiem(soSo > 0 && soDung == soSo, "Act1 sat thuong quai bi doi");
 
         Ghi("");
         Ghi("so loi ghi nhan = " + loi);

@@ -12,7 +12,7 @@ using UnityEngine;
 /// thuc Perlin - la 0,43 m va 4,3 do. Di trong Act2 nhu di tren mat ban.
 ///
 /// Cong cu nay CONG THEM mot lop dia hinh Perlin ba tang len tren nen san co,
-/// dung tan so cua Act1 (<see cref="WorldFactory.AnalyticHeight"/>):
+/// dung tan so cua Act1 (ham toan AnalyticHeight cu, nay da xoa cung Act1):
 ///
 ///   - doi thoai   buoc song ~28 m   -> suon dai, cho cao cho thap
 ///   - go nho      buoc song ~9 m    -> nhap nho vua tam nhin

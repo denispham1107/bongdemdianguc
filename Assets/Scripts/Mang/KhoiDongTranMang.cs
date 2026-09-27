@@ -58,9 +58,8 @@ public class KhoiDongTranMang : MonoBehaviour
     /// <summary>
     /// TU DAT MINH VAO MAN CHOI, khong bat ai keo tay vao scene.
     ///
-    /// Act1 dung bang code luc chay con Act2 la scene da nuong san - gan tay
-    /// thi phai nho ca hai, va quen mot cai la mot man khong noi mang duoc ma
-    /// khong bao gi.
+    /// Gan tay vao scene thi quen mot lan (dung lai scene) la man khong noi
+    /// mang duoc ma khong ai bao gi.
     ///
     /// CAI BAY DA VAP: [RuntimeInitializeOnLoadMethod] chay DUNG MOT LAN, luc
     /// game vua khoi dong - KHONG chay lai moi lan nap scene. Ma luc ay nguoi
@@ -87,7 +86,7 @@ public class KhoiDongTranMang : MonoBehaviour
     static void KhiNapXongMan(Scene canh, LoadSceneMode kieu)
     {
         if (!TranHienTai.DangChoiMang) return;
-        if (canh.name != "Act1" && canh.name != "Act2") return;
+        if (canh.name != PhongMang.ManMacDinh) return;
         if (Object.FindAnyObjectByType<KhoiDongTranMang>() != null) return;
 
         var go = new GameObject("TranMang");
@@ -124,8 +123,8 @@ public class KhoiDongTranMang : MonoBehaviour
         string maNgan = string.IsNullOrEmpty(TranHienTai.MaPhong)
             ? "?" : TranHienTai.MaPhong.Substring(
                   Mathf.Max(0, TranHienTai.MaPhong.Length - 6));
-        NhanDang = string.Format("phòng …{0} · {1} · {2}", maNgan,
-                                 TranHienTai.ManChoi,
+        // Khong ghi ten man: chi con mot man (Act1 da xoa), va "Act2" la ten scene chu khong phai chu cho nguoi choi doc
+        NhanDang = string.Format("phòng …{0} · {1}", maNgan,
                                  TranHienTai.LaHost ? "chủ phòng" : "khách");
 
         // Doi nhan vat cua minh duoc dung xong

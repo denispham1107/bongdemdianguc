@@ -184,8 +184,7 @@ public static class PhongMang
     //  TAO / VAO / RA
     // ================================================================
 
-    public static IEnumerator TaoPhong(string tenPhong, string manChoi,
-                                       Action<bool, string> xong)
+    public static IEnumerator TaoPhong(string tenPhong, Action<bool, string> xong)
     {
         string ten = string.IsNullOrEmpty(tenPhong)
             ? "Phòng của " + FirebaseMang.TenHienThi : tenPhong;
@@ -196,7 +195,7 @@ public static class PhongMang
             "{\"ten\":\"" + FirebaseMang.Thoat(ten) + "\","
             + "\"hostUid\":\"" + FirebaseMang.Uid + "\","
             + "\"hostTen\":\"" + FirebaseMang.Thoat(tenToi) + "\","
-            + "\"manChoi\":\"" + manChoi + "\","
+            + "\"manChoi\":\"" + ManMacDinh + "\","
             + "\"trangThai\":\"cho\","
             + "\"toiDa\":" + SoNguoiToiDa + ","
             + "\"soNguoi\":1,"
@@ -253,7 +252,10 @@ public static class PhongMang
         yield return TaiLaiPhong(maPhong, (ok, e) => xong(ok, e));
     }
 
-    /// <summary>Man mac dinh khi khong ai chon - xem <see cref="VaoPhongNhanh"/>.</summary>
+    /// <summary>
+    /// Man choi DUY NHAT (Nghia dia). Act1 da xoa han 27/09/2026 (nguoi dung) nen sanh khong con cho chon man;
+    /// truong "manChoi" van ghi len Firebase cho trang quan tri doc.
+    /// </summary>
     public const string ManMacDinh = "Act2";
 
     /// <summary>
@@ -312,7 +314,7 @@ public static class PhongMang
         }
 
         bool taoDuoc = false;
-        yield return TaoPhong(null, ManMacDinh, (o, e) => { taoDuoc = o; });
+        yield return TaoPhong(null, (o, e) => { taoDuoc = o; });
         if (!taoDuoc || PhongHienTai == null)
         { xong(false, "Không tạo được phòng."); yield break; }
 
@@ -357,7 +359,7 @@ public static class PhongMang
 
         // Phong kia vua bien mat - tao lai phong cua minh chu khong bo nguoi
         // choi dung khong o dau ca.
-        yield return TaoPhong(null, ManMacDinh, xong);
+        yield return TaoPhong(null, xong);
     }
 
     public static IEnumerator RoiPhong(Action xong)
@@ -390,27 +392,6 @@ public static class PhongMang
         yield return FirebaseMang.Ghi(
             "phong/" + PhongHienTai.ma + "/nguoiChoi/" + FirebaseMang.Uid + "/sanSang",
             sanSang ? "true" : "false", (ok, e) => { });
-        if (xong != null) xong();
-    }
-
-    /// <summary>
-    /// Chu phong doi man. CHI DOI DUOC KHI PHONG CON DANG CHO.
-    ///
-    /// Da bam bat dau roi ma con doi duoc thi may khach co the da doc man cu
-    /// va nhay vao do - hai nguoi hai man. Cua so ay chi vai tram mili giay,
-    /// nhung no thuc su mo.
-    /// </summary>
-    public static IEnumerator DoiManChoi(string manChoi, Action xong)
-    {
-        if (PhongHienTai == null || !LaHost || !PhongHienTai.DangCho)
-        { if (xong != null) xong(); yield break; }
-
-        yield return FirebaseMang.Ghi("phong/" + PhongHienTai.ma + "/manChoi",
-                                      "\"" + manChoi + "\"", (ok, e) => { });
-
-        // Sua luon ban sao cuc bo: nut phai doi chu ngay chu khong doi lan hoi
-        // ke tiep - khong thi nguoi ta bam hai lan vi tuong nut hong.
-        PhongHienTai.manChoi = manChoi;
         if (xong != null) xong();
     }
 

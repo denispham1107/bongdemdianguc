@@ -24,7 +24,7 @@ public static class LeakTest
         EditorSettings.enterPlayModeOptionsEnabled = true;
         EditorSettings.enterPlayModeOptions = EnterPlayModeOptions.DisableDomainReload;
 
-        EditorSceneManager.OpenScene("Assets/Scenes/Act1.unity");
+        EditorSceneManager.OpenScene("Assets/Scenes/Act2.unity");
         EditorApplication.update += Tick;
         stage = 0;
         t0 = -1f;

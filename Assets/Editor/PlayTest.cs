@@ -31,7 +31,7 @@ public static class PlayTest
         EditorSettings.enterPlayModeOptionsEnabled = true;
         EditorSettings.enterPlayModeOptions = EnterPlayModeOptions.DisableDomainReload;
 
-        EditorSceneManager.OpenScene("Assets/Scenes/Act1.unity");
+        EditorSceneManager.OpenScene("Assets/Scenes/Act2.unity");
 
         Application.logMessageReceived += OnLog;
         EditorApplication.update += Tick;

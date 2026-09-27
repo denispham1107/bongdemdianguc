@@ -1,27 +1,23 @@
 using UnityEngine;
 
 /// <summary>
-/// DIEM KHOI DAU CUA GAME (dat tren vat the "GAME" trong scene).
+/// DIEM KHOI DAU CUA TRAN (dat tren vat the "GAME" trong scene Act2 - man choi duy nhat).
 ///
-/// Cach lam viec:
-/// - Neu scene DA co san the gioi va nhan vat (do cong cu "nuong asset" dung ra,
-///   lay tu Assets/Prefabs), script nay chi noi cac thanh phan lai voi nhau.
-/// - Neu scene con trong, no se TU DUNG toan bo man choi bang code de game van chay.
-///
-/// Nho vay ban vua sua tay duoc tung vat the trong scene, vua khong so game vo.
+/// Canh vat da nuong san trong scene (ban do Blender); script nay dat bau troi, anh trang, vong
+/// dem -> ngay -> chieu, nhan vat, camera, GameDirector va HUD roi noi chung voi nhau.
+/// (Truoc 27/09/2026 no con tu dung dau truong Act1 bang code khi scene trong - Act1 da xoa han.)
 /// </summary>
 public class GameBootstrap : MonoBehaviour
 {
-    [Header("Kich thuoc dau truong")]
+    [Header("Kich thuoc ban do")]
     public float arenaRadius = 34f;
-    public int worldSeed = 12345;
 
     [Header("Nhan vat")]
     // 30 000 mau la de CHAY THU cho lau, khong phai con so can bang cua game.
     // Muc that la 400 - doi lai truoc khi phat hanh, khong thi quai danh ca
     // buoi khong het mot thanh mau va khong ai biet vi sao.
     //
-    // Con so nay nam trong CA HAI SCENE (Act1.unity, Act2.unity) nua: Unity
+    // Con so nay nam trong SCENE (Act2.unity) nua: Unity
     // luu gia tri cua component vao scene, va gia tri do DE LEN mac dinh viet
     // o day. Sua moi mot cho la khong doi gi ca.
     public float playerMaxHealth = 600f;
@@ -30,10 +26,6 @@ public class GameBootstrap : MonoBehaviour
     [Header("Do hoa")]
     public bool useBloom = true;
     public float bloomIntensity = 0.9f;
-
-    [Header("Tu dung neu scene con trong")]
-    [Tooltip("Bat: neu scene chua co canh vat thi tu dung bang code.")]
-    public bool buildWorldIfMissing = true;
 
     PlayerController player;
     CameraRig camRig;
@@ -44,17 +36,8 @@ public class GameBootstrap : MonoBehaviour
         // Khoang bong theo muc do hoa nguoi choi chon (Cao 60 m nhu truoc day)
         QualitySettings.shadowDistance = CaiDatDoHoa.KhoangBong;
 
-        bool worldReady = GameObject.Find("World") != null;
-        if (!worldReady && buildWorldIfMissing)
-        {
-            var world = new GameObject("World").transform;
-            WorldFactory.Build(world, arenaRadius, worldSeed);
-        }
-        else
-        {
-            // The gioi da co san trong scene - chi can dat lai bau troi va suong mu
-            WorldFactory.BuildSkyAndFog();
-        }
+        // Canh vat da co san trong scene - chi can dat lai bau troi va suong mu
+        WorldFactory.BuildSkyAndFog();
 
         BuildSun();
         var playerGo = EnsurePlayer();
@@ -81,14 +64,14 @@ public class GameBootstrap : MonoBehaviour
 
         WorldFactory.SetupMoonlight(sun);
 
-        // Mac dinh lo lua chay binh thuong; chi Act2 luc xe chieu moi tat (dat lai o day vi co la
-        // static, giu nguyen tu lan chay truoc).
+        // Vao tran la ban dem nen lo lua chay; ban ngay moi tat (dat lai o day vi co la static,
+        // giu nguyen tu lan chay truoc).
         LoLuaDa.ChoPhepNhomLua = true;
 
-        // ACT2: vong DEM 4 phut -> NGAY 2 phut -> CHIEU 2 phut lap lai toi het tran (nguoi dung 25/09/2026).
+        // Vong DEM 4 phut -> NGAY 2 phut -> CHIEU 2 phut lap lai toi het tran (nguoi dung 25/09/2026).
         // Gan SAU SetupMoonlight: ChuyenChieuSangDem doc chinh trang thai vua dat lam dich "ban dem",
         // nen sau nay doi mau dem trong WorldFactory thi no tu di theo.
-        if (WorldFactory.LaAct2()) ChuyenChieuSangDem.Gan(sun.gameObject, sun);
+        ChuyenChieuSangDem.Gan(sun.gameObject, sun);
     }
 
     // ================================================================

@@ -15,7 +15,7 @@ using UnityEngine;
 ///     0 - 210 s  DEM         | 210 - 240 s  binh minh (dem -> ngay)
 ///   240 - 330 s  NGAY        | 330 - 360 s  chieu xuong (ngay -> chieu)
 ///   360 - 450 s  CHIEU       | 450 - 480 s  hoang hon (chieu -> dem)   roi quay lai 0.
-/// Chi Act2 - Act1 va man chinh giu nguyen.
+/// Chi trong tran (GameBootstrap gan) - man chinh giu nguyen.
 ///
 /// CACH LAM: ba bo anh sang <see cref="BoAnhSang"/>. NGAY va CHIEU la hang so trong file nay; DEM thi
 /// KHONG viet tay ma DOC THANG tu canh ngay luc bat dau (sau khi <see cref="WorldFactory.BuildSkyAndFog"/> va

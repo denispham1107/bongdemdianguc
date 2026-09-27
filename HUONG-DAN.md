@@ -8603,6 +8603,53 @@ châm cả bia mộ / nhà mồ (tính năng sáng nay), đầy trần "4 vật 
 
 Ảnh: `PlayTestShots/maygiong_1_dem_can.png`, `maygiong_2_chay_den.png`, `maygiong_3_ngay_goc_choi.png`.
 
+### Xoá vĩnh viễn Act1 (Đấu trường) — chỉ còn Nghĩa địa (27/09/2026)
+
+**Người dùng xin:** xoá vĩnh viễn toàn bộ Act1, không giữ ở đâu nữa, không được ảnh hưởng Act2, và cập nhật sảnh tạo phòng.
+Người dùng chọn: **xoá sạch mọi nhánh Act1 trong code**; **lịch sử git giữ nguyên** (không viết lại lịch sử, không force push —
+đó là chỗ lùi khẩn cấp duy nhất); **bỏ hẳn phần chọn màn** ở sảnh.
+
+**Đã xoá:**
+- Scene `Act1.unity` và **138 tài nguyên chỉ Act1 dùng** (19,7 MB): 49 vật liệu, 37 lưới, 36 prefab cảnh vật (`Prop_DaTang_*`,
+  `Prop_CayXanh_*`, `Prop_Mo_*`, `Prop_Leu_ThayMo_*`…), địa hình `DiaHinh_Act1` + 4 lớp đất, thảm cỏ, 6 ảnh. Danh sách lập bằng
+  `AssetDatabase.GetDependencies`: thứ Act1 cần **trừ** mọi thứ Act2, MainMenu và `Resources/` cần. `Prop_LoLua` còn giữ vì Act2 vẫn
+  trỏ tới.
+- Code chỉ để dựng Act1: `TerrainFactory`, `DuongFactory`, `GraveFactory`, `LeuFactory`, `RockTexScale`; `WorldFactory` từ 1 092 dòng
+  còn 136 (chỉ bầu trời, ánh trăng Act2 và màu đất cho mảnh vụn Lốc xoáy); `GameBootstrap` bỏ đường "scene trống thì tự dựng";
+  `AssetBaker` bỏ menu 1 (nướng tất cả + dựng Act1 + màn chính kiểu cũ) và menu 8 (dựng lại địa hình Act1), giữ 11/12/13.
+- `GameDirector`: bỏ luật quái cũ (rải quái khắp bản đồ, dòng Quỷ dữ / Quỷ cây riêng, `SpawnWave`) và **chế độ chạy thử bốn bộ
+  xương** (`CheDoBonBoXuong` — CLAUDE.md từng nhắc "tắt trước khi phát hành"; nay không còn gì để tắt). Luật đợt quanh người chơi
+  là luật duy nhất, không còn xét tên scene.
+- `CayChay`: bỏ ba kiểu tên cây Act1 (`CayXanh_`, `CayChet_`, `Tree`, `DeadTree`); đường "đọc thẳng lưới" vẫn giữ cho lưới bật
+  Read/Write.
+- Build Settings và menu 29 chỉ còn MainMenu + Act2. Menu 5, 18b, 30b, 47 xoá; menu 2 mở Act2; menu 4, 7 chạy trên Act2.
+- Ảnh / báo cáo Act1 trong `PlayTestShots/`.
+
+**Sảnh (MainMenu):**
+- Khung TẠO PHÒNG MỚI chỉ còn ô tên (dài ra hết khung) và nút TẠO PHÒNG.
+- Trong phòng, chủ phòng không còn khung CHỌN MÀN CHƠI, nên bảng người chơi đẩy lên sát đầu.
+- Dòng phụ dưới tên phòng: "Bạn là chủ phòng" hoặc "Chủ phòng: …". Hàng phòng trong danh sách: "Chủ phòng: …".
+- `PhongMang.TaoPhong` không nhận màn nữa, `DoiManChoi` xoá. Trường `manChoi` vẫn ghi "Act2" lên Firebase cho trang quản trị.
+- ⚠️ Lúc vào trận **không đọc `manChoi` của phòng**: phòng cũ còn ghi "Act1" mà nạp scene ấy thì `LoadScene` ném lỗi, kẹt ở sảnh.
+- Dòng nhận dạng phòng trong trận bỏ chữ "Act2" (tên scene, không phải chữ cho người chơi đọc).
+
+**Kiểm không ảnh hưởng Act2:**
+
+| Kiểm | Kết quả |
+|---|---|
+| Quét GUID trong Act2, MainMenu, mọi prefab, `Resources/`, vật liệu | 0 tham chiếu hỏng |
+| Đối chứng: cùng phép quét trên bản `Act1.unity` cũ lấy từ git | 39/76 hỏng — phép quét bắt được lỗi |
+| Biên dịch (Unity chạy đúng bản mới) | 0 lỗi; gọi hằng `CheDoBonBoXuong` đã xoá thì báo "không tồn tại" |
+| Menu 3 · 79 · 56 · 64 · 40 · 36 · 35 · 26 · 50 | cả 9 menu 0 lỗi |
+
+Chi tiết từng menu:
+- **Menu 79:** đối chứng "chỉ trong trận" nay nạp **MainMenu**: không có vòng ngày đêm, và rời trận thì cờ lò lửa bật lại.
+- **Menu 56:** đợt đầu chờ 30,0 giây, 4 loại quái sát thương ×0,650. Phần D (đối chứng Act1) xoá.
+- **Menu 26:** phòng thật trên Firebase ghi màn Act2.
+- **Menu 50:** ảnh `gd_3b_sanh_coPhong.png`, `gd_6_trongphong.png` — 0 chữ bị cắt.
+
+Trên web, Act1 chỉ biến mất ở lần "push và cập nhật web" sau.
+
 ### Bình máu rơi 25%, bình mana rơi 15% (27/09/2026)
 
 Người dùng xin giết quái xong tỉ lệ rơi bình máu **25%**, bình mana **15%** (trước 10% / 10%). Đổi `QuanLyBinhRoi.TiLeRoiBinhMau`
@@ -11100,14 +11147,11 @@ Lần chạy đầu phép thử báo cả 10 con "lơ lửng": tia chiếu từ 
 
 | Mục | Tác dụng |
 |-----|----------|
-| **1. Nuong Asset + Dung Man Choi** | Tạo lại **toàn bộ** Textures / Materials / Models / Prefabs và dựng lại 3 scene. Dùng khi bạn sửa code tạo hình và muốn cập nhật prefab. |
-| **2. Mo Man Choi (Open Scene)** | Mở nhanh scene Act1 |
+| **2. Mo Man Choi (Open Scene)** | Mở nhanh scene Act2 (màn chơi duy nhất) |
 | **3. Tu kiem tra (Self Test)** | Dựng thử mọi thứ + kiểm tra shader, báo lỗi nếu có |
 | **4. Chay thu va chup hinh (Play Test)** | Tự chạy game, tự tung phép, chụp ảnh vào thư mục `PlayTestShots` |
-| **5. Dung Scene Trong** | Tạo scene rỗng chỉ có vật thể `GAME` (kiểu cũ: mọi thứ sinh bằng code lúc chạy) |
 | **6. Chup man hinh chinh** | Chụp riêng màn hình MainMenu |
 | **7. Kiem tra hieu ung con sot** | Tự bắn phép rồi đếm xem có hiệu ứng nào không tự biến mất |
-| **8. Dung lai dia hinh** | Xoá hết nét tô tay trên mặt đất rồi sinh lại từ công thức |
 | **10. Ve lai dia hinh Act2** | Cộng lớp gồ ghề Perlin lên mặt đất Act2 và dời toàn bộ đồ đạc theo. Mở scene Act2 trước khi bấm. |
 | **11. Nuong rieng prefab Quy du** | Nướng lại riêng `Enemy_QuyDu` từ model Meshy, không đụng gì khác. |
 | **12. Nuong rieng prefab Quy cay** | Nướng lại riêng `Enemy_QuyCay` từ model Meshy. |
@@ -11118,7 +11162,6 @@ Lần chạy đầu phép thử báo cả 10 con "lơ lửng": tia chiếu từ 
 | **17. Sut me mot phan bia mo - Act2** | Cắt sứt mẻ thật ở mức lưới cho 28% số bia. |
 | **17b. Tra bia mo ve nguyen ven** | Gỡ mọi bản vỡ, trả bia về lưới gốc. |
 | **18. Chay thu CAY CHAY - Act2** | Thả một quả thiên thạch vào một cái cây rồi đo cả vòng đời cháy → biến mất → mọc lại. Kết quả ghi ra `PlayTestShots/cay_chay_Act2.txt`. |
-| **18b. Chay thu CAY CHAY - Act1** | Như trên nhưng trên Act1 — cây Act1 dựng bằng code thành 88 mảnh con, khác hẳn cây Act2. |
 | **18c. Chay thu TRAN so cay chay cung luc** | Châm lửa 12 cây một lúc để kiểm cái trần 6 cây và đo khung hình. |
 | **18d. Chay thu CAY CHAY bang PHEP THAT** | Như 18 nhưng người chơi tự bấm phép Thiên thạch — chạy đúng đường mà người chơi đi. |
 | **19. Chay thu HOI SINH sau Loc xoay** | Thả một con lốc, đo xem cảnh vật bị cuốn có mọc lại đúng 30 giây không. |
@@ -11129,7 +11172,7 @@ Lần chạy đầu phép thử báo cả 10 con "lơ lửng": tia chiếu từ 
 | **27. Chay thu MANG - khoa tai khoan** | Kiểm rằng tài khoản bị admin khoá trên web thì không vào được game, còn tài khoản bình thường vẫn vào được. Kết quả ra `PlayTestShots/mang_khoa.txt`. |
 | **28. Chup man DANG NHAP va SANH PHONG** | Chụp ba màn hình thật của phần mạng ra `PlayTestShots/mang_man_*.png`. Xoá phiên đăng nhập cũ trên máy này (lần sau phải gõ lại mật khẩu) và luôn dọn phòng đã tạo. |
 | **29. Xuat ban WEBGL** | Xuất bản bản chơi trên trình duyệt ra `Build/WebGL` (khoảng 11 phút). Kết quả và dung lượng từng file ghi ra `PlayTestShots/build_webgl.txt`. **Xoá sạch `web/Build/`**, chép `Build/WebGL/Build/*`, `Build/WebGL/TemplateData/*` và `Build/WebGL/index.html` sang `web/`, rồi `firebase deploy --only hosting` là lên mạng. |
-| **30 / 30b. Bom input Act2 · Act1** | Bước 1 giai đoạn 2: bơm một chuỗi ý muốn vào `PlayerController` rồi đo quãng đường đi được, đối chiếu với lý thuyết. Phải chạy cả hai vì hai màn dựng khác hẳn nhau. |
+| **30. Bom input Act2** | Bước 1 giai đoạn 2: bơm một chuỗi ý muốn vào `PlayerController` rồi đo quãng đường đi được, đối chiếu với lý thuyết. |
 | **31. Chay thu DU DOAN va HIEU CHINH** | Bước 2: chạy 120 gói input, đặt lại trạng thái rồi chạy lại từ gói N+1, đo độ lệch giữa hai lần — phải là 0. |
 | **32. Chay thu NHIEU NGUOI mot canh** | Bước 3: sinh thêm nhân vật thứ hai rồi đếm xem quái chia nhau ra nhắm hai người hay dồn cả vào một. |
 | **33. Chay thu NOI SUY** | Bước 4: đo độ dày của đệm co giãn ở mạng tốt và mạng 4G, và số lần giật khi ép đệm mỏng. |
@@ -11146,7 +11189,6 @@ Lần chạy đầu phép thử báo cả 10 con "lơ lửng": tia chiếu từ 
 | **44. Chay thu SUA BUOC 5 (2-1-4-5)** | Mười lăm chiều cho bốn chỗ hở đã vá: bản sao không chết cục bộ nhưng chết khi chủ phòng bảo, xác không ra đòn, HUD khách lấy bảng số của chủ phòng, phím R bị chặn trong trận mạng, và hai ngưỡng mất kết nối (chờ tín hiệu 3 giây — hồi phục được — rồi rời trận sau 10 giây hoặc ngay khi kênh đóng). Kết quả ra `PlayTestShots/sua_buoc5.txt`. |
 | **45. Chay thu BON NGUOI (noi hinh sao)** | Mười một chiều cho trận bốn người: xếp ghế tất định (kể cả khi hai người trùng ghế), chủ phòng chuyển tiếp trạng thái và kỹ năng sang đúng những người còn lại và **không vòng về người gửi**, trả lời nhịp đúng kênh, sinh bản sao khi gói đầu tiên đến, một khách rời trận thì những người còn lại đều biết và gói trễ không làm người đó hiện lại. Kết quả ra `PlayTestShots/bonnguoi.txt`. |
 | **46. Chay thu HIEU UNG qua mang** | Mười hai chiều: bản sao không tự gieo đóng băng/choáng (và nhân vật thật vẫn gieo được), cờ và máu khiên đọc đúng rồi đi qua gói tin không to thêm, bản sao vẽ lại theo lời kể, khiên bản sao không bị trừ cục bộ, mất gói thì hiệu ứng tự tan, và quái bên khách choáng theo chủ phòng. Kết quả ra `PlayTestShots/hieuung_mang.txt`. |
-| **47. Chay thu CHE DO BON BO XUONG** | Vào Play thật ở **cả hai màn**, đếm quái trên cảnh theo loại: vào màn đúng 4 bộ xương, giết hết thì đợt mới ra đúng 30 giây game (hai vòng), và để yên 260 giây không sinh thêm con nào. Kết quả ra `PlayTestShots/bonboxuong.txt`. |
 | **48. Chay thu CAI DAT do hoa** | Ngoài Play: font đủ chữ có dấu, vị trí nút ở nhiều cỡ màn hình, `index.html` không hạ `devicePixelRatio`, chuyển khoá cũ 3 mức sang khoá mới 4 mức. Trong Play: đăng nhập thật, bấm OK lần lượt 4 mức, đọc lại từ kho lưu, kiểu bóng / chi tiết xa, vào Act2 đếm vật đổ bóng, đo ảnh đệm cảnh 3D (kích thước, có phóng lên màn hình, gỡ ra ngoài lúc vẽ, đứng sau bloom), độ sáng ảnh chụp. Trả lại mức cũ, phiên đăng nhập và mức chất lượng của Editor. Kết quả ra `PlayTestShots/caidat.txt`. |
 | **49. Chay thu CAU LUA trung nguoi va khieng** | Tự chọn hướng bắn trống, rồi đo hai chiều mạng: người khác bắn mình / mình bắn người khác, có và không có khiên, và khiên của chính người bắn. Ghi từng cú mất máu (cú nổ hay cú cháy), chỗ quả cầu nổ so với mặt vòm, máu khiên; chụp màn hình lúc nổ để xem con số sát thương có đọc được không. Kết quả ra `PlayTestShots/cauluapvp.txt`, ảnh `caulua_no_*.png`. |
 | **50. Chay thu GIAO DIEN dang nhap - sanh - phong** | Đi hết các màn (đăng nhập, tạo tài khoản, sảnh trống, sảnh có phòng, Cài đặt, trong phòng, phòng đủ 4 người, đếm ngược); ở mỗi màn đếm số lượt vẽ, số chữ bị cắt, số chữ phải thu nhỏ — đếm ngay trong hàm vẽ nên không sót nhãn nào. Kiểm font đang dùng là Inter, và quay về MainMenu khi đã đăng nhập thì vào thẳng sảnh. Ảnh `gd_*.png`, kết quả `PlayTestShots/giaodien.txt`. |
@@ -11175,7 +11217,7 @@ Lần chạy đầu phép thử báo cả 10 con "lơ lửng": tia chiếu từ 
 | **72. Chay thu LUA DIA NGUC (ky nang moi)** | Thông số (số hiệu 11, năng lượng 31/hồi chiêu/niệm, sát thương gốc = prefab Quả cầu lửa × 1,2⁴, chữ Sách phép, icon); tung thật 5 quả; tự dí 5 bia ngoài hình quạt (đối chứng Quả cầu lửa thường 0 bia), 1 bia, bia chạy ngang, mục tiêu chết giữa đường, không có ai bay thẳng 18°; sát thương so với Quả cầu lửa cấp 5 thật + thiêu đốt; màu giống hệt Quả cầu lửa; qua mạng + kẻ đánh. Tạm tắt va chạm đồ vật 26 m (Act2 không có chỗ trống). Số đo `luadianguc.txt`. |
 | **70. Chay thu QUA CAU LUA (85 sat thuong, vet lua moi)** | Sát thương đọc thẳng prefab và trên quả cầu thật khi tung; quả cầu sinh từ prefab bay vào bia (mất 85 × giảm theo khoảng cách); hạt `Flames` không còn ảnh tam giác mà là flipbook Blender, có vệt lửa dài `TrailRenderer`; nổ xong vệt được thả ra; chụp cận cảnh lúc bay. Chạy trên bản cũ ra 7 lỗi (đối chứng). Số đo `quacaulua.txt`. |
 | **86. Mo rong Act2 them 50% (rao moi + vanh dat + do dac)** | Chạy MỘT lần trên Act2 gốc: rào mới từ Blender (nửa cạnh 66,41 m), terrain 134,63 m (vùng cũ chép nguyên), thêm 100 bia · 13 cây · 51 đá · 2 nhà mồ · 4 lò · 6 vũng nước ở vành, `arenaRadius` 62. Báo cáo `PlayTestShots/mo_rong_act2.txt`. Terrain đã rộng thì tự bỏ qua. |
-| **56. Chay thu DOT QUAI Act2 + cho xuat phat** | *(13/09/2026: thêm đo chờ 30 giây và 10 con xa 55–65 m)*  Kiểm chỗ xuất phát ngẫu nhiên (hai máy cùng mã phòng ra cùng danh sách, cách nhau ≥ 22 m, trên đất, ngoài nước, không vướng vật cản) và luật đợt quái Act2 (đợt 1 bốn con quanh mỗi người; đợt sau cộng dồn quái và mạnh thêm 5% máu · sát thương); kiểm Act1 không bị đổi. Số đo `dotquai_act2.txt`. |
+| **56. Chay thu DOT QUAI Act2 + cho xuat phat** | *(13/09/2026: thêm đo chờ 30 giây và 10 con xa 55–65 m)*  Kiểm chỗ xuất phát ngẫu nhiên (hai máy cùng mã phòng ra cùng danh sách, cách nhau ≥ 22 m, trên đất, ngoài nước, không vướng vật cản) và luật đợt quái Act2 (đợt 1 bốn con quanh mỗi người; đợt sau cộng dồn quái và mạnh thêm 5% máu · sát thương). Số đo `dotquai_act2.txt`. |
 | **55. Chay thu KET TRAN (nguoi song sot cuoi cung)** | Mở kênh giả lập như menu 45: kiểm gói tin kết trận/chết, máy chủ phòng phán quyết đúng lúc còn một người, bảng điểm cộng đúng người, máy khách không tự kết luận và hiện đúng kết quả nghe được, chết rồi camera chuyển sang người còn sống, chụp màn kết trận. Số đo `kettran.txt`, ảnh `kettran_*.png`. |
 | **54c. Chay thu LOC XOAY cuon lo lua** | Vào Play Act2, thả một cơn lốc đi thẳng vào lò: đo mốc thời gian lửa tắt / lò nhấc lên / lò biến mất / lò mọc lại, kiểm than trong chậu tắt bằng độ sáng trên ảnh, và kiểm vật có hệ hạt khác vẫn không bị cuốn. Ảnh `locxoay_*.png`, số đo `locxoay_lolua.txt`. |
 | **54b. Chay thu lo lua Act2** | Kiểm 10 lò (14 lò sau menu 86; lò vành mới phải cách mép rào vuông ≥ 2 m) bằng cách khác lúc đặt (va chạm tạm cho lưới nước, tia chiếu lên tìm mái nhà, hộp bao bia, độ cao địa hình quanh chân); trong Play: lửa + đèn bật, nhân vật đi thẳng vào lò bị chặn; chụp `lolua_*.png` + bản đồ. Số đo `lolua_act2.txt`. |

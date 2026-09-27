@@ -114,7 +114,7 @@ public static class ThuMangSanh
 
         // ---- 4. TAO PHONG ----
         t = Time.realtimeSinceStartup;
-        yield return PhongMang.TaoPhong("Phong chay thu", "Act2", (o, err) => { ok = o; e = err; });
+        yield return PhongMang.TaoPhong("Phong chay thu", (o, err) => { ok = o; e = err; });
         Ghi(string.Format("tao phong: {0} ({1:F0} ms)",
                           ok ? "OK" : "LOI - " + e, (Time.realtimeSinceStartup - t) * 1000f));
         if (!ok) { loi++; Ket(); yield break; }
@@ -138,11 +138,10 @@ public static class ThuMangSanh
                           (Time.realtimeSinceStartup - t) * 1000f));
         if (thay == null) { Ghi("[LOI] tao phong xong ma danh sach khong thay"); loi++; }
 
-        // ---- 6. DOI MAN CHOI ----
-        yield return PhongMang.DoiManChoi("Act1", null);
+        // ---- 6. MAN CHOI (duy nhat - Act1 da xoa, sanh khong con chon man) ----
         yield return PhongMang.TaiLaiPhong(maPhongDaTao, (o, err) => { });
-        Ghi("doi man sang Act1 -> doc lai duoc: " + PhongMang.PhongHienTai.manChoi);
-        if (PhongMang.PhongHienTai.manChoi != "Act1") { Ghi("[LOI] doi man khong an"); loi++; }
+        Ghi("man choi ghi tren phong vua tao: " + PhongMang.PhongHienTai.manChoi + " (phai la " + PhongMang.ManMacDinh + ")");
+        if (PhongMang.PhongHienTai.manChoi != PhongMang.ManMacDinh) { Ghi("[LOI] phong khong ghi dung man"); loi++; }
 
         // ---- 7. BAT DAU DEM NGUOC ----
         t = Time.realtimeSinceStartup;

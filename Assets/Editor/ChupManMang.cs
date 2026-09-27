@@ -114,7 +114,7 @@ public static class ChupManMang
         bao.AppendLine("2. sanh phong: " + CoAnh("mang_man_2_sanh"));
 
         // ---- 3. TRONG PHONG ----
-        yield return PhongMang.TaoPhong("Phong chup hinh", "Act2", (o, err) => { ok = o; e = err; });
+        yield return PhongMang.TaoPhong("Phong chup hinh", (o, err) => { ok = o; e = err; });
         bao.AppendLine("   tao phong: " + (ok ? "OK - " + PhongMang.PhongHienTai.ma : "LOI - " + e));
 
         if (ok)

@@ -7,8 +7,7 @@ using UnityEngine.SceneManagement;
 /// </summary>
 public class MainMenuUI : MonoBehaviour
 {
-    [Header("Ten man choi")]
-    public string act1Scene = "Act1";
+    [Header("Ten man choi (man duy nhat - Act1 da xoa 27/09/2026)")]
     public string act2Scene = "Act2";
 
     [Header("Nhan vat dung lam nen")]
@@ -46,8 +45,8 @@ public class MainMenuUI : MonoBehaviour
         //
         // Truoc day sanh chi bat khi viec dang nhap XAY RA trong luc man nay dang
         // mo. Quay ve day sau tran (bam TRO VE / ESC) thi da dang nhap tu truoc,
-        // khong ai goi daVao - va nguoi choi roi vao menu choi don cu voi hai
-        // nut "MAN 1 / MAN 2" thay vi sanh cho.
+        // khong ai goi daVao - va nguoi choi roi vao menu choi don cu thay vi
+        // sanh cho.
         if (FirebaseMang.DaDangNhap) manDangNhap.daVao();
     }
 
@@ -57,11 +56,11 @@ public class MainMenuUI : MonoBehaviour
             showcase.Rotate(Vector3.up, spinSpeed * Time.deltaTime, Space.World);
 
         // Choi mang thi man nay CHI CO dang nhap va sanh cho - menu choi don cu
-        // (hai nut MAN 1 / MAN 2, phim Enter vao thang Act1) khong con nua.
+        // (nut VAO CHOI, phim Enter vao thang man choi) khong con nua.
         if (batChoiMang) return;
 
         if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
-            Play(act1Scene);
+            Play(act2Scene);
         if (Input.GetKeyDown(KeyCode.Escape))
             Quit();
     }
@@ -107,13 +106,9 @@ public class MainMenuUI : MonoBehaviour
         float x = (Screen.width - w) * 0.5f;
         float y = Screen.height * 0.42f;
 
-        // Act1: dau truong tron sinh bang code.
-        // Act2: nghia dia ve tay trong Blender, moi dot GAP DOI so quai.
-        if (GUI.Button(new Rect(x, y, w, h), "MAN 1 - DAU TRUONG", button))
-            Play(act1Scene);
-        if (GUI.Button(new Rect(x, y + h + 14f * s, w, h), "MAN 2 - NGHIA DIA", button))
+        if (GUI.Button(new Rect(x, y, w, h), "VAO CHOI - NGHIA DIA", button))
             Play(act2Scene);
-        if (GUI.Button(new Rect(x, y + (h + 14f * s) * 2f, w, h), "THOAT", button))
+        if (GUI.Button(new Rect(x, y + h + 14f * s, w, h), "THOAT", button))
             Quit();
 
         // Bang huong dan

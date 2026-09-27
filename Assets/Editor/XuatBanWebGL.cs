@@ -43,7 +43,6 @@ public static class XuatBanWebGL
         var canh = new string[]
         {
             "Assets/Scenes/MainMenu.unity",
-            "Assets/Scenes/Act1.unity",
             "Assets/Scenes/Act2.unity",
         };
 

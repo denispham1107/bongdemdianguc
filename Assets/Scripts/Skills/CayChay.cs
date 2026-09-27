@@ -97,8 +97,8 @@ public class CayChay : MonoBehaviour
     /// <summary>Moi diem moi lua nha bao nhieu hat khoi mot giay.</summary>
     public const float KhoiMoiDiem = 0.22f;
 
-    /// <summary>Bao nhieu diem moi lua cho mot cai cay (Act1 - luoi doc thang duoc).</summary>
-    public const int SoDiemAct1 = 340;
+    /// <summary>Bao nhieu diem moi lua cho mot cai cay khi DOC THANG luoi duoc (luoi bat Read/Write, khong co bo nuong san).</summary>
+    public const int SoDiemDocLuoi = 340;
 
     static int dangChay;
 
@@ -171,36 +171,13 @@ public class CayChay : MonoBehaviour
     /// <summary>
     /// Goc cua vat the nay co phai mot cai cay khong.
     ///
-    /// BON kieu ten, va deu phai nhan ra duoc:
-    ///
-    /// <code>
-    ///   Act2   TREE_oakA_bare_701, TREE_dead_733, TREE_thin_742   (dua tu Blender)
-    ///   Act1   CayXanh_19, CayChet_11                             (ten trong CANH da bake)
-    ///   Act1   Tree7, DeadTree12                                  (ten khi dung bang CODE)
-    /// </code>
-    ///
-    /// Hai dong Act1 cuoi la CUNG mot thu o hai thoi diem khac nhau:
-    /// <c>WorldFactory.BuildLeafyTree</c> dat ten "Tree7", con AssetBaker khi
-    /// nuong canh vao Act1.unity thi doi thanh "CayXanh_19". Chi nho moi ten
-    /// trong code thi Act1 khong co cai cay nao chay - da vap dung cai do: kich
-    /// ban thu bao "khong tim thay cay nao hop le" trong khi canh co 22 cai.
-    ///
-    /// Phan duoi ten phai la SO, khong thi mot vat ten "Treasure" hay "TreeStump"
-    /// cung lot vao.
+    /// Cay cua ban do (dua tu Blender) ten "TREE_oakA_bare_701", "TREE_dead_733", "TREE_thin_742"...
+    /// (Truoc 27/09/2026 con ba kieu ten cay Act1 dung bang code - Act1 da xoa han.)
     /// </summary>
     public static bool LaCay(GameObject go)
     {
         if (go == null) return false;
-        string n = go.name;
-
-        if (n.StartsWith("TREE_")) return true;                       // Act2
-
-        if (n.StartsWith("CayXanh_")) return LaSo(n, 8);              // Act1 (canh da bake)
-        if (n.StartsWith("CayChet_")) return LaSo(n, 8);              // Act1 (canh da bake)
-
-        if (n.StartsWith("DeadTree")) return LaSo(n, 8);              // Act1 (dung bang code)
-        if (n.StartsWith("Tree")) return LaSo(n, 4);                  // Act1 (dung bang code)
-        return false;
+        return go.name.StartsWith("TREE_");
     }
 
     /// <summary>Ten nhom cha cua bia mo / nha mo trong Act2 (map_luoi.fbx) - menu 72 cung phan loai theo nhom nay.</summary>
@@ -221,20 +198,11 @@ public class CayChay : MonoBehaviour
     /// <summary>Cay, bia mo hay nha mo - moi thu Thien thach dot chay duoc.</summary>
     public static bool ChayDuoc(GameObject go) { return LaCay(go) || LaBiaNha(go); }
 
-    static bool LaSo(string s, int tu)
-    {
-        if (s.Length <= tu) return false;
-        for (int i = tu; i < s.Length; i++)
-            if (s[i] < '0' || s[i] > '9') return false;
-        return true;
-    }
-
     /// <summary>
     /// Tu mot bo phan bat ky tim len GOC cua cai cay.
     ///
-    /// Act1 dung cay thanh nhieu manh con ("Trunk", "Leaves", "Branch3"), va
-    /// tia quet co the trung bat cu manh nao. Dot chay mot manh la chi chay cai
-    /// canh do, con ca cai cay van dung nguyen - nen phai leo len goc.
+    /// Tia quet co the trung mot vat CON (bo phan) chu khong phai goc. Dot chay
+    /// mot bo phan la chi chay bo phan do - nen phai leo len goc.
     /// </summary>
     public static Transform GocCay(Transform t)
     {
@@ -312,7 +280,7 @@ public class CayChay : MonoBehaviour
     ///   1. asset nuong san   Act2 - 46/58 cay nam trong map_luoi.fbx voi
     ///                        Read/Write TAT, luc chay khong doc luoi duoc.
     ///                        Xem Act2DiemLua (menu 20).
-    ///   2. doc thang luoi    Act1 - luoi dung bang code luc chay nen doc duoc.
+    ///   2. doc thang luoi    luoi bat Read/Write (khong co bo nuong san).
     ///   3. rai trong khoi bao   duong lui cuoi cung, khi khong co ca hai.
     /// </code>
     ///
@@ -321,16 +289,15 @@ public class CayChay : MonoBehaviour
     /// </summary>
     void LayDiemMoi()
     {
-        var ds = new List<Vector3>(SoDiemAct1 + 32);
+        var ds = new List<Vector3>(SoDiemDocLuoi + 32);
 
         var mfs = GetComponentsInChildren<MeshFilter>(true);
 
         // Chia ngan sach diem theo SO DINH cua tung manh, khong chia deu.
         //
-        // Chia deu thi cay Act1 hong: no co 88 khuc canh nho va DUY NHAT MOT
-        // manh "Leaves" chua ca tan la. Moi manh 3 diem nhu nhau thi ca tan la
-        // chi duoc 3 cho bat lua, con may chuc khuc canh con thi thua diem -
-        // nhin ra cai cay chay o than ma tan la gan nhu khong bat lua.
+        // Chia deu thi cay nhieu bo phan hong: may chuc khuc canh nho va mot manh
+        // tan la lon - moi manh vai diem nhu nhau thi ca tan la chi duoc vai cho
+        // bat lua, nhin ra cai cay chay o than ma tan la gan nhu khong bat lua.
         int tongDinh = 0;
         for (int i = 0; i < mfs.Length; i++)
             if (mfs[i].sharedMesh != null) tongDinh += mfs[i].sharedMesh.vertexCount;
@@ -341,7 +308,7 @@ public class CayChay : MonoBehaviour
             var m = mfs[i].sharedMesh;
             if (m == null) continue;
             var tr = mfs[i].transform;
-            int nganSach = Mathf.Max(1, Mathf.RoundToInt(SoDiemAct1 * (float)m.vertexCount / tongDinh));
+            int nganSach = Mathf.Max(1, Mathf.RoundToInt(SoDiemDocLuoi * (float)m.vertexCount / tongDinh));
 
             // 1) Asset nuong san (tra theo TEN luoi)
             var bo = DiemLuaCay.Nap(m.name);
@@ -390,7 +357,7 @@ public class CayChay : MonoBehaviour
         xaNhat = xa.Length > 0 ? xa[xa.Length - 1] : 1f;
     }
 
-    /// <summary>Lay mau deu tren be mat mot luoi doc duoc (Act1).</summary>
+    /// <summary>Lay mau deu tren be mat mot luoi doc duoc.</summary>
     static Vector3[] LayMauLuoi(Mesh m, int soDiem)
     {
         var dinh = m.vertices;
@@ -503,8 +470,8 @@ public class CayChay : MonoBehaviour
 
         // ---- Than cay den dan, theo dung buoc lua lan ----
         //
-        // Doi mau theo NHIP chu khong moi khung hinh: mot cai cay Act1 co 88
-        // renderer, sau cai chay cung luc la 528 lan SetPropertyBlock moi khung.
+        // Doi mau theo NHIP chu khong moi khung hinh: mot cai cay nhieu bo phan (tung co
+        // cay 88 renderer) chay cung luc la hang tram lan SetPropertyBlock moi khung.
         // Ma than cay den di trong may giay - mat nguoi khong phan biet noi buoc
         // nhay 0,12 giay voi doi mau lien tuc.
         denTimer -= dt;
@@ -596,9 +563,9 @@ public class CayChay : MonoBehaviour
     /// To den tung bo phan theo dung buoc lua lan toi no.
     ///
     /// Bo phan nao lua chua toi thi con nguyen mau; toi roi thi den dan trong
-    /// khoang mot met ke tu luc bat lua. Cay Act1 co 88 bo phan nen nhin ro
-    /// tung canh den lai lan luot; cay Act2 chi co mot bo phan nen ca cay den
-    /// theo tien do chung.
+    /// khoang mot met ke tu luc bat lua. Cay nhieu bo phan thi nhin ro tung canh
+    /// den lai lan luot; cay Blender chi co mot bo phan nen ca cay den theo tien
+    /// do chung.
     /// </summary>
     void ToDen()
     {

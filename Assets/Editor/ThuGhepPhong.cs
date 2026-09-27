@@ -101,20 +101,15 @@ public static class ThuGhepPhong
 
         // ---- 3. Man mac dinh phai co dinh, khong ngau nhien --------------
         Ghi("4. man mac dinh cua 'vao phong nhanh': " + PhongMang.ManMacDinh
-            + " (phai la Act1 hoac Act2, va khong doi giua hai lan goi)");
-        if (PhongMang.ManMacDinh != "Act1" && PhongMang.ManMacDinh != "Act2")
+            + " (phai la Act2 - man duy nhat, co trong Build Settings)");
+        if (PhongMang.ManMacDinh != "Act2" || !System.Array.Exists(EditorBuildSettings.scenes, c => c.enabled && c.path == "Assets/Scenes/" + PhongMang.ManMacDinh + ".unity"))
         { Ghi("[LOI] man mac dinh khong hop le"); loi++; }
 
-        // ---- 4. Khong doi duoc man khi phong da bat dau dem nguoc --------
-        // Doi duoc thi may khach co the doc man cu roi nhay vao do.
-        var cuPhong = PhongMang.PhongHienTai;
+        // ---- 4. Phong dang dem nguoc thi khong con "dang cho" --------
         var p = new PhongMang.Phong { ma = "-thu", manChoi = "Act2", trangThai = "demNguoc" };
-        PhongMang.PhongHienTai = p;
         bool choDoi = p.DangCho;
-        Ghi("5. phong dang dem nguoc -> DangCho = " + choDoi + " (phai la False, "
-            + "nen DoiManChoi tu choi ngay dong dau)");
-        if (choDoi) { Ghi("[LOI] van doi duoc man sau khi bam bat dau"); loi++; }
-        PhongMang.PhongHienTai = cuPhong;
+        Ghi("5. phong dang dem nguoc -> DangCho = " + choDoi + " (phai la False)");
+        if (choDoi) { Ghi("[LOI] phong da bam bat dau van hien la dang cho"); loi++; }
 
         Ghi("so loi ghi nhan = " + loi);
         File.WriteAllText("PlayTestShots/ghepphong.txt", bao.ToString());

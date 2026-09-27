@@ -108,8 +108,7 @@ public static class ThuQuaiTruyLung
         if (pc == null) { Loi("khong tim thay nhan vat"); Ket(); yield break; }
         var toi = pc.GetComponent<Damageable>();
         toi.maxHealth = 10000000f; toi.health = 10000000f;
-        Ghi("Act2, che do dot quanh nguoi = " + dir.CheDoDotQuanhNguoi + ", nhan vat o " + pc.transform.position.ToString("F1"));
-        Kiem(dir.CheDoDotQuanhNguoi, "Act2 khong bat luat dot quanh nguoi");
+        Ghi("Act2, nhan vat o " + pc.transform.position.ToString("F1"));
 
         // ---- D. dat hai con doi chung (quai thuong, khong hen truy lung) ----
         var doiChung = new List<TheoDoi>();

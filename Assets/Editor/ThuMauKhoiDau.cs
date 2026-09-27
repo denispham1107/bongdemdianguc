@@ -11,12 +11,12 @@ using UnityEngine;
 /// Con so mau nguoi choi nam o BA cho, va sua thieu mot cho la khong doi gi ca:
 ///
 ///   1. <c>GameBootstrap.playerMaxHealth</c> - mac dinh viet trong code
-///   2. Gia tri luu trong Act1.unity va Act2.unity - Unity luu gia tri cua
+///   2. Gia tri luu trong Act2.unity - Unity luu gia tri cua
 ///      component vao scene, va no DE LEN mac dinh o (1)
 ///   3. <c>Player_Sorceress.prefab</c> - ban sao cua nguoi choi khac lay mau
 ///      tu day, khong di qua GameBootstrap
 ///
-/// Phep thu vao Play THAT o ca hai man roi doc mau tu Damageable - khong doc
+/// Phep thu vao Play THAT o man choi roi doc mau tu Damageable - khong doc
 /// file, vi doc file thi chi chung minh duoc "da sua chu", con cai chay len
 /// man hinh thi chua chac.
 ///
@@ -71,7 +71,6 @@ public static class ThuMauKhoiDau
             + MauMongDoi.ToString("F0") + ")");
 
         yield return ThuMotMan("Act2");
-        yield return ThuMotMan("Act1");
 
         Ghi("so loi ghi nhan = " + loi);
         Ket();

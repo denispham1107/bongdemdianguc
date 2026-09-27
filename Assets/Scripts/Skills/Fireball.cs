@@ -67,13 +67,12 @@ public class Fireball : MonoBehaviour
     public const float NgaXacSuatCap5 = 0.30f;
 
     /// <summary>
-    /// Vat can nay co phai VAT NHO khong - do bang KICH THUOC collider, khong theo ten: Act1 dung bang code,
-    /// Act2 nhap tu Blender, ten khong lien quan gi den nhau.
+    /// Vat can nay co phai VAT NHO khong - do bang KICH THUOC collider, khong theo ten:
+    /// ban do nhap tu Blender, ten (40 kieu luoi bia) khong noi len kich thuoc.
     ///
     /// So do 19/09/2026 (cao / ngang, met):
     ///   Act2 nho:  452 bia mo 0,16-3,18 / toi 2,77   229 da 0,12-1,31   10 lo lua 2,33 / 1,00
     ///   Act2 to:   58 cay 6,54-17,47    5 nha mo 4,22-5,15 / 4,37-6,16   hang rao 4,77 / 107,60
-    ///   Act1 to:   76 vach da 4,53-14,55
     /// Khe ho giua "bia cao nhat" 3,18 va "vat to thap nhat" 4,22 rong hon 1 m - nguong 4,00 nam giua.
     ///
     /// MAT DAT va NGUOI/QUAI khong bao gio la vat nho: dat thi khong the xuyen, con nguoi/quai thi phai NO.

@@ -209,7 +209,7 @@ public class GioLoc : MonoBehaviour
     static int lopMatDat = -1;
 
     /// <summary>
-    /// Do cao MAT DAT duoi mot diem - CHI lop Ground (dia hinh Act2, dat WorldFactory Act1).
+    /// Do cao MAT DAT duoi mot diem - CHI lop Ground (dia hinh Act2).
     ///
     /// LOI NGUOI DUNG BAO (17/09/2026): loc trung mot can nha nho thi "tu treo len mai nha". VfxFactory.GroundY chieu tia
     /// xuong ca lop Default (nha mo, bia, da, hang rao) nen di vao nha la no dung len MAI. Loc xuyen vat can thi phai

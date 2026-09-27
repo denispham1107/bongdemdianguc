@@ -2,7 +2,7 @@ using UnityEngine;
 
 /// <summary>
 /// GAN <see cref="KetXuatThuNho"/> VAO CAMERA CHINH cua moi man - song suot
-/// game. Kiem moi khung chu khong chi luc nap scene: Act1 dung camera bang code
+/// game. Kiem moi khung chu khong chi luc nap scene: GameBootstrap dung camera
 /// SAU khi scene nap xong, va CameraRig co the thay camera.
 /// </summary>
 public class TheoDoiCamera : MonoBehaviour

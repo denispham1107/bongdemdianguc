@@ -70,11 +70,7 @@ public static class ThuTuGan
         Ghi("[ban 1] vao man choi mang thi co ai dung day bo noi mang khong");
         Ghi("canh dau: " + SceneManager.GetActiveScene().name);
 
-        // PHAI THU CA HAI MAN. Act1 dung bang code con Act2 la scene nuong san
-        // - mot cach gan hong o mot man ma khong hong o man kia la chuyen da
-        // xay ra nhieu lan trong du an nay.
-        yield return ThuMotMan("Act2");
-        yield return ThuMotMan("Act1");
+        yield return ThuMotMan(PhongMang.ManMacDinh);
 
         Ghi("so loi ghi nhan = " + loi);
         Ket();
@@ -94,8 +90,8 @@ public static class ThuTuGan
         Ghi("da bat DangChoiMang = true, sap nap " + manCanThu);
 
         // XOA DAU VET CUA LAN THU TRUOC. Hai truong nay la static nen chung
-        // song qua lan nap man - khong xoa thi lan thu Act1 co the doc lai ket
-        // qua cua Act2 va bao "dat" ma chang do gi ca.
+        // song qua lan nap man - khong xoa thi co the doc lai ket qua cua lan
+        // Play truoc va bao "dat" ma chang do gi ca.
         KhoiDongTranMang.TrangThai = "";
         KhoiDongTranMang.NhanDang = "";
         KhoiDongTranMang.DaNoi = false;
