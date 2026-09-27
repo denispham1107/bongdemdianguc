@@ -8603,6 +8603,28 @@ châm cả bia mộ / nhà mồ (tính năng sáng nay), đầy trần "4 vật 
 
 Ảnh: `PlayTestShots/maygiong_1_dem_can.png`, `maygiong_2_chay_den.png`, `maygiong_3_ngay_goc_choi.png`.
 
+### Tia sét của Mây giông giống tia Sấm sét (28/09/2026)
+
+**Người dùng:** tia sét trong Mây giông giống tia sét trong Sấm sét — **chỉ đổi hiển thị**.
+
+**Trước** (25/09/2026, "đúng y Giựt sét"): `GiatSet.KieuTia` với ảnh Blender, quầng xanh sẫm `MauQuangMayGiong`, viền và hào quang
+×1,2, sống 0,6 s, bám theo kẻ địch.
+
+**Nay** `VfxFactory.TiaMayGiong` vẽ y như `LightningStrike.Strike` của Sấm sét:
+- `LightningArc` kiểu mặc định (không ảnh Blender, màu mặc định), 20 đoạn, 2–3 nhánh, sống 0,30 s, không bám mục tiêu.
+- Thêm `LightningImpact` ở chỗ chạm đất.
+- Tia ngang trong mây cũng kiểu mặc định.
+- Bỏ các hằng quầng xanh sẫm.
+- Nhịp, chỗ đánh, sát thương, hất ngã, cháy đen, ướt, mảng mây rọi sáng: giữ nguyên (`MayGiong.DanhMotTia`).
+
+**Đo (menu 83):**
+- Mục C: 36 tia, cách nhau trung bình 0,249 s, 0 tia ảnh Blender, 36/36 cùng một kiểu.
+- Mục I tung **Sấm sét thật**. 20 tia chính cùng một kiểu, và chuỗi thông số trùng khớp với tia Mây giông: bề ngang 1,1, lõi 0,22,
+  quầng 1,05, sống 0,30 s, 20 đoạn, nhánh dài 0,34. Màu quầng (0,45 0,70 1), viền 1,100, hào quang 0,605 bằng nhau; số nhánh
+  đều trong {2,3}. Một tia Mây giông sinh đúng 1 hiệu ứng chạm đất.
+- Các mục sát thương, hất ngã, cháy đen, ướt, bay: **0 lỗi**.
+- Ảnh `maygiong_tia_samset_kieu.png` so với `samset_tia_doichung.png`.
+
 ### Mưa băng: mảnh vỡ to hơn 10%; Sấm sét: hồi chiêu 4 giây (28/09/2026)
 
 **Người dùng:**

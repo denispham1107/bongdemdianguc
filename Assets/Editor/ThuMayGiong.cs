@@ -24,9 +24,9 @@ using UnityEngine;
 ///   G. Qua mang: TungPhepTheoMang(21) phat lai duoc.
 ///   H. Hinh: may nam NGANG tren cao 7 m, du dam may sang + xam, den; COT KHOI dung thang tu trong may xuong TAN MAT DAT
 ///      (hat + do thang anh CotMay.png: hang diem anh thap nhat con khoi); khoi cuon doc cot; anh chup dem + ngay o goc choi.
-///   I. Tia HINH DANG Y GIUT SET (nguoi dung 25/09/2026): tung Giut set THAT tu nhan vat, chup thong so tia cua no, so voi tia
-///      May giong - khong so voi hang so trong code (phep kiem doc lap). Rieng quang: May giong XANH DAM HON (do/luc < 60% cua
-///      Giut set) va day x1,2; Giut set phai giu nguyen mau (0,14 0,34 1) + vien 1,10.
+///   I. Tia Y NHU TIA SAM SET (nguoi dung 28/09/2026, chi doi hinh; truoc do 25/09 la "y Giut set"): tung SAM SET THAT, chup
+///      thong so tia chinh cua no, so voi tia May giong - khong so voi hang so trong code (phep kiem doc lap); moi tia May giong
+///      co hieu ung cham dat LightningImpact nhu Sam set.
 ///   H (them). Quang may mong sat dat: 5 dam nam phang, cao < 0,6 m, lan ~3 m (kem phan anh thay duoc doc tu PNG).
 ///   ⚠️ H do cot khoi / quang sat dat bang HINH VE THAT (ParticleSystemRenderer.BakeMesh): hat Vertical/HorizontalBillboard ve
 ///      chi bang 0,7071 kich thuoc dat - ban truoc doc kich thuoc DAT nen bao "cot cham dat" trong khi chan cot lo lung ~0,9 m.
@@ -57,10 +57,12 @@ public static class ThuMayGiong
     /// hai thu ay May giong co y lam khac Giut set, so rieng o muc I).</summary>
     static string KieuTia(LightningArc a)
     {
-        return string.Format("anhBlender {0} | beNgang {1:F3} | loi {2:F3} | quang {3:F3} | mauLoi {4} | song {5:F2} s | nhanh {6} x {7:F2} | bung {8:F2}/{9:F2}",
-            a.anhBlender, a.beNgang, a.coreWidth, a.glowWidth, a.coreColor, a.lifetime, a.branches, a.branchLength,
+        // So nhanh KHONG nam trong chuoi: ca Sam set lan May giong deu gieo ngau nhien 2-3 nhanh moi tia - so rieng theo tap gia tri
+        return string.Format("anhBlender {0} | beNgang {1:F3} | loi {2:F3} | quang {3:F3} | mauLoi {4} | song {5:F2} s | doan {6} | nhanh dai {7:F2} | bung {8:F2}/{9:F2}",
+            a.anhBlender, a.beNgang, a.coreWidth, a.glowWidth, a.coreColor, a.lifetime, a.segments, a.branchLength,
             a.coBungDau, a.coBungCuoi);
     }
+    static readonly HashSet<int> nhanhMayGiong = new HashSet<int>();
     static Color quangMayGiong; static float vienMayGiong, haoMayGiong;
 
     /// <summary>
@@ -158,7 +160,7 @@ public static class ThuMayGiong
             return;
         }
         Directory.CreateDirectory("PlayTestShots");
-        bao.Length = 0; loi = 0; daBatDau = false; kieuMayGiong = null;
+        bao.Length = 0; loi = 0; daBatDau = false; kieuMayGiong = null; nhanhMayGiong.Clear();
         Ghi("[ban 1] May giong");
         canhCu = EditorSceneManager.GetActiveScene().path;
         if (canhCu != "Assets/Scenes/Act2.unity") EditorSceneManager.OpenScene("Assets/Scenes/Act2.unity");
@@ -366,6 +368,7 @@ public static class ThuMayGiong
                 if (!tiaCu.Add(a) || a.name != "TiaMayGiong") continue;
                 lucTia.Add(Time.time - lucMay);
                 if (a.anhBlender) anhBlender++;
+                nhanhMayGiong.Add(a.branches);
                 string kieu = KieuTia(a);
                 if (kieuMayGiong == null) { kieuMayGiong = kieu; quangMayGiong = a.glowColor; vienMayGiong = a.heSoVien; haoMayGiong = a.heSoHaoQuang; }
                 if (kieu == kieuMayGiong && a.glowColor == quangMayGiong && Mathf.Abs(a.heSoVien - vienMayGiong) < 1e-4f) cungKieu++;
@@ -426,7 +429,7 @@ public static class ThuMayGiong
         Kiem(coDauBay && tiaKhiBay == MayGiong.SoTiaKhiBay && tiaBayNgoaiVung == 0, "khi bay khong du 16 tia / tia roi ngoai vung may dang o");
         Kiem(diBay.magnitude > 5.6f && diBay.magnitude < 6.2f && Vector3.Angle(diBay, huongMong) < 3f, "may khong bay ~6 m theo HuongBay");
         Kiem(lechDatBay < 0.05f, "may bay khong bam mat dat (lop Ground)");
-        Kiem(anhBlender == lucTia.Count && cungKieu == lucTia.Count, "tia khong cung mot kieu anh Blender");
+        Kiem(anhBlender == 0 && cungKieu == lucTia.Count, "tia May giong van dung anh Blender (kieu Giut set cu) hoac khong cung mot kieu");
         Kiem(buocMat.Count >= 10 && boiSo125 == buocMat.Count, "moi tia len bia UOT khong gay dung 187,5 (125 x 1,5)");
         Kiem(soTia > 0 && soNham / (float)soTia > 0.4f && soNham / (float)soTia < 0.9f, "ti le nham ke dich khong quanh 65%");
 
@@ -910,40 +913,53 @@ public static class ThuMayGiong
             }
         }
 
-        // ================= I. TIA GIONG Y GIUT SET =================
+        // ================= I. TIA Y NHU SAM SET (28/09/2026) =================
         {
-            CapDo.MoCaDuongChoPhepThu(KyGiatSet);
+            const int KySamSet = 2;
+            CapDo.MoCaDuongChoPhepThu(KySamSet);
             yield return new WaitForSeconds(0.8f);
             var cuI = new HashSet<LightningArc>(Object.FindObjectsByType<LightningArc>(FindObjectsInactive.Exclude));
             toi.mana = toi.maxMana;
-            toi.CastAt(KyGiatSet, toi.transform.position + huong * 8f);
-            string kieuGiatSet = null; int soTiaGS = 0; Color quangGS = Color.clear; float vienGS = 0f, haoGS = 0f; var cacKieu = new List<string>();
-            for (float h = Time.time + 1.5f; Time.time < h; )
+            toi.CastAt(KySamSet, toi.transform.position + huong * 8f);
+            string kieuSS = null; int soTiaSS = 0; Color quangSS = Color.clear, loiSS = Color.clear; float vienSS = 0f, haoSS = 0f;
+            var nhanhSS = new HashSet<int>(); int khacKieu = 0;
+            for (float h = Time.time + 3.2f; Time.time < h; )
             {
                 foreach (var a in Object.FindObjectsByType<LightningArc>(FindObjectsInactive.Exclude))
                 {
                     if (!cuI.Add(a) || a.name == "TiaMayGiong" || a.name == "TiaNgangMayGiong") continue;
-                    if (Vector3.Distance(a.start, toi.transform.position) > 3f) continue;   // chi tia ra tu tay nhan vat
-                    soTiaGS++;
+                    if (a.start.y - a.end.y < 8f) continue;      // chi tia tu tren troi giang xuong (tia chinh LightningStrike)
+                    soTiaSS++;
+                    nhanhSS.Add(a.branches);
                     string kk = KieuTia(a);
-                    if (!cacKieu.Contains(kk)) cacKieu.Add(kk);
-                    // Tia CHINH cua Giut set la tia ve bang anh Blender; con lai la tia loe phu luc niem o tay (song 0,11 s)
-                    if (kieuGiatSet == null && a.anhBlender) { kieuGiatSet = kk; quangGS = a.glowColor; vienGS = a.heSoVien; haoGS = a.heSoHaoQuang; }
+                    if (kieuSS == null) { kieuSS = kk; quangSS = a.glowColor; loiSS = a.coreColor; vienSS = a.heSoVien; haoSS = a.heSoHaoQuang; }
+                    else if (kk != kieuSS) khacKieu++;
                 }
                 yield return null;
             }
-            foreach (var kk in cacKieu) Ghi("I. moi kieu tia bay ra khi tung Giut set: " + kk);
-            Ghi("I. tia CHINH Giut set THAT (" + soTiaGS + " tia): " + kieuGiatSet);
-            Ghi("I. tia May giong:              " + kieuMayGiong);
-            Kiem(kieuGiatSet != null, "tung Giut set khong ra tia de so");
-            Kiem(kieuGiatSet != null && kieuGiatSet == kieuMayGiong, "HINH DANG tia May giong KHAC tia Giut set");
-            // Mau: May giong XANH DAM HON (do + luc thap hon ro, lam van du), vien + hao quang day x1,2 so voi tia Giut set THAT
-            Ghi(string.Format("I. quang Giut set {0} vien {1:F3} hao quang {2:F3} | May giong {3} vien {4:F3} hao quang {5:F3} (ti le {6:F2} / {7:F2})",
-                quangGS, vienGS, haoGS, quangMayGiong, vienMayGiong, haoMayGiong, vienGS > 0f ? vienMayGiong / vienGS : 0f, haoGS > 0f ? haoMayGiong / haoGS : 0f));
-            Kiem(quangMayGiong.r < quangGS.r * 0.6f && quangMayGiong.g < quangGS.g * 0.6f && quangMayGiong.b >= 0.99f, "quang May giong khong xanh dam hon Giut set");
-            Kiem(vienGS > 0f && Mathf.Abs(vienMayGiong / vienGS - 1.2f) < 0.01f && haoGS > 0f && Mathf.Abs(haoMayGiong / haoGS - 1.2f) < 0.01f, "quang May giong khong day x1,2");
-            // Giut set KHONG bi doi theo (so voi mau nguoi dung da duyet 25/09/2026, CLAUDE.md)
-            Kiem(Mathf.Abs(quangGS.r - 0.14f) < 0.005f && Mathf.Abs(quangGS.g - 0.34f) < 0.005f && Mathf.Abs(vienGS - 1.10f) < 1e-3f, "Giut set bi doi mau / vien theo");
+            foreach (var st in Object.FindObjectsByType<LightningStorm>(FindObjectsInactive.Exclude)) Object.Destroy(st.gameObject);
+            string nSS = string.Join(",", new List<int>(nhanhSS).ConvertAll(x => x.ToString()).ToArray());
+            string nMG = string.Join(",", new List<int>(nhanhMayGiong).ConvertAll(x => x.ToString()).ToArray());
+            Ghi("I. tia chinh Sam set THAT (" + soTiaSS + " tia, " + khacKieu + " tia khac kieu): " + kieuSS + " | so nhanh {" + nSS + "}");
+            Ghi("I. tia May giong:                    " + kieuMayGiong + " | so nhanh {" + nMG + "}");
+            Ghi(string.Format("I. mau quang / loi / vien / hao quang - Sam set {0} / {1} / {2:F3} / {3:F3} | May giong {4} / - / {5:F3} / {6:F3}",
+                quangSS, loiSS, vienSS, haoSS, quangMayGiong, vienMayGiong, haoMayGiong));
+            Kiem(kieuSS != null && soTiaSS >= 5, "tung Sam set khong ra tia de so");
+            Kiem(kieuSS != null && kieuSS == kieuMayGiong, "HINH DANG tia May giong KHAC tia Sam set");
+            Kiem(quangSS == quangMayGiong && Mathf.Abs(vienSS - vienMayGiong) < 1e-4f && Mathf.Abs(haoSS - haoMayGiong) < 1e-4f,
+                 "mau / do day quang tia May giong khac Sam set");
+            bool nhanhKhop = nhanhMayGiong.Count > 0; foreach (var n in nhanhMayGiong) if (n < 2 || n > 3) nhanhKhop = false;
+            Kiem(nhanhKhop && nhanhSS.Count > 0, "so nhanh tia May giong khong trong khoang 2-3 cua Sam set");
+
+            // Moi tia May giong co hieu ung cham dat (LightningImpact) nhu Sam set
+            var cuGoc = new HashSet<GameObject>(UnityEngine.SceneManagement.SceneManager.GetActiveScene().GetRootGameObjects());
+            Vector3 chamI = toi.transform.position + huong * 6f; chamI.y = VfxFactory.GroundY(chamI);
+            VfxFactory.TiaMayGiong(chamI + Vector3.up * MayGiong.CaoMay, chamI);
+            int soCham = 0;
+            foreach (var g in UnityEngine.SceneManagement.SceneManager.GetActiveScene().GetRootGameObjects())
+                if (!cuGoc.Contains(g) && (g.name.Contains("SetChamDat") || g.name.Contains("LightningImpact"))) soCham++;
+            Ghi("I. mot tia May giong -> " + soCham + " hieu ung cham dat (LightningImpact)");
+            Kiem(soCham == 1, "tia May giong khong co hieu ung cham dat nhu Sam set");
         }
 
         // Anh ban dem o goc choi that (cot khoi phai thay tu may xuong dat)

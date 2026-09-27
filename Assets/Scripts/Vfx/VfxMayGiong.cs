@@ -9,11 +9,9 @@ using UnityEngine;
 ///   ChayDen.png    than den lien mach + vet nut hong lua (lop phu ChayDenToanThan)
 ///   CotMay.png     bon COT KHOI 2x2 (moi o 512x1024) - may ru tu day may xuong TAN MAT DAT (nguoi dung 25/09/2026 gui
 ///                  anh thu hai: "may giong keo dai xuong duoi tan mat dat"; chon "mot cot khoi giua vung")
-/// Tia set DUNG Y GIUT SET (nguoi dung 25/09/2026: "tia set giong nhu tia set trong skill Giut set"; chon "dung y"): cung
-/// GiatSet.KieuTia, be ngang x1, loi trang + quang XANH DAM GiatSet.MauQuangNguoiChoi, hien GiatSet.GiayTiaHien 0,6 s, 2 nhanh.
-/// Ban dau (truoc 25/09 chieu) tia day x1,7, quang xanh nhat mac dinh, song 0,30-0,42 s, 4-6 nhanh + loe hinh sao cham dat.
-/// Lan ba (nguoi dung, anh thu ba): "tia set mau xanh duong DAM HON" (chon "xanh dam hon, van loi trang") -> quang
-/// MauQuangMayGiong (0,05 0,16 1) thay (0,14 0,34 1), vien + hao quang day x1,2; loi trang, hinh dang van y Giut set.
+/// Tia set Y NHU TIA SAM SET (nguoi dung 28/09/2026, chi doi hinh): LightningArc kieu mac dinh, 20 doan, 2-3 nhanh, 0,30 s +
+/// LightningImpact cham dat - xem TiaMayGiong. (25/09/2026 tung "y Giut set": anh Blender, quang xanh dam MauQuangMayGiong
+/// (0,05 0,16 1), vien + hao quang x1,2, bam ke dich - da bo.)
 /// Va "mot quang may giong mong o tren mat dat" (chon "quanh chan cot ~3 m"):
 ///   SuongDat.png   bon dam suong mong nhin tu tren xuong 2x2 - soi xoay, lo thung, mem dan ra mep; nam PHANG sat dat.
 /// Khoi den tu ke bi chay dung anh bui Blender cua Loc xoay (BuiXam) to toi.
@@ -52,10 +50,6 @@ public static partial class VfxFactory
     public const float HeSoToMay = 1.15f;
     /// <summary>Mua: so vet mua moi giay, toc do roi (m/s), be ngang / dai vet thay duoc (m).</summary>
     public const float VetMuaMoiGiay = 160f, TocDoMua = 16f, BeNgangVetMua = 0.22f;
-    /// <summary>Quang xanh cua tia May giong - dam hon Giut set (0,14 0,34 1): do/luc thap thi tam khong nga trang.</summary>
-    public static readonly Color MauQuangMayGiong = new Color(0.05f, 0.16f, 1f, 1f);
-    /// <summary>Vien xanh + hao quang cua tia May giong day hon Giut set bao nhieu lan.</summary>
-    public const float HeSoQuangMayGiong = 1.2f;
     /// <summary>
     /// MAY GIONG DEN (nguoi dung 25/09/2026 toi: "toan may giong mau toi den hon, giong may giong den that"; chon "xam den,
     /// set roi sang"): mau moi lop may = mau cu x 0,26 (day may xam cu da toi hon dinh nen van toi hon). Set roi sang: LoeSangMay.
@@ -203,24 +197,23 @@ public static partial class VfxFactory
         return root;
     }
 
-    /// <summary>
-    /// Mot tia set May giong tu day may xuong dat - HINH DANG y tia Giut set (cung ham, be ngang, thoi gian song, so nhanh:
-    /// giong <c>GiatSet.VeTia</c> voi day = 1), rieng quang XANH DAM HON va day x1,2. Them chop den cho mat dat sang len.
-    /// </summary>
-    public static LightningArc TiaMayGiong(Vector3 tu, Vector3 den, Transform bamCuoi)
-    {
-        Vector3 cham = den + Vector3.up * 0.15f;
-        var arc = LightningArc.Create(tu, cham, 1f, GiatSet.GiayTiaHien);
-        arc.name = "TiaMayGiong";
-        arc.coreColor = Color.white;
-        arc.glowColor = MauQuangMayGiong;
-        GiatSet.KieuTia(arc, 1f, null, bamCuoi);
-        arc.heSoVien = LightningArc.HeSoVienXanh * HeSoQuangMayGiong;
-        arc.heSoHaoQuang *= HeSoQuangMayGiong;
+    /// <summary>Tia chinh Sam set song bao lau (LightningStrike.Strike) - May giong ve y het.</summary>
+    public const float GiayTiaSamSet = 0.30f;
 
-        var sang = new GameObject("ChopDenMayGiong");
-        sang.transform.position = cham + Vector3.up * 1.2f;
-        var lb = sang.AddComponent<LightBurst>(); lb.peak = 6f; lb.duration = 0.25f; lb.range = 9f;
+    /// <summary>
+    /// Mot tia set May giong tu day may xuong dat. 28/09/2026 nguoi dung: "cho cac tia set trong May giong giong nhu cac tia set
+    /// trong Sam set (chi thay doi hien thi)" -> ve Y NHU LightningStrike.Strike: LightningArc KIEU MAC DINH (khong anh Blender,
+    /// mau mac dinh), 20 doan, 2-3 nhanh, song 0,30 s, KHONG bam muc tieu, + LightningImpact o cho cham dat (ban kinh tia 2 m).
+    /// (Truoc do 25/09/2026: "y tia Giut set" - anh Blender, quang xanh dam x1,2, bam theo ke dich.) Nhip, cho danh, sat thuong,
+    /// hat nga, chay den, uot giu nguyen - nam o MayGiong.DanhMotTia.
+    /// </summary>
+    public static LightningArc TiaMayGiong(Vector3 tu, Vector3 den)
+    {
+        var arc = LightningArc.Create(tu, den, 1f, GiayTiaSamSet);
+        arc.name = "TiaMayGiong";
+        arc.segments = 20;
+        arc.branches = Random.Range(2, 4);
+        LightningImpact(den, MayGiong.BanKinhTia);
         return arc;
     }
 
@@ -281,13 +274,11 @@ public static partial class VfxFactory
         Vector2 a = Random.insideUnitCircle * banKinh * 0.8f, b = Random.insideUnitCircle * banKinh * 0.8f;
         Vector3 p1 = tamMay + new Vector3(a.x, Random.Range(-0.4f, 0.6f), a.y);
         Vector3 p2 = tamMay + new Vector3(b.x, Random.Range(-0.4f, 0.6f), b.y);
+        // Cung kieu tia Sam set (28/09/2026) - mac dinh LightningArc, nhieu doan, 1-2 nhanh vi tia ngan
         var arc = LightningArc.Create(p1, p2, 1f, Random.Range(0.18f, 0.3f));
         arc.name = "TiaNgangMayGiong";
-        arc.coreColor = Color.white;
-        arc.glowColor = MauQuangMayGiong;
-        GiatSet.KieuTia(arc, 1f, null, null);
-        arc.heSoVien = LightningArc.HeSoVienXanh * HeSoQuangMayGiong;
-        arc.heSoHaoQuang *= HeSoQuangMayGiong;
+        arc.segments = 16;
+        arc.branches = Random.Range(1, 3);
     }
 
     /// <summary>Khoi den boc len tu nguoi dang chay den (anh bui Blender BuiXam to toi), bam theo nguoi.</summary>

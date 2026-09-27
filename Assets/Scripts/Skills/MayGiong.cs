@@ -174,7 +174,7 @@ public class MayGiong : MonoBehaviour
 
         Vector2 lech = Random.insideUnitCircle * (BanKinh * 0.45f);
         Vector3 tu = transform.position + new Vector3(lech.x, CaoMay, lech.y);
-        VfxFactory.TiaMayGiong(tu, cho, muc != null ? muc.transform : null);
+        VfxFactory.TiaMayGiong(tu, cho);      // hinh y tia Sam set (28/09/2026)
         // Cho set cham dat CHAY XEM + boc khoi, NAM DEN vat quanh do - dung y nhu tia Sam set (LightningStrike.Strike,
         // nguoi dung 25/09/2026 khuya "giong nhu cac tia set trong skill Sam set")
         VfxFactory.SetChayDen(cho, BanKinhTia * 0.72f, 0.45f);

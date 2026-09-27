@@ -222,6 +222,10 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
   cấp 5** (người dùng 26/09/2026; lúc ra mắt không điều kiện). Tia hệ **PHONG** (`GhiKeDanh(boQua, HeSat.Phong)`). Hình **Blender MCP** (`CongCu/Blender/may_giong.blend`
   → `Resources/KyNang/MayGiong/`: `MayGiong.png` 4 đám mây bồng 2×2, `ChopSet.png` loé chạm đất, `ChayDen.png` than đen liền mạch)
   + icon `Resources/Icons/MayGiong.png` (Read/Write bật). Mây ở **7 m** (10 m thì nằm trên mép màn hình ở góc chơi thật).
+  ⚠️⚠️ **28/09/2026: TIA MÂY GIÔNG NAY Y NHƯ TIA SẤM SÉT** (người dùng, chỉ đổi hình): `VfxFactory.TiaMayGiong` vẽ như
+  `LightningStrike.Strike` — `LightningArc` kiểu MẶC ĐỊNH (không ảnh Blender, màu mặc định), 20 đoạn, 2–3 nhánh, 0,30 s, KHÔNG bám
+  mục tiêu, + `LightningImpact` chỗ chạm đất; tia ngang trong mây cũng kiểu mặc định. Các đoạn "y Giựt sét / quầng xanh sẫm
+  `MauQuangMayGiong` ×1,2" bên dưới là LỊCH SỬ (hằng đã xoá). Menu 83 mục I nay tung SẤM SÉT THẬT để so.
   ⚠️ **Chiều 25/09/2026 người dùng gửi ảnh thứ hai**: **CỘT KHÓI rủ từ đáy mây xuống TẬN MẶT ĐẤT** (chọn "một cột khói giữa
   vùng") — ảnh Blender `CotMay.png` (4 cột 2×2, uốn chữ S, mép lồi lõm, loe lên mây) vẽ bằng hạt **VerticalBillboard** 3 lớp,
   rộng `VfxFactory.BeNgangCotMay` 5 m, cao −0,35 → cao mây + 1,2 m, kèm khói cuộn dọc cột (`KhoiCot`); và **tia ĐÚNG Y GIỰT SÉT**
