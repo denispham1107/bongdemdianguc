@@ -8603,6 +8603,38 @@ châm cả bia mộ / nhà mồ (tính năng sáng nay), đầy trần "4 vật 
 
 Ảnh: `PlayTestShots/maygiong_1_dem_can.png`, `maygiong_2_chay_den.png`, `maygiong_3_ngay_goc_choi.png`.
 
+### Mảnh vỡ băng vẽ lại: mảnh pha lê 3D (28/09/2026)
+
+**Người dùng (2 ảnh):** Mưa băng và Quả cầu băng nổ ra các mảnh nhỏ "chỉ là hình tam giác, sơ sài" — dựng lại bằng Blender MCP
+thành mảnh vỡ băng pha lê trong suốt tông xanh lam.
+
+**Nguồn tam giác:**
+- `Shards` của vụ nổ tảng băng (`Vfx_NoBang`) và của băng vỡ (`Vfx_VoBang`): hạt kéo dãn dùng ảnh hình cánh diều (`Tex_shard`).
+- `Manh3D` (`Vfx_NoBang`): lưới `ManhVo` với shader `Ice` phát sáng, hiện thành tam giác phẳng trắng.
+- `ManhBung` / `ManhBangRoi` của quả cầu: hạt phẳng ảnh thoi `ManhBang.png`.
+
+**Dựng bằng Blender MCP** (`CongCu/Blender/manh_bang_pha_le.blend`, cảnh `ManhBangPhaLe`), 8 mảnh 14–28 tam giác:
+- 4 **phiến**: viền đa giác lởm chởm 6–9 cạnh quanh elip, dày 0,16–0,26, mặt vỡ nghiêng lệch, vát nhỏ hai mặt. Bản đầu thon đều
+  hai đầu nên vẫn ra cánh diều, đã làm lại.
+- 2 **cục** nhiều mặt; 2 **kim** dày.
+- Ảnh chi tiết nứt / bọt / sương 512².
+
+**Trong Unity:**
+- Shader mới `Diablo25D/ManhBangPhaLe`: như khối băng pha lê nhưng một lượt vẽ, nhân màu hạt để `colorOverLifetime` làm mờ.
+- `DoiThanhManhBangPhaLe` đổi hạt sang dạng lưới: 8 mẫu ngẫu nhiên, góc 3D ngẫu nhiên, lộn nhào 3 trục ±7 rad/s. Các `Shards`
+  nhỏ lại ×0,8 vì mảnh 3D dày trông to hơn vệt kéo dãn.
+- Prefab giữ nguyên, đổi lúc sinh ra.
+- Lưới bật Read/Write (hạt dạng lưới trên WebGL).
+
+**Đo:**
+- Chụp trong game: vụ nổ quả cầu có 3 hệ mảnh, cả 3 dùng mảnh pha lê, 0 hệ còn kiểu cũ, 77 hạt đang bay. Băng vỡ có 140 mảnh.
+- Ảnh `manhbangphale_vo_can.png`, `manhbangphale_no_can.png`, `manhbangphale_no_gocchoi.png`.
+- **Menu 68:** 0 lỗi.
+- **Menu 58, lần 1:** 1 lỗi ở đối chứng ngẫu nhiên E2 (cần hơn 20% tảng rơi trúng người tung, ra 3/21) — không liên quan hình.
+  **Lần 2:** 7/20, 0 lỗi.
+
+Chưa đổi: quả cầu chớp sáng `Flash` 0,35 s lúc nổ (vẫn là "mái vòm" trắng trong ảnh người dùng) — chờ người dùng quyết.
+
 ### Tảng băng trên mặt đất vẽ lại: cụm băng pha lê (28/09/2026)
 
 **Người dùng (ảnh chụp):** tảng băng mọc trên đất của Quả cầu băng và Mưa băng "quá chói, thô sơ sài, chưa giống thật" — dựng

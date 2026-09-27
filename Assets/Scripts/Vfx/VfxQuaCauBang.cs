@@ -227,6 +227,102 @@ public static partial class VfxFactory
         }
     }
 
+    // ================================================================
+    //  MANH BANG VO PHA LE (28/09/2026)
+    // ================================================================
+    //
+    // Nguoi dung (2 anh): manh nho no ra cua Mua bang / Qua cau bang "chi la hinh tam giac, so sai" -> manh bang pha le
+    // trong suot tong xanh lam that. Nguon cu: Shards (hat KEO DAN anh canh dieu Tex_shard / T_MB_P_Shard), Manh3D (luoi
+    // ManhVo + shader Ice phat sang), ManhBung / ManhBangRoi (hat phang anh ManhBang). Blender MCP
+    // (CongCu/Blender/manh_bang_pha_le.blend) -> ManhBangPhaLe.fbx: 8 manh 3D (4 PHIEN vien lom chom day, mat vo vat lech;
+    // 2 CUC; 2 KIM), 14-28 tam giac, canh dai nhat 1 m + anh chi tiet + ManhBangPhaLe.mat (shader Diablo25D/ManhBangPhaLe:
+    // nhan mau hat nen colorOverLifetime van lam mo). Hat doi sang dang LUOI, goc 3D ngau nhien, lon nhao quanh ca 3 truc.
+
+    static Mesh[] luoiManhBang;
+    static Material mManhBangPhaLe;
+
+    public static Mesh[] LuoiManhBangPhaLe
+    {
+        get
+        {
+            if (luoiManhBang == null || luoiManhBang.Length == 0 || luoiManhBang[0] == null)
+            {
+                var ds = new System.Collections.Generic.List<Mesh>();
+                var go = Resources.Load<GameObject>(ThuMucQuaCauBang + "ManhBangPhaLe");
+                if (go != null)
+                    foreach (var mf in go.GetComponentsInChildren<MeshFilter>())
+                        if (mf.sharedMesh != null) ds.Add(mf.sharedMesh);
+                luoiManhBang = ds.ToArray();
+            }
+            return luoiManhBang;
+        }
+    }
+
+    public static Material ManhBangPhaLeMat
+    {
+        get
+        {
+            if (mManhBangPhaLe == null) mManhBangPhaLe = Resources.Load<Material>(ThuMucQuaCauBang + "ManhBangPhaLe");
+            return mManhBangPhaLe;
+        }
+    }
+
+    /// <summary>Toc lon nhao toi da cua manh (rad/giay, moi truc).</summary>
+    public const float TocLonNhaoManhBang = 7f;
+
+    /// <summary>
+    /// Doi mot he hat manh bang sang MANH BANG PHA LE 3D. Goi ngay sau khi dung / sinh, truoc nhip mo phong dau.
+    /// <paramref name="heSoCo"/> nhan co hat (hat keo dan cu to hon ve mat nhin so voi mot manh 3D day).
+    /// </summary>
+    public static void DoiThanhManhBangPhaLe(ParticleSystem ps, float heSoCo)
+    {
+        if (ps == null) return;
+        var luoi = LuoiManhBangPhaLe;
+        var mat = ManhBangPhaLeMat;
+        if (luoi == null || luoi.Length == 0 || mat == null) return;
+        var r = ps.GetComponent<ParticleSystemRenderer>();
+        if (r == null) return;
+        r.renderMode = ParticleSystemRenderMode.Mesh;
+        r.SetMeshes(luoi);
+        r.meshDistribution = ParticleSystemMeshDistribution.UniformRandom;
+        r.sharedMaterial = mat;
+        r.alignment = ParticleSystemRenderSpace.World;
+        r.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+        r.receiveShadows = false;
+
+        var m = ps.main;
+        if (Mathf.Abs(heSoCo - 1f) > 0.001f)
+        {
+            var co = m.startSize;
+            if (co.mode == ParticleSystemCurveMode.TwoConstants)
+                m.startSize = new ParticleSystem.MinMaxCurve(co.constantMin * heSoCo, co.constantMax * heSoCo);
+            else if (co.mode == ParticleSystemCurveMode.Constant)
+                m.startSize = new ParticleSystem.MinMaxCurve(co.constant * heSoCo);
+        }
+        m.startRotation3D = true;
+        m.startRotationX = new ParticleSystem.MinMaxCurve(0f, Mathf.PI * 2f);
+        m.startRotationY = new ParticleSystem.MinMaxCurve(0f, Mathf.PI * 2f);
+        m.startRotationZ = new ParticleSystem.MinMaxCurve(0f, Mathf.PI * 2f);
+        // Ca ba truc CUNG kieu TwoConstants - lech kieu la Unity bo qua ca mo-dun (da vap voi hat Grit cua Gio loc)
+        var rot = ps.rotationOverLifetime;
+        rot.enabled = true;
+        rot.separateAxes = true;
+        rot.x = new ParticleSystem.MinMaxCurve(-TocLonNhaoManhBang, TocLonNhaoManhBang);
+        rot.y = new ParticleSystem.MinMaxCurve(-TocLonNhaoManhBang, TocLonNhaoManhBang);
+        rot.z = new ParticleSystem.MinMaxCurve(-TocLonNhaoManhBang, TocLonNhaoManhBang);
+    }
+
+    /// <summary>Doi moi he hat manh (Manh3D, Shards) duoi mot goc vu no sang manh bang pha le.</summary>
+    public static void DoiManhBangTrong(GameObject goc)
+    {
+        if (goc == null) return;
+        foreach (var ps in goc.GetComponentsInChildren<ParticleSystem>(true))
+        {
+            if (ps.name == "Manh3D") DoiThanhManhBangPhaLe(ps, 1f);
+            else if (ps.name == "Shards") DoiThanhManhBangPhaLe(ps, 0.8f);
+        }
+    }
+
     /// <summary>
     /// Thay moi cum gai (CumGai*) cua mot tang bang vua sinh bang cum bang pha le. Goi NGAY sau khi dung / sinh tu prefab,
     /// TRUOC Start cua ExpandFade (no lay ban sao vat lieu o Start).
@@ -234,6 +330,7 @@ public static partial class VfxFactory
     public static void NangCapTangBang(GameObject tang)
     {
         if (tang == null) return;
+        DoiManhBangTrong(tang);      // manh vo tam giac -> manh bang pha le 3D
         var luoi = LuoiTangBangPhaLe;
         var mat = TangBangPhaLeMat;
         if (luoi == null || luoi.Length == 0 || mat == null) return;
@@ -393,6 +490,7 @@ public static partial class VfxFactory
         mcol.color = new ParticleSystem.MinMaxGradient(Grad(Color.white, 0f, Color.white, 0.5f, Color.white, 1f, 1f, 1f, 0.7f, 0f));
         var mrot = manh.rotationOverLifetime; mrot.enabled = true;
         mrot.z = new ParticleSystem.MinMaxCurve(-6f, 6f);
+        DoiThanhManhBangPhaLe(manh, 1f);
 
         // 6) Anh sang lanh hat xuong mat dat - ban roi cua Mua bang KHONG co: 7-8 qua cung luc tren
         //    khong la 7-8 den diem, qua nang cho dien thoai; vung bao tuyet da co anh sang rieng
@@ -500,6 +598,7 @@ public static partial class VfxFactory
         mcol.color = new ParticleSystem.MinMaxGradient(Grad(Color.white, 0f, Color.white, 0.6f, Color.white, 1f, 1f, 1f, 0.8f, 0f));
         var mrot = manh.rotationOverLifetime; mrot.enabled = true;
         mrot.z = new ParticleSystem.MinMaxCurve(-8f, 8f);
+        DoiThanhManhBangPhaLe(manh, 1f);
 
         // Vet suong gia luon de lai tren dat (IceImpact chi de 35%)
         GroundDecal.Spawn(new Vector3(pos.x, GroundY(pos), pos.z), radius * 0.9f, new Material(FrostMat), 5f, 2.5f);

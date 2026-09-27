@@ -1405,9 +1405,10 @@ public static partial class VfxFactory
         {
             var inst = GameAssets.Make(pf, pos);
             if (Mathf.Abs(scale - 1f) > 0.05f) inst.transform.localScale = Vector3.one * scale;
+            DoiManhBangTrong(inst);      // manh vo tam giac -> manh bang pha le 3D (28/09/2026)
             return;
         }
-        BuildFrozenShatter(pos, scale);
+        DoiManhBangTrong(BuildFrozenShatter(pos, scale));
     }
 
     /// <summary>Dung hinh vo bang vo tan bang code.</summary>

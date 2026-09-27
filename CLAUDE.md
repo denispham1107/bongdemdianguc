@@ -168,6 +168,12 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
   ăn) + `TangBangPhaLe.png` (sương dày ở chân) + `TangBangPhaLe.mat`. Prefab `Vfx_NoBang` GIỮ NGUYÊN; `VfxFactory.NangCapTangBang`
   (gọi trong `IceImpact`, TRƯỚC Start của ExpandFade) thay lưới + vật liệu từng `CumGai*`, xoay ngẫu nhiên, quầng chân 1,15 → 0,5.
   Shader có `_AlphaGoc`: độ hiện = `_Color.a / _AlphaGoc` nên ExpandFade vẫn làm mờ được, cấp 5 `TangBangNo` tắt mờ vẫn đứng đặc.
+  ⚠️ **MẢNH VỠ BĂNG CŨNG LÀ PHA LÊ 3D** (28/09/2026, người dùng: "mảnh nhỏ chỉ là hình tam giác, sơ sài"): Blender MCP
+  `CongCu/Blender/manh_bang_pha_le.blend` → `ManhBangPhaLe.fbx` (8 mảnh: 4 phiến viền lởm chởm, 2 cục, 2 kim; 14–28 tam giác, dài
+  nhất 1 m, **Read/Write BẬT** cho hạt dạng lưới) + `.png` + `.mat` (shader `Diablo25D/ManhBangPhaLe`: một lượt, NHÂN MÀU HẠT).
+  `VfxFactory.DoiThanhManhBangPhaLe` đổi hạt sang dạng LƯỚI (8 mẫu ngẫu nhiên, góc 3D ngẫu nhiên, lộn nhào 3 trục cùng kiểu
+  TwoConstants): `Manh3D` + `Shards` (×0,8) của `Vfx_NoBang` (trong `NangCapTangBang`), `Shards` của `Vfx_VoBang` (`FrozenShatter`),
+  `ManhBangRoi` + `ManhBung` của quả cầu băng. Prefab giữ nguyên.
   Cụm gai băng trên đất của **Mưa băng** dùng chung cỡ hình `QuaCauBang.BanKinhHinhBang` (2,55 m, người dùng xin 16/09/2026) —
   chỉ hình, vùng sát thương mỗi tảng vẫn 1,7 m (menu 68 mục J đo kích thước thật).
   **Mưa băng rơi QUẢ CẦU BĂNG** thay tảng băng (16/09/2026): `VfxFactory.QuaCauBangRoi` (luồng khí lạnh/vệt băng như Quả cầu băng, bản nhẹ:
