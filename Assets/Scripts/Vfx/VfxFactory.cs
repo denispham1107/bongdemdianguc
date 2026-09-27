@@ -582,21 +582,17 @@ public static partial class VfxFactory
         return go;
     }
 
-    /// <summary>Ngon lua bam tren nguoi quai dang chay (uu tien dung prefab).</summary>
+    /// <summary>
+    /// Lua chay TOAN THAN tren nguoi choi / quai dang chay (28/09/2026: <see cref="LuaToanThan"/>, anh lua Blender MCP,
+    /// phat theo tung khuc xuong). KHONG con dung prefab Vfx_BongChay (GameAssets.burningPrefab - mot cuc lua hinh cau
+    /// giua nguoi, nguoi dung che "chi vang ra cac dom chay nho qua don so").
+    /// </summary>
     public static GameObject AttachBurning(Transform target, float height, float radius)
     {
-        var pf = GameAssets.I != null ? GameAssets.I.burningPrefab : null;
-        if (pf != null)
-        {
-            var inst = Object.Instantiate(pf, target);
-            inst.name = "Burning";
-            inst.transform.localPosition = new Vector3(0f, height * 0.45f, 0f);
-            return inst;
-        }
-        return BuildBurning(target, height, radius);
+        return LuaToanThan.Dung(target, height, radius).gameObject;
     }
 
-    /// <summary>Dung hinh lua bam nguoi bang code (dung khi chua co prefab).</summary>
+    /// <summary>Hinh lua CU (mot he hat hinh cau giua nguoi) - khong con ai goi, giu de so sanh.</summary>
     public static GameObject BuildBurning(Transform target, float height, float radius)
     {
         var go = new GameObject("Burning");

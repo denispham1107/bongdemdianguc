@@ -124,6 +124,13 @@ public class Damageable : MonoBehaviour
         khungGhiKeGay = Time.frameCount;
     }
 
+    /// <summary>
+    /// Dat true quanh mot lan TakeDamage de KHONG phun tia lua trung don (HitBurst). BurningEffect dung cho moi nhip chay:
+    /// cu 0,5 s mot chum tia keo dai vang ra khoi nguoi - chinh la "cac dom chay nho qua don so" nguoi dung che
+    /// (28/09/2026); nay lua toan than (LuaToanThan) da la hinh cua trang thai chay. So sat thuong + chop mau van giu.
+    /// </summary>
+    public static bool BoQuaTiaTrungDon;
+
     public void TakeDamage(float amount, DamageType type, Vector3 hitPoint)
     {
         if (IsDead || amount <= 0f) return;
@@ -182,6 +189,7 @@ public class Damageable : MonoBehaviour
 
         Vector3 popupAt = rig != null && rig.hitPoint != null ? rig.hitPoint.position : transform.position + Vector3.up * 1.2f;
         DamagePopup.Spawn(popupAt, Mathf.RoundToInt(amount), type, isPlayer);
+        if (!BoQuaTiaTrungDon)
         VfxFactory.HitBurst(hitPoint == Vector3.zero ? popupAt : hitPoint,
                             type == DamageType.Fire ? new Color(1f, 0.5f, 0.15f)
                           : type == DamageType.Ice ? new Color(0.6f, 0.85f, 1f)

@@ -3,6 +3,9 @@ using System.Collections.Generic;
 
 /// <summary>
 /// TRANG THAI BONG CHAY: quai bi lua bam vao nguoi, mat mau dan theo thoi gian.
+///
+/// Hinh: <see cref="LuaToanThan"/> - lua chay khap than (28/09/2026). GiayTatDan giay cuoi thi lua nho dan, thua dan
+/// roi tat; bi go giua chung (Toc bien, Tang hinh, chet) thi lua tu tat dan chu khong bien mat mot phat.
 /// </summary>
 public class BurningEffect : MonoBehaviour
 {
@@ -17,7 +20,7 @@ public class BurningEffect : MonoBehaviour
     public Damageable keGayChay;
 
     Damageable target;
-    GameObject vfx;
+    LuaToanThan vfx;
     float tick;
 
     public static void Apply(Damageable d, float dps, float seconds, Damageable keGay = null)
@@ -38,7 +41,8 @@ public class BurningEffect : MonoBehaviour
         target = GetComponent<Damageable>();
         float h = target != null && target.rig != null ? target.rig.bodyHeight : 1.8f;
         float r = target != null && target.rig != null ? target.rig.bodyRadius : 0.35f;
-        vfx = VfxFactory.AttachBurning(transform, h, r * 1.15f);
+        var go = VfxFactory.AttachBurning(transform, h, r * 1.15f);
+        vfx = go != null ? go.GetComponent<LuaToanThan>() : null;
 
         // Lua thieu lam tan bang
         var frozen = GetComponent<FrozenEffect>();
@@ -55,15 +59,19 @@ public class BurningEffect : MonoBehaviour
         if (tick >= 0.5f)
         {
             target.GhiKeDanh(keGayChay);
-            target.TakeDamage(damagePerSecond * tick, DamageType.Fire, transform.position + Vector3.up * 1f);
+            Damageable.BoQuaTiaTrungDon = true;       // khong phun tia trung don moi nhip chay - lua toan than la hinh roi
+            try { target.TakeDamage(damagePerSecond * tick, DamageType.Fire, transform.position + Vector3.up * 1f); }
+            finally { Damageable.BoQuaTiaTrungDon = false; }
             tick = 0f;
         }
 
+        if (vfx != null) vfx.DatDoManh(remaining / LuaToanThan.GiayTatDan);
         if (remaining <= 0f) Destroy(this);
     }
 
     void OnDestroy()
     {
-        if (vfx != null) Destroy(vfx);
+        // Khong xoa phat: lua tu tat dan (het gio thi do manh da ve ~0, bi go giua chung thi tat trong 0,6 s)
+        if (vfx != null) vfx.TatDan();
     }
 }

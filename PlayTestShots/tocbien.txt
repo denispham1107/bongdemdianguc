@@ -1,13 +1,13 @@
 [ban 1] Toc bien
 
-A. so hieu 15, so ky nang 16; nang luong 40, hoi chieu 5 s (cap 1), niem 0.01 s; Sach phep doc 40/5/0.01; tam 15 m
-A. ten "TỐC BIẾN", tom tat "Dịch chuyển tức thời trong 15 m", mo ta 626 ky tu; HUD 16 icon, icon so 15 co; icon file 256x256; nhom trong Sach phep: HỖ TRỢ
+A. so hieu 15, so ky nang 22; nang luong 40, hoi chieu 5 s (cap 1), niem 0.01 s; Sach phep doc 40/5/0.01; tam 15 m
+A. ten "TỐC BIẾN", tom tat "Dịch chuyển tức thời trong 15 m", mo ta 626 ky tu; HUD 22 icon, icon so 15 co; icon file 256x256; nhom trong Sach phep: HỖ TRỢ
 
 E. hoi chieu theo cap: cap 1=5.00  cap 2=4.75  cap 3=4.50  cap 4=4.25  cap 5=4.00  (mong 5 / 4,75 / 4,5 / 4,25 / 4)
 
 B. khoa -> tu choi True; mo khoa -> nhay 1 lan, di duoc 10.00 m (ngam 10 m, lech 0.00 m), ton 40 nang luong, hoi chieu ngay sau 5.00 s
 B. hieu ung tren canh: bien mat True, hien ra True
-F. tu luc bam den luc doi cho: 0.029 giay (khong niem chu)
+F. tu luc bam den luc doi cho: 0.030 giay (khong niem chu)
 
 C. ngam ra 30 m -> nhay duoc 15.01 m (tam toi da 15 m)
 

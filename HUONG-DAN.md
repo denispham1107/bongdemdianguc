@@ -8603,6 +8603,73 @@ châm cả bia mộ / nhà mồ (tính năng sáng nay), đầy trần "4 vật 
 
 Ảnh: `PlayTestShots/maygiong_1_dem_can.png`, `maygiong_2_chay_den.png`, `maygiong_3_ngay_goc_choi.png`.
 
+### Bị cháy: lửa bốc khắp toàn thân, sắp hết thì tàn dần (28/09/2026)
+
+**Người dùng (2 ảnh):** người chơi và quái bị cháy thì "chỉ văng ra các đốm cháy nhỏ quá đơn sơ". Muốn toàn thân bốc cháy
+bởi lửa thật, dựng bằng Blender MCP; sắp hết cháy thì lửa giảm dần rồi biến mất.
+
+**Nguyên nhân — thật ra có hai thứ:**
+- Hình cháy cũ (prefab `Vfx_BongChay` / `BuildBurning`) là **một hệ hạt hình cầu 0,4 m** treo ở giữa người. Đo trên hình thật
+  của nhân vật: dải chân **0%** có lửa, Quỷ cây cả dải chân lẫn dải đùi đều 0%.
+- "Đốm văng ra" là **tia trúng đòn** (`HitBurst`, hạt kéo dài): mỗi nhịp cháy 0,5 s gọi `TakeDamage` như một đòn đánh, nên cứ
+  nửa giây lại phun một chùm tia ra khỏi người. Ảnh chụp riêng từng lớp hạt mới tách được nó ra khỏi lửa.
+- Lúc hết cháy `OnDestroy` xoá hình cháy **một phát**.
+
+**Cách sửa:**
+- **Ảnh lửa Blender MCP** (`CongCu/Blender/lua_chay_nguoi.blend`, cảnh `LuaChayNguoi`): một ngọn lửa vẽ bằng shader (nhiễu 4D
+  uốn lượn + nhiễu tách lưỡi, dải màu trắng vàng → cam → đỏ sẫm, phát sáng trên nền đen), render 16 khung theo một nút
+  thời gian: **bùng lên → liếm cao → tách lưỡi → tàn thành đỏ sẫm**. Ghép thành `Resources/Flipbooks/LuaChayNguoi.png` 4×4
+  (alpha = kênh sáng nhất, màu chia lại cho alpha để cộng sáng ra đúng màu gốc).
+- **`Vfx/LuaToanThan.cs`** thay hình cũ (`VfxFactory.AttachBurning` gọi nó; prefab cũ không dùng nữa):
+  - Phát lửa **theo 16 khúc xương** (hông–lưng, lưng–ngực, ngực–cổ, cổ–đỉnh đầu, hai vai, cánh tay, cẳng tay, đùi, ống
+    chân, bàn chân). Chọn khúc theo trọng số dài × dày, phát quanh trục khúc. Lửa bám đúng tay chân khi chạy, vung tay,
+    ngã. Mọi quái và người chơi dùng chung bộ xương Meshy.
+  - Không dùng hình phát `SkinnedMeshRenderer` của hệ hạt: lưới Meshy tắt Read/Write, bản build sẽ im lặng không phát gì.
+  - Mỗi ngọn lửa chạy **trọn 16 khung một lần từ khung 0** — bắt đầu ở khung ngẫu nhiên thì ngọn lửa hiện ra khi đã tàn.
+    Một nửa lật ngang cho đỡ lặp. Mô phỏng thế giới: chạy thì lửa để lại phía sau.
+  - Kèm quầng cam, khói cuộn xám đậm, tàn lửa bay lên, đèn nhấp nháy.
+  - Chiều cao thân đo từ xương, không đổi theo tư thế: hông → đỉnh đầu + đùi + ống chân + 6%. Cộng cả chuỗi xương thì ra
+    2,03–2,26 m vì chuỗi zic-zac; `rig.bodyHeight` cũng sai.
+- **Tàn dần:** `LuaToanThan.DatDoManh(k)`, `BurningEffect` đặt k = còn lại / `GiayTatDan` 1,2 s.
+  - Giây cuối: số ngọn lửa × k, cỡ × (0,45 + 0,55k), đèn × k. Ngọn lửa đang cháy vẫn sống nốt đời của nó rồi mới tắt.
+  - Bị gỡ giữa chừng (Tốc biến cấp 5, Tàng hình, chết): `TatDan()` tự hạ về 0 trong 0,6 s. Lửa không còn biến mất một phát.
+  - Hình tự xoá khi khói tan hết.
+- **Nhịp cháy không phun tia trúng đòn nữa:** `Damageable.BoQuaTiaTrungDon` bật quanh `TakeDamage` của `BurningEffect`.
+  Số sát thương nổi lên và chớp màu cam trên thân vẫn giữ.
+
+**Đo (menu 90 mới, `PlayTestShots/lua_chay.txt`, 0 lỗi):**
+
+Phép đo độ phủ độc lập với cách chọn điểm phát lửa: `BakeMesh` hình thật, chia thân thành 5 dải chân → đầu, đếm đỉnh có
+ngọn lửa trong 0,35 m.
+
+| | Độ phủ 5 dải (chân → đầu) | Dải kém nhất |
+|---|---|---|
+| Người chơi | 78 · 100 · 88 · 100 · 100 % | 78% |
+| Bộ xương | 97 · 94 · 98 · 100 · 100 % | 94% |
+| Quỷ cây | 71 · 92 · 100 · 99 · 98 % | 71% (trước khi thêm khúc bàn chân: 21%) |
+| **Đối chứng hình cũ** — bộ xương | 0 · 70 · 97 · 100 · 97 % | **0%** |
+| **Đối chứng hình cũ** — Quỷ cây | 0 · 0 · 47 · 87 · 86 % | **0%** |
+
+- 95–98% ngọn lửa nằm cách thân dưới 0,3 m.
+- Chiều cao theo xương 1,56 / 1,56 / 1,79 m, hình thật 1,66 / 1,71 / 1,82 m.
+- Lượt cháy thật dài 4,00 s.
+  - Lúc cháy mạnh: trung bình 60,5 ngọn lửa, cỡ 0,31 m.
+  - 0,3 s cuối: 25,3 ngọn lửa, cỡ 0,25 m.
+  - Ngay sau khi hết còn 12,4 (không tắt một phát), về 0 lúc 4,63 s.
+- Gỡ giữa chừng: 55 ngọn lửa, 0,15 s sau còn 54, hết lửa sau 1,27 s.
+- Đang tàn (k 0,30) mà cháy thêm → k về 1,00.
+- 2 giây cháy trừ 9,2 máu, sinh **0 chùm tia trúng đòn**. Đối chứng: một đòn lửa thường sinh 1 chùm.
+- Menu 70 (Quả cầu lửa) và menu 76 (Tốc biến gỡ cháy) chạy lại: **0 lỗi**.
+  - Menu 76 từng ra 10 lỗi khi chạy nối ngay sau menu 70. Dự án tắt Domain Reload nên biến tĩnh còn sót từ phép thử
+    trước.
+  - Chạy lại trên nền vừa biên dịch: 0 lỗi. Đối chứng bản code cũ cũng 0 lỗi.
+
+Ảnh: `lua_chay_gan.png`, `lua_chay_goc_choi.png`, `lua_chay_tat_dan.png`, `lua_chay_rieng_*.png` (từng lớp hạt).
+
+⚠️ **Chưa sửa, cần người dùng quyết:** `BurningEffect.Apply` mắc đúng bẫy "AddComponent mang giá trị mặc định". Component
+mới có sẵn `remaining = 4` và `damagePerSecond = 6`, rồi lấy `Max`. Vì thế mọi lần cháy kéo dài **ít nhất 4 giây** và
+**ít nhất 6 máu/giây**, dù Quả cầu lửa đặt 3,5 s, quả cầu của quái đặt 2,2 s. Sửa thì thay đổi lối chơi, nên chưa đụng.
+
 ### Tia sét của Mây giông giống tia Sấm sét (28/09/2026)
 
 **Người dùng:** tia sét trong Mây giông giống tia sét trong Sấm sét — **chỉ đổi hiển thị**.
@@ -11441,6 +11508,7 @@ Lần chạy đầu phép thử báo cả 10 con "lơ lửng": tia chiếu từ 
 | **87. Chay thu RA - VAO NHA MO (Act2)** | Nhân vật thật đi vào nhà mồ từ 8 hướng rồi thử đi ra 5 hướng (đầu tiên là quay lui đúng đường vào); lượt đối chứng tạm gắn lại lưới gốc (~20 phút cả hai lượt, `ThuRaKhoiNhaMo.BoQuaDoiChung` để bỏ). `ra_khoi_nha_mo.txt`. |
 | **88. Va cham hai mat cho nha mo (Act2)** | Dựng lưới va chạm hai mặt cho mỗi kiểu nhà mồ (`BlenderMaps/GraveyardAct2/VaCham/`) và gắn vào `MeshCollider` của 7 nhà. Chạy lại khi thêm nhà mồ / nhập lại bản đồ. |
 | **89. Chay thu O VUONG SANG tren mat dat (den ky nang)** | Chụp riêng lớp Terrain có / không đèn kỹ năng ở 3 điểm cố định × 4 mức đồ hoạ × 1 / 6 đèn, đo "đường nối" (ô vuông) trên D/A; đối chứng tắt đèn sinh đôi `DenMatDat`. Kèm ảnh vụ nổ thật. `den_mat_dat.txt`. |
+| **90. Chay thu LUA CHAY TOAN THAN (nguoi choi + quai)** | Đốt người chơi, bộ xương, Quỷ cây: độ phủ lửa theo 5 dải thân trên hình thật (BakeMesh), đối chứng hình cháy cũ; đếm ngọn lửa suốt lượt cháy (tàn dần, không tắt một phát); gỡ giữa chừng; cháy thêm khi đang tàn; nhịp cháy không phun tia trúng đòn (đối chứng một đòn thường). `lua_chay.txt`. |
 | **56. Chay thu DOT QUAI Act2 + cho xuat phat** | *(13/09/2026: thêm đo chờ 30 giây và 10 con xa 55–65 m)*  Kiểm chỗ xuất phát ngẫu nhiên (hai máy cùng mã phòng ra cùng danh sách, cách nhau ≥ 22 m, trên đất, ngoài nước, không vướng vật cản) và luật đợt quái Act2 (đợt 1 bốn con quanh mỗi người; đợt sau cộng dồn quái và mạnh thêm 5% máu · sát thương). Số đo `dotquai_act2.txt`. |
 | **55. Chay thu KET TRAN (nguoi song sot cuoi cung)** | Mở kênh giả lập như menu 45: kiểm gói tin kết trận/chết, máy chủ phòng phán quyết đúng lúc còn một người, bảng điểm cộng đúng người, máy khách không tự kết luận và hiện đúng kết quả nghe được, chết rồi camera chuyển sang người còn sống, chụp màn kết trận. Số đo `kettran.txt`, ảnh `kettran_*.png`. |
 | **54c. Chay thu LOC XOAY cuon lo lua** | Vào Play Act2, thả một cơn lốc đi thẳng vào lò: đo mốc thời gian lửa tắt / lò nhấc lên / lò biến mất / lò mọc lại, kiểm than trong chậu tắt bằng độ sáng trên ảnh, và kiểm vật có hệ hạt khác vẫn không bị cuốn. Ảnh `locxoay_*.png`, số đo `locxoay_lolua.txt`. |
