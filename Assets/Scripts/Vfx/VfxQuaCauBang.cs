@@ -5,9 +5,15 @@ using UnityEngine;
 ///
 /// Nguoi dung: ba qua cau bang bay nhu Qua cau lua, nhung "khac han la tao ra mot luong
 /// khong khi lanh phia sau va vet bang cua qua cau". Tai nguyen dung trong Blender qua
-/// MCP (CongCu/Blender/qua_cau_bang.blend), nam o Resources/KyNang/QuaCauBang:
-///   - QuaCauBang.fbx : loi pha le nhieu mat, gai bang toa quanh than, gai phia sau dai
-///                      chum lai nhu duoi sao choi (truc bay = +Z trong Unity);
+/// MCP, nam o Resources/KyNang/QuaCauBang:
+///   - CauBangPhaLe.fbx + .png + .mat (28/09/2026, CongCu/Blender/cau_bang_pha_le.blend - nguoi dung: ban cu "chi la
+///     hinh khoi tron dinh gai xung quanh, qua so sai", chon "khoi bang pha le" tong xanh lam): KHOI BANG DEO THO 63 mat cat
+///     khong deu + 6 tinh the luc giac dau nhon moc lech (2 lon, 4 nho), anh chi tiet nuong (R vet nut to + mang nut manh,
+///     G bot khi, B mang suong gia) doc bang shader Diablo25D/CauBangPhaLe (mat cat phang loe sang, nut chim sau theo goc
+///     nhin, vien fresnel); LOI SANG la DOM SANG MEM ben trong (hat cong sang ve truoc lop bang - thu luoi loi 34 mat roi:
+///     hien thanh mot khoi xanh canh sac dan vao giua, bo). Tinh the dang LANG TRU MAP NGAN (ban dai manh doc ra gai - dung
+///     cai nguoi dung che). Quay lan tren mot truc nghieng;
+///     (ban cu QuaCauBang.fbx - loi tron dinh gai + duoi gai - da xoa);
 ///   - SuongLanh.png  : dam suong lanh cuon (nhieu fBm, tat dan ra mep) - luong khi lanh;
 ///   - ManhBang.png   : manh tinh the bang co tia sang cheo - vet bang lap lanh roi xuong.
 /// Icon nut: Resources/Icons/CauBang.png (cung canh Blender).
@@ -20,39 +26,41 @@ public static partial class VfxFactory
     const string ThuMucQuaCauBang = "KyNang/QuaCauBang/";
 
     static Mesh luoiQuaCauBang;
-    static bool daTimLuoiQuaCauBang;
-    static Material mSuongLanh, mManhBang, mVetBang, mHaoQuangCauBang, mLoiCauBang;
+    static Material mSuongLanh, mManhBang, mVetBang, mHaoQuangCauBang, mKhoiBang, mLoiSangCauBang;
 
-    /// <summary>
-    /// Vat lieu loi pha le: ban sao Mats.Ice nhung PHAT SANG IT va xanh sau hon. Dung thang Mats.Ice
-    /// (glow 1,35) thi ba qua cau + bloom ra ba dom trang chop, khong doc ra mat pha le xanh.
-    /// </summary>
-    static Material LoiCauBangMat
+    /// <summary>Vat lieu khoi bang pha le (asset trong Resources - giu shader trong ban build). Null thi dung Mats.Ice.</summary>
+    public static Material KhoiBangPhaLeMat
     {
         get
         {
-            if (mLoiCauBang == null)
-            {
-                mLoiCauBang = new Material(Mats.Ice);
-                mLoiCauBang.name = "LoiCauBang";
-                mLoiCauBang.SetColor("_Color", new Color(0.36f, 0.66f, 1f, 0.75f));
-                mLoiCauBang.SetColor("_DeepColor", new Color(0.04f, 0.22f, 0.62f, 1f));
-                mLoiCauBang.SetColor("_RimColor", new Color(0.70f, 0.92f, 1f, 1f));
-                mLoiCauBang.SetFloat("_Glow", 0.55f);
-            }
-            return mLoiCauBang;
+            // Kiem bang null cua Unity chu khong co "da nap": vat lieu / luoi nap luc Play bi xoa khi thoat Play
+            if (mKhoiBang == null) mKhoiBang = Resources.Load<Material>(ThuMucQuaCauBang + "CauBangPhaLe");
+            return mKhoiBang;
         }
     }
 
-    /// <summary>Luoi Blender - null neu khong nap duoc (luc do dung khoi cau tron).</summary>
+    /// <summary>Dom sang mem trong long khoi bang: cong sang, ve TRUOC lop bang (hang doi 2999 &lt; 3001 cua shader khoi bang).</summary>
+    static Material LoiSangCauBangMat
+    {
+        get
+        {
+            if (mLoiSangCauBang == null)
+            {
+                mLoiSangCauBang = Mats.Additive("LoiSangCauBang", TextureFactory.SoftDot(2.4f), new Color(0.62f, 0.86f, 1f, 1f), 1.25f);
+                mLoiSangCauBang.renderQueue = 2999;
+            }
+            return mLoiSangCauBang;
+        }
+    }
+
+    /// <summary>Luoi khoi bang pha le (Blender) - null neu khong nap duoc (luc do dung khoi cau tron).</summary>
     public static Mesh LuoiQuaCauBang
     {
         get
         {
-            if (!daTimLuoiQuaCauBang)
+            if (luoiQuaCauBang == null)
             {
-                daTimLuoiQuaCauBang = true;
-                var go = Resources.Load<GameObject>(ThuMucQuaCauBang + "QuaCauBang");
+                var go = Resources.Load<GameObject>(ThuMucQuaCauBang + "CauBangPhaLe");
                 var mf = go != null ? go.GetComponentInChildren<MeshFilter>() : null;
                 luoiQuaCauBang = mf != null ? mf.sharedMesh : null;
             }
@@ -105,7 +113,7 @@ public static partial class VfxFactory
         get
         {
             if (mHaoQuangCauBang == null)
-                mHaoQuangCauBang = Mats.Additive("P_HaoQuangCauBang", TextureFactory.SoftDot(1.8f), new Color(0.40f, 0.70f, 1f, 0.45f), 0.8f);
+                mHaoQuangCauBang = Mats.Additive("P_HaoQuangCauBang", TextureFactory.SoftDot(1.8f), new Color(0.40f, 0.70f, 1f, 0.45f), 0.6f);   // 28/09/2026 0,8 -> 0,6: khoi pha le khong bi nhoe thanh dom sang
             return mHaoQuangCauBang;
         }
     }
@@ -130,22 +138,38 @@ public static partial class VfxFactory
         BuildPhanBayQuaCauBang(parent, radius, banRoi, heSoHat);
     }
 
+    /// <summary>Truc quay lan cua khoi bang (khong gian rieng cua khoi) - nghieng de moi vong mot bo mat cat khac loe sang.</summary>
+    public static readonly Vector3 TrucLanKhoiBang = new Vector3(0.35f, 0.55f, 1f).normalized;
+
     static void DungLoiCoGai(Transform parent, float radius, float k)
     {
-        // LOI PHA LE CO GAI tu Blender. Luoi dung o ban kinh loi 0,5 -> phong theo radius.
+        // KHOI BANG PHA LE tu Blender (ban kinh 0,5 -> phong theo radius). Ten "LoiBang" giu nguyen cho phep thu / cho khac tim.
         var luoi = LuoiQuaCauBang;
+        var mat = KhoiBangPhaLeMat;
         GameObject loi;
-        // Xoay 180 do quanh truc dung: truc duoi gai trong Blender la -Y, qua FBX thanh +Z
-        // (do bang bounds: tam luoi lech +0,75 theo Z) - khong xoay thi duoi chi ve phia truoc.
-        if (luoi != null)
-            loi = ProcMesh.Part("LoiBang", parent, luoi, LoiCauBangMat, Vector3.zero, Quaternion.Euler(0f, 180f, 0f), Vector3.one * k, false);
+        // Goc xoay ngau nhien: ba qua trong chum khong giong het nhau
+        var goc = Random.rotation;
+        if (luoi != null && mat != null)
+        {
+            loi = ProcMesh.Part("LoiBang", parent, luoi, mat, Vector3.zero, goc, Vector3.one * k, false);
+            // Dom sang mem trong long: vai hat cong sang chong nhau o tam, nhap nhay nhe
+            var ls = NewPS("LoiSang", parent, Vector3.zero, LoiSangCauBangMat, ParticleSystemRenderMode.Billboard);
+            var lm = ls.main;
+            lm.startLifetime = 0.30f; lm.startSpeed = 0f;
+            lm.startSize = new ParticleSystem.MinMaxCurve(radius * 1.05f, radius * 1.35f);
+            lm.simulationSpace = ParticleSystemSimulationSpace.Local; lm.maxParticles = 6;
+            var lem = ls.emission; lem.rateOverTime = 14f;
+            var lsh = ls.shape; lsh.enabled = false;
+            var lcol = ls.colorOverLifetime; lcol.enabled = true;
+            lcol.color = new ParticleSystem.MinMaxGradient(Grad(Color.white, 0f, Color.white, 0.5f, Color.white, 1f, 0f, 0.8f, 0.5f, 0f));
+        }
         else
             loi = ProcMesh.Part("LoiBang", parent, ProcMesh.Sphere(radius, 12, 8, 1f, Color.white), Mats.Ice,
                                 Vector3.zero, Quaternion.identity, Vector3.one, false);
-        // Quay CHAM quanh truc bay: gai duoi van chum ve phia sau, chi lap lanh doi mat
+        // Quay lan: mat cat thay nhau loe sang anh trang
         var xoay = loi.AddComponent<Spin>();
-        xoay.axis = Vector3.forward;
-        xoay.degreesPerSecond = 160f;
+        xoay.axis = TrucLanKhoiBang;
+        xoay.degreesPerSecond = 150f;
     }
 
     static Material mVetSaoBang, mDauSaoBang;
@@ -337,7 +361,7 @@ public static partial class VfxFactory
             var ps = c.GetComponent<ParticleSystem>();
             var tr = c.GetComponent<TrailRenderer>();
             if (ps == null && tr == null) continue;
-            if (ps != null && (c.name == "HaoQuang" || c.name == "DauSaoBang")) continue;
+            if (ps != null && (c.name == "HaoQuang" || c.name == "DauSaoBang" || c.name == "LoiSang")) continue;
             c.SetParent(null, true);
             if (ps != null) ps.Stop(true, ParticleSystemStopBehavior.StopEmitting);
             if (tr != null) tr.emitting = false;

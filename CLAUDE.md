@@ -152,8 +152,16 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
 - **Quả cầu băng** (`Skills/QuaCauBang.cs`, hình `Vfx/VfxQuaCauBang.cs`): 3 quả toé quạt như Quả cầu lửa (đường bay/va chạm chép
   `Fireball.Update`), sát thương gốc **65**, hồi chiêu **0,55 s**, 12 năng lượng, nổ vùng 3,4 m; trúng là **chậm 50% trong 2 s** và **40% ĐÓNG BĂNG 1,5 s**
   (18/09/2026: không đi, không tung phép — `FrozenEffect.Apply` như Mưa băng, qua mạng bằng bit `CoBangHoanToan`); **cấp 5 ra 5 quả** (`SoQuaTheoCap`). Hình **dựng bằng Blender MCP** (`CongCu/Blender/qua_cau_bang.blend`) → `Resources/KyNang/QuaCauBang/`
-  (lõi pha lê FBX, ảnh sương lạnh, mảnh băng) + icon `Resources/Icons/CauBang.png`; dựng bằng code, **không** có prefab trong GameAssets
-  (thêm trường prefab là phải sửa hai scene). Lưới FBX xoay 180° (đuôi gai −Y Blender → +Z Unity). Menu 68 kiểm.
+  (ảnh sương lạnh, mảnh băng) + icon `Resources/Icons/CauBang.png`; dựng bằng code, **không** có prefab trong GameAssets
+  (thêm trường prefab là phải sửa hai scene). Menu 68 kiểm.
+  ⚠️ **28/09/2026 QUẢ CẦU VẼ LẠI: KHỐI BĂNG PHA LÊ** (người dùng chê bản cũ "khối tròn đính gai, sơ sài", chọn "khối băng pha lê",
+  tông xanh lam) — Blender MCP `CongCu/Blender/cau_bang_pha_le.blend` → `CauBangPhaLe.fbx` (khối đẽo thô 63 mặt cắt + 6 tinh thể
+  lăng trụ MẬP NGẮN, 212 tam giác) + `CauBangPhaLe.png` (nướng: R vết nứt, G bọt khí, B sương giá — **tuyến tính, tắt sRGB**) +
+  `CauBangPhaLe.mat` (shader MỚI `Diablo25D/CauBangPhaLe`: mặt cắt phẳng lóe sáng, nứt "chìm sâu" theo góc nhìn, viền fresnel;
+  hai lượt: ghi độ sâu rồi trộn; hàng đợi 3001). Lõi sáng là **đốm hạt mềm** `LoiSang` (hàng đợi 2999, vẽ trước lớp băng). Quay
+  lăn trục nghiêng `VfxFactory.TrucLanKhoiBang`. ⚠️ Vết nứt phải TRỘN VỀ TRẮNG ĐỤC, **không cộng sáng** — cộng sáng ra lưới điện
+  y Quả cầu điện; tinh thể dài mảnh đọc ra GAI (cái người dùng chê); lõi bằng lưới hiện thành khối xanh cạnh sắc — cả ba đã thử, bỏ.
+  Vật liệu `.mat` giữ giá trị riêng: đổi mặc định trong shader phải cập nhật cả `.mat`. Bản cũ `QuaCauBang.fbx` đã xoá.
   Cụm gai băng trên đất của **Mưa băng** dùng chung cỡ hình `QuaCauBang.BanKinhHinhBang` (2,55 m, người dùng xin 16/09/2026) —
   chỉ hình, vùng sát thương mỗi tảng vẫn 1,7 m (menu 68 mục J đo kích thước thật).
   **Mưa băng rơi QUẢ CẦU BĂNG** thay tảng băng (16/09/2026): `VfxFactory.QuaCauBangRoi` (luồng khí lạnh/vệt băng như Quả cầu băng, bản nhẹ:

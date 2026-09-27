@@ -8603,6 +8603,43 @@ châm cả bia mộ / nhà mồ (tính năng sáng nay), đầy trần "4 vật 
 
 Ảnh: `PlayTestShots/maygiong_1_dem_can.png`, `maygiong_2_chay_den.png`, `maygiong_3_ngay_goc_choi.png`.
 
+### Quả cầu băng vẽ lại: khối băng pha lê (28/09/2026)
+
+**Người dùng:** quả cầu băng "quá thô, chỉ là một hình khối tròn kèm đính các gai xung quanh, sơ sài" — dựng lại bằng Blender MCP
+cho chi tiết như quả cầu băng thật, hợp phong cách game. Người dùng chọn: **khối băng pha lê**, **tông xanh lam lạnh**.
+
+**Dựng bằng Blender MCP** (`CongCu/Blender/cau_bang_pha_le.blend`, cảnh `CauBangPhaLe`):
+- Vỏ là bao lồi của 46 điểm rải lệch trên mặt cầu bán kính 0,5, rồi gộp tam giác gần phẳng (7°) → **63 mặt cắt to nhỏ không đều**
+  như băng bị đẽo thô.
+- 6 tinh thể băng lục giác đầu nhọn mọc lệch (2 lớn, 4 nhỏ, một cụm đôi một bên).
+- Ảnh chi tiết 1024² nướng (Cycles, bake Emit) từ vật liệu thủ tục theo toạ độ vật:
+  - kênh R = vết nứt to (Voronoi khoảng cách tới cạnh) + mạng nứt mảnh;
+  - kênh G = bọt khí;
+  - kênh B = mảng sương giá.
+
+**Trong Unity:**
+- Shader mới `Diablo25D/CauBangPhaLe`:
+  - mặt cắt phẳng, mỗi mặt nhận ánh trăng một kiểu nên quay là lóe sáng từng mặt;
+  - lòng xanh sâu, viền fresnel xanh trắng;
+  - lớp nứt "chìm sâu" (nhiễu 3D lấy mẫu lùi vào trong theo hướng nhìn, trôi lệch khi khối quay);
+  - sương giá và vết nứt trắng đục, bọt khí lấp lánh.
+- Vật liệu là asset trong `Resources/`, nên shader chắc chắn vào bản web.
+- Lõi sáng là đốm hạt mềm vẽ trước lớp băng. Khối quay lăn trên trục nghiêng, mỗi quả một góc ngẫu nhiên.
+
+**Ba lần sửa sau khi chụp trong game:**
+
+| Lần chụp | Thấy | Sửa |
+|---|---|---|
+| 1 | Vết nứt cộng sáng trông như **lưới điện** (giống Quả cầu điện); cả khối sáng đều | Nứt trộn về trắng đục, tương phản mặt cắt 0,72+0,45 → 0,50+0,70, lòng sâu hơn, quầng sáng 0,8 → 0,6 |
+| 1 | Tinh thể nhô quá ngắn, không thấy | Kéo dài ×1,6 |
+| 2 | Tinh thể dài mảnh đọc ra **gai** (đúng cái người dùng chê) | Mập ngang ×1,5, dài lùi còn ×1,25 (nhô tới 0,72) |
+| 2 | Lõi lưới 34 mặt hiện thành **khối xanh cạnh sắc** dán giữa | Bỏ lõi lưới, dùng đốm hạt cộng sáng mềm |
+
+**Đo:** menu 68 **0 lỗi**. Phần A: lưới 212 tam giác, vật liệu đúng shader, ảnh 1024². Phần G: tâm khối lệch 0,019 m trên cỡ 1,65 m,
+tức khối gọn, không còn đuôi gai (bản cũ lệch 0,75 m); có lõi sáng, có quay; luồng khí lạnh, vệt băng, ánh sáng giữ nguyên. Sát
+thương, đóng băng, nổ, tảng băng cấp 5 không đổi. Ảnh: `caubangphale_can.png` (cận), `caubangphale_gocchoi.png` (góc chơi),
+`quacaubang_1b_bay_can.png` (đang bay thật).
+
 ### Ô vuông, ô chữ nhật sáng chắp vá dưới mặt đất khi kỹ năng phát sáng (28/09/2026)
 
 **Người dùng thấy (6 ảnh):** quái hay người chơi đánh kỹ năng phát sáng thì dưới mặt đất hiện rõ các ô vuông, ô chữ nhật chắp

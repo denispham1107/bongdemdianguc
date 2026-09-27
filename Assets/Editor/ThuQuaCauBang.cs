@@ -245,7 +245,14 @@ public static class ThuQuaCauBang
             tManh != null ? tManh.width + "x" + tManh.height : "KHONG", tManh != null && GraphicsFormatUtilityCoAlpha(tManh),
             tIcon != null ? tIcon.width + "x" + tIcon.height : "KHONG"));
         // GetIndexCount chu khong .triangles: luoi khong bat Read/Write (khong can - chi de ve), trong Play .triangles tra rong
-        Kiem(luoi != null && luoi.GetIndexCount(0) > 300, "khong nap duoc luoi qua cau bang tu Blender");
+        // 28/09/2026: KHOI BANG PHA LE (63 mat cat + 6 tinh the) + vat lieu shader CauBangPhaLe + anh chi tiet nuong
+        var matKhoi = VfxFactory.KhoiBangPhaLeMat;
+        Ghi(string.Format("   khoi bang pha le: vat lieu {0}, anh chi tiet {1}",
+            matKhoi != null ? matKhoi.shader.name : "KHONG",
+            matKhoi != null && matKhoi.mainTexture != null ? matKhoi.mainTexture.width + "x" + matKhoi.mainTexture.height : "KHONG"));
+        Kiem(luoi != null && luoi.GetIndexCount(0) >= 150, "khong nap duoc luoi khoi bang pha le tu Blender");
+        Kiem(matKhoi != null && matKhoi.shader.name == "Diablo25D/CauBangPhaLe" && matKhoi.mainTexture != null,
+             "thieu vat lieu / anh chi tiet cua khoi bang pha le");
         Kiem(tSuong != null && tManh != null && tIcon != null, "thieu anh hat / icon");
 
         // ================= B. THONG SO THAT =================
@@ -297,7 +304,7 @@ public static class ThuQuaCauBang
         // G. hinh anh luc dang bay
         var mot = Object.FindAnyObjectByType<QuaCauBang>();
         string hinh = "khong co qua dang bay";
-        bool duoiSau = false, coSuong = false, coVet = false, coDen = false, dungLuoi = false;
+        bool khoiGon = false, coLoiSang = false, dungVatLieu = false, coQuay = false, coSuong = false, coVet = false, coDen = false, dungLuoi = false;
         if (mot != null)
         {
             var mfLoi = mot.transform.Find("LoiBang");
@@ -307,8 +314,12 @@ public static class ThuQuaCauBang
             if (mr != null)
             {
                 Vector3 lech = mr.bounds.center - mot.transform.position;
-                duoiSau = Vector3.Dot(lech, mot.transform.forward) < -0.02f;
-                hinh = "tam hop bao lech theo huong bay " + Vector3.Dot(lech, mot.transform.forward).ToString("F3") + " m";
+                // Khoi GON quanh tam (ban cu co duoi gai dai lech 0,75 ve sau - nay phai het)
+                khoiGon = lech.magnitude < 0.15f * mr.bounds.size.magnitude;
+                hinh = string.Format("tam hop bao lech {0:F3} m / co {1:F2} m", lech.magnitude, mr.bounds.size.magnitude);
+                dungVatLieu = mr.sharedMaterial != null && mr.sharedMaterial.shader.name == "Diablo25D/CauBangPhaLe";
+                coLoiSang = mot.transform.Find("LoiSang") != null;
+                coQuay = mfLoi.GetComponent<Spin>() != null;
             }
             var ps = mot.transform.Find("LuongKhiLanh");
             coSuong = ps != null && ps.GetComponent<ParticleSystem>().particleCount > 0;
@@ -343,9 +354,9 @@ public static class ThuQuaCauBang
         Ghi(string.Format("D. bia tren duong bay (8 m) mat {0:F1} mau; bia lech 7 m khoi duong bay mat {1:F1}", matDuong, matLech));
         Kiem(matDuong >= 65f * 0.55f - 0.5f && matDuong <= 3f * 65f + 0.5f, "bia tren duong bay khong mat mau dung khoang cua 1..3 qua");
         Kiem(matLech < 0.5f, "bia nam ngoai duong bay cung mat mau");
-        Ghi(string.Format("G. luc bay: dung luoi Blender {0}, {1} -> duoi gai phia SAU {2}; luong khi lanh dang phat {3}, vet bang {4}, anh sang {5}; sau khi no: {6} luong khi lanh con o lai tan dan",
-            dungLuoi, hinh, duoiSau, coSuong, coVet, coDen, suongConLai));
-        Kiem(dungLuoi && duoiSau && coSuong && coVet && coDen, "hinh anh qua cau bang dang bay thieu phan");
+        Ghi(string.Format("G. luc bay: dung luoi khoi bang pha le {0}, {1} -> khoi gon (khong duoi gai) {2}; shader CauBangPhaLe {3}, loi sang {4}, quay lan {5}; luong khi lanh dang phat {6}, vet bang {7}, anh sang {8}; sau khi no: {9} luong khi lanh con o lai tan dan",
+            dungLuoi, hinh, khoiGon, dungVatLieu, coLoiSang, coQuay, coSuong, coVet, coDen, suongConLai));
+        Kiem(dungLuoi && khoiGon && dungVatLieu && coLoiSang && coQuay && coSuong && coVet && coDen, "hinh anh qua cau bang dang bay thieu phan");
         Kiem(suongConLai >= 1, "no xong luong khi lanh bien mat cung qua cau");
         toi.DaTungPhep -= dem;
         yield return new WaitForSeconds(1.5f);
