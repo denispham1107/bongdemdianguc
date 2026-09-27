@@ -174,6 +174,13 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
   `VfxFactory.DoiThanhManhBangPhaLe` đổi hạt sang dạng LƯỚI (8 mẫu ngẫu nhiên, góc 3D ngẫu nhiên, lộn nhào 3 trục cùng kiểu
   TwoConstants): `Manh3D` + `Shards` (×0,8) của `Vfx_NoBang` (trong `NangCapTangBang`), `Shards` của `Vfx_VoBang` (`FrozenShatter`),
   `ManhBangRoi` + `ManhBung` của quả cầu băng. Prefab giữ nguyên.
+  ⚠️ **VỤ NỔ BĂNG KHÔNG CÒN QUẢ CẦU CHỚP SÁNG** (28/09/2026, người dùng: "đổi thành vòng sương băng cho dịu lại"): `ThayChopBangVongSuong`
+  (trong `NangCapTangBang`) TẮT con `Flash` (cầu shader Ice + bloom = mái vòm trắng chói), thêm `VongSuongBang` (tấm sát đất, ảnh Blender
+  MCP `CongCu/Blender/vong_suong_bang.blend` → `VongSuongBang.png` alpha từ độ xám, loang 0,37 → 1,4 bán kính trong 1 s) + `SuongVong`
+  (12 cụm sương `SuongLanh` toả từ mép vòng). ⚠️ Tấm sương billboard cắm xuyên đất để lại **đường thẳng sắc** (tưởng mặt nước, ẩn hồ
+  vẫn còn): shader `Diablo25D/ParticleAlphaSatDat` mờ dần 0,6 m sát đất, độ cao đất qua MaterialPropertyBlock (`MemSatDat`) — áp cho
+  `SuongVong`, `Mist` của `Vfx_NoBang`, `SuongBung` của quả cầu. Vật liệu gốc `Resources/KyNang/QuaCauBang/SuongSatDat.mat` giữ shader
+  trong bản build. Menu 68 mục J nay so HỆ SỐ PHÓNG vụ nổ (trước vô tình đo quả cầu Flash).
   Cụm gai băng trên đất của **Mưa băng** dùng chung cỡ hình `QuaCauBang.BanKinhHinhBang` (2,55 m, người dùng xin 16/09/2026) —
   chỉ hình, vùng sát thương mỗi tảng vẫn 1,7 m (menu 68 mục J đo kích thước thật).
   **Mưa băng rơi QUẢ CẦU BĂNG** thay tảng băng (16/09/2026): `VfxFactory.QuaCauBangRoi` (luồng khí lạnh/vệt băng như Quả cầu băng, bản nhẹ:

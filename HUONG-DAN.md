@@ -8603,6 +8603,42 @@ châm cả bia mộ / nhà mồ (tính năng sáng nay), đầy trần "4 vật 
 
 Ảnh: `PlayTestShots/maygiong_1_dem_can.png`, `maygiong_2_chay_den.png`, `maygiong_3_ngay_goc_choi.png`.
 
+### Quả cầu chớp sáng của vụ nổ băng đổi thành vòng sương băng (28/09/2026)
+
+**Người dùng:** đồng ý đổi quả cầu chớp sáng trắng to lúc vụ nổ băng (cái "mái vòm" chói trong ảnh) thành **vòng sương băng** cho
+dịu lại.
+
+**Trước:** con `Flash` của `Vfx_NoBang` là một hình cầu shader `Ice` phóng từ 0,2 lên 1,1 bán kính trong 0,35 s. Có bloom thì thành
+mái vòm trắng che cả cụm băng.
+
+**Sau** (`VfxFactory.ThayChopBangVongSuong`, gọi trong `NangCapTangBang` nên áp cho cả Quả cầu băng lẫn Mưa băng):
+- Tắt `Flash`.
+- `VongSuongBang`: tấm nằm sát đất, ảnh vòng sương cuộn sợi vẽ bằng **Blender MCP** (`CongCu/Blender/vong_suong_bang.blend`,
+  render ảnh xám trên nền đen, Unity lấy alpha từ độ xám). Mép ảnh tối đa 0,004 nên không lộ cạnh vuông; lòng vòng mờ.
+  Vòng loang 0,37 → 1,4 bán kính trong 1 s, nhanh rồi chậm, mờ dần.
+- `SuongVong`: 12 cụm sương lạnh (ảnh `SuongLanh` Blender có sẵn) toả ra từ mép vòng, sát đất, chậm dần.
+
+⚠️ **Đường thẳng sắc trên mặt đất** lộ ra khi bỏ mái vòm:
+- Lúc đầu tôi tưởng là mặt nước hồ giữa (tấm chữ nhật 12,9 × 11,9 m). Chụp đối chứng ẩn hồ đi thì đường vẫn còn, nên không phải.
+- Thật ra là **tấm sương billboard cắm xuyên xuống đất**: chỗ giao là đường thẳng. Có từ trước, bị mái vòm che.
+- Tắt lần lượt từng lớp: `Mist` (tảng băng), `SuongBung` (quả cầu), `SuongVong` (mới) — lớp nào cũng góp đường cắt.
+- Sửa bằng shader `Diablo25D/ParticleAlphaSatDat`: điểm ảnh càng gần mặt đất càng mờ, tắt hẳn ở mặt đất (0,6 m). Độ cao đất
+  truyền qua MaterialPropertyBlock, không tạo vật liệu mới. Không dùng "hạt mềm" đọc độ sâu vì phải vẽ thêm một lượt cả cảnh,
+  nặng cho điện thoại.
+
+**Menu 68 mục J** so cỡ tảng băng Mưa băng với Quả cầu băng:
+- Trước nay đo hộp bao mọi lưới cao > 0,15 m, tức **vô tình đo quả cầu `Flash`**. Mưa băng rơi chỗ trống không mọc cụm (luật 19/09),
+  nên chỉ còn `Flash`.
+- Bỏ `Flash` thì phép đo ra 0.
+- Nay: đặt bia thử cho quả cầu rơi trúng; chỉ nhận vụ nổ có `CumGai` bật; so **hệ số phóng vụ nổ**: Mưa băng 1,500 / Quả cầu
+  1,500 = ×1,000, đối chứng cỡ cũ ×0,67. Hộp bao chỉ ghi tham khảo vì 4 mẫu cụm ngẫu nhiên làm nó dao động (×0,82 rồi ×1,17 ở
+  hai lượt).
+
+**Đo:**
+- Ảnh `vongsuong_cu_015.png` (mái vòm cũ), `vongsuong_moi_015.png`, `vongsuong_moi_045.png`, `vongsuong_moi_015_gocchoi.png`.
+- 3 hệ sương dùng shader mờ sát đất.
+- **Menu 68:** 0 lỗi. **Menu 58:** 0 lỗi.
+
 ### Mảnh vỡ băng vẽ lại: mảnh pha lê 3D (28/09/2026)
 
 **Người dùng (2 ảnh):** Mưa băng và Quả cầu băng nổ ra các mảnh nhỏ "chỉ là hình tam giác, sơ sài" — dựng lại bằng Blender MCP
@@ -8633,7 +8669,7 @@ thành mảnh vỡ băng pha lê trong suốt tông xanh lam.
 - **Menu 58, lần 1:** 1 lỗi ở đối chứng ngẫu nhiên E2 (cần hơn 20% tảng rơi trúng người tung, ra 3/21) — không liên quan hình.
   **Lần 2:** 7/20, 0 lỗi.
 
-Chưa đổi: quả cầu chớp sáng `Flash` 0,35 s lúc nổ (vẫn là "mái vòm" trắng trong ảnh người dùng) — chờ người dùng quyết.
+Quả cầu chớp sáng `Flash` 0,35 s lúc nổ: người dùng chọn đổi thành vòng sương băng — xem mục trên.
 
 ### Tảng băng trên mặt đất vẽ lại: cụm băng pha lê (28/09/2026)
 

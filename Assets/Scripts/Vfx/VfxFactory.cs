@@ -1380,7 +1380,7 @@ public static partial class VfxFactory
         }
 
         // Cum gai cu -> cum bang pha le Blender (28/09/2026, xem VfxQuaCauBang.NangCapTangBang)
-        NangCapTangBang(go);
+        NangCapTangBang(go, radius);
 
         if (!coGai && go != null)
         {

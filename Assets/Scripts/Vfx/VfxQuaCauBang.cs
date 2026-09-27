@@ -323,14 +323,130 @@ public static partial class VfxFactory
         }
     }
 
+    // ================================================================
+    //  VONG SUONG BANG thay QUA CAU CHOP SANG (28/09/2026)
+    // ================================================================
+    //
+    // Nguoi dung: khoi cau chop sang trang (con "Flash" cua vu no bang - hinh cau shader Ice phong 0,2 -> 1,1 ban kinh trong
+    // 0,35 s, cong them bloom thanh MAI VOM trang choi) -> "doi thanh vong suong bang cho diu lai". Tat Flash, thay bang:
+    //   - VongSuongBang: tam nam sat dat anh VongSuongBang.png (Blender MCP CongCu/Blender/vong_suong_bang.blend - vong suong
+    //     cuon soi, long mo, mep anh 0) loang 0,37 -> 1,4 ban kinh trong 1 s, nhanh roi cham, mo dan;
+    //   - SuongVong: 12 cum suong lanh (anh SuongLanh Blender) toa ra tu mep vong, sat dat, cham dan.
+
+    static Material mVongSuongBang;
+
+    /// <summary>Tam vong suong: vong o ~0,62 nua canh anh -> duong kinh tam = ban kinh vong / 0,31.</summary>
+    public const float VongSuongTu = 0.37f, VongSuongToi = 1.4f, GiayVongSuong = 1.0f;
+
+    static Material VongSuongBangMat
+    {
+        get
+        {
+            if (mVongSuongBang == null)
+            {
+                var t = Resources.Load<Texture2D>(ThuMucQuaCauBang + "VongSuongBang");
+                mVongSuongBang = Mats.Alpha("P_VongSuongBang", t != null ? t : TextureFactory.Smoke(), new Color(0.78f, 0.90f, 1f, 0.62f));
+            }
+            return mVongSuongBang;
+        }
+    }
+
+    // ---- Suong MO DAN SAT MAT DAT (shader Diablo25D/ParticleAlphaSatDat) ----
+    // Tam suong billboard cam xuyen xuong dat de lai duong thang sac (chup 28/09/2026: tat tung lop mot - con Mist cua tang bang,
+    // SuongBung cua qua cau, SuongVong moi; an ho nuoc giua van con -> khong phai nuoc). Moi he hat nhan do cao dat qua
+    // MaterialPropertyBlock; vat lieu ban "sat dat" lam MOT lan cho moi vat lieu nguon.
+
+    static Material mSuongSatDatGoc;
+    static readonly System.Collections.Generic.Dictionary<Material, Material> satDatTheoNguon =
+        new System.Collections.Generic.Dictionary<Material, Material>();
+    static MaterialPropertyBlock mpbSatDat;
+
+    static Material BanSatDat(Material nguon)
+    {
+        if (nguon == null) return null;
+        if (mSuongSatDatGoc == null) mSuongSatDatGoc = Resources.Load<Material>(ThuMucQuaCauBang + "SuongSatDat");
+        if (mSuongSatDatGoc == null) return nguon;
+        Material m;
+        if (satDatTheoNguon.TryGetValue(nguon, out m) && m != null) return m;
+        m = new Material(mSuongSatDatGoc);
+        m.name = nguon.name + "_SatDat";
+        m.mainTexture = nguon.mainTexture;
+        if (nguon.HasProperty("_TintColor")) m.SetColor("_TintColor", nguon.GetColor("_TintColor"));
+        satDatTheoNguon[nguon] = m;
+        return m;
+    }
+
+    /// <summary>Doi vat lieu cua mot he hat suong sang ban mo dan sat mat dat (do cao dat <paramref name="yDat"/>).</summary>
+    public static void MemSatDat(ParticleSystem ps, float yDat)
+    {
+        if (ps == null) return;
+        var r = ps.GetComponent<ParticleSystemRenderer>();
+        if (r == null) return;
+        r.sharedMaterial = BanSatDat(r.sharedMaterial);
+        if (mpbSatDat == null) mpbSatDat = new MaterialPropertyBlock();
+        r.GetPropertyBlock(mpbSatDat);
+        mpbSatDat.SetFloat("_MatDatY", yDat);
+        r.SetPropertyBlock(mpbSatDat);
+    }
+
+    /// <summary>Tat qua cau chop sang "Flash" cua vu no bang, dung vong suong bang thay vao.</summary>
+    public static void ThayChopBangVongSuong(GameObject tang, float radius)
+    {
+        if (tang == null) return;
+        var flash = tang.transform.Find("Flash");
+        if (flash != null) flash.gameObject.SetActive(false);
+
+        // Kich thuoc tinh trong khong gian RIENG cua goc (prefab da phong goc theo ban kinh)
+        float k = Mathf.Max(0.001f, tang.transform.lossyScale.x);
+        float R = radius / k;
+
+        var vong = ProcMesh.Part("VongSuongBang", tang.transform, GroundDecal.QuadMesh(), VongSuongBangMat,
+                                 new Vector3(0f, 0.12f, 0f), Quaternion.Euler(90f, Random.Range(0f, 360f), 0f), Vector3.one, false);
+        var ef = vong.AddComponent<ExpandFade>();
+        ef.duration = GiayVongSuong;
+        ef.startScale = Vector3.one * (R * VongSuongTu / 0.31f);
+        ef.endScale = Vector3.one * (R * VongSuongToi / 0.31f);
+        ef.ease = new AnimationCurve(new Keyframe(0f, 0f, 0f, 3.2f), new Keyframe(0.4f, 0.8f), new Keyframe(1f, 1f, 0.2f, 0f));
+
+        var suong = NewPS("SuongVong", tang.transform, new Vector3(0f, 0.25f, 0f), SuongLanhMat, ParticleSystemRenderMode.Billboard);
+        var sm = suong.main;
+        sm.loop = false; sm.duration = 0.2f;
+        sm.startLifetime = new ParticleSystem.MinMaxCurve(0.8f, 1.3f);
+        sm.startSpeed = new ParticleSystem.MinMaxCurve(R * 1.2f, R * 2.2f);
+        sm.startSize = new ParticleSystem.MinMaxCurve(R * 0.5f, R * 0.9f);
+        sm.startRotation = new ParticleSystem.MinMaxCurve(0f, Mathf.PI * 2f);
+        sm.scalingMode = ParticleSystemScalingMode.Hierarchy;
+        sm.simulationSpace = ParticleSystemSimulationSpace.Local;
+        sm.maxParticles = 16;
+        var sem = suong.emission; sem.rateOverTime = 0f;
+        sem.SetBursts(new[] { new ParticleSystem.Burst(0f, 12) });
+        var ssh = suong.shape;
+        ssh.shapeType = ParticleSystemShapeType.Circle; ssh.radius = R * 0.35f; ssh.radiusThickness = 0f;
+        ssh.rotation = new Vector3(-90f, 0f, 0f);         // vong nam ngang, hat toa ra theo mat dat
+        var slim = suong.limitVelocityOverLifetime; slim.enabled = true; slim.limit = R * 0.25f; slim.dampen = 0.12f;
+        var scol = suong.colorOverLifetime; scol.enabled = true;
+        scol.color = new ParticleSystem.MinMaxGradient(Grad(
+            new Color(0.92f, 0.97f, 1f), 0f, new Color(0.70f, 0.86f, 1f), 0.5f, new Color(0.50f, 0.70f, 0.95f), 1f,
+            0f, 0.55f, 0.35f, 0f));
+        var ssol = suong.sizeOverLifetime; ssol.enabled = true;
+        ssol.size = new ParticleSystem.MinMaxCurve(1f, Curve(0.7f, 1.2f, 1.7f));
+
+        // Suong cua vong + suong san co cua vu no (Mist): mo dan sat dat, khong de lai duong cat thang
+        float yDat = GroundY(tang.transform.position);
+        MemSatDat(suong, yDat);
+        var mist = tang.transform.Find("Mist");
+        if (mist != null) MemSatDat(mist.GetComponent<ParticleSystem>(), yDat);
+    }
+
     /// <summary>
     /// Thay moi cum gai (CumGai*) cua mot tang bang vua sinh bang cum bang pha le. Goi NGAY sau khi dung / sinh tu prefab,
     /// TRUOC Start cua ExpandFade (no lay ban sao vat lieu o Start).
     /// </summary>
-    public static void NangCapTangBang(GameObject tang)
+    public static void NangCapTangBang(GameObject tang, float radius)
     {
         if (tang == null) return;
         DoiManhBangTrong(tang);      // manh vo tam giac -> manh bang pha le 3D
+        ThayChopBangVongSuong(tang, radius);
         var luoi = LuoiTangBangPhaLe;
         var mat = TangBangPhaLeMat;
         if (luoi == null || luoi.Length == 0 || mat == null) return;
@@ -580,6 +696,7 @@ public static partial class VfxFactory
             0f, 0.9f, 0.4f, 0f));
         var ssol = suong.sizeOverLifetime; ssol.enabled = true;
         ssol.size = new ParticleSystem.MinMaxCurve(1f, Curve(0.6f, 1.2f, 1.7f));
+        MemSatDat(suong, GroundY(pos));      // khong de tam suong cam xuyen dat thanh duong thang
 
         var manh = NewPS("ManhBung", root.transform, Vector3.up * 0.4f, ManhBangMat, ParticleSystemRenderMode.Billboard);
         var mm = manh.main;

@@ -470,14 +470,18 @@ public static class ThuQuaCauBang
             Vector3 cho = goc + huong * 6f;
             cho.y = VfxFactory.GroundY(cho);
 
-            float[] rong = new float[3], cao = new float[3];
+            float[] rong = new float[3], cao = new float[3], coNo = new float[3];
             bool daChupMua = false;
             string[] ten = { "Mua bang (tang bang that)", "Qua cau bang (vu no that)", "doi chung co cu IceImpact 1,7 m" };
             for (int ca = 0; ca < 3; ca++)
             {
                 var truoc = new HashSet<GameObject>(UnityEngine.SceneManagement.SceneManager.GetActiveScene().GetRootGameObjects());
                 IceStorm bao = null;
-                if (ca == 0) bao = IceStorm.Spawn(cho, maskEnemy);
+                // Ca Mua bang: tang bang CHI MOC khi dong bang duoc ai (19/09/2026) -> dat bia thu cho qua cau roi trung.
+                // (Truoc 28/09/2026 phep do nay vo tinh do QUA CAU CHOP SANG "Flash" - moi luoi cao > 0,15 m deu tinh - nen o cho
+                // trong van "bat duoc". Flash da thay bang vong suong -> do DUNG cum gai CumGai*.)
+                Damageable biaJ = null;
+                if (ca == 0) { biaJ = TaoBia("TAM_BiaJ", cho); yield return new WaitForFixedUpdate(); bao = IceStorm.Spawn(cho, maskEnemy); }
                 else if (ca == 1) VfxFactory.NoQuaCauBang(cho, QuaCauBang.BanKinhNo);
                 else VfxFactory.IceImpact(cho, 1.7f);
 
@@ -493,7 +497,10 @@ public static class ThuQuaCauBang
                             if (truoc.Contains(g) || g == null) continue;
                             if (g.name.Contains("NoQuaCauBang") || g.GetComponentInChildren<IceStorm>() != null) continue;
                             if (!(g.name.Contains("NoBang") || g.name.Contains("IceImpact"))) continue;
-                            cum = g; tBat = Time.time; break;
+                            bool coGai = false;
+                            foreach (Transform con in g.transform) if (con.name.StartsWith("CumGai") && con.gameObject.activeSelf) coGai = true;
+                            if (!coGai) continue;      // vu no khong gai (khong dong bang duoc ai) - cho vu sau
+                            cum = g; tBat = Time.time; coNo[ca] = g.transform.lossyScale.x; break;
                         }
                     }
                     else
@@ -505,6 +512,7 @@ public static class ThuQuaCauBang
                         bool co = false;
                         foreach (var r in cum.GetComponentsInChildren<MeshRenderer>())
                         {
+                            if (!r.name.StartsWith("CumGai")) continue;
                             if (r.bounds.size.y < 0.15f) continue;
                             if (!co) { hop = r.bounds; co = true; } else hop.Encapsulate(r.bounds);
                         }
@@ -517,15 +525,20 @@ public static class ThuQuaCauBang
                     yield return null;
                 }
                 if (bao != null) Object.Destroy(bao.gameObject);
+                if (biaJ != null) Object.Destroy(biaJ.gameObject);
                 yield return new WaitForSeconds(2.5f);
             }
             Ghi(string.Format("J. cum gai bang duoi dat (lon nhat trong 0,8 giay): {0}: rong {1:F2} m, cao {2:F2} m | {3}: rong {4:F2} m, cao {5:F2} m | {6}: rong {7:F2} m, cao {8:F2} m",
                 ten[0], rong[0], cao[0], ten[1], rong[1], cao[1], ten[2], rong[2], cao[2]));
             float tiRong = rong[1] > 0 ? rong[0] / rong[1] : 0f, tiCao = cao[1] > 0 ? cao[0] / cao[1] : 0f;
-            float doiChung = rong[1] > 0 ? rong[2] / rong[1] : 0f;
-            Ghi(string.Format("    Mua bang / Qua cau bang: rong x{0:F2}, cao x{1:F2}; doi chung co cu / Qua cau bang: rong x{2:F2}", tiRong, tiCao, doiChung));
+            // 28/09/2026: SO HE SO PHONG cua vu no (ban kinh that code truyen vao) chu khong so hop bao - cum bang pha le chon
+            // ngau nhien 1 trong 4 mau (cao 0,56-1,05 m) + goc xoay nen hop bao mot vu no dao dong +-20%. Hop bao ghi de tham khao.
+            float tiCo = coNo[1] > 0 ? coNo[0] / coNo[1] : 0f;
+            float doiChung = coNo[1] > 0 ? coNo[2] / coNo[1] : 0f;
+            Ghi(string.Format("    he so phong vu no: Mua bang {0:F3}, Qua cau bang {1:F3}, doi chung co cu {2:F3} -> Mua bang / Qua cau bang x{3:F3}; doi chung / Qua cau bang x{4:F2}; (hop bao, tham khao: rong x{5:F2}, cao x{6:F2})",
+                coNo[0], coNo[1], coNo[2], tiCo, doiChung, tiRong, tiCao));
             Kiem(rong[0] > 0f && rong[1] > 0f && rong[2] > 0f, "khong bat duoc cum bang de do");
-            Kiem(Mathf.Abs(tiRong - 1f) < 0.15f && Mathf.Abs(tiCao - 1f) < 0.15f, "cum bang cua Mua bang khong to bang cua Qua cau bang");
+            Kiem(Mathf.Abs(tiCo - 1f) < 0.02f, "cum bang cua Mua bang khong to bang cua Qua cau bang");
             Kiem(doiChung < 0.85f, "doi chung hong: co cu 1,7 m khong nho hon - phep do khong phan biet duoc");
         }
 
