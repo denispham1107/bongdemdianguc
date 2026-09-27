@@ -162,6 +162,12 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
   lăn trục nghiêng `VfxFactory.TrucLanKhoiBang`. ⚠️ Vết nứt phải TRỘN VỀ TRẮNG ĐỤC, **không cộng sáng** — cộng sáng ra lưới điện
   y Quả cầu điện; tinh thể dài mảnh đọc ra GAI (cái người dùng chê); lõi bằng lưới hiện thành khối xanh cạnh sắc — cả ba đã thử, bỏ.
   Vật liệu `.mat` giữ giá trị riêng: đổi mặc định trong shader phải cập nhật cả `.mat`. Bản cũ `QuaCauBang.fbx` đã xoá.
+  ⚠️ **TẢNG BĂNG TRÊN ĐẤT (Quả cầu băng + Mưa băng) CŨNG LÀ KHỐI BĂNG PHA LÊ** (28/09/2026, người dùng: "quá chói, thô sơ sài"):
+  Blender MCP `CongCu/Blender/tang_bang_pha_le.blend` → `TangBangPhaLe.fbx` (4 cụm `CumBang0–3`: 3–6 lăng trụ băng đẽo đỉnh gãy vát
+  nghiêng ra + tảng thấp ở chân, xuất với `bake_space_transform` để lưới có trục Y lên — `bakeAxisConversion` của Unity KHÔNG
+  ăn) + `TangBangPhaLe.png` (sương dày ở chân) + `TangBangPhaLe.mat`. Prefab `Vfx_NoBang` GIỮ NGUYÊN; `VfxFactory.NangCapTangBang`
+  (gọi trong `IceImpact`, TRƯỚC Start của ExpandFade) thay lưới + vật liệu từng `CumGai*`, xoay ngẫu nhiên, quầng chân 1,15 → 0,5.
+  Shader có `_AlphaGoc`: độ hiện = `_Color.a / _AlphaGoc` nên ExpandFade vẫn làm mờ được, cấp 5 `TangBangNo` tắt mờ vẫn đứng đặc.
   Cụm gai băng trên đất của **Mưa băng** dùng chung cỡ hình `QuaCauBang.BanKinhHinhBang` (2,55 m, người dùng xin 16/09/2026) —
   chỉ hình, vùng sát thương mỗi tảng vẫn 1,7 m (menu 68 mục J đo kích thước thật).
   **Mưa băng rơi QUẢ CẦU BĂNG** thay tảng băng (16/09/2026): `VfxFactory.QuaCauBangRoi` (luồng khí lạnh/vệt băng như Quả cầu băng, bản nhẹ:

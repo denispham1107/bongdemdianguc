@@ -24,6 +24,7 @@ Shader "Diablo25D/CauBangPhaLe"
         _DoSau      ("Do sau lop nut (m)",Float) = 0.14
         _Suong      ("Do dam suong gia",  Range(0,2)) = 1.2
         _Sparkle    ("Lap lanh",          Range(0,2)) = 0.9
+        _AlphaGoc   ("Alpha goc cua _Color (mo dan = _Color.a / so nay)", Float) = 0.62
     }
 
     SubShader
@@ -62,7 +63,7 @@ Shader "Diablo25D/CauBangPhaLe"
 
             sampler2D _MainTex; float4 _MainTex_ST;
             fixed4 _Color, _DeepColor, _RimColor, _FrostColor;
-            float _RimPower, _Glow, _Nut, _NutSau, _DoSau, _Suong, _Sparkle;
+            float _RimPower, _Glow, _Nut, _NutSau, _DoSau, _Suong, _Sparkle, _AlphaGoc;
 
             float hash13(float3 p)
             {
@@ -129,7 +130,10 @@ Shader "Diablo25D/CauBangPhaLe"
                 float sp = vnoise(i.opos * 24.0 + float3(0, _Time.y * 0.7, 0));
                 col += (pow(saturate(sp - 0.70) * 3.3, 3.0) * _Sparkle + ct.g * 0.8) * _RimColor.rgb;
 
-                float a = saturate(_Color.a + rim * 0.45 + ct.r * 0.30 * _Nut + ct.b * 0.35 * _Suong + nutSau * 0.25 + spec);
+                // MO DAN: ExpandFade (tang bang tren dat) ha _Color.a -> ca khoi mo theo ti le _Color.a / _AlphaGoc.
+                // Cap 5 TangBangNo tat mo dan (fadeColorAlpha = false) thi _Color.a giu nguyen, ti le = 1.
+                float hien = saturate(_Color.a / max(_AlphaGoc, 0.001));
+                float a = saturate(_AlphaGoc + rim * 0.45 + ct.r * 0.30 * _Nut + ct.b * 0.35 * _Suong + nutSau * 0.25 + spec) * hien;
                 return fixed4(col, a);
             }
             ENDCG

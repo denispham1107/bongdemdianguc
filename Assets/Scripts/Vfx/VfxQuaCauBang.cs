@@ -172,6 +172,89 @@ public static partial class VfxFactory
         xoay.degreesPerSecond = 150f;
     }
 
+    // ================================================================
+    //  TANG BANG PHA LE TREN MAT DAT (28/09/2026)
+    // ================================================================
+    //
+    // Nguoi dung (anh chup): tang bang moc tren dat cua Qua cau bang / Mua bang "qua choi va tho so sai, chua giong that" ->
+    // dung lai bang Blender MCP theo dang KHOI BANG PHA LE tong xanh lam nhu qua cau (CongCu/Blender/tang_bang_pha_le.blend):
+    // 4 cum TangBangPhaLe.fbx (CumBang0-3: 3-6 lang tru bang deo nhieu mat dinh gay vat, nghieng ra ngoai + tang thap o chan,
+    // 158-244 tam giac, chan lun -0,2 m) + anh chi tiet (nut / bot / suong, suong DAY o chan) + TangBangPhaLe.mat (cung shader
+    // Diablo25D/CauBangPhaLe). Prefab Vfx_NoBang giu nguyen cau truc (ten CumGai*, ExpandFade, quang chan HaoQuang*) - moi lan
+    // sinh ra thi THAY luoi + vat lieu cua tung cum (chon ngau nhien, xoay ngau nhien quanh truc dung), nen TangBangNo cap 5,
+    // phep thu, moc tu dat troi len van y nguyen. Ban cu: shader Ice phat sang + quang chan 1,15 -> "choi".
+
+    static Mesh[] luoiTangBangPhaLe;
+    static Material mTangBangPhaLe, mHaoQuangBangDiu;
+
+    /// <summary>Bon luoi cum tang bang pha le (Blender) - rong neu khong nap duoc (luc do giu cum gai cu).</summary>
+    public static Mesh[] LuoiTangBangPhaLe
+    {
+        get
+        {
+            if (luoiTangBangPhaLe == null || luoiTangBangPhaLe.Length == 0 || luoiTangBangPhaLe[0] == null)
+            {
+                var ds = new System.Collections.Generic.List<Mesh>();
+                var go = Resources.Load<GameObject>(ThuMucQuaCauBang + "TangBangPhaLe");
+                if (go != null)
+                    foreach (var mf in go.GetComponentsInChildren<MeshFilter>())
+                        if (mf.sharedMesh != null) ds.Add(mf.sharedMesh);
+                luoiTangBangPhaLe = ds.ToArray();
+            }
+            return luoiTangBangPhaLe;
+        }
+    }
+
+    public static Material TangBangPhaLeMat
+    {
+        get
+        {
+            if (mTangBangPhaLe == null) mTangBangPhaLe = Resources.Load<Material>(ThuMucQuaCauBang + "TangBangPhaLe");
+            return mTangBangPhaLe;
+        }
+    }
+
+    /// <summary>Quang chan cum bang - diu hon ban cu (1,15 -> 0,5) de khoi bang khong choi.</summary>
+    public const float DoSangQuangChanBang = 0.5f;
+
+    static Material HaoQuangBangDiuMat
+    {
+        get
+        {
+            if (mHaoQuangBangDiu == null)
+                mHaoQuangBangDiu = Mats.Additive("P_HaoQuangBangDiu", TextureFactory.GlowPool(), new Color(0.34f, 0.62f, 1f, 1f), DoSangQuangChanBang);
+            return mHaoQuangBangDiu;
+        }
+    }
+
+    /// <summary>
+    /// Thay moi cum gai (CumGai*) cua mot tang bang vua sinh bang cum bang pha le. Goi NGAY sau khi dung / sinh tu prefab,
+    /// TRUOC Start cua ExpandFade (no lay ban sao vat lieu o Start).
+    /// </summary>
+    public static void NangCapTangBang(GameObject tang)
+    {
+        if (tang == null) return;
+        var luoi = LuoiTangBangPhaLe;
+        var mat = TangBangPhaLeMat;
+        if (luoi == null || luoi.Length == 0 || mat == null) return;
+        foreach (Transform con in tang.transform)
+        {
+            if (!con.name.StartsWith("CumGai")) continue;
+            var mf = con.GetComponent<MeshFilter>();
+            var mr = con.GetComponent<MeshRenderer>();
+            if (mf == null || mr == null) continue;
+            mf.sharedMesh = luoi[Random.Range(0, luoi.Length)];
+            mr.sharedMaterial = mat;
+            con.localRotation = Quaternion.Euler(0f, Random.Range(0f, 360f), 0f);
+            foreach (Transform q in con)
+                if (q.name.StartsWith("HaoQuang"))
+                {
+                    var qr = q.GetComponent<MeshRenderer>();
+                    if (qr != null) qr.sharedMaterial = HaoQuangBangDiuMat;
+                }
+        }
+    }
+
     static Material mVetSaoBang, mDauSaoBang;
 
     /// <summary>Be rong vet sao bang CO GOC o dau / duoi (m). 17/09/2026 nguoi dung: to them 20% chi be ngang (0,55/0,30 -> 0,66/0,36).</summary>

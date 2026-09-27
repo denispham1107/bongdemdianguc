@@ -1379,6 +1379,9 @@ public static partial class VfxFactory
             go = BuildIceImpact(pos, radius);
         }
 
+        // Cum gai cu -> cum bang pha le Blender (28/09/2026, xem VfxQuaCauBang.NangCapTangBang)
+        NangCapTangBang(go);
+
         if (!coGai && go != null)
         {
             foreach (Transform con in go.transform)

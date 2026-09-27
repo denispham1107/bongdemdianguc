@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: CauBangPhaLe
+  m_Name: TangBangPhaLe
   m_Shader: {fileID: 4800000, guid: e77fe0304824f184fbce6451c5e94245, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
@@ -24,19 +24,19 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: f72fff607ba8abf4ba015ba349dd8964, type: 3}
+        m_Texture: {fileID: 2800000, guid: c1b13cb471f5c6c4cae087942eca2f83, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
     - _AlphaGoc: 0.62
     - _DoSau: 0.14
-    - _Glow: 0.7
+    - _Glow: 0.55
     - _Nut: 0.8
     - _NutSau: 0.5
     - _RimPower: 2.4
     - _Sparkle: 0.9
-    - _Suong: 1.2
+    - _Suong: 0.8
     m_Colors:
     - _Color: {r: 0.5, g: 0.78, b: 1, a: 0.62}
     - _DeepColor: {r: 0.03, g: 0.15, b: 0.46, a: 1}

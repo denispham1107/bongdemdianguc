@@ -8603,6 +8603,37 @@ châm cả bia mộ / nhà mồ (tính năng sáng nay), đầy trần "4 vật 
 
 Ảnh: `PlayTestShots/maygiong_1_dem_can.png`, `maygiong_2_chay_den.png`, `maygiong_3_ngay_goc_choi.png`.
 
+### Tảng băng trên mặt đất vẽ lại: cụm băng pha lê (28/09/2026)
+
+**Người dùng (ảnh chụp):** tảng băng mọc trên đất của Quả cầu băng và Mưa băng "quá chói, thô sơ sài, chưa giống thật" — dựng
+lại bằng Blender MCP theo dạng khối băng pha lê tông xanh lam như quả cầu.
+
+**Nguyên nhân chói:** cả hai kỹ năng đi qua `IceImpact`, sinh prefab `Vfx_NoBang` có 8 cụm gai `CumGai0–7` dùng shader `Ice`
+phát sáng, mỗi cụm thêm đĩa hào quang cộng sáng 1,15 dưới chân. Có bloom nữa thì thành một khối trắng xoá.
+
+**Dựng bằng Blender MCP** (`CongCu/Blender/tang_bang_pha_le.blend`, cảnh `TangBangPhaLe`):
+- 4 cụm `CumBang0–3`, cao 0,56 / 0,63 / 0,86 / 1,05 m như cụm cũ.
+- Mỗi cụm: 3–6 lăng trụ băng 5–7 cạnh (bao lồi của điểm rải trong lăng trụ thon, gộp mặt 6°), **đỉnh gãy vát xiên** chứ không
+  nhọn đều, nghiêng toả ra, thêm tảng thấp ở chân. Chân lún −0,2 m cho cụm "đâm lên từ đất".
+- Ảnh chi tiết nướng như quả cầu (nứt / bọt khí / sương giá), thêm **sương dày ở chân**.
+- ⚠️ Xuất FBX phải bật `bake_space_transform`. Tuỳ chọn `bakeAxisConversion` của Unity không có tác dụng, lưới vẫn nằm trục Z
+  và vật mang góc 90°. Mà `CumGai` dùng thẳng lưới, trục Y lên.
+
+**Trong Unity:**
+- Prefab giữ nguyên (tên `CumGai*`, `ExpandFade` mọc từ đất trồi lên, `TangBangNo` cấp 5, phép thử đều dựa vào).
+- `VfxFactory.NangCapTangBang` chạy ngay trong `IceImpact`, trước `Start` của `ExpandFade`: đổi lưới (ngẫu nhiên 1 trong 4) và
+  vật liệu từng cụm, xoay ngẫu nhiên quanh trục đứng. Quầng chân dùng vật liệu dịu hơn (1,15 → 0,5).
+- Shader `CauBangPhaLe` thêm `_AlphaGoc`: độ hiện = `_Color.a / _AlphaGoc`. `ExpandFade` hạ `_Color.a` thì cả khối mờ theo
+  (bản đầu alpha cộng từ viền/nứt/sương làm khối không mờ hết). Cấp 5 tắt mờ thì tỉ lệ = 1, khối đứng đặc tới lúc nổ.
+
+**Đo:**
+- Ảnh `tangbangphale_can.png` (0,7 s sau khi nổ), `tangbangphale_can_tan.png` (1,6 s, đã mờ), `tangbangphale_gocchoi.png`.
+- **Menu 58:** 0 lỗi.
+- **Menu 68, lần 1:** 3 lỗi ở phần L. Tại tấm bia `TS_slab_266`, bộ đếm đóng băng của `FallingShard` tăng dù không có kẻ địch.
+  Đây là logic trò chơi, không phải phần hình. Cảnh gốc chỉ có mỗi nhân vật là vật có máu, nên nhiều khả năng là bia thử `TAM_`
+  sót lại từ phần trước của chính phép thử.
+- **Menu 68, lần 2:** điểm thử ở tấm bia khác, **0 lỗi**. Phần N2 cấp 5: cụm đứng đặc 1,00 tới lúc nổ, nổ trước khi tan 0,023 s.
+
 ### Quả cầu băng vẽ lại: khối băng pha lê (28/09/2026)
 
 **Người dùng:** quả cầu băng "quá thô, chỉ là một hình khối tròn kèm đính các gai xung quanh, sơ sài" — dựng lại bằng Blender MCP
