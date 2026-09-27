@@ -40,6 +40,14 @@ public class LoLuaDa : MonoBehaviour
     /// </summary>
     public static bool ChoPhepNhomLua = true;
 
+    /// <summary>
+    /// Tra co ve BAT moi lan vao Play. Du an TAT Domain Reload (Enter Play Mode Options) nen bien tinh giu gia tri
+    /// cua lan Play truoc: mot tran Act2 da sang ngay de lai co TAT, bam Play man chinh la hai lo khong co lua
+    /// (27/09/2026). Truong hop roi Act2 giua tran (ban build) do <see cref="ChuyenChieuSangDem"/>.OnDestroy lo.
+    /// </summary>
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    static void DatLaiCoKhiVaoPlay() { ChoPhepNhomLua = true; }
+
     /// <summary>Moc Time.time se tu nhom lua lai (Gio loc dap tat). 0 = khong hen.</summary>
     float henChayLai;
     /// <summary>Luc (Time.time) lo hen chay lai, 0 = khong hen - phep thu doc (menu 83).</summary>

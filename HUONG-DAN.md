@@ -8623,6 +8623,24 @@ châm cả bia mộ / nhà mồ (tính năng sáng nay), đầy trần "4 vật 
 
 Ảnh chụp bằng máy quay của game trong Play: `PlayTestShots/manchinh_matdat.png`.
 
+**Lỗi thứ hai tìm thấy lúc chụp: hai lò ở Màn chính không có lửa.**
+- `LoLuaDa.ChoPhepNhomLua` là cờ tĩnh. Vòng ngày–đêm của Act2 **tắt** nó khi bình minh, và không ai bật lại khi rời Act2.
+  Act1 / Act2 bật lại ở `GameBootstrap.Awake`, nhưng Màn chính không có `GameBootstrap`.
+- Người chơi đánh Act2 quá bình minh (~3,7 phút) rồi về Màn chính thì hai lò đứng nguội, tới khi tải lại trang.
+- Trong Editor còn dai hơn: dự án **tắt Domain Reload** khi vào Play, nên cờ giữ nguyên qua các lần bấm Play.
+
+**Sửa:**
+- `ChuyenChieuSangDem.OnDestroy` trả cờ về BẬT khi rời Act2.
+- `LoLuaDa.DatLaiCoKhiVaoPlay` (`RuntimeInitializeOnLoadMethod(SubsystemRegistration)`) đặt lại mỗi lần vào Play.
+
+| Kịch bản | Trước | Sau |
+|---|---|---|
+| Editor để lại cờ TẮT rồi Play Màn chính | 0 hệ hạt, không đèn | 2/2 lò cháy, 4 hệ hạt, đèn 2,86 |
+| Play: vào Act2 → cho sang ngày (cờ TẮT, 0/14 lò cháy) → về Màn chính | — | cờ BẬT, 2/2 lò cháy, đèn 2,70–2,85 |
+| Menu 79 (vòng ngày–đêm Act2) | — | 0 lỗi |
+
+Ảnh: `PlayTestShots/manchinh_lua_sau_act2.png`.
+
 ### Cổng rào dựng lại: vòm đá liền khối, hai cánh cổng sắt đóng kín (27/09/2026)
 
 **Người dùng thấy:** trên vòm cổng, các viên gạch bay lơ lửng giữa không trung (ảnh chụp trong trận).

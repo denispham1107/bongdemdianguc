@@ -263,6 +263,12 @@ public class ChuyenChieuSangDem : MonoBehaviour
         if (DangChayThu()) { ApGiay(GiayGiuaDem); enabled = false; }
     }
 
+    /// <summary>
+    /// Roi Act2 (ve man chinh, sang tran khac) thi TRA co lua ve BAT. Co la static: tran sang ngay de lai TAT, ma man chinh
+    /// khong co GameBootstrap de bat lai - hai lo lua man chinh dung nguoi lanh toi khi tai lai trang (27/09/2026).
+    /// </summary>
+    void OnDestroy() { LoLuaDa.ChoPhepNhomLua = true; }
+
     Color DocMau(string ten, Color neuThieu) { return troi.HasProperty(ten) ? troi.GetColor(ten) : neuThieu; }
     float DocSo(string ten, float neuThieu) { return troi.HasProperty(ten) ? troi.GetFloat(ten) : neuThieu; }
 

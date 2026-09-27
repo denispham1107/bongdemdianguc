@@ -565,6 +565,8 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
 - **Màn chính (MainMenu.unity) dựng từ cảnh Act2** bằng menu 51 — đừng sửa tay trong scene, chạy lại menu.
   ⚠️ Mặt đất Màn chính là file RIÊNG `Terrain/ManChinh_MatDat.asset` (bản Act2 trước khi mở rộng, 27/09/2026) — trước đó dùng chung
   `Act2_MatDat.asset` nên menu 86 làm Màn chính mất đất. Chạy lại menu 51 thì nó lại dùng chung — sửa Act2 phải kiểm cả Màn chính.
+  ⚠️ Dự án TẮT Domain Reload khi vào Play: biến tĩnh giữ giá trị lần Play trước. Cờ lửa `LoLuaDa.ChoPhepNhomLua` nay đặt lại khi
+  vào Play và khi rời Act2 (`ChuyenChieuSangDem.OnDestroy`) — trước đó chơi Act2 sang ngày rồi về Màn chính là hai lò nguội.
   Lò đá: `Assets/Models/LoLuaDa` (FBX + texture nướng từ `CongCu/Blender/lo_lua_da.py`, chạy nền — từ nay
   dựng/thiết kế phải qua Blender MCP). Lửa + khói đen: mô phỏng Mantaflow trong Blender qua MCP
   (`CongCu/Blender/lua_lo_da.blend`) → flipbook `LuaLo` / `KhoiDen`, ba tấm đứng yên mỗi lò, dựng lúc chạy
