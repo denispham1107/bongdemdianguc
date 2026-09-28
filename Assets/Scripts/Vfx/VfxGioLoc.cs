@@ -86,10 +86,10 @@ public static partial class VfxFactory
                 Material goc; Color mau; float quay; Vector2 truot;
                 switch (mf.name)
                 {
-                    case "Vo0":    goc = VatLieuGio(ref mGioDai, "GioDai"); mau = new Color(0.82f, 0.84f, 0.88f, 0.72f); quay = 330f; truot = new Vector2(0f, -0.95f); break;
-                    case "Vo1":    goc = VatLieuGio(ref mGioDai, "GioDai"); mau = new Color(0.90f, 0.92f, 0.95f, 0.34f); quay = 250f; truot = new Vector2(0f, -0.70f); break;
-                    case "Vo2":    goc = VatLieuGio(ref mGioSoi, "GioSoi"); mau = new Color(0.96f, 0.97f, 1.00f, 0.26f); quay = 180f; truot = new Vector2(0f, -0.50f); break;
-                    default:       goc = VatLieuGio(ref mGioSoi, "GioSoi"); mau = new Color(1.00f, 1.00f, 1.00f, 0.90f); quay = 400f; truot = new Vector2(-1.1f, 0f); break;
+                    case "Vo0":    goc = VatLieuGio(ref mGioDai, "GioDai"); mau = new Color(0.82f, 0.84f, 0.88f, DoDucVoGioLoc[0]); quay = 330f; truot = new Vector2(0f, -0.95f); break;
+                    case "Vo1":    goc = VatLieuGio(ref mGioDai, "GioDai"); mau = new Color(0.90f, 0.92f, 0.95f, DoDucVoGioLoc[1]); quay = 250f; truot = new Vector2(0f, -0.70f); break;
+                    case "Vo2":    goc = VatLieuGio(ref mGioSoi, "GioSoi"); mau = new Color(0.96f, 0.97f, 1.00f, DoDucVoGioLoc[2]); quay = 180f; truot = new Vector2(0f, -0.50f); break;
+                    default:       goc = VatLieuGio(ref mGioSoi, "GioSoi"); mau = new Color(1.00f, 1.00f, 1.00f, DoDucVoGioLoc[3]); quay = 400f; truot = new Vector2(-1.1f, 0f); break;
                 }
                 var go = new GameObject(mf.name);
                 go.transform.SetParent(root.transform, false);
@@ -153,6 +153,12 @@ public static partial class VfxFactory
 
     /// <summary>Bui xam chan Gio loc: co hat (so voi Loc xoay) va ban kinh vong phun (m) - theo chan moi.</summary>
     public const float CoBuiGioLoc = 0.85f, BanKinhVongBuiGioLoc = 1.0f;
+
+    /// <summary>
+    /// Do duc (alpha _TintColor) Vo0, Vo1, Vo2, DaiGio. 28/09/2026 than to gap doi thi ba lop chong thanh khoi TRANG DAC, che het bui -
+    /// nguoi dung: "cho than trong hon de thay bui ben trong". Truoc: 0,72 / 0,34 / 0,26 / 0,90 (menu 71c giu lam doi chung).
+    /// </summary>
+    public static readonly float[] DoDucVoGioLoc = { 0.42f, 0.20f, 0.16f, 0.70f };
 
     /// <summary>Ban kinh vo trong cung (da nhan 1,1) o do cao y tinh tu chan loc.</summary>
     public static float BanKinhVoTrongGioLoc(float y)

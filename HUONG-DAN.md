@@ -8647,6 +8647,16 @@ Tôi hỏi lại, người dùng chọn:
 
 Ảnh: `PlayTestShots/gioloc_1_bay.png` … `gioloc_4_cap5_nam_loc_quat.png`.
 
+**Thân trong hơn** (người dùng, cùng tối: thân to ra trông trắng đặc — "cho thân trong hơn để thấy bụi bên trong"):
+- Độ đục các lớp đưa thành hằng `VfxFactory.DoDucVoGioLoc`: Vo0 / Vo1 / Vo2 / dải gió 0,72 / 0,34 / 0,26 / 0,90 → **0,42 / 0,20 /
+  0,16 / 0,70**.
+- **Menu 71c** (mới, `ThuGioLocTrong.cs`): dựng hình Gió lốc đứng yên, máy quay cố định, tắt bloom. Mỗi khung render hai lần (có bụi /
+  tắt bụi) trong vùng thân 0–2,5 m, 12 khung. Đối chứng là độ đục cũ, đo cùng một lượt:
+  - Bụi lộ ra qua vỏ 0,0531 → **0,1091 (×2,06)**.
+  - Độ sáng thân (tắt bụi) 0,639 → 0,555 (×0,87); nhìn xuyên thấy thân cây phía sau.
+  - 0 lỗi. Ảnh `PlayTestShots/gioloc_trong_cu.png` / `gioloc_trong_moi.png`.
+- Menu 71 chạy lại: 0 lỗi (màu vỏ vẫn xám trắng 0,89 / 0,91 / 0,94).
+
 ### Vẽ lại năm icon: Gió lốc, Lốc xoáy, Mây giông, Tốc biến, Hoá lốc xoáy (28/09/2026)
 
 **Người dùng:** năm icon này cũng "quá thô và sơ sài" (lốc chỉ là lò xo, Tốc biến là hai hình người que). Vẽ lại hợp nội dung
@@ -11986,6 +11996,7 @@ Lần chạy đầu phép thử báo cả 10 con "lơ lửng": tia chiếu từ 
 | **68. Chay thu QUA CAU BANG (ky nang moi)** | Tài nguyên Blender nạp được; thông số thật trên nhân vật (hồi chiêu 0,55); tung thật `CastAt(9)` (khoá, 3 quả, năng lượng, hồi chiêu); bia trên / lệch đường bay; sát thương 65 ở tâm và vùng nổ 3,4 m; 1000 lần gieo làm chậm (40%, 50%, 2 giây, cấp kéo dài); hình lúc bay (lưới, đuôi gai phía sau, luồng khí lạnh, vệt băng) và sau khi nổ; gói kỹ năng số 9 qua mạng; icon HUD, chữ Sách phép; kích thước thật cụm băng Mưa băng = Quả cầu băng (đối chứng cỡ cũ); Mưa băng thật rơi **vệt sáng băng như sao băng, không khối cầu** (0 lưới, đối chứng quả của kỹ năng có lưới; ảnh vệt Blender, độ dài thật của vệt, hào quang, mảnh băng, luồng khí lạnh, không đèn, không còn tảng cũ, vẫn gây sát thương, rơi thẳng đứng); cụm gai chỉ khi trúng đồ vật / kẻ địch (4 trường hợp + đối chứng + 2 cơn thật). Số đo `quacaubang.txt`. |
 | **69. Chay thu GIUT SET (20 m, 75, 4 tia, 15% choang)** | Thông số; tung thật `CastAt(6)` vào 5 bia (đúng 4 bia mất 75 cùng một khung hình); tầm 20 m bằng bia 19,9 / 20,4 m; tia lan ra ngoài tầm vẫn trúng ×0,85; 160 lần phóng đếm tỉ lệ choáng tia đầu và tia lan riêng (bằng StunnedEffect trên bia); cấp kỹ năng kéo dài choáng. Số đo `giatset.txt`. |
 | **71. Chay thu GIO LOC (ky nang moi)** | Thông số; tung thật `CastAt(10)` (khoá, 3 lốc, 20 năng lượng, hồi chiêu đo bằng bấm mỗi khung); lưới Blender, cao 5 m so Lốc xoáy thật, xám trắng, không đèn, không tia sét; **xoáy một chiều đi lên** (độ xoắn dải gió đo ngoài Play + chiều quay thật từng lớp + chiều trượt ảnh); khói bụi đen bay lên và cuộn cùng chiều (theo dõi từng hạt), vòng phun nằm ngang (phun thử 200 hạt), vệt phía sau; bán kính chân ×1,68 / phần trên ×1,0 (so công thức gốc); tia sét hiệu ứng khi trúng (5 bia → 5 tia từ thân lốc, 5 cháy sém, 0 cột sáng đứng, mất đúng 75); 1 lốc, sống 4,5 s; không trèo mái nhà mồ (đối chứng tia cũ chạm mái); tốc độ 8 m/s và thời gian sống; xuyên bia mộ (tia đối chứng); 75 một lần, 225 ba lốc, vùng 2,2 m (2,5 / 2,7 m); 190 lần trúng đếm hất tung độc lập, độ cao, thời gian bay; khiên chặn hất; ngắt chiêu người chơi (đối chứng) và đòn quái (đối chứng); qua mạng: gói số 10, bit hất tung, mặt nạ 5 bit, bản sao bay / ngắt chiêu / không hất lần hai; lò lửa tắt rồi cháy lại sau 30 s. Số đo `gioloc.txt`. |
+| **71c. Do THAN GIO LOC trong (thay bui ben trong)** | Dựng hình Gió lốc đứng yên, tắt bloom; mỗi khung render có bụi / tắt bụi, đo "bụi lộ ra" và độ sáng thân trong vùng 0–2,5 m, so với đối chứng độ đục cũ cùng lượt. `gioloc_trong.txt`, ảnh `gioloc_trong_*.png`. |
 | **71b. Chup anh GIO LOC (so voi Loc xoay)** | Chỉ chụp: hai lốc bay ngang màn hình 5 khung liên tiếp + Lốc xoáy lớn để so. Ảnh `gioloc_can_*.png`, `gioloc_locxoay_*.png`. |
 | **76. Chay thu TOC BIEN (ky nang moi)** | Thông số (số hiệu 15, 40 năng lượng, tầm 15 m, nhóm HỖ TRỢ); hồi chiêu theo cấp 5 / 4,75 / 4,5 / 4,25 / 4; nháy đúng chỗ ngắm (lệch 0,00 m), có cả hai hiệu ứng; không niệm (0,029 s); ngắm 30 m chỉ nháy 15,01 m; ngắm vào giữa khối đá thì lùi về chỗ trống cách đá 2,02 m; **cấp 5 gỡ trói**: đối chứng cấp 4 bị chặn, cấp 5 dính 4 trạng thái vẫn bấm được và sạch còn 0, cháy hết, bị Lốc xoáy cuốn thì bị chặn. Số đo `tocbien.txt`. |
 | **75. Chay thu HOA LOC XOAY + Gio loc hoi mana** | Thông số (số hiệu 14, 45 năng lượng, hồi chiêu 0,5); Gió lốc quét 3 bia hồi đúng 30 mana (đối chứng bắn chỗ trống: 0); năng lượng Gió lốc cấp 5 = 25 (bản cũ 58,6); hoá xong 0 Gió lốc / có Lốc xoáy lệch 0,00 m, bay 9,5 m/s, sống 6 s, đòn chạm 75 + 20/giây; hình to dần 0,42 → 1,00; bấm hụt không tốn mana và không vào hồi chiêu; cấp 5 hoá cả hai cơn. Số đo `hoalocxoay.txt`. |
