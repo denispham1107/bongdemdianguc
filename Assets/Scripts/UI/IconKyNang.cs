@@ -37,14 +37,17 @@ public static class IconKyNang
     // Hai binh ve bang CongCu/Icon/sinh_binh.py (khong phai Blender) - cung nen den, cung cach cong
     public static Texture2D BinhMau()    { return Ve("Icons/BinhMau",    new Color(0.22f, 0.03f, 0.03f)); }
     public static Texture2D BinhMana()   { return Ve("Icons/BinhMana",   new Color(0.03f, 0.06f, 0.24f)); }
-    // Qua cau bang: dung trong Blender qua MCP (CongCu/Blender/qua_cau_bang.blend, 16/09/2026).
+    // Qua cau bang: VE LAI 28/09/2026 bang script (CongCu/Icon/sinh_icon_ve_lai.py - nguoi dung che ban Blender cu "so sai",
+    // cho phep khong dung Blender): khoi bang pha le nhieu mat cat + vet suong gia.
     // Nen xanh bang SANG hon Mua bang mot chut de hai nut bang khong lan vao nhau.
     public static Texture2D CauBang()    { return Ve("Icons/CauBang",    new Color(0.04f, 0.17f, 0.34f)); }
     // Gio loc: ba loc nho tu icon Loc xoay nhuom nau (CongCu/Icon/sinh_gio_loc.py, 16/09/2026), nen nau dat toi
     public static Texture2D GioLoc()     { return Ve("Icons/GioLoc",     new Color(0.20f, 0.11f, 0.04f)); }
-    // Lua dia nguc: dung trong Blender qua MCP (CongCu/Blender/lua_dia_nguc.blend, 17/09/2026), nen do mau toi
+    // Lua dia nguc: VE LAI 28/09/2026 (CongCu/Icon/sinh_icon_ve_lai.py): 5 qua cau lua toa quat roi di ve muc tieu, an chu
+    // ngu giac do sam phia sau. Nen do mau toi
     public static Texture2D LuaDiaNguc() { return Ve("Icons/LuaDiaNguc", new Color(0.24f, 0.02f, 0.02f)); }
-    // Tang hinh: dung trong Blender qua MCP (CongCu/Blender/tang_hinh.blend, 18/09/2026), nen xanh lo toi
+    // Tang hinh: VE LAI 28/09/2026 (CongCu/Icon/sinh_icon_ve_lai.py): phu thuy trum mu chi con vien sang, than duoi tan
+    // thanh hat, vong phep duoi chan. Nen xanh lo toi
     public static Texture2D TangHinh()   { return Ve("Icons/TangHinh",   new Color(0.03f, 0.13f, 0.16f)); }
     /// <summary>May giong (25/09/2026): may + tia set, render bang Blender MCP (CongCu/Blender/may_giong.blend).</summary>
     public static Texture2D MayGiong()   { return Ve("Icons/MayGiong",   new Color(0.05f, 0.08f, 0.16f)); }

@@ -8603,6 +8603,27 @@ châm cả bia mộ / nhà mồ (tính năng sáng nay), đầy trần "4 vật 
 
 Ảnh: `PlayTestShots/maygiong_1_dem_can.png`, `maygiong_2_chay_den.png`, `maygiong_3_ngay_goc_choi.png`.
 
+### Vẽ lại ba icon: Quả cầu băng, Tàng hình, Lửa địa ngục (28/09/2026)
+
+**Người dùng:** ba icon "quá thô và sơ sài, nét vẽ như game trẻ em" — vẽ lại cho hợp nội dung từng kỹ năng và bối cảnh game,
+**không cần Blender MCP**.
+
+Vẽ bằng script `CongCu/Icon/sinh_icon_ve_lai.py` (chỉ Pillow — máy không có numpy): vẽ ở 1024 × 1024 rồi thu về 256, nền
+ĐEN vì `IconKyNang.Ve` CỘNG ảnh vào đĩa nút. Dùng lớp phát sáng (làm mờ rồi cộng), nhiễu tự sinh (value noise nhiều tầng),
+mặt nạ viền kiểu fresnel (mặt nạ × (1 − bản mờ của nó)).
+- **Quả cầu băng:** khối băng pha lê 13 + 6 đỉnh tam giác hoá; mỗi mặt cắt sáng theo pháp tuyến giả và đèn từ trên trái. Có vết
+  nứt, bọt khí, viền fresnel, lõi sáng lệch về phía đèn, điểm loé. Phía sau là vệt sương giá cuộn, vệt tốc độ, 4 mảnh băng bay
+  theo, tinh thể lấp lánh — giống quả cầu "khối băng pha lê" trong game.
+- **Tàng hình:** phù thuỷ trùm mũ CHỈ CÒN VIỀN SÁNG (như shader `S_TangHinh`), khoang mặt tối hẳn với đôi mắt mờ, nếp áo
+  choàng. Thân dưới tan dần thành hạt bay lên; dưới chân là vòng phép (vòng nổ khi hiện hình).
+- **Lửa địa ngục:** 5 quả cầu lửa toả quạt ±66° rồi uốn cong dí về một mục tiêu, đuôi lửa cuộn xé bằng nhiễu, tàn tro. Nền
+  là ấn chú ngũ giác đỏ sẫm.
+
+Lần vẽ đầu: quả cầu băng cháy sáng mất mặt cắt, hạt tàng hình chói như nhiễu, 5 quả cầu lửa dồn thành một cục khi nhìn nhỏ
+— đã chỉnh (tương phản sâu hơn, bớt hạt, toả quạt rộng và tách tiến độ từng quả). Kiểm bằng chính `IconKyNang` trong Unity:
+`PlayTestShots/icon_ve_lai_trong_game.png` (đặt cạnh Cầu lửa, Mưa băng, Giựt sét). Ảnh vẫn Read/Write. Menu 66: bảng biểu
+tượng đủ 22 ô, 0 lỗi.
+
 ### Tối đa 6 người; chế độ ĐƠN và ĐÔI (28/09/2026)
 
 **Người dùng:** cho game chơi được tối đa **6 người**. Chế độ hiện có (giết nhau, người sống sót cuối cùng thắng) đặt tên
