@@ -8657,6 +8657,23 @@ Tôi hỏi lại, người dùng chọn:
   - 0 lỗi. Ảnh `PlayTestShots/gioloc_trong_cu.png` / `gioloc_trong_moi.png`.
 - Menu 71 chạy lại: 0 lỗi (màu vỏ vẫn xám trắng 0,89 / 0,91 / 0,94).
 
+**Đổi sang MÀU MÂY GIÔNG** (người dùng, cùng tối: "thử đổi màu Gió lốc như màu đám mây giông trong Mây giông, kể cả khói bụi cuộn
+lên"; trước đó cùng tối đã thử đổi Lốc xoáy rồi người dùng bảo nhầm, quay về `2a3450d` — Lốc xoáy KHÔNG đổi):
+- Hai màu tầng mây của Mây giông thành thuộc tính dùng chung `VfxFactory.MauMayGiongSang` (0,25 0,25 0,29) / `MauMayGiongXam`
+  (0,13 0,14 0,16) — mây vẫn dùng chúng, số không đổi.
+- Vỏ Gió lốc `MauMayGioLoc(t, độ đục)`: Vo0 = tầng XÁM (t 0), Vo1 giữa (0,5), Vo2 + dải gió = tầng SÁNG (t 1); độ đục giữ
+  0,42 / 0,20 / 0,16 / 0,70.
+- Bụi cuộn `BuiCuon` + vệt `KhoiBui`: vẫn ảnh + kiểu cuộn của Lốc xoáy, màu `MauBuiGioLocToi/Sang` (hai tầng mây, đục 0,70 / 0,90).
+  Bụi chân LỐC XOÁY giữ xám nhạt.
+- **Menu 71: 0 lỗi.**
+  - So với một đám MÂY GIÔNG THẬT dựng trong phép thử: 4/4 lớp nằm trong dải màu hai tầng mây; bụi 2/2 đúng màu (0,13–0,25).
+  - Đối chứng: bụi Lốc xoáy thật vẫn xám nhạt (0,80–0,95).
+- **Menu 71c** — tiêu chí "trong hơn" sửa lại. Cũ là "độ sáng thân giảm", chỉ đúng với vỏ TRẮNG: vỏ tối mỏng đi thì ảnh SÁNG lên,
+  nên nó báo lỗi oan. Nay render thêm ảnh NỀN (tắt vỏ + bụi) và đo "thân che nền" = |ảnh tắt bụi − nền|.
+  - Với màu mây giông: che nền 0,0915 → 0,0648 (×0,71), bụi lộ ×1,42. 0 lỗi.
+- ⚠️ Nhược điểm thấy trên ảnh: ban đêm, ở góc chơi, Gió lốc xám đen và trong gần như CHÌM vào nền, chủ yếu còn thấy tia sét.
+  Đám mây Mây giông ban đêm cũng vậy (sét rọi mới thấy). Đã báo người dùng để chọn.
+
 ### Vẽ lại năm icon: Gió lốc, Lốc xoáy, Mây giông, Tốc biến, Hoá lốc xoáy (28/09/2026)
 
 **Người dùng:** năm icon này cũng "quá thô và sơ sài" (lốc chỉ là lò xo, Tốc biến là hai hình người que). Vẽ lại hợp nội dung

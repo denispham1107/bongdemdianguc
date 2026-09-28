@@ -1,10 +1,10 @@
-[ban 1] than Gio loc trong hon - 28/09/2026 23:18
+[ban 1] than Gio loc trong hon - 28/09/2026 23:53
 dung hinh: 4 lop vo (DaiGio,Vo0,Vo1,Vo2), 2 he bui
 vung do (diem anh 640x360): (x:289, y:118, width:63, height:89)
-MOI (do duc 0.42/0.20/0.16/0.70): bui lo ra 0.1091, do sang than (tat bui) 0.555, diem chay trang 0.3 %
+MOI (do duc 0.42/0.20/0.16/0.70): bui lo ra 0.0737, do sang than (tat bui) 0.228, diem chay trang 0.0 %, than che nen 0.0648
 anh: PlayTestShots/gioloc_trong_moi.png
-DOI CHUNG cu (do duc 0.72/0.34/0.26/0.90): bui lo ra 0.0531, do sang than (tat bui) 0.639, diem chay trang 0.2 %
+DOI CHUNG cu (do duc 0.72/0.34/0.26/0.90): bui lo ra 0.0521, do sang than (tat bui) 0.202, diem chay trang 0.0 %, than che nen 0.0915
 anh: PlayTestShots/gioloc_trong_cu.png
-=> bui lo ra x2.06, do sang than x0.87
+=> bui lo ra x1.42, do sang than x1.13, than che nen x0.71
 
 so loi ghi nhan = 0

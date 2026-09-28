@@ -116,35 +116,41 @@ public static class ThuGioLocTrong
                 mr.sharedMaterial.SetColor("_TintColor", c);
             }
             yield return new WaitForSeconds(0.3f);
-            float loTong = 0f, trangTong = 0f, chayTong = 0f; int soKhung = 0;
+            float loTong = 0f, trangTong = 0f, chayTong = 0f, cheTong = 0f; int soKhung = 0;
             for (int k = 0; k < 12; k++)
             {
                 yield return new WaitForEndOfFrame();
                 var co = Chup(cam, rt, W, H);
                 foreach (var r in bui) r.enabled = false;
                 var khong = Chup(cam, rt, W, H);
+                // NEN: tat ca vo lan bui - vo cang trong thi anh "tat bui" cang gan nen (dung cho ca vo trang lan vo toi mau may giong)
+                foreach (var v in vo) v.enabled = false;
+                var nen = Chup(cam, rt, W, H);
+                foreach (var v in vo) v.enabled = true;
                 foreach (var r in bui) r.enabled = true;
-                float lo = 0f, trang = 0f; int chay = 0, n = 0;
+                float lo = 0f, trang = 0f, che = 0f; int chay = 0, n = 0;
                 for (int y = o.yMin; y < o.yMax; y++)
                     for (int x = o.xMin; x < o.xMax; x++)
                     {
                         int id = y * W + x;
                         float a = Sang(co[id]), b = Sang(khong[id]);
-                        lo += Mathf.Abs(a - b); trang += b; if (b > 0.85f) chay++; n++;
+                        lo += Mathf.Abs(a - b); trang += b; che += Mathf.Abs(b - Sang(nen[id])); if (b > 0.85f) chay++; n++;
                     }
-                loTong += lo / n; trangTong += trang / n; chayTong += (float)chay / n; soKhung++;
+                loTong += lo / n; trangTong += trang / n; chayTong += (float)chay / n; cheTong += che / n; soKhung++;
                 yield return new WaitForSeconds(0.12f);
             }
-            kq[ten] = new[] { loTong / soKhung, trangTong / soKhung, chayTong / soKhung };
-            Ghi(string.Format("{0} (do duc {1}): bui lo ra {2:F4}, do sang than (tat bui) {3:F3}, diem chay trang {4:P1}",
+            kq[ten] = new[] { loTong / soKhung, trangTong / soKhung, chayTong / soKhung, cheTong / soKhung };
+            Ghi(string.Format("{0} (do duc {1}): bui lo ra {2:F4}, do sang than (tat bui) {3:F3}, diem chay trang {4:P1}, than che nen {5:F4}",
                 ten == "moi" ? "MOI" : "DOI CHUNG cu", string.Join("/", System.Array.ConvertAll(doDuc, v => v.ToString("F2"))),
-                kq[ten][0], kq[ten][1], kq[ten][2]));
+                kq[ten][0], kq[ten][1], kq[ten][2], kq[ten][3]));
             yield return ChupAnh(cam, "PlayTestShots/gioloc_trong_" + ten + ".png");
         }
-        Ghi(string.Format("=> bui lo ra x{0:F2}, do sang than x{1:F2}", kq["moi"][0] / Mathf.Max(1e-6f, kq["cu"][0]), kq["moi"][1] / Mathf.Max(1e-6f, kq["cu"][1])));
+        Ghi(string.Format("=> bui lo ra x{0:F2}, do sang than x{1:F2}, than che nen x{2:F2}", kq["moi"][0] / Mathf.Max(1e-6f, kq["cu"][0]),
+            kq["moi"][1] / Mathf.Max(1e-6f, kq["cu"][1]), kq["moi"][3] / Mathf.Max(1e-6f, kq["cu"][3])));
         Kiem(kq["cu"][0] > 0.002f, "doi chung: bui khong tao khac biet nao - phep do vo nghia");
         Kiem(kq["moi"][0] > kq["cu"][0] * 1.2f, "than moi khong lo bui ro hon (it nhat x1,2)");
-        Kiem(kq["moi"][1] < kq["cu"][1], "than moi khong trong hon (do sang khong giam)");
+        // "Trong hon" = che nen IT hon (dung ca khi vo mau toi may giong: vo toi mong di thi anh SANG len, tieu chi do sang cu sai)
+        Kiem(kq["moi"][3] < kq["cu"][3], "than moi khong trong hon (che nen khong giam)");
 
         Object.Destroy(rt);
         Object.Destroy(loc);

@@ -57,6 +57,11 @@ public static partial class VfxFactory
     public const float HeSoToiMay = 0.26f;
     static Color Toi(float r, float g, float b, float a) { return new Color(r * HeSoToiMay, g * HeSoToiMay, b * HeSoToiMay, a); }
 
+    /// <summary>Mau hai tang may giong: tang SANG (tren) va tang XAM (duoi). GIO LOC dung chung tu 28/09/2026 (nguoi dung: "doi mau
+    /// Gio loc nhu mau dam may giong, ke ca khoi bui cuon len").</summary>
+    public static Color MauMayGiongSang { get { return Toi(0.95f, 0.97f, 1.10f, 1f); } }
+    public static Color MauMayGiongXam { get { return Toi(0.50f, 0.53f, 0.62f, 0.95f); } }
+
     public static GameObject MayGiongHinh(Vector3 chan, float banKinh, float cao, float song)
     {
         var root = new GameObject("MayGiongHinh");
@@ -67,7 +72,7 @@ public static partial class VfxFactory
         {
             bool sang = tang == 0;
             var mat = VatLieuMayGiong(sang ? "MaySang" : "MayXam", ThuMucMayGiong, "MayGiong",
-                sang ? Toi(0.95f, 0.97f, 1.10f, 1f) : Toi(0.50f, 0.53f, 0.62f, 0.95f), false);
+                sang ? MauMayGiongSang : MauMayGiongXam, false);
             var ps = NewPS(sang ? "MaySang" : "MayXam", root.transform, new Vector3(0f, cao + (sang ? 0.6f : -0.5f), 0f), mat,
                            ParticleSystemRenderMode.Billboard);
             LuoiAnh2x2(ps);

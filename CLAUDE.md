@@ -218,6 +218,9 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
   `BuiXam`, cùng màu, cùng kiểu cuộn — hàm chung `VfxFactory.BuiXamChanLoc`); `BuiCuon` để CỤC BỘ (lốc bay 9,5 m/s), vệt `KhoiBui`
   cũng bụi xám. Các dòng "khói bụi đen" phía trên là LỊCH SỬ. Thân trong hơn (cùng tối): độ đục `VfxFactory.DoDucVoGioLoc`
   0,42 / 0,20 / 0,16 / 0,70 (trước 0,72 / 0,34 / 0,26 / 0,90) — menu 71c đo bụi lộ qua vỏ ×2,06.
+  ⚠️ **Cùng tối: GIÓ LỐC ĐỔI SANG MÀU MÂY GIÔNG** (thân lẫn bụi — `MauMayGioLoc`, `MauBuiGioLocToi/Sang`, lấy từ
+  `VfxFactory.MauMayGiongSang/Xam`); **Lốc xoáy GIỮ xám trắng** (người dùng thử đổi Lốc xoáy trước rồi bảo nhầm, quay về `2a3450d`).
+  Ban đêm Gió lốc gần như chìm vào nền (chỉ thấy tia sét) — đã báo người dùng.
 - **MÂY GIÔNG** (`CapDo.KyMayGiong` = 21, `Skills/MayGiong.cs`, hình `Vfx/VfxMayGiong.cs`, hiệu ứng `Combat/ChayDenToanThan.cs`,
   25/09/2026, nhóm **PHONG**, người dùng gửi ảnh mẫu): vùng mây giông ngay chỗ ngắm, tầm **= Sấm sét** (`boltRange` 12), bán kính
   **6 m**; **20 tia trong 5 giây** (0,35 s mây kết + 0,25 s/tia, đếm theo đồng hồ), **65% nhắm kẻ địch** trong vùng như Sấm sét;

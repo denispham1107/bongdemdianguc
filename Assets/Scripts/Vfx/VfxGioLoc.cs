@@ -86,10 +86,12 @@ public static partial class VfxFactory
                 Material goc; Color mau; float quay; Vector2 truot;
                 switch (mf.name)
                 {
-                    case "Vo0":    goc = VatLieuGio(ref mGioDai, "GioDai"); mau = new Color(0.82f, 0.84f, 0.88f, DoDucVoGioLoc[0]); quay = 330f; truot = new Vector2(0f, -0.95f); break;
-                    case "Vo1":    goc = VatLieuGio(ref mGioDai, "GioDai"); mau = new Color(0.90f, 0.92f, 0.95f, DoDucVoGioLoc[1]); quay = 250f; truot = new Vector2(0f, -0.70f); break;
-                    case "Vo2":    goc = VatLieuGio(ref mGioSoi, "GioSoi"); mau = new Color(0.96f, 0.97f, 1.00f, DoDucVoGioLoc[2]); quay = 180f; truot = new Vector2(0f, -0.50f); break;
-                    default:       goc = VatLieuGio(ref mGioSoi, "GioSoi"); mau = new Color(1.00f, 1.00f, 1.00f, DoDucVoGioLoc[3]); quay = 400f; truot = new Vector2(-1.1f, 0f); break;
+                    // MAU MAY GIONG (nguoi dung 28/09/2026: "doi mau Gio loc nhu mau dam may giong"; truoc: xam trang 0,82 - 1,00):
+                    // vo trong cung = tang may XAM (duoi, toi hon), ra ngoai dan sang tang may SANG (tren) - nhu may: day toi, dinh sang
+                    case "Vo0":    goc = VatLieuGio(ref mGioDai, "GioDai"); mau = MauMayGioLoc(0.0f, DoDucVoGioLoc[0]); quay = 330f; truot = new Vector2(0f, -0.95f); break;
+                    case "Vo1":    goc = VatLieuGio(ref mGioDai, "GioDai"); mau = MauMayGioLoc(0.5f, DoDucVoGioLoc[1]); quay = 250f; truot = new Vector2(0f, -0.70f); break;
+                    case "Vo2":    goc = VatLieuGio(ref mGioSoi, "GioSoi"); mau = MauMayGioLoc(1.0f, DoDucVoGioLoc[2]); quay = 180f; truot = new Vector2(0f, -0.50f); break;
+                    default:       goc = VatLieuGio(ref mGioSoi, "GioSoi"); mau = MauMayGioLoc(1.0f, DoDucVoGioLoc[3]); quay = 400f; truot = new Vector2(-1.1f, 0f); break;
                 }
                 var go = new GameObject(mf.name);
                 go.transform.SetParent(root.transform, false);
@@ -115,14 +117,16 @@ public static partial class VfxFactory
         // BUI XAM CUON QUANH CHAN - KIEU LOC XOAY (nguoi dung 28/09/2026: khoi bui den "cho cung mau cung hieu ung giong skill Loc
         // xoay"; truoc la khoi DEN BuiDenCuon). Ten giu "BuiCuon" (menu 71 doc). Co / vong theo chan MOI (x2): chan Vo1 1,11 m so voi
         // vo chinh Loc xoay 1,3 m -> co 0,85; bay len x0,5 vi loc chi cao 5 m. Cuc bo de om chan khi loc bay 9,5 m/s.
-        BuiXamChanLoc(root.transform, "BuiCuon", new Vector3(0f, 0.2f, 0f), CoBuiGioLoc, BanKinhVongBuiGioLoc, 0.5f, true);
+        var buiCuon = BuiXamChanLoc(root.transform, "BuiCuon", new Vector3(0f, 0.2f, 0f), CoBuiGioLoc, BanKinhVongBuiGioLoc, 0.5f, true);
+        // cung kieu cuon cua Loc xoay nhung MAU MAY GIONG (28/09/2026) - Loc xoay giu bui xam nhat
+        var bcm = buiCuon.main; bcm.startColor = new ParticleSystem.MinMaxGradient(MauBuiGioLocToi, MauBuiGioLocSang);
 
         // Vet bui o lai phia sau duong loc di (khong gian the gioi) - nay cung BUI XAM cua Loc xoay (truoc: khoi den)
         var vet = BuildKhoiBuiLoc(root.transform, 0.55f * HeSoBanKinhGioLoc * 2f);
         vet.GetComponent<ParticleSystemRenderer>().sharedMaterial = BuiXamMat;
         DatKhungBuiXam(vet);
         var vm = vet.main; vm.maxParticles = 110;
-        vm.startColor = new ParticleSystem.MinMaxGradient(MauBuiXamToi, MauBuiXamSang);
+        vm.startColor = new ParticleSystem.MinMaxGradient(MauBuiGioLocToi, MauBuiGioLocSang);
         var vcol = vet.colorOverLifetime; vcol.enabled = true;
         vcol.color = new ParticleSystem.MinMaxGradient(Grad(Color.white, 0f, Color.white, 0.5f, new Color(0.85f, 0.86f, 0.9f), 1f, 0f, 0.7f, 0.45f, 0f));
         var vem = vet.emission; vem.rateOverTime = 20f;
@@ -159,6 +163,18 @@ public static partial class VfxFactory
     /// nguoi dung: "cho than trong hon de thay bui ben trong". Truoc: 0,72 / 0,34 / 0,26 / 0,90 (menu 71c giu lam doi chung).
     /// </summary>
     public static readonly float[] DoDucVoGioLoc = { 0.42f, 0.20f, 0.16f, 0.70f };
+
+    /// <summary>Mau mot lop vo Gio loc: noi tu tang may XAM (t = 0) sang tang may SANG (t = 1) cua May giong.</summary>
+    public static Color MauMayGioLoc(float t, float alpha)
+    {
+        var c = Color.Lerp(MauMayGiongXam, MauMayGiongSang, t);
+        c.a = alpha;
+        return c;
+    }
+
+    /// <summary>Bui cuon + vet bui Gio loc: mau hai tang may giong, do duc 0,70 / 0,90 nhu bui Loc xoay (28/09/2026).</summary>
+    public static Color MauBuiGioLocToi { get { var c = MauMayGiongXam; c.a = 0.70f; return c; } }
+    public static Color MauBuiGioLocSang { get { var c = MauMayGiongSang; c.a = 0.90f; return c; } }
 
     /// <summary>Ban kinh vo trong cung (da nhan 1,1) o do cao y tinh tu chan loc.</summary>
     public static float BanKinhVoTrongGioLoc(float y)

@@ -589,7 +589,31 @@ public static class ThuGioLoc
                 dayNhoMax, dayLonMax, soTiaLon, dayLonMax > 0 ? dayNhoMax / dayLonMax : 0f, caoNho / caoLon));
             Kiem(tenLuoi.Count == 4 && vo0 != null && dai != null, "khong dung luoi Blender (Vo0-2, DaiGio)");
             Kiem(Mathf.Abs(caoNho - 5f) < 0.35f && caoNho / caoLon < 0.5f, "loc nho khong cao ~5 m");
-            Kiem(Mathf.Abs(tb.r - tb.b) < 0.12f && tb.r > 0.75f, "vo loc khong xam trang nhu Loc xoay");
+            // 28/09/2026: vo MAU MAY GIONG - so voi mau hai tang may cua mot dam MAY GIONG THAT (khong so voi hang so)
+            Color maySang = Color.clear, mayXam = Color.clear;
+            {
+                var may = VfxFactory.MayGiongHinh(loc.transform.position + Vector3.up * 40f, 6f, 7f, 5f);
+                foreach (var ps in may.GetComponentsInChildren<ParticleSystem>())
+                {
+                    var vlMay = ps.GetComponent<ParticleSystemRenderer>().sharedMaterial;
+                    if (ps.name == "MaySang") maySang = vlMay.GetColor("_TintColor");
+                    if (ps.name == "MayXam") mayXam = vlMay.GetColor("_TintColor");
+                }
+                Object.Destroy(may);
+            }
+            int voTrongDoan = 0, soVoDem = 0;
+            foreach (var mf in loc.GetComponentsInChildren<MeshFilter>())
+            {
+                var c = mf.GetComponent<MeshRenderer>().sharedMaterial.GetColor("_TintColor");
+                bool trong = true;
+                for (int k = 0; k < 3; k++)
+                    if (c[k] < Mathf.Min(mayXam[k], maySang[k]) - 0.01f || c[k] > Mathf.Max(mayXam[k], maySang[k]) + 0.01f) trong = false;
+                soVoDem++; if (trong) voTrongDoan++;
+            }
+            Ghi(string.Format("C. mau may giong that: tang sang ({0:F2} {1:F2} {2:F2}), tang xam ({3:F2} {4:F2} {5:F2}); {6}/{7} lop Gio loc nam trong doan mau may",
+                maySang.r, maySang.g, maySang.b, mayXam.r, mayXam.g, mayXam.b, voTrongDoan, soVoDem));
+            Kiem(maySang.a > 0f && mayXam.a > 0f, "doi chung: khong doc duoc mau may giong that");
+            Kiem(soVoDem == 4 && voTrongDoan == 4, "vo Gio loc chua doi sang mau may giong");
             Kiem(soDen == 0, "loc nho con den diem");
             Kiem(soNhip >= 5 && soArc == soNhip * 2 && soKhungDung2 == soKhungCoTia, "tia set trong loc khong phai moi nhip dung 2 tia");
             Ghi(string.Format("C. khoang cach hai tia ({0} nhip): dinh - nho nhat {1:F2} m, trung binh {2:F2} m; duoi - nho nhat {3:F2} m, trung binh {4:F2} m; dau tia nam trong vo trong cung {5}/{6} (sat vo nhat {7:F2} m, am = ben trong)",
@@ -617,7 +641,9 @@ public static class ThuGioLoc
                     var c0 = ps.main.startColor.colorMin; var c1 = ps.main.startColor.colorMax;
                     var l0 = buiLx.main.startColor.colorMin; var l1 = buiLx.main.startColor.colorMax;
                     bool anhDung = anh != null && anh == anhLx;
-                    bool mauDung = (c0 - l0).maxColorComponent < 0.02f && (c1 - l1).maxColorComponent < 0.02f
+                    // 28/09/2026: MAU MAY GIONG (tang xam -> tang sang), do duc nhu bui Loc xoay; anh + kieu cuon van cua Loc xoay
+                    bool mauDung = Mathf.Abs(c0.r - mayXam.r) < 0.01f && Mathf.Abs(c0.b - mayXam.b) < 0.01f
+                                   && Mathf.Abs(c1.r - maySang.r) < 0.01f && Mathf.Abs(c1.b - maySang.b) < 0.01f
                                    && Mathf.Abs(c0.a - l0.a) < 0.02f && Mathf.Abs(c1.a - l1.a) < 0.02f;
                     var t = ps.textureSheetAnimation;
                     bool khungDung = t.enabled && t.numTilesX == 2 && t.numTilesY == 2;
@@ -628,7 +654,9 @@ public static class ThuGioLoc
                     anhLx != null ? anhLx.name : "null", buiLx != null ? buiLx.main.startColor.colorMin.r : -1f, buiLx != null ? buiLx.main.startColor.colorMax.r : -1f,
                     moTa, dungAnh, dungMau, dungKhung));
                 Kiem(buiLx != null && anhLx != null, "doi chung: khong dung duoc bui chan cua Loc xoay that");
-                Kiem(dungAnh == 2 && dungMau == 2 && dungKhung == 2, "bui Gio loc khong cung mau / cung anh bui xam cua Loc xoay (con khoi den?)");
+                Kiem(dungAnh == 2 && dungMau == 2 && dungKhung == 2, "bui Gio loc khong cung anh bui Loc xoay / khong mau may giong");
+                // DOI CHUNG: Loc xoay KHONG doi theo - bui chan cua no van xam nhat
+                Kiem(buiLx != null && buiLx.main.startColor.colorMin.r > 0.7f, "bui Loc xoay bi doi mau theo (chi Gio loc doi)");
                 Object.Destroy(locThat);
             }
             // Vet gio "goc giam khi len cao" + quay lam goc TANG = vet chay LEN
