@@ -7,7 +7,7 @@ E. hoi chieu theo cap: cap 1=5.00  cap 2=4.75  cap 3=4.50  cap 4=4.25  cap 5=4.0
 
 B. khoa -> tu choi True; mo khoa -> nhay 1 lan, di duoc 10.00 m (ngam 10 m, lech 0.00 m), ton 40 nang luong, hoi chieu ngay sau 5.00 s
 B. hieu ung tren canh: bien mat True, hien ra True
-F. tu luc bam den luc doi cho: 0.072 giay (khong niem chu)
+F. tu luc bam den luc doi cho: 0.025 giay (khong niem chu)
 
 C. ngam ra 30 m -> nhay duoc 15.01 m (tam toi da 15 m)
 

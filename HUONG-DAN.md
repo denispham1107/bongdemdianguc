@@ -8603,6 +8603,51 @@ châm cả bia mộ / nhà mồ (tính năng sáng nay), đầy trần "4 vật 
 
 Ảnh: `PlayTestShots/maygiong_1_dem_can.png`, `maygiong_2_chay_den.png`, `maygiong_3_ngay_goc_choi.png`.
 
+### Bị cháy, lần 3: lửa cháy lan trên chính thân, nằm gọn trong viền người (28/09/2026)
+
+**Người dùng (ảnh, khoanh đường đỏ sát quanh nhân vật):** khối lửa lần 2 đã tốt, nhưng muốn lửa **đốt lan khắp người**, cháy
+và **nằm bên trong đường kẻ đỏ**. Không muốn một cục lửa đứng trùm rồi nhân vật ở bên trong.
+
+**Cách sửa:** lửa vẽ **thẳng trên lưới nhân vật**, không dùng tấm billboard nữa.
+- Shader mới `Diablo25D/LuaPhuThan` (`Assets/Shaders/S_LuaPhuThan.shader`), phủ THÊM lên mọi SkinnedMeshRenderer / MeshRenderer
+  của kẻ đang cháy, giống lớp than của `ChayDenToanThan`. Khi gỡ chỉ bỏ đúng lớp của mình, nên vỏ băng / than đen đang
+  chồng lên không mất.
+- Lượt 1 vẽ lửa cộng sáng trên da; mép thân lửa dày hơn (fresnel); vết nứt than hồng bên dưới.
+- Lượt 2 là vỏ phồng ra 7 cm theo pháp tuyến, nhô lên theo sọc lửa, chỉ hiện ở viền. Mép lửa liếm ra ngoài một chút, đúng
+  như nét đỏ người dùng vẽ.
+- Hoa văn lửa là ảnh **Blender MCP** (cảnh `LuaPhuThan` trong `lua_chay_nguoi.blend` → `Resources/KyNang/Chay/LuaPhuThan.png`),
+  lặp liền mạch cả hai chiều (nhiễu 4D trên hình xuyến). Ba kênh: R sọc lửa dọc, G đám lửa lớn, B vết nứt than.
+  - Mép lặp lệch 15,1 / 7,3, trong khi hai cột cạnh nhau lệch 10,7 / 5,1: vẫn trong mức nhiễu thường.
+- Toạ độ lửa:
+  - Chiều ngang là trục phải của máy quay, chiều dọc là độ cao trên chân / chiều cao thân. Sọc lửa luôn đứng thẳng trên
+    màn hình và trôi lên.
+  - Trừ gốc `_Goc` = hông / xương thấp nhất, cập nhật mỗi khung, nên người chạy thì hoa văn không trượt.
+- Vật liệu gốc `Resources/KyNang/Chay/LuaPhuThan.mat` để shader vào bản build. Mỗi kẻ cháy có một bản sao riêng.
+- **Bỏ khói**: khói xám trên nền đêm làm SÁNG nền quanh thân thành một quầng ngoài viền. Giữ tàn lửa và đèn, đèn đặt ra
+  ngoài thân.
+- Khối billboard lần 2 chỉ còn làm đối chứng cho menu 90 (`LuaToanThan.DoiChungKhoiLua`).
+
+**Đo (menu 90 viết lại bằng ẢNH THẬT, 0 lỗi).** Mỗi nhân vật chụp ba ảnh trong cùng một khung hình, đèn lửa và bloom tắt:
+(1) có thân, ẩn lửa; (3) có thân, có lửa; (2) riêng nhân vật ấy vẽ trắng đặc trên nền đen (lớp 31, `RenderWithShader`)
+làm bóng thân, nới rộng 14 điểm ảnh làm "đường đỏ".
+
+| | Vùng có lửa nằm trong viền | Thân được lửa phủ |
+|---|---|---|
+| Người chơi / bộ xương / Quỷ cây | **99 / 100 / 100%** | 99 / 99 / 97% |
+| Đang chạy 6 m/s | 99% | 99% |
+| Đối chứng khối lần 2 | 62 / 79 / 67% (TB 69%) | — |
+| Đối chứng khối + mô phỏng thế giới, đang chạy | 1% | — |
+
+- Hết giờ hoặc gỡ giữa chừng: khung kế tiếp không còn hình lửa, và 0 vật liệu lửa còn dính trên thân. 0 chùm tia trúng
+  đòn. Menu 76: 0 lỗi.
+- Hai bẫy của phép đo:
+  - Lấy bóng thân bằng "có thân trừ ẩn thân" thì dính cả **bóng đổ trên đất** và sót phần áo tối lẫn vào nền đêm. Kết quả
+    là đối chứng khối billboard ra "93% trong viền".
+  - **Bloom** tạo một vành mờ 20–30 điểm ảnh quanh mọi vật sáng. Để nguyên thì bản đúng chỉ ra 76–87%.
+  - Tính theo năng lượng thì khối billboard sáng nhất ở giữa thân, nên cũng "trong viền". Phải tính theo diện tích.
+- Ảnh: `lua_chay_gan.png`, `lua_chay_goc_choi.png`, `lua_chay_vien.png` (viền đỏ = bóng thân nới rộng, xanh = lửa ngoài viền),
+  `lua_chay_vien_doichung.png`, `lua_chay_dang_chay.png`.
+
 ### Bị cháy, lần 2: một khối lửa trùm toàn thân, đi theo người, tắt ngay (28/09/2026)
 
 **Người dùng (ảnh chụp bản lần 1):**
@@ -11551,7 +11596,7 @@ Lần chạy đầu phép thử báo cả 10 con "lơ lửng": tia chiếu từ 
 | **87. Chay thu RA - VAO NHA MO (Act2)** | Nhân vật thật đi vào nhà mồ từ 8 hướng rồi thử đi ra 5 hướng (đầu tiên là quay lui đúng đường vào); lượt đối chứng tạm gắn lại lưới gốc (~20 phút cả hai lượt, `ThuRaKhoiNhaMo.BoQuaDoiChung` để bỏ). `ra_khoi_nha_mo.txt`. |
 | **88. Va cham hai mat cho nha mo (Act2)** | Dựng lưới va chạm hai mặt cho mỗi kiểu nhà mồ (`BlenderMaps/GraveyardAct2/VaCham/`) và gắn vào `MeshCollider` của 7 nhà. Chạy lại khi thêm nhà mồ / nhập lại bản đồ. |
 | **89. Chay thu O VUONG SANG tren mat dat (den ky nang)** | Chụp riêng lớp Terrain có / không đèn kỹ năng ở 3 điểm cố định × 4 mức đồ hoạ × 1 / 6 đèn, đo "đường nối" (ô vuông) trên D/A; đối chứng tắt đèn sinh đôi `DenMatDat`. Kèm ảnh vụ nổ thật. `den_mat_dat.txt`. |
-| **90. Chay thu LUA CHAY TOAN THAN (nguoi choi + quai)** | Đốt người chơi, bộ xương, Quỷ cây: số khối lửa + độ lệch so với hông (một cụm), phủ thân (đỉnh BakeMesh chiếu lên mặt phẳng nhìn); chạy 6 m/s — lửa bám theo, đối chứng mô phỏng thế giới; hết giờ / gỡ giữa chừng tắt ngay; nhịp cháy không phun tia trúng đòn. `lua_chay.txt`. |
+| **90. Chay thu LUA CHAY TOAN THAN (nguoi choi + quai)** | Đốt người chơi, bộ xương, Quỷ cây; chụp 3 ảnh cùng khung (ẩn lửa · có lửa · bóng thân trắng đặc lớp 31), tắt bloom + đèn lửa: tỉ lệ diện tích lửa nằm trong viền thân nới 14 px và tỉ lệ thân được phủ; đối chứng khối billboard lần 2; chạy 6 m/s (đối chứng mô phỏng thế giới); hết giờ / gỡ giữa chừng tắt ngay, không sót vật liệu; nhịp cháy không phun tia trúng đòn. `lua_chay.txt`. |
 | **56. Chay thu DOT QUAI Act2 + cho xuat phat** | *(13/09/2026: thêm đo chờ 30 giây và 10 con xa 55–65 m)*  Kiểm chỗ xuất phát ngẫu nhiên (hai máy cùng mã phòng ra cùng danh sách, cách nhau ≥ 22 m, trên đất, ngoài nước, không vướng vật cản) và luật đợt quái Act2 (đợt 1 bốn con quanh mỗi người; đợt sau cộng dồn quái và mạnh thêm 5% máu · sát thương). Số đo `dotquai_act2.txt`. |
 | **55. Chay thu KET TRAN (nguoi song sot cuoi cung)** | Mở kênh giả lập như menu 45: kiểm gói tin kết trận/chết, máy chủ phòng phán quyết đúng lúc còn một người, bảng điểm cộng đúng người, máy khách không tự kết luận và hiện đúng kết quả nghe được, chết rồi camera chuyển sang người còn sống, chụp màn kết trận. Số đo `kettran.txt`, ảnh `kettran_*.png`. |
 | **54c. Chay thu LOC XOAY cuon lo lua** | Vào Play Act2, thả một cơn lốc đi thẳng vào lò: đo mốc thời gian lửa tắt / lò nhấc lên / lò biến mất / lò mọc lại, kiểm than trong chậu tắt bằng độ sáng trên ảnh, và kiểm vật có hệ hạt khác vẫn không bị cuốn. Ảnh `locxoay_*.png`, số đo `locxoay_lolua.txt`. |

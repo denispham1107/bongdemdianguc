@@ -9,16 +9,17 @@ using UnityEngine;
 /// <summary>
 /// CHAY THU: LUA CHAY TOAN THAN (menu 90).
 ///
-/// Lan 2 (28/09/2026, nguoi dung): lua la MOT CUM toan than; di chuyen thi lua KHONG bi bo lai phia sau; het chay thi lua
-/// bien mat NGAY. Do doc lap voi cach LuaToanThan dat khoi lua:
-///   A. MOT CUM + PHU THAN: so khoi lua song, do lech ngang cua moi khoi so voi xuong Hips; nuong hinh that (BakeMesh), chieu
-///      dinh len mat phang nhin cua may quay, dinh nao nam trong phan co lua cua mot khoi (60% ngang x 90% doc) la "co lua";
-///      chia than 5 dai chan -> dau.
-///   B. DI CHUYEN 6 m/s trong 1 s: khoang cach ngang trung binh tu tam cac khoi lua (vi tri THE GIOI) toi xuong Hips.
-///      DOI CHUNG: cung phep do voi LuaToanThan.DoiChungTheGioi (mo phong the gioi nhu ban cu).
-///   C. TAT NGAY: het gio chay / bi go giua chung -> khung ke tiep khong con vat hinh lua nao.
+/// Lan 3 (28/09/2026, nguoi dung ve duong do om sat nhan vat): lua CHAY LAN KHAP NGUOI va NAM TRONG DUONG VIEN than, khong
+/// phai mot cuc dung truoc nguoi. Do bang ANH THAT, doc lap voi cach ve lua - moi nhan vat chup 3 anh CUNG MOT KHUNG:
+///   (1) co than, an lua  (2) rieng nhan vat ve trang dac tren nen den -> BONG THAN (noi rong 14 diem anh ~ net do nguoi dung ve)
+///   (3) co than, co lua (den lua tat ca 3 anh) -> 3-1 la PHAN LUA THEM VAO
+///   A. TRONG VIEN = phan anh sang lua nam trong bong than / tong; PHU THAN = ti le diem anh bong than co lua > 0,08.
+///      DOI CHUNG: khoi lua billboard lan 2 (LuaToanThan.DoiChungKhoiLua) tren cung nhan vat.
+///   B. DI CHUYEN 6 m/s: goc toa do lua (_Goc) cach Hips bao nhieu, va TRONG VIEN chup luc dang chay.
+///      DOI CHUNG: khoi billboard + mo phong the gioi (ban lan 1-2).
+///   C. TAT NGAY: het gio / bi go giua chung -> khung ke tiep khong con hinh lua, vat lieu phu da go khoi than.
 ///   E. Nhip chay khong phun tia trung don (doi chung 1 don lua thuong).
-///   Anh: PlayTestShots/lua_chay_*.png. Ket qua: PlayTestShots/lua_chay.txt.
+/// Anh: PlayTestShots/lua_chay_*.png. Ket qua: PlayTestShots/lua_chay.txt.
 /// </summary>
 public static class ThuLuaChay
 {
@@ -42,6 +43,7 @@ public static class ThuLuaChay
             EditorSceneManager.OpenScene("Assets/Scenes/Act2.unity");
         bao.Length = 0; loi = 0; daBatDau = false;
         LuaToanThan.DoiChungTheGioi = false;
+        LuaToanThan.DoiChungKhoiLua = false;
         EditorApplication.update -= Nhip;
         EditorApplication.update += Nhip;
         EditorApplication.EnterPlaymode();
@@ -114,37 +116,39 @@ public static class ThuLuaChay
         }
         yield return new WaitForSeconds(0.6f);
 
-        // ================= A. MOT CUM + PHU THAN =================
+        // ================= A. LUA NAM TRONG VIEN THAN + PHU THAN =================
         var tatCa = new List<Damageable> { mauPc }; tatCa.AddRange(quai);
         foreach (var d in tatCa) BurningEffect.Apply(d, 0.01f, 3.5f, null);
         float giayChay = mauPc.GetComponent<BurningEffect>().remaining;   // AddComponent mang san 4 s (xem HUONG-DAN)
         float t0 = Time.time;
         while (Time.time - t0 < 1.2f) yield return null;
-
         cam.transform.position = p + new Vector3(0f, 4.2f, -6.2f);
         cam.transform.LookAt(p + new Vector3(0f, 1.0f, 0f));
-        yield return null;
+        yield return new WaitForEndOfFrame();
         Chup(cam, "PlayTestShots/lua_chay_gan.png");
+        cam.transform.position = p + new Vector3(0f, 13f, -11.5f);
+        cam.transform.LookAt(p);
+        yield return new WaitForEndOfFrame();
+        Chup(cam, "PlayTestShots/lua_chay_goc_choi.png");
         foreach (var d in tatCa)
         {
             var l = d.GetComponentInChildren<LuaToanThan>();
             Kiem(l != null, d.name + ": khong co LuaToanThan");
             if (l == null) continue;
-            int soKhoi; float lechMax; float phuMin; string dai;
-            DoCum(d, l, cam, out soKhoi, out lechMax, out phuMin, out dai);
+            var c = d.transform.position;
+            cam.transform.position = c + new Vector3(0f, 2.6f, -3.6f);
+            cam.transform.LookAt(c + Vector3.up * 0.9f);
+            yield return new WaitForEndOfFrame();
+            float trongVien, phu;
+            DoAnh(cam, d, l, out trongVien, out phu, d == mauPc ? "PlayTestShots/lua_chay_vien.png" : null);
             float lo, hi; KhungDoc(d, out lo, out hi);
-            Ghi(string.Format("A. {0}: than cao theo xuong {1:F2} m / hinh that {2:F2} m; {3} khoi lua song, lech ngang toi da so voi Hips {4:F2} m; khoi {5:F2} x {6:F2} m; PHU THAN (chan->dau) {7}, dai kem nhat {8:P0}",
-                d.name, l.ChieuCaoThan, hi - lo, soKhoi, lechMax, l.CoKhoi.x, l.CoKhoi.y, dai, phuMin));
-            Kiem(l.CoXuong, d.name + ": khong tim thay xuong");
+            Ghi(string.Format("A. {0}: phu lop lua len {1} renderer; than cao theo xuong {2:F2} m / hinh that {3:F2} m; vung co lua NAM TRONG VIEN than {4:P0} (theo nang luong {6:P0}); than duoc lua phu {5:P0}",
+                d.name, l.SoRendererDaPhu, l.ChieuCaoThan, hi - lo, trongVien, phu, NangLuongTrong));
+            Kiem(l.SoRendererDaPhu >= 1, d.name + ": khong phu duoc lop lua len renderer nao");
             Kiem(Mathf.Abs(l.ChieuCaoThan / (hi - lo) - 1f) < 0.15f, d.name + ": chieu cao theo xuong lech hinh that qua 15%");
-            Kiem(soKhoi >= 2 && soKhoi <= 12, d.name + ": so khoi lua khong phai mot cum vai khoi chong nhau");
-            Kiem(lechMax < 0.55f, d.name + ": co khoi lua lech khoi than (khong phai mot cum)");
-            Kiem(phuMin >= 0.85f, d.name + ": co dai than khong nam trong khoi lua");
+            Kiem(trongVien >= 0.90f, d.name + ": lua tran ra ngoai vien than");
+            Kiem(phu >= 0.80f, d.name + ": lua chua lan khap than");
         }
-        cam.transform.position = p + new Vector3(0f, 13f, -11.5f);
-        cam.transform.LookAt(p);
-        yield return null;
-        Chup(cam, "PlayTestShots/lua_chay_goc_choi.png");
 
         // ================= C1. HET GIO -> TAT NGAY =================
         bool daThayHet = false; int khungSauHet = -1; bool conHinh = false;
@@ -158,6 +162,36 @@ public static class ThuLuaChay
         }
         Ghi(string.Format("C1. het chay ({0:F2} s): khung dau khong con BurningEffect -> vat hinh lua con: {1}", giayChay, conHinh));
         Kiem(daThayHet && !conHinh, "het gio chay ma lua van con");
+        int conVatLieu = 0;
+        foreach (var r in mauPc.GetComponentsInChildren<Renderer>())
+            foreach (var m in r.sharedMaterials) if (m != null && m.name.StartsWith("P_LuaPhuThan")) conVatLieu++;
+        Ghi("C1. vat lieu lua con tren than sau khi het: " + conVatLieu);
+        Kiem(conVatLieu == 0, "het chay ma lop lua van dinh tren than");
+
+        // DOI CHUNG muc A: khoi lua billboard lan 2
+        LuaToanThan.DoiChungKhoiLua = true;
+        foreach (var d in tatCa) BurningEffect.Apply(d, 0.01f, 3.5f, null);
+        float tdc = Time.time; while (Time.time - tdc < 1.2f) yield return null;
+        float tongDc = 0f; int soDc = 0;
+        foreach (var d in tatCa)
+        {
+            var l = d.GetComponentInChildren<LuaToanThan>();
+            if (l == null) continue;
+            var c = d.transform.position;
+            cam.transform.position = c + new Vector3(0f, 2.6f, -3.6f);
+            cam.transform.LookAt(c + Vector3.up * 0.9f);
+            yield return new WaitForEndOfFrame();
+            float trongVien, phu;
+            DoAnh(cam, d, l, out trongVien, out phu, d == mauPc ? "PlayTestShots/lua_chay_vien_doichung.png" : null);
+            Ghi(string.Format("A. DOI CHUNG khoi lua lan 2 {0}: vung co lua nam trong vien {1:P0} (theo nang luong {3:P0}); phu than {2:P0}", d.name, trongVien, phu, NangLuongTrong));
+            tongDc += trongVien; soDc++;
+        }
+        // Trung binh ca ba (bo xuong cam khien + kiem nen vien than rong, rieng no doi chung ra 84%)
+        Ghi(string.Format("A. DOI CHUNG trung binh: {0:P0}", soDc > 0 ? tongDc / soDc : -1f));
+        Kiem(soDc > 0 && tongDc / soDc < 0.75f, "doi chung khoi billboard lai nam trong vien - phep do khong phan biet duoc");
+        foreach (var d in tatCa) { var be = d.GetComponent<BurningEffect>(); if (be != null) Object.Destroy(be); }
+        LuaToanThan.DoiChungKhoiLua = false;
+        yield return null;
 
         // ================= B. DI CHUYEN: LUA BAM THEO NGUOI =================
         var dB = quai[0];
@@ -165,52 +199,47 @@ public static class ThuLuaChay
         var ketQua = new float[2];
         for (int bien = 0; bien < 2; bien++)
         {
+            LuaToanThan.DoiChungKhoiLua = bien == 1;
             LuaToanThan.DoiChungTheGioi = bien == 1;
             var goc = p + new Vector3(-6f, 0f, 3f); goc.y = DatY(goc);
             DatCho(dB, goc);
             dB.transform.rotation = Quaternion.Euler(0f, 90f, 0f);
             BurningEffect.Apply(dB, 0.01f, 3f, null);
-            float tb = Time.time; while (Time.time - tb < 0.8f) yield return null;   // dung yen cho du khoi lua
+            float tb = Time.time; while (Time.time - tb < 0.8f) yield return null;   // dung yen cho du lua
             float tc = Time.time;
-            bool daChup = false;
+            float lechGoc = 0f;
             while (Time.time - tc < 1.0f)
             {
                 var q = dB.transform.position + Vector3.right * 6f * Time.deltaTime;
                 q.y = DatY(q);
                 DatCho(dB, q);
-                if (bien == 0 && !daChup && Time.time - tc > 0.7f)
-                {
-                    daChup = true;
-                    cam.transform.position = q + new Vector3(0f, 4.2f, -6.2f);
-                    cam.transform.LookAt(q + Vector3.up);
-                    yield return new WaitForEndOfFrame();
-                    Chup(cam, "PlayTestShots/lua_chay_dang_chay.png");
-                }
                 yield return null;
+                var lb = dB.GetComponentInChildren<LuaToanThan>();
+                if (lb != null && lb.LopPhu != null)
+                {
+                    Vector4 g = lb.LopPhu.GetVector("_Goc");
+                    lechGoc = Mathf.Max(lechGoc, Vector2.Distance(new Vector2(g.x, g.z), new Vector2(hongB.position.x, hongB.position.z)));
+                }
             }
+            var c = dB.transform.position;
+            cam.transform.position = c + new Vector3(0f, 2.6f, -3.6f);
+            cam.transform.LookAt(c + Vector3.up * 0.9f);
             yield return new WaitForEndOfFrame();
             var l = dB.GetComponentInChildren<LuaToanThan>();
-            float s = 0f; int n = 0;
-            if (l != null)
-                foreach (var ps in new[] { l.LopTruoc, l.LopSau })
-                {
-                    var hat = new ParticleSystem.Particle[ps.main.maxParticles];
-                    int k = ps.GetParticles(hat);
-                    for (int i = 0; i < k; i++)
-                    {
-                        Vector3 w = ps.main.simulationSpace == ParticleSystemSimulationSpace.Local ? ps.transform.TransformPoint(hat[i].position) : hat[i].position;
-                        s += Vector2.Distance(new Vector2(w.x, w.z), new Vector2(hongB.position.x, hongB.position.z)); n++;
-                    }
-                }
-            ketQua[bien] = n > 0 ? s / n : -1f;
-            Ghi(string.Format("B. {0}: chay 6 m/s trong 1 s -> {1} khoi lua, tam khoi cach xuong Hips (ngang) trung binh {2:F2} m",
-                bien == 0 ? "BAN SUA (cuc bo theo than)" : "DOI CHUNG mo phong the gioi (ban cu)", n, ketQua[bien]));
+            float trongVien = -1f, phu = -1f;
+            if (l != null) DoAnh(cam, dB, l, out trongVien, out phu, bien == 0 ? "PlayTestShots/lua_chay_dang_chay.png" : "PlayTestShots/lua_chay_dang_chay_doichung.png");
+            ketQua[bien] = trongVien;
+            Ghi(string.Format("B. {0}: chay 6 m/s trong 1 s -> lua nam trong vien than {1:P0}, phu than {2:P0}{3}",
+                bien == 0 ? "BAN SUA (lop lua tren than)" : "DOI CHUNG khoi billboard + mo phong the gioi (lan 1-2)", trongVien, phu,
+                bien == 0 ? string.Format("; goc toa do lua lech Hips toi da {0:F3} m", lechGoc) : ""));
+            if (bien == 0) Kiem(lechGoc < 0.05f, "goc toa do lua khong di theo nguoi");
             Object.Destroy(dB.GetComponent<BurningEffect>());
             yield return null; yield return null;
         }
         LuaToanThan.DoiChungTheGioi = false;
-        Kiem(ketQua[0] >= 0f && ketQua[0] < 0.5f, "dang chay ma lua khong bam theo nguoi");
-        Kiem(ketQua[1] > 1.0f, "doi chung mo phong the gioi khong bi bo lai - phep do khong bat duoc loi cu");
+        LuaToanThan.DoiChungKhoiLua = false;
+        Kiem(ketQua[0] >= 0.90f, "dang chay ma lua tran ra ngoai / bi bo lai");
+        Kiem(ketQua[1] >= 0f && ketQua[1] < 0.6f, "doi chung (lua bi bo lai) van nam trong vien - phep do khong bat duoc loi cu");
 
         // ================= C2. BI GO GIUA CHUNG -> TAT NGAY =================
         var dC = quai[1];
@@ -266,62 +295,115 @@ public static class ThuLuaChay
         }
     }
 
-    /// <summary>
-    /// Khoi lua la billboard quay mat ve may quay: chieu dinh than va tam khoi len mat phang nhin (toa do may quay x, y).
-    /// Dinh "co lua" khi nam trong phan co lua cua MOT khoi: |dx| <= 0,30 be ngang, dy trong [-0,41; +0,37] chieu cao khung
-    /// (lua thay ro tu 9% den 87% khung, do tren anh).
-    /// </summary>
-    static void DoCum(Damageable d, LuaToanThan l, Camera cam, out int soKhoi, out float lechMax, out float phuMin, out string dai)
+    const int RongAnh = 480, CaoAnh = 540;
+    static float NangLuongTrong;
+    const int NoiVien = 14;
+
+    static Color[] ChupMau(Camera cam, Shader thay = null)
     {
-        soKhoi = 0; lechMax = 0f; phuMin = 0f; dai = "";
-        var hong = Hong(d);
-        var tam = new List<Vector3>(); var co = new List<Vector3>();
-        foreach (var ps in new[] { l.LopTruoc, l.LopSau })
+        var rt = RenderTexture.GetTemporary(RongAnh, CaoAnh, 24, RenderTextureFormat.ARGB32);
+        var cuRt = cam.targetTexture;
+        cam.targetTexture = rt;
+        if (thay != null) cam.RenderWithShader(thay, ""); else cam.Render();
+        cam.targetTexture = cuRt;
+        var cu = RenderTexture.active;
+        RenderTexture.active = rt;
+        var tx = new Texture2D(RongAnh, CaoAnh, TextureFormat.RGB24, false);
+        tx.ReadPixels(new Rect(0, 0, RongAnh, CaoAnh), 0, 0);
+        tx.Apply();
+        RenderTexture.active = cu;
+        RenderTexture.ReleaseTemporary(rt);
+        var px = tx.GetPixels();
+        Object.DestroyImmediate(tx);
+        return px;
+    }
+
+    static float Sang(Color c) { return 0.299f * c.r + 0.587f * c.g + 0.114f * c.b; }
+
+    /// <summary>
+    /// Ba anh CUNG MOT KHUNG (khong ai cap nhat giua ba lan Render): co than + an lua, co than + co lua, va BONG THAN = rieng
+    /// nhan vat nay ve TRANG DAC tren nen den (lop 31, shader thay the). Lan dau lay bong bang "co than tru an than" thi dinh
+    /// ca BONG DO tren dat (than tat thi bong do cung mat) va sot phan ao toi lan vao nen dem -> doi chung khoi billboard ra
+    /// "93% trong vien". Den lua tat ca ba (chi do HINH lua, khong do anh sang no hat len dat).
+    /// </summary>
+    static void DoAnh(Camera cam, Damageable d, LuaToanThan l, out float trongVien, out float phu, string luuAnh)
+    {
+        var than = new List<Renderer>();
+        foreach (var r in d.GetComponentsInChildren<Renderer>())
+            if (r.enabled && (r is SkinnedMeshRenderer || r is MeshRenderer) && !r.transform.IsChildOf(l.transform)) than.Add(r);
+        bool denBat = l.Den != null && l.Den.enabled;
+        if (l.Den != null) l.Den.enabled = false;
+        // Tat BLOOM khi do HINH lua: quang toa sang cua bloom quanh moi vat sang (lo lua cung co) ra mot vanh mo 20-30 diem
+        // anh ngoai vien - lan do thu hai tuong la lop vo lua tran ra (76-87% "trong vien").
+        var bloom = cam.GetComponent<SimpleBloom>();
+        bool bloomBat = bloom != null && bloom.enabled;
+        if (bloom != null) bloom.enabled = false;
+
+        l.AnHinh(true);
+        var a1 = ChupMau(cam);
+        l.AnHinh(false);
+        var a3 = ChupMau(cam);
+        if (l.Den != null) l.Den.enabled = denBat;
+        if (bloom != null) bloom.enabled = bloomBat;
+
+        // Bong than: rieng nhan vat nay, trang dac tren nen den
+        var lopCu = new List<int>();
+        foreach (var r in than) { lopCu.Add(r.gameObject.layer); r.gameObject.layer = 31; }
+        var cf = cam.clearFlags; var nen = cam.backgroundColor; int mat = cam.cullingMask;
+        cam.clearFlags = CameraClearFlags.SolidColor; cam.backgroundColor = Color.black; cam.cullingMask = 1 << 31;
+        var a2 = ChupMau(cam, Shader.Find("Hidden/Diablo25D/TrangDacPhepThu"));
+        cam.clearFlags = cf; cam.backgroundColor = nen; cam.cullingMask = mat;
+        for (int k = 0; k < than.Count; k++) than[k].gameObject.layer = lopCu[k];
+
+        int n = RongAnh * CaoAnh;
+        var bong = new bool[n];
+        for (int i = 0; i < n; i++) bong[i] = a2[i].r > 0.5f;
+        // Noi vien bong than NoiVien diem anh (hai luot tach: ngang roi doc)
+        var tam = new bool[n]; var vien = new bool[n];
+        for (int y = 0; y < CaoAnh; y++)
         {
-            var hat = new ParticleSystem.Particle[ps.main.maxParticles];
-            int k = ps.GetParticles(hat);
-            for (int i = 0; i < k; i++)
+            int cuoi = -100000;
+            for (int x = 0; x < RongAnh; x++) { if (bong[y * RongAnh + x]) cuoi = x; if (x - cuoi <= NoiVien) tam[y * RongAnh + x] = true; }
+            cuoi = 100000;
+            for (int x = RongAnh - 1; x >= 0; x--) { if (bong[y * RongAnh + x]) cuoi = x; if (cuoi - x <= NoiVien) tam[y * RongAnh + x] = true; }
+        }
+        for (int x = 0; x < RongAnh; x++)
+        {
+            int cuoi = -100000;
+            for (int y = 0; y < CaoAnh; y++) { if (tam[y * RongAnh + x]) cuoi = y; if (y - cuoi <= NoiVien) vien[y * RongAnh + x] = true; }
+            cuoi = 100000;
+            for (int y = CaoAnh - 1; y >= 0; y--) { if (tam[y * RongAnh + x]) cuoi = y; if (cuoi - y <= NoiVien) vien[y * RongAnh + x] = true; }
+        }
+        float trong = 0f, tong = 0f; int soBong = 0, bongCoLua = 0, dtLua = 0, dtTrong = 0;
+        var anh = luuAnh != null ? new Color[n] : null;
+        for (int i = 0; i < n; i++)
+        {
+            float them = Mathf.Max(0f, Sang(a3[i]) - Sang(a1[i]));
+            tong += them;
+            if (vien[i]) trong += them;
+            if (them > 0.05f) { dtLua++; if (vien[i]) dtTrong++; }
+            if (bong[i]) { soBong++; if (them > 0.08f) bongCoLua++; }
+            if (anh != null)
             {
-                Vector3 w = ps.main.simulationSpace == ParticleSystemSimulationSpace.Local ? ps.transform.TransformPoint(hat[i].position) : hat[i].position;
-                tam.Add(w); co.Add(hat[i].GetCurrentSize3D(ps));
-                float lech = Vector2.Distance(new Vector2(w.x, w.z), new Vector2(hong.position.x, hong.position.z));
-                if (lech > lechMax) lechMax = lech;
+                // Anh soi: anh co lua, vien noi rong ve do (nhu net nguoi dung ve), lua ngoai vien to xanh la
+                var c = a3[i];
+                bool bien = vien[i] && ((i % RongAnh > 0 && !vien[i - 1]) || (i % RongAnh < RongAnh - 1 && !vien[i + 1]) || (i >= RongAnh && !vien[i - RongAnh]) || (i < n - RongAnh && !vien[i + RongAnh]));
+                if (bien) c = Color.red;
+                else if (!vien[i] && them > 0.05f) c = Color.Lerp(c, Color.green, 0.7f);
+                anh[i] = c;
             }
         }
-        soKhoi = tam.Count;
-        var dinh = new List<Vector3>();
-        foreach (var smr in d.GetComponentsInChildren<SkinnedMeshRenderer>())
+        // Tinh theo DIEN TICH vung co lua (sang them > 0,05): tinh theo nang luong thi khoi billboard sang nhat o giua than
+        // nen van ra 75-88% "trong vien" (doi chung lan dau).
+        trongVien = dtLua > 0 ? (float)dtTrong / dtLua : 0f;
+        NangLuongTrong = tong > 1e-3f ? trong / tong : 0f;
+        phu = soBong > 0 ? (float)bongCoLua / soBong : 0f;
+        if (anh != null)
         {
-            var m = new Mesh();
-            smr.BakeMesh(m, true);
-            var v = m.vertices;
-            int buoc = Mathf.Max(1, v.Length / 800);
-            for (int i = 0; i < v.Length; i += buoc) dinh.Add(smr.transform.TransformPoint(v[i]));
-            Object.DestroyImmediate(m);
-        }
-        if (dinh.Count == 0 || soKhoi == 0) return;
-        float lo = 1e9f, hi = -1e9f;
-        foreach (var x in dinh) { if (x.y < lo) lo = x.y; if (x.y > hi) hi = x.y; }
-        int[] tong = new int[5], coLua = new int[5];
-        var W2V = cam.worldToCameraMatrix;
-        foreach (var x in dinh)
-        {
-            int b = Mathf.Clamp((int)((x.y - lo) / Mathf.Max(0.01f, hi - lo) * 5f), 0, 4);
-            tong[b]++;
-            Vector3 vx = W2V.MultiplyPoint(x);
-            for (int i = 0; i < tam.Count; i++)
-            {
-                Vector3 vc = W2V.MultiplyPoint(tam[i]);
-                float dy = (vx.y - vc.y) / co[i].y;
-                if (Mathf.Abs(vx.x - vc.x) <= 0.30f * co[i].x && dy >= -LuaToanThan.TamTrenChanLua && dy <= 0.37f) { coLua[b]++; break; }
-            }
-        }
-        phuMin = 1f;
-        for (int b = 0; b < 5; b++)
-        {
-            float f = tong[b] > 0 ? (float)coLua[b] / tong[b] : 1f;
-            if (f < phuMin) phuMin = f;
-            dai += (b > 0 ? " " : "") + f.ToString("P0");
+            var tx = new Texture2D(RongAnh, CaoAnh, TextureFormat.RGB24, false);
+            tx.SetPixels(anh); tx.Apply();
+            File.WriteAllBytes(luuAnh, tx.EncodeToPNG());
+            Object.DestroyImmediate(tx);
         }
     }
 
@@ -346,6 +428,7 @@ public static class ThuLuaChay
     static void Ket()
     {
         LuaToanThan.DoiChungTheGioi = false;
+        LuaToanThan.DoiChungKhoiLua = false;
         File.WriteAllText("PlayTestShots/lua_chay.txt", bao.ToString());
         foreach (var go in Object.FindObjectsByType<Transform>())
             if (go != null && go.parent == null && go.name.StartsWith("TAM_")) Object.Destroy(go.gameObject);

@@ -1,9 +1,14 @@
-A. Player: than cao theo xuong 1.56 m / hinh that 1.66 m; 6 khoi lua song, lech ngang toi da so voi Hips 0.26 m; khoi 1.67 x 2.70 m; PHU THAN (chan->dau) 100 % 100 % 100 % 100 % 100 %, dai kem nhat 100 %
-A. TAM_Quai_Skeleton: than cao theo xuong 1.56 m / hinh that 1.71 m; 4 khoi lua song, lech ngang toi da so voi Hips 0.27 m; khoi 1.68 x 2.71 m; PHU THAN (chan->dau) 99 % 95 % 97 % 100 % 100 %, dai kem nhat 95 %
-A. TAM_Quai_QuyCay: than cao theo xuong 1.79 m / hinh that 1.82 m; 6 khoi lua song, lech ngang toi da so voi Hips 0.31 m; khoi 1.92 x 3.10 m; PHU THAN (chan->dau) 98 % 100 % 100 % 100 % 100 %, dai kem nhat 98 %
+A. Player: phu lop lua len 1 renderer; than cao theo xuong 1.56 m / hinh that 1.66 m; vung co lua NAM TRONG VIEN than 99 % (theo nang luong 100 %); than duoc lua phu 99 %
+A. TAM_Quai_Skeleton: phu lop lua len 1 renderer; than cao theo xuong 1.56 m / hinh that 1.71 m; vung co lua NAM TRONG VIEN than 100 % (theo nang luong 100 %); than duoc lua phu 99 %
+A. TAM_Quai_QuyCay: phu lop lua len 1 renderer; than cao theo xuong 1.79 m / hinh that 1.82 m; vung co lua NAM TRONG VIEN than 100 % (theo nang luong 100 %); than duoc lua phu 97 %
 C1. het chay (4.00 s): khung dau khong con BurningEffect -> vat hinh lua con: False
-B. BAN SUA (cuc bo theo than): chay 6 m/s trong 1 s -> 6 khoi lua, tam khoi cach xuong Hips (ngang) trung binh 0.20 m
-B. DOI CHUNG mo phong the gioi (ban cu): chay 6 m/s trong 1 s -> 6 khoi lua, tam khoi cach xuong Hips (ngang) trung binh 3.36 m
+C1. vat lieu lua con tren than sau khi het: 0
+A. DOI CHUNG khoi lua lan 2 Player: vung co lua nam trong vien 62 % (theo nang luong 79 %); phu than 94 %
+A. DOI CHUNG khoi lua lan 2 TAM_Quai_Skeleton: vung co lua nam trong vien 79 % (theo nang luong 88 %); phu than 59 %
+A. DOI CHUNG khoi lua lan 2 TAM_Quai_QuyCay: vung co lua nam trong vien 67 % (theo nang luong 81 %); phu than 96 %
+A. DOI CHUNG trung binh: 69 %
+B. BAN SUA (lop lua tren than): chay 6 m/s trong 1 s -> lua nam trong vien than 99 %, phu than 99 %; goc toa do lua lech Hips toi da 0.000 m
+B. DOI CHUNG khoi billboard + mo phong the gioi (lan 1-2): chay 6 m/s trong 1 s -> lua nam trong vien than 1 %, phu than 0 %
 C2. go giua chung: truoc co lua True -> khung ke tiep con lua False
-E. 2 s chay: mat 9.3 mau, 0 chum tia trung don | DOI CHUNG 1 don lua thuong: 1 chum
+E. 2 s chay: mat 9.4 mau, 0 chum tia trung don | DOI CHUNG 1 don lua thuong: 1 chum
 so loi ghi nhan = 0

@@ -395,15 +395,15 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
   `GiatSet.MauQuangNguoiChoi`, bám cầu → kẻ địch) — sửa kiểu tia là đổi cả hai; tia cầu điện vẫn sống 0,22 s (`GiaySongTiaCauDien`,
   cầu bắn mỗi 0,4 s). Menu 74 mục K kiểm. ⚠️ Vật liệu static tạo lúc Play **bị xoá khi thoát Play** — kiểm bằng null của Unity, đừng
   dùng cờ "đã nạp" (tia từng âm thầm quay về kiểu cũ). Menu 69 mục G kiểm (có đối chứng từng mục).
-- ⚠️ **BỊ CHÁY = MỘT KHỐI LỬA TRÙM TOÀN THÂN, ĐI THEO NGƯỜI, TẮT NGAY** (người dùng 28/09/2026, hai lần; `Vfx/LuaToanThan.cs`, gọi từ
-  `VfxFactory.AttachBurning` — prefab `Vfx_BongChay` KHÔNG dùng nữa): ảnh Blender MCP `Flipbooks/LuaToanThan` (khung 1:2, 4×4 **lặp vòng**,
-  `CongCu/Blender/lua_chay_nguoi.blend` cảnh `LuaToanThan`; lửa thấy rõ 9–87% chiều cao khung → `TamTrenChanLua` 0,41, `PhanCaoCoLua` 0,78);
-  vài hạt LỚN (mỗi hạt cả khối lửa, 14 khung/giây) hai lớp trước/sau lệch theo hướng máy quay; ⚠️ **MÔ PHỎNG CỤC BỘ** + gốc hình đặt
-  theo xương Hips / xương thấp nhất mỗi khung (mô phỏng thế giới = lửa bị bỏ lại 3,36 m khi chạy 6 m/s — người dùng báo). Chồng nhiều
-  khối cộng sáng thì thành cục trắng chói. Hết chạy / bị gỡ: `BurningEffect.OnDestroy` xoá hình NGAY (người dùng bỏ tàn dần).
-  **Nhịp cháy không phun tia trúng đòn** (`Damageable.BoQuaTiaTrungDon` — chùm `HitBurst` mỗi 0,5 s là "đốm cháy văng ra" người dùng chê).
+- ⚠️ **BỊ CHÁY = LỬA CHÁY LAN TRÊN CHÍNH THÂN, NẰM TRONG VIỀN NGƯỜI, TẮT NGAY** (người dùng 28/09/2026, ba lần; `Vfx/LuaToanThan.cs`,
+  gọi từ `VfxFactory.AttachBurning` — prefab `Vfx_BongChay` KHÔNG dùng nữa): phủ THÊM vật liệu `Diablo25D/LuaPhuThan` (`S_LuaPhuThan.shader`,
+  vật liệu gốc `Resources/KyNang/Chay/LuaPhuThan.mat` để vào bản build, mỗi kẻ một bản sao) lên mọi Skinned/MeshRenderer như lớp than
+  `ChayDenToanThan`; lượt 1 lửa trên da, lượt 2 vỏ phồng 7 cm chỉ hiện ở viền. Hoa văn Blender MCP `KyNang/Chay/LuaPhuThan.png` (lặp
+  liền mạch; R sọc, G đám, B nứt), toạ độ = trục phải máy quay × độ cao thân, trừ `_Goc` (hông / xương thấp nhất mỗi khung) → chạy không
+  trượt. **Không có khói** (khói xám làm sáng nền đêm thành quầng ngoài viền). Khối billboard lần 2 chỉ còn là đối chứng (`DoiChungKhoiLua`).
+  Hết chạy / bị gỡ: xoá ngay, gỡ đúng lớp của mình. **Nhịp cháy không phun tia trúng đòn** (`Damageable.BoQuaTiaTrungDon`).
   ⚠️ `BurningEffect.Apply` mắc bẫy AddComponent: cháy luôn ≥ 4 s và ≥ 6 máu/giây — CHƯA sửa, đã hỏi người dùng.
-  Menu 90 kiểm (một cụm, phủ thân chiếu lên mặt phẳng nhìn, chạy 6 m/s có đối chứng `DoiChungTheGioi`, tắt ngay, 0 tia trúng đòn).
+  Menu 90 kiểm bằng ẢNH (bóng thân trắng đặc lớp 31 + nới 14 px; TẮT bloom; tính theo DIỆN TÍCH): 99–100% lửa trong viền, đối chứng 69%.
 - ⚠️ **XÁC NẰM TRÊN VŨNG MÁU** (người dùng 26/09/2026, `Combat/XacNam.cs`, gắn trong `Damageable.Die`): quái và người chơi chết thì
   **nằm hẳn theo tư thế NGẪU NHIÊN: ngửa / sấp / nghiêng trái / nghiêng phải** (1/3 ngửa · 1/3 sấp · 1/3 nghiêng, `XacNam.KieuNam`,
   `ChonTuThe`) — lật MODEL CON 90° quanh trục của gốc như `BiDanhNga` (`XoayNam`); các bộ hoạt hình thấy `XacNam.LaXac` thì bỏ tư thế

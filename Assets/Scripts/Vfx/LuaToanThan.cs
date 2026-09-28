@@ -18,6 +18,13 @@ using UnityEngine;
 ///   - MO PHONG CUC BO (Local) va goc hinh DI THEO THAN moi khung (tam = xuong Hips, day = xuong thap nhat): nhan vat chay
 ///     thi ca khoi lua di theo, khong con vet lua o lai phia sau (ban truoc mo phong THE GIOI).
 ///   - Het chay / bi go (Toc bien, Tang hinh, chet): BurningEffect xoa ngay - lua bien mat luon.
+/// Lan 3 (28/09/2026, nguoi dung ve DUONG DO om sat dang nhan vat): "cho ngon lua dot lan khap nguoi, khong de nguyen 1 cuc
+/// roi de nhan vat ben trong - lua chay va nam ben trong duong ke do". Khoi billboard lan 2 la tam anh dung truoc than,
+/// tran ra hai ben va tren dau. Nay lua ve THANG TREN LUOI NHAN VAT: phu them vat lieu Diablo25D/LuaPhuThan (anh nhieu lua
+/// Blender MCP, canh LuaPhuThan -> Resources/KyNang/Chay/LuaPhuThan.png; vat lieu goc Resources/KyNang/Chay/LuaPhuThan.mat
+/// de shader vao ban build) len moi SkinnedMeshRenderer / MeshRenderer, nhu lop than cua ChayDenToanThan: lua om dung tay,
+/// chan, dau, cu dong theo hoat hinh; vo lua phong ra 7 cm o vien. Khoi billboard lan 2 CHI con lam DOI CHUNG cho menu 90
+/// (<see cref="DoiChungKhoiLua"/>). Tan lua, den giu nguyen (cuc bo); bo khoi.
 /// Kich thuoc theo chieu cao than do tu XUONG (rig.bodyHeight sai: bo xuong 2,36 m trong khi hinh cao 1,67). Vat khong co
 /// xuong (bia thu) thi dung h, r truyen vao.
 /// </summary>
@@ -38,13 +45,23 @@ public class LuaToanThan : MonoBehaviour
 
     /// <summary>Phep thu (menu 90) bat de lam DOI CHUNG: mo phong THE GIOI nhu ban cu - lua bi bo lai phia sau khi chay.</summary>
     public static bool DoiChungTheGioi;
+    /// <summary>Phep thu (menu 90) bat de lam DOI CHUNG: khoi lua billboard cua lan 2 thay cho lop lua phu tren than.</summary>
+    public static bool DoiChungKhoiLua;
+
+    const string DuongVatLieuPhu = "KyNang/Chay/LuaPhuThan";
+    static Material mPhuGoc;
+    Material lopPhu;
+    readonly List<Renderer> daPhu = new List<Renderer>();
+    /// <summary>So renderer da phu lop lua - phep thu doc.</summary>
+    public int SoRendererDaPhu { get { return daPhu.Count; } }
+    public Material LopPhu { get { return lopPhu; } }
 
     Transform muc, hong, dauDinh;
     readonly List<Transform> xuongDuoi = new List<Transform>();
     float cao = 1.7f;
     float hDuPhong = 1.7f;
 
-    ParticleSystem truoc, sau, quang, tan, khoi;
+    ParticleSystem truoc, sau, quang, tan;
     Light den;
 
     public float ChieuCaoThan { get { return cao; } }
@@ -181,21 +198,25 @@ public class LuaToanThan : MonoBehaviour
 
     void DungHat()
     {
-        // Moi lop ~3 khoi chong nhau, cong sang: sang qua thi thanh mot cuc trang, mat het luoi lua (lan dau 8 khoi x 1,15)
-        truoc = TaoLopLua("LuaTruoc", -6f, 1.0f, 0.85f);
-        sau = TaoLopLua("LuaSau", -4f, 1.08f, 0.55f);
-
-        quang = TaoHe("QuangLua", VfxFactory.GlowMat, 6, -3f);
+        if (DoiChungKhoiLua)
         {
-            var m = quang.main;
-            m.startLifetime = new ParticleSystem.MinMaxCurve(0.5f, 0.8f);
-            m.startSpeed = 0f;
-            m.startSize = new ParticleSystem.MinMaxCurve(cao * 0.9f, cao * 1.1f);
-            m.startColor = new ParticleSystem.MinMaxGradient(new Color(1f, 0.40f, 0.08f, 0.16f), new Color(1f, 0.55f, 0.15f, 0.24f));
-            var em = quang.emission; em.rateOverTime = 5f; em.SetBursts(new[] { new ParticleSystem.Burst(0f, 2) });
-            var col = quang.colorOverLifetime; col.enabled = true; col.color = MoVaoMoRa(0.3f, 0.6f);
-            quang.Play();
+            // Moi lop ~3 khoi chong nhau, cong sang: sang qua thi thanh mot cuc trang, mat het luoi lua (lan dau 8 khoi x 1,15)
+            truoc = TaoLopLua("LuaTruoc", -6f, 1.0f, 0.85f);
+            sau = TaoLopLua("LuaSau", -4f, 1.08f, 0.55f);
+
+            quang = TaoHe("QuangLua", VfxFactory.GlowMat, 6, -3f);
+            {
+                var m = quang.main;
+                m.startLifetime = new ParticleSystem.MinMaxCurve(0.5f, 0.8f);
+                m.startSpeed = 0f;
+                m.startSize = new ParticleSystem.MinMaxCurve(cao * 0.9f, cao * 1.1f);
+                m.startColor = new ParticleSystem.MinMaxGradient(new Color(1f, 0.40f, 0.08f, 0.16f), new Color(1f, 0.55f, 0.15f, 0.24f));
+                var em = quang.emission; em.rateOverTime = 5f; em.SetBursts(new[] { new ParticleSystem.Burst(0f, 2) });
+                var col = quang.colorOverLifetime; col.enabled = true; col.color = MoVaoMoRa(0.3f, 0.6f);
+                quang.Play();
+            }
         }
+        else PhuThan();
 
         tan = TaoHe("TanLua", VfxFactory.EmberMat, 40, -7f);
         {
@@ -219,26 +240,8 @@ public class LuaToanThan : MonoBehaviour
             tan.Play();
         }
 
-        // Khoi xam dam boc tu dinh khoi lua (cuc bo theo than - khong keo thanh vet phia sau)
-        var matKhoi = VfxFactory.KhoiCuonMat;
-        khoi = TaoHe("KhoiChay", matKhoi != null ? matKhoi : VfxFactory.SmokeMat, 12, 4f);
-        {
-            var m = khoi.main;
-            m.startLifetime = new ParticleSystem.MinMaxCurve(0.9f, 1.3f);
-            m.startSpeed = 0f;
-            m.startSize = new ParticleSystem.MinMaxCurve(cao * 0.35f, cao * 0.55f);
-            m.startRotation = new ParticleSystem.MinMaxCurve(0f, 6.28f);
-            m.startColor = new ParticleSystem.MinMaxGradient(new Color(0.24f, 0.21f, 0.19f, 0.45f), new Color(0.36f, 0.32f, 0.28f, 0.60f));
-            if (matKhoi != null) VfxFactory.BatFlipbook(khoi, 6, 6, 1);
-            var em = khoi.emission; em.rateOverTime = 5f;
-            var vel = khoi.velocityOverLifetime; vel.enabled = true; vel.space = ParticleSystemSimulationSpace.Local;
-            vel.x = new ParticleSystem.MinMaxCurve(-0.1f, 0.1f); vel.y = new ParticleSystem.MinMaxCurve(0.8f, 1.2f); vel.z = new ParticleSystem.MinMaxCurve(-0.1f, 0.1f);
-            var col = khoi.colorOverLifetime; col.enabled = true; col.color = MoVaoMoRa(0.25f, 0.5f);
-            var sol = khoi.sizeOverLifetime; sol.enabled = true;
-            sol.size = new ParticleSystem.MinMaxCurve(1f, new AnimationCurve(new Keyframe(0f, 0.6f), new Keyframe(1f, 1.4f)));
-            khoi.transform.localPosition = new Vector3(0f, cao * 0.62f, 0f);
-            khoi.Play();
-        }
+        // KHONG co khoi: khoi xam tren nen dem toi lam SANG nen quanh than thanh mot quang mo ngoai vien (menu 90 do duoc,
+        // lan 3 - nguoi dung muon lua nam gon trong duong vien than).
 
         var dgo = new GameObject("BurnLight");
         dgo.transform.SetParent(transform, false);
@@ -271,9 +274,15 @@ public class LuaToanThan : MonoBehaviour
             tam = muc.position; day = muc.position.y;
         }
         float cHat = CoKhoi.y;
-        // Chan lua (9% khung) cham xuong thap nhat
-        transform.position = new Vector3(tam.x, day + cHat * TamTrenChanLua, tam.z);
+        // Khoi billboard (doi chung): chan lua (9% khung) cham xuong thap nhat. Lop phu: goc o giua than.
+        transform.position = truoc != null ? new Vector3(tam.x, day + cHat * TamTrenChanLua, tam.z) : new Vector3(tam.x, day + cao * 0.5f, tam.z);
         transform.rotation = Quaternion.identity;
+        if (lopPhu != null)
+        {
+            // Goc toa do lua = chan (xuong thap nhat), ngang theo Hips: nhan vat chay thi hoa van lua di theo, khong truot
+            lopPhu.SetVector("_Goc", new Vector4(tam.x, day, tam.z, 0f));
+            lopPhu.SetFloat("_CaoThan", cao);
+        }
 
         var cam = Camera.main;
         Vector3 huong = Vector3.back;
@@ -284,11 +293,61 @@ public class LuaToanThan : MonoBehaviour
             huong = huong.sqrMagnitude > 1e-4f ? huong.normalized : Vector3.back;
         }
         float r = cao * 0.16f;
-        truoc.transform.position = transform.position + huong * r;
-        sau.transform.position = transform.position - huong * r * 0.6f;
-        quang.transform.position = transform.position + huong * r * 0.5f;
+        if (truoc != null) truoc.transform.position = transform.position + huong * r;
+        if (sau != null) sau.transform.position = transform.position - huong * r * 0.6f;
+        if (quang != null) quang.transform.position = transform.position + huong * r * 0.5f;
         tan.transform.position = transform.position;
-        den.transform.position = transform.position + huong * r + Vector3.up * cao * 0.05f;
+        den.transform.position = transform.position + huong * r * 2f + Vector3.up * cao * 0.05f;   // den ra ngoai than: den trong than chieu nong mat trong
+    }
+
+    /// <summary>
+    /// Phu lop lua len moi renderer cua nhan vat (bo renderer trong suot - vom khien, hat, tia set gan vao nguoi; chi xet vat
+    /// lieu GOC o dau mang: lop phu them khac nhu vo bang, bong uot deu trong suot). Moi ke mot ban vat lieu rieng (_Goc).
+    /// </summary>
+    void PhuThan()
+    {
+        if (mPhuGoc == null) mPhuGoc = Resources.Load<Material>(DuongVatLieuPhu);
+        if (mPhuGoc == null) return;
+        lopPhu = new Material(mPhuGoc);
+        lopPhu.name = "P_LuaPhuThan";
+        foreach (var r in muc.GetComponentsInChildren<Renderer>())
+        {
+            if (r == null || !r.enabled) continue;
+            if (!(r is MeshRenderer) && !(r is SkinnedMeshRenderer)) continue;
+            if (r.transform.IsChildOf(transform)) continue;
+            var mats = r.sharedMaterials;
+            if (mats == null || mats.Length == 0 || mats[0] == null || mats[0].renderQueue >= 3000) continue;
+            var moi = new Material[mats.Length + 1];
+            for (int k = 0; k < mats.Length; k++) moi[k] = mats[k];
+            moi[mats.Length] = lopPhu;
+            r.sharedMaterials = moi;
+            daPhu.Add(r);
+        }
+    }
+
+    /// <summary>Phep thu: an / hien toan bo hinh lua (lop phu + hat), de chup anh co / khong lua cung mot khung.</summary>
+    public void AnHinh(bool an)
+    {
+        if (lopPhu != null) lopPhu.SetFloat("_Do", an ? 0f : 1f);
+        foreach (var r in GetComponentsInChildren<ParticleSystemRenderer>()) r.enabled = !an;
+    }
+
+    public Light Den { get { return den; } }
+
+    void OnDestroy()
+    {
+        // Go DUNG lop cua minh (khong tra ca mang goc - de khong mat vo bang / than den dang chong len)
+        for (int i = 0; i < daPhu.Count; i++)
+        {
+            var r = daPhu[i];
+            if (r == null) continue;
+            var mats = r.sharedMaterials;
+            var giu = new List<Material>(mats.Length);
+            for (int k = 0; k < mats.Length; k++) if (mats[k] != lopPhu) giu.Add(mats[k]);
+            r.sharedMaterials = giu.ToArray();
+        }
+        daPhu.Clear();
+        if (lopPhu != null) Destroy(lopPhu);
     }
 
     void LateUpdate()
