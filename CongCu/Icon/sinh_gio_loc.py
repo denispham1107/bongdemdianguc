@@ -1,8 +1,14 @@
 # -*- coding: utf-8 -*-
 # Icon ky nang GIO LOC (16/09/2026): ba con loc nho tu icon Loc xoay (Icons/Loc.png), nhuom nau.
 # Nguoi dung chon: dung hinh Loc xoay doi mau nau, khong dung Blender.
-# Chay: python CongCu/Icon/sinh_gio_loc.py
+# Chay: python CongCu/Icon/sinh_gio_loc.py --cu
+#
+# !!! BAN CU - icon Gio loc nay ve bang CongCu/Icon/sinh_icon_ve_lai_5.py (29/09/2026). Chay se DE MAT icon moi.
 import os
+import sys
+if "--cu" not in sys.argv:
+    print("Ban cu - icon Gio loc ve bang CongCu/Icon/sinh_icon_ve_lai_5.py. Them --cu neu that su muon ve lai ban cu.")
+    sys.exit(0)
 from PIL import Image, ImageChops
 
 GOC = os.path.join(os.path.dirname(__file__), "..", "..")

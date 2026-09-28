@@ -46,8 +46,10 @@ public static class IconKyNang
     // cho phep khong dung Blender): khoi bang pha le nhieu mat cat + vet suong gia.
     // Nen xanh bang SANG hon Mua bang mot chut de hai nut bang khong lan vao nhau.
     public static Texture2D CauBang()    { return Ve("Icons/CauBang",    new Color(0.04f, 0.17f, 0.34f)); }
-    // Gio loc: ba loc nho tu icon Loc xoay nhuom nau (CongCu/Icon/sinh_gio_loc.py, 16/09/2026), nen nau dat toi
-    public static Texture2D GioLoc()     { return Ve("Icons/GioLoc",     new Color(0.20f, 0.11f, 0.04f)); }
+    // Gio loc: VE LAI LAN HAI 29/09/2026 (CongCu/Icon/sinh_icon_ve_lai_5.py - nguoi dung: ban 28/09 "van con qua xau"): ba loc
+    // THE TICH toa hinh quat tu mot diem, dinh tan vao may giong, set trong long, bia mo bi hat tung. Nen XANH XAM MAY GIONG
+    // (loc trong game da doi sang mau may giong; truoc nen nau dat 0,20 0,11 0,04)
+    public static Texture2D GioLoc()     { return Ve("Icons/GioLoc",     new Color(0.07f, 0.09f, 0.13f)); }
     // Lua dia nguc: VE LAI 28/09/2026 (CongCu/Icon/sinh_icon_ve_lai.py): 5 qua cau lua toa quat roi di ve muc tieu, an chu
     // ngu giac do sam phia sau. Nen do mau toi
     public static Texture2D LuaDiaNguc() { return Ve("Icons/LuaDiaNguc", new Color(0.24f, 0.02f, 0.02f)); }
@@ -58,6 +60,8 @@ public static class IconKyNang
     public static Texture2D MayGiong()   { return Ve("Icons/MayGiong",   new Color(0.05f, 0.08f, 0.16f)); }
     public static Texture2D CauDien()    { return Ve("Icons/CauDien",    new Color(0.02f, 0.08f, 0.20f)); }
     public static Texture2D HoaLocXoay() { return Ve("Icons/HoaLocXoay", new Color(0.10f, 0.09f, 0.07f)); }
+    // Toc bien: VE LAI LAN HAI 29/09/2026 (sinh_icon_ve_lai_5.py): khong ve hinh nguoi - cho cu khoi tim bay len + vong co lai,
+    // vet phep cong vut sang cho moi, vong phep khac ky tu no ra + cot sang (dung hai hieu ung bien mat / hien ra trong game)
     public static Texture2D TocBien()    { return Ve("Icons/TocBien",    new Color(0.09f, 0.04f, 0.15f)); }
 
     // BON KY NANG BI DONG "KHANG ..." (19/09/2026) + TOC DO: VE LAI 29/09/2026 bang script (CongCu/Icon/sinh_icon_ve_lai_4.py -

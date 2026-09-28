@@ -8812,6 +8812,47 @@ là đè mất icon mới — trừ khi thêm `--cu`.
   - Ô trống đo được 0,117–0,123 — khớp đối chứng tháo icon ngày 19/09 (0,115–0,127). Icon mới **×1,85 – ×2,46** so với ô trống
     (ngưỡng ×1,3). **0 lỗi.** Vành vẫn ghi ra để tham khảo (0,166–0,192; mốc 0,217).
 - Ảnh xem trước trên đĩa nút: `PlayTestShots/icon_bi_dong_moi.png`.
+
+### Vẽ lại lần hai hai icon: Gió lốc, Tốc biến (29/09/2026)
+
+**Người dùng:** hai icon vẽ lại hôm 28/09 "vẫn còn quá xấu" — vẽ và thiết kế lại cho hợp nội dung và bối cảnh, không cần Blender.
+
+Nhìn lại bản 28/09:
+- Gió lốc là một phễu bằng các dải xoắn phẳng, trông như lò xo, kèm hai vệt chém trắng như vành đĩa.
+- Tốc biến là bóng người trùm mũ tròn trịa kiểu hoạt hình.
+
+Script mới `CongCu/Icon/sinh_icon_ve_lai_5.py`. Bản cũ tự chặn trừ khi thêm `--cu`: `sinh_gio_loc.py` (16/09) và phần GioLoc/TocBien
+của `sinh_icon_ve_lai_3.py`.
+
+**Gió lốc:**
+- **Ba cơn lốc toả hình quạt** từ một điểm, đúng kỹ năng (3 lốc cách 15°). Cơn giữa to và gần; hai cơn bên nhỏ, xa, nghiêng ra ngoài.
+  Vệt bụi trên đất nối về điểm tung.
+- **Thân lốc vẽ THỂ TÍCH, tính từng điểm ảnh:**
+  - Mỗi hàng có bán kính r(t) (chân loe rộng — tránh dáng "cây kem"), trục uốn chữ S, mép lổn nhổn.
+  - Mỗi điểm lấy góc θ = asin(u) cho mặt TRƯỚC, π − θ cho mặt SAU nhìn xuyên qua.
+  - Vân gió là tổng sin **tuần hoàn theo chu vi**, nên liền mạch quanh phễu; xoắn theo độ cao.
+  - Độ đục tăng theo 1/cos (nhìn xuyên nhiều lớp vỏ hơn ở mép) nên mép đặc, giữa trong. Đèn từ trái.
+  - Bản đầu miệng phễu cắt phẳng, trông như ly thuỷ tinh mờ. Nay **đỉnh tan vào đám mây giông cuộn** (hàm mây của icon Mây giông).
+- Màu mây giông xám xanh như Gió lốc trong game. Bụi cuộn ở chân, sét trong lòng cơn giữa, sét loé trong mây.
+- **Bia mộ bị hất tung** (80% hất tung): phiến đá vòm, sứt mẻ, khắc chữ thập chìm, vết nứt, nổi khối. Có đá vụn bay quanh.
+- **Nền đĩa đổi từ nâu đất (0,20 0,11 0,04) sang xanh xám mây giông (0,07 0,09 0,13)**, vì lốc trong game đã đổi màu.
+
+**Tốc biến — không vẽ hình người**, dựng theo đúng hai hiệu ứng trong game (`VfxTocBien`):
+- **Chỗ cũ:** khói tím bay lên, vòng phép mờ và ba vòng sáng CO lại, hạt tím.
+- Một **vệt phép cong vút** bay sang (mảnh ở đầu, dày và sáng dần về cuối), có vệt tốc độ đứt quãng và sao lấp lánh.
+- **Chỗ mới:** vòng phép phối cảnh (hai vành, ký tự khắc, sao sáu cánh) NỞ ra thành sóng vòng, cột sáng, tia tím toé lên, loé sáng
+  ở điểm đáp.
+
+**Kiểm** (Unity, ảnh sau khi `IconKyNang` ghép lên đĩa nút, vùng giữa 60%):
+
+| Icon | Độ sáng TB | Độ lệch sáng (có hình) | Ghi chú |
+|---|---|---|---|
+| Gió lốc | 0,285 | 0,171 | b 0,372 > r 0,256 — đĩa xanh mây giông |
+| Tốc biến | 0,193 | 0,247 | |
+| Mốc Hoá lốc xoáy / Mây giông | 0,353 / 0,305 | 0,285 / 0,264 | |
+
+- Đủ 22 ô; ô 10 và 15 có hình; Read/Write vẫn bật.
+- Ảnh xem trước (ảnh gốc, trên đĩa nút, 84 px): `PlayTestShots/icon_gio_loc_toc_bien_moi.png`.
 ### Vẽ lại năm icon: Quả cầu lửa, Mưa băng, Sấm sét, Giựt sét, Quả cầu điện (28/09/2026)
 
 **Người dùng:** năm icon này cũng "quá thô và sơ sài" — vẽ lại hợp nội dung từng kỹ năng, không cần Blender MCP.

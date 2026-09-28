@@ -510,6 +510,9 @@ def hoa_loc_xoay():
 if __name__ == "__main__":
     ds = [("GioLoc", gio_loc, (0.20, 0.11, 0.04)), ("Loc", loc_xoay, (0.03, 0.17, 0.18)), ("MayGiong", may_giong, (0.05, 0.08, 0.16)),
           ("TocBien", toc_bien, (0.09, 0.04, 0.15)), ("HoaLocXoay", hoa_loc_xoay, (0.10, 0.09, 0.07))]
+    # 29/09/2026: GioLoc + TocBien da VE LAI LAN HAI bang sinh_icon_ve_lai_5.py - bo qua tru khi co --cu (khong thi de mat icon moi)
+    if "--cu" not in sys.argv:
+        ds = [d for d in ds if d[0] not in ("GioLoc", "TocBien")]
     kq = []
     for ten, ham, nen_he in ds:
         kq.append((ten, xuat(ham(), ten), nen_he))

@@ -210,7 +210,9 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
   con số cố định thay cho 20 × 1,1⁴ × 2 = 58,6 — cấp 4 tốn 26,6 nên cấp 5 lại rẻ hơn, đúng ý người dùng).
   Bị hất = khoá như ngã + **ngắt chiêu** (`PlayerController.NgatChieu`, `EnemyAI.NgatDon`). Bit mạng **`CoHatTung` = bit thứ 5**, mặt nạ gói
   người chơi và gói quái đã nới **0x1F** (còn trống bit 7 gói người chơi, bit 6–7 gói quái). Lướt qua lò lửa thì `DapTatRoiChayLai(30)`.
-  Icon `python CongCu/Icon/sinh_gio_loc.py`. Menu 71 kiểm, 71b chụp ảnh.
+  Icon **vẽ lại lần hai 29/09/2026** `python CongCu/Icon/sinh_icon_ve_lai_5.py` (ba lốc THỂ TÍCH toả quạt, đỉnh tan vào mây giông,
+  nền đĩa xanh xám mây giông; `sinh_gio_loc.py` và phần GioLoc/TocBien của `sinh_icon_ve_lai_3.py` là bản cũ, tự chặn trừ khi `--cu`).
+  Menu 71 kiểm, 71b chụp ảnh.
   ⚠️ **28/09/2026: THÂN DƯỚI TO GẤP ĐÔI** (người dùng: "nhìn như cây kem ốc quế") — Blender MCP, `CongCu/Blender/gio_loc_than_rong.blend`:
   vỏ trong r = 0,826 + 1,019·(z/5)^1,6 (chân 0,413 → 0,827, miệng giữ 1,845), cả 4 lớp nhân cùng k(z); vùng trúng GIỮ 2,42 m. Xuất lại
   `LocNho.fbx`: `axis_forward='-Z', axis_up='Y', bake_space_transform=True, apply_unit_scale=True, mesh_smooth_type='FACE',
@@ -295,7 +297,8 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
   `FrozenEffect` (qua `Thaw()`), `StunnedEffect`, `BiDanhNga`, `BiHatTung`, `BurningEffect`. Đang bị **Lốc xoáy** cuốn
   (`WhirledEffect`) thì chịu. ⚠️ Đo thử đừng dính cháy chung với đóng băng: `BurningEffect.Start` gọi `frozen.Thaw()` nên
   lửa nuốt mất cái đóng băng trước khi đo (menu 76 mục G tách riêng).
-  Đổi `transform.position` phải **tắt `CharacterController` rồi bật lại**. Icon Blender MCP. Menu 76 kiểm.
+  Đổi `transform.position` phải **tắt `CharacterController` rồi bật lại**. Icon vẽ lại lần hai 29/09/2026 (`sinh_icon_ve_lai_5.py`:
+  không hình người — khói tím + vòng co ở chỗ cũ, vệt phép cong, vòng phép nở + cột sáng ở chỗ mới). Menu 76 kiểm.
 - ⚠️ **LỐC XOÁY DỰNG LẠI BẰNG BLENDER MCP THEO ẢNH MẪU** (người dùng 25/09/2026: "giống như trên hình 100%, lốc cuốn lên
   chỉ quay xoay theo trục 1 chiều"; chọn cao 15,4 m dáng theo ảnh · bỏ mây giông + khói đen · tia kiểu Giựt sét nhiều nhánh ·
   vùng hút giữ 5,184). `CongCu/Blender/loc_xoay.blend` → `Resources/KyNang/LocXoay/`: `LocXoay.fbx` (4 vỏ phễu `Vo0–3`
