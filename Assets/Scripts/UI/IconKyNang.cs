@@ -25,6 +25,9 @@ public static class IconKyNang
     // se thay cai nay sang goc nay cai kia goc kia.
     static readonly Vector3 Den = new Vector3(-0.40f, 0.62f, 0.68f).normalized;
 
+    // Lua, Bang, Set, GiatSet, CauDien: VE LAI 28/09/2026 bang script (CongCu/Icon/sinh_icon_ve_lai_2.py - nguoi dung che ban
+    // cu "tho, so sai", cho phep khong dung Blender): chum ba qua cau lua, may bang + vet sao bang roi, may giong + tia set
+    // giang xuong, tia dien lan nhieu muc tieu, qua cau dien loi toi + vo tia dut quang + 5 tia.
     public static Texture2D Lua()        { return Ve("Icons/Lua",        new Color(0.30f, 0.09f, 0.03f)); }
     public static Texture2D Bang()       { return Ve("Icons/Bang",       new Color(0.05f, 0.14f, 0.30f)); }
     public static Texture2D Set()        { return Ve("Icons/Set",        new Color(0.08f, 0.06f, 0.22f)); }

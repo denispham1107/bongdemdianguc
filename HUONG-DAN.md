@@ -8603,6 +8603,36 @@ châm cả bia mộ / nhà mồ (tính năng sáng nay), đầy trần "4 vật 
 
 Ảnh: `PlayTestShots/maygiong_1_dem_can.png`, `maygiong_2_chay_den.png`, `maygiong_3_ngay_goc_choi.png`.
 
+### Vẽ lại năm icon: Quả cầu lửa, Mưa băng, Sấm sét, Giựt sét, Quả cầu điện (28/09/2026)
+
+**Người dùng:** năm icon này cũng "quá thô và sơ sài" — vẽ lại hợp nội dung từng kỹ năng, không cần Blender MCP.
+
+Script `CongCu/Icon/sinh_icon_ve_lai_2.py` dùng lại bộ hàm của `sinh_icon_ve_lai.py` và thêm hai thứ:
+- **Tia sét**: dời điểm giữa ngẫu nhiên vuông góc (midpoint displacement), mỗi tia có nhánh (tối đa 2 cấp). Vẽ hai lớp:
+  lõi trắng mảnh và quầng màu rộng làm mờ hai tầng.
+- **Tô bằng dải màu**: vẽ "trường nhiệt" xám rồi tô bằng dải đen → đỏ → cam → vàng. Đây là cách vẽ lửa không cần mô phỏng.
+
+Nội dung từng icon:
+- **Quả cầu lửa:** CHÙM BA QUẢ như kỹ năng thật (một quả chính, hai quả phụ). Mỗi quả có mặt dung nham cuộn, viền sáng,
+  lưỡi lửa kéo về sau và tàn tro. Khác hẳn Lửa địa ngục (5 quả dí mục tiêu trên ấn chú).
+- **Mưa băng:** mây băng giá xốp phía trên, 10 vệt sao băng rơi THẲNG ĐỨNG (đúng hình Mưa băng trong game), dưới đất có hai
+  cụm lăng trụ băng pha lê (nửa tối nửa sáng), vòng sương và mảnh băng lấp lánh.
+- **Sấm sét:** mây giông tím đen loé sáng từ bên trong, một tia lớn và hai tia phụ rẽ nhánh giáng xuống. Chỗ giáng có chớp
+  trắng, hai vòng xung kích và tia lửa điện toé lên.
+- **Giựt sét:** luồng điện trắng viền xanh đậm phóng từ cụm điện nguồn, LAN sang bốn mục tiêu (tia lan từ kẻ thứ nhất sang
+  kẻ thứ hai, ba). Mỗi chỗ trúng một chớp sao toé tia.
+- **Quả cầu điện:** lõi TỐI, vành sáng, hào quang vòng khuyên, vỏ tia điện ĐỨT QUÃNG nằm ngoài mặt cầu (như hình trong game),
+  5 tia bắn ra 5 hướng.
+
+Sai ở lần vẽ đầu và cách sửa:
+- Quả cầu lửa thành một đám lửa cháy trắng, không thấy quả cầu. Nay vẽ quả cầu riêng trên lửa, lưỡi lửa hẹp và ngắn hơn.
+- Mây dẹt như cái đĩa. Nay là cụm bông xốp nhiều elip xé bằng nhiễu.
+- Tia Sấm sét cong thành chữ "C": độ lệch ngẫu nhiên 0,2 × chiều dài quá lớn ở tầng đầu, nay 0,11.
+- Chỗ trúng Giựt sét trông như tâm ngắm. Nay là chớp toé tia.
+
+Kiểm bằng `IconKyNang` trong Unity: `PlayTestShots/icon_ve_lai_2_trong_game.png` (8 icon vẽ lại xếp cạnh nhau, 5 ảnh vẫn
+Read/Write). Menu 66: đủ 22 ô, 0 lỗi.
+
 ### Vẽ lại ba icon: Quả cầu băng, Tàng hình, Lửa địa ngục (28/09/2026)
 
 **Người dùng:** ba icon "quá thô và sơ sài, nét vẽ như game trẻ em" — vẽ lại cho hợp nội dung từng kỹ năng và bối cảnh game,
