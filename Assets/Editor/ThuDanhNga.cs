@@ -14,8 +14,8 @@ using UnityEngine;
 /// duoc, khong dung duoc ky nang.
 ///
 /// Do bang SO:
-///   A. Xac suat tren 1000 lan gieo (~40%), va thien thach cua Quy du KHONG
-///      danh nga (nguoi dung chi xin cho ky nang cua nguoi choi).
+///   A. Xac suat tren 1000 lan gieo (~40%), va thien thach MAC DINH (ThienThach.Spawn) KHONG danh nga.
+///      Quy du tu 28/09/2026 danh nga 15% / 1 giay - dat rieng o EnemyAI (EnemyFactory.ApDacTinh), menu 91 kiem.
 ///   B. Tung thien thach THAT tu nhan vat: qua roi mang dung 40% va 1,5 giay.
 ///   C. Hinh that tren mot con quai: co bi hat len, co nam NGUA (dau nga ra
 ///      SAU va thap sat dat - do bang VI TRI XUONG DAU, khong doc lai goc minh
@@ -155,11 +155,11 @@ public static class ThuDanhNga
         Ghi("A1. " + SoLan + " lan gieo -> danh nga " + tl.ToString("F1") + "% (mong doi 40%)");
         Kiem(Mathf.Abs(tl - 40f) <= 5f, "xac suat danh nga lech qua xa 40%");
 
-        // Thien thach mac dinh (Quy du dung) khong danh nga
+        // Thien thach MAC DINH khong danh nga (Quy du dat rieng 15% qua EnemyAI - menu 91)
         var ttMacDinh = ThienThach.Spawn(pc.transform.position + new Vector3(0f, 0f, -40f),
                                          LayerMask.GetMask("Enemy", "Ground", "Default"), maskQuai);
-        Ghi("A2. thien thach mac dinh (cua Quy du): xac suat nga " + ttMacDinh.ngaXacSuat + " (phai 0)");
-        Kiem(ttMacDinh.ngaXacSuat == 0f, "thien thach cua quai cung danh nga nguoi choi - khong ai xin");
+        Ghi("A2. thien thach mac dinh: xac suat nga " + ttMacDinh.ngaXacSuat + " (phai 0; Quy du dat rieng 15% - menu 91)");
+        Kiem(ttMacDinh.ngaXacSuat == 0f, "thien thach mac dinh lai danh nga");
         Object.DestroyImmediate(ttMacDinh.gameObject);
 
         // ================================================================

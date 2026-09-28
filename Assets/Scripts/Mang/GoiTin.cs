@@ -314,6 +314,9 @@ public static class GoiTin
 
         /// <summary>Dong bang / choang - bit HieuUngQuaMang.Co*.</summary>
         public byte coHieuUng;
+
+        /// <summary>Vua DO DON (Bo xuong, ChongDo - 28/09/2026): bit 7 cua byte co, bit trong cuoi cung cua goi quai.</summary>
+        public bool doDon;
     }
 
     /// <summary>Mot lan tung phep.</summary>
@@ -705,7 +708,8 @@ public static class GoiTin
             // Byte cuoi truoc day chi mang "da chet" (0/1). Gio bit 0 van la
             // da chet, bit 1-5 la hieu ung (ke ca bi danh nga, bi hat tung) - khong
             // phai doi co goi. Xem ghi chu 0x1F o goi trang thai nguoi choi.
-            b[i++] = (byte)((q.daChet ? 1 : 0) | ((q.coHieuUng & 0x3F) << 1));
+            // Bit 7 (trong cuoi cung): vua do don - xem ChongDo. Goi quai nay da dung HET 8 bit.
+            b[i++] = (byte)((q.daChet ? 1 : 0) | ((q.coHieuUng & 0x3F) << 1) | (q.doDon ? 0x80 : 0));
         }
         return b;
     }
@@ -744,6 +748,7 @@ public static class GoiTin
             byte coQ = b[i++];
             q.daChet = (coQ & 1) != 0;
             q.coHieuUng = (byte)((coQ >> 1) & 0x3F);
+            q.doDon = (coQ & 0x80) != 0;
 
             ra[n] = q;
         }

@@ -112,8 +112,9 @@ public class WhirledEffect : MonoBehaviour
             // Ghi ke danh truoc: con nao chet vi bi cuon ma khong ai ghi thi
             // thanh vo danh (13/09/2026 - menu 61 bat duoc)
             target.GhiKeDanh(KeCuonHienTai);
-            target.TakeDamage(tornado.damagePerSecond * tick, DamageType.Physical,
-                              transform.position);
+            Damageable.LaSatThuongRi = true;          // nhip ri: Bo xuong khong do (ChongDo)
+            try { target.TakeDamage(tornado.damagePerSecond * tick, DamageType.Physical, transform.position); }
+            finally { Damageable.LaSatThuongRi = false; }
             tick = 0f;
         }
     }

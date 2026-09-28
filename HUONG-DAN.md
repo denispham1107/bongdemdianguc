@@ -8603,6 +8603,65 @@ châm cả bia mộ / nhà mồ (tính năng sáng nay), đầy trần "4 vật 
 
 Ảnh: `PlayTestShots/maygiong_1_dem_can.png`, `maygiong_2_chay_den.png`, `maygiong_3_ngay_goc_choi.png`.
 
+### Quỷ cây làm choáng, Quỷ dữ đánh ngã, Bộ xương nhanh hơn, mạnh hơn và biết đỡ đòn (28/09/2026)
+
+**Người dùng yêu cầu:**
+- Quỷ cây: đánh kỹ năng có 15% làm choáng người chơi 1 giây.
+- Quỷ dữ: đánh kỹ năng có 15% đánh ngã người chơi 1 giây.
+- Bộ xương: tốc độ +35%, sát thương lên người chơi +30%, và 25% chống đỡ mọi kỹ năng của người chơi. Đỡ thành công thì không
+  mất máu, kèm một quả cầu bảo vệ và một dòng chữ.
+
+**Người dùng chọn thêm:**
+- Chữ hiện là **"ĐỠ ĐÒN!"** (có dấu, theo quy tắc của game), không phải "Block".
+- Đỡ được thì **tránh cả hiệu ứng** của đòn ấy: cháy, băng, choáng, ngã, hất tung, bị cuốn, cháy đen.
+- **Mỗi đòn trúng gieo riêng** (mỗi quả cầu, hạt băng, tia sét), **trừ sát thương rỉ**: nhịp cháy, nhịp lốc cuốn, vũng lửa
+  Thiên thạch, cây cháy.
+
+**Cách làm:**
+- **Đặt mọi đặc tính trong `EnemyFactory.ApDacTinh`**, gọi lúc sinh quái. Mọi đường sinh đều qua đây: chủ phòng rải quái, máy
+  khách sinh bản sao, phép thử.
+  - Không đặt trong prefab, vì prefab do AssetBaker nướng sẽ đè số trong script.
+  - `GameDirector` sau đó nhân hệ số đợt, nên hai hệ số chồng lên nhau đúng.
+- **Quỷ cây**: `GiatSet.PhongCuaQuai` nhận thêm tỉ lệ và số giây choáng (`EnemyAI.xacSuatChoangTia` 0,15 / 1 s), gieo riêng từng
+  cú trúng như Giựt sét của người chơi. Khiên chặn. Bản sao mạng không tự gieo (máy nạn nhân gieo, báo qua bit `CoChoang`).
+- **Quỷ dữ**: thiên thạch của nó mang `ngaXacSuat` 0,15 và `ngaGiay` 1, đi qua `ThienThach.GieoDanhNga`; kẻ có khiên được bỏ qua.
+- **Bộ xương**: `moveSpeed` ×1,35 và `attackDamage` ×1,30; `Damageable.tiLeDoDon` 0,25.
+- **Đỡ đòn** (`Combat/ChongDo.cs`):
+  - `TakeDamage` gieo khi đòn đến từ NGƯỜI CHƠI (thẻ `GhiKeDanh` của cùng khung hình) và không phải sát thương rỉ
+    (`Damageable.LaSatThuongRi`, bật quanh bốn nguồn rỉ).
+  - Mỗi con chỉ gieo một lần mỗi khung, ghi nhớ kết quả. Đòn và hiệu ứng của chính đòn ấy chạy trong cùng khung, nên dùng chung
+    một kết quả: đỡ sát thương thì đỡ luôn hiệu ứng.
+  - Bảy hàm gắn hiệu ứng đều hỏi `ChongDo.ChanHieuUng` ở đầu.
+  - Lốc xoáy thử cuốn lại mỗi khung, nên mỗi cơn lốc nhớ những con đã đỡ nó (`Tornado.daDoDon`); không thì sớm muộn cũng cuốn được.
+- **Hình khi đỡ đòn** (`Vfx/VfxCauDoDon.cs`):
+  - Vòm khiên dùng lại lưới và shader Khiên (đã có trong bản build), nhuộm **bạc xanh** để khác khiên vàng của người chơi.
+  - Loé to từ 55% lên đủ trong 0,1 s, rồi mờ tắt trong 0,55 s.
+  - Kèm chữ "ĐỠ ĐÒN!" (font Inter). Hai lần hiện cách nhau ít nhất 0,25 s: 36 hạt Mưa băng trúng một con thì không chồng 36 chữ.
+- **Qua mạng**: chủ phòng là trọng tài của quái, chỉ máy chủ gieo.
+  - Byte cờ của gói quái dùng **bit 7** (bit trống cuối cùng) báo "vừa đỡ đòn", giữ trong 0,35 s.
+  - Máy khách thấy bit vừa bật thì hiện quả cầu và chữ.
+  - ⚠️ Máy khách vẫn tự phát lại phép của mình lên bản sao quái, nên với một đòn bị đỡ nó có thể hiện số sát thương trước.
+    Máu thật vẫn theo chủ phòng.
+
+**Đo (menu 91 mới, `PlayTestShots/dac_tinh_quai.txt`, 0 lỗi):**
+
+| Mục | Kết quả | Đối chứng |
+|---|---|---|
+| Bộ xương, so với prefab gốc | tốc 3,645 / 2,70 = ×1,350; sát thương 15,6 / 12 = ×1,300 | Phù thủy ×1,000, đỡ đòn 0% |
+| Bộ xương đuổi thật | 3,61 m/s | — |
+| Bộ xương đánh trúng người chơi | mất 15,60 máu | — |
+| Quỷ cây: 200 tia thật, trúng 200 | choáng 33 = 16,5%; một lần choáng kéo dài trong [0,74; 1,11] s | tỉ lệ 0 → 0/60 |
+| Quỷ dữ: thiên thạch thật | mang 0,15 / 1,00 s; 40 quả trúng 40, ngã 9, mỗi lần 1,00 s | — |
+| Bộ xương: 400 đòn kỹ năng (mỗi đòn một khung) | đỡ 111 = 27,8%. Đỡ mà vẫn cháy: 0; không đỡ mà không cháy: 0; hình hiện 33 lần | sát thương rỉ 0/80; đòn của quái 0/80; Phù thủy 0/80 |
+| Hất tung không kèm đòn | 153/200 = 77% (mong khoảng 75%) | — |
+| Gói tin | bit "vừa đỡ đòn" giữ đúng, không đè lên 6 bit hiệu ứng | — |
+
+- Menu 61 (kinh nghiệm theo kỹ năng, có giết Bộ xương) chạy lại: 0 lỗi.
+- Hai phép thử cũ gắn hiệu ứng thẳng lên Bộ xương để đo cơ chế KHÁC, nay tắt đỡ đòn cho con thử:
+  - menu 71 mục H3: hất tung ngắt đòn;
+  - `ThuBangNguoiChoi` mục B4: vỏ băng.
+- Ảnh: `dac_tinh_quai_do_don.png`. Chữ OnGUI không vào ảnh chụp camera.
+
 ### Bị cháy, lần 4: thấy rõ lửa đang bốc, kèm ít khói (28/09/2026)
 
 **Người dùng:** lớp lửa lần 3 bọc thân chính xác; còn thiếu cảm giác **lửa đang bốc cháy** và **ít khói bay lên**. Họ chọn:
@@ -11628,6 +11687,7 @@ Lần chạy đầu phép thử báo cả 10 con "lơ lửng": tia chiếu từ 
 | **88. Va cham hai mat cho nha mo (Act2)** | Dựng lưới va chạm hai mặt cho mỗi kiểu nhà mồ (`BlenderMaps/GraveyardAct2/VaCham/`) và gắn vào `MeshCollider` của 7 nhà. Chạy lại khi thêm nhà mồ / nhập lại bản đồ. |
 | **89. Chay thu O VUONG SANG tren mat dat (den ky nang)** | Chụp riêng lớp Terrain có / không đèn kỹ năng ở 3 điểm cố định × 4 mức đồ hoạ × 1 / 6 đèn, đo "đường nối" (ô vuông) trên D/A; đối chứng tắt đèn sinh đôi `DenMatDat`. Kèm ảnh vụ nổ thật. `den_mat_dat.txt`. |
 | **90. Chay thu LUA CHAY TOAN THAN (nguoi choi + quai)** | Đốt người chơi, bộ xương, Quỷ cây; chụp 3 ảnh cùng khung (ẩn lửa · có lửa · bóng thân trắng đặc lớp 31), tắt bloom + đèn lửa: tỉ lệ diện tích lửa nằm trong viền thân nới 14 px và tỉ lệ thân được phủ; đối chứng khối billboard lần 2; chạy 6 m/s (đối chứng mô phỏng thế giới); hết giờ / gỡ giữa chừng tắt ngay, không sót vật liệu; nhịp cháy không phun tia trúng đòn. `lua_chay.txt`. |
+| **91. Chay thu DAC TINH QUAI (Quy cay choang, Quy du nga, Bo xuong do don)** | Bộ xương ×1,35 tốc · ×1,30 sát thương so với PREFAB gốc, chạy / đánh thật; Quỷ cây 200 tia thật → ~15% choáng 1 s (đối chứng tỉ lệ 0); Quỷ dữ thiên thạch thật 15% ngã 1 s; Bộ xương 400 đòn kỹ năng → ~25% đỡ, đỡ thì không dính cháy (đối chứng rỉ · đòn quái · Phù thủy = 0), hất tung ~75%; bit gói quái. `dac_tinh_quai.txt`. |
 | **56. Chay thu DOT QUAI Act2 + cho xuat phat** | *(13/09/2026: thêm đo chờ 30 giây và 10 con xa 55–65 m)*  Kiểm chỗ xuất phát ngẫu nhiên (hai máy cùng mã phòng ra cùng danh sách, cách nhau ≥ 22 m, trên đất, ngoài nước, không vướng vật cản) và luật đợt quái Act2 (đợt 1 bốn con quanh mỗi người; đợt sau cộng dồn quái và mạnh thêm 5% máu · sát thương). Số đo `dotquai_act2.txt`. |
 | **55. Chay thu KET TRAN (nguoi song sot cuoi cung)** | Mở kênh giả lập như menu 45: kiểm gói tin kết trận/chết, máy chủ phòng phán quyết đúng lúc còn một người, bảng điểm cộng đúng người, máy khách không tự kết luận và hiện đúng kết quả nghe được, chết rồi camera chuyển sang người còn sống, chụp màn kết trận. Số đo `kettran.txt`, ảnh `kettran_*.png`. |
 | **54c. Chay thu LOC XOAY cuon lo lua** | Vào Play Act2, thả một cơn lốc đi thẳng vào lò: đo mốc thời gian lửa tắt / lò nhấc lên / lò biến mất / lò mọc lại, kiểm than trong chậu tắt bằng độ sáng trên ảnh, và kiểm vật có hệ hạt khác vẫn không bị cuốn. Ảnh `locxoay_*.png`, số đo `locxoay_lolua.txt`. |

@@ -33,6 +33,7 @@ public class ChayDenToanThan : MonoBehaviour
     {
         if (d == null) return null;
         if (TangHinh.ChanHieuUng(d)) return null;
+        if (ChongDo.ChanHieuUng(d)) return null;  // Bo xuong do duoc don nay (28/09/2026)
         var c = d.GetComponent<ChayDenToanThan>();
         if (c == null) c = d.gameObject.AddComponent<ChayDenToanThan>();
         c.conLai = giay; c.tong = giay;

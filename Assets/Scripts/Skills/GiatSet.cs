@@ -145,7 +145,8 @@ public class GiatSet : MonoBehaviour
     /// coong nhua phat sang.
     /// </summary>
     public static GiatSet PhongCuaQuai(Vector3 origin, Vector3 huong, LayerMask damageMask,
-                                       float satThuong, float tam, Color loi, Color quang)
+                                       float satThuong, float tam, Color loi, Color quang,
+                                       float xacSuatChoang = 0f, float giayChoang = 1f)
     {
         var gs = Phong(origin, huong, damageMask);
         gs.damage = satThuong;
@@ -156,8 +157,9 @@ public class GiatSet : MonoBehaviour
         // Quai chi danh MOT nguoi choi, khong co gi de lan sang
         gs.maxChains = 0;
         gs.soTiaDau = 1;
-        // Choang 15% la cua KY NANG nguoi choi - don cua quai giu nguyen nhu cu
-        gs.xacSuatChoang = 0f;
+        // Choang: Quy cay 15% / 1 giay (nguoi dung 28/09/2026, EnemyAI.xacSuatChoangTia); quai khac 0
+        gs.xacSuatChoang = xacSuatChoang;
+        gs.giayChoang = giayChoang;
         gs.tangKhiUot = false;
         return gs;
     }

@@ -14,10 +14,47 @@ public static class EnemyFactory
             var inst = GameAssets.Make(pf, pos, Quaternion.Euler(0f, Random.Range(0f, 360f), 0f), parent);
             var eai = inst.GetComponent<EnemyAI>();
             if (eai != null) eai.target = player;
+            ApDacTinh(type, inst);
             return inst;
         }
 
-        return BuildFromCode(type, pos, parent, player);
+        var go = BuildFromCode(type, pos, parent, player);
+        ApDacTinh(type, go);
+        return go;
+    }
+
+    // ---- DAC TINH MOI (nguoi dung 28/09/2026) - ap LUC SINH, sau prefab, truoc he so dot cua GameDirector (nhan) ----
+    /// <summary>Bo xuong: toc do di chuyen x1,35.</summary>
+    public const float HeSoTocBoXuong = 1.35f;
+    /// <summary>Bo xuong: sat thuong len nguoi choi x1,30.</summary>
+    public const float HeSoSatThuongBoXuong = 1.30f;
+    /// <summary>Quy cay: moi tia sam trung nguoi choi 15% choang 1 giay.</summary>
+    public const float XacSuatChoangQuyCay = 0.15f, GiayChoangQuyCay = 1f;
+    /// <summary>Quy du: moi thien thach 15% danh nga nguoi choi trong vung no, 1 giay.</summary>
+    public const float XacSuatNgaQuyDu = 0.15f, GiayNgaQuyDu = 1f;
+
+    /// <summary>
+    /// Ap dac tinh rieng tung loai o MOT cho cho moi duong sinh (chu phong rai quai, may khach sinh ban sao, phep thu) - dat
+    /// trong code chu khong trong prefab (prefab nuong boi AssetBaker se de len gia tri doi trong script).
+    /// </summary>
+    static void ApDacTinh(MonsterType type, GameObject go)
+    {
+        if (go == null) return;
+        var ai = go.GetComponent<EnemyAI>();
+        var hp = go.GetComponent<Damageable>();
+        switch (type)
+        {
+            case MonsterType.Skeleton:
+                if (ai != null) { ai.moveSpeed *= HeSoTocBoXuong; ai.attackDamage *= HeSoSatThuongBoXuong; }
+                if (hp != null) hp.tiLeDoDon = ChongDo.TiLeBoXuong;
+                break;
+            case MonsterType.QuyCay:
+                if (ai != null) { ai.xacSuatChoangTia = XacSuatChoangQuyCay; ai.giayChoangTia = GiayChoangQuyCay; }
+                break;
+            case MonsterType.QuyDu:
+                if (ai != null) { ai.xacSuatNgaThienThach = XacSuatNgaQuyDu; ai.giayNgaThienThach = GiayNgaQuyDu; }
+                break;
+        }
     }
 
     /// <summary>Lap rap con quai bang code (dung de "nuong" ra prefab, hoac khi thieu prefab).</summary>

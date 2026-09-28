@@ -63,6 +63,7 @@ public class BiHatTung : MonoBehaviour
         if (TangHinh.ChanHieuUng(d)) return null;   // tang hinh mien moi hieu ung (18/09/2026)
         if (d == null || d.IsDead || giay <= 0f) return null;
         if (d.mauDoMayKhacQuyet) return null;
+        if (ChongDo.ChanHieuUng(d)) return null;  // Bo xuong do duoc don nay (28/09/2026)
         // Dang bi Loc xoay cuon tren troi: WhirledEffect da dat vi tri, hat them la hai co che giat nhau
         if (d.GetComponent<WhirledEffect>() != null) return null;
         SoLanHat++;

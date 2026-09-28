@@ -27,6 +27,7 @@ public class BurningEffect : MonoBehaviour
     {
         if (TangHinh.ChanHieuUng(d)) return;      // tang hinh mien moi hieu ung (18/09/2026)
         if (d == null || d.IsDead) return;
+        if (ChongDo.ChanHieuUng(d)) return;       // Bo xuong do duoc don nay (28/09/2026)
 
         var b = d.GetComponent<BurningEffect>();
         if (b == null) b = d.gameObject.AddComponent<BurningEffect>();
@@ -60,8 +61,9 @@ public class BurningEffect : MonoBehaviour
         {
             target.GhiKeDanh(keGayChay);
             Damageable.BoQuaTiaTrungDon = true;       // khong phun tia trung don moi nhip chay - lua toan than la hinh roi
+            Damageable.LaSatThuongRi = true;          // nhip ri: Bo xuong khong do (ChongDo)
             try { target.TakeDamage(damagePerSecond * tick, DamageType.Fire, transform.position + Vector3.up * 1f); }
-            finally { Damageable.BoQuaTiaTrungDon = false; }
+            finally { Damageable.BoQuaTiaTrungDon = false; Damageable.LaSatThuongRi = false; }
             tick = 0f;
         }
 

@@ -420,6 +420,7 @@ public static class ThuBangNguoiChoi
             int voQuai = -1;
             if (mq != null)
             {
+                mq.tiLeDoDon = 0f;          // Bo xuong do don 25% (28/09/2026) - muc nay do VO BANG, khong do do don (menu 91)
                 FrozenEffect.Apply(mq, 1.5f);
                 yield return null; yield return null;
                 voQuai = SoVoBang(mq.GetComponent<FrozenEffect>());

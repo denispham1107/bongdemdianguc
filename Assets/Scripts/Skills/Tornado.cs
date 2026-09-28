@@ -262,6 +262,8 @@ public class Tornado : MonoBehaviour
     //  HUT QUAI VAO LOC
     // ================================================================
 
+    readonly HashSet<Damageable> daDoDon = new HashSet<Damageable>();
+
     void CatchNearby()
     {
         int n = Physics.OverlapSphereNonAlloc(transform.position + Vector3.up * 1.2f,
@@ -272,6 +274,9 @@ public class Tornado : MonoBehaviour
             var d = buffer[i].GetComponentInParent<Damageable>();
             if (d == null || d.IsDead) continue;
             if (boQua != null && d == boQua) continue;
+            if (daDoDon.Contains(d)) continue;
+            // Bo xuong DO DON (28/09/2026): gieo MOT lan cho ca con loc nay - khong thi moi khung gieo lai, som muon cung cuon duoc
+            if (d.GetComponent<WhirledEffect>() == null && ChongDo.ChanHieuUng(d)) { daDoDon.Add(d); continue; }
 
             var w = WhirledEffect.Catch(d, this);
             if (w != null) caught.Add(w);

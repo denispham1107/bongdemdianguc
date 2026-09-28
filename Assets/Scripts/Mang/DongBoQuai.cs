@@ -75,6 +75,8 @@ public class DongBoQuai : MonoBehaviour
         public Damageable mau;
         public NoiSuy noiSuy = new NoiSuy();
         public float ngheLanCuoi;
+        /// <summary>Bit "vua do don" o goi truoc - hien hinh khi bit vua BAT (ChongDo).</summary>
+        public bool doDonTruoc;
 
         /// <summary>Cho ve o khung truoc - de tinh ra no dang di nhanh bao nhieu.</summary>
         public Vector3 choKhungTruoc;
@@ -180,7 +182,8 @@ public class DongBoQuai : MonoBehaviour
                 gocY = n.transform.eulerAngles.y,
                 mau01 = d != null && d.maxHealth > 0f ? d.health / d.maxHealth : 1f,
                 daChet = d != null && d.IsDead,
-                coHieuUng = HieuUngQuaMang.DocCo(n.gameObject)
+                coHieuUng = HieuUngQuaMang.DocCo(n.gameObject),
+                doDon = ChongDo.VuaDoDon(d)
             };
         }
 
@@ -361,6 +364,10 @@ public class DongBoQuai : MonoBehaviour
 
             if (q.daChet && c.mau != null && !c.mau.IsDead) c.mau.Die();
             else if (c.mau != null) HieuUngQuaMang.ApCo(c.mau, q.coHieuUng);
+
+            // Bo xuong vua DO DON tren may chu phong -> qua cau bao ve + chu "ĐỠ ĐÒN!" ben nay (chi luc bit vua bat)
+            if (q.doDon && !c.doDonTruoc && c.mau != null && !c.mau.IsDead) ChongDo.HienDoDon(c.mau);
+            c.doDonTruoc = q.doDon;
         }
     }
 

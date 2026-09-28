@@ -41,6 +41,14 @@ public class EnemyAI : MonoBehaviour
 
     /// <summary>Tam bay cua tia Giut set cua quai, met. Am = cu nhu cu (attackRange + 2). Quy cay dat rieng.</summary>
     public float tamTiaSet = -1f;
+
+    /// <summary>
+    /// Don ky nang cua quai gay CHOANG / DANH NGA nguoi choi (nguoi dung 28/09/2026: Quy cay 15% choang 1 s, Quy du 15% nga 1 s).
+    /// Dat trong EnemyFactory.ApDacTinh (khong trong prefab - prefab nuong san khong co truong moi). NonSerialized de prefab
+    /// khong bao gio de len.
+    /// </summary>
+    [System.NonSerialized] public float xacSuatChoangTia, giayChoangTia = 1f;
+    [System.NonSerialized] public float xacSuatNgaThienThach, giayNgaThienThach = 1f;
     [Tooltip("Cho phep phep bay ra - de trong thi tu tim xuong ban tay")]
     public Transform diemPhongPhep;
 
@@ -721,6 +729,9 @@ public class EnemyAI : MonoBehaviour
 
         tt.impactDamage = satThuongCau;
         tt.blastRadius = banKinhNo;
+        // Quy du: 15% danh nga nguoi choi 1 giay (28/09/2026) - ThienThach.GieoDanhNga tu bo qua ke con khien
+        tt.ngaXacSuat = xacSuatNgaThienThach;
+        tt.ngaGiay = giayNgaThienThach;
 
         // CHI GAY SAT THUONG - khong de lai vung lua nhu ban cua nguoi choi.
         // Phai gan RO RANG ve 0: ThienThach mac dinh chay 5 giay, khong gan gi
@@ -763,7 +774,7 @@ public class EnemyAI : MonoBehaviour
         // giat vao dong bon cua chinh no.
         GiatSet.PhongCuaQuai(tu, h.normalized, LayerMask.GetMask("Player"),
                              satThuongCau, tamTiaSet > 0f ? tamTiaSet : attackRange + 2f,
-                             tiaMauLoi, tiaMauQuang);
+                             tiaMauLoi, tiaMauQuang, xacSuatChoangTia, giayChoangTia);
     }
 
     /// <summary>Day nhe ra khoi cac con quai khac dung qua sat.</summary>

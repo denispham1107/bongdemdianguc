@@ -464,8 +464,15 @@ public class CayChay : MonoBehaviour
             float manh = con < 2f ? Mathf.Clamp01(con / 2f) : 1f;
             float moiNhip = satThuongMoiGiay * nhipDot * manh;
             if (moiNhip > 0.01f)
-                CombatUtil.AreaDamage(chanCay + Vector3.up * 0.8f, banKinhLua, moiNhip,
-                                      damageMask, DamageType.Fire, 1.6f, keDot);
+            {
+                Damageable.LaSatThuongRi = true;      // nhip ri: Bo xuong khong do (ChongDo, 28/09/2026)
+                try
+                {
+                    CombatUtil.AreaDamage(chanCay + Vector3.up * 0.8f, banKinhLua, moiNhip,
+                                          damageMask, DamageType.Fire, 1.6f, keDot);
+                }
+                finally { Damageable.LaSatThuongRi = false; }
+            }
         }
 
         // ---- Than cay den dan, theo dung buoc lua lan ----

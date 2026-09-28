@@ -131,6 +131,19 @@ public class Damageable : MonoBehaviour
     /// </summary>
     public static bool BoQuaTiaTrungDon;
 
+    /// <summary>
+    /// Dat true quanh mot lan gay SAT THUONG RI (nhip chay, nhip loc cuon, vung lua Thien thach, cay chay): nhip ri khong gieo
+    /// chong do cua Bo xuong va khong bi chan hieu ung (nguoi dung chon 28/09/2026 - xem <see cref="ChongDo"/>).
+    /// </summary>
+    public static bool LaSatThuongRi;
+
+    /// <summary>Ti le DO DON ky nang cua nguoi choi (Bo xuong 0,25 - dat trong EnemyFactory.ApDacTinh). 0 = khong bao gio do.</summary>
+    [System.NonSerialized] public float tiLeDoDon;
+    [System.NonSerialized] public int khungGieoDoDon = -1;
+    [System.NonSerialized] public bool ketQuaDoDon;
+    [System.NonSerialized] public float lucDoDonCuoi = -100f;
+    [System.NonSerialized] public float lucHienDoDon = -100f;
+
     public void TakeDamage(float amount, DamageType type, Vector3 hitPoint)
     {
         if (IsDead || amount <= 0f) return;
@@ -146,6 +159,11 @@ public class Damageable : MonoBehaviour
             Damageable nguoiGay = (khungGhiKeGay == Time.frameCount) ? keGayDon : null;
             HeSat heDon = heGayDon;
             keGayDon = null; heGayDon = HeSat.Khac;      // the dung mot lan
+
+            // BO XUONG DO DON (28/09/2026): don KY NANG cua nguoi choi (khong phai sat thuong ri) - 25% khong mat mau.
+            // Hieu ung cua cung don nay do ChongDo.ChanHieuUng chan (cung ket qua gieo trong khung).
+            if (tiLeDoDon > 0f && !LaSatThuongRi && nguoiGay != null && nguoiGay.isPlayer && ChongDo.Gieo(this))
+                return;
 
             // CapDo la cap cua nhan vat MAY NAY, nen chi ap cho chinh minh: ban sao cua nguoi choi
             // khac (mauDoMayKhacQuyet) khong duoc muon cap khang cua minh.

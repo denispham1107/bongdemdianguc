@@ -947,6 +947,7 @@ public static class ThuGioLoc
             {
                 var mauQuai = goQuai.GetComponent<Damageable>();
                 mauQuai.maxHealth = 1e7f; mauQuai.health = 1e7f;
+                mauQuai.tiLeDoDon = 0f;     // Bo xuong do don 25% (28/09/2026) - muc nay do NGAT DON, khong do do don (menu 91)
                 int donNgat = 0, donDoiChung = 0, lanNgat = 0, lanDoi = 0;
                 int dongNgat0 = EnemyAI.SoLanNgatDon;
                 for (int lan = 0; lan < 10; lan++)
