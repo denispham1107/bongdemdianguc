@@ -218,8 +218,9 @@ public static class CapDo
     }
 
     /// <summary>Kinh nghiem giet QUAI nhan them - giet nguoi choi khong doi. Nguoi dung 26/09/2026: "tang them 35%", roi cung ngay
-    /// "tang them 20%" TREN MUC HIEN TAI (chon) -> 1,35 x 1,20 = 1,62 so voi goc.</summary>
-    public const float HeSoKnQuai = 1.35f * 1.20f;
+    /// "tang them 20%" TREN MUC HIEN TAI (chon) -> 1,35 x 1,20 = 1,62; 28/09/2026 "tang them 30%" TREN MUC HIEN TAI (chon)
+    /// -> 1,35 x 1,20 x 1,30 = 2,106 so voi goc.</summary>
+    public const float HeSoKnQuai = 1.35f * 1.20f * 1.30f;
 
     /// <summary>
     /// Kinh nghiem moi con quai = muc goc x HeSoKnQuai, lam tron nua len (Mathf.RoundToInt lam tron ve so CHAN: 40,5 -> 40).

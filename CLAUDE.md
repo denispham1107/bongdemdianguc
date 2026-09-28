@@ -137,9 +137,8 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
   **Mỗi đợt thêm 20 con vòng ngoài + 10 con cho MỖI người chơi thêm** (26/09/2026, người dùng; trước cố định 20 cho cả phòng:
   1 người 20 · 2 người 30 · 3 người 40 · 4 người 50 — `GameDirector.SoQuaiXaCho(số người CÒN SỐNG)`, `SoQuaiXaThemMoiNguoi`),
   loại ngẫu nhiên, cách người chơi GẦN NHẤT **20–25 m** (13/09/2026 đổi từ 10 con ở 55–65 m); không đủ chỗ thì thả gần khoảng
-  nhất có thể và đếm vào `SoQuaiXaDungKhoang`. ⚠️ **Kinh nghiệm giết QUÁI ×1,62 so với gốc** (26/09/2026: +35% rồi +20% trên mức
-  đó, `CapDo.HeSoKnQuai` = 1,35 × 1,20 nhân `KnGocCuaQuai`; bộ xương 18 → 29 … quỷ khổng lồ 70 → 113; hạ người chơi vẫn 250) — chơi
-  một mình lên cấp 10 sau ~4 đợt, cấp 20 sau ~13 đợt
+  nhất có thể và đếm vào `SoQuaiXaDungKhoang`. ⚠️ **Kinh nghiệm giết QUÁI ×2,106 so với gốc** (26/09/2026: +35% rồi +20%; 28/09/2026 +30% nữa, đều trên mức đang có — `CapDo.HeSoKnQuai` = 1,35 × 1,20 × 1,30 nhân `KnGocCuaQuai`; bộ xương 18 → 38 … quỷ khổng lồ 70 → 147; hạ người chơi vẫn 250) — chơi
+  một mình lên cấp 10 sau ~3 đợt, cấp 20 sau ~11 đợt
   (`kinhnghiem.md`). Menu 60, 56 (2 người → 30 con), 64 kiểm.
   **Sau 60 giây con vòng ngoài nào còn sống tự truy lùng người gần nhất** (`EnemyAI.HenTruyLung`, bỏ giới hạn
   `aggroRange` 14 m); đang truy lùng mà kẹt thì vòng vật cản, kẹt mãi thì đổi chỗ sang 10–14 m cạnh người chơi,
@@ -408,7 +407,8 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
   Menu 90 kiểm bằng ẢNH (bóng thân trắng đặc lớp 31 + nới 14 px; TẮT bloom; tính theo DIỆN TÍCH): 99–100% lửa trong viền, đối chứng 69%.
 - ⚠️ **ĐẶC TÍNH QUÁI** (người dùng 28/09/2026, đặt trong `EnemyFactory.ApDacTinh` lúc sinh — KHÔNG trong prefab): **Quỷ cây** mỗi tia
   15% choáng người chơi 1 s (`EnemyAI.xacSuatChoangTia`, qua `GiatSet.PhongCuaQuai`); **Quỷ dữ** thiên thạch 15% đánh ngã 1 s
-  (`xacSuatNgaThienThach`); **Bộ xương** tốc ×1,35, sát thương ×1,30, **25% ĐỠ ĐÒN** kỹ năng người chơi (`Combat/ChongDo.cs`,
+  (`xacSuatNgaThienThach`); **Bộ xương** tốc **×1,8225** (1,35 × 1,35 — người dùng xin thêm +35% CỘNG DỒN), sát thương **×1,43** (1,30 × 1,10),
+  **25% ĐỠ ĐÒN** kỹ năng người chơi (`Combat/ChongDo.cs`,
   `Damageable.tiLeDoDon`): không mất máu + tránh cả hiệu ứng của đòn ấy, mỗi đòn gieo riêng (một lần mỗi khung mỗi con), **sát thương rỉ
   không gieo** (`Damageable.LaSatThuongRi` quanh nhịp cháy / lốc cuốn / vũng lửa / cây cháy); hình vòm khiên bạc xanh + chữ **"ĐỠ ĐÒN!"**
   (`Vfx/VfxCauDoDon.cs`). Mạng: chỉ chủ phòng gieo, **bit 7 byte cờ gói quái** = vừa đỡ (gói quái nay dùng HẾT 8 bit). Phép thử gắn hiệu ứng

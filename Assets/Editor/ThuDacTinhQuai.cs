@@ -8,7 +8,7 @@ using UnityEngine;
 
 /// <summary>
 /// CHAY THU: DAC TINH MOI CUA BA LOAI QUAI (menu 91, nguoi dung 28/09/2026).
-///   A. BO XUONG: toc do x1,35 va sat thuong x1,30 so voi PREFAB goc (doc thang prefab, khong doc hang so); do THAT: chay
+///   A. BO XUONG: toc do x1,8225 (1,35 x 1,35) va sat thuong x1,43 (1,30 x 1,10) so voi PREFAB goc (doc thang prefab, khong doc hang so); do THAT: chay
 ///      duoi nguoi choi bao nhieu m/s, danh trung mat bao nhieu mau. Doi chung: Phu thuy (khong doi).
 ///   B. QUY CAY: 15% choang 1 giay - phong 200 tia THAT vao nguoi choi, dem choang, doc so giay. Doi chung: tat ti le -> 0.
 ///   C. QUY DU: 15% danh nga 1 giay - doc thien thach THAT no sinh ra (ngaXacSuat / ngaGiay) + goi 40 qua that, dem nga.
@@ -121,8 +121,8 @@ public static class ThuDacTinhQuai
             float rT2 = ph.moveSpeed / pfPhu.moveSpeed, rS2 = ph.attackDamage / pfPhu.attackDamage;
             Ghi(string.Format("A1. Bo xuong: toc {0:F3} / prefab {1:F3} = x{2:F3}; sat thuong {3:F2} / prefab {4:F2} = x{5:F3}; do don {6:P0} | DOI CHUNG Phu thuy x{7:F3} / x{8:F3}, do don {9:P0}",
                 bx.moveSpeed, pfXuong.moveSpeed, rT, bx.attackDamage, pfXuong.attackDamage, rS, bx.health.tiLeDoDon, rT2, rS2, ph.health.tiLeDoDon));
-            Kiem(Mathf.Abs(rT - 1.35f) < 0.001f, "Bo xuong toc do khong phai x1,35");
-            Kiem(Mathf.Abs(rS - 1.30f) < 0.001f, "Bo xuong sat thuong khong phai x1,30");
+            Kiem(Mathf.Abs(rT - 1.8225f) < 0.001f, "Bo xuong toc do khong phai x1,8225 (1,35 x 1,35)");
+            Kiem(Mathf.Abs(rS - 1.43f) < 0.001f, "Bo xuong sat thuong khong phai x1,43 (1,30 x 1,10)");
             Kiem(Mathf.Abs(bx.health.tiLeDoDon - 0.25f) < 1e-4f, "Bo xuong khong co 25% do don");
             Kiem(Mathf.Abs(rT2 - 1f) < 1e-4f && Mathf.Abs(rS2 - 1f) < 1e-4f && ph.health.tiLeDoDon == 0f, "Phu thuy bi doi theo (doi chung)");
             Object.Destroy(ph.gameObject);
@@ -136,7 +136,7 @@ public static class ThuDacTinhQuai
             float v = Vector2.Distance(new Vector2(a.x, a.z), new Vector2(b.x, b.z)) / (Time.time - ta);
             bx.enabled = false;
             Ghi(string.Format("A2. Bo xuong chay THAT {0:F2} m/s (moveSpeed {1:F3}; prefab goc {2:F2})", v, bx.moveSpeed, pfXuong.moveSpeed));
-            Kiem(v > pfXuong.moveSpeed * 1.2f && v < bx.moveSpeed * 1.05f, "toc do chay that khong khop x1,35");
+            Kiem(v > pfXuong.moveSpeed * 1.65f && v < bx.moveSpeed * 1.05f, "toc do chay that khong khop x1,8225");
 
             // A3. Danh THAT: dung sat nguoi choi, ra don
             DatCho(bx, TrenDat(p + new Vector3(1.4f, 0f, 0f)));
@@ -145,8 +145,8 @@ public static class ThuDacTinhQuai
             bx.RaDonNgay();
             yield return null;
             float mat = m0 - mauPc.health;
-            Ghi(string.Format("A3. Bo xuong danh trung nguoi choi: mat {0:F2} mau (mong {1:F2} = 12 x 1,30)", mat, pfXuong.attackDamage * 1.3f));
-            Kiem(Mathf.Abs(mat - pfXuong.attackDamage * 1.3f) < 0.05f, "Bo xuong danh nguoi choi khong ra x1,30");
+            Ghi(string.Format("A3. Bo xuong danh trung nguoi choi: mat {0:F2} mau (mong {1:F2} = 12 x 1,43)", mat, pfXuong.attackDamage * 1.43f));
+            Kiem(Mathf.Abs(mat - pfXuong.attackDamage * 1.43f) < 0.05f, "Bo xuong danh nguoi choi khong ra x1,43");
             Object.Destroy(bx.gameObject);
             mauPc.health = mauPc.maxHealth;
         }

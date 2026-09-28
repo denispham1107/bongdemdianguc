@@ -1,12 +1,12 @@
-A1. Bo xuong: toc 3.645 / prefab 2.700 = x1.350; sat thuong 15.60 / prefab 12.00 = x1.300; do don 25 % | DOI CHUNG Phu thuy x1.000 / x1.000, do don 0 %
-A2. Bo xuong chay THAT 3.61 m/s (moveSpeed 3.645; prefab goc 2.70)
-A3. Bo xuong danh trung nguoi choi: mat 15.60 mau (mong 15.60 = 12 x 1,30)
+A1. Bo xuong: toc 4.921 / prefab 2.700 = x1.823; sat thuong 17.16 / prefab 12.00 = x1.430; do don 25 % | DOI CHUNG Phu thuy x1.000 / x1.000, do don 0 %
+A2. Bo xuong chay THAT 4.88 m/s (moveSpeed 4.921; prefab goc 2.70)
+A3. Bo xuong danh trung nguoi choi: mat 17.16 mau (mong 17.16 = 12 x 1,43)
 B0. Quy cay: xacSuatChoangTia 0.15, giayChoangTia 1.00
-B1. 200 tia THAT, trung 200, choang 33 = 16.5 % (mong 15%, sai so ngau nhien ~2,5 diem); lan choang dau keo dai trong [0.74; 1.11] s
+B1. 200 tia THAT, trung 200, choang 26 = 13.0 % (mong 15%, sai so ngau nhien ~2,5 diem); lan choang dau keo dai trong [0.97; 1.03] s
 B2. DOI CHUNG ti le 0: 60 tia -> choang 0
 C1. thien thach THAT cua Quy du: ngaXacSuat 0.15, ngaGiay 1.00
-C2. 40 thien thach THAT, trung 40, danh nga 9 (23 %); thoi gian nga 1.00 s
-D1. 400 don ky nang (moi don mot khung): do 111 = 27.8 % (mong 25%, sai so ~2,2 diem); do ma van chay 0; khong do ma khong chay 0; hinh do don hien 33 lan
-D2. DOI CHUNG sat thuong ri: 80 nhip -> do 0 | D3. don cua QUAI: 80 -> do 0 | D4. Phu thuy an don ky nang: 80 -> do 0 | D5. hat tung khong kem don: 200 lan -> hat duoc 153 (77 %, mong ~75%)
+C2. 40 thien thach THAT, trung 40, danh nga 4 (10 %); thoi gian nga 1.00 s
+D1. 400 don ky nang (moi don mot khung): do 96 = 24.0 % (mong 25%, sai so ~2,2 diem); do ma van chay 0; khong do ma khong chay 0; hinh do don hien 36 lan
+D2. DOI CHUNG sat thuong ri: 80 nhip -> do 0 | D3. don cua QUAI: 80 -> do 0 | D4. Phu thuy an don ky nang: 80 -> do 0 | D5. hat tung khong kem don: 200 lan -> hat duoc 146 (73 %, mong ~75%)
 E. goi quai qua VietQuai/DocQuai: 3 con; doDon True/False/True, co hieu ung 0x3F/0x3F/0x00, chet True
 so loi ghi nhan = 0

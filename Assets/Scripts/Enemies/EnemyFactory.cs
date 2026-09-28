@@ -24,10 +24,10 @@ public static class EnemyFactory
     }
 
     // ---- DAC TINH MOI (nguoi dung 28/09/2026) - ap LUC SINH, sau prefab, truoc he so dot cua GameDirector (nhan) ----
-    /// <summary>Bo xuong: toc do di chuyen x1,35.</summary>
-    public const float HeSoTocBoXuong = 1.35f;
-    /// <summary>Bo xuong: sat thuong len nguoi choi x1,30.</summary>
-    public const float HeSoSatThuongBoXuong = 1.30f;
+    /// <summary>Bo xuong: toc do di chuyen +35% roi +35% nua CONG DON (nguoi dung 28/09/2026, chon cong don) = x1,8225 (2,7 -> 4,92 m/s).</summary>
+    public const float HeSoTocBoXuong = 1.35f * 1.35f;
+    /// <summary>Bo xuong: sat thuong len nguoi choi +30% roi +10% CONG DON (28/09/2026) = x1,43 (12 -> 17,16).</summary>
+    public const float HeSoSatThuongBoXuong = 1.30f * 1.10f;
     /// <summary>Quy cay: moi tia sam trung nguoi choi 15% choang 1 giay.</summary>
     public const float XacSuatChoangQuyCay = 0.15f, GiayChoangQuyCay = 1f;
     /// <summary>Quy du: moi thien thach 15% danh nga nguoi choi trong vung no, 1 giay.</summary>

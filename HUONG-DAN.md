@@ -8603,6 +8603,26 @@ châm cả bia mộ / nhà mồ (tính năng sáng nay), đầy trần "4 vật 
 
 Ảnh: `PlayTestShots/maygiong_1_dem_can.png`, `maygiong_2_chay_den.png`, `maygiong_3_ngay_goc_choi.png`.
 
+### Bộ xương nhanh và mạnh thêm nữa; kinh nghiệm giết quái +30% (28/09/2026)
+
+**Người dùng:** Bộ xương tăng thêm 35% tốc độ và 10% sát thương lên người chơi; giết quái được thêm 30% kinh nghiệm. Hỏi lại
+thì người dùng chọn **cộng dồn** lên mức vừa đặt, và kinh nghiệm **×1,30 trên mức đang có**.
+
+- **Bộ xương**:
+  - Tốc độ ×1,35 × 1,35 = **×1,8225** (2,7 → 4,92 m/s — gần bằng người chơi cấp 1 là 5,2).
+  - Sát thương ×1,30 × 1,10 = **×1,43** (12 → 17,16).
+  - Hằng `EnemyFactory.HeSoTocBoXuong / HeSoSatThuongBoXuong`. Đỡ đòn 25% giữ nguyên.
+- **Kinh nghiệm quái**: `CapDo.HeSoKnQuai` = 1,35 × 1,20 × 1,30 = **2,106** so với gốc.
+  - Bộ xương 38 · xác sống 42 · quỷ lùn 46 · Quỷ cây 63 · phù thủy 67 · Quỷ dữ 84 · quỷ khổng lồ 147.
+  - Hạ người chơi vẫn 250.
+  - Chơi một mình, giết hết thì cấp 10 sau khoảng 3 đợt (trước 4) và cấp 20 sau khoảng 11 đợt (trước 13). Bảng ở `kinhnghiem.md`.
+
+**Đo:**
+- Menu 60, mục A6b: 7 loại quái đều đúng bằng gốc × 2,106 làm tròn; tổng 232 → 487 (×2,099). 0 lỗi.
+- Menu 91:
+  - Bộ xương so với prefab gốc: tốc ×1,823, sát thương ×1,430. Chạy thật 4,88 m/s, đánh trúng thật mất 17,16 máu.
+  - Các mục Quỷ cây, Quỷ dữ, đỡ đòn, gói tin vẫn đạt. 0 lỗi.
+
 ### Quỷ cây làm choáng, Quỷ dữ đánh ngã, Bộ xương nhanh hơn, mạnh hơn và biết đỡ đòn (28/09/2026)
 
 **Người dùng yêu cầu:**
