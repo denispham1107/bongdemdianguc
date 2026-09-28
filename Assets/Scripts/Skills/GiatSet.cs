@@ -345,7 +345,7 @@ public class GiatSet : MonoBehaviour
         {
             var d = buffer[i].GetComponentInParent<Damageable>();
             if (d == null || d.IsDead) continue;
-            if (boQua != null && d == boQua) continue;
+            if (CheDoTran.BoQua(boQua, d)) continue;
 
             // OverlapSphere tra ve TUNG COLLIDER: mot con quai co may collider
             // la no vao danh sach may lan, va ba tia se doi het vao mot con.
@@ -388,7 +388,7 @@ public class GiatSet : MonoBehaviour
         {
             var d = buffer[i].GetComponentInParent<Damageable>();
             if (d == null || d.IsDead || daTrung.Contains(d)) continue;
-            if (boQua != null && d == boQua) continue;
+            if (CheDoTran.BoQua(boQua, d)) continue;
 
             float xa = Vector3.Distance(DiemTrung(d), tu);
             if (xa < ganNhat) { ganNhat = xa; gan = d; }

@@ -697,6 +697,7 @@ public class PlayerController : MonoBehaviour
         {
             var d = c.GetComponentInParent<Damageable>();
             if (d == null || d.IsDead) continue;
+            if (CheDoTran.BoQua(health, d)) continue;           // chinh minh / dong doi (che do Doi)
 
             Vector3 toi = d.transform.position - transform.position;
             toi.y = 0f;

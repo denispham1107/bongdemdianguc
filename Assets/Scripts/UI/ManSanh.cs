@@ -25,6 +25,12 @@ public class ManSanh : MonoBehaviour
 
     List<PhongMang.Phong> danhSach = new List<PhongMang.Phong>();
     string tenPhongMoi = "";
+    /// <summary>Che do cua phong sap tao: "don" / "doi" (nguoi dung 28/09/2026 - chon luc tao phong).</summary>
+    public string cheDoMoi = CheDoTran.Don;
+    /// <summary>Loi nhac trong phong (doi doi that bai...).</summary>
+    string baoTrongPhong = "";
+    float baoTrongPhongLuc;
+    bool dangDoiDoi;
     string bao = "";
     bool dangCho;
     bool daVaoTran;
@@ -97,6 +103,14 @@ public class ManSanh : MonoBehaviour
 
         bool con = true;
         yield return PhongMang.TaiLaiPhong(ma, (ok, loi) => con = ok);
+
+        // Phong Doi: chu phong xep doi cho nguoi chua co doi / doi qua 3 nguoi (hai nguoi vao cung luc)
+        if (con && PhongMang.LaHost && PhongMang.PhongHienTai != null && PhongMang.PhongHienTai.LaDoi)
+        {
+            int soChuyen = 0;
+            yield return PhongMang.CanBangDoiNeuCan(n => soChuyen = n);
+            if (soChuyen > 0) yield return PhongMang.TaiLaiPhong(ma, (ok, loi) => con = ok);
+        }
 
         if (!con)
         {
@@ -316,6 +330,15 @@ public class ManSanh : MonoBehaviour
 
         GiaoDien.Chu(new Rect(xx, kt.y + 18f * s, rr, 34f * s), "TẠO PHÒNG MỚI", GiaoDien.KieuTieuDeNho);
 
+        // Chon che do ngay tren hang tieu de, sat le phai: ĐƠN | ĐÔI (nut dang chon to mau)
+        {
+            var nDon = NutCheDo(kt, s, 0);
+            var nDoi = NutCheDo(kt, s, 1);
+            GiaoDien.Chu(new Rect(nDon.x - 118f * s, nDon.y, 110f * s, nDon.height), "Chế độ:", KieuPhai(GiaoDien.KieuChuMo));
+            if (GiaoDien.Nut(nDon, "ĐƠN", cheDoMoi == CheDoTran.Don ? GiaoDien.KieuNutMau : GiaoDien.KieuNutDa)) cheDoMoi = CheDoTran.Don;
+            if (GiaoDien.Nut(nDoi, "ĐÔI", cheDoMoi == CheDoTran.Doi ? GiaoDien.KieuNutMau : GiaoDien.KieuNutDa)) cheDoMoi = CheDoTran.Doi;
+        }
+
         float yh = kt.y + 70f * s, cao = 56f * s;
         float rongTao = 210f * s, khe = 12f * s;
         float rongO = rr - rongTao - khe;
@@ -397,20 +420,36 @@ public class ManSanh : MonoBehaviour
         float xChu = r.x + 24f * s;
         float rongChu = r.width - 24f * s - rongNut - rongCho - 40f * s;
 
-        GiaoDien.Chu(new Rect(xChu, r.y + 10f * s, rongChu, 36f * s), p.ten, GiaoDien.KieuTieuDeNho);
+        // Nhan che do DON / DOI ngay dau hang - nguoi khac nhin la biet phong choi kieu gi (nguoi dung 28/09/2026)
+        var oNhan = new Rect(xChu, r.y + 12f * s, 76f * s, 30f * s);
+        VeNhanCheDo(oNhan, p.cheDo, s);
+        float xTen = oNhan.xMax + 12f * s;
+        GiaoDien.Chu(new Rect(xTen, r.y + 10f * s, rongChu - (xTen - xChu), 36f * s), p.ten, GiaoDien.KieuTieuDeNho);
         GiaoDien.Chu(new Rect(xChu, r.y + 46f * s, rongChu, 28f * s),
-                     "Chủ phòng: " + p.hostTen, GiaoDien.KieuChuMo);
+                     "Chủ phòng: " + p.hostTen + "   ·   Chế độ " + CheDoTran.TenCheDo(p.cheDo), GiaoDien.KieuChuMo);
 
         // Bon o nguoi: o da co nguoi to do
         float xo = r.xMax - rongNut - 24f * s - rongCho;
         float kt = 16f * s, khe = 7f * s;
         float yo = r.y + r.height * 0.5f - kt * 0.5f - 10f * s;
+        kt = Mathf.Min(kt, (rongCho - (toiDa - 1) * khe) / Mathf.Max(1, toiDa));
+        // Phong Doi: ba o dau la Doi A (xanh), ba o sau Doi B (do), to theo so nguoi moi doi
+        int soA = p.LaDoi ? CheDoTran.DemDoi(p.nguoiChoi, CheDoTran.DoiA) : 0;
+        int soB = p.LaDoi ? CheDoTran.DemDoi(p.nguoiChoi, CheDoTran.DoiB) : 0;
         for (int i = 0; i < toiDa; i++)
         {
             var o = new Rect(xo + i * (kt + khe), yo, kt, kt);
+            var trong = new Rect(o.x + 2f, o.y + 2f, o.width - 4f, o.height - 4f);
             GiaoDien.To(o, new Color(0.35f, 0.12f, 0.10f));
-            if (i < p.soNguoi) GiaoDien.To(new Rect(o.x + 2f, o.y + 2f, o.width - 4f, o.height - 4f), GiaoDien.MauMauSang);
-            else GiaoDien.To(new Rect(o.x + 2f, o.y + 2f, o.width - 4f, o.height - 4f), new Color(0.05f, 0.04f, 0.04f));
+            bool co; Color mauO = GiaoDien.MauMauSang;
+            if (p.LaDoi)
+            {
+                bool laA = i < CheDoTran.SoNguoiMoiDoi;
+                co = laA ? i < soA : i - CheDoTran.SoNguoiMoiDoi < soB;
+                mauO = laA ? CheDoTran.MauDoiA : CheDoTran.MauDoiB;
+            }
+            else co = i < p.soNguoi;
+            GiaoDien.To(trong, co ? mauO : new Color(0.05f, 0.04f, 0.04f));
         }
         GiaoDien.Chu(new Rect(xo, yo + kt + 4f * s, rongCho, 26f * s),
                      p.soNguoi + "/" + toiDa + " người", GiaoDien.KieuChuNho);
@@ -437,7 +476,8 @@ public class ManSanh : MonoBehaviour
         float rongNutRoi = 200f * s;
         GiaoDien.Chu(new Rect(x, y, rong - rongNutRoi - 20f * s, 44f * s), p.ten, GiaoDien.KieuTieuDe);
         GiaoDien.Chu(new Rect(x, y + 44f * s, rong - rongNutRoi - 20f * s, 28f * s),
-                     PhongMang.LaHost ? "Bạn là chủ phòng" : "Chủ phòng: " + p.hostTen,
+                     (PhongMang.LaHost ? "Bạn là chủ phòng" : "Chủ phòng: " + p.hostTen)
+                     + "   ·   Chế độ " + CheDoTran.TenCheDo(p.cheDo) + ": " + CheDoTran.LuatCheDo(p.cheDo),
                      GiaoDien.KieuChuMo);
 
         if (GiaoDien.Nut(new Rect(x + rong - rongNutRoi, y + 10f * s, rongNutRoi, 50f * s),
@@ -456,18 +496,40 @@ public class ManSanh : MonoBehaviour
         // hep 220 don vi nua.
         int toiDa = p.toiDa <= 0 ? PhongMang.SoNguoiToiDa : p.toiDa;
         const float CaoHangGhe = 64f, KheHangGhe = 8f;
-        float caoKhungGhe = 96f + toiDa * CaoHangGhe + (toiDa - 1) * KheHangGhe + 24f;
+        float caoKhungGhe = p.LaDoi
+            ? 96f + 2f * (CaoTieuDeDoi + KheHangGhe + CheDoTran.SoNguoiMoiDoi * CaoHangGhe + (CheDoTran.SoNguoiMoiDoi - 1) * KheHangGhe) + KheDoi + 24f
+            : 96f + toiDa * CaoHangGhe + (toiDa - 1) * KheHangGhe + 24f;
         var kg = new Rect(x, y, rong, caoKhungGhe * s);
         GiaoDien.Khung(kg, s, true);
         GiaoDien.Chu(new Rect(kg.x + le, kg.y + 44f * s, rong - 2f * le, 34f * s),
                      "NGƯỜI CHƠI  " + p.nguoiChoi.Count + "/" + toiDa, GiaoDien.KieuTieuDeNho);
 
         float yHang = kg.y + 96f * s;
-        for (int i = 0; i < toiDa; i++)
+        if (p.LaDoi)
         {
-            var o = new Rect(kg.x + le, yHang, rong - 2f * le, CaoHangGhe * s);
-            VeGhe(o, i, i < p.nguoiChoi.Count ? p.nguoiChoi[i] : null, p, s);
-            yHang += (CaoHangGhe + KheHangGhe) * s;
+            // CHE DO DOI: hai nhom, moi nhom mot dong tieu de (ten doi, so nguoi, nut VAO DOI NAY) + 3 ghe
+            for (int d = CheDoTran.DoiA; d <= CheDoTran.DoiB; d++)
+            {
+                var ds = p.nguoiChoi.FindAll(n => n.doi == d);
+                VeTieuDeDoi(new Rect(kg.x + le, yHang, rong - 2f * le, CaoTieuDeDoi * s), d, ds.Count, p, s);
+                yHang += (CaoTieuDeDoi + KheHangGhe) * s;
+                for (int i = 0; i < CheDoTran.SoNguoiMoiDoi; i++)
+                {
+                    var o = new Rect(kg.x + le, yHang, rong - 2f * le, CaoHangGhe * s);
+                    VeGhe(o, i, i < ds.Count ? ds[i] : null, p, s);
+                    yHang += (CaoHangGhe + KheHangGhe) * s;
+                }
+                yHang += (KheDoi - KheHangGhe) * s;
+            }
+        }
+        else
+        {
+            for (int i = 0; i < toiDa; i++)
+            {
+                var o = new Rect(kg.x + le, yHang, rong - 2f * le, CaoHangGhe * s);
+                VeGhe(o, i, i < p.nguoiChoi.Count ? p.nguoiChoi[i] : null, p, s);
+                yHang += (CaoHangGhe + KheHangGhe) * s;
+            }
         }
         y += caoKhungGhe * s + 30f * s;
 
@@ -496,7 +558,87 @@ public class ManSanh : MonoBehaviour
                      PhongMang.LaHost
                        ? "Bạn là chủ phòng — bấm BẮT ĐẦU TRẬN lúc nào cũng được, kể cả khi chỉ có một mình."
                        : "Đang chờ chủ phòng bắt đầu trận…", k);
+        if (!string.IsNullOrEmpty(baoTrongPhong) && Time.unscaledTime - baoTrongPhongLuc < 5f)
+        {
+            var mc = k.normal.textColor;
+            k.normal.textColor = GiaoDien.MauLoi;
+            GiaoDien.Chu(new Rect(x, y + 32f * s, rong, 30f * s), baoTrongPhong, k);
+            k.normal.textColor = mc;
+        }
         k.alignment = canh;
+    }
+
+    // ---------------- CHE DO DOI ----------------
+
+    /// <summary>Cao dong tieu de moi doi va khe giua hai doi (don vi truoc khi nhan ti le).</summary>
+    public const float CaoTieuDeDoi = 48f, KheDoi = 20f;
+
+    /// <summary>Nut chon che do o khung TAO PHONG: 0 = ĐƠN, 1 = ĐÔI (sat le phai hang tieu de).</summary>
+    public static Rect NutCheDo(Rect khungTao, float s, int thuTu)
+    {
+        float rongNut = 110f * s, cao = 44f * s, khe = 10f * s, le = 30f * s;
+        float xPhai = khungTao.xMax - le;
+        float x = xPhai - (2 - thuTu) * rongNut - (1 - thuTu) * khe;
+        return new Rect(x, khungTao.y + 12f * s, rongNut, cao);
+    }
+
+    static GUIStyle kieuPhai;
+    static GUIStyle KieuPhai(GUIStyle goc)
+    {
+        if (kieuPhai == null || kieuPhai.font != goc.font || kieuPhai.fontSize != goc.fontSize)
+        {
+            kieuPhai = new GUIStyle(goc);
+            kieuPhai.alignment = TextAnchor.MiddleRight;
+        }
+        return kieuPhai;
+    }
+
+    /// <summary>Nhan che do (o mau + chu) o dau hang phong trong danh sach.</summary>
+    static void VeNhanCheDo(Rect o, string cheDo, float s)
+    {
+        bool doi = CheDoTran.LaCheDoDoi(cheDo);
+        GiaoDien.To(o, doi ? new Color(0.20f, 0.30f, 0.55f, 0.95f) : new Color(0.45f, 0.08f, 0.06f, 0.95f));
+        GiaoDien.To(new Rect(o.x, o.yMax - Mathf.Max(1f, 2f * s), o.width, Mathf.Max(1f, 2f * s)),
+                    doi ? CheDoTran.MauDoiA : GiaoDien.MauMauSang);
+        var k = GiaoDien.KieuChuNho;
+        var canh = k.alignment; var mau = k.normal.textColor;
+        k.alignment = TextAnchor.MiddleCenter; k.normal.textColor = GiaoDien.MauGiay;
+        GiaoDien.Chu(o, CheDoTran.TenCheDo(cheDo), k);
+        k.alignment = canh; k.normal.textColor = mau;
+    }
+
+    /// <summary>
+    /// Dong tieu de mot doi trong phong Doi: "ĐỘI A  2/3" theo mau doi, va nut "VÀO ĐỘI A" cho nguoi dang o doi kia (doi nay
+    /// con cho). Nguoi choi tu chon doi; chu phong chuyen nguoi khac bang nut CHUYỂN ĐỘI tren hang ghe.
+    /// </summary>
+    void VeTieuDeDoi(Rect o, int doi, int soNguoi, PhongMang.Phong p, float s)
+    {
+        Color mau = CheDoTran.MauDoi(doi);
+        GiaoDien.To(new Rect(o.x, o.yMax - Mathf.Max(1f, 2f * s), o.width, Mathf.Max(1f, 2f * s)), new Color(mau.r, mau.g, mau.b, 0.8f));
+        var kt = GiaoDien.KieuTieuDeNho;
+        var mc = kt.normal.textColor; kt.normal.textColor = mau;
+        GiaoDien.Chu(new Rect(o.x + 8f * s, o.y, o.width * 0.5f, o.height), CheDoTran.TenDoi(doi) + "   " + soNguoi + "/" + CheDoTran.SoNguoiMoiDoi, kt);
+        kt.normal.textColor = mc;
+
+        var toi = p.nguoiChoi.Find(n => n.uid == FirebaseMang.Uid);
+        if (toi == null || toi.doi == doi) return;
+        bool conCho = soNguoi < CheDoTran.SoNguoiMoiDoi;
+        float rongNut = 240f * s;
+        var nut = new Rect(o.xMax - rongNut, o.y + 2f * s, rongNut, o.height - 8f * s);
+        bool bat = GUI.enabled;
+        GUI.enabled = bat && conCho && !dangDoiDoi;
+        if (GiaoDien.Nut(nut, conCho ? "VÀO " + CheDoTran.TenDoi(doi) : CheDoTran.TenDoi(doi) + " ĐÃ ĐỦ", GiaoDien.KieuNutDa))
+            StartCoroutine(ChayDoiDoi(FirebaseMang.Uid, doi));
+        GUI.enabled = bat;
+    }
+
+    IEnumerator ChayDoiDoi(string uid, int doiMoi)
+    {
+        dangDoiDoi = true;
+        bool ok = false; string loi = null;
+        yield return PhongMang.DatDoi(uid, doiMoi, (o, e) => { ok = o; loi = e; });
+        dangDoiDoi = false;
+        if (!ok) { baoTrongPhong = loi ?? "Không đổi được đội."; baoTrongPhongLuc = Time.unscaledTime; }
     }
 
     /// <summary>
@@ -510,7 +652,10 @@ public class ManSanh : MonoBehaviour
         float rongSo = 56f * s;
         float rongDuoi = 140f * s;
         float rongTrangThai = 190f * s;
-        float xTrangThai = o.xMax - 16f * s - rongDuoi - 24f * s - rongTrangThai;
+        // Phong Doi: chu phong co them nut CHUYỂN ĐỘI tren hang cua nguoi khac, ngay ben trai DUOI
+        bool coNutChuyen = p.LaDoi && PhongMang.LaHost && n != null && n.uid != FirebaseMang.Uid;
+        float rongChuyen = 190f * s;
+        float xTrangThai = o.xMax - 16f * s - rongDuoi - 24f * s - rongTrangThai - (p.LaDoi && PhongMang.LaHost ? rongChuyen + 12f * s : 0f);
         float xTen = o.x + rongSo;
         float rongTen = xTrangThai - 16f * s - xTen;
 
@@ -563,6 +708,18 @@ public class ManSanh : MonoBehaviour
             if (GiaoDien.Nut(new Rect(o.xMax - 16f * s - rongDuoi, o.y + (o.height - 44f * s) * 0.5f, rongDuoi, 44f * s),
                              "ĐUỔI", GiaoDien.KieuNutDa))
                 StartCoroutine(PhongMang.DuoiNguoi(n.uid, null));
+        }
+
+        if (coNutChuyen)
+        {
+            int kia = CheDoTran.DoiKia(n.doi);
+            bool duoc = CheDoTran.ChuyenDuoc(p.nguoiChoi, n.uid, kia);
+            bool bat = GUI.enabled;
+            GUI.enabled = bat && duoc && !dangDoiDoi;
+            var nut = new Rect(o.xMax - 16f * s - rongDuoi - 12f * s - rongChuyen, o.y + (o.height - 44f * s) * 0.5f, rongChuyen, 44f * s);
+            if (GiaoDien.Nut(nut, "CHUYỂN ĐỘI", GiaoDien.KieuNutDa))
+                StartCoroutine(ChayDoiDoi(n.uid, kia));
+            GUI.enabled = bat;
         }
     }
 
@@ -698,7 +855,7 @@ public class ManSanh : MonoBehaviour
     {
         dangCho = true; bao = "";
         bool ok = false; string loi = null;
-        yield return PhongMang.TaoPhong(tenPhongMoi.Trim(), (o, e) => { ok = o; loi = e; });
+        yield return PhongMang.TaoPhong(tenPhongMoi.Trim(), cheDoMoi, (o, e) => { ok = o; loi = e; });
         dangCho = false;
         if (ok) { dangO = Cho.TrongPhong; daVaoTran = false; hoiLanSau = 0f; }
         else bao = loi ?? "Không tạo được phòng.";

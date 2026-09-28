@@ -34,13 +34,15 @@
         "ten":       { ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 24" },
         "manChoi":   { ".validate": "newData.val() === 'Act1' || newData.val() === 'Act2'" },
         "trangThai": { ".validate": "newData.val().matches(/^(cho|demNguoc|dangChoi|xong)$/)" },
-        "toiDa":     { ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 4" },
+        "toiDa":     { ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 6" },
+        // Che do tran (28/09/2026): "don" = moi nguoi mot minh, "doi" = hai doi A/B. Phong cu khong co truong nay = don.
+        "cheDo":     { ".validate": "newData.val() === 'don' || newData.val() === 'doi'" },
         "soNguoi": {
           // Nguoi VAO phong cung phai tang so nay, ma ho khong phai host - nen
           // rieng o nay ai dang nhap cung ghi duoc. Bu lai, chi duoc nhich MOT
           // don vi mot lan: khong ai dat bua thanh 0 de chen vao phong day.
           ".write": "auth != null",
-          ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 4 && ( !data.exists() || root.child('phong').child($maPhong).child('hostUid').val() === auth.uid || newData.val() === data.val() + 1 || newData.val() === data.val() - 1 )"
+          ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 6 && ( !data.exists() || root.child('phong').child($maPhong).child('hostUid').val() === auth.uid || newData.val() === data.val() + 1 || newData.val() === data.val() - 1 )"
         },
         "taoLuc":    { ".validate": "newData.isNumber()" },
         "batDauLuc": { ".validate": "newData.isNumber()" },
@@ -60,12 +62,14 @@
 
             // Luat RTDB KHONG co numChildren() (chi Firestore moi co size()),
             // nen suc chua phong duoc giu bang truong 'soNguoi' o cap tren:
-            // "soNguoi" da co .validate <= 4, va phia trinh duyet dung mot
+            // "soNguoi" da co .validate <= 6, va phia trinh duyet dung mot
             // giao dich (transaction) de tang no - hai nguoi bam cung luc thi
             // chi mot nguoi thang.
             "ten":     { ".validate": "newData.isString() && newData.val().length <= 16" },
             "sanSang": { ".validate": "newData.isBoolean()" },
-            "cho":     { ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 3" },
+            "cho":     { ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 5" },
+            // Doi trong che do Doi: 0 = Doi A, 1 = Doi B. Nguoi choi tu ghi cua minh, chu phong ghi ho (chuyen doi).
+            "doi":     { ".validate": "newData.isNumber() && (newData.val() === 0 || newData.val() === 1)" },
             "vaoLuc":  { ".validate": "newData.isNumber()" },
             "$khac":   { ".validate": false }
           }

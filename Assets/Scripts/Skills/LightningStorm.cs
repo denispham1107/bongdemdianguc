@@ -110,7 +110,7 @@ public class LightningStorm : MonoBehaviour
                 // KHONG NHAM VAO CHINH NGUOI TUNG PHEP. Khi choi mang, damageMask
                 // co ca lop Player nen nguoi tung cung quet duoc - giong het cho
                 // da sua o IceStorm.ChonDiemRoi.
-                if (boQua != null && d == boQua) continue;
+                if (CheDoTran.BoQua(boQua, d)) continue;
 
                 alive++;
                 if (Random.Range(0, alive) == 0) pick = d;

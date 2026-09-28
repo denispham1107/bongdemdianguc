@@ -339,7 +339,7 @@ public class Fireball : MonoBehaviour
         for (int i = 0; i < cham.Length; i++)
         {
             var d = cham[i].collider.GetComponentInParent<Damageable>();
-            if (d == null || d == boQua || d.IsDead) continue;
+            if (d == null || CheDoTran.BoQua(boQua, d) || d.IsDead) continue;
             if (khongCham != null && khongCham.Contains(d)) continue;
             if (cham[i].distance >= ganNhat) continue;
 
@@ -421,7 +421,7 @@ public class Fireball : MonoBehaviour
         for (int i = 0; i < n; i++)
         {
             var d = boNay[i].GetComponentInParent<Damageable>();
-            if (d == null || d.IsDead || d == boQua) continue;
+            if (d == null || d.IsDead || CheDoTran.BoQua(boQua, d)) continue;
             ra.Add(d);
         }
         return ra;
@@ -435,7 +435,7 @@ public class Fireball : MonoBehaviour
         for (int i = 0; i < n; i++)
         {
             var d = boNay[i].GetComponentInParent<Damageable>();
-            if (d == null || d.IsDead || d == boQua || (boRa != null && boRa.Contains(d))) continue;
+            if (d == null || d.IsDead || CheDoTran.BoQua(boQua, d) || (boRa != null && boRa.Contains(d))) continue;
             Vector3 v = d.transform.position - tam; v.y = 0f;
             float kc = v.magnitude;
             if (kc > TamNay || kc >= ganNhat) continue;

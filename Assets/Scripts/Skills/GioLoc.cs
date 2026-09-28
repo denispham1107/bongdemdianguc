@@ -248,7 +248,7 @@ public class GioLoc : MonoBehaviour
         for (int i = 0; i < n; i++)
         {
             var d = boDem[i].GetComponentInParent<Damageable>();
-            if (d == null || d.IsDead || d == boQua || daTrung.Contains(d)) continue;
+            if (d == null || d.IsDead || CheDoTran.BoQua(boQua, d) || daTrung.Contains(d)) continue;
             daTrung.Add(d);
             TrungMot(d);
         }

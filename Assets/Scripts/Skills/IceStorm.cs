@@ -163,7 +163,7 @@ public class IceStorm : MonoBehaviour
                 // KHONG uop lanh chinh nguoi tung phep. Truoc day thieu dong
                 // nay: phu thuy dung trong con bao cua chinh minh thi bi cham
                 // 55% - tu trung phep minh.
-                if (boQua != null && d == boQua) continue;
+                if (CheDoTran.BoQua(boQua, d)) continue;
 
                 // Ban sao lay lop bang tu goi tin - xem HieuUngQuaMang
                 if (d.mauDoMayKhacQuyet) continue;
@@ -221,7 +221,7 @@ public class IceStorm : MonoBehaviour
                 // AreaFreeze co bo qua boQua nen khong mat mau, nhung ca tran
                 // mua do xuong dau minh trong khi ke dich ben canh khong dinh
                 // giot nao.
-                if (boQua != null && d == boQua) continue;
+                if (CheDoTran.BoQua(boQua, d)) continue;
 
                 song++;
                 if (Random.Range(0, song) == 0) chon = d;

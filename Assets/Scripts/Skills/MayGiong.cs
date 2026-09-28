@@ -190,7 +190,7 @@ public class MayGiong : MonoBehaviour
         {
             var d = bo[i].GetComponentInParent<Damageable>();
             if (d == null || d.IsDead || ds.Contains(d)) continue;
-            if (boQua != null && d == boQua) continue;
+            if (CheDoTran.BoQua(boQua, d)) continue;
             ds.Add(d);
         }
         for (int i = 0; i < ds.Count; i++)
@@ -218,7 +218,7 @@ public class MayGiong : MonoBehaviour
         {
             var d = bo[i].GetComponentInParent<Damageable>();
             if (d == null || d.IsDead || ds.Contains(d)) continue;
-            if (boQua != null && d == boQua) continue;
+            if (CheDoTran.BoQua(boQua, d)) continue;
             Vector3 v = d.transform.position - transform.position; v.y = 0f;
             if (v.magnitude > BanKinh) continue;
             ds.Add(d);
@@ -237,7 +237,7 @@ public class MayGiong : MonoBehaviour
         {
             var d = bo[i].GetComponentInParent<Damageable>();
             if (d == null || d.IsDead || ds.Contains(d)) continue;
-            if (boQua != null && d == boQua) continue;
+            if (CheDoTran.BoQua(boQua, d)) continue;
             Vector3 v = d.transform.position - transform.position; v.y = 0f;
             if (v.magnitude > BanKinh) continue;
             ds.Add(d);

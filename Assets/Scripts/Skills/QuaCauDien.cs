@@ -95,7 +95,7 @@ public class QuaCauDien : MonoBehaviour
         {
             var d = bo[i].GetComponentInParent<Damageable>();
             if (d == null || d.IsDead) continue;
-            if (boQua != null && d == boQua) continue;
+            if (CheDoTran.BoQua(boQua, d)) continue;
             float kc = Vector3.Distance(d.transform.position, choNgam);
             if (kc < xaNhat) { xaNhat = kc; gan = d; }
         }
@@ -158,7 +158,7 @@ public class QuaCauDien : MonoBehaviour
         {
             var d = bo[i].GetComponentInParent<Damageable>();
             if (d == null || d.IsDead) continue;
-            if (boQua != null && d == boQua) continue;
+            if (CheDoTran.BoQua(boQua, d)) continue;
             if (!mucTieu.Contains(d)) mucTieu.Add(d);
         }
 

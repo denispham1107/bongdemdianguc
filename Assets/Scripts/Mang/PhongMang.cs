@@ -16,7 +16,8 @@ using UnityEngine;
 /// </summary>
 public static class PhongMang
 {
-    public const int SoNguoiToiDa = 4;
+    /// <summary>Toi da 6 nguoi (nguoi dung 28/09/2026, truoc la 4). Che do Doi: 3 moi doi (<see cref="CheDoTran.SoNguoiMoiDoi"/>).</summary>
+    public const int SoNguoiToiDa = 6;
     public const int GiayDemNguoc = 10;
 
     /// <summary>Bao lau hoi lai danh sach phong mot lan, tinh bang giay.</summary>
@@ -34,17 +35,24 @@ public static class PhongMang
         public string uid, ten;
         public bool sanSang;
         public int cho;
+        /// <summary>Doi trong che do Doi: 0 = A, 1 = B, -1 = chua co (phong Don, hoac ban game cu).</summary>
+        public sbyte doi = CheDoTran.KhongDoi;
+        /// <summary>Luc vao phong (gio may) - chu phong can bang doi thi chuyen nguoi vao SAU CUNG.</summary>
+        public double vaoLuc;
     }
 
     public class Phong
     {
         public string ma, ten, hostUid, hostTen, manChoi, trangThai;
+        /// <summary>"don" / "doi" (<see cref="CheDoTran"/>). Phong cu khong ghi -> "don".</summary>
+        public string cheDo = CheDoTran.Don;
         public int soNguoi, toiDa;
         public double batDauLuc;
         public double taoLuc, capNhatLuc;
         public readonly List<NguoiTrongPhong> nguoiChoi = new List<NguoiTrongPhong>();
 
         public bool DangCho { get { return trangThai == "cho"; } }
+        public bool LaDoi { get { return CheDoTran.LaCheDoDoi(cheDo); } }
         public bool ConCho  { get { return soNguoi < (toiDa <= 0 ? SoNguoiToiDa : toiDa); } }
     }
 
@@ -186,6 +194,13 @@ public static class PhongMang
 
     public static IEnumerator TaoPhong(string tenPhong, Action<bool, string> xong)
     {
+        yield return TaoPhong(tenPhong, CheDoTran.Don, xong);
+    }
+
+    /// <summary>Tao phong theo che do "don" / "doi" (nguoi dung chon luc tao, 28/09/2026). Phong Doi: chu phong vao Doi A.</summary>
+    public static IEnumerator TaoPhong(string tenPhong, string cheDo, Action<bool, string> xong)
+    {
+        bool laDoi = CheDoTran.LaCheDoDoi(cheDo);
         string ten = string.IsNullOrEmpty(tenPhong)
             ? "Phòng của " + FirebaseMang.TenHienThi : tenPhong;
         if (ten.Length > 24) ten = ten.Substring(0, 24);
@@ -197,12 +212,15 @@ public static class PhongMang
             + "\"hostTen\":\"" + FirebaseMang.Thoat(tenToi) + "\","
             + "\"manChoi\":\"" + ManMacDinh + "\","
             + "\"trangThai\":\"cho\","
+            + "\"cheDo\":\"" + (laDoi ? CheDoTran.Doi : CheDoTran.Don) + "\","
             + "\"toiDa\":" + SoNguoiToiDa + ","
             + "\"soNguoi\":1,"
             + "\"taoLuc\":{\".sv\":\"timestamp\"},"
             + "\"nguoiChoi\":{\"" + FirebaseMang.Uid + "\":{"
                 + "\"ten\":\"" + FirebaseMang.Thoat(tenToi) + "\","
-                + "\"sanSang\":true,\"cho\":0,\"vaoLuc\":" + (long)GioMay() + "}}}";
+                + "\"sanSang\":true,\"cho\":0,"
+                + (laDoi ? "\"doi\":" + CheDoTran.DoiA + "," : "")
+                + "\"vaoLuc\":" + (long)GioMay() + "}}}";
 
         string ma = null; string loi = null;
         yield return FirebaseMang.Them("phong", than, (k, e) => { ma = k; loi = e; });
@@ -235,8 +253,12 @@ public static class PhongMang
             while (daDung.Contains(cho) && cho < SoNguoiToiDa - 1) cho++;
 
             string tenToi = FirebaseMang.TenHienThi ?? "NguoiChoi";
+            // Phong Doi: vao doi IT NGUOI HON (bang nhau -> A). Hai nguoi vao cung luc co the cung chon mot doi -
+            // chu phong can bang lai (CheDoTran.CanBangDoi).
+            string phanDoi = p.LaDoi ? "\"doi\":" + CheDoTran.DoiKhiVao(p.nguoiChoi, FirebaseMang.Uid) + "," : "";
             string than = "{\"ten\":\"" + FirebaseMang.Thoat(tenToi) + "\","
                         + "\"sanSang\":false,\"cho\":" + cho + ","
+                        + phanDoi
                         + "\"vaoLuc\":" + (long)GioMay() + "}";
 
             bool ok = false; string loi = null;
@@ -419,6 +441,48 @@ public static class PhongMang
         if (xong != null) xong();
     }
 
+    /// <summary>
+    /// DOI DOI (che do Doi): nguoi choi tu doi doi cua minh, hoac CHU PHONG chuyen doi cho nguoi khac.
+    /// Doc lai phong TRUOC khi ghi de biet doi kia con cho that (toi da 3) - danh sach tren man hinh co the cu 1 giay.
+    /// </summary>
+    public static IEnumerator DatDoi(string uid, int doiMoi, Action<bool, string> xong)
+    {
+        if (PhongHienTai == null || !PhongHienTai.LaDoi) { if (xong != null) xong(false, null); yield break; }
+        if (uid != FirebaseMang.Uid && !LaHost) { if (xong != null) xong(false, "Chỉ chủ phòng mới chuyển đội cho người khác."); yield break; }
+
+        string ma = PhongHienTai.ma;
+        bool doc = false;
+        yield return TaiLaiPhong(ma, (o, e) => doc = o);
+        if (!doc || PhongHienTai == null) { if (xong != null) xong(false, "Phòng đã đóng."); yield break; }
+        if (!PhongHienTai.DangCho) { if (xong != null) xong(false, "Trận đã bắt đầu."); yield break; }
+        if (!CheDoTran.ChuyenDuoc(PhongHienTai.nguoiChoi, uid, doiMoi))
+        { if (xong != null) xong(false, CheDoTran.TenDoi(doiMoi) + " đã đủ " + CheDoTran.SoNguoiMoiDoi + " người."); yield break; }
+
+        bool ok = false; string loi = null;
+        yield return FirebaseMang.Ghi("phong/" + ma + "/nguoiChoi/" + uid + "/doi", doiMoi.ToString(), (o, e) => { ok = o; loi = e; });
+        yield return TaiLaiPhong(ma, (o, e) => { });
+        if (xong != null) xong(ok, ok ? null : (loi ?? "Không đổi được đội."));
+    }
+
+    /// <summary>
+    /// CHU PHONG can bang doi moi nhip trong phong (ManSanh goi): nguoi chua co doi, doi qua 3 nguoi (hai nguoi vao cung luc).
+    /// Tra ve so nguoi da chuyen.
+    /// </summary>
+    public static IEnumerator CanBangDoiNeuCan(Action<int> xong)
+    {
+        int n = 0;
+        if (PhongHienTai != null && LaHost && PhongHienTai.LaDoi && PhongHienTai.DangCho)
+        {
+            string ma = PhongHienTai.ma;
+            foreach (var kv in CheDoTran.CanBangDoi(PhongHienTai.nguoiChoi))
+            {
+                yield return FirebaseMang.Ghi("phong/" + ma + "/nguoiChoi/" + kv.Key + "/doi", kv.Value.ToString(), (o, e) => { });
+                n++;
+            }
+        }
+        if (xong != null) xong(n);
+    }
+
     public static IEnumerator DuoiNguoi(string uid, Action xong)
     {
         if (PhongHienTai == null || !LaHost) { if (xong != null) xong(); yield break; }
@@ -493,7 +557,8 @@ public static class PhongMang
     // thi qua nang cho ban WebGL. Nen boc tay - cau truc o day nong va biet
     // truoc, khong can bo phan tich day du.
 
-    static Phong DocPhong(string ma, string json)
+    /// <summary>Doc mot phong tu JSON Firebase (public cho phep thu menu 92).</summary>
+    public static Phong DocPhong(string ma, string json)
     {
         var p = new Phong { ma = ma };
         p.ten       = LayChuoi(json, "ten");
@@ -501,6 +566,8 @@ public static class PhongMang
         p.hostTen   = LayChuoi(json, "hostTen");
         p.manChoi   = LayChuoi(json, "manChoi");
         p.trangThai = LayChuoi(json, "trangThai");
+        string cd = LayChuoi(json, "cheDo");
+        p.cheDo = CheDoTran.LaCheDoDoi(cd) ? CheDoTran.Doi : CheDoTran.Don;
         p.soNguoi   = LaySo(json, "soNguoi");
         p.toiDa     = LaySo(json, "toiDa");
         p.batDauLuc = LaySoThuc(json, "batDauLuc");
@@ -518,11 +585,21 @@ public static class PhongMang
                     ten     = LayChuoi(cap.Value, "ten"),
                     sanSang = LayChuoi(cap.Value, "sanSang") == "true"
                               || LayThoTho(cap.Value, "sanSang") == "true",
-                    cho     = LaySo(cap.Value, "cho")
+                    cho     = LaySo(cap.Value, "cho"),
+                    doi     = DocDoi(LayThoTho(cap.Value, "doi")),
+                    vaoLuc  = LaySoThuc(cap.Value, "vaoLuc")
                 });
             }
         }
         return p;
+    }
+
+    /// <summary>Truong "doi" cua mot nguoi: 0 / 1, thieu hoac la -> -1 (LaySo tra 0 khi thieu - la Doi A oan).</summary>
+    static sbyte DocDoi(string v)
+    {
+        int n;
+        if (string.IsNullOrEmpty(v) || !int.TryParse(v.Trim(), out n)) return CheDoTran.KhongDoi;
+        return n == CheDoTran.DoiA || n == CheDoTran.DoiB ? (sbyte)n : CheDoTran.KhongDoi;
     }
 
     /// <summary>Tach mot doi tuong JSON thanh cac cap khoa - than con.</summary>

@@ -8603,6 +8603,100 @@ châm cả bia mộ / nhà mồ (tính năng sáng nay), đầy trần "4 vật 
 
 Ảnh: `PlayTestShots/maygiong_1_dem_can.png`, `maygiong_2_chay_den.png`, `maygiong_3_ngay_goc_choi.png`.
 
+### Tối đa 6 người; chế độ ĐƠN và ĐÔI (28/09/2026)
+
+**Người dùng:** cho game chơi được tối đa **6 người**. Chế độ hiện có (giết nhau, người sống sót cuối cùng thắng) đặt tên
+**"Đơn"**. Thêm chế độ **"Đôi"**: tạo phòng thì chọn Đơn hay Đôi, người khác nhìn thấy phòng chơi chế độ nào. Đôi chia hai
+đội, **Đội A** và **Đội B**, mỗi đội tối đa 3 người. Người chơi tự chọn đội, hoặc chủ phòng chuyển đội cho họ. Đội nào còn
+người sống cuối cùng thì thắng.
+
+Hỏi lại, người dùng chọn:
+- **Đồng đội không gây sát thương và không dính hiệu ứng** của nhau (cháy, đóng băng, choáng, ngã, hất tung, cuốn, ướt…).
+- **Đồng đội xuất phát gần nhau**, hai đội ở hai phía bản đồ.
+- **Tên trên đầu theo màu đội** (A xanh dương, B đỏ) kèm chữ "ĐỘI A/B"; HUD ghi đội mình và số người còn sống mỗi đội.
+- Chủ phòng **bắt đầu lúc nào cũng được**; vào trận mà cả phòng cùng một đội thì **đội đó thắng ngay**.
+- Số quái giữ đúng công thức: 6 người = 24 con quanh người + 70 con vòng ngoài = **94 con** ở đợt đầu.
+- Người mới vào phòng Đôi tự vào **đội ít người hơn** (bằng nhau thì Đội A).
+
+**Giới hạn 4 → 6** ở năm chỗ: `PhongMang.SoNguoiToiDa`, `KenhTrucTiep.SoKenhToiDa` (chủ phòng nối 5 kênh WebRTC),
+`GoiTin.SoGheToiDa`, luật Firebase (`toiDa`, `soNguoi` ≤ 6, `cho` ≤ 5) và giao diện (6 hàng ghế, 6 ô ở danh sách phòng).
+⚠️ Menu 55 có mảng bảng điểm 4 phần tử viết tay: `DocKetTran` đọc 6 ghế thì vỡ chỉ số, đã sửa thành 6.
+
+**Luật chung ở `Mang/CheDoTran.cs`** (hàm thuần, kiểm được bằng số):
+- Firebase: `phong/{ma}/cheDo` = `"don"` / `"doi"` (phòng cũ không có → Đơn), `nguoiChoi/{uid}/doi` = 0 / 1. Người chơi tự ghi
+  đội của mình, chủ phòng ghi hộ (luật cũ đã cho chủ phòng ghi mọi ô `nguoiChoi/*`). Thiếu `doi` đọc ra **−1**, không phải 0 —
+  `LaySo` trả 0 khi thiếu, dùng nó thì người bản cũ vào nhầm Đội A.
+- Đổi đội (`PhongMang.DatDoi`) đọc lại phòng TRƯỚC khi ghi để biết đội kia còn chỗ thật.
+- **Hai người vào cùng lúc** cùng thấy Đội B còn chỗ rồi cùng ngồi vào (cuộc đua y như nút "Vào phòng nhanh"). Chủ phòng cân bằng
+  mỗi nhịp hỏi phòng (`CheDoTran.CanBangDoi`): người chưa có đội thì xếp vào đội ít người; đội quá 3 thì người **vào sau cùng**
+  sang đội kia.
+- Trong trận: `Damageable.doi` trên nhân vật của mình lẫn bản sao người khác, gán từ bảng ghế (`KhoiDongTranMang.GanDoi`).
+
+**Đồng đội không đánh nhau — hai lớp:**
+1. Mọi chỗ kỹ năng loại "chính người tung" (`d == boQua`, 26 chỗ trong 15 file) đổi thành `CheDoTran.BoQua(boQua, d)` =
+   người tung **hoặc đồng đội**. Nhờ vậy kỹ năng tự nhắm (Lửa địa ngục, Quả cầu điện, Giựt sét, quả nảy, Mây giông, Mưa băng
+   65% nhắm) bỏ qua đồng đội mà chọn đối thủ, vụ nổ và hiệu ứng không dính đồng đội. Quả cầu bay xuyên qua người đồng đội và
+   khiên của đồng đội; máy ngắm tự động (`TimKeDichGanNhat`) cũng bỏ qua đồng đội.
+2. Lưới an toàn trong `Damageable.TakeDamage`: đòn có ghi kẻ đánh là đồng đội thì bỏ.
+
+**Xuất phát** (`ChoXuatPhat.ChoChoDoi`): gieo từ mã phòng như trận Đơn, nên mọi máy ra cùng một danh sách.
+- Góc Đội A ở một vành ngẫu nhiên; góc Đội B phía đối diện, cách ≥ 55 m.
+- Mỗi người đứng quanh góc đội mình 2,5–6 m, cách đồng đội ≥ 2,2 m.
+
+**Kết trận Đôi** (`KetTran.XetXongDoi`, chủ phòng phán quyết):
+- Đợi **cả phòng vào trận** (hoặc quá 45 s thì người chưa vào coi như đã ra). Không đợi thì đội chưa ai tải xong màn bị coi là
+  chết hết, và gói kết trận gửi đi lúc khách chưa nối xong sẽ không ai nghe.
+- Gói kết trận thêm byte **mã đội thắng** (15 byte): 0 = trận Đơn — đúng giá trị mặc định của struct, nên mọi chỗ cũ tạo
+  `KetQua` vẫn là Đơn; 1 = A, 2 = B, 3 = không ai sống.
+- Cả đội thắng được ghi "trận thắng", kể cả người đã ngã giữa trận.
+- Chết rồi thì camera ưu tiên xem đồng đội còn sống.
+- Màn kết trận: "ĐỘI A CHIẾN THẮNG" / "ĐỘI CỦA BẠN CHIẾN THẮNG"; bảng điểm xếp theo đội, đội thắng màu vàng.
+
+**Giao diện sảnh:**
+- Khung tạo phòng có nút **ĐƠN | ĐÔI**.
+- Mỗi phòng trong danh sách có nhãn ĐƠN (đỏ) / ĐÔI (xanh), dòng "Chế độ …", 6 ô người (phòng Đôi: 3 ô xanh + 3 ô đỏ theo số
+  người mỗi đội).
+- Trong phòng Đôi: hai nhóm "ĐỘI A 3/3" / "ĐỘI B 3/3", nút "VÀO ĐỘI …" cho người đang ở đội kia, chủ phòng có nút
+  **CHUYỂN ĐỘI** trên hàng người khác (khoá khi đội kia đủ 3).
+
+**Đo:**
+- **Menu 92** (mới), 0 lỗi, 0 ngoại lệ:
+  - A. Hàm thuần: xếp đội, giới hạn 3, cân bằng (A1 B4 + một người thiếu đội → 3/3, chuyển đúng người vào sau), đội thắng
+    (6 ca), đọc JSON phòng cũ, gói kết trận 15 byte.
+  - B1. **10 kỹ năng THẬT** tung vào mục tiêu cùng đội: **0 máu, 0 hiệu ứng**. Đối chứng tung vào đội kia: mất 67–1089 máu
+    kèm cháy / đóng băng / choáng / ngã / hất tung / cuốn.
+  - B2. Đường mạng thật (máy nạn nhân phát lại gói phép Quả cầu lửa của đồng đội): mất 0; đối chứng đội kia: mất 97,7.
+  - B3. Lửa địa ngục / Quả cầu điện: đồng đội đứng gần 4 m mất 0, đối thủ ở 9 m mất 817 / 1089; đối chứng người gần là đối
+    thủ thì trúng người gần.
+  - C. Xuất phát (10 mã phòng): đồng đội cách nhau 2,4–10,8 m, hai đội gần nhất 58,6 m, 0 chỗ đứng sai, hai lần tính giống hệt.
+  - D. Kết trận qua kênh giả lập 6 ghế:
+    - Mới 3/6 người vào thì chưa xét.
+    - Đội B chết hết → Đội A thắng; gói tới đủ 5 kênh.
+    - Máy khách đội A thắng, đội B thua.
+    - Phòng một đội thắng ngay khi đủ người.
+    - Trận Đơn 6 người phán đúng ghế 0; ghế thứ 6 ghi đúng 4 người hạ.
+  - E. Tên theo màu đội + chữ "ĐỘI A/B" trên tên (3/3 bản sao), HUD "ĐỘI A (bạn) 3/3 còn sống · ĐỘI B …".
+  - ⚠️ Lần chạy đầu báo "Sấm sét trúng đồng đội 52 máu, chậm". Hoá ra là mảnh băng của lượt Mưa băng trước còn đang rơi
+    (Mưa băng kéo dài 5 s, lượt đo 4,5 s; người tung đã bị xoá nên mảnh băng mất `boQua`). Phép thử nay dọn mảnh băng giữa
+    các lượt và đo Mưa băng 5,8 s.
+- **Menu 92b** (mới, Firebase thật, hai tài khoản chạy thử + ghế giả do chủ phòng ghi), 0 lỗi:
+  - Luật Firebase: ghi `doi` = 2, `toiDa` = 7, `soNguoi` = 7 bị từ chối; `cho` = 5 được.
+  - Người bản cũ không có đội → chủ phòng xếp vào B.
+  - A vào (A1 B1) → Đội A; A tự sang B.
+  - A sửa đội của chủ phòng → Firebase từ chối.
+  - Đội đủ 3 → không chuyển thêm được ("ĐỘI A đã đủ 3 người.").
+  - Ghế vào nhầm làm B có 4 người → nhịp hỏi phòng của chủ phòng đưa người vào sau cùng về A (3/3).
+  - Ba ảnh sảnh / phòng Đôi / phòng Đơn 6 người, 0 chữ bị cắt. Hai phòng thử đã xoá sạch.
+  - Luật mới đã đưa lên Firebase (`firebase deploy --only database`, người dùng cho phép). Luật chỉ nới thêm nên bản web cũ vẫn
+    chơi được.
+- Chạy lại menu 52 (tên trên đầu), 53 (HUD, quét chữ có dấu), 55 (kết trận), 45 (nhiều người): 0 lỗi mới.
+  - Menu 55 còn 1 lỗi "không tìm thấy quái để thử" và menu 45 mục 2e "đàn quái không tới khách". Cả hai có sẵn từ khi đợt đầu
+    chờ 30 giây: phép thử đo ngay lúc vào trận, lúc ấy chưa có con quái nào (không có quái thì chủ phòng không gửi gói quái).
+    Báo cáo menu 55 đã commit cũng ghi đúng lỗi này.
+
+Ảnh: `PlayTestShots/che_do_doi_ten_hud.png`, `che_do_doi_ket_tran_thang.png`, `che_do_doi_ket_tran_thua.png`, `sanh_doi_sanh.png`,
+`sanh_doi_phong_doi.png`, `sanh_doi_phong_don.png`.
+
 ### Người khách ăn đòn quái đúng hệ số đợt; Bộ xương đợt 1 còn 35 (28/09/2026)
 
 **Người dùng:** sửa lỗi người khách ăn đòn quái ở mức gốc (ghi ở mục dưới), và hạ Bộ xương đợt 1 từ 55 xuống **35**.
@@ -11758,6 +11852,8 @@ Lần chạy đầu phép thử báo cả 10 con "lơ lửng": tia chiếu từ 
 | **89. Chay thu O VUONG SANG tren mat dat (den ky nang)** | Chụp riêng lớp Terrain có / không đèn kỹ năng ở 3 điểm cố định × 4 mức đồ hoạ × 1 / 6 đèn, đo "đường nối" (ô vuông) trên D/A; đối chứng tắt đèn sinh đôi `DenMatDat`. Kèm ảnh vụ nổ thật. `den_mat_dat.txt`. |
 | **90. Chay thu LUA CHAY TOAN THAN (nguoi choi + quai)** | Đốt người chơi, bộ xương, Quỷ cây; chụp 3 ảnh cùng khung (ẩn lửa · có lửa · bóng thân trắng đặc lớp 31), tắt bloom + đèn lửa: tỉ lệ diện tích lửa nằm trong viền thân nới 14 px và tỉ lệ thân được phủ; đối chứng khối billboard lần 2; chạy 6 m/s (đối chứng mô phỏng thế giới); hết giờ / gỡ giữa chừng tắt ngay, không sót vật liệu; nhịp cháy không phun tia trúng đòn. `lua_chay.txt`. |
 | **91. Chay thu DAC TINH QUAI (Quy cay choang, Quy du nga, Bo xuong do don)** | Bộ xương ×1,35 tốc · ×1,30 sát thương so với PREFAB gốc, chạy / đánh thật; Quỷ cây 200 tia thật → ~15% choáng 1 s (đối chứng tỉ lệ 0); Quỷ dữ thiên thạch thật 15% ngã 1 s; Bộ xương 400 đòn kỹ năng → ~25% đỡ, đỡ thì không dính cháy (đối chứng rỉ · đòn quái · Phù thủy = 0), hất tung ~75%; bit gói quái. `dac_tinh_quai.txt`. |
+| **92. Chay thu CHE DO DON - DOI (6 nguoi, dong doi, ket tran doi)** | Hàm thuần xếp đội / cân bằng / đội thắng / JSON phòng cũ / gói kết trận 15 byte; 10 kỹ năng thật vào đồng đội → 0 máu 0 hiệu ứng (đối chứng đội kia trúng); gói phép mạng của đồng đội; tự nhắm bỏ qua đồng đội gần; chỗ xuất phát theo đội; kết trận Đôi 6 ghế qua kênh giả lập (chưa đủ người chưa xét, máy khách hai đội, phòng một đội, Đơn 6 người); tên màu đội + HUD. `che_do_doi.txt`, ảnh `che_do_doi_*.png`. |
+| **92b. Chay thu SANH DON - DOI tren Firebase that** | Hai tài khoản chạy thử + ghế giả: tạo phòng Đơn / Đôi, luật Firebase (đối chứng ghi sai bị từ chối), người bản cũ được xếp đội, vào đội ít người, tự đổi đội, khách không sửa được đội người khác, đội đủ 3 bị chặn, chủ phòng cân bằng khi 4 người một đội; chụp sảnh / phòng Đôi / phòng Đơn 6 người (0 chữ bị cắt). Xoá sạch phòng thử. `sanh_doi.txt`, ảnh `sanh_doi_*.png`. |
 | **56. Chay thu DOT QUAI Act2 + cho xuat phat** | *(13/09/2026: thêm đo chờ 30 giây và 10 con xa 55–65 m)*  Kiểm chỗ xuất phát ngẫu nhiên (hai máy cùng mã phòng ra cùng danh sách, cách nhau ≥ 22 m, trên đất, ngoài nước, không vướng vật cản) và luật đợt quái Act2 (đợt 1 bốn con quanh mỗi người; đợt sau cộng dồn quái và mạnh thêm 5% máu · sát thương). Số đo `dotquai_act2.txt`. |
 | **55. Chay thu KET TRAN (nguoi song sot cuoi cung)** | Mở kênh giả lập như menu 45: kiểm gói tin kết trận/chết, máy chủ phòng phán quyết đúng lúc còn một người, bảng điểm cộng đúng người, máy khách không tự kết luận và hiện đúng kết quả nghe được, chết rồi camera chuyển sang người còn sống, chụp màn kết trận. Số đo `kettran.txt`, ảnh `kettran_*.png`. |
 | **54c. Chay thu LOC XOAY cuon lo lua** | Vào Play Act2, thả một cơn lốc đi thẳng vào lò: đo mốc thời gian lửa tắt / lò nhấc lên / lò biến mất / lò mọc lại, kiểm than trong chậu tắt bằng độ sáng trên ảnh, và kiểm vật có hệ hạt khác vẫn không bị cuốn. Ảnh `locxoay_*.png`, số đo `locxoay_lolua.txt`. |

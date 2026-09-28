@@ -36,6 +36,13 @@ public class Damageable : MonoBehaviour
 
     [Header("Khac")]
     public bool isPlayer = false;
+
+    /// <summary>
+    /// DOI cua nhan vat NGUOI CHOI trong tran che do Doi (28/09/2026): 0 = Doi A, 1 = Doi B, -1 = khong doi (tran Don, quai).
+    /// KhoiDongTranMang gan cho nhan vat cua minh va ban sao cua nguoi khac. Dong doi khong an sat thuong / hieu ung cua nhau
+    /// (<see cref="CheDoTran.LaDongDoi"/>).
+    /// </summary>
+    [System.NonSerialized] public sbyte doi = -1;
     /// <summary>KHONG DUNG NUA (26/09/2026): xac nam theo XacNam (quai 20 giay roi chim). Giu truong vi prefab con ghi.</summary>
     public float corpseSeconds = 6f;
 
@@ -160,6 +167,10 @@ public class Damageable : MonoBehaviour
             HeSat heDon = heGayDon;
             keGayDon = null; heGayDon = HeSat.Khac;      // the dung mot lan
 
+            // CHE DO DOI (28/09/2026): don cua DONG DOI khong gay sat thuong. Ky nang da bo qua dong doi luc chon muc tieu
+            // (CheDoTran.BoQua); day la luoi an toan cho moi duong con lai co ghi ke danh (nhip chay, vung lua, cay chay...).
+            if (nguoiGay != null && CheDoTran.LaDongDoi(nguoiGay, this)) return;
+
             // BO XUONG DO DON (28/09/2026): don KY NANG cua nguoi choi (khong phai sat thuong ri) - 25% khong mat mau.
             // Hieu ung cua cung don nay do ChongDo.ChanHieuUng chan (cung ket qua gieo trong khung).
             if (tiLeDoDon > 0f && !LaSatThuongRi && nguoiGay != null && nguoiGay.isPlayer && ChongDo.Gieo(this))
@@ -278,7 +289,7 @@ public static class CombatUtil
         {
             var d = buffer[i].GetComponentInParent<Damageable>();
             if (d == null || d.IsDead) continue;
-            if (boQua != null && d == boQua) continue;
+            if (CheDoTran.BoQua(boQua, d)) continue;
             if (boRa != null && boRa.Contains(d)) continue;
 
             // Sat thuong giam dan tu tam ra ria
@@ -349,7 +360,7 @@ public static class CombatUtil
         {
             var d = buffer[i].GetComponentInParent<Damageable>();
             if (d == null || d.IsDead) continue;
-            if (boQua != null && d == boQua) continue;
+            if (CheDoTran.BoQua(boQua, d)) continue;
 
             float dist = Vector3.Distance(center, d.transform.position);
             float falloff = Mathf.Lerp(1f, 0.55f, Mathf.Clamp01(dist / Mathf.Max(0.01f, radius)));
@@ -392,7 +403,7 @@ public static class CombatUtil
         {
             var d = buffer[i].GetComponentInParent<Damageable>();
             if (d == null || d.IsDead) continue;
-            if (boQua != null && d == boQua) continue;
+            if (CheDoTran.BoQua(boQua, d)) continue;
 
             float dist = Vector3.Distance(center, d.transform.position);
             float falloff = Mathf.Lerp(1f, 0.55f, Mathf.Clamp01(dist / Mathf.Max(0.01f, radius)));

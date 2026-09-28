@@ -157,11 +157,19 @@ public class KhoiDongTranMang : MonoBehaviour
         if (!ok || phong == null) { Hong("khong doc duoc phong"); yield break; }
 
         // ---- 2. Xep ghe ----
+        // Che do tran (28/09/2026): phong Doi thi moi ghe mang doi A/B. Ai con thieu doi (ban game cu, ghi hong) thi xep
+        // bang CheDoTran.CanBangDoi - ham thuan, moi may ra cung dap an.
+        CheDoTran.LaTranDoi = phong.LaDoi;
+        if (phong.LaDoi)
+            foreach (var kv in CheDoTran.CanBangDoi(phong.nguoiChoi))
+                foreach (var n in phong.nguoiChoi) if (n.uid == kv.Key) n.doi = kv.Value;
         bangGhe = XepGhe(phong.nguoiChoi, phong.hostUid);
+        if (!phong.LaDoi) for (int i = 0; i < bangGhe.Count; i++) { var g = bangGhe[i]; g.doi = CheDoTran.KhongDoi; bangGhe[i] = g; }
         MotGhe gheToi = TimGhe(bangGhe, FirebaseMang.Uid);
         if (gheToi.uid == null) { Hong("khong thay minh trong danh sach phong"); yield break; }
 
-        NhanDang += string.Format(" · ghế {0} · {1} người", gheToi.ghe, bangGhe.Count);
+        NhanDang += string.Format(" · ghế {0} · {1} người", gheToi.ghe, bangGhe.Count)
+                  + (phong.LaDoi ? " · " + CheDoTran.TenDoi(gheToi.doi) : "");
 
         if (bangGhe.Count < 2)
         {
@@ -173,7 +181,8 @@ public class KhoiDongTranMang : MonoBehaviour
 
         // Ten cua minh tren dau nhan vat cua minh (mau vang) - ban sao cua nguoi
         // khac tu gan ten luc sinh (NguoiChoiKhac.Sinh)
-        BangTen.Gan(toi.gameObject, TenCuaGhe(gheToi.ghe), true);
+        var bangTenToi = BangTen.Gan(toi.gameObject, TenCuaGhe(gheToi.ghe), true);
+        GanDoi(toi, bangTenToi, gheToi.doi);
 
         // ---- 3. Dung bo dong bo TRUOC khi bat tay ----
         // Goi tin cua nguoi ta co the den ngay khi kenh vua mo - bo dong bo
@@ -201,6 +210,9 @@ public class KhoiDongTranMang : MonoBehaviour
         KetTran.Xoa();
         var ketTran = gameObject.AddComponent<KetTran>();
         ketTran.TenCuaGhe = TenCuaGhe;
+        ketTran.DoiCuaGhe = DoiCuaGhe;
+        ketTran.GheCoTrongPhong = new List<byte>();
+        foreach (var g in bangGhe) ketTran.GheCoTrongPhong.Add(g.ghe);
         ketTran.Gan(dongBo, toi, gheToi.ghe);
 
         // Nhan vat cua minh ghi lai duong di: bu tre can biet "mot khoang truoc
@@ -298,6 +310,8 @@ public class KhoiDongTranMang : MonoBehaviour
         public string uid;
         public string ten;
         public bool laChuPhong;
+        /// <summary>Doi (che do Doi): 0 = A, 1 = B, -1 = khong doi.</summary>
+        public sbyte doi;
     }
 
     /// <summary>Bang ghe cua tran nay - de tra ten tu so ghe.</summary>
@@ -336,11 +350,11 @@ public class KhoiDongTranMang : MonoBehaviour
 
         var ra = new List<MotGhe>();
         foreach (var n in chuPhong)
-            ra.Add(new MotGhe { ghe = 0, uid = n.uid, ten = n.ten, laChuPhong = true });
+            ra.Add(new MotGhe { ghe = 0, uid = n.uid, ten = n.ten, laChuPhong = true, doi = n.doi });
         foreach (var n in khach)
         {
             if (ra.Count >= KenhTrucTiep.SoKenhToiDa) break;
-            ra.Add(new MotGhe { ghe = (byte)ra.Count, uid = n.uid, ten = n.ten, laChuPhong = false });
+            ra.Add(new MotGhe { ghe = (byte)ra.Count, uid = n.uid, ten = n.ten, laChuPhong = false, doi = n.doi });
         }
         return ra;
     }
@@ -356,6 +370,35 @@ public class KhoiDongTranMang : MonoBehaviour
         foreach (var g in bangGhe)
             if (g.ghe == ghe) return string.IsNullOrEmpty(g.ten) ? ("người chơi " + (ghe + 1)) : g.ten;
         return "người chơi " + (ghe + 1);
+    }
+
+    /// <summary>Doi cua mot ghe (tran Doi) - -1 neu tran Don hoac ghe khong co trong phong.</summary>
+    public sbyte DoiCuaGhe(byte ghe)
+    {
+        if (!CheDoTran.LaTranDoi) return CheDoTran.KhongDoi;
+        foreach (var g in bangGhe) if (g.ghe == ghe) return g.doi;
+        return CheDoTran.KhongDoi;
+    }
+
+    /// <summary>Doi cua tung ghe 0..SoKenhToiDa-1 (-1 = ghe trong) - dau vao cua ChoXuatPhat.ChoChoDoi.</summary>
+    sbyte[] DoiTheoGhe()
+    {
+        var ra = new sbyte[KenhTrucTiep.SoKenhToiDa];
+        for (int i = 0; i < ra.Length; i++) ra[i] = CheDoTran.KhongDoi;
+        foreach (var g in bangGhe) if (g.ghe < ra.Length) ra[g.ghe] = g.doi;
+        return ra;
+    }
+
+    /// <summary>
+    /// Gan doi cho mot nhan vat (cua minh hoac ban sao): Damageable.doi - dong doi khong an don cua nhau - va mau ten tren dau.
+    /// Tran Don thi doi = -1, khong doi gi.
+    /// </summary>
+    public static void GanDoi(PlayerController nv, BangTen bt, sbyte doi)
+    {
+        if (nv == null) return;
+        var d = nv.GetComponent<Damageable>();
+        if (d != null) d.doi = doi;
+        if (bt != null) bt.doi = doi;
     }
 
     /// <summary>
@@ -377,8 +420,11 @@ public class KhoiDongTranMang : MonoBehaviour
         Vector3 tam = dir != null ? dir.arenaCenter : Vector3.zero;
         float banKinh = dir != null ? dir.arenaRadius : 34f;
 
-        var cho = ChoXuatPhat.ChoChoCaPhong(ChoXuatPhat.HatTuMaPhong(TranHienTai.MaPhong),
-                                            KenhTrucTiep.SoKenhToiDa, tam, banKinh);
+        // Tran Doi: dong doi dung gan nhau, hai doi hai phia ban do (nguoi dung chon 28/09/2026)
+        var cho = CheDoTran.LaTranDoi
+            ? ChoXuatPhat.ChoChoDoi(ChoXuatPhat.HatTuMaPhong(TranHienTai.MaPhong), DoiTheoGhe(), tam, banKinh)
+            : ChoXuatPhat.ChoChoCaPhong(ChoXuatPhat.HatTuMaPhong(TranHienTai.MaPhong),
+                                        KenhTrucTiep.SoKenhToiDa, tam, banKinh);
         if (ghe >= cho.Count) return;
         Vector3 moi = cho[ghe];
 
@@ -403,6 +449,7 @@ public class KhoiDongTranMang : MonoBehaviour
 
         var nv = NguoiChoiKhac.Sinh(g.uid, TenCuaGhe(ghe), viTri);
         if (nv == null) return null;
+        GanDoi(nv, nv.GetComponent<BangTen>(), DoiCuaGhe(ghe));
 
         // Ban sao cung ghi lai duong di - de phep cua CHINH HO khong bi lui
         // (BuTre.Mo bo qua nguoi tung), va de lui ho khi phep nguoi khac trung.

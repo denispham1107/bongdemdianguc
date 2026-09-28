@@ -33,6 +33,7 @@ public static class TranHienTai
         KetTran.Xoa();
 
         DangChoiMang = false;
+        CheDoTran.LaTranDoi = false;
         MaPhong = null;
         ManChoi = null;
         LaHost = false;

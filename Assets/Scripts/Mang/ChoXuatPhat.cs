@@ -78,6 +78,88 @@ public static class ChoXuatPhat
         return ra;
     }
 
+    /// <summary>Tran Doi: hai GOC DOI cach nhau it nhat chung nay met (ban kinh Act2 62 m - hai phia ban do).</summary>
+    public const float CachHaiDoiToiThieu = 55f;
+    /// <summary>Tran Doi: dong doi dung quanh goc doi trong khoang nay (met).</summary>
+    public const float DongDoiGanToiThieu = 2.5f, DongDoiGanToiDa = 6f;
+    /// <summary>Hai dong doi khong dung sat nhau hon (met).</summary>
+    public const float DongDoiCachNhau = 2.2f;
+
+    /// <summary>
+    /// CHO XUAT PHAT TRAN DOI (nguoi dung 28/09/2026: "dong doi gan nhau"): moi doi mot GOC o mot phia ban do, hai goc cach
+    /// nhau it nhat <see cref="CachHaiDoiToiThieu"/>; moi nguoi dung quanh goc doi minh 2,5 - 6 m, cach dong doi >= 2,2 m.
+    /// Nhu <see cref="ChoChoCaPhong"/>: gieo tu ma phong va bang doi cua phong nen moi may ra CUNG MOT danh sach.
+    /// </summary>
+    /// <param name="doiTheoGhe">Doi cua tung ghe (0/1; -1 = ghe trong).</param>
+    public static List<Vector3> ChoChoDoi(int hat, IList<sbyte> doiTheoGhe, Vector3 tam, float banKinh)
+    {
+        var ra = new List<Vector3>();
+        var cu = Random.state;
+        Random.InitState(hat ^ 0x5D0D01);
+
+        // ---- Hai goc doi: goc A o mot vanh ngau nhien, goc B phia doi dien xa nhat ----
+        Vector3 gocA = tam, gocB = tam;
+        bool coA = false;
+        for (int lan = 0; lan < SoLanBoc && !coA; lan++)
+        {
+            float g = Random.Range(0f, Mathf.PI * 2f);
+            float r = banKinh * Random.Range(0.45f, 0.78f);
+            var p = tam + new Vector3(Mathf.Cos(g) * r, 0f, Mathf.Sin(g) * r);
+            float y;
+            if (!ChoDungDuoc(p, out y)) continue;
+            p.y = y + 0.1f; gocA = p; coA = true;
+        }
+        float xaNhat = -1f;
+        for (int lan = 0; lan < SoLanBoc; lan++)
+        {
+            Vector3 nguoc = tam - (gocA - tam);
+            float g = Mathf.Atan2(nguoc.z - tam.z, nguoc.x - tam.x) + Random.Range(-0.9f, 0.9f);
+            float r = banKinh * Random.Range(0.45f, 0.85f);
+            var p = tam + new Vector3(Mathf.Cos(g) * r, 0f, Mathf.Sin(g) * r);
+            float y;
+            if (!ChoDungDuoc(p, out y)) continue;
+            p.y = y + 0.1f;
+            float xa = new Vector2(p.x - gocA.x, p.z - gocA.z).magnitude;
+            if (xa > xaNhat) { xaNhat = xa; gocB = p; }
+            if (xa >= CachHaiDoiToiThieu) break;
+        }
+
+        // ---- Tung nguoi quanh goc doi minh ----
+        var daCo = new List<Vector3>();
+        for (int i = 0; i < doiTheoGhe.Count; i++)
+        {
+            int d = doiTheoGhe[i];
+            Vector3 goc = d == CheDoTran.DoiB ? gocB : gocA;
+            Vector3 tot = goc; bool coCho = false; float xaNhatCho = -1f;
+            for (int lan = 0; lan < SoLanBoc; lan++)
+            {
+                float g = Random.Range(0f, Mathf.PI * 2f);
+                float r = Random.Range(DongDoiGanToiThieu, DongDoiGanToiDa);
+                var p = goc + new Vector3(Mathf.Cos(g) * r, 0f, Mathf.Sin(g) * r);
+                float y;
+                if (!ChoDungDuoc(p, out y)) continue;
+                p.y = y + 0.1f;
+                float gan = GanNhat(p, daCo);
+                if (gan >= DongDoiCachNhau) { tot = p; coCho = true; break; }
+                if (gan > xaNhatCho) { xaNhatCho = gan; tot = p; coCho = true; }
+            }
+            if (!coCho) tot = goc;
+            daCo.Add(tot);
+            ra.Add(tot);
+        }
+
+        Random.state = cu;
+        return ra;
+    }
+
+    /// <summary>Dung duoc: tren dat, khong duoi nuoc, khong vuong vat can.</summary>
+    static bool ChoDungDuoc(Vector3 p, out float y)
+    {
+        if (!DungTrenDat(p, out y)) return false;
+        var q = new Vector3(p.x, y + 0.1f, p.z);
+        return !DuoiNuoc(q) && !VuongVatCan(q);
+    }
+
     /// <summary>Hat gieo tu ma phong - moi may deu tinh ra cung mot so.</summary>
     public static int HatTuMaPhong(string maPhong)
     {

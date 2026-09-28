@@ -226,7 +226,7 @@ public class ThienThach : MonoBehaviour
         {
             var d = cols[i].GetComponentInParent<Damageable>();
             if (d == null || d.IsDead || !daXet.Add(d)) continue;
-            if (boQua != null && d == boQua) continue;
+            if (CheDoTran.BoQua(boQua, d)) continue;
             if (boRa != null && boRa.Contains(d)) continue;      // qua NAY: ke da trung vu no truoc khong gieo lai
             if (d.khieng != null && d.khieng.DangBat) continue;
             if (Random.value < xacSuat) { BiDanhNga.Apply(d, giay); so++; }

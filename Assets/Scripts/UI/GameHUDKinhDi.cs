@@ -120,6 +120,7 @@ public partial class GameHUD
     {
         public Vector2 thongTin;       // ca khung dot quai (da cong le)
         public float caoDong1, caoDong2;
+        public float caoDong3;         // dong doi (tran Doi) - 0 neu khong co
         public Vector2 mang;           // khung thong bao mang (da cong le), (0,0) neu khong co
         public Vector2 ketNoi;         // khung bao mat ket noi
         public Vector2 baoGiua;        // dong bao ngan (F9, khoa goc nhin)
@@ -149,6 +150,14 @@ public partial class GameHUD
                                    string mang, string ketNoi, string baoGiua, string baoNhanVat,
                                    string soMau, string soMana)
     {
+        return DoCoChu(k, W, s, dong1, dong2, mang, ketNoi, baoGiua, baoNhanVat, soMau, soMana, "");
+    }
+
+    /// <param name="dong3">Dong DOI cua tran Doi ("ĐỘI A 2/3 còn sống · ĐỘI B ...") - rong thi khung dot quai giu hai dong.</param>
+    public static CoChuHUD DoCoChu(KieuHUD k, float W, float s, string dong1, string dong2,
+                                   string mang, string ketNoi, string baoGiua, string baoNhanVat,
+                                   string soMau, string soMana, string dong3)
+    {
         var c = new CoChuHUD();
         float rongToiDa = W - 32f * s;
 
@@ -156,8 +165,15 @@ public partial class GameHUD
         c.caoDong1 = k.dot.CalcSize(n1).y;
         c.caoDong2 = k.dong2.CalcSize(n2).y;
         float rong = Mathf.Max(k.dot.CalcSize(n1).x, k.dong2.CalcSize(n2).x) + 2f * 30f * s;
+        if (!string.IsNullOrEmpty(dong3))
+        {
+            var n3 = new GUIContent(dong3);
+            c.caoDong3 = k.dong2.CalcSize(n3).y;
+            rong = Mathf.Max(rong, k.dong2.CalcSize(n3).x + 2f * 30f * s);
+        }
         c.thongTin = new Vector2(Mathf.Min(rongToiDa, Mathf.Max(260f * s, rong)),
-                                 14f * s + c.caoDong1 + 4f * s + c.caoDong2 + 14f * s);
+                                 14f * s + c.caoDong1 + 4f * s + c.caoDong2 + 14f * s
+                                 + (c.caoDong3 > 0f ? c.caoDong3 + 4f * s : 0f));
 
         c.mang = KhungChu(k.mang, mang, Mathf.Min(rongToiDa, 780f * s), 22f * s, 12f * s);
         c.ketNoi = KhungChu(k.ketNoi, ketNoi, Mathf.Min(rongToiDa, 900f * s), 28f * s, 18f * s);
@@ -350,7 +366,8 @@ public partial class GameHUD
             ? Mathf.CeilToInt(playerHealth.health) + " / " + Mathf.CeilToInt(playerHealth.maxHealth) : "";
         string soMana = player != null ? Mathf.CeilToInt(player.mana) + " / " + Mathf.CeilToInt(player.maxMana) : "";
 
-        var c = DoCoChu(kieu, Screen.width, s, dong1, dong2, mang, ketNoi, baoGiua, baoNV, soMau, soMana);
+        string dong3 = DongDoi();
+        var c = DoCoChu(kieu, Screen.width, s, dong1, dong2, mang, ketNoi, baoGiua, baoNV, soMau, soMana, dong3);
         if (director == null) c.thongTin = Vector2.zero;
         var b = TinhBoCuc(Screen.width, Screen.height, s, c, CamUng.DangDung);
         BoCucCuoi = b;
@@ -515,6 +532,35 @@ public partial class GameHUD
         GiaoDien.DuongKe(new Rect(r.x + r.width * 0.2f, y - 3f * s, r.width * 0.6f, Mathf.Max(1f, 1.5f * s)),
                          new Color(0.75f, 0.12f, 0.08f, 0.8f));
         VeChuVien(new Rect(r.x, y, r.width, c.caoDong2), dong2, kieu.dong2, GiaoDien.MauGiay, s);
+
+        // Tran Doi: dong thu ba, moi doi mot mau
+        if (c.caoDong3 > 0f)
+        {
+            y += c.caoDong2 + 4f * s;
+            string a = PhanDoi(CheDoTran.DoiA), g = "   ·   ", b = PhanDoi(CheDoTran.DoiB);
+            var k = kieu.dong2;
+            float ra = k.CalcSize(new GUIContent(a)).x, rg = k.CalcSize(new GUIContent(g)).x, rb = k.CalcSize(new GUIContent(b)).x;
+            float x = r.x + (r.width - ra - rg - rb) * 0.5f;
+            var canh = k.alignment; k.alignment = TextAnchor.MiddleLeft;
+            VeChuVien(new Rect(x, y, ra + 4f, c.caoDong3), a, k, CheDoTran.MauDoiA, s);
+            VeChuVien(new Rect(x + ra, y, rg + 4f, c.caoDong3), g, k, GiaoDien.MauMo, s);
+            VeChuVien(new Rect(x + ra + rg, y, rb + 4f, c.caoDong3), b, k, CheDoTran.MauDoiB, s);
+            k.alignment = canh;
+        }
+    }
+
+    /// <summary>"ĐỘI A (bạn) 2/3 còn sống" - mot nua dong doi.</summary>
+    static string PhanDoi(int doi)
+    {
+        return CheDoTran.TenDoi(doi) + (KetTran.DoiCuaToi == doi ? " (bạn)" : "") + "  "
+             + KetTran.SoSongDoi[doi] + "/" + KetTran.SoNguoiDoi[doi] + " còn sống";
+    }
+
+    /// <summary>Dong doi cua khung dot quai - chi tran Doi, rong khi tran Don / choi mot minh.</summary>
+    static string DongDoi()
+    {
+        if (!CheDoTran.LaTranDoi || KetTran.Hien == null) return "";
+        return PhanDoi(CheDoTran.DoiA) + "   ·   " + PhanDoi(CheDoTran.DoiB);
     }
 
     // ---------------- Thong bao mang ----------------
@@ -568,7 +614,12 @@ public partial class GameHUD
         GUI.DrawTexture(new Rect(0f, 0f, Screen.width, Screen.height), barTex);
         GUI.color = prev;
 
-        string tieuDe = KetTran.GheThang == 255 ? "KHÔNG AI SỐNG SÓT"
+        bool tranDoi = KetTran.BangDiem.doiThang != GoiTin.KhongDoiThang;
+        string tieuDe = tranDoi
+                      ? (KetTran.DoiThang < 0 ? "KHÔNG AI SỐNG SÓT"
+                         : KetTran.ToiThang ? "ĐỘI CỦA BẠN CHIẾN THẮNG"
+                         : CheDoTran.TenDoi(KetTran.DoiThang) + " CHIẾN THẮNG")
+                      : KetTran.GheThang == 255 ? "KHÔNG AI SỐNG SÓT"
                       : KetTran.ToiThang ? "BẠN SỐNG SÓT CUỐI CÙNG"
                       : GhepDauTiengViet.Ghep(KetTran.TenNguoiThang).ToUpperInvariant() + " ĐÃ THẮNG";
 
@@ -606,12 +657,22 @@ public partial class GameHUD
                   "Đã hạ", kDong, GiaoDien.MauMo, s);
         y += caoDong + 2f * s;
 
+        // Tran Doi: xep theo doi - Doi A truoc, Doi B sau (luot 0 / 1); tran Don mot luot theo ghe
+        for (int luot = 0; luot < (tranDoi ? 2 : 1); luot++)
         for (byte g = 0; g < GoiTin.SoGheToiDa; g++)
         {
             if (!KetTran.CoTrongTran[g]) continue;
+            if (tranDoi && KetTran.DoiTheoGhe[g] != luot) continue;
             string ten = GhepDauTiengViet.Ghep(KetTran.TenTheoGhe[g] ?? ("người chơi " + (g + 1)));
             if (g == KetTran.GheCuaToi) ten += " (bạn)";
             var mau = g == KetTran.GheThang ? new Color(1f, 0.86f, 0.45f) : GiaoDien.MauGiay;
+            // Tran Doi: ghi doi truoc ten; doi thang mau vang, doi thua theo mau doi
+            int doiG = tranDoi ? KetTran.DoiTheoGhe[g] : -1;
+            if (doiG >= 0)
+            {
+                ten = CheDoTran.TenDoi(doiG) + " · " + ten;
+                mau = doiG == KetTran.DoiThang ? new Color(1f, 0.86f, 0.45f) : CheDoTran.MauDoi(doiG);
+            }
 
             VeChuVien(new Rect(xBang, y, cotTen, caoDong), ten, kDong, mau, s);
             VeChuVien(new Rect(xBang + cotTen, y, cotQuai, caoDong),

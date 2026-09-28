@@ -1,0 +1,20 @@
+[ban 1] sanh / phong che do Don - Doi tren Firebase that - 28/09/2026 13:23
+   dang nhap B (chu phong): OK (ChienBinhB)
+1a. phong Don: cheDo don, toiDa 6, 6 nguoi
+1b. phong Doi: cheDo "doi", toiDa 6, doi chu phong 0 | JSON that co "cheDo":"doi": True
+1c. luat: ghi doi=2 False, toiDa=7 False, soNguoi=7 False (ca ba phai False) | cho=5 True (phai True)
+2. nguoi ban cu vao khong ghi doi: doi -1 -> chu phong xep 1 nguoi -> doi 1 (phai -1 -> 1)
+   dang nhap A: OK (thunghiem.a.diab)
+3a. A vao phong Doi (A 1, B 1): OK, doi cua A = 0 (phai 0 - bang nhau vao A)
+3b. A tu sang Doi B: OK, doi = 1 (phai 1)
+3c. A sua doi cua CHU PHONG: ghi thang Firebase False (phai False), qua DatDoi False ("Chỉ chủ phòng mới chuyển đội cho người khác.")
+   dang nhap B (chu phong): OK (ChienBinhB)
+4a. phong du 6 (A 3, B 3): chu phong chuyen A sang Doi A (da du) -> False ("ĐỘI A đã đủ 3 người."), doi A van 1
+5a. sanh co phong Don + Doi: 6 luot ve, chu bi cat 0 lan - anh sanh_doi_sanh.png
+5b. phong Doi 3/3 - 3/3 (chu phong thay nut CHUYEN DOI): 6 luot ve, chu bi cat 0 lan - anh sanh_doi_phong_doi.png
+4b. ghe tam_g3 vao nham Doi B (B 4) -> nhip hoi phong cua chu phong can bang: A 3, B 3, tam_g3 doi 0 (phai 3/3, tam_g3 ve 0 - nguoi vao sau cung)
+5c. phong Don 6 nguoi: 6 luot ve, chu bi cat 0 lan - anh sanh_doi_phong_don.png
+don phong -P2afcUQZgazvpgwabiJ: sach
+don phong -P2afc8s9ErXSjV8LkMp: sach
+
+so loi ghi nhan = 0

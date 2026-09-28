@@ -109,8 +109,8 @@ public static class ThuKetTran
         var kq = new GoiTin.KetQua
         {
             gheThang = 3,
-            quaiTheoGhe = new byte[] { 7, 0, 200, 1 },
-            nguoiTheoGhe = new byte[] { 1, 2, 0, 3 }
+            quaiTheoGhe = new byte[] { 7, 0, 200, 1, 0, 9 },
+            nguoiTheoGhe = new byte[] { 1, 2, 0, 3, 4, 0 }
         };
         GoiTin.KetQua doc;
         bool ok = GoiTin.DocKetTran(GoiTin.VietKetTran(kq), out doc);

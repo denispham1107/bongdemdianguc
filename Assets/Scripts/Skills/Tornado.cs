@@ -273,7 +273,7 @@ public class Tornado : MonoBehaviour
         {
             var d = buffer[i].GetComponentInParent<Damageable>();
             if (d == null || d.IsDead) continue;
-            if (boQua != null && d == boQua) continue;
+            if (CheDoTran.BoQua(boQua, d)) continue;
             if (daDoDon.Contains(d)) continue;
             // Bo xuong DO DON (28/09/2026): gieo MOT lan cho ca con loc nay - khong thi moi khung gieo lai, som muon cung cuon duoc
             if (d.GetComponent<WhirledEffect>() == null && ChongDo.ChanHieuUng(d)) { daDoDon.Add(d); continue; }

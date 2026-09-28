@@ -30,6 +30,16 @@ public class BangTen : MonoBehaviour
     public string ten = "";
     public bool laToi;
 
+    /// <summary>
+    /// Tran DOI (28/09/2026, nguoi dung chon "ten tren dau theo mau doi"): 0 = Doi A (xanh duong), 1 = Doi B (do), -1 = tran
+    /// Don. Co doi thi ten ve bang MAU DOI (ca ten cua minh) va mot dong nho "ĐỘI A/B" ngay tren ten.
+    /// </summary>
+    public sbyte doi = -1;
+    /// <summary>Co chu dong "ĐỘI A/B" so voi ten.</summary>
+    public const float HeSoChuDoi = 0.72f;
+    /// <summary>O chu "ĐỘI A/B" vua ve (phep thu doc lai).</summary>
+    public Rect oDoiCuoi;
+
     /// <summary>Co chu o man hinh cao 1080 - cung thuoc do voi GameHUD.</summary>
     public const float CoChu = 19f;
     /// <summary>Khoang ho giua dinh dau va day bang ten (m).</summary>
@@ -147,7 +157,7 @@ public class BangTen : MonoBehaviour
         var o = new Rect(man.x - kt.x * 0.5f, yDay - kt.y, kt.x, kt.y);
 
         bool daGuc = mau != null && mau.IsDead;
-        Color c = laToi ? MauToi : MauNguoiKhac;
+        Color c = doi >= 0 ? CheDoTran.MauDoi(doi) : laToi ? MauToi : MauNguoiKhac;
         float doDuc = daGuc ? 0.45f : 1f;
         c.a = doDuc;
 
@@ -165,6 +175,25 @@ public class BangTen : MonoBehaviour
 
         kieu.normal.textColor = c;
         GUI.Label(o, nd, kieu);
+
+        // Tran Doi: dong nho "ĐỘI A/B" ngay tren ten, cung mau
+        if (doi >= 0)
+        {
+            int coTen = kieu.fontSize;
+            kieu.fontSize = Mathf.Max(10, Mathf.RoundToInt(coTen * HeSoChuDoi));
+            var ndDoi = new GUIContent(CheDoTran.TenDoi(doi));
+            Vector2 ktDoi = kieu.CalcSize(ndDoi);
+            var oDoi = new Rect(man.x - ktDoi.x * 0.5f, o.y - ktDoi.y + 2f * s, ktDoi.x, ktDoi.y);
+            kieu.normal.textColor = new Color(0f, 0f, 0f, 0.85f * doDuc);
+            GUI.Label(new Rect(oDoi.x - v, oDoi.y, oDoi.width, oDoi.height), ndDoi, kieu);
+            GUI.Label(new Rect(oDoi.x + v, oDoi.y, oDoi.width, oDoi.height), ndDoi, kieu);
+            GUI.Label(new Rect(oDoi.x, oDoi.y - v, oDoi.width, oDoi.height), ndDoi, kieu);
+            GUI.Label(new Rect(oDoi.x, oDoi.y + v, oDoi.width, oDoi.height), ndDoi, kieu);
+            kieu.normal.textColor = c;
+            GUI.Label(oDoi, ndDoi, kieu);
+            kieu.fontSize = coTen;
+            oDoiCuoi = oDoi;
+        }
 
         oCuoi = o; khungVeCuoi = Time.frameCount; mauCuoi = c;
     }

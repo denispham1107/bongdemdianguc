@@ -50,7 +50,7 @@ public static class LuaDiaNguc
         for (int i = 0; i < n; i++)
         {
             var d = boDem[i].GetComponentInParent<Damageable>();
-            if (d == null || d == boQua || d.IsDead || ds.Contains(d)) continue;
+            if (d == null || CheDoTran.BoQua(boQua, d) || d.IsDead || ds.Contains(d)) continue;
             ds.Add(d);
         }
         ds.Sort((a, b) => (a.transform.position - tam).sqrMagnitude.CompareTo((b.transform.position - tam).sqrMagnitude));

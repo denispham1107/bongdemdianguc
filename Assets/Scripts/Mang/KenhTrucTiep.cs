@@ -42,7 +42,7 @@ public static class KenhTrucTiep
         "stun:stun.l.google.com:19302,stun:stun1.l.google.com:19302";
 
     /// <summary>Bon ghe trong phong, nen toi da bon kenh (0..3).</summary>
-    public const int SoKenhToiDa = 4;
+    public const int SoKenhToiDa = 6;
 
     static readonly bool[] daTao = new bool[SoKenhToiDa];
 

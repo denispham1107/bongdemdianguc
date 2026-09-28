@@ -94,7 +94,7 @@ public class Khieng : MonoBehaviour
             if ((mask.value & (1 << k.gameObject.layer)) == 0) continue;
 
             // Khieng cua chinh nguoi tung phep
-            if (boQua != null && k.gameObject == boQua.gameObject) continue;
+            if (boQua != null && (k.gameObject == boQua.gameObject || CheDoTran.LaDongDoi(boQua, k.GetComponent<Damageable>()))) continue;
 
             float d = Vector3.Distance(tamNo, k.transform.position);
 
@@ -139,7 +139,7 @@ public class Khieng : MonoBehaviour
             if (k == null) { dangBat.RemoveAt(i); continue; }
             if (!k.DangBat) continue;
             if ((mask.value & (1 << k.gameObject.layer)) == 0) continue;
-            if (boQua != null && k.gameObject == boQua.gameObject) continue;
+            if (boQua != null && (k.gameObject == boQua.gameObject || CheDoTran.LaDongDoi(boQua, k.GetComponent<Damageable>()))) continue;
 
             // Tam vom o chan nhan vat (xem Dung). Cong ban kinh vien dan: no no
             // khi MAT NGOAI cua no cham vom, khong phai khi tam no cham.

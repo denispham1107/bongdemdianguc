@@ -163,7 +163,7 @@ public class TangHinh : MonoBehaviour
         for (int i = 0; i < n; i++)
         {
             var d = boVong[i].GetComponentInParent<Damageable>();
-            if (d == null || d == toi || d.IsDead || dsVong.Contains(d)) continue;
+            if (d == null || CheDoTran.BoQua(toi, d) || d.IsDead || dsVong.Contains(d)) continue;
             Vector3 v = d.transform.position - tam; v.y = 0f;
             if (v.magnitude > BanKinhVong) continue;
             dsVong.Add(d);

@@ -162,7 +162,7 @@ public class QuaCauBang : MonoBehaviour
         for (int i = 0; i < cham.Length; i++)
         {
             var d = cham[i].collider.GetComponentInParent<Damageable>();
-            if (d == null || d == boQua || d.IsDead) continue;
+            if (d == null || CheDoTran.BoQua(boQua, d) || d.IsDead) continue;
             if (khongCham != null && khongCham.Contains(d)) continue;
             if (cham[i].distance >= ganNhat) continue;
             ganNhat = cham[i].distance;
@@ -257,7 +257,7 @@ public class QuaCauBang : MonoBehaviour
         {
             var d = buffer[i].GetComponentInParent<Damageable>();
             if (d == null || d.IsDead) continue;
-            if (boQua != null && d == boQua) continue;
+            if (CheDoTran.BoQua(boQua, d)) continue;
             if (boRa != null && boRa.Contains(d)) continue;      // qua NAY: ke da trung vu no truoc khong an lai
 
             float dist = Vector3.Distance(center, d.transform.position);

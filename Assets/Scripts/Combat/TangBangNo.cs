@@ -119,7 +119,7 @@ public class TangBangNo : MonoBehaviour
         {
             var d = boDem[i].GetComponentInParent<Damageable>();
             if (d == null || d.IsDead) continue;
-            if (boQua != null && d == boQua) continue;
+            if (CheDoTran.BoQua(boQua, d)) continue;
 
             float xa = Vector3.Distance(cho, d.transform.position);
             float giam = Mathf.Lerp(1f, 0.55f, Mathf.Clamp01(xa / BanKinh));

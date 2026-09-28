@@ -146,10 +146,20 @@ public static class GoiTin
     /// hinh co the bao hai nguoi thang khac nhau: goi tin den khong cung luc,
     /// may nay thay doi phuong chet truoc khi may kia thay minh chet.
     ///
-    /// 10 byte: loai, ghe thang (255 = khong ai song sot), roi 4 ghe x (quai
-    /// diet, nguoi ha).
+    /// 15 byte: loai, ghe thang (255 = khong ai song sot / tran Doi), roi 6 ghe x (quai
+    /// diet, nguoi ha), roi MA DOI THANG (tran Doi, 28/09/2026 - xem <see cref="MaDoiThang"/>).
     /// </summary>
     public const byte LoaiKetTran = 10;
+
+    /// <summary>
+    /// Ma "doi thang" trong goi ket tran: 0 = tran DON (gia tri mac dinh cua struct - moi cho cu tao KetQua van la Don),
+    /// 1 = Doi A thang, 2 = Doi B thang, <see cref="DoiKhongAiSong"/> = tran Doi ma hai doi chet het.
+    /// </summary>
+    public const byte KhongDoiThang = 0;
+    public const byte DoiKhongAiSong = 3;
+    public static byte MaDoiThang(int doi) { return doi == CheDoTran.DoiA ? (byte)1 : doi == CheDoTran.DoiB ? (byte)2 : DoiKhongAiSong; }
+    /// <summary>Doi thang tu ma: 0/1, -1 = khong doi nao (tran Don hoac khong ai song).</summary>
+    public static int DoiTuMa(byte ma) { return ma == 1 ? CheDoTran.DoiA : ma == 2 ? CheDoTran.DoiB : -1; }
 
     /// <summary>
     /// GOI KINH NGHIEM: "ghe so N vua ha mot con quai, duoc bay nhieu diem".
@@ -242,12 +252,13 @@ public static class GoiTin
     }
 
     /// <summary>So ghe nhieu nhat trong mot tran - bang so kenh cua KenhTrucTiep.</summary>
-    public const int SoGheToiDa = 4;
+    public const int SoGheToiDa = 6;
 
     /// <summary>Bang diem cuoi tran.</summary>
     public struct KetQua
     {
         public byte gheThang;                 // 255 = khong ai song sot
+        public byte doiThang;                 // MA doi thang (MaDoiThang); 0 = tran Don - mac dinh cua struct
         public byte[] quaiTheoGhe;            // SoGheToiDa phan tu
         public byte[] nguoiTheoGhe;
     }
@@ -269,9 +280,10 @@ public static class GoiTin
 
     public static byte[] VietKetTran(KetQua k)
     {
-        var b = new byte[2 + SoGheToiDa * 2];
+        var b = new byte[3 + SoGheToiDa * 2];
         b[0] = LoaiKetTran;
         b[1] = k.gheThang;
+        b[2 + SoGheToiDa * 2] = k.doiThang;
         for (int i = 0; i < SoGheToiDa; i++)
         {
             b[2 + i * 2] = k.quaiTheoGhe != null && i < k.quaiTheoGhe.Length ? k.quaiTheoGhe[i] : (byte)0;
@@ -285,11 +297,13 @@ public static class GoiTin
         k = new KetQua
         {
             gheThang = 255,
+            doiThang = KhongDoiThang,
             quaiTheoGhe = new byte[SoGheToiDa],
             nguoiTheoGhe = new byte[SoGheToiDa]
         };
-        if (b == null || b.Length < 2 + SoGheToiDa * 2 || b[0] != LoaiKetTran) return false;
+        if (b == null || b.Length < 3 + SoGheToiDa * 2 || b[0] != LoaiKetTran) return false;
         k.gheThang = b[1];
+        k.doiThang = b[2 + SoGheToiDa * 2];
         for (int i = 0; i < SoGheToiDa; i++)
         {
             k.quaiTheoGhe[i] = b[2 + i * 2];
