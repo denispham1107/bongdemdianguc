@@ -8616,8 +8616,16 @@ Script `CongCu/Icon/sinh_icon_ve_lai_3.py` dùng lại bộ hàm của hai scrip
 - Thân phễu trong suốt, đặc ở chân, loãng dần lên trên; vân gió xé bằng nhiễu.
 
 Nội dung từng icon:
-- **Gió lốc:** QUẠT BA cơn lốc nhỏ xám trắng (kỹ năng tung 3 lốc toả 15°), chân có khói bụi nâu đen cuộn, sét xanh nhỏ trong
-  lòng, vệt gió phía sau.
+- **Gió lốc:** ~~quạt ba cơn lốc nhỏ~~ — người dùng chê "vẫn sơ sài, không cần giữ theo ảnh cũ 3 cơn lốc", nên cùng ngày
+  THIẾT KẾ LẠI (hàm `gio_loc`):
+  - MỘT cơn lốc NGHIÊNG VỀ TRƯỚC như đang lao đi (Gió lốc bay 9,5 m/s, xuyên mọi vật).
+  - Thân là 30 DẢI GIÓ BẢN RỘNG (đa giác theo đường xoắn, không phải nét mảnh), cộng dồn ở độ sáng thấp. Vân gió kéo ngang
+    (nhiễu giãn theo chiều ngang), mép trên mỗi dải bắt sáng.
+  - Ba VỆT CHÉM GIÓ hình lưỡi liềm quấn quanh; vệt bụi nâu cuộn phía sau; sét nhỏ trong lòng.
+  - BIA MỘ (khắc chữ thập, có vết nứt) và đá hai mặt sáng tối BỊ HẤT TUNG lên không, ứng với hiệu ứng hất tung 80%.
+  - Lần vẽ đầu các dải chồng nhau cháy trắng thành một khối (dùng `lighter` ở độ sáng đầy), bia và đá quá nhỏ, quá tối.
+    Nay cộng dồn ở 0,34 / 0,20, bia to gấp 1,4 lần. Ảnh trong game: `PlayTestShots/icon_gio_loc_trong_game.png`
+    (cạnh Lốc xoáy, Hoá lốc xoáy). Menu 66: 0 lỗi.
 - **Lốc xoáy:** một phễu khổng lồ 70 dải gió, miệng trên có vành mây cuộn, sét trong lòng (kiểu Giựt sét). Bụi ở chân; mảnh bia
   mộ và đá bị cuốn bay quanh phễu.
 - **Mây giông:** mây XÁM ĐEN bị sét rọi sáng TỪNG MẢNG ngay chỗ tia phát ra (đúng hình kỹ năng), mưa xối nghiêng, hai tia sét,

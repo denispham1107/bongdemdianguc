@@ -5,10 +5,10 @@ A3. SachPhep.cs: khai bao + goi CD_DocChuoi co, CD_GhiChuoi co, chi tren WebGL c
 
 B. man Game 1626x621, ti le sach 0.575; nut CAI DAT (x:871.08, y:18.40, width:97.75, height:28.75), KY NANG (x:799.20, y:196.65, width:97.75, height:29.90)
 B1. xem truoc: XemTruoc = True, ky nang hien da mo / keo duoc 22/22; doi chung trong tran (con khoa) 2/22
-    do sang VANH hinh cot trai (xem truoc / doi chung khoa; ne o khoa giua hinh): 0:0.191/0.056(x3.42) 1:0.277/0.085(x3.27) 2:0.214/0.069(x3.08) 6:0.204/0.058(x3.54) 9:0.209/0.031(x6.76) 11:0.158/0.030(x5.24) 12:0.195/0.031(x6.31) -> thap nhat x3.08 tren 7 hang
-    do sang hinh trong o: o1:x2.01 o2:x2.24 o3:x2.04 o4:x2.17 o6:x2.37 o7:x2.05 -> thap nhat x2.01
+    do sang VANH hinh cot trai (xem truoc / doi chung khoa; ne o khoa giua hinh): 0:0.191/0.056(x3.42) 1:0.277/0.085(x3.27) 2:0.214/0.069(x3.08) 6:0.204/0.057(x3.55) 9:0.209/0.031(x6.78) 11:0.158/0.030(x5.24) 12:0.195/0.031(x6.31) -> thap nhat x3.08 tren 7 hang
+    do sang hinh trong o: o1:x2.01 o2:x2.24 o3:x2.04 o4:x2.17 o6:x2.38 o7:x2.08 -> thap nhat x2.01
 B1b. bang bieu tuong dung chung: 22 o (so ky nang 22), o rong: khong co
-B1b2. sau khi cuon het cot, do sang VANH hinh nhom BI DONG: 16:0.287 17:0.329 18:0.289 19:0.342 20:0.348 -> thap nhat 0.287 tren 5 hang; moc cac ky nang khac cung khung hinh 0.211 (4 hang)
+B1b2. sau khi cuon het cot, do sang VANH hinh nhom BI DONG: 16:0.287 17:0.329 18:0.289 19:0.342 20:0.348 -> thap nhat 0.287 tren 5 hang; moc cac ky nang khac cung khung hinh 0.213 (4 hang)
 B2. nhan vat mau o man chinh: PhuThuy_TrungBay; cau lua nang luong 10 / hoi 0.55 (prefab 10 / 0.55); thien thach nang luong 60 (prefab 60)
 B3. kho luu sau khi sap o sanh: vuong [8,7,3,2,4,5,6] (mong [8,7,3,2,4,5,6]), tron [0,1,2,3,4,5,8] (mong [0,1,2,3,4,5,8], cam ung bat True)
 B4. vao Act2 luc sach dang mo (True): sach con mo = False, thanh ky nang trong tran [8,7,3,2,4,5,6]

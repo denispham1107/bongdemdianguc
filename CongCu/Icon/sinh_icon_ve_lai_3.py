@@ -126,29 +126,173 @@ def set_trong_loc(cx, day_y, dinh_y, r_dinh, hat, mau=(80, 130, 255), co=1.0):
 
 
 # ------------------------------------------------------------------ GIO LOC
+#
+# 28/09/2026 lan hai: nguoi dung che ban "quat ba con loc" van so sai, "khong can giu theo anh cu" -> thiet ke lai: MOT con loc
+# NGHIENG VE TRUOC nhu dang lao di (Gio loc bay 9,5 m/s xuyen moi vat), than la DAI GIO BAN RONG co van keo ngang, vet CHEM GIO
+# hinh luoi liem quan quanh, vet bui nau den cuon phia sau, BIA MO + DA BI HAT TUNG len khong (hat tung 80%), set nho trong long.
+
+def van_ngang(hat, doc=36, ngang=3):
+    """Nhieu keo dai theo chieu ngang - van gio chay."""
+    rd = random.Random(hat)
+    nho = Image.new("L", (ngang, doc))
+    nho.putdata([rd.randint(0, 255) for _ in range(ngang * doc)])
+    return nho.resize((W, W), Image.BICUBIC)
+
 
 def gio_loc():
-    nen = moi()
     rd = random.Random(1)
-    # vet gio phia sau (loc bay toi truoc - sang phai tren)
-    vet = moi()
-    dv = ImageDraw.Draw(vet)
-    for _ in range(16):
-        y = rd.uniform(0.45, 0.85)
-        x0 = rd.uniform(0.10, 0.30)
-        dai = rd.uniform(0.12, 0.28)
-        for k in range(8):
-            a, b = k / 8, (k + 1) / 8
-            dv.line([P(x0 + dai * a, y - dai * a * 0.35), P(x0 + dai * b, y - dai * b * 0.35)],
-                    fill=lerp((0, 0, 0), (150, 150, 145), b), width=3)
-    nen = cong(nen, mo(vet, 1.5))
-    # ba loc toa quat
-    for (cx, day, cao, rd_, rt, hat) in [(0.28, 0.80, 0.42, 0.018, 0.11, 11), (0.72, 0.80, 0.42, 0.018, 0.11, 12),
-                                         (0.50, 0.86, 0.58, 0.022, 0.15, 13)]:
-        nen = cong(nen, bui_chan(cx, day, rt * 1.0, hat, (95, 78, 60), 0.9))
-        lop, _ = pheu_loc(cx, day, day - cao, rd_, rt, hat, 30, (210, 212, 215), 0.03, 0.8)
-        nen = cong(nen, lop)
-        nen = cong(nen, sang(set_trong_loc(cx, day, day - cao, rt, hat + 50, (90, 140, 255), 0.6), 0.7))
+    nen = moi()
+    cx, day, dinh = 0.44, 0.84, 0.16
+    nghieng = 0.16                        # dinh lech ve phai: dang lao toi truoc
+
+    def x_at(t):
+        return cx + nghieng * t ** 1.3 + math.sin(t * 5.0) * 0.012
+
+    def r_at(t):
+        return 0.034 + 0.165 * t ** 1.35
+
+    H = day - dinh
+
+    # ---- vet bui cuon phia sau (duoi trai) ----
+    bui = Image.new("L", (W, W), 0)
+    db = ImageDraw.Draw(bui)
+    for i in range(34):
+        t = i / 33.0
+        x = cx - 0.02 - 0.34 * t + rd.uniform(-0.02, 0.02)
+        y = day - 0.01 - 0.10 * t * t + rd.uniform(-0.02, 0.02)
+        r = (0.06 + 0.07 * t) * rd.uniform(0.7, 1.1)
+        db.ellipse([P(x - r, y - r * 0.6), P(x + r, y + r * 0.6)], fill=int(230 * (1 - 0.6 * t)))
+    bui = ImageChops.multiply(mo(bui, 12), fbm(81, 10, 4).point(lambda v: min(255, 40 + v)))
+    nen = cong(nen, to_mau(bui, (150, 112, 78)))
+    da_nho = moi()
+    dd = ImageDraw.Draw(da_nho)
+    for _ in range(26):
+        x, y = rd.uniform(0.10, 0.45), rd.uniform(0.66, 0.88)
+        r = rd.uniform(3, 7)
+        dd.ellipse([x * W - r, y * W - r, x * W + r, y * W + r], fill=(95, 82, 70))
+    nen = cong(nen, da_nho)
+
+    # ---- than loc: dai gio ban rong (nua sau mo truoc, nua truoc sang sau) ----
+    def dai_gio(truoc, g0, vong, t0, t1, day_k, sang_k):
+        lop = Image.new("L", (W, W), 0)
+        d = ImageDraw.Draw(lop)
+        n = 60
+        tren, duoi = [], []
+        for i in range(n + 1):
+            t = t0 + (t1 - t0) * i / n
+            g = g0 + vong * 2 * math.pi * t
+            r = r_at(t)
+            x = x_at(t) + r * math.cos(g)
+            y = day - H * t + r * 0.20 * math.sin(g)
+            rong = (0.006 + 0.03 * r / 0.2) * day_k * math.sin(math.pi * i / n) ** 0.6
+            tren.append((x, y - rong))
+            duoi.append((x, y + rong))
+        # chi giu doan cung phia (truoc / sau)
+        doan, cu = [], []
+        for i in range(n + 1):
+            t = t0 + (t1 - t0) * i / n
+            o_truoc = math.sin(g0 + vong * 2 * math.pi * t) > 0
+            if o_truoc == truoc:
+                cu.append(i)
+            elif cu:
+                doan.append(cu); cu = []
+        if cu:
+            doan.append(cu)
+        for ds in doan:
+            if len(ds) < 2:
+                continue
+            poly = [P(*tren[i]) for i in ds] + [P(*duoi[i]) for i in reversed(ds)]
+            d.polygon(poly, fill=int(255 * sang_k))
+        return lop
+
+    dai_ds = []
+    for _ in range(30):
+        dai_ds.append((rd.uniform(0, 6.28), rd.uniform(1.3, 2.2), rd.uniform(0.0, 0.72), rd.uniform(0.3, 0.7), rd.uniform(0.7, 1.3)))
+    sau = Image.new("L", (W, W), 0)
+    truoc = Image.new("L", (W, W), 0)
+    for (g0, vong, t0, dai, day_k) in dai_ds:
+        t1 = min(1.0, t0 + dai)
+        sau = ImageChops.add(sau, dai_gio(False, g0, vong, t0, t1, day_k, 0.20))
+        truoc = ImageChops.add(truoc, dai_gio(True, g0, vong, t0, t1, day_k, 0.34))
+    van = van_ngang(83).point(lambda v: min(255, 20 + int(v * 1.1)))
+    sau = ImageChops.multiply(mo(sau, 2.5), van)
+    truoc = ImageChops.multiply(mo(truoc, 1.5), van)
+    # vien sang o mep tren moi dai (canh dai gio bat sang)
+    canh = ImageChops.subtract(truoc, ImageChops.offset(truoc, 0, 5))
+    than = cong(to_mau(sau, (130, 132, 136)), to_mau(truoc, (215, 218, 224)), to_mau(canh, (255, 255, 255)))
+    # quang loc mo
+    quang = Image.new("L", (W, W), 0)
+    dq = ImageDraw.Draw(quang)
+    for i in range(30):
+        t = i / 29
+        r = r_at(t) * 1.1
+        dq.ellipse([P(x_at(t) - r, day - H * t - r * 0.3), P(x_at(t) + r, day - H * t + r * 0.3)], fill=70)
+    nen = cong(nen, to_mau(mo(quang, 18), (90, 92, 96)))
+    nen = cong(nen, phat_sang(than, 7, 0.35))
+
+    # set nho trong long loc
+    loi, q = moi(), moi()
+    ve_cay_tia(cay_tia((x_at(0.95) - 0.04, day - H * 0.95), (x_at(0.35), day - H * 0.35), rd, 0.13, 5, 2), loi, q, 5, 16, (90, 150, 255))
+    nen = cong(nen, sang(gop_tia(loi, q, 0.6), 0.5))
+
+    # ---- vet chem gio luoi liem quan quanh ----
+    chem = moi()
+    dc = ImageDraw.Draw(chem)
+    for (t, rx_k, ry_k, bat, het, day_c, mau) in [(0.28, 2.0, 0.42, 0.08, 0.60, 0.034, (235, 238, 240)),
+                                                   (0.58, 1.75, 0.36, 0.55, 1.05, 0.030, (215, 218, 222)),
+                                                   (0.84, 1.5, 0.30, 0.05, 0.52, 0.024, (195, 198, 202))]:
+        cxc, cyc = x_at(t), day - H * t
+        R = r_at(t) * rx_k + 0.05
+        pts_ngoai, pts_trong = [], []
+        n = 50
+        for i in range(n + 1):
+            u = bat + (het - bat) * i / n
+            g = u * 2 * math.pi
+            dd_ = day_c * math.sin(math.pi * i / n) ** 0.8
+            pts_ngoai.append(P(cxc + math.cos(g) * R, cyc + math.sin(g) * R * ry_k))
+            pts_trong.append(P(cxc + math.cos(g) * (R - dd_), cyc + math.sin(g) * (R - dd_) * ry_k - dd_ * 0.6))
+        dc.polygon(pts_ngoai + list(reversed(pts_trong)), fill=mau)
+    chem = nhan(chem, van_ngang(85).point(lambda v: min(255, 110 + v)))
+    nen = cong(nen, phat_sang(mo(chem, 1.2), 9, 0.9))
+
+    # ---- bia mo + da bi hat tung ----
+    bay = moi()
+    dbay = ImageDraw.Draw(bay)
+    for (x, y, s_, goc, la_bia) in [(0.79, 0.40, 0.072, 0.55, True), (0.80, 0.63, 0.036, 2.1, False),
+                                     (0.66, 0.17, 0.030, 1.2, False), (0.24, 0.44, 0.028, 0.3, False)]:
+        if la_bia:
+            pts = [(-0.55, 1.0), (0.55, 1.0), (0.55, -0.35), (0.35, -0.8), (0.0, -0.95), (-0.35, -0.8), (-0.55, -0.35)]
+        else:
+            pts = [(math.cos(k * 1.05) * rd.uniform(0.6, 1.0), math.sin(k * 1.05) * rd.uniform(0.6, 1.0)) for k in range(6)]
+        poly = [P(x + (px * math.cos(goc) - py * math.sin(goc)) * s_, y + (px * math.sin(goc) + py * math.cos(goc)) * s_) for (px, py) in pts]
+        dbay.polygon(poly, fill=(128, 124, 118), outline=(225, 220, 210))
+        if not la_bia:       # mat tren trai sang hon: da co khoi
+            tam_ = P(x, y)
+            dbay.polygon([tam_] + poly[2:5], fill=(170, 165, 158))
+        if la_bia:   # chu thap khac tren bia + vet nut
+            dbay.line([P(x + (0.0 * math.cos(goc) - (-0.55) * math.sin(goc)) * 1, y)], fill=(0, 0, 0))
+            for (a, b) in [((0.0, -0.55), (0.0, 0.25)), ((-0.25, -0.25), (0.25, -0.25)), ((-0.3, 0.5), (0.2, 0.85))]:
+                pa = P(x + (a[0] * math.cos(goc) - a[1] * math.sin(goc)) * s_, y + (a[0] * math.sin(goc) + a[1] * math.cos(goc)) * s_)
+                pb = P(x + (b[0] * math.cos(goc) - b[1] * math.sin(goc)) * s_, y + (b[0] * math.sin(goc) + b[1] * math.cos(goc)) * s_)
+                dbay.line([pa, pb], fill=(70, 66, 62), width=5)
+        # vet gio keo theo vat bay
+        for k in range(3):
+            dy = (k - 1) * s_ * 0.5
+            dbay.line([P(x - s_ * 1.1, y + dy + s_ * 0.3), P(x - s_ * 2.8, y + dy + s_ * 1.0)], fill=(150, 152, 155), width=3)
+    nen = cong(nen, phat_sang(bay, 4, 0.4))
+
+    # hat bui li ti bay quanh
+    li = moi()
+    dl = ImageDraw.Draw(li)
+    for _ in range(50):
+        t = rd.uniform(0.05, 0.95)
+        g = rd.uniform(0, 6.28)
+        r = r_at(t) * rd.uniform(1.1, 1.6)
+        x = x_at(t) + math.cos(g) * r
+        y = day - H * t + math.sin(g) * r * 0.25
+        rr = rd.uniform(2, 4)
+        dl.ellipse([x * W - rr, y * W - rr, x * W + rr, y * W + rr], fill=(170, 160, 145))
+    nen = cong(nen, li)
     return nen
 
 
