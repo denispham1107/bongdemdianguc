@@ -8766,6 +8766,52 @@ Lần vẽ đầu có hai chỗ sai, đã sửa:
 
 Kiểm bằng `IconKyNang` trong Unity: `PlayTestShots/icon_ve_lai_3_trong_game.png`; 5 ảnh vẫn Read/Write. Menu 66: đủ 22 ô, 0 lỗi.
 
+
+### Vẽ lại năm icon bị động: Kháng Lửa, Kháng Băng, Kháng Sét, Kháng Phong, Tốc độ di chuyển (29/09/2026)
+
+**Người dùng:** năm icon này "vẽ quá thô và sơ sài, nét vẽ như của game trẻ em" (bản cũ `sinh_khang.py`: tấm khiên phẳng một màu
++ ký hiệu trắng — ngọn lửa, bông tuyết, tia sét, xoáy ốc, mũi tên »). Vẽ lại hợp nội dung từng kỹ năng và bối cảnh game, không cần
+Blender MCP.
+
+Script mới `CongCu/Icon/sinh_icon_ve_lai_4.py` (dùng lại bộ hàm của ba script trước). Bản cũ `sinh_khang.py` giờ tự chặn — chạy nhầm
+là đè mất icon mới — trừ khi thêm `--cu`.
+
+**Bốn icon Kháng — "đỡ được, dạt ra":**
+- Chung một **tấm khiên sắt gothic**:
+  - Vành thép có mũi nhọn giữa cạnh trên, đinh tán, nổi khối (ánh sáng trên trái, cùng hướng đèn đĩa nút).
+  - Lòng khiên tráng men màu hệ, chìm xuống, có vết trầy và chỗ men tróc.
+  - Ấn hệ khắc chìm (rãnh tối quanh) và phát sáng.
+- Đòn nguyên tố **lao tới từ góc trên phải** và **bị tách, dạt qua hai mép khiên**. Đường đi tính bằng dòng chảy thế vòng quanh vật
+  cản (khiên coi như elip), nên luồng uốn đúng theo mép. Chỗ va chạm toé ra.
+  - **Lửa:** lưỡi lửa cuộn (nhiễu + dải màu đen → đỏ → cam → vàng trắng), mép khiên nung đỏ, tàn lửa bay theo dòng.
+  - **Băng:** gió buốt kèm mảnh băng lao tới và vỡ toé hai bên. Sương giá (nhánh cây nhỏ rẽ nhánh) bám mặt khiên phía va chạm.
+  - **Sét:** tia sét giáng trúng vành. Điện chạy vòng theo vành khiên rồi phóng xuống đất ở hai bên mũi khiên, có tia lửa điện.
+  - **Phong:** vệt gió đứt quãng, bụi cuộn, lá khô và đá vụn bị cuốn qua.
+- Ấn khắc trên khiên: ngọn lửa ba lưỡi (lần đầu trông như vương miện — kéo lưỡi giữa cao và cong), bông băng sáu nhánh mũi kim
+  cương, tia sét gãy khúc, ba dải gió xoắn.
+
+**Tốc độ di chuyển — ủng sắt có cánh ma:**
+- Hai ý đầu đã bỏ:
+  - Bóng phù thuỷ chạy nhìn nghiêng: ra người que đầu tròn — đúng kiểu "game trẻ em" người dùng chê.
+  - Bóng ma trùm mũ lao vút: làm mượt đường viền quá tay nên ra cục tròn như con cá / con chim, lỗ mặt thành con mắt hoạt hình.
+- Chốt: **ủng sắt gothic** nhìn nghiêng, mũi nhọn nghiêng xuống như đang sải bước.
+  - Da gần đen có nếp gấp, mũi thép chia khớp, giáp ống chân, cổ ủng viền thép đinh tán.
+  - Hai đai da khoá sắt, bánh thúc ở gót.
+  - Sau cổ ủng là **cánh ma xanh** (7 lông vũ quét ra sau, có gân), gót toé lửa ma xanh, vệt gió xé ngang, bụi đất.
+  - Ở cỡ 84 px da đen chìm vào nền đĩa xanh tối: da sáng lên một bậc và có viền sáng mỏng quanh ủng.
+
+**Kiểm:**
+- Ảnh 256×256, Read/Write vẫn bật (meta giữ nguyên).
+- **Menu 77: 0 lỗi** (HUD 22 icon, đủ icon số 16–19).
+- **Menu 66**, mục B1b2 (Sách phép ở sảnh, cuộn tới nhóm Bị động):
+  - Lần chạy đầu: **1 lỗi — "biểu tượng bị động quá tối so với các kỹ năng khác"**. Ảnh chụp cho thấy cả năm icon hiện đủ.
+  - Ngưỡng cũ (19/09) so độ sáng VÀNH hình (62–92% cỡ ô) với các kỹ năng khác. Khi đó có icon ×1,27–1,55, tháo ra ×0,51–0,56,
+    nên đặt ×0,85. Icon mới dồn nội dung vào giữa (tấm khiên, chiếc ủng) nên vành tối hơn: ×0,76–0,89 — rơi giữa hai cụm.
+  - So với icon KHÁC không còn nói được "có hay không có". Nay phép thử chụp lại **cùng khung hình với năm icon bị THÁO** (ô trống
+    thật, `ManSanh.DatIconXemTruocChoPhepThu`) rồi đo CẢ hình (xem trước không có ổ khoá che giữa).
+  - Ô trống đo được 0,117–0,123 — khớp đối chứng tháo icon ngày 19/09 (0,115–0,127). Icon mới **×1,85 – ×2,46** so với ô trống
+    (ngưỡng ×1,3). **0 lỗi.** Vành vẫn ghi ra để tham khảo (0,166–0,192; mốc 0,217).
+- Ảnh xem trước trên đĩa nút: `PlayTestShots/icon_bi_dong_moi.png`.
 ### Vẽ lại năm icon: Quả cầu lửa, Mưa băng, Sấm sét, Giựt sét, Quả cầu điện (28/09/2026)
 
 **Người dùng:** năm icon này cũng "quá thô và sơ sài" — vẽ lại hợp nội dung từng kỹ năng, không cần Blender MCP.

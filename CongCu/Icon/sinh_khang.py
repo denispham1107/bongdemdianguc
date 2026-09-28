@@ -7,9 +7,17 @@
 # Mau khien lay theo mau nhom trong Sach phep (SachPhep.MauNhom) de nhin la biet thuoc he nao.
 # Anh ra 256x256 RGB nen den - dung khuon voi cac icon khac trong Assets/Resources/Icons.
 #
-# Chay: python CongCu/Icon/sinh_khang.py
+# Chay: python CongCu/Icon/sinh_khang.py --cu
+#
+# !!! 29/09/2026: BAN CU - nam icon nay da VE LAI bang CongCu/Icon/sinh_icon_ve_lai_4.py (nguoi dung che "tho, so sai, nhu game
+# tre em"). Chay script nay se DE MAT icon moi, nen no tu chan tru khi co --cu.
 import os
 import math
+import sys
+
+if "--cu" not in sys.argv:
+    print("Ban cu - icon Khang / Toc do nay ve bang CongCu/Icon/sinh_icon_ve_lai_4.py. Them --cu neu that su muon ve lai ban cu.")
+    sys.exit(0)
 from PIL import Image, ImageDraw, ImageFilter
 
 GOC = os.path.join(os.path.dirname(__file__), "..", "..")

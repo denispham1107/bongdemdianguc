@@ -203,6 +203,10 @@ public class ManSanh : MonoBehaviour
 
     static Texture2D[] iconXemTruoc;
 
+    /// <summary>CHI CHO PHEP THU (menu 66): thay bang bieu tuong xem truoc (vd thao bieu tuong nhom Bi dong de do o TRONG that);
+    /// null = tra ve bang chung IconKyNang.BoDayDu o lan ve sau.</summary>
+    public static void DatIconXemTruocChoPhepThu(Texture2D[] bo) { iconXemTruoc = bo; }
+
     static Texture2D[] IconXemTruoc()
     {
         // Kiem CA DO DAI: bang cu giu lai tu lan truoc co the con thieu ky nang moi them

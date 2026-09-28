@@ -270,7 +270,7 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
   lúc Awake, trước mọi lần tăng theo cấp nhân vật), mỗi cấp +2,5% (`CapDo.TocThemTheoCap`, cấp 5 = +20%), CỘNG vào tốc độ đang có:
   `(moveSpeed + TocGoc × TocThemBiDong) × lội nước × băng × tàng hình`. Chỉ nhân vật của máy này — điều kiện là `!mauDoMayKhacQuyet`,
   ⚠️ **không** dùng `tuDocInput` (phép thử bơm input tắt cờ ấy, đo sẽ ra một nhân vật không bao giờ được cộng). Icon bằng script
-  (`CongCu/Icon/sinh_khang.py`, khiên xanh nhóm Bị động + mũi tên tốc độ, meta chép từ KhangPhong để có Read/Write). Menu 80 mục A
+  (vẽ lại 29/09/2026: **ủng sắt gothic có cánh ma xanh**, `CongCu/Icon/sinh_icon_ve_lai_4.py`; meta chép từ KhangPhong để có Read/Write). Menu 80 mục A
   đo thật (bơm input cùng đoạn đường): cấp 1 ×1,100, cấp 5 ×1,195. Phép thử đếm cứng "nhóm Bị động có 4" / "20 icon" đã sửa (menu 77).
 - **NHÓM BỊ ĐỘNG — bốn kỹ năng Kháng** (`Combat/KhangHe.cs`, 19/09/2026): mở khoá giảm **25%** sát thương của hệ đó
   **TỪ NGƯỜI CHƠI KHÁC**, mỗi cấp thêm **5%** (cấp 5 = 45%). ⚠️ **Không chặn đòn của quái** (người dùng chỉ xin chặn đòn
@@ -281,7 +281,8 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
   người chơi của đòn trước và làm đòn quái bị chặn oan. Hệ suy từ `DamageType` (Fire/Ice/Lightning/Physical → LỬA/BĂNG/SÉT/PHONG);
   **ngoại lệ duy nhất**: tia sét trong lòng Lốc xoáy / Gió lốc gọi `GhiKeDanh(boQua, HeSat.Phong)` vì hai kỹ năng ấy thuộc
   nhóm PHONG (người dùng chốt). Kháng đọc `CapDo` nên chỉ áp cho nhân vật của máy này, không áp cho bản sao. Icon vẽ bằng
-  `python CongCu/Icon/sinh_khang.py` (người dùng chọn script, không Blender) — ảnh icon phải bật **Read/Write** thì
+  script (người dùng chọn không Blender) — **vẽ lại 29/09/2026** bằng `python CongCu/Icon/sinh_icon_ve_lai_4.py`: khiên sắt gothic
+  chặn đòn nguyên tố bị tách dạt qua hai mép (`sinh_khang.py` là bản cũ, tự chặn trừ khi có `--cu`) — ảnh icon phải bật **Read/Write** thì
   `IconKyNang.Ve` mới ghép được ruột. Menu 77 kiểm.
 - **Tốc biến** (`Skills/TocBien.cs`, hiệu ứng `Vfx/VfxTocBien.cs`, 18/09/2026, nhóm **HỖ TRỢ**): dịch chuyển tức thời tối đa **15 m**
   tới chỗ ngắm; ngắm vào chỗ không đứng được thì **lùi dần 0,5 m** về phía mình tới điểm trống gần nhất (đi xuyên tường/bia mộ được);
@@ -562,7 +563,9 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
   `GameHUD.BoIcon` và `ManSanh.IconXemTruoc` đều gọi nó. 19/09/2026 hai nơi còn giữ hai bản riêng, thêm nhóm BỊ ĐỘNG
   chỉ sửa bản của HUD → Sách phép ở **sảnh** hiện bốn ô TRỐNG TRƠN (người dùng báo). Thêm kỹ năng mới = thêm một dòng
   ở `BoDayDu`. Menu 66 mục B1b kiểm (cuộn hết cột rồi đo, vì phép đo cũ bỏ qua mọi hàng bị khuất — chính chỗ bốn kỹ
-  năng Kháng nằm); ngưỡng ×0,85 đặt theo đối chứng THÁO biểu tượng ra (có 0,288–0,352 · không 0,115–0,127).
+  năng Kháng nằm); ⚠️ 29/09/2026 (icon bị động vẽ lại, dồn nội dung vào giữa) mục B1b2 so với **Ô TRỐNG THẬT chụp cùng lượt**
+  (tháo icon qua `ManSanh.DatIconXemTruocChoPhepThu`, đo cả hình): ô trống 0,117–0,123, icon ×1,85–2,46, ngưỡng ×1,3 — không so
+  với độ sáng icon KHÁC nữa (icon hợp lệ có bố cục khác nhau).
 - **Nút KỸ NĂNG ở sảnh** (14/09/2026, chỗ cũ của CÀI ĐẶT — CÀI ĐẶT lên đầu trang bên trái ĐĂNG XUẤT): mở Sách phép **xem trước**
   (`CuaSoSachPhep.MoXemTruoc`): 9 kỹ năng đủ màu, không ổ khoá, kéo thả được, không nút mở khoá / số bình; thông số đọc từ
   nhân vật trưng bày của MainMenu. `CuaSoSachPhep` là static — sảnh phải đóng nó khi rời sảnh (`OnDestroy`), không thì vào trận

@@ -60,13 +60,15 @@ public static class IconKyNang
     public static Texture2D HoaLocXoay() { return Ve("Icons/HoaLocXoay", new Color(0.10f, 0.09f, 0.07f)); }
     public static Texture2D TocBien()    { return Ve("Icons/TocBien",    new Color(0.09f, 0.04f, 0.15f)); }
 
-    // BON KY NANG BI DONG "KHANG ..." (19/09/2026) - anh ve bang script Python (CongCu/Icon/sinh_khang.py),
-    // nguoi dung chon khong dung Blender cho bon cai nay.
+    // BON KY NANG BI DONG "KHANG ..." (19/09/2026) + TOC DO: VE LAI 29/09/2026 bang script (CongCu/Icon/sinh_icon_ve_lai_4.py -
+    // nguoi dung che ban khien phang cu "tho, so sai, nhu game tre em", cho phep khong dung Blender): khien sat gothic vanh thep
+    // dinh tan, long men mau he, an he khac chim phat sang, dung chan don nguyen to (lua / gio buot + manh bang / tia set / gio
+    // bui) bi tach dat qua hai mep; Toc do = ung sat gothic co canh ma xanh, lua ma toe o got.
     public static Texture2D KhangLua()   { return Ve("Icons/KhangLua",   new Color(0.16f, 0.05f, 0.02f)); }
     public static Texture2D KhangBang()  { return Ve("Icons/KhangBang",  new Color(0.03f, 0.08f, 0.14f)); }
     public static Texture2D KhangSet()   { return Ve("Icons/KhangSet",   new Color(0.08f, 0.05f, 0.16f)); }
     public static Texture2D KhangPhong() { return Ve("Icons/KhangPhong", new Color(0.08f, 0.09f, 0.08f)); }
-    /// <summary>Bi dong Toc do di chuyen (25/09/2026) - khien mau nhom BI DONG, dau hieu mui ten toc do.</summary>
+    /// <summary>Bi dong Toc do di chuyen (25/09/2026) - ung sat gothic co canh ma xanh nhom BI DONG (ve lai 29/09/2026).</summary>
     public static Texture2D TocDo()      { return Ve("Icons/TocDo",      new Color(0.06f, 0.10f, 0.05f)); }
 
     /// <summary>

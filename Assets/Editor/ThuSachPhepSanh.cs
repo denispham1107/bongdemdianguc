@@ -404,30 +404,44 @@ console.log(out.join('|'));
         }
         sangMoc = demMoc > 0 ? sangMoc / demMoc : 0f;
 
+        // DOI CHUNG THAT trong cung luot (29/09/2026): chup lai cung khung hinh voi bieu tuong nhom Bi dong bi THAO (o trong
+        // that) - moi bieu tuong phai sang hon chinh o trong cua no. Do CA HINH (xem truoc khong co o khoa che giua hinh).
+        var boThao = (Texture2D[])IconKyNang.BoDayDu().Clone();
+        for (int ky = 0; ky < boThao.Length; ky++) if (CapDo.LaKyBiDong(ky)) boThao[ky] = null;
+        ManSanh.DatIconXemTruocChoPhepThu(boThao);
+        yield return new WaitForSecondsRealtime(0.3f);
+        Texture2D texThao = null;
+        yield return ChupTex(t => texThao = t);
+        ManSanh.DatIconXemTruocChoPhepThu(null);
+
         var sbBd = new StringBuilder();
-        float thapNhat = 99f; int soDo = 0;
+        float thapNhat = 99f, tiLeThao = 99f; int soDo = 0;
         for (int ky = 0; ky < CapDo.SoKyNang; ky++)
         {
             if (!CapDo.LaKyBiDong(ky)) continue;
             var rr = CuaSoSachPhep.VungHangKyNang(bCuoi, ky, s);
             if (rr.height <= 1f || rr.yMin < bCuoi.kho.yMin || rr.yMax > bCuoi.kho.yMax)
             { sbBd.Append(ky).Append(":KHUAT "); continue; }
-            float sang = DoSangVanhHinh(texCuoi, OHinhCuaHang(rr, s));
-            sbBd.AppendFormat("{0}:{1:F3} ", ky, sang);
-            thapNhat = Mathf.Min(thapNhat, sang); soDo++;
+            var oh = OHinhCuaHang(rr, s);
+            float sang = DoSangVanhHinh(texCuoi, oh);
+            float ca = DoSang(texCuoi, Giua(oh, 0.92f)), trong = DoSang(texThao, Giua(oh, 0.92f));
+            sbBd.AppendFormat("{0}:vanh {1:F3} ca hinh {2:F3}/o trong {3:F3}(x{4:F2}) ", ky, sang, ca, trong, ca / Mathf.Max(1e-4f, trong));
+            thapNhat = Mathf.Min(thapNhat, sang); tiLeThao = Mathf.Min(tiLeThao, ca / Mathf.Max(1e-4f, trong)); soDo++;
         }
         Object.Destroy(texCuoi);
+        Object.Destroy(texThao);
         CuaSoSachPhep.Dong();
         Ghi("B1b2. sau khi cuon het cot, do sang VANH hinh nhom BI DONG: " + sbBd.ToString().Trim()
             + " -> thap nhat " + thapNhat.ToString("F3") + " tren " + soDo + " hang; moc cac ky nang khac cung khung hinh "
-            + sangMoc.ToString("F3") + " (" + demMoc + " hang)");
+            + sangMoc.ToString("F3") + " (" + demMoc + " hang); ca hinh so voi O TRONG that thap nhat x" + tiLeThao.ToString("F2"));
         int soBiDong = SachPhep.KyNangTheoNhom[SachPhep.KyNangTheoNhom.Length - 1].Length;
         Kiem(soDo == soBiDong, "khong do duoc het " + soBiDong + " ky nang bi dong (cuon chua toi day cot?)");
-        // ⚠️ NGUONG do bang DOI CHUNG that (19/09/2026): co bieu tuong 0,288-0,352 (x1,27-1,55 moc);
-        // thao bieu tuong ra 0,115-0,127 (x0,51-0,56 moc). Nguong dau tien toi dat la x0,5 - va ban
-        // THIEU BIEU TUONG van lot qua voi 0,115 > 0,1135. Nay lay x0,85, nam giua hai cum.
-        Kiem(demMoc >= 2 && thapNhat > sangMoc * 0.85f,
-             "bieu tuong ky nang bi dong qua toi so voi cac ky nang khac - o trong?");
+        // ⚠️ 19/09/2026 nguong so voi MOC (vanh hinh cac ky nang khac): co bieu tuong x1,27-1,55, thao ra x0,51-0,56 -> x0,85.
+        // 29/09/2026 bo icon bi dong VE LAI dua noi dung vao giua (tam khien, chiec ung) nen vanh toi hon: x0,76-0,89 moc - phep so
+        // voi bieu tuong KHAC khong con noi duoc "co / khong co". Nay so voi O TRONG THAT chup cung luot (thao bieu tuong).
+        Kiem(demMoc >= 2, "khong co ky nang khac trong khung de lam moc");
+        Kiem(tiLeThao > 1.3f, "bieu tuong ky nang bi dong khong sang hon o trong that - o trong?");
+        Kiem(thapNhat > 0.05f, "vanh hinh bi dong gan nhu den - khong ve gi?");
 
         // ---- B2. nhan vat mau ----
         var pcMau = Object.FindAnyObjectByType<PlayerController>(FindObjectsInactive.Include);
