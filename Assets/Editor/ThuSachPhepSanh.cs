@@ -444,6 +444,9 @@ console.log(out.join('|'));
              "o sanh khong doc duoc thong so ky nang that");
 
         // ---- B3. sap o o sanh, doc kho luu ----
+        // CamUng.EpBat la bien TINH, du an tat Domain Reload: bam F9 (doi sang cam ung) luc choi thu truoc do thi co van
+        // BAT khi phep thu chay -> ba lan sap o dau roi vao bo o TRON (28/09/2026, 4 loi gia). Tu dat ve may tinh truoc da.
+        CamUng.EpBat = false;
         sanh.MoSachPhep();
         yield return null;
         SachPhep.DatVaoO(0, 8);

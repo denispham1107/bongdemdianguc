@@ -8626,6 +8626,16 @@ Nội dung từng icon:
   - Lần vẽ đầu các dải chồng nhau cháy trắng thành một khối (dùng `lighter` ở độ sáng đầy), bia và đá quá nhỏ, quá tối.
     Nay cộng dồn ở 0,34 / 0,20, bia to gấp 1,4 lần. Ảnh trong game: `PlayTestShots/icon_gio_loc_trong_game.png`
     (cạnh Lốc xoáy, Hoá lốc xoáy). Menu 66: 0 lỗi.
+  - **Thân to ra, chân loe** (người dùng, cùng ngày: Gió lốc và Lốc xoáy "nhìn giống 2 cây kem" — chân nhọn hoắt, cho to bề
+    ngang, nhất là dưới chân). Bán kính thêm một khoản LOE tắt dần theo độ cao: r(t) = r_đáy + (r_đỉnh − r_đáy)·t^mũ +
+    loe·e^(−t / 0,08…0,09). `pheu_loc` có thêm tham số `mu`, `loe`, `loe_cao` (mặc định giữ dáng cũ cho Hoá lốc xoáy).
+    - Gió lốc: r = 0,070 + 0,150·t^1,15 + 0,085·e^(−t/0,09), thêm cụm bụi ôm chân.
+    - Lốc xoáy: r_đáy 0,035 → 0,10, mũ 1,7 → 1,25, loe 0,13, bụi chân rộng 0,20 → 0,27.
+    - Thân rộng hơn nên dải gió chồng nhiều hơn: giảm độ sáng mỗi dải (0,34 → 0,27) để không cháy trắng.
+  - ⚠️ Lần chạy menu 66 sau đó báo 4 lỗi "bộ ô không lưu đúng", KHÔNG do icon. `CamUng.EpBat` là biến tĩnh (dự án tắt Domain
+    Reload): người dùng bấm F9 (đổi sang cảm ứng) lúc chơi thử trong Editor, cờ còn BẬT khi phép thử chạy, nên ba lần sắp ô
+    đầu rơi vào bộ ô tròn. Phép thử nay tự đặt `CamUng.EpBat = false` trước mục B3 → 0 lỗi. Trên web, mỗi lần mở game biến
+    tĩnh lại bắt đầu từ đầu, nên người chơi không gặp.
 - **Lốc xoáy:** một phễu khổng lồ 70 dải gió, miệng trên có vành mây cuộn, sét trong lòng (kiểu Giựt sét). Bụi ở chân; mảnh bia
   mộ và đá bị cuốn bay quanh phễu.
 - **Mây giông:** mây XÁM ĐEN bị sét rọi sáng TỪNG MẢNG ngay chỗ tia phát ra (đúng hình kỹ năng), mưa xối nghiêng, hai tia sét,

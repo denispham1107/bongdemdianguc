@@ -29,7 +29,8 @@ from sinh_icon_ve_lai_2 import dai_mau, cay_tia, ve_cay_tia, gop_tia, may
 
 # ------------------------------------------------------------------ pheu loc
 
-def pheu_loc(cx, day_y, dinh_y, r_day, r_dinh, hat, so_dai=40, mau=(205, 212, 220), lac=0.025, do_day=1.0, sang_k=1.0):
+def pheu_loc(cx, day_y, dinh_y, r_day, r_dinh, hat, so_dai=40, mau=(205, 212, 220), lac=0.025, do_day=1.0, sang_k=1.0,
+             mu=1.7, loe=0.0, loe_cao=0.09):
     """Ve mot pheu loc -> (lop RGB dai gio, mat na L than pheu)."""
     rd = random.Random(hat)
     lop = moi()
@@ -37,8 +38,10 @@ def pheu_loc(cx, day_y, dinh_y, r_day, r_dinh, hat, so_dai=40, mau=(205, 212, 22
     H = day_y - dinh_y
     pha = rd.uniform(0, 6.28)
 
+    # mu nho = than to ngang len som; loe = CHAN LOE rong ra sat dat (nguoi dung 28/09/2026: "nhin giong cay kem" - chan
+    # nhon hoat, phai to ra) - tat dan theo do cao loe_cao
     def r_at(t):
-        return r_day + (r_dinh - r_day) * (t ** 1.7)
+        return r_day + (r_dinh - r_day) * (t ** mu) + loe * math.exp(-t / loe_cao)
 
     def x_at(t):
         return cx + math.sin(t * 3.2 + pha) * lac * (0.3 + t)
@@ -148,8 +151,9 @@ def gio_loc():
     def x_at(t):
         return cx + nghieng * t ** 1.3 + math.sin(t * 5.0) * 0.012
 
+    # Than TO NGANG va CHAN LOE (nguoi dung 28/09/2026: "nhin giong cay kem" - duoi chan nhon hoat)
     def r_at(t):
-        return 0.034 + 0.165 * t ** 1.35
+        return 0.070 + 0.150 * t ** 1.15 + 0.085 * math.exp(-t / 0.09)
 
     H = day - dinh
 
@@ -164,6 +168,7 @@ def gio_loc():
         db.ellipse([P(x - r, y - r * 0.6), P(x + r, y + r * 0.6)], fill=int(230 * (1 - 0.6 * t)))
     bui = ImageChops.multiply(mo(bui, 12), fbm(81, 10, 4).point(lambda v: min(255, 40 + v)))
     nen = cong(nen, to_mau(bui, (150, 112, 78)))
+    nen = cong(nen, bui_chan(x_at(0.0), day, 0.19, 88, (150, 115, 82), 1.1))     # cum bui om chan loe
     da_nho = moi()
     dd = ImageDraw.Draw(da_nho)
     for _ in range(26):
@@ -212,8 +217,8 @@ def gio_loc():
     truoc = Image.new("L", (W, W), 0)
     for (g0, vong, t0, dai, day_k) in dai_ds:
         t1 = min(1.0, t0 + dai)
-        sau = ImageChops.add(sau, dai_gio(False, g0, vong, t0, t1, day_k, 0.20))
-        truoc = ImageChops.add(truoc, dai_gio(True, g0, vong, t0, t1, day_k, 0.34))
+        sau = ImageChops.add(sau, dai_gio(False, g0, vong, t0, t1, day_k, 0.16))
+        truoc = ImageChops.add(truoc, dai_gio(True, g0, vong, t0, t1, day_k, 0.27))
     van = van_ngang(83).point(lambda v: min(255, 20 + int(v * 1.1)))
     sau = ImageChops.multiply(mo(sau, 2.5), van)
     truoc = ImageChops.multiply(mo(truoc, 1.5), van)
@@ -301,9 +306,9 @@ def gio_loc():
 def loc_xoay():
     nen = moi()
     rd = random.Random(2)
-    cx, day, dinh, r_day, r_dinh = 0.50, 0.88, 0.12, 0.035, 0.34
-    nen = cong(nen, bui_chan(cx, day, 0.20, 21, (100, 92, 84), 1.1))
-    lop, mn = pheu_loc(cx, day, dinh, r_day, r_dinh, 22, 70, (215, 222, 228), 0.035, 1.25)
+    cx, day, dinh, r_day, r_dinh = 0.50, 0.86, 0.12, 0.10, 0.335
+    nen = cong(nen, bui_chan(cx, day, 0.27, 21, (100, 92, 84), 1.2))
+    lop, mn = pheu_loc(cx, day, dinh, r_day, r_dinh, 22, 80, (215, 222, 228), 0.03, 1.3, 1.0, mu=1.25, loe=0.13, loe_cao=0.08)
     nen = cong(nen, lop)
     # vanh may cuon o mieng tren
     vanh = Image.new("L", (W, W), 0)
@@ -323,7 +328,7 @@ def loc_xoay():
     for i in range(9):
         t = rd.uniform(0.15, 0.85)
         g = rd.uniform(0, 2 * math.pi)
-        r = (r_day + (r_dinh - r_day) * t ** 1.7) * 1.25
+        r = (r_day + (r_dinh - r_day) * t ** 1.25 + 0.13 * math.exp(-t / 0.08)) * 1.2
         x = cx + math.cos(g) * r
         y = day - (day - dinh) * t + math.sin(g) * r * 0.16
         s = rd.uniform(0.012, 0.024)
