@@ -8603,6 +8603,31 @@ châm cả bia mộ / nhà mồ (tính năng sáng nay), đầy trần "4 vật 
 
 Ảnh: `PlayTestShots/maygiong_1_dem_can.png`, `maygiong_2_chay_den.png`, `maygiong_3_ngay_goc_choi.png`.
 
+### Người khách ăn đòn quái đúng hệ số đợt; Bộ xương đợt 1 còn 35 (28/09/2026)
+
+**Người dùng:** sửa lỗi người khách ăn đòn quái ở mức gốc (ghi ở mục dưới), và hạ Bộ xương đợt 1 từ 55 xuống **35**.
+
+**Nguyên nhân lỗi:**
+- Hệ số đợt (`GameDirector.LamManhTheoDot`, đợt 1 × 0,65, mỗi đợt +5%) chỉ nhân lên quái trên máy chủ phòng.
+- Máy khách sinh bản sao bằng `EnemyFactory.Spawn`, không nhân hệ số này.
+- Đòn đánh trúng người khách lại do máy khách tự tính (`EnemyAI.DienLaiDon`) bằng `attackDamage` / `satThuongCau` của bản sao.
+- Kết quả: người khách luôn ăn mức gốc, mọi quái, mọi đợt.
+
+**Cách sửa:** gói "quái ra đòn" (`GoiTin.MotDonQuai`) mang thêm `satThuong`, 2 byte, bước 0,05; gói tăng từ 15 lên **17 byte**.
+- Chủ phòng điền số THẬT của con quái: `attackDamage` cho đòn gần, `satThuongCau` cho đòn xa.
+- Máy khách đặt đúng số ấy lên bản sao rồi mới phát lại đòn.
+- Gói cũ 15 byte (bản build trước) vẫn đọc được với sát thương 0, khi đó máy khách dùng số của bản sao như trước.
+- Cách này đúng với mọi thứ làm đổi sát thương trên máy chủ, không riêng hệ số đợt.
+
+**Bộ xương**: `SatThuongBoXuongDot1` 55 → 35, tức mức gốc lúc sinh 35 / 0,65 = 53,85.
+
+**Đo:**
+- Menu 39 (đòn của quái qua mạng), 0 lỗi:
+  - Gói 17 byte, sát thương viết 35,05, đọc lại 35,05; gói cũ 15 byte vẫn đọc được, sát thương 0.
+  - Chủ phòng nhân hệ số đợt 1 lên con Bộ xương (53,85 → 35,00) rồi ra đòn: gói gửi đi mang **35,00**.
+  - Máy khách nhận gói có sát thương: mất **35,00**. Đối chứng gói không kèm (như bản cũ): mất 53,85.
+- Menu 91, 0 lỗi: gốc 53,85 × 0,65 = 35,00; nhịp đánh 0,314 s; đỡ đòn 45,8%.
+
 ### Bộ xương đánh 55 mỗi 0,3 giây, đỡ đòn 45% (28/09/2026)
 
 **Người dùng:** Bộ xương gây sát thương lên người chơi là 55, cứ 0,3 giây đánh lại, và có 45% đỡ đòn. Hỏi lại thì người dùng

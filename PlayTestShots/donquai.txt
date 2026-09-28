@@ -1,10 +1,13 @@
 [ban 1] don cua quai phai di qua duoc mang
-da don 25 con quai co san de mau chi doi vi phep thu
-1. quai danh ban sao: 30000 -> 29960 mau, roi mot goi tin tu may kia den -> 30000 mau
+da don 0 con quai co san de mau chi doi vi phep thu
+1. quai danh ban sao: 10000 -> 9960 mau, roi mot goi tin tu may kia den -> 10000 mau
    => sat thuong bi xoa sach: True (dung nhu vay thi nguoi khach bat tu truoc quai)
-2. goi don quai 15 byte, doc lai: idQuai=777 kieuDon=2 nanNhan=1 lech diem ngam=0.0000 m
-3. chu phong: quai ra don -> so goi don quai gui di: 6 (phai it nhat 1)
-4. may khach nghe 'quai ra don' -> minh mat 12 mau (phai lon hon 0)
+2. goi don quai 17 byte, doc lai: idQuai=777 kieuDon=2 nanNhan=1 lech diem ngam=0.0000 m
+2b. sat thuong kem goi: viet 35.05 -> doc 35.05; goi cu 15 byte: doc duoc True, sat thuong 0.00
+3. chu phong: quai ra don -> so goi don quai gui di: 14 (phai it nhat 1)
+3b. goi don quai mang sat thuong 35.00 (con quai tren chu phong da nhan he so dot: 35.00; goc 53.85)
+4. may khach nghe 'quai ra don' -> minh mat 54 mau (phai lon hon 0)
 5. cung goi ay den them hai lan -> mat them 0 mau (phai la 0)
 6. don nham NGUOI KIA -> minh mat 0 mau (phai la 0)
+7. khach an don co kem sat thuong: mat 35.00 (chu phong 35.00) | DOI CHUNG goi cu khong kem: mat 53.85 (so goc ban sao 53.85)
 so loi ghi nhan = 0

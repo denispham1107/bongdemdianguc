@@ -235,7 +235,9 @@ public class DongBoQuai : MonoBehaviour
             kieuDon = (byte)kieu,
             chiSoNanNhan = dongBo.ChiSoCua(mucTieu),
             soThuTu = ++soDonDaKe,
-            diemNgam = diemNgam
+            diemNgam = diemNgam,
+            // So THAT tren may nay (da nhan he so dot) - may khach khong tu nhan duoc (xem GoiTin.MotDonQuai.satThuong)
+            satThuong = kieu == 0 ? conQuai.attackDamage : conQuai.satThuongCau
         });
 
         SoDonDaKe++;
@@ -314,6 +316,13 @@ public class DongBoQuai : MonoBehaviour
         Damageable nanNhan = null;
         if (d.chiSoNanNhan == chiSoCuaToi && dongBo != null && dongBo.toi != null)
             nanNhan = dongBo.toi.GetComponent<Damageable>();
+
+        // Dat DUNG sat thuong cua chu phong len ban sao truoc khi dien lai (ban sao khong nhan he so dot - 28/09/2026)
+        if (d.satThuong > 0f)
+        {
+            if (d.kieuDon == 0) ai.attackDamage = d.satThuong;
+            else ai.satThuongCau = d.satThuong;
+        }
 
         SoDonDaDien++;
         ai.DienLaiDon(d.kieuDon, d.diemNgam, nanNhan);

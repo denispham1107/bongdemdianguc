@@ -136,7 +136,8 @@ public static class ThuDonQuai
         var donGoc = new GoiTin.MotDonQuai
         {
             idQuai = 777, kieuDon = 2, chiSoNanNhan = 1,
-            diemNgam = new Vector3(-4.56f, 0.75f, 9.87f)
+            diemNgam = new Vector3(-4.56f, 0.75f, 9.87f),
+            satThuong = 35.05f
         };
         GoiTin.MotDonQuai donDoc;
         byte[] bd = GoiTin.VietDonQuai(donGoc);
@@ -149,6 +150,16 @@ public static class ThuDonQuai
         if (!docDuoc || donDoc.idQuai != donGoc.idQuai || donDoc.kieuDon != donGoc.kieuDon
             || donDoc.chiSoNanNhan != donGoc.chiSoNanNhan || lech > 0.02f)
         { Ghi("[LOI] goi don quai doc ra khong khop luc viet"); loi++; }
+        // 2b. Sat thuong that di kem (28/09/2026) + goi CU 15 byte van doc duoc (sat thuong 0)
+        {
+            var cu = new byte[15]; System.Array.Copy(bd, cu, 15);
+            GoiTin.MotDonQuai donCu;
+            bool docCu = GoiTin.DocDonQuai(cu, out donCu);
+            Ghi(string.Format("2b. sat thuong kem goi: viet {0:F2} -> doc {1:F2}; goi cu 15 byte: doc duoc {2}, sat thuong {3:F2}",
+                donGoc.satThuong, donDoc.satThuong, docCu, donCu.satThuong));
+            if (Mathf.Abs(donDoc.satThuong - donGoc.satThuong) > 0.03f || !docCu || donCu.satThuong != 0f)
+            { Ghi("[LOI] sat thuong trong goi don quai sai / goi cu khong doc duoc"); loi++; }
+        }
 
         // ---- 3. Chu phong ra don thi CO goi di ra ----
         KenhTrucTiep.Tao();
@@ -175,6 +186,10 @@ public static class ThuDonQuai
         var soQuai = conQuai.GetComponent<NhanDangQuai>();
 
         daGui.Clear();
+        // Chu phong: GameDirector.LamManhTheoDot nhan sat thuong theo dot (dot 1 x 0,65). Lam dung phep nhan ay tren con nay
+        // de biet goi gui di mang so DA NHAN, khong phai so goc.
+        float satGoc = aiQuai.attackDamage;
+        aiQuai.attackDamage = satGoc * GameDirector.HeSoSatThuongDotDau;
         aiQuai.RaDonNgay();                 // ep no ra don, khong doi hoi chieu
         yield return new WaitForSeconds(1.2f);
 
@@ -186,6 +201,19 @@ public static class ThuDonQuai
             + " (phai it nhat 1)");
         if (soGoiDon < 1)
         { Ghi("[LOI] quai ra don ma khong bao gi sang may kia"); loi++; }
+        float satTrongGoi = -1f;
+        foreach (var t in daGui)
+        {
+            var bb = GoiTin.TuChuoi(t);
+            GoiTin.MotDonQuai dd;
+            if (GoiTin.LoaiCuaGoi(bb) == GoiTin.LoaiDonQuai && GoiTin.DocDonQuai(bb, out dd)) satTrongGoi = dd.satThuong;
+        }
+        Ghi(string.Format("3b. goi don quai mang sat thuong {0:F2} (con quai tren chu phong da nhan he so dot: {1:F2}; goc {2:F2})",
+            satTrongGoi, aiQuai.attackDamage, satGoc));
+        if (Mathf.Abs(satTrongGoi - aiQuai.attackDamage) > 0.03f)
+        { Ghi("[LOI] goi don quai khong mang sat thuong DA NHAN he so dot"); loi++; }
+        float satDaNhan = aiQuai.attackDamage;
+        aiQuai.attackDamage = satGoc;       // ban sao ben khach: sinh bang EnemyFactory, KHONG qua he so dot
 
         // ---- 4. PHEP DO CHINH: may khach nghe goi thi MAT MAU ----
         //
@@ -239,6 +267,32 @@ public static class ThuDonQuai
         float mat6 = truoc6 - mauToi.health;
         Ghi("6. don nham NGUOI KIA -> minh mat " + mat6.ToString("F0") + " mau (phai la 0)");
         if (mat6 > 0f) { Ghi("[LOI] an don thay nguoi khac"); loi++; }
+
+        // ---- 7. Khach an DUNG sat thuong cua chu phong (da nhan he so dot), khong phai so goc cua ban sao ----
+        yield return new WaitForSeconds(0.5f);
+        aiQuai.attackDamage = satGoc;
+        float truoc7 = mauToi.health;
+        boQuai.NhanDonQuai(GoiTin.VietDonQuai(new GoiTin.MotDonQuai
+        {
+            idQuai = soQuai.id, kieuDon = 0, chiSoNanNhan = 0, soThuTu = 1000,
+            diemNgam = toi.transform.position, satThuong = satDaNhan
+        }), 0);
+        yield return new WaitForSeconds(1.2f);
+        float mat7 = truoc7 - mauToi.health;
+        // DOI CHUNG: goi khong kem sat thuong (nhu ban cu) -> khach an so GOC cua ban sao
+        aiQuai.attackDamage = satGoc;
+        float truoc7b = mauToi.health;
+        boQuai.NhanDonQuai(GoiTin.VietDonQuai(new GoiTin.MotDonQuai
+        {
+            idQuai = soQuai.id, kieuDon = 0, chiSoNanNhan = 0, soThuTu = 1001,
+            diemNgam = toi.transform.position
+        }), 0);
+        yield return new WaitForSeconds(1.2f);
+        float mat7b = truoc7b - mauToi.health;
+        Ghi(string.Format("7. khach an don co kem sat thuong: mat {0:F2} (chu phong {1:F2}) | DOI CHUNG goi cu khong kem: mat {2:F2} (so goc ban sao {3:F2})",
+            mat7, satDaNhan, mat7b, satGoc));
+        if (Mathf.Abs(mat7 - satDaNhan) > 0.05f) { Ghi("[LOI] khach khong an dung sat thuong cua chu phong"); loi++; }
+        if (Mathf.Abs(mat7b - satGoc) > 0.05f) { Ghi("[LOI] doi chung goi cu khong ra so goc - phep do khong phan biet duoc"); loi++; }
 
         // ---- Don ----
         KenhTrucTiep.guiSangBenKia = null;

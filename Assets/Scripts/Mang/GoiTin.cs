@@ -99,6 +99,13 @@ public static class GoiTin
         public byte chiSoNanNhan;   // ai bi nham; 255 = khong nham ai ro rang
         public int soThuTu;
         public Vector3 diemNgam;
+
+        /// <summary>
+        /// SAT THUONG THAT cua don (28/09/2026): attackDamage (danh gan) hoac satThuongCau (danh xa) cua con quai TREN MAY CHU
+        /// PHONG - da nhan he so dot. Truoc day may khach dien lai don bang so cua BAN SAO, ma ban sao khong qua
+        /// GameDirector.LamManhTheoDot -> nguoi khach an muc GOC (Bo xuong dot 1: 84,6 thay vi 55). 0 = goi cu, khong kem.
+        /// </summary>
+        public float satThuong;
     }
 
     /// <summary>
@@ -561,10 +568,10 @@ public static class GoiTin
     //  GOI DON QUAI
     // ================================================================
 
-    /// <summary>Dong goi mot lan quai ra don. 15 byte.</summary>
+    /// <summary>Dong goi mot lan quai ra don. 17 byte (15 + 2 byte sat thuong that, buoc 0,05 - toi da 3 276).</summary>
     public static byte[] VietDonQuai(MotDonQuai d)
     {
-        var b = new byte[15];
+        var b = new byte[17];
         int i = 0;
 
         b[i++] = LoaiDonQuai;
@@ -583,6 +590,9 @@ public static class GoiTin
         b[i++] = (byte)(x & 0xFF); b[i++] = (byte)((x >> 8) & 0xFF);
         b[i++] = (byte)(y & 0xFF); b[i++] = (byte)((y >> 8) & 0xFF);
         b[i++] = (byte)(z & 0xFF); b[i++] = (byte)((z >> 8) & 0xFF);
+
+        int st = Mathf.Clamp(Mathf.RoundToInt(d.satThuong * 20f), 0, 65535);
+        b[i++] = (byte)(st & 0xFF); b[i++] = (byte)((st >> 8) & 0xFF);
 
         return b;
     }
@@ -604,6 +614,9 @@ public static class GoiTin
         short y = (short)(b[i] | (b[i + 1] << 8)); i += 2;
         short z = (short)(b[i] | (b[i + 1] << 8)); i += 2;
         ra.diemNgam = new Vector3(MoToaDo(x), MoToaDo(y), MoToaDo(z));
+
+        // Goi cu 15 byte (ban build truoc) khong co sat thuong -> 0, may khach dung so cua ban sao nhu cu
+        if (b.Length >= 17) ra.satThuong = (b[i] | (b[i + 1] << 8)) / 20f;
 
         return true;
     }

@@ -407,13 +407,14 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
   Menu 90 kiểm bằng ẢNH (bóng thân trắng đặc lớp 31 + nới 14 px; TẮT bloom; tính theo DIỆN TÍCH): 99–100% lửa trong viền, đối chứng 69%.
 - ⚠️ **ĐẶC TÍNH QUÁI** (người dùng 28/09/2026, đặt trong `EnemyFactory.ApDacTinh` lúc sinh — KHÔNG trong prefab): **Quỷ cây** mỗi tia
   15% choáng người chơi 1 s (`EnemyAI.xacSuatChoangTia`, qua `GiatSet.PhongCuaQuai`); **Quỷ dữ** thiên thạch 15% đánh ngã 1 s
-  (`xacSuatNgaThienThach`); **Bộ xương** tốc **×1,8225** (1,35 × 1,35 — người dùng xin thêm +35% CỘNG DỒN), **mỗi đòn 55 ở ĐỢT 1**
-  (gốc lúc sinh 55 / 0,65 = 84,6 vì GameDirector nhân 0,65 — `SatThuongBoXuongDot1`), **cứ 0,3 s một đòn** (hồi chiêu 0,3, vung 0,25 —
+  (`xacSuatNgaThienThach`); **Bộ xương** tốc **×1,8225** (1,35 × 1,35 — người dùng xin thêm +35% CỘNG DỒN), **mỗi đòn 35 ở ĐỢT 1**
+  (gốc lúc sinh 35 / 0,65 = 53,85 vì GameDirector nhân 0,65 — `SatThuongBoXuongDot1`; trước đó cùng ngày là 55), **cứ 0,3 s một đòn** (hồi chiêu 0,3, vung 0,25 —
   vung bằng hồi chiêu thì nhịp đo ra 0,356), **45% ĐỠ ĐÒN** kỹ năng người chơi (`Combat/ChongDo.cs`,
   `Damageable.tiLeDoDon`): không mất máu + tránh cả hiệu ứng của đòn ấy, mỗi đòn gieo riêng (một lần mỗi khung mỗi con), **sát thương rỉ
   không gieo** (`Damageable.LaSatThuongRi` quanh nhịp cháy / lốc cuốn / vũng lửa / cây cháy); hình vòm khiên bạc xanh + chữ **"ĐỠ ĐÒN!"**
-  (`Vfx/VfxCauDoDon.cs`). ⚠️ Lỗi có sẵn chưa sửa: bản sao quái trên MÁY KHÁCH không nhân hệ số đợt → người khách ăn đòn cận chiến ở
-  mức GỐC (Bộ xương 84,6 thay vì 55) — xem HUONG-DAN. Mạng: chỉ chủ phòng gieo, **bit 7 byte cờ gói quái** = vừa đỡ (gói quái nay dùng HẾT 8 bit). Phép thử gắn hiệu ứng
+  (`Vfx/VfxCauDoDon.cs`). ⚠️ Bản sao quái trên MÁY KHÁCH không nhân hệ số đợt → **gói "quái ra đòn" mang SÁT THƯƠNG THẬT của chủ
+  phòng** (`GoiTin.MotDonQuai.satThuong`, gói 17 byte; gói cũ 15 byte → 0 = dùng số bản sao), máy khách đặt lên bản sao trước khi
+  `DienLaiDon` (28/09/2026, menu 39 mục 2b/3b/7). Mạng: chỉ chủ phòng gieo, **bit 7 byte cờ gói quái** = vừa đỡ (gói quái nay dùng HẾT 8 bit). Phép thử gắn hiệu ứng
   thẳng lên Bộ xương để đo cơ chế khác phải đặt `tiLeDoDon = 0` (đã sửa menu 71 H3, ThuBangNguoiChoi B4). Menu 91 kiểm.
 - ⚠️ **XÁC NẰM TRÊN VŨNG MÁU** (người dùng 26/09/2026, `Combat/XacNam.cs`, gắn trong `Damageable.Die`): quái và người chơi chết thì
   **nằm hẳn theo tư thế NGẪU NHIÊN: ngửa / sấp / nghiêng trái / nghiêng phải** (1/3 ngửa · 1/3 sấp · 1/3 nghiêng, `XacNam.KieuNam`,

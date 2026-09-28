@@ -8,7 +8,7 @@ using UnityEngine;
 
 /// <summary>
 /// CHAY THU: DAC TINH MOI CUA BA LOAI QUAI (menu 91, nguoi dung 28/09/2026).
-///   A. BO XUONG: toc do x1,8225 (1,35 x 1,35) so voi PREFAB goc; sat thuong 55 o dot 1 (goc 55 / 0,65 = 84,6 - GameDirector
+///   A. BO XUONG: toc do x1,8225 (1,35 x 1,35) so voi PREFAB goc; sat thuong 35 o dot 1 (goc 35 / 0,65 = 53,85 - GameDirector
 ///      nhan 0,65 o dot 1, menu 56 do he so ay tren con sinh THAT cua dot); cu 0,3 s mot don (A4: do thoi diem tung don trung) (doc thang prefab, khong doc hang so); do THAT: chay
 ///      duoi nguoi choi bao nhieu m/s, danh trung mat bao nhieu mau. Doi chung: Phu thuy (khong doi).
 ///   B. QUY CAY: 15% choang 1 giay - phong 200 tia THAT vao nguoi choi, dem choang, doc so giay. Doi chung: tat ti le -> 0.
@@ -123,7 +123,7 @@ public static class ThuDacTinhQuai
             Ghi(string.Format("A1. Bo xuong: toc {0:F3} / prefab {1:F3} = x{2:F3}; sat thuong goc {3:F2} (prefab {4:F2}) -> dot 1 (x0,65) = {5:F2}; do don {6:P0} | DOI CHUNG Phu thuy x{7:F3} / x{8:F3}, do don {9:P0}",
                 bx.moveSpeed, pfXuong.moveSpeed, rT, bx.attackDamage, pfXuong.attackDamage, rS, bx.health.tiLeDoDon, rT2, rS2, ph.health.tiLeDoDon));
             Kiem(Mathf.Abs(rT - 1.8225f) < 0.001f, "Bo xuong toc do khong phai x1,8225 (1,35 x 1,35)");
-            Kiem(Mathf.Abs(rS - 55f) < 0.01f, "Bo xuong dot 1 khong danh 55");
+            Kiem(Mathf.Abs(rS - 35f) < 0.01f, "Bo xuong dot 1 khong danh 35");
             Kiem(Mathf.Abs(bx.health.tiLeDoDon - 0.45f) < 1e-4f, "Bo xuong khong co 45% do don");
             Kiem(Mathf.Abs(bx.attackCooldown - 0.3f) < 1e-4f && bx.attackAnimTime < 0.3f, "Bo xuong khong dat nhip 0,3 s");
             Kiem(Mathf.Abs(rT2 - 1f) < 1e-4f && Mathf.Abs(rS2 - 1f) < 1e-4f && ph.health.tiLeDoDon == 0f, "Phu thuy bi doi theo (doi chung)");
@@ -147,8 +147,8 @@ public static class ThuDacTinhQuai
             bx.RaDonNgay();
             yield return null;
             float mat = m0 - mauPc.health;
-            Ghi(string.Format("A3. Bo xuong (sinh thang, chua nhan he so dot) danh trung nguoi choi: mat {0:F2} mau (mong 55 / 0,65 = {1:F2}; o dot 1 = 55)", mat, 55f / 0.65f));
-            Kiem(Mathf.Abs(mat - 55f / 0.65f) < 0.05f, "Bo xuong danh nguoi choi khong ra muc goc 84,6");
+            Ghi(string.Format("A3. Bo xuong (sinh thang, chua nhan he so dot) danh trung nguoi choi: mat {0:F2} mau (mong 35 / 0,65 = {1:F2}; o dot 1 = 35)", mat, 35f / 0.65f));
+            Kiem(Mathf.Abs(mat - 35f / 0.65f) < 0.05f, "Bo xuong danh nguoi choi khong ra muc goc 53,85");
             mauPc.health = mauPc.maxHealth;
 
             // A4. NHIP DANH THAT: bat AI canh nguoi choi, ghi thoi diem tung don trung (su kien DaRaDon) trong ~3 s

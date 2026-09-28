@@ -27,11 +27,11 @@ public static class EnemyFactory
     /// <summary>Bo xuong: toc do di chuyen +35% roi +35% nua CONG DON (nguoi dung 28/09/2026, chon cong don) = x1,8225 (2,7 -> 4,92 m/s).</summary>
     public const float HeSoTocBoXuong = 1.35f * 1.35f;
     /// <summary>
-    /// Bo xuong: moi don TRUNG NGUOI CHOI 55 o DOT 1 (nguoi dung 28/09/2026, chon "55 la so trung that o dot 1", roi manh +5% moi
-    /// dot nhu quai khac). GameDirector nhan sat thuong dot 1 x HeSoSatThuongDotDau (0,65) nen muc goc luc sinh = 55 / 0,65 = 84,6.
-    /// (Truoc: x1,30 roi x1,43 so voi 12.)
+    /// Bo xuong: moi don TRUNG NGUOI CHOI 35 o DOT 1 (nguoi dung 28/09/2026: 55 "so trung that o dot 1", cung ngay ha xuong 35;
+    /// manh +5% moi dot nhu quai khac). GameDirector nhan sat thuong dot 1 x HeSoSatThuongDotDau (0,65) nen muc goc luc sinh =
+    /// 35 / 0,65 = 53,85. (Truoc: x1,30 roi x1,43 so voi 12.)
     /// </summary>
-    public const float SatThuongBoXuongDot1 = 55f;
+    public const float SatThuongBoXuongDot1 = 35f;
     /// <summary>Bo xuong: cu 0,3 giay danh mot don (nguoi dung 28/09/2026). Nhip = max(hoi chieu, thoi gian vung don) nen dat ca hai.</summary>
     public const float NhipDanhBoXuong = 0.3f;
     /// <summary>Quy cay: moi tia sam trung nguoi choi 15% choang 1 giay.</summary>

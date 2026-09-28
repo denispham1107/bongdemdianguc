@@ -1,13 +1,13 @@
-A1. Bo xuong: toc 4.921 / prefab 2.700 = x1.823; sat thuong goc 84.62 (prefab 12.00) -> dot 1 (x0,65) = 55.00; do don 45 % | DOI CHUNG Phu thuy x1.000 / x1.000, do don 0 %
-A2. Bo xuong chay THAT 4.88 m/s (moveSpeed 4.921; prefab goc 2.70)
-A3. Bo xuong (sinh thang, chua nhan he so dot) danh trung nguoi choi: mat 84.62 mau (mong 55 / 0,65 = 84.62; o dot 1 = 55)
-A4. Bo xuong danh THAT trong 3,2 s: 10 don, cach nhau trung binh 0.321 s (mong 0,3; khung Editor lam tron len toi ~1 khung)
+A1. Bo xuong: toc 4.921 / prefab 2.700 = x1.823; sat thuong goc 53.85 (prefab 12.00) -> dot 1 (x0,65) = 35.00; do don 45 % | DOI CHUNG Phu thuy x1.000 / x1.000, do don 0 %
+A2. Bo xuong chay THAT 4.85 m/s (moveSpeed 4.921; prefab goc 2.70)
+A3. Bo xuong (sinh thang, chua nhan he so dot) danh trung nguoi choi: mat 53.85 mau (mong 35 / 0,65 = 53.85; o dot 1 = 35)
+A4. Bo xuong danh THAT trong 3,2 s: 10 don, cach nhau trung binh 0.314 s (mong 0,3; khung Editor lam tron len toi ~1 khung)
 B0. Quy cay: xacSuatChoangTia 0.15, giayChoangTia 1.00
-B1. 200 tia THAT, trung 200, choang 37 = 18.5 % (mong 15%, sai so ngau nhien ~2,5 diem); lan choang dau keo dai trong [0.90; 1.01] s
+B1. 200 tia THAT, trung 200, choang 24 = 12.0 % (mong 15%, sai so ngau nhien ~2,5 diem); lan choang dau keo dai trong [0.97; 1.03] s
 B2. DOI CHUNG ti le 0: 60 tia -> choang 0
 C1. thien thach THAT cua Quy du: ngaXacSuat 0.15, ngaGiay 1.00
-C2. 40 thien thach THAT, trung 40, danh nga 8 (20 %); thoi gian nga 1.00 s
-D1. 400 don ky nang (moi don mot khung): do 163 = 40.8 % (mong 45%, sai so ~2,5 diem); do ma van chay 0; khong do ma khong chay 0; hinh do don hien 40 lan
-D2. DOI CHUNG sat thuong ri: 80 nhip -> do 0 | D3. don cua QUAI: 80 -> do 0 | D4. Phu thuy an don ky nang: 80 -> do 0 | D5. hat tung khong kem don: 200 lan -> hat duoc 120 (60 %, mong ~55%)
+C2. 40 thien thach THAT, trung 40, danh nga 7 (18 %); thoi gian nga 1.00 s
+D1. 400 don ky nang (moi don mot khung): do 183 = 45.8 % (mong 45%, sai so ~2,5 diem); do ma van chay 0; khong do ma khong chay 0; hinh do don hien 38 lan
+D2. DOI CHUNG sat thuong ri: 80 nhip -> do 0 | D3. don cua QUAI: 80 -> do 0 | D4. Phu thuy an don ky nang: 80 -> do 0 | D5. hat tung khong kem don: 200 lan -> hat duoc 110 (55 %, mong ~55%)
 E. goi quai qua VietQuai/DocQuai: 3 con; doDon True/False/True, co hieu ung 0x3F/0x3F/0x00, chet True
 so loi ghi nhan = 0
