@@ -8693,6 +8693,10 @@ Hỏi lại, người dùng chọn:
   - Menu 55 còn 1 lỗi "không tìm thấy quái để thử" và menu 45 mục 2e "đàn quái không tới khách". Cả hai có sẵn từ khi đợt đầu
     chờ 30 giây: phép thử đo ngay lúc vào trận, lúc ấy chưa có con quái nào (không có quái thì chủ phòng không gửi gói quái).
     Báo cáo menu 55 đã commit cũng ghi đúng lỗi này.
+  - **Đã sửa (cùng ngày, người dùng xin):** hai phép thử gọi `DamBaoCoQuai()` — chưa có quái thì sinh MỘT ĐỢT THẬT bằng
+    `GameDirector.SinhDotQuanhNguoi()` (đánh số cho mạng, đăng ký bảng điểm y như trong trận), báo số quái trước / sau.
+    Menu 45: trước 0, sau 52 con, đàn quái tới kênh 1, 2, 3 — **0 lỗi**. Menu 55: giết một Quỷ dữ thật, bảng điểm "ghế 0 diệt
+    1 quái" — **0 lỗi**.
 
 Ảnh: `PlayTestShots/che_do_doi_ten_hud.png`, `che_do_doi_ket_tran_thang.png`, `che_do_doi_ket_tran_thua.png`, `sanh_doi_sanh.png`,
 `sanh_doi_phong_doi.png`, `sanh_doi_phong_don.png`.

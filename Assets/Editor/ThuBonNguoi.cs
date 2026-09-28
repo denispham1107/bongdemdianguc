@@ -205,6 +205,7 @@ public static class ThuBonNguoi
         Kiem(kenhNhip.Count == 1 && kenhNhip.Contains(3), "tra loi nhip sai kenh");
 
         // 2e. Dan quai cua chu phong toi ca ba nguoi khach
+        yield return DamBaoCoQuai();
         daGui.Clear();
         yield return new WaitForSeconds(0.25f);
         var kenhQuai = new HashSet<int>();
@@ -347,5 +348,22 @@ public static class ThuBonNguoi
 
         if (!string.IsNullOrEmpty(canhCu) && canhCu != Canh)
             EditorApplication.update += TraLaiCanh;
+    }
+
+    /// <summary>
+    /// DOT DAU CHO 30 GIAY (GameDirector.GiayChoDotDau, 13/09/2026) nen luc phep thu do chua co con quai nao - phep do quai
+    /// hong tu do (28/09/2026 moi phat hien). Chua co thi sinh MOT DOT THAT bang chinh duong cua game (danh so cho mang,
+    /// dang ky bang diem), khong dung quai gia.
+    /// </summary>
+    static IEnumerator DamBaoCoQuai()
+    {
+        int co = Object.FindObjectsByType<NhanDangQuai>().Length;
+        if (co == 0 && GameDirector.Instance != null)
+        {
+            GameDirector.Instance.SinhDotQuanhNguoi();
+            for (int i = 0; i < 3; i++) yield return null;
+        }
+        Ghi("   quai trong canh: truoc " + co + " con, sau " + Object.FindObjectsByType<NhanDangQuai>().Length
+            + " con" + (co == 0 ? " (vua sinh mot dot that - dot dau cho 30 giay)" : ""));
     }
 }

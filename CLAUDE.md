@@ -415,8 +415,8 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
   trong `Damageable.TakeDamage`; thêm kỹ năng mới thì dùng hàm này, đừng viết `d == boQua`. `Damageable.doi` gán cho nhân vật mình và
   bản sao (`KhoiDongTranMang.GanDoi`). Xuất phát `ChoXuatPhat.ChoChoDoi` (đồng đội 2,5–6 m, hai đội ≥ 55 m). Gói kết trận 15 byte, byte
   cuối = mã đội thắng (0 = Đơn — mặc định struct). Tên trên đầu màu đội + "ĐỘI A/B"; HUD dòng thứ ba "ĐỘI A (bạn) 2/3 còn sống ·
-  …"; bảng điểm xếp theo đội. Menu 92, 92b kiểm (0 lỗi). ⚠️ Menu 45 mục 2e và menu 55 mục B1b hỏng SẴN từ khi đợt đầu chờ 30 s
-  (đo lúc chưa có quái) — không phải lỗi mạng.
+  …"; bảng điểm xếp theo đội. Menu 92, 92b kiểm (0 lỗi). Menu 45 mục 2e và menu 55 mục B1b từng hỏng vì đợt đầu chờ 30 s (đo lúc
+  chưa có quái) — nay tự sinh một đợt thật (`DamBaoCoQuai`), 0 lỗi. Phép thử mới đo quái cũng phải làm thế.
 - ⚠️ **ĐẶC TÍNH QUÁI** (người dùng 28/09/2026, đặt trong `EnemyFactory.ApDacTinh` lúc sinh — KHÔNG trong prefab): **Quỷ cây** mỗi tia
   15% choáng người chơi 1 s (`EnemyAI.xacSuatChoangTia`, qua `GiatSet.PhongCuaQuai`); **Quỷ dữ** thiên thạch 15% đánh ngã 1 s
   (`xacSuatNgaThienThach`); **Bộ xương** tốc **×1,8225** (1,35 × 1,35 — người dùng xin thêm +35% CỘNG DỒN), **mỗi đòn 35 ở ĐỢT 1**

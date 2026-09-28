@@ -235,6 +235,7 @@ public static class ThuKetTran
              "chu phong khong sinh du ban sao");
 
         // Quai chet vi don cua minh -> phai cong vao bang diem cua ghe 0
+        yield return DamBaoCoQuai();
         Damageable quaiThu = null;
         foreach (var d in Object.FindObjectsByType<Damageable>(FindObjectsSortMode.None))
             if (d != null && !d.isPlayer && !d.IsDead && d.GetComponent<NhanDangQuai>() != null) { quaiThu = d; break; }
@@ -478,5 +479,22 @@ public static class ThuKetTran
         EditorSettings.enterPlayModeOptions = truocOpt;
         EditorApplication.isPlaying = false;
         EditorApplication.update += TraLaiCanh;
+    }
+
+    /// <summary>
+    /// DOT DAU CHO 30 GIAY (GameDirector.GiayChoDotDau, 13/09/2026) nen luc phep thu do chua co con quai nao - phep do quai
+    /// hong tu do (28/09/2026 moi phat hien). Chua co thi sinh MOT DOT THAT bang chinh duong cua game (danh so cho mang,
+    /// dang ky bang diem), khong dung quai gia.
+    /// </summary>
+    static IEnumerator DamBaoCoQuai()
+    {
+        int co = Object.FindObjectsByType<NhanDangQuai>().Length;
+        if (co == 0 && GameDirector.Instance != null)
+        {
+            GameDirector.Instance.SinhDotQuanhNguoi();
+            for (int i = 0; i < 3; i++) yield return null;
+        }
+        Ghi("   quai trong canh: truoc " + co + " con, sau " + Object.FindObjectsByType<NhanDangQuai>().Length
+            + " con" + (co == 0 ? " (vua sinh mot dot that - dot dau cho 30 giay)" : ""));
     }
 }
