@@ -221,7 +221,9 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
   ⚠️ **Cùng tối: GIÓ LỐC ĐỔI SANG MÀU MÂY GIÔNG** (thân lẫn bụi — `MauMayGioLoc`, `MauBuiGioLocToi/Sang`, lấy từ
   `VfxFactory.MauMayGiongSang/Xam`); **Lốc xoáy GIỮ xám trắng** (người dùng thử đổi Lốc xoáy trước rồi bảo nhầm, quay về `2a3450d`).
   Ban đêm bản ấy chìm vào nền → người dùng chọn: **độ đục về lại 0,72 / 0,34 / 0,26 / 0,90** (dòng "thân trong hơn" trên là LỊCH SỬ)
-  + **màu mây ×2,5** (`VfxFactory.HeSoSangMayGioLoc`, chọn sau khi menu 71c quét ×1,5/2/2,5/3) — thân che nền ×1,52 so với bản chìm.
+  + màu mây ×2,5 (chọn sau khi menu 71c quét ×1,5/2/2,5/3). **29/09/2026: đen hơn một chút → ×2,25 cho CẢ thân lẫn bụi**
+  (`VfxFactory.HeSoSangMayGioLoc`; cả cơn lốc đêm ×0,91, ngày ×0,88 so với ×2,5; đêm vẫn nổi hơn bản chìm) và **bụi cuộn dày ×2**
+  (`HeSoBuiDayGioLoc`: 80 hạt/giây, trần 240 — chỉ Gió lốc, bụi chân Lốc xoáy giữ 40 / 120).
 - **MÂY GIÔNG** (`CapDo.KyMayGiong` = 21, `Skills/MayGiong.cs`, hình `Vfx/VfxMayGiong.cs`, hiệu ứng `Combat/ChayDenToanThan.cs`,
   25/09/2026, nhóm **PHONG**, người dùng gửi ảnh mẫu): vùng mây giông ngay chỗ ngắm, tầm **= Sấm sét** (`boltRange` 12), bán kính
   **6 m**; **20 tia trong 5 giây** (0,35 s mây kết + 0,25 s/tia, đếm theo đồng hồ), **65% nhắm kẻ địch** trong vùng như Sấm sét;

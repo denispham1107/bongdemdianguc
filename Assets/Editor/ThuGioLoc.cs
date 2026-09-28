@@ -659,6 +659,16 @@ public static class ThuGioLoc
                 Kiem(dungAnh == 2 && dungMau == 2 && dungKhung == 2, "bui Gio loc khong cung anh bui Loc xoay / khong mau may giong");
                 // DOI CHUNG: Loc xoay KHONG doi theo - bui chan cua no van xam nhat
                 Kiem(buiLx != null && buiLx.main.startColor.colorMin.r > 0.7f, "bui Loc xoay bi doi mau theo (chi Gio loc doi)");
+                // 29/09/2026: bui cuon Gio loc DAY GAP DOI (so hat phun + tran) so voi bui chan Loc xoay that; Loc xoay giu 40 / 120
+                if (buiLx != null)
+                {
+                    float rG = psBui.emission.rateOverTime.constant, rL = buiLx.emission.rateOverTime.constant;
+                    int mG = psBui.main.maxParticles, mL = buiLx.main.maxParticles;
+                    Ghi(string.Format("C. bui cuon Gio loc {0:F0} hat/giay (tran {1}) / bui chan Loc xoay that {2:F0} (tran {3}) = x{4:F2} / x{5:F2}",
+                        rG, mG, rL, mL, rG / Mathf.Max(1e-3f, rL), (float)mG / Mathf.Max(1, mL)));
+                    Kiem(Mathf.Abs(rG / rL - 2f) < 0.01f && mG == 2 * mL, "bui cuon Gio loc khong day gap doi bui Loc xoay");
+                    Kiem(Mathf.Abs(rL - 40f) < 0.01f && mL == 120, "bui chan Loc xoay bi doi theo (chi Gio loc day them)");
+                }
                 Object.Destroy(locThat);
             }
             // Vet gio "goc giam khi len cao" + quay lam goc TANG = vet chay LEN

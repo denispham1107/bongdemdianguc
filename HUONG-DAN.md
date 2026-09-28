@@ -8695,6 +8695,29 @@ sáng hơn một chút để thân nổi lên nền đêm"):
 - **Menu 71: 0 lỗi** — 4/4 lớp vỏ (chia cho 2,5) nằm trong dải màu hai tầng của một đám MÂY GIÔNG THẬT; bụi 2/2 đúng màu (0,33–0,62);
   đối chứng bụi Lốc xoáy vẫn 0,80–0,95.
 
+**Thân đen hơn một chút + bụi cuộn dày đặc hơn** (người dùng 29/09/2026: "cho toàn thân đen hơn 1 chút; cho hiệu ứng bụi khói cuốn lên
+dày đặc hơn nữa" — lúc đầu ghi nhầm là Lốc xoáy rồi sửa lại là Gió lốc; Lốc xoáy KHÔNG đổi):
+- **Bụi cuộn ×2 số hạt** (người dùng chọn): `BuiCuon` 40 → **80 hạt/giây**, trần 120 → **240** (`VfxFactory.HeSoBuiDayGioLoc`), đặt
+  sau khi dựng bằng hàm chung `BuiXamChanLoc` nên bụi chân Lốc xoáy giữ 40 / 120. Vệt bụi `KhoiBui` phía sau giữ nguyên.
+  - Menu 71: 80 / 240 so với bụi chân của một Lốc xoáy THẬT 40 / 120 = ×2,00; đối chứng Lốc xoáy không đổi theo.
+  - Menu 71c đếm hạt đang sống (lốc đứng yên, `AlwaysSimulate` — ngoài khung hình thì đếm ra 0): **183,8 so với 92,8 của lốc đối chứng
+    40 hạt/giây = ×1,98**. Cấp 5 (5 cơn) nên có tới ~920 hạt bụi cuộn cùng lúc; hạt to 2,2–4,7 m.
+- **Đen hơn**: bụi dày phủ gần hết thân nên chỉ hạ màu VỎ thì ảnh hầu như không đổi. Quét màu vỏ (bụi đã dày):
+
+| Màu mây × | Ban ngày: độ sáng thân | Ban đêm: nổi trên nền so bản chìm |
+|---|---|---|
+| 2,5 (trước) | 0,425 | ×1,44 |
+| **2,25** | 0,361 | ×1,13 |
+| 2,0 | 0,336 | ×0,95 |
+| 1,75 | 0,310 | ×0,83 |
+
+  Người dùng chọn **×2,25, và bụi tối theo cùng mức** (`HeSoSangMayGioLoc` 2,5 → 2,25 — hằng này dùng cho cả vỏ lẫn bụi). Ảnh quét
+  `PlayTestShots/gioloc_den_so_sanh.png`.
+- **Menu 71c** đo CẢ CƠN LỐC (có bụi) so với bản ×2,5 dựng lại trong cùng lượt (vỏ + bụi cuộn + vệt bụi, xoá hạt cũ rồi chờ 3,5 s):
+  **đêm 0,370 → 0,336 (×0,91), ngày 0,379 → 0,333 (×0,88)**. Thân vẫn nổi trên nền đêm hơn bản chìm (che nền ×1,26 ≥ 1,05). 0 lỗi.
+  Ảnh trước/sau `PlayTestShots/gioloc_den_truoc_sau.png`.
+- **Menu 71: 0 lỗi** — vỏ chia 2,25 vẫn nằm trong dải màu mây giông thật; bụi 0,29–0,56.
+
 ### Vẽ lại năm icon: Gió lốc, Lốc xoáy, Mây giông, Tốc biến, Hoá lốc xoáy (28/09/2026)
 
 **Người dùng:** năm icon này cũng "quá thô và sơ sài" (lốc chỉ là lò xo, Tốc biến là hai hình người que). Vẽ lại hợp nội dung

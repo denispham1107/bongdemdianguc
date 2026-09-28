@@ -84,7 +84,29 @@ public static class ThuGioLocTrong
         loc.transform.position = P;
         cam.transform.position = P - huong * 9f + Vector3.up * 3.2f;
         cam.transform.LookAt(P + Vector3.up * 1.8f);
-        yield return new WaitForSeconds(2.5f);            // cho bui day
+        // 29/09/2026 BUI DAY x2: DOI CHUNG = mot Gio loc nua, bui cuon tra ve muc cu 40 hat/giay, tran 120 - dat SAU LUNG may quay
+        // (ngoai anh). Ca hai AlwaysSimulate: ngoai khung hinh, culling Automatic dung mo phong va dem ra 0.
+        var locDc = VfxFactory.BuildGioLoc();
+        locDc.name = "TAM_GioLocDoiChung";
+        locDc.transform.position = cam.transform.position - huong * 30f;
+        ParticleSystem buiMoi = null, buiDc = null;
+        foreach (var ps in loc.GetComponentsInChildren<ParticleSystem>()) if (ps.name == "BuiCuon") buiMoi = ps;
+        foreach (var ps in locDc.GetComponentsInChildren<ParticleSystem>()) if (ps.name == "BuiCuon") buiDc = ps;
+        {
+            var m = buiDc.main; m.maxParticles = 120; m.cullingMode = ParticleSystemCullingMode.AlwaysSimulate;
+            var e = buiDc.emission; e.rateOverTime = 40f;
+            var m2 = buiMoi.main; m2.cullingMode = ParticleSystemCullingMode.AlwaysSimulate;
+        }
+        yield return new WaitForSeconds(3.5f);            // cho bui day (doi song hat 1,6 - 3,0 s)
+        {
+            int nMoi = 0, nDc = 0;
+            for (int k = 0; k < 10; k++) { nMoi += buiMoi.particleCount; nDc += buiDc.particleCount; yield return new WaitForSeconds(0.1f); }
+            Ghi(string.Format("BUI DAY: hat bui cuon dang song (tb 10 lan do) moi {0:F1} / doi chung 40 hat/giay {1:F1} = x{2:F2}",
+                nMoi / 10f, nDc / 10f, (float)nMoi / Mathf.Max(1, nDc)));
+            Kiem(nDc > 20, "doi chung: bui cuon khong co hat - phep dem vo nghia");
+            Kiem((float)nMoi / Mathf.Max(1, nDc) > 1.7f, "bui cuon khong day them ~x2");
+        }
+        Object.Destroy(locDc);
 
         var vo = new List<MeshRenderer>();
         foreach (var mr in loc.GetComponentsInChildren<MeshRenderer>()) vo.Add(mr);
@@ -158,47 +180,93 @@ public static class ThuGioLocTrong
         // 28/09/2026 khuya: muc tieu DOI - than MAU MAY GIONG phai NOI len nen dem (nguoi dung chon do duc cu + mau sang hon); chap
         // nhan kho thay bui hon. "Noi" = than che nen NHIEU hon ban doi chung (mau may goc, do duc thap - ban da chim vao nen).
         Kiem(kq["cu"][3] > 0.002f, "doi chung: than khong khac nen chut nao - phep do vo nghia");
-        Kiem(kq["moi"][3] > kq["cu"][3] * 1.5f, "than moi khong noi len nen dem ro hon (it nhat x1,5 so ban chim)");
+        // 29/09/2026: den hon 1 chut (x2,25) - quet do duoc noi x1,13 so ban chim; van phai noi hon ban chim
+        Kiem(kq["moi"][3] > kq["cu"][3] * 1.05f, "than moi khong noi len nen dem hon ban chim (it nhat x1,05)");
 
-        // QUET HE SO SANG (mau may x k, do duc hien tai) - chon muc nho nhat du noi tren nen dem. Anh gioloc_sang_<k>.png
+        // 29/09/2026 (nguoi dung: "cho toan than DEN hon 1 chut", chon x2,25 cho CA THAN LAN BUI sau khi xem anh quet 2,5/2,25/2,0/1,75):
+        // DOI CHUNG = ban truoc x2,5 (vo + bui cuon + vet bui). Do do sang CA CON LOC (co bui) trong vung than, dem lan ngay.
         {
+            var chuyen = Object.FindAnyObjectByType<ChuyenChieuSangDem>();
+            if (chuyen != null) chuyen.enabled = false;
+            Kiem(chuyen != null, "khong tim thay ChuyenChieuSangDem - khong chup duoc anh ban ngay");
+            var heBui = new List<ParticleSystem>();
+            foreach (var ps in loc.GetComponentsInChildren<ParticleSystem>()) if (ps.name == "BuiCuon" || ps.name == "KhoiBui") heBui.Add(ps);
+            var buiGoc = new Dictionary<ParticleSystem, ParticleSystem.MinMaxGradient>();
+            foreach (var ps in heBui) buiGoc[ps] = ps.main.startColor;
             string[] thuTu = { "Vo0", "Vo1", "Vo2", "DaiGio" };
             float[] tMay = { 0f, 0.5f, 1f, 1f };
-            foreach (var k in new[] { 1.5f, 2f, 2.5f, 3f })
+            var sang = new Dictionary<string, float[]>();
+            foreach (var ban in new[] { "truoc", "moi" })
             {
+                float k = ban == "truoc" ? 2.5f : VfxFactory.HeSoSangMayGioLoc;
                 foreach (var mr in vo)
                 {
                     int i = System.Array.IndexOf(thuTu, mr.name); if (i < 0) i = 3;
                     var c = Color.Lerp(VfxFactory.MauMayGiongXam, VfxFactory.MauMayGiongSang, tMay[i]) * k;
                     c.a = VfxFactory.DoDucVoGioLoc[i];
-                    mr.sharedMaterial.SetColor("_TintColor", c);
+                    mr.sharedMaterial.SetColor("_TintColor", ban == "moi" ? mauGoc[mr] : c);
                 }
-                yield return new WaitForSeconds(0.2f);
-                float cheT = 0f; int soK = 0;
-                for (int kk = 0; kk < 8; kk++)
+                foreach (var ps in heBui)
                 {
-                    yield return new WaitForEndOfFrame();
-                    foreach (var r in bui) r.enabled = false;
-                    var khong = Chup(cam, rt, W, H);
-                    foreach (var v in vo) v.enabled = false;
-                    var nen = Chup(cam, rt, W, H);
-                    foreach (var v in vo) v.enabled = true;
-                    foreach (var r in bui) r.enabled = true;
-                    float che = 0f; int n = 0;
-                    for (int y = o.yMin; y < o.yMax; y++)
-                        for (int x = o.xMin; x < o.xMax; x++) { int id = y * W + x; che += Mathf.Abs(Sang(khong[id]) - Sang(nen[id])); n++; }
-                    cheT += che / n; soK++;
-                    yield return new WaitForSeconds(0.1f);
+                    var m = ps.main;
+                    if (ban == "moi") m.startColor = buiGoc[ps];
+                    else
+                    {
+                        var c0 = VfxFactory.MauMayGiongXam * 2.5f; c0.a = 0.70f;
+                        var c1 = VfxFactory.MauMayGiongSang * 2.5f; c1.a = 0.90f;
+                        m.startColor = new ParticleSystem.MinMaxGradient(c0, c1);
+                    }
+                    ps.Clear();                       // hat cu giu mau cu - xoa roi cho hat moi day lai
                 }
-                Ghi(string.Format("QUET: mau may x{0:F1} (do duc {1}) -> than che nen {2:F4} = x{3:F2} so ban chim",
-                    k, string.Join("/", System.Array.ConvertAll(VfxFactory.DoDucVoGioLoc, v => v.ToString("F2"))), cheT / soK, (cheT / soK) / Mathf.Max(1e-6f, kq["cu"][3])));
-                yield return ChupAnh(cam, "PlayTestShots/gioloc_sang_" + k.ToString("F1").Replace(',', '.') + ".png");
+                yield return new WaitForSeconds(3.5f);
+                var kqBan = new float[2];
+                for (int buoi = 0; buoi < 2; buoi++)
+                {
+                    if (chuyen != null) { chuyen.ApGiay(buoi == 0 ? ChuyenChieuSangDem.GiayGiuaDem : ChuyenChieuSangDem.GiayGiuaNgay); yield return null; yield return null; }
+                    float t = 0f;
+                    for (int kk = 0; kk < 10; kk++)
+                    {
+                        yield return new WaitForEndOfFrame();
+                        var px = Chup(cam, rt, W, H);
+                        float a = 0f; int n = 0;
+                        for (int y = o.yMin; y < o.yMax; y++)
+                            for (int x = o.xMin; x < o.xMax; x++) { a += Sang(px[y * W + x]); n++; }
+                        t += a / n;
+                        yield return new WaitForSeconds(0.1f);
+                    }
+                    kqBan[buoi] = t / 10f;
+                    yield return ChupAnh(cam, "PlayTestShots/gioloc_den_" + ban + (buoi == 0 ? "_dem" : "_ngay") + ".png");
+                }
+                if (chuyen != null) { chuyen.ApGiay(ChuyenChieuSangDem.GiayGiuaDem); yield return null; }
+                sang[ban] = kqBan;
+                Ghi(string.Format("{0} (mau may x{1:F2}, ca vo lan bui): do sang ca con loc (co bui) DEM {2:F3}, NGAY {3:F3}",
+                    ban == "moi" ? "MOI" : "DOI CHUNG ban truoc", k, kqBan[0], kqBan[1]));
             }
+            float tlDem = sang["moi"][0] / Mathf.Max(1e-6f, sang["truoc"][0]), tlNgay = sang["moi"][1] / Mathf.Max(1e-6f, sang["truoc"][1]);
+            Ghi(string.Format("=> den hon: dem x{0:F2}, ngay x{1:F2} so ban x2,5", tlDem, tlNgay));
+            Kiem(tlNgay < 0.95f && tlDem < 0.97f, "con loc khong den hon ban x2,5 (ca vo lan bui)");
         }
 
         Object.Destroy(rt);
         Object.Destroy(loc);
         Ket();
+    }
+
+    /// <summary>Do sang trung binh vung than (TAT bui), trung binh 4 lan render.</summary>
+    static float DoSangThan(Camera cam, RenderTexture rt, int W, int H, RectInt o, List<Renderer> bui)
+    {
+        float tong = 0f;
+        foreach (var r in bui) r.enabled = false;
+        for (int k = 0; k < 4; k++)
+        {
+            var px = Chup(cam, rt, W, H);
+            float t = 0f; int n = 0;
+            for (int y = o.yMin; y < o.yMax; y++)
+                for (int x = o.xMin; x < o.xMax; x++) { t += Sang(px[y * W + x]); n++; }
+            tong += t / n;
+        }
+        foreach (var r in bui) r.enabled = true;
+        return tong / 4f;
     }
 
     static Color[] Chup(Camera cam, RenderTexture rt, int W, int H)

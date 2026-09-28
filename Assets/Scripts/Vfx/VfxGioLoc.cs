@@ -120,6 +120,10 @@ public static partial class VfxFactory
         var buiCuon = BuiXamChanLoc(root.transform, "BuiCuon", new Vector3(0f, 0.2f, 0f), CoBuiGioLoc, BanKinhVongBuiGioLoc, 0.5f, true);
         // cung kieu cuon cua Loc xoay nhung MAU MAY GIONG (28/09/2026) - Loc xoay giu bui xam nhat
         var bcm = buiCuon.main; bcm.startColor = new ParticleSystem.MinMaxGradient(MauBuiGioLocToi, MauBuiGioLocSang);
+        // DAY DAC HON (nguoi dung 29/09/2026: "hieu ung bui khoi cuon len day dac hon nua", chon x2 so hat): 40 -> 80 hat/giay,
+        // tran 120 -> 240. Chi Gio loc - bui chan Loc xoay giu 40 / 120 (cung ham BuiXamChanLoc).
+        bcm.maxParticles = Mathf.RoundToInt(bcm.maxParticles * HeSoBuiDayGioLoc);
+        var bce = buiCuon.emission; bce.rateOverTime = bce.rateOverTime.constant * HeSoBuiDayGioLoc;
 
         // Vet bui o lai phia sau duong loc di (khong gian the gioi) - nay cung BUI XAM cua Loc xoay (truoc: khoi den)
         var vet = BuildKhoiBuiLoc(root.transform, 0.55f * HeSoBanKinhGioLoc * 2f);
@@ -168,7 +172,12 @@ public static partial class VfxFactory
 
     /// <summary>Mau may cua Gio loc SANG HON mau may that bao nhieu lan (nguoi dung 28/09/2026: "pha mau may sang hon mot chut de
     /// than noi len nen dem"). Chi Gio loc - dam may May giong giu nguyen.</summary>
-    public const float HeSoSangMayGioLoc = 2.5f;   // x1,5 van chim (noi x1,02) - menu 71c quet 1,5/2/2,5/3, nguoi dung chon 2,5 (noi x1,53)
+    /// <summary>So hat bui cuon quanh chan Gio loc gap bao nhieu lan bui chan Loc xoay (nguoi dung 29/09/2026 chon x2).</summary>
+    public const float HeSoBuiDayGioLoc = 2f;
+
+    public const float HeSoSangMayGioLoc = 2.25f;
+    // ^ x1,5 van chim (noi x1,02) - menu 71c quet 1,5/2/2,5/3, nguoi dung chon 2,5 (noi x1,53). 29/09/2026 nguoi dung: "cho toan than
+    //   den hon 1 chut" - quet 2,5/2,25/2,0/1,75 (bui da day x2), chon 2,25 CHO CA THAN LAN BUI (dem van noi x1,13 so ban chim).
 
     /// <summary>Mau mot lop vo Gio loc: noi tu tang may XAM (t = 0) sang tang may SANG (t = 1) cua May giong.</summary>
     public static Color MauMayGioLoc(float t, float alpha)
