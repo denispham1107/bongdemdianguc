@@ -8603,6 +8603,36 @@ châm cả bia mộ / nhà mồ (tính năng sáng nay), đầy trần "4 vật 
 
 Ảnh: `PlayTestShots/maygiong_1_dem_can.png`, `maygiong_2_chay_den.png`, `maygiong_3_ngay_goc_choi.png`.
 
+### Vẽ lại năm icon: Gió lốc, Lốc xoáy, Mây giông, Tốc biến, Hoá lốc xoáy (28/09/2026)
+
+**Người dùng:** năm icon này cũng "quá thô và sơ sài" (lốc chỉ là lò xo, Tốc biến là hai hình người que). Vẽ lại hợp nội dung
+từng kỹ năng, không cần Blender MCP.
+
+Script `CongCu/Icon/sinh_icon_ve_lai_3.py` dùng lại bộ hàm của hai script trước (mây, cây tia sét, dải màu) và thêm hàm vẽ
+**phễu lốc**:
+- Bán kính theo độ cao r(t) = r_đáy + (r_đỉnh − r_đáy)·t^1,7; trục lắc nhẹ.
+- Mỗi dải gió là một đường xoắn quanh trục, góc TĂNG theo độ cao — MỘT chiều, như `ChieuQuayGioLoc` trong game. Nửa SAU vẽ trước
+  và mờ, nửa TRƯỚC sáng; hai đầu dải mờ dần.
+- Thân phễu trong suốt, đặc ở chân, loãng dần lên trên; vân gió xé bằng nhiễu.
+
+Nội dung từng icon:
+- **Gió lốc:** QUẠT BA cơn lốc nhỏ xám trắng (kỹ năng tung 3 lốc toả 15°), chân có khói bụi nâu đen cuộn, sét xanh nhỏ trong
+  lòng, vệt gió phía sau.
+- **Lốc xoáy:** một phễu khổng lồ 70 dải gió, miệng trên có vành mây cuộn, sét trong lòng (kiểu Giựt sét). Bụi ở chân; mảnh bia
+  mộ và đá bị cuốn bay quanh phễu.
+- **Mây giông:** mây XÁM ĐEN bị sét rọi sáng TỪNG MẢNG ngay chỗ tia phát ra (đúng hình kỹ năng), mưa xối nghiêng, hai tia sét,
+  chớp chạm đất, vòng nước bắn. Khác Sấm sét: mây tím, một tia lớn.
+- **Tốc biến:** ở chỗ cũ, bóng phù thuỷ tan thành hạt tím, để lại hai bóng mờ. Vệt không gian nối sang chỗ mới. Ở chỗ mới, bóng
+  hiện rõ viền sáng tím trắng, khoảng mặt tối trong mũ và đôi mắt; dưới chân là vòng phép, phía trên có cột sáng.
+- **Hoá lốc xoáy:** cơn lốc NHỎ sáng ấm ở giữa (Gió lốc) đang PHÌNH RA thành phễu lớn trong suốt bao quanh (Lốc xoáy). Có ba
+  vòng sóng lan rộng và hai mũi tên phình ra.
+
+Lần vẽ đầu có hai chỗ sai, đã sửa:
+- Tốc biến: bóng thiếu khoảng mặt, bóng mờ nhoè thành khói.
+- Hoá lốc xoáy: sét của phễu lớn lấn át cơn lốc nhỏ, chi tiết chính của icon.
+
+Kiểm bằng `IconKyNang` trong Unity: `PlayTestShots/icon_ve_lai_3_trong_game.png`; 5 ảnh vẫn Read/Write. Menu 66: đủ 22 ô, 0 lỗi.
+
 ### Vẽ lại năm icon: Quả cầu lửa, Mưa băng, Sấm sét, Giựt sét, Quả cầu điện (28/09/2026)
 
 **Người dùng:** năm icon này cũng "quá thô và sơ sài" — vẽ lại hợp nội dung từng kỹ năng, không cần Blender MCP.

@@ -31,6 +31,8 @@ public static class IconKyNang
     public static Texture2D Lua()        { return Ve("Icons/Lua",        new Color(0.30f, 0.09f, 0.03f)); }
     public static Texture2D Bang()       { return Ve("Icons/Bang",       new Color(0.05f, 0.14f, 0.30f)); }
     public static Texture2D Set()        { return Ve("Icons/Set",        new Color(0.08f, 0.06f, 0.22f)); }
+    // Loc, GioLoc, MayGiong, TocBien, HoaLocXoay: VE LAI 28/09/2026 bang script (CongCu/Icon/sinh_icon_ve_lai_3.py, nguoi dung
+    // cho phep khong dung Blender): pheu loc xam trang xoay mot chieu co set trong long, may xam den + mua, bong phu thuy dich chuyen.
     public static Texture2D Loc()        { return Ve("Icons/Loc",        new Color(0.03f, 0.17f, 0.18f)); }
     public static Texture2D ThienThach() { return Ve("Icons/ThienThach", new Color(0.24f, 0.11f, 0.03f)); }
     public static Texture2D Khieng()     { return Ve("Icons/Khieng",     new Color(0.20f, 0.12f, 0.02f)); }
