@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// CHONG DO (DO DON) - Bo xuong co 25% chan dung moi don ky nang cua nguoi choi (nguoi dung 28/09/2026).
+/// CHONG DO (DO DON) - Bo xuong co 45% chan dung moi don ky nang cua nguoi choi (nguoi dung 28/09/2026: 25%, cung ngay len 45%).
 ///
 /// Nguoi dung chon:
 ///   - do duoc thi KHONG mat mau VA KHONG dinh hieu ung nao cua don ay (chay, dong bang, choang, nga, hat tung, cuon, chay den);
@@ -18,8 +18,8 @@ using UnityEngine;
 /// </summary>
 public static class ChongDo
 {
-    /// <summary>Ti le Bo xuong do don ky nang cua nguoi choi.</summary>
-    public const float TiLeBoXuong = 0.25f;
+    /// <summary>Ti le Bo xuong do don ky nang cua nguoi choi (28/09/2026: 0,25 -> 0,45).</summary>
+    public const float TiLeBoXuong = 0.45f;
     /// <summary>Bit "vua do don" trong goi quai giu bat bao lau sau moi lan do.</summary>
     public const float GiayBaoQuaMang = 0.35f;
     /// <summary>Hai lan hien hinh do don cach nhau it nhat (Mua bang 36 hat trung cung mot con - khong chong 36 chu).</summary>

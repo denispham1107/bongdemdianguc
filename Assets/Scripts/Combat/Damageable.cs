@@ -137,7 +137,7 @@ public class Damageable : MonoBehaviour
     /// </summary>
     public static bool LaSatThuongRi;
 
-    /// <summary>Ti le DO DON ky nang cua nguoi choi (Bo xuong 0,25 - dat trong EnemyFactory.ApDacTinh). 0 = khong bao gio do.</summary>
+    /// <summary>Ti le DO DON ky nang cua nguoi choi (Bo xuong 0,45 - dat trong EnemyFactory.ApDacTinh). 0 = khong bao gio do.</summary>
     [System.NonSerialized] public float tiLeDoDon;
     [System.NonSerialized] public int khungGieoDoDon = -1;
     [System.NonSerialized] public bool ketQuaDoDon;

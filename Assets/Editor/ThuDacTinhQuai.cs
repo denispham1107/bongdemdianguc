@@ -8,11 +8,12 @@ using UnityEngine;
 
 /// <summary>
 /// CHAY THU: DAC TINH MOI CUA BA LOAI QUAI (menu 91, nguoi dung 28/09/2026).
-///   A. BO XUONG: toc do x1,8225 (1,35 x 1,35) va sat thuong x1,43 (1,30 x 1,10) so voi PREFAB goc (doc thang prefab, khong doc hang so); do THAT: chay
+///   A. BO XUONG: toc do x1,8225 (1,35 x 1,35) so voi PREFAB goc; sat thuong 55 o dot 1 (goc 55 / 0,65 = 84,6 - GameDirector
+///      nhan 0,65 o dot 1, menu 56 do he so ay tren con sinh THAT cua dot); cu 0,3 s mot don (A4: do thoi diem tung don trung) (doc thang prefab, khong doc hang so); do THAT: chay
 ///      duoi nguoi choi bao nhieu m/s, danh trung mat bao nhieu mau. Doi chung: Phu thuy (khong doi).
 ///   B. QUY CAY: 15% choang 1 giay - phong 200 tia THAT vao nguoi choi, dem choang, doc so giay. Doi chung: tat ti le -> 0.
 ///   C. QUY DU: 15% danh nga 1 giay - doc thien thach THAT no sinh ra (ngaXacSuat / ngaGiay) + goi 40 qua that, dem nga.
-///   D. BO XUONG DO DON 25%: 400 don ky nang (AreaDamage lua co chay) moi don mot khung: dem don khong mat mau; don do thi
+///   D. BO XUONG DO DON 45%: 400 don ky nang (AreaDamage lua co chay) moi don mot khung: dem don khong mat mau; don do thi
 ///      KHONG dinh chay, don khong do thi co chay; hinh qua cau + chu. Doi chung: sat thuong RI (0 do), don cua QUAI (0 do),
 ///      Phu thuy (0 do); hieu ung khong kem don (hat tung) cung bi do ~25%.
 ///   E. GOI TIN: bit "vua do don" qua VietQuai / DocQuai giu nguyen, khong de len 6 bit hieu ung.
@@ -117,13 +118,14 @@ public static class ThuDacTinhQuai
             var pfPhu = GameAssets.EnemyPrefab(MonsterType.Witch).GetComponent<EnemyAI>();
             var bx = Sinh(MonsterType.Skeleton, p + new Vector3(12f, 0f, 0f), pc.transform, "TAM_BoXuong");
             var ph = Sinh(MonsterType.Witch, p + new Vector3(-12f, 0f, 6f), pc.transform, "TAM_PhuThuy");
-            float rT = bx.moveSpeed / pfXuong.moveSpeed, rS = bx.attackDamage / pfXuong.attackDamage;
+            float rT = bx.moveSpeed / pfXuong.moveSpeed, rS = bx.attackDamage * 0.65f;   // 0,65 = sat thuong dot 1 (chep tay, khong doc GameDirector)
             float rT2 = ph.moveSpeed / pfPhu.moveSpeed, rS2 = ph.attackDamage / pfPhu.attackDamage;
-            Ghi(string.Format("A1. Bo xuong: toc {0:F3} / prefab {1:F3} = x{2:F3}; sat thuong {3:F2} / prefab {4:F2} = x{5:F3}; do don {6:P0} | DOI CHUNG Phu thuy x{7:F3} / x{8:F3}, do don {9:P0}",
+            Ghi(string.Format("A1. Bo xuong: toc {0:F3} / prefab {1:F3} = x{2:F3}; sat thuong goc {3:F2} (prefab {4:F2}) -> dot 1 (x0,65) = {5:F2}; do don {6:P0} | DOI CHUNG Phu thuy x{7:F3} / x{8:F3}, do don {9:P0}",
                 bx.moveSpeed, pfXuong.moveSpeed, rT, bx.attackDamage, pfXuong.attackDamage, rS, bx.health.tiLeDoDon, rT2, rS2, ph.health.tiLeDoDon));
             Kiem(Mathf.Abs(rT - 1.8225f) < 0.001f, "Bo xuong toc do khong phai x1,8225 (1,35 x 1,35)");
-            Kiem(Mathf.Abs(rS - 1.43f) < 0.001f, "Bo xuong sat thuong khong phai x1,43 (1,30 x 1,10)");
-            Kiem(Mathf.Abs(bx.health.tiLeDoDon - 0.25f) < 1e-4f, "Bo xuong khong co 25% do don");
+            Kiem(Mathf.Abs(rS - 55f) < 0.01f, "Bo xuong dot 1 khong danh 55");
+            Kiem(Mathf.Abs(bx.health.tiLeDoDon - 0.45f) < 1e-4f, "Bo xuong khong co 45% do don");
+            Kiem(Mathf.Abs(bx.attackCooldown - 0.3f) < 1e-4f && bx.attackAnimTime < 0.3f, "Bo xuong khong dat nhip 0,3 s");
             Kiem(Mathf.Abs(rT2 - 1f) < 1e-4f && Mathf.Abs(rS2 - 1f) < 1e-4f && ph.health.tiLeDoDon == 0f, "Phu thuy bi doi theo (doi chung)");
             Object.Destroy(ph.gameObject);
 
@@ -145,8 +147,22 @@ public static class ThuDacTinhQuai
             bx.RaDonNgay();
             yield return null;
             float mat = m0 - mauPc.health;
-            Ghi(string.Format("A3. Bo xuong danh trung nguoi choi: mat {0:F2} mau (mong {1:F2} = 12 x 1,43)", mat, pfXuong.attackDamage * 1.43f));
-            Kiem(Mathf.Abs(mat - pfXuong.attackDamage * 1.43f) < 0.05f, "Bo xuong danh nguoi choi khong ra x1,43");
+            Ghi(string.Format("A3. Bo xuong (sinh thang, chua nhan he so dot) danh trung nguoi choi: mat {0:F2} mau (mong 55 / 0,65 = {1:F2}; o dot 1 = 55)", mat, 55f / 0.65f));
+            Kiem(Mathf.Abs(mat - 55f / 0.65f) < 0.05f, "Bo xuong danh nguoi choi khong ra muc goc 84,6");
+            mauPc.health = mauPc.maxHealth;
+
+            // A4. NHIP DANH THAT: bat AI canh nguoi choi, ghi thoi diem tung don trung (su kien DaRaDon) trong ~3 s
+            var moc = new List<float>();
+            System.Action<EnemyAI, int, Transform, Vector3> nghe = (e, k, t, q) => moc.Add(Time.time);
+            bx.DaRaDon += nghe;
+            bx.enabled = true;
+            float t4 = Time.time;
+            while (Time.time - t4 < 3.2f) { mauPc.health = mauPc.maxHealth; yield return null; }
+            bx.DaRaDon -= nghe;
+            bx.enabled = false;
+            float nhipTB = moc.Count >= 2 ? (moc[moc.Count - 1] - moc[0]) / (moc.Count - 1) : -1f;
+            Ghi(string.Format("A4. Bo xuong danh THAT trong 3,2 s: {0} don, cach nhau trung binh {1:F3} s (mong 0,3; khung Editor lam tron len toi ~1 khung)", moc.Count, nhipTB));
+            Kiem(nhipTB > 0.28f && nhipTB < 0.34f, "Bo xuong khong danh moi 0,3 giay");
             Object.Destroy(bx.gameObject);
             mauPc.health = mauPc.maxHealth;
         }
@@ -278,9 +294,9 @@ public static class ThuDacTinhQuai
                 yield return null;
             }
             int hien = ChongDo.SoLanHien - hien0;
-            Ghi(string.Format("D1. {0} don ky nang (moi don mot khung): do {1} = {2:P1} (mong 25%, sai so ~2,2 diem); do ma van chay {3}; khong do ma khong chay {4}; hinh do don hien {5} lan",
+            Ghi(string.Format("D1. {0} don ky nang (moi don mot khung): do {1} = {2:P1} (mong 45%, sai so ~2,5 diem); do ma van chay {3}; khong do ma khong chay {4}; hinh do don hien {5} lan",
                 soDon, soDo, (float)soDo / soDon, doMaChay, khongDoMaKhongChay, hien));
-            Kiem((float)soDo / soDon > 0.18f && (float)soDo / soDon < 0.32f, "ti le do don khong phai ~25%");
+            Kiem((float)soDo / soDon > 0.38f && (float)soDo / soDon < 0.52f, "ti le do don khong phai ~45%");
             Kiem(doMaChay == 0, "do duoc don ma van dinh chay");
             Kiem(khongDoMaKhongChay == 0, "khong do ma khong dinh chay - phep do hieu ung vo nghia");
             Kiem(hien >= 1 && hien <= soDo, "hinh do don khong hien / hien nhieu hon so lan do");
@@ -327,12 +343,12 @@ public static class ThuDacTinhQuai
                 yield return null;
             }
             DonDepHieuUng(bx.gameObject);
-            Ghi(string.Format("D2. DOI CHUNG sat thuong ri: 80 nhip -> do {0} | D3. don cua QUAI: 80 -> do {1} | D4. Phu thuy an don ky nang: 80 -> do {2} | D5. hat tung khong kem don: 200 lan -> hat duoc {3} ({4:P0}, mong ~75%)",
+            Ghi(string.Format("D2. DOI CHUNG sat thuong ri: 80 nhip -> do {0} | D3. don cua QUAI: 80 -> do {1} | D4. Phu thuy an don ky nang: 80 -> do {2} | D5. hat tung khong kem don: 200 lan -> hat duoc {3} ({4:P0}, mong ~55%)",
                 doRi, doQuai, doPhu, hatDuoc, hatDuoc / 200f));
             Kiem(doRi == 0, "sat thuong ri bi do");
             Kiem(doQuai == 0, "don cua quai bi Bo xuong do");
             Kiem(doPhu == 0, "Phu thuy lai do don");
-            Kiem(hatDuoc > 120 && hatDuoc < 180, "hieu ung hat tung khong bi do ~25%");
+            Kiem(hatDuoc > 90 && hatDuoc < 130, "hieu ung hat tung khong bi do ~45%");
             Object.Destroy(quaiKhac.gameObject);
             Object.Destroy(bx.gameObject);
         }

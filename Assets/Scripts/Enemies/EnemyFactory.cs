@@ -26,8 +26,14 @@ public static class EnemyFactory
     // ---- DAC TINH MOI (nguoi dung 28/09/2026) - ap LUC SINH, sau prefab, truoc he so dot cua GameDirector (nhan) ----
     /// <summary>Bo xuong: toc do di chuyen +35% roi +35% nua CONG DON (nguoi dung 28/09/2026, chon cong don) = x1,8225 (2,7 -> 4,92 m/s).</summary>
     public const float HeSoTocBoXuong = 1.35f * 1.35f;
-    /// <summary>Bo xuong: sat thuong len nguoi choi +30% roi +10% CONG DON (28/09/2026) = x1,43 (12 -> 17,16).</summary>
-    public const float HeSoSatThuongBoXuong = 1.30f * 1.10f;
+    /// <summary>
+    /// Bo xuong: moi don TRUNG NGUOI CHOI 55 o DOT 1 (nguoi dung 28/09/2026, chon "55 la so trung that o dot 1", roi manh +5% moi
+    /// dot nhu quai khac). GameDirector nhan sat thuong dot 1 x HeSoSatThuongDotDau (0,65) nen muc goc luc sinh = 55 / 0,65 = 84,6.
+    /// (Truoc: x1,30 roi x1,43 so voi 12.)
+    /// </summary>
+    public const float SatThuongBoXuongDot1 = 55f;
+    /// <summary>Bo xuong: cu 0,3 giay danh mot don (nguoi dung 28/09/2026). Nhip = max(hoi chieu, thoi gian vung don) nen dat ca hai.</summary>
+    public const float NhipDanhBoXuong = 0.3f;
     /// <summary>Quy cay: moi tia sam trung nguoi choi 15% choang 1 giay.</summary>
     public const float XacSuatChoangQuyCay = 0.15f, GiayChoangQuyCay = 1f;
     /// <summary>Quy du: moi thien thach 15% danh nga nguoi choi trong vung no, 1 giay.</summary>
@@ -45,7 +51,15 @@ public static class EnemyFactory
         switch (type)
         {
             case MonsterType.Skeleton:
-                if (ai != null) { ai.moveSpeed *= HeSoTocBoXuong; ai.attackDamage *= HeSoSatThuongBoXuong; }
+                if (ai != null)
+                {
+                    ai.moveSpeed *= HeSoTocBoXuong;
+                    ai.attackDamage = SatThuongBoXuongDot1 / GameDirector.HeSoSatThuongDotDau;
+                    ai.attackCooldown = NhipDanhBoXuong;
+                    // Vung don NGAN HON hoi chieu: het don AI mat them 1-2 khung moi vao lai nhanh ra don, dat bang 0,3 thi nhip
+                    // do duoc 0,356 s (menu 91 A4). Ngan hon 0,05 s thi nhip do HOI CHIEU (dem tu luc ra don) quyet dinh.
+                    ai.attackAnimTime = NhipDanhBoXuong - 0.05f;
+                }
                 if (hp != null) hp.tiLeDoDon = ChongDo.TiLeBoXuong;
                 break;
             case MonsterType.QuyCay:

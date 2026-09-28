@@ -8603,6 +8603,31 @@ châm cả bia mộ / nhà mồ (tính năng sáng nay), đầy trần "4 vật 
 
 Ảnh: `PlayTestShots/maygiong_1_dem_can.png`, `maygiong_2_chay_den.png`, `maygiong_3_ngay_goc_choi.png`.
 
+### Bộ xương đánh 55 mỗi 0,3 giây, đỡ đòn 45% (28/09/2026)
+
+**Người dùng:** Bộ xương gây sát thương lên người chơi là 55, cứ 0,3 giây đánh lại, và có 45% đỡ đòn. Hỏi lại thì người dùng
+chọn: **55 là số trúng thật ở đợt 1**, sau đó mạnh thêm 5% mỗi đợt như các quái khác.
+
+- **Sát thương**: `GameDirector` nhân sát thương đợt 1 × 0,65, nên lúc sinh đặt mức gốc = 55 / 0,65 = **84,6**
+  (`EnemyFactory.SatThuongBoXuongDot1`). Đợt 1 ra 55, đợt 2 57,75, đợt 3 60,6… Thay cho ×1,43 của yêu cầu trước.
+- **Nhịp đánh**: một đòn kéo dài bằng lớn hơn trong hai số: hồi chiêu (tính từ lúc ra đòn) và thời gian vung.
+  - Để cả hai là 0,3 thì đo ra **0,356 s**: hết đòn AI mất thêm 1–2 khung mới vào lại nhánh ra đòn.
+  - Nay hồi chiêu `attackCooldown` 0,3, thời gian vung `attackAnimTime` 0,25 (hình vung chạy nhanh cho vừa) → hồi chiêu quyết định.
+- **Đỡ đòn**: `ChongDo.TiLeBoXuong` 0,25 → **0,45**.
+- Tốc độ ×1,8225 giữ nguyên.
+
+**Đo (menu 91, 0 lỗi):**
+- Mức gốc 84,62 × 0,65 = 55,00. Đánh thật (con sinh thẳng, chưa nhân hệ số đợt) mất 84,62.
+  Hệ số 0,65 trên con sinh THẬT của đợt do menu 56 mục B4b đo.
+- Đánh thật trong 3,2 s: 10 đòn, cách nhau trung bình **0,321 s** (khung Editor ~0,03 s).
+- 400 đòn kỹ năng: đỡ 163 = 40,8%. Các lần trước: 47,8%, 40,8%; khoảng ±2,5 điểm quanh 45%, ngưỡng 38–52%.
+  Hất tung không kèm đòn: 52%.
+
+⚠️ **Lỗi có sẵn, chưa sửa (đã báo người dùng):** hệ số đợt chỉ được nhân trên máy **chủ phòng** (`GameDirector.LamManhTheoDot`).
+Bản sao quái trên máy khách sinh bằng `EnemyFactory.Spawn`, không nhân. Mà đòn cận chiến của quái đánh trúng người khách lại
+được máy khách tính bằng `attackDamage` của bản sao (`EnemyAI.DienLaiDon`). Vì thế người khách luôn ăn đòn ở mức gốc: Bộ xương
+đợt 1 đánh người khách **84,6** thay vì 55; mọi quái cận chiến đều lệch ×1 / (0,65 × 1,05^(đợt−1)).
+
 ### Bộ xương nhanh và mạnh thêm nữa; kinh nghiệm giết quái +30% (28/09/2026)
 
 **Người dùng:** Bộ xương tăng thêm 35% tốc độ và 10% sát thương lên người chơi; giết quái được thêm 30% kinh nghiệm. Hỏi lại
