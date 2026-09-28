@@ -137,40 +137,7 @@ public static partial class VfxFactory
         fl.baseIntensity = 2.4f; fl.amount = 0.6f; fl.speed = 14f; fl.rangeWobble = 0.12f;
 
         // ---- Bui xam nhat cuon o chan (anh mau: dam bui xam duoi chan, KHONG phai khoi den) ----
-        var matBui = VatLieuLocXoay("BuiXam", "BuiXam", new Color(0.86f, 0.87f, 0.90f, 0.75f), false);
-        var bui = NewPS("BuiChan", hinh.transform, new Vector3(0f, 0.3f, 0f), matBui, ParticleSystemRenderMode.Billboard);
-        var tsa = bui.textureSheetAnimation;
-        tsa.enabled = true; tsa.mode = ParticleSystemAnimationMode.Grid; tsa.numTilesX = 2; tsa.numTilesY = 2;
-        tsa.animation = ParticleSystemAnimationType.WholeSheet; tsa.timeMode = ParticleSystemAnimationTimeMode.Lifetime;
-        tsa.frameOverTime = new ParticleSystem.MinMaxCurve(0f); tsa.startFrame = new ParticleSystem.MinMaxCurve(0f, 3.99f);
-        var bm = bui.main;
-        bm.startLifetime = new ParticleSystem.MinMaxCurve(1.6f, 3.0f);
-        bm.startSpeed = new ParticleSystem.MinMaxCurve(0.4f, 1.4f);
-        bm.startSize = new ParticleSystem.MinMaxCurve(2.6f * scale, 5.5f * scale);
-        bm.startRotation = new ParticleSystem.MinMaxCurve(0f, Mathf.PI * 2f);
-        bm.startColor = new ParticleSystem.MinMaxGradient(new Color(0.80f, 0.81f, 0.84f, 0.70f), new Color(0.95f, 0.95f, 0.97f, 0.90f));
-        bm.simulationSpace = ParticleSystemSimulationSpace.World;
-        bm.scalingMode = ParticleSystemScalingMode.Hierarchy;
-        bm.maxParticles = 120;
-        bm.gravityModifier = -0.04f;
-        var be = bui.emission; be.rateOverTime = 40f;
-        var bs = bui.shape; bs.shapeType = ParticleSystemShapeType.Circle; bs.radius = 2.0f * scale;
-        var bv = bui.velocityOverLifetime;
-        bv.enabled = true;
-        bv.space = ParticleSystemSimulationSpace.Local;
-        // Ca BA truc cung MOT kieu duong cong (hai hang so) - lech kieu la Unity bo qua ca mo-dun (hat cat Grit ban cu)
-        bv.x = new ParticleSystem.MinMaxCurve(0f, 0f);
-        bv.y = new ParticleSystem.MinMaxCurve(0.5f, 1.6f);
-        bv.z = new ParticleSystem.MinMaxCurve(0f, 0f);
-        bv.orbitalX = new ParticleSystem.MinMaxCurve(0f, 0f);
-        bv.orbitalY = new ParticleSystem.MinMaxCurve(ChieuQuyDaoGioLoc * 2.5f, ChieuQuyDaoGioLoc * 4.5f);
-        bv.orbitalZ = new ParticleSystem.MinMaxCurve(0f, 0f);
-        bv.radial = new ParticleSystem.MinMaxCurve(0.3f, 1.2f);
-        var bc = bui.colorOverLifetime; bc.enabled = true;
-        bc.color = new ParticleSystem.MinMaxGradient(Grad(Color.white, 0f, Color.white, 0.5f, new Color(0.85f, 0.86f, 0.9f), 1f, 0f, 0.85f, 0.55f, 0f));
-        var bz = bui.sizeOverLifetime; bz.enabled = true;
-        bz.size = new ParticleSystem.MinMaxCurve(1f, new AnimationCurve(new Keyframe(0f, 0.6f), new Keyframe(1f, 1.5f)));
-        var br = bui.rotationOverLifetime; br.enabled = true; br.z = new ParticleSystem.MinMaxCurve(-0.8f, 0.8f);
+        BuiXamChanLoc(hinh.transform, "BuiChan", new Vector3(0f, 0.3f, 0f), scale, 2.0f * scale, 1f, false);
 
         return root;
     }
@@ -199,5 +166,66 @@ public static partial class VfxFactory
             arc.branches = Random.Range(3, 6);      // nhieu nhanh chang chit nhu anh mau
             arc.branchLength = 0.42f;
         }
+    }
+
+    /// <summary>Vat lieu bui xam chan loc (anh BuiXam 2x2 cua Loc xoay) - Gio loc dung chung tu 28/09/2026.</summary>
+    public static Material BuiXamMat
+    {
+        get { return VatLieuLocXoay("BuiXam", "BuiXam", new Color(0.86f, 0.87f, 0.90f, 0.75f), false); }
+    }
+
+    /// <summary>Mau bui xam cua Loc xoay - Gio loc dung y het (nguoi dung 28/09/2026: "cung mau, cung hieu ung").</summary>
+    public static readonly Color MauBuiXamToi = new Color(0.80f, 0.81f, 0.84f, 0.70f), MauBuiXamSang = new Color(0.95f, 0.95f, 0.97f, 0.90f);
+
+    /// <summary>Dat 4 dam bui ngau nhien cua anh BuiXam 2x2, khong chay khung (moi hat mot dam).</summary>
+    public static void DatKhungBuiXam(ParticleSystem ps)
+    {
+        var tsa = ps.textureSheetAnimation;
+        tsa.enabled = true; tsa.mode = ParticleSystemAnimationMode.Grid; tsa.numTilesX = 2; tsa.numTilesY = 2;
+        tsa.animation = ParticleSystemAnimationType.WholeSheet; tsa.timeMode = ParticleSystemAnimationTimeMode.Lifetime;
+        tsa.frameOverTime = new ParticleSystem.MinMaxCurve(0f); tsa.startFrame = new ParticleSystem.MinMaxCurve(0f, 3.99f);
+    }
+
+    /// <summary>
+    /// BUI XAM CUON O CHAN LOC - kieu cua Loc xoay (anh mau: dam bui xam duoi chan). Tach ra 28/09/2026 de GIO LOC dung chung
+    /// (nguoi dung: khoi bui den cua Gio loc "cho cung mau cung hieu ung giong skill Loc xoay").
+    /// <paramref name="coHat"/> nhan co hat, <paramref name="banKinhVong"/> vong phun, <paramref name="heSoBay"/> nhan van toc bay len
+    /// (Gio loc thap 5 m so voi 15,7 m). <paramref name="cucBo"/>: Loc xoay di cham 3,4 m/s nen bui o khong gian THE GIOI; Gio loc
+    /// bay 9,5 m/s - bui the gioi se rot lai thanh vet dai sau lung, nen de CUC BO cho bui om chan (vet phia sau da co KhoiBui).
+    /// </summary>
+    public static ParticleSystem BuiXamChanLoc(Transform cha, string ten, Vector3 viTri, float coHat, float banKinhVong, float heSoBay, bool cucBo)
+    {
+        var bui = NewPS(ten, cha, viTri, BuiXamMat, ParticleSystemRenderMode.Billboard);
+        DatKhungBuiXam(bui);
+        var bm = bui.main;
+        bm.startLifetime = new ParticleSystem.MinMaxCurve(1.6f, 3.0f);
+        bm.startSpeed = new ParticleSystem.MinMaxCurve(0.4f * heSoBay, 1.4f * heSoBay);
+        bm.startSize = new ParticleSystem.MinMaxCurve(2.6f * coHat, 5.5f * coHat);
+        bm.startRotation = new ParticleSystem.MinMaxCurve(0f, Mathf.PI * 2f);
+        bm.startColor = new ParticleSystem.MinMaxGradient(MauBuiXamToi, MauBuiXamSang);
+        bm.simulationSpace = cucBo ? ParticleSystemSimulationSpace.Local : ParticleSystemSimulationSpace.World;
+        bm.scalingMode = ParticleSystemScalingMode.Hierarchy;
+        bm.maxParticles = 120;
+        bm.gravityModifier = -0.04f;
+        var be = bui.emission; be.rateOverTime = 40f;
+        var bs = bui.shape; bs.shapeType = ParticleSystemShapeType.Circle; bs.radius = banKinhVong;
+        if (cucBo) { bs.rotation = new Vector3(-90f, 0f, 0f); bs.radiusThickness = 1f; }   // Circle mac dinh dung trong mat XY
+        var bv = bui.velocityOverLifetime;
+        bv.enabled = true;
+        bv.space = ParticleSystemSimulationSpace.Local;
+        // Ca BA truc cung MOT kieu duong cong (hai hang so) - lech kieu la Unity bo qua ca mo-dun (hat cat Grit ban cu)
+        bv.x = new ParticleSystem.MinMaxCurve(0f, 0f);
+        bv.y = new ParticleSystem.MinMaxCurve(0.5f * heSoBay, 1.6f * heSoBay);
+        bv.z = new ParticleSystem.MinMaxCurve(0f, 0f);
+        bv.orbitalX = new ParticleSystem.MinMaxCurve(0f, 0f);
+        bv.orbitalY = new ParticleSystem.MinMaxCurve(ChieuQuyDaoGioLoc * 2.5f, ChieuQuyDaoGioLoc * 4.5f);
+        bv.orbitalZ = new ParticleSystem.MinMaxCurve(0f, 0f);
+        bv.radial = new ParticleSystem.MinMaxCurve(0.3f, 1.2f);
+        var bc = bui.colorOverLifetime; bc.enabled = true;
+        bc.color = new ParticleSystem.MinMaxGradient(Grad(Color.white, 0f, Color.white, 0.5f, new Color(0.85f, 0.86f, 0.9f), 1f, 0f, 0.85f, 0.55f, 0f));
+        var bz = bui.sizeOverLifetime; bz.enabled = true;
+        bz.size = new ParticleSystem.MinMaxCurve(1f, new AnimationCurve(new Keyframe(0f, 0.6f), new Keyframe(1f, 1.5f)));
+        var br = bui.rotationOverLifetime; br.enabled = true; br.z = new ParticleSystem.MinMaxCurve(-0.8f, 0.8f);
+        return bui;
     }
 }

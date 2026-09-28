@@ -112,19 +112,25 @@ public static partial class VfxFactory
             }
         }
 
-        BuildBuiCuonQuanhThan(root.transform);
+        // BUI XAM CUON QUANH CHAN - KIEU LOC XOAY (nguoi dung 28/09/2026: khoi bui den "cho cung mau cung hieu ung giong skill Loc
+        // xoay"; truoc la khoi DEN BuiDenCuon). Ten giu "BuiCuon" (menu 71 doc). Co / vong theo chan MOI (x2): chan Vo1 1,11 m so voi
+        // vo chinh Loc xoay 1,3 m -> co 0,85; bay len x0,5 vi loc chi cao 5 m. Cuc bo de om chan khi loc bay 9,5 m/s.
+        BuiXamChanLoc(root.transform, "BuiCuon", new Vector3(0f, 0.2f, 0f), CoBuiGioLoc, BanKinhVongBuiGioLoc, 0.5f, true);
 
-        // Vet khoi bui den o lai phia sau duong loc di (khong gian the gioi) - cung ham cua Loc xoay, doi sang bui Blender
-        var vet = BuildKhoiBuiLoc(root.transform, 0.55f * HeSoBanKinhGioLoc);
-        var mbd = BuiDenCuonMat;
-        if (mbd != null) vet.GetComponent<ParticleSystemRenderer>().sharedMaterial = mbd;
+        // Vet bui o lai phia sau duong loc di (khong gian the gioi) - nay cung BUI XAM cua Loc xoay (truoc: khoi den)
+        var vet = BuildKhoiBuiLoc(root.transform, 0.55f * HeSoBanKinhGioLoc * 2f);
+        vet.GetComponent<ParticleSystemRenderer>().sharedMaterial = BuiXamMat;
+        DatKhungBuiXam(vet);
         var vm = vet.main; vm.maxParticles = 110;
+        vm.startColor = new ParticleSystem.MinMaxGradient(MauBuiXamToi, MauBuiXamSang);
+        var vcol = vet.colorOverLifetime; vcol.enabled = true;
+        vcol.color = new ParticleSystem.MinMaxGradient(Grad(Color.white, 0f, Color.white, 0.5f, new Color(0.85f, 0.86f, 0.9f), 1f, 0f, 0.7f, 0.45f, 0f));
         var vem = vet.emission; vem.rateOverTime = 20f;
         var vv = vet.velocityOverLifetime;
         vv.orbitalY = new ParticleSystem.MinMaxCurve(ChieuQuyDaoGioLoc * 2.2f, ChieuQuyDaoGioLoc * 4.0f);
 
         // Hat dat cat li ti bi hut quay quanh than
-        BuildDebrisSwarm(root.transform, 0.45f * HeSoBanKinhGioLoc, "Grit", 0.04f, 0.13f, 50f, 110, 2.2f, 4.6f);
+        BuildDebrisSwarm(root.transform, 0.90f * HeSoBanKinhGioLoc, "Grit", 0.04f, 0.13f, 50f, 110, 2.2f, 4.6f);   // chan x2 -> vong cat x2
         var grit = root.transform.Find("Grit").GetComponent<ParticleSystem>();
         var gv = grit.velocityOverLifetime;
         gv.orbitalY = new ParticleSystem.MinMaxCurve(ChieuQuyDaoGioLoc * 7f, ChieuQuyDaoGioLoc * 11f);
@@ -140,8 +146,13 @@ public static partial class VfxFactory
     /// <summary>Dau tia khong qua ti le nay cua ban kinh vo trong cung o cung do cao (con nam trong long loc).</summary>
     public const float TiLeTrongVoGioLoc = 0.85f;
 
-    // Ban kinh vo TRONG CUNG Vo0 cua LocNho.fbx moi 0,5 m do cao, DO tren luoi 17/09/2026 (chua nhan HeSoBanKinhGioLoc)
-    static readonly float[] banKinhVo0 = { 0.41f, 0.42f, 0.445f, 0.48f, 0.53f, 0.67f, 0.87f, 1.05f, 1.30f, 1.54f, 1.85f };
+    // Ban kinh vo TRONG CUNG Vo0 cua LocNho.fbx moi 0,5 m do cao (chua nhan HeSoBanKinhGioLoc). 28/09/2026 THAN TO RA (nguoi
+    // dung: "nhin loc nhu cay kem oc que"): chan x2 (0,413 -> 0,827), to dan deu r = 0,826 + 1,019 (z/5)^1,6, mieng giu 1,845 -
+    // sua trong Blender (CongCu/Blender/gio_loc_than_rong.blend). Bang cu 17/09: 0,41 0,42 0,445 0,48 0,53 0,67 0,87 1,05 1,30 1,54 1,85.
+    static readonly float[] banKinhVo0 = { 0.827f, 0.852f, 0.904f, 0.975f, 1.062f, 1.163f, 1.276f, 1.402f, 1.539f, 1.687f, 1.845f };
+
+    /// <summary>Bui xam chan Gio loc: co hat (so voi Loc xoay) va ban kinh vong phun (m) - theo chan moi.</summary>
+    public const float CoBuiGioLoc = 0.85f, BanKinhVongBuiGioLoc = 1.0f;
 
     /// <summary>Ban kinh vo trong cung (da nhan 1,1) o do cao y tinh tu chan loc.</summary>
     public static float BanKinhVoTrongGioLoc(float y)
@@ -191,49 +202,5 @@ public static partial class VfxFactory
             arc.jitter = i == 0 ? 1.5f : 1.05f;
             arc.branches = i == 0 ? Random.Range(1, 3) : Random.Range(2, 4);
         }
-    }
-
-    /// <summary>
-    /// KHOI BUI DEN CUON QUANH THAN BOC LEN: phun o chan, bay len doc than theo quy dao CUNG CHIEU xoay, no to va loe ra
-    /// theo mieng loc roi tan. Khong gian CUC BO de di theo con loc (vet phia sau da co KhoiBui khong gian the gioi).
-    /// </summary>
-    static void BuildBuiCuonQuanhThan(Transform parent)
-    {
-        var mat = BuiDenCuonMat;
-        var ps = NewPS("BuiCuon", parent, new Vector3(0f, 0.2f, 0f), mat != null ? mat : SmokeMat,
-                       ParticleSystemRenderMode.Billboard);
-        if (mat != null) BatFlipbook(ps, 6, 6, 1);
-        var m = ps.main;
-        m.startLifetime = new ParticleSystem.MinMaxCurve(1.2f, 1.8f);
-        m.startSpeed = new ParticleSystem.MinMaxCurve(0f, 0.2f);
-        m.startSize = new ParticleSystem.MinMaxCurve(0.9f, 1.8f);
-        m.startRotation = new ParticleSystem.MinMaxCurve(0f, Mathf.PI * 2f);
-        // Den dam: 0,07-0,20 tren nen dem chi con vet xam nhat (anh 17/09/2026)
-        m.startColor = new ParticleSystem.MinMaxGradient(new Color(0.02f, 0.018f, 0.016f), new Color(0.09f, 0.08f, 0.07f));
-        m.simulationSpace = ParticleSystemSimulationSpace.Local;
-        m.maxParticles = 90;
-        var em = ps.emission; em.rateOverTime = 44f;
-        var sh = ps.shape; sh.shapeType = ParticleSystemShapeType.Circle; sh.radius = 0.45f * HeSoBanKinhGioLoc; sh.radiusThickness = 1f;
-        sh.rotation = new Vector3(-90f, 0f, 0f);     // vong nam NGANG tren mat dat (Circle mac dinh dung trong mat phang XY)
-
-        var vel = ps.velocityOverLifetime;
-        vel.enabled = true;
-        vel.space = ParticleSystemSimulationSpace.Local;
-        vel.orbitalX = new ParticleSystem.MinMaxCurve(0f, 0f);
-        vel.orbitalY = new ParticleSystem.MinMaxCurve(ChieuQuyDaoGioLoc * 3.5f, ChieuQuyDaoGioLoc * 5.5f);
-        vel.orbitalZ = new ParticleSystem.MinMaxCurve(0f, 0f);
-        vel.radial = new ParticleSystem.MinMaxCurve(0.5f, 1.1f);
-        vel.x = new ParticleSystem.MinMaxCurve(0f, 0f);
-        vel.y = new ParticleSystem.MinMaxCurve(2.6f, 3.6f);
-        vel.z = new ParticleSystem.MinMaxCurve(0f, 0f);
-
-        var sz = ps.sizeOverLifetime; sz.enabled = true;
-        sz.size = new ParticleSystem.MinMaxCurve(1f, new AnimationCurve(new Keyframe(0f, 0.5f), new Keyframe(1f, 1.8f)));
-        var col = ps.colorOverLifetime; col.enabled = true;
-        col.color = new ParticleSystem.MinMaxGradient(Grad(
-            new Color(1f, 1f, 1f), 0f, new Color(0.9f, 0.9f, 0.9f), 0.5f, new Color(0.75f, 0.75f, 0.75f), 1f,
-            0f, 1f, 0.75f, 0f));
-        var rot = ps.rotationOverLifetime; rot.enabled = true;
-        rot.z = new ParticleSystem.MinMaxCurve(-1.2f, -0.4f);
     }
 }

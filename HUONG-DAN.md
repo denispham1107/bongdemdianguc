@@ -8603,6 +8603,50 @@ châm cả bia mộ / nhà mồ (tính năng sáng nay), đầy trần "4 vật 
 
 Ảnh: `PlayTestShots/maygiong_1_dem_can.png`, `maygiong_2_chay_den.png`, `maygiong_3_ngay_goc_choi.png`.
 
+### Gió lốc (kỹ năng): thân dưới to gấp đôi, bụi xám như Lốc xoáy (28/09/2026)
+
+**Người dùng:** thân lốc nhìn "như một cây kem ốc quế" (miệng rộng, thân dưới thuôn thành cuống mảnh). Cho phần thân từ đáy trở lên
+to ra; khói bụi đen cuộn lên thì cho **cùng màu, cùng hiệu ứng như Lốc xoáy**. Làm trong Blender MCP.
+
+Tôi hỏi lại, người dùng chọn:
+- **Chân ×2, thân to dần đều** lên miệng; miệng giữ nguyên.
+- **Đổi hết** khói đen (bụi cuộn quanh chân và vệt phía sau) sang bụi xám của Lốc xoáy.
+- Vùng trúng đòn **giữ 2,42 m** (chỉ đổi hình).
+
+**Lưới (Blender MCP):**
+- Nạp `Vo0/Vo1/Vo2/DaiGio` từ `gio_loc.blend` bằng `libraries.load` vào scene riêng `GioLocRong` (không mở file, không đụng scene đang
+  mở). File này đúng bằng bản trong game: chân Vo1 0,504 m = ×1,68 gốc.
+- Trước khi sửa, xuất thử rồi nhập lại cả bản ấy lẫn `LocNho.fbx` đang dùng để so: lệch 0,000000 m ở cả 4 lưới, cùng số đỉnh, UV, màu
+  đỉnh. Nên xuất lại bằng đúng thiết lập ấy: `axis_forward='-Z', axis_up='Y', bake_space_transform=True, apply_unit_scale=True,
+  mesh_smooth_type='FACE', colors_type='LINEAR'`.
+- Bán kính mới của vỏ trong: r(z) = 0,826 + 1,019·(z/5)^1,6 (chân = 2 × 0,413, miệng 1,845 giữ nguyên). Mọi đỉnh của cả 4 lớp nhân
+  CÙNG hệ số k(z) = r_mới / r_cũ(z) (r_cũ đọc từ 29 vòng của Vo0), k ≥ 1 nên không chỗ nào nhỏ đi: ×2,0 ở 0–1,5 m, ×1,72 ở 2,5 m,
+  ×1,19 ở 4 m, ×1 ở miệng.
+- Bản Blender lưu riêng `CongCu/Blender/gio_loc_than_rong.blend` (`save_as_mainfile(copy=True)`).
+- Bảng `banKinhVo0` trong `VfxGioLoc.cs` (đặt tia sét trong lòng lốc) cập nhật theo.
+
+**Bụi (Unity):**
+- Bụi chân của Lốc xoáy tách thành hàm dùng chung `VfxFactory.BuiXamChanLoc` (ảnh `BuiXam` 2×2, màu xám 0,80–0,95, nở ×0,6 → 1,5,
+  xoáy cùng chiều). Lốc xoáy gọi y như cũ.
+- Gió lốc: `BuiCuon` = hàm ấy với cỡ 0,85, vòng phun 1,0 m, bay lên ×0,5 (lốc chỉ cao 5 m so với 15,7 m).
+  ⚠️ Để CỤC BỘ: Gió lốc bay 9,5 m/s, bụi không gian thế giới sẽ rớt thành vệt dài sau lưng thay vì ôm chân; Lốc xoáy đi 3,4 m/s nên để
+  thế giới.
+- Vệt `KhoiBui` phía sau cũng đổi sang ảnh và màu bụi xám ấy. Vòng hạt cát `Grit` ×2 theo chân.
+- Hàm khói đen cũ `BuildBuiCuonQuanhThan` đã xoá.
+
+**Đo:**
+- **Menu 71: 0 lỗi.**
+  - Chân Vo1 1,008 m (×3,36 gốc = ×2 bản trước), 2,5 m ×1,724, miệng 2,250 = gốc.
+  - Mục mới: bụi Gió lốc so với bụi chân của một Lốc xoáy THẬT dựng ngay trong phép thử (không so với hằng số) → đúng ảnh 2/2, đúng
+    màu 2/2, khung 2×2 2/2. Bụi vẫn bay lên 22/0, xoáy cùng chiều 22/0; vòng phun 1,00 m.
+  - Tia sét vẫn nằm trong vỏ trong cùng 12/12.
+- ⚠️ Lần chạy đầu báo "quái bị hất tung mà đòn vẫn trúng 5/5", dù bộ đếm ngắt báo đủ 5. Nguyên nhân: phép thử đếm đòn trong 0,9 s,
+  mà sáng nay Bộ xương đổi thành 0,3 s một đòn, nên cú MỚI sau khi rơi xuống bị tính vào. Nay chỉ đếm trong đúng 0,5 s bị hất:
+  0/5 trúng, đối chứng không hất 5/5.
+- **Menu 82 (Lốc xoáy): 0 lỗi**, bụi chân vẫn 100% cùng chiều — hàm tách ra không đổi gì ở Lốc xoáy.
+
+Ảnh: `PlayTestShots/gioloc_1_bay.png` … `gioloc_4_cap5_nam_loc_quat.png`.
+
 ### Vẽ lại năm icon: Gió lốc, Lốc xoáy, Mây giông, Tốc biến, Hoá lốc xoáy (28/09/2026)
 
 **Người dùng:** năm icon này cũng "quá thô và sơ sài" (lốc chỉ là lò xo, Tốc biến là hai hình người que). Vẽ lại hợp nội dung

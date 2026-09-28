@@ -211,6 +211,12 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
   Bị hất = khoá như ngã + **ngắt chiêu** (`PlayerController.NgatChieu`, `EnemyAI.NgatDon`). Bit mạng **`CoHatTung` = bit thứ 5**, mặt nạ gói
   người chơi và gói quái đã nới **0x1F** (còn trống bit 7 gói người chơi, bit 6–7 gói quái). Lướt qua lò lửa thì `DapTatRoiChayLai(30)`.
   Icon `python CongCu/Icon/sinh_gio_loc.py`. Menu 71 kiểm, 71b chụp ảnh.
+  ⚠️ **28/09/2026: THÂN DƯỚI TO GẤP ĐÔI** (người dùng: "nhìn như cây kem ốc quế") — Blender MCP, `CongCu/Blender/gio_loc_than_rong.blend`:
+  vỏ trong r = 0,826 + 1,019·(z/5)^1,6 (chân 0,413 → 0,827, miệng giữ 1,845), cả 4 lớp nhân cùng k(z); vùng trúng GIỮ 2,42 m. Xuất lại
+  `LocNho.fbx`: `axis_forward='-Z', axis_up='Y', bake_space_transform=True, apply_unit_scale=True, mesh_smooth_type='FACE',
+  colors_type='LINEAR'` (đã kiểm: xuất lại bản chưa sửa khớp FBX cũ 0,000000 m). **Bụi ĐEN → BỤI XÁM CỦA LỐC XOÁY** (cùng ảnh
+  `BuiXam`, cùng màu, cùng kiểu cuộn — hàm chung `VfxFactory.BuiXamChanLoc`); `BuiCuon` để CỤC BỘ (lốc bay 9,5 m/s), vệt `KhoiBui`
+  cũng bụi xám. Các dòng "khói bụi đen" phía trên là LỊCH SỬ.
 - **MÂY GIÔNG** (`CapDo.KyMayGiong` = 21, `Skills/MayGiong.cs`, hình `Vfx/VfxMayGiong.cs`, hiệu ứng `Combat/ChayDenToanThan.cs`,
   25/09/2026, nhóm **PHONG**, người dùng gửi ảnh mẫu): vùng mây giông ngay chỗ ngắm, tầm **= Sấm sét** (`boltRange` 12), bán kính
   **6 m**; **20 tia trong 5 giây** (0,35 s mây kết + 0,25 s/tia, đếm theo đồng hồ), **65% nhắm kẻ địch** trong vùng như Sấm sét;
