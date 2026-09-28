@@ -8674,6 +8674,27 @@ lên"; trước đó cùng tối đã thử đổi Lốc xoáy rồi người d�
 - ⚠️ Nhược điểm thấy trên ảnh: ban đêm, ở góc chơi, Gió lốc xám đen và trong gần như CHÌM vào nền, chủ yếu còn thấy tia sét.
   Đám mây Mây giông ban đêm cũng vậy (sét rọi mới thấy). Đã báo người dùng để chọn.
 
+**Cho thân nổi lên nền đêm** (người dùng chọn CẢ HAI: "tăng độ đục trở lại mức trước (0,72 / 0,34 / 0,26 / 0,90)" và "pha màu mây
+sáng hơn một chút để thân nổi lên nền đêm"):
+- `DoDucVoGioLoc` về lại **0,72 / 0,34 / 0,26 / 0,90**.
+- Màu vỏ + bụi = màu mây giông × `VfxFactory.HeSoSangMayGioLoc` (vẫn giữ tỉ lệ hai tầng, tức vẫn là màu mây, chỉ sáng hơn).
+- Tôi thử ×1,5 trước ("một chút") — đo ra KHÔNG ĐỦ. Menu 71c quét bốn mức (đối chứng = màu mây gốc, độ đục trong 0,42 / 0,20 / 0,16 /
+  0,70 — bản "chìm"), "thân che nền" so với bản chìm:
+
+| Hệ số sáng | Thân che nền | So bản chìm |
+|---|---|---|
+| ×1,5 | 0,0645 | ×1,01 (không nổi hơn) |
+| ×2,0 | 0,0745 | ×1,16 |
+| **×2,5** | 0,0953 | **×1,49** |
+| ×3,0 | 0,1409 | ×2,20 |
+
+  Người dùng chọn **×2,5** (ảnh `PlayTestShots/gioloc_sang_<hệ số>.png`). Màu tầng sáng ×2,5 ≈ (0,62 0,62 0,72), tầng xám ≈ (0,33 0,35 0,40)
+  — xám xanh như mây giông được sét rọi, không phải xám trắng của Lốc xoáy.
+- **Menu 71c (bản chạy thật): thân che nền 0,0641 → 0,0974 (×1,52)**, độ sáng thân ×1,61, 0% điểm cháy trắng; đổi lại bụi lộ qua vỏ
+  chỉ còn ×0,31 (vỏ đục trở lại — đúng như người dùng đã biết khi chọn). 0 lỗi.
+- **Menu 71: 0 lỗi** — 4/4 lớp vỏ (chia cho 2,5) nằm trong dải màu hai tầng của một đám MÂY GIÔNG THẬT; bụi 2/2 đúng màu (0,33–0,62);
+  đối chứng bụi Lốc xoáy vẫn 0,80–0,95.
+
 ### Vẽ lại năm icon: Gió lốc, Lốc xoáy, Mây giông, Tốc biến, Hoá lốc xoáy (28/09/2026)
 
 **Người dùng:** năm icon này cũng "quá thô và sơ sài" (lốc chỉ là lò xo, Tốc biến là hai hình người que). Vẽ lại hợp nội dung

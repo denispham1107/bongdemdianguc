@@ -7,7 +7,9 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 
 /// <summary>
-/// CHAY THU: THAN GIO LOC TRONG HON, THAY BUI BEN TRONG (nguoi dung 28/09/2026). Menu 71c.
+/// CHAY THU: THAN GIO LOC - DO TRONG / DO NOI TREN NEN DEM (nguoi dung 28/09/2026). Menu 71c.
+/// Khuya 28/09/2026: sau khi doi sang MAU MAY GIONG, than toi + trong chim vao nen dem; nguoi dung chon do duc cu + mau may pha
+/// sang x1,5 -> phep thu nay nay do "than NOI tren nen" (che nen) so voi DOI CHUNG la ban mau may goc do duc thap.
 ///
 /// Dung hinh Gio loc dung yen trong Act2, may quay co dinh, TAT bloom. Moi khung render HAI lan vao cung mot RenderTexture:
 /// co bui (BuiCuon + KhoiBui) va TAT bui. Trong vung than duoi (0 - 2,5 m):
@@ -23,7 +25,9 @@ public static class ThuGioLocTrong
     static bool daBatDau;
     static string canhCu;
     static bool truocBat; static EnterPlayModeOptions truocOpt;
-    static readonly float[] DoDucCu = { 0.72f, 0.34f, 0.26f, 0.90f };
+    // DOI CHUNG (28/09/2026 khuya): ban MAU MAY GIONG goc (he so sang 1) + do duc thap - ban da CHIM vao nen dem
+    static readonly float[] DoDucCu = { 0.42f, 0.20f, 0.16f, 0.70f };
+    static readonly float[] TMayCu = { 0f, 0.5f, 1f, 1f };
 
     [MenuItem("Diablo 2.5D/71c. Do THAN GIO LOC trong (thay bui ben trong)", false, 160)]
     public static void Chay()
@@ -104,15 +108,19 @@ public static class ThuGioLocTrong
         Ghi("vung do (diem anh 640x360): " + o);
 
         var kq = new Dictionary<string, float[]>();
+        // Mau MOI dung nhu code dung ra - cat lai de tra ve sau luot doi chung
+        var mauGoc = new Dictionary<MeshRenderer, Color>();
+        foreach (var mr in vo) mauGoc[mr] = mr.sharedMaterial.GetColor("_TintColor");
         foreach (var ten in new[] { "moi", "cu" })
         {
             float[] doDuc = ten == "moi" ? VfxFactory.DoDucVoGioLoc : DoDucCu;
             string[] thuTu = { "Vo0", "Vo1", "Vo2", "DaiGio" };
             foreach (var mr in vo)
             {
-                int i = System.Array.IndexOf(thuTu, mr.name);
-                var c = mr.sharedMaterial.GetColor("_TintColor");
-                c.a = doDuc[i < 0 ? 3 : i];
+                int i = System.Array.IndexOf(thuTu, mr.name); if (i < 0) i = 3;
+                Color c;
+                if (ten == "moi") c = mauGoc[mr];
+                else { c = Color.Lerp(VfxFactory.MauMayGiongXam, VfxFactory.MauMayGiongSang, TMayCu[i]); c.a = doDuc[i]; }
                 mr.sharedMaterial.SetColor("_TintColor", c);
             }
             yield return new WaitForSeconds(0.3f);
@@ -141,16 +149,52 @@ public static class ThuGioLocTrong
             }
             kq[ten] = new[] { loTong / soKhung, trangTong / soKhung, chayTong / soKhung, cheTong / soKhung };
             Ghi(string.Format("{0} (do duc {1}): bui lo ra {2:F4}, do sang than (tat bui) {3:F3}, diem chay trang {4:P1}, than che nen {5:F4}",
-                ten == "moi" ? "MOI" : "DOI CHUNG cu", string.Join("/", System.Array.ConvertAll(doDuc, v => v.ToString("F2"))),
+                ten == "moi" ? "MOI" : "DOI CHUNG (may goc, trong)", string.Join("/", System.Array.ConvertAll(doDuc, v => v.ToString("F2"))),
                 kq[ten][0], kq[ten][1], kq[ten][2], kq[ten][3]));
             yield return ChupAnh(cam, "PlayTestShots/gioloc_trong_" + ten + ".png");
         }
         Ghi(string.Format("=> bui lo ra x{0:F2}, do sang than x{1:F2}, than che nen x{2:F2}", kq["moi"][0] / Mathf.Max(1e-6f, kq["cu"][0]),
             kq["moi"][1] / Mathf.Max(1e-6f, kq["cu"][1]), kq["moi"][3] / Mathf.Max(1e-6f, kq["cu"][3])));
-        Kiem(kq["cu"][0] > 0.002f, "doi chung: bui khong tao khac biet nao - phep do vo nghia");
-        Kiem(kq["moi"][0] > kq["cu"][0] * 1.2f, "than moi khong lo bui ro hon (it nhat x1,2)");
-        // "Trong hon" = che nen IT hon (dung ca khi vo mau toi may giong: vo toi mong di thi anh SANG len, tieu chi do sang cu sai)
-        Kiem(kq["moi"][3] < kq["cu"][3], "than moi khong trong hon (che nen khong giam)");
+        // 28/09/2026 khuya: muc tieu DOI - than MAU MAY GIONG phai NOI len nen dem (nguoi dung chon do duc cu + mau sang hon); chap
+        // nhan kho thay bui hon. "Noi" = than che nen NHIEU hon ban doi chung (mau may goc, do duc thap - ban da chim vao nen).
+        Kiem(kq["cu"][3] > 0.002f, "doi chung: than khong khac nen chut nao - phep do vo nghia");
+        Kiem(kq["moi"][3] > kq["cu"][3] * 1.5f, "than moi khong noi len nen dem ro hon (it nhat x1,5 so ban chim)");
+
+        // QUET HE SO SANG (mau may x k, do duc hien tai) - chon muc nho nhat du noi tren nen dem. Anh gioloc_sang_<k>.png
+        {
+            string[] thuTu = { "Vo0", "Vo1", "Vo2", "DaiGio" };
+            float[] tMay = { 0f, 0.5f, 1f, 1f };
+            foreach (var k in new[] { 1.5f, 2f, 2.5f, 3f })
+            {
+                foreach (var mr in vo)
+                {
+                    int i = System.Array.IndexOf(thuTu, mr.name); if (i < 0) i = 3;
+                    var c = Color.Lerp(VfxFactory.MauMayGiongXam, VfxFactory.MauMayGiongSang, tMay[i]) * k;
+                    c.a = VfxFactory.DoDucVoGioLoc[i];
+                    mr.sharedMaterial.SetColor("_TintColor", c);
+                }
+                yield return new WaitForSeconds(0.2f);
+                float cheT = 0f; int soK = 0;
+                for (int kk = 0; kk < 8; kk++)
+                {
+                    yield return new WaitForEndOfFrame();
+                    foreach (var r in bui) r.enabled = false;
+                    var khong = Chup(cam, rt, W, H);
+                    foreach (var v in vo) v.enabled = false;
+                    var nen = Chup(cam, rt, W, H);
+                    foreach (var v in vo) v.enabled = true;
+                    foreach (var r in bui) r.enabled = true;
+                    float che = 0f; int n = 0;
+                    for (int y = o.yMin; y < o.yMax; y++)
+                        for (int x = o.xMin; x < o.xMax; x++) { int id = y * W + x; che += Mathf.Abs(Sang(khong[id]) - Sang(nen[id])); n++; }
+                    cheT += che / n; soK++;
+                    yield return new WaitForSeconds(0.1f);
+                }
+                Ghi(string.Format("QUET: mau may x{0:F1} (do duc {1}) -> than che nen {2:F4} = x{3:F2} so ban chim",
+                    k, string.Join("/", System.Array.ConvertAll(VfxFactory.DoDucVoGioLoc, v => v.ToString("F2"))), cheT / soK, (cheT / soK) / Mathf.Max(1e-6f, kq["cu"][3])));
+                yield return ChupAnh(cam, "PlayTestShots/gioloc_sang_" + k.ToString("F1").Replace(',', '.') + ".png");
+            }
+        }
 
         Object.Destroy(rt);
         Object.Destroy(loc);

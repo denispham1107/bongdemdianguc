@@ -220,7 +220,8 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
   0,42 / 0,20 / 0,16 / 0,70 (trước 0,72 / 0,34 / 0,26 / 0,90) — menu 71c đo bụi lộ qua vỏ ×2,06.
   ⚠️ **Cùng tối: GIÓ LỐC ĐỔI SANG MÀU MÂY GIÔNG** (thân lẫn bụi — `MauMayGioLoc`, `MauBuiGioLocToi/Sang`, lấy từ
   `VfxFactory.MauMayGiongSang/Xam`); **Lốc xoáy GIỮ xám trắng** (người dùng thử đổi Lốc xoáy trước rồi bảo nhầm, quay về `2a3450d`).
-  Ban đêm Gió lốc gần như chìm vào nền (chỉ thấy tia sét) — đã báo người dùng.
+  Ban đêm bản ấy chìm vào nền → người dùng chọn: **độ đục về lại 0,72 / 0,34 / 0,26 / 0,90** (dòng "thân trong hơn" trên là LỊCH SỬ)
+  + **màu mây ×2,5** (`VfxFactory.HeSoSangMayGioLoc`, chọn sau khi menu 71c quét ×1,5/2/2,5/3) — thân che nền ×1,52 so với bản chìm.
 - **MÂY GIÔNG** (`CapDo.KyMayGiong` = 21, `Skills/MayGiong.cs`, hình `Vfx/VfxMayGiong.cs`, hiệu ứng `Combat/ChayDenToanThan.cs`,
   25/09/2026, nhóm **PHONG**, người dùng gửi ảnh mẫu): vùng mây giông ngay chỗ ngắm, tầm **= Sấm sét** (`boltRange` 12), bán kính
   **6 m**; **20 tia trong 5 giây** (0,35 s mây kết + 0,25 s/tia, đếm theo đồng hồ), **65% nhắm kẻ địch** trong vùng như Sấm sét;

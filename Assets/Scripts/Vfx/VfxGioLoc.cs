@@ -162,19 +162,25 @@ public static partial class VfxFactory
     /// Do duc (alpha _TintColor) Vo0, Vo1, Vo2, DaiGio. 28/09/2026 than to gap doi thi ba lop chong thanh khoi TRANG DAC, che het bui -
     /// nguoi dung: "cho than trong hon de thay bui ben trong". Truoc: 0,72 / 0,34 / 0,26 / 0,90 (menu 71c giu lam doi chung).
     /// </summary>
-    public static readonly float[] DoDucVoGioLoc = { 0.42f, 0.20f, 0.16f, 0.70f };
+    public static readonly float[] DoDucVoGioLoc = { 0.72f, 0.34f, 0.26f, 0.90f };
+    // ^ 28/09/2026 khuya: doi sang MAU MAY GIONG roi thi than toi + trong (0,42/0,20/0,16/0,70) CHIM vao nen dem -> nguoi dung chon
+    //   TRA do duc ve muc cu (than dac, de thay; kho thay bui ben trong) VA pha mau may sang hon mot chut (HeSoSangMayGioLoc).
+
+    /// <summary>Mau may cua Gio loc SANG HON mau may that bao nhieu lan (nguoi dung 28/09/2026: "pha mau may sang hon mot chut de
+    /// than noi len nen dem"). Chi Gio loc - dam may May giong giu nguyen.</summary>
+    public const float HeSoSangMayGioLoc = 2.5f;   // x1,5 van chim (noi x1,02) - menu 71c quet 1,5/2/2,5/3, nguoi dung chon 2,5 (noi x1,53)
 
     /// <summary>Mau mot lop vo Gio loc: noi tu tang may XAM (t = 0) sang tang may SANG (t = 1) cua May giong.</summary>
     public static Color MauMayGioLoc(float t, float alpha)
     {
-        var c = Color.Lerp(MauMayGiongXam, MauMayGiongSang, t);
+        var c = Color.Lerp(MauMayGiongXam, MauMayGiongSang, t) * HeSoSangMayGioLoc;
         c.a = alpha;
         return c;
     }
 
     /// <summary>Bui cuon + vet bui Gio loc: mau hai tang may giong, do duc 0,70 / 0,90 nhu bui Loc xoay (28/09/2026).</summary>
-    public static Color MauBuiGioLocToi { get { var c = MauMayGiongXam; c.a = 0.70f; return c; } }
-    public static Color MauBuiGioLocSang { get { var c = MauMayGiongSang; c.a = 0.90f; return c; } }
+    public static Color MauBuiGioLocToi { get { var c = MauMayGiongXam * HeSoSangMayGioLoc; c.a = 0.70f; return c; } }
+    public static Color MauBuiGioLocSang { get { var c = MauMayGiongSang * HeSoSangMayGioLoc; c.a = 0.90f; return c; } }
 
     /// <summary>Ban kinh vo trong cung (da nhan 1,1) o do cao y tinh tu chan loc.</summary>
     public static float BanKinhVoTrongGioLoc(float y)

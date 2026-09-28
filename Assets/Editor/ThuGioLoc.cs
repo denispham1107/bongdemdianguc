@@ -604,13 +604,14 @@ public static class ThuGioLoc
             int voTrongDoan = 0, soVoDem = 0;
             foreach (var mf in loc.GetComponentsInChildren<MeshFilter>())
             {
-                var c = mf.GetComponent<MeshRenderer>().sharedMaterial.GetColor("_TintColor");
+                // mau may pha sang x HeSoSangMayGioLoc (nguoi dung chon) -> chia lai roi moi so voi doan mau may that
+                var c = mf.GetComponent<MeshRenderer>().sharedMaterial.GetColor("_TintColor") / VfxFactory.HeSoSangMayGioLoc;
                 bool trong = true;
                 for (int k = 0; k < 3; k++)
                     if (c[k] < Mathf.Min(mayXam[k], maySang[k]) - 0.01f || c[k] > Mathf.Max(mayXam[k], maySang[k]) + 0.01f) trong = false;
                 soVoDem++; if (trong) voTrongDoan++;
             }
-            Ghi(string.Format("C. mau may giong that: tang sang ({0:F2} {1:F2} {2:F2}), tang xam ({3:F2} {4:F2} {5:F2}); {6}/{7} lop Gio loc nam trong doan mau may",
+            Ghi(string.Format("C. mau may giong that: tang sang ({0:F2} {1:F2} {2:F2}), tang xam ({3:F2} {4:F2} {5:F2}); {6}/{7} lop Gio loc (chia he so sang " + VfxFactory.HeSoSangMayGioLoc + ") nam trong doan mau may",
                 maySang.r, maySang.g, maySang.b, mayXam.r, mayXam.g, mayXam.b, voTrongDoan, soVoDem));
             Kiem(maySang.a > 0f && mayXam.a > 0f, "doi chung: khong doc duoc mau may giong that");
             Kiem(soVoDem == 4 && voTrongDoan == 4, "vo Gio loc chua doi sang mau may giong");
@@ -642,8 +643,9 @@ public static class ThuGioLoc
                     var l0 = buiLx.main.startColor.colorMin; var l1 = buiLx.main.startColor.colorMax;
                     bool anhDung = anh != null && anh == anhLx;
                     // 28/09/2026: MAU MAY GIONG (tang xam -> tang sang), do duc nhu bui Loc xoay; anh + kieu cuon van cua Loc xoay
-                    bool mauDung = Mathf.Abs(c0.r - mayXam.r) < 0.01f && Mathf.Abs(c0.b - mayXam.b) < 0.01f
-                                   && Mathf.Abs(c1.r - maySang.r) < 0.01f && Mathf.Abs(c1.b - maySang.b) < 0.01f
+                    float hs = VfxFactory.HeSoSangMayGioLoc;
+                    bool mauDung = Mathf.Abs(c0.r - mayXam.r * hs) < 0.015f && Mathf.Abs(c0.b - mayXam.b * hs) < 0.015f
+                                   && Mathf.Abs(c1.r - maySang.r * hs) < 0.015f && Mathf.Abs(c1.b - maySang.b * hs) < 0.015f
                                    && Mathf.Abs(c0.a - l0.a) < 0.02f && Mathf.Abs(c1.a - l1.a) < 0.02f;
                     var t = ps.textureSheetAnimation;
                     bool khungDung = t.enabled && t.numTilesX == 2 && t.numTilesY == 2;
