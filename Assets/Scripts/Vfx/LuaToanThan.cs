@@ -25,6 +25,11 @@ using UnityEngine;
 /// de shader vao ban build) len moi SkinnedMeshRenderer / MeshRenderer, nhu lop than cua ChayDenToanThan: lua om dung tay,
 /// chan, dau, cu dong theo hoat hinh; vo lua phong ra 7 cm o vien. Khoi billboard lan 2 CHI con lam DOI CHUNG cho menu 90
 /// (<see cref="DoiChungKhoiLua"/>). Tan lua, den giu nguyen (cuc bo); bo khoi.
+/// Lan 4 (28/09/2026, nguoi dung: "boc lua toan than chinh xac; con phai cho thay RO lua dang boc chay va kem IT KHOI bay
+/// len"; chon "ca hai" + "khoi xam den mong tu dau, vai"): lop phu cuon len nhanh hon, uon luon, nhap nhay sang toi
+/// (<see cref="TocDoLua"/>, <see cref="XoanLua"/>, <see cref="NhapNhayLua"/>); them LUOI LUA liem len tu dau, vai, tay (anh
+/// ngon lua don Blender MCP cua lan 1 - Flipbooks/LuaChayNguoi, moi hat chay tron doi tu khung 0) va KHOI XAM DEN MONG boc
+/// tu dau, vai. Ca hai cuc bo theo nguoi (khong bi bo lai khi chay).
 /// Kich thuoc theo chieu cao than do tu XUONG (rig.bodyHeight sai: bo xuong 2,36 m trong khi hinh cao 1,67). Vat khong co
 /// xuong (bia thu) thi dung h, r truyen vao.
 /// </summary>
@@ -49,6 +54,33 @@ public class LuaToanThan : MonoBehaviour
     public static bool DoiChungKhoiLua;
 
     const string DuongVatLieuPhu = "KyNang/Chay/LuaPhuThan";
+    /// <summary>Thong so dong cua lop phu (lan 4). Lan 3: 0,9 / 0 / 0 - phep thu dung lam doi chung.</summary>
+    public const float TocDoLua = 1.5f, XoanLua = 0.35f, NhapNhayLua = 0.45f;
+    /// <summary>Luoi lua liem len moi giay / khoi moi giay (than 1,7 m).</summary>
+    const float LuoiMoiGiay = 34f, KhoiMoiGiay2 = 14f;
+
+    struct DiemLuoi { public Transform x; public float w, r; }
+    readonly List<DiemLuoi> diemLuoi = new List<DiemLuoi>(), diemKhoi = new List<DiemLuoi>();
+    float tongLuoi, tongKhoi, tichLuoi, tichKhoi;
+    ParticleSystem luoi, khoiBoc;
+    public ParticleSystem LuoiLua { get { return luoi; } }
+    public ParticleSystem KhoiBoc { get { return khoiBoc; } }
+    public Transform DinhDau { get { return dauDinh; } }
+
+    static Material mLuoi;
+    static Material LuoiMat
+    {
+        get
+        {
+            if (mLuoi == null)
+            {
+                var tex = VfxFactory.NapFlipbook("LuaChayNguoi");
+                if (tex == null) return null;
+                mLuoi = Mats.FlipbookAdd("P_LuoiLua", tex, Color.white, 1.1f);
+            }
+            return mLuoi;
+        }
+    }
     static Material mPhuGoc;
     Material lopPhu;
     readonly List<Renderer> daPhu = new List<Renderer>();
@@ -111,6 +143,24 @@ public class LuaToanThan : MonoBehaviour
 
         ten.TryGetValue("Hips", out hong);
         ten.TryGetValue("head_end", out dauDinh);
+        // Luoi lua: phan TREN co the (lua boc len tu dau, vai, lung, tay) + it o dau goi
+        ThemDiem(diemLuoi, ref tongLuoi, ten, "Head", 4f, 0.10f);
+        ThemDiem(diemLuoi, ref tongLuoi, ten, "head_end", 2f, 0.06f);
+        ThemDiem(diemLuoi, ref tongLuoi, ten, "neck", 1.5f, 0.10f);
+        ThemDiem(diemLuoi, ref tongLuoi, ten, "LeftArm", 2f, 0.09f);
+        ThemDiem(diemLuoi, ref tongLuoi, ten, "RightArm", 2f, 0.09f);
+        ThemDiem(diemLuoi, ref tongLuoi, ten, "Spine02", 2.5f, 0.15f);
+        ThemDiem(diemLuoi, ref tongLuoi, ten, "Spine01", 1.5f, 0.15f);
+        ThemDiem(diemLuoi, ref tongLuoi, ten, "LeftForeArm", 1.2f, 0.07f);
+        ThemDiem(diemLuoi, ref tongLuoi, ten, "RightForeArm", 1.2f, 0.07f);
+        ThemDiem(diemLuoi, ref tongLuoi, ten, "LeftHand", 1f, 0.06f);
+        ThemDiem(diemLuoi, ref tongLuoi, ten, "RightHand", 1f, 0.06f);
+        ThemDiem(diemLuoi, ref tongLuoi, ten, "LeftLeg", 0.7f, 0.07f);
+        ThemDiem(diemLuoi, ref tongLuoi, ten, "RightLeg", 0.7f, 0.07f);
+        // Khoi: dau, vai
+        ThemDiem(diemKhoi, ref tongKhoi, ten, "Head", 2f, 0.08f);
+        ThemDiem(diemKhoi, ref tongKhoi, ten, "LeftArm", 1f, 0.08f);
+        ThemDiem(diemKhoi, ref tongKhoi, ten, "RightArm", 1f, 0.08f);
         foreach (var n in new[] { "LeftFoot", "RightFoot", "LeftToeBase", "RightToeBase", "Hips", "Head" })
         {
             Transform t;
@@ -216,7 +266,7 @@ public class LuaToanThan : MonoBehaviour
                 quang.Play();
             }
         }
-        else PhuThan();
+        else { PhuThan(); DungLuoiVaKhoi(); }
 
         tan = TaoHe("TanLua", VfxFactory.EmberMat, 40, -7f);
         {
@@ -282,6 +332,7 @@ public class LuaToanThan : MonoBehaviour
             // Goc toa do lua = chan (xuong thap nhat), ngang theo Hips: nhan vat chay thi hoa van lua di theo, khong truot
             lopPhu.SetVector("_Goc", new Vector4(tam.x, day, tam.z, 0f));
             lopPhu.SetFloat("_CaoThan", cao);
+            lopPhu.SetFloat("_ThoiGian", Time.time);
         }
 
         var cam = Camera.main;
@@ -310,6 +361,9 @@ public class LuaToanThan : MonoBehaviour
         if (mPhuGoc == null) return;
         lopPhu = new Material(mPhuGoc);
         lopPhu.name = "P_LuaPhuThan";
+        lopPhu.SetFloat("_TocDo", TocDoLua);
+        lopPhu.SetFloat("_Xoan", XoanLua);
+        lopPhu.SetFloat("_NhapNhay", NhapNhayLua);
         foreach (var r in muc.GetComponentsInChildren<Renderer>())
         {
             if (r == null || !r.enabled) continue;
@@ -326,10 +380,102 @@ public class LuaToanThan : MonoBehaviour
     }
 
     /// <summary>Phep thu: an / hien toan bo hinh lua (lop phu + hat), de chup anh co / khong lua cung mot khung.</summary>
-    public void AnHinh(bool an)
+    public void AnHinh(bool an, bool caHat = true)
     {
         if (lopPhu != null) lopPhu.SetFloat("_Do", an ? 0f : 1f);
-        foreach (var r in GetComponentsInChildren<ParticleSystemRenderer>()) r.enabled = !an;
+        foreach (var r in GetComponentsInChildren<ParticleSystemRenderer>()) r.enabled = !an && caHat;
+    }
+
+    static void ThemDiem(List<DiemLuoi> ds, ref float tong, Dictionary<string, Transform> ten, string n, float w, float r)
+    {
+        Transform t;
+        if (!ten.TryGetValue(n, out t)) return;
+        ds.Add(new DiemLuoi { x = t, w = w, r = r });
+        tong += w;
+    }
+
+    Vector3 ChonDiem(List<DiemLuoi> ds, float tong, float tiLe)
+    {
+        float x = Random.value * tong;
+        int i = 0;
+        for (; i < ds.Count - 1; i++) { x -= ds[i].w; if (x <= 0f) break; }
+        var d = ds[i];
+        Vector3 p = d.x != null ? d.x.position : transform.position;
+        return p + Random.onUnitSphere * d.r * tiLe * Random.Range(0.4f, 1f);
+    }
+
+    void DungLuoiVaKhoi()
+    {
+        float s = Mathf.Clamp(cao / 1.7f, 0.5f, 2.5f);
+        var matLuoi = LuoiMat;
+        luoi = TaoHe("LuoiLua", matLuoi != null ? matLuoi : VfxFactory.FlameMat, 80, -6f);
+        {
+            var m = luoi.main;
+            m.startLifetime = new ParticleSystem.MinMaxCurve(0.45f, 0.7f);
+            m.startSpeed = 0f;
+            m.startRotation = new ParticleSystem.MinMaxCurve(-0.2f, 0.2f);
+            var em = luoi.emission; em.rateOverTime = 0f;       // phat bang tay theo xuong (LateUpdate)
+            if (matLuoi != null)
+            {
+                VfxFactory.BatFlipbook(luoi, 4, 4, 1);
+                var tsa = luoi.textureSheetAnimation; tsa.startFrame = 0f;   // moi luoi lua chay tron doi: bung - liem - tan
+            }
+            var col = luoi.colorOverLifetime; col.enabled = true; col.color = MoVaoMoRa(0.08f, 0.8f);
+            var r = luoi.GetComponent<ParticleSystemRenderer>();
+            r.flip = new Vector3(0.5f, 0f, 0f);
+            r.pivot = new Vector3(0f, 0.30f, 0f);       // chan ngon lua (day anh) nam o diem phat tren than
+            luoi.Play();
+        }
+        var matKhoi = VfxFactory.KhoiCuonMat;
+        khoiBoc = TaoHe("KhoiBoc", matKhoi != null ? matKhoi : VfxFactory.SmokeMat, 45, 5f);
+        {
+            var m = khoiBoc.main;
+            m.startLifetime = new ParticleSystem.MinMaxCurve(1.6f, 2.2f);
+            m.startSpeed = 0f;
+            m.startSize = new ParticleSystem.MinMaxCurve(0.22f * s, 0.36f * s);
+            m.startRotation = new ParticleSystem.MinMaxCurve(0f, 6.28f);
+            // XAM DEN, toi hon nen: quanh nguoi dang chay, dat duoc den lua roi sang (~0,3) - khoi xam 0,2-0,28 trung mau nen,
+            // khong thay (menu 90 muc F2). Khoi chi boc tu dau, vai len cao (khong thanh quang quanh than nhu lop khoi lan 3).
+            m.startColor = new ParticleSystem.MinMaxGradient(new Color(0.05f, 0.045f, 0.04f, 0.38f), new Color(0.10f, 0.09f, 0.08f, 0.52f));
+            if (matKhoi != null) VfxFactory.BatFlipbook(khoiBoc, 6, 6, 1);
+            var em = khoiBoc.emission; em.rateOverTime = 0f;
+            var col = khoiBoc.colorOverLifetime; col.enabled = true; col.color = MoVaoMoRa(0.12f, 0.35f);
+            var sol = khoiBoc.sizeOverLifetime; sol.enabled = true;
+            sol.size = new ParticleSystem.MinMaxCurve(1f, new AnimationCurve(new Keyframe(0f, 0.5f), new Keyframe(1f, 3.2f)));
+            var rot = khoiBoc.rotationOverLifetime; rot.enabled = true; rot.z = new ParticleSystem.MinMaxCurve(-0.6f, 0.6f);
+            khoiBoc.Play();
+        }
+    }
+
+    void PhatLuoiVaKhoi()
+    {
+        if (luoi == null) return;
+        float s = Mathf.Clamp(cao / 1.7f, 0.5f, 2.5f);
+        float dt = Time.deltaTime;
+        var ep = new ParticleSystem.EmitParams();
+        tichLuoi += LuoiMoiGiay * s * s * dt;
+        int n = Mathf.Min(Mathf.FloorToInt(tichLuoi), 10);
+        tichLuoi -= Mathf.FloorToInt(tichLuoi);
+        for (int i = 0; i < n && diemLuoi.Count > 0; i++)
+        {
+            ep.position = transform.InverseTransformPoint(ChonDiem(diemLuoi, tongLuoi, s));
+            // Luoi lua to, boc nhanh: nho hon 0,4 m thi chim vao lop lua sang tren than, khong con thay "dang boc chay"
+            ep.startSize = Random.Range(0.38f, 0.60f) * s;
+            ep.velocity = new Vector3(Random.Range(-0.08f, 0.08f), Random.Range(0.6f, 1.0f) * s, Random.Range(-0.08f, 0.08f));
+            luoi.Emit(ep, 1);
+        }
+        var ek = new ParticleSystem.EmitParams();
+        tichKhoi += KhoiMoiGiay2 * s * dt;
+        int k = Mathf.Min(Mathf.FloorToInt(tichKhoi), 4);
+        tichKhoi -= Mathf.FloorToInt(tichKhoi);
+        for (int i = 0; i < k && diemKhoi.Count > 0; i++)
+        {
+            // Sinh o dinh luoi lua (0,25 m tren dau / vai), hat nho day: thanh lan khoi lien tu ngon lua boc len. Sinh thap
+            // (0,15) thi khoi chim sau luoi lua sang; sinh 0,4 m + hat to thi thanh cuc den roi lo lung cach dau ~1 m.
+            ek.position = transform.InverseTransformPoint(ChonDiem(diemKhoi, tongKhoi, s) + Vector3.up * 0.25f * s);
+            ek.velocity = new Vector3(Random.Range(-0.15f, 0.15f), Random.Range(0.8f, 1.2f) * s, Random.Range(-0.15f, 0.15f));
+            khoiBoc.Emit(ek, 1);
+        }
     }
 
     public Light Den { get { return den; } }
@@ -354,5 +500,6 @@ public class LuaToanThan : MonoBehaviour
     {
         if (muc == null) { Destroy(gameObject); return; }
         BamThan();
+        PhatLuoiVaKhoi();
     }
 }

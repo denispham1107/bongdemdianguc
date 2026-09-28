@@ -400,7 +400,9 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
   vật liệu gốc `Resources/KyNang/Chay/LuaPhuThan.mat` để vào bản build, mỗi kẻ một bản sao) lên mọi Skinned/MeshRenderer như lớp than
   `ChayDenToanThan`; lượt 1 lửa trên da, lượt 2 vỏ phồng 7 cm chỉ hiện ở viền. Hoa văn Blender MCP `KyNang/Chay/LuaPhuThan.png` (lặp
   liền mạch; R sọc, G đám, B nứt), toạ độ = trục phải máy quay × độ cao thân, trừ `_Goc` (hông / xương thấp nhất mỗi khung) → chạy không
-  trượt. **Không có khói** (khói xám làm sáng nền đêm thành quầng ngoài viền). Khối billboard lần 2 chỉ còn là đối chứng (`DoiChungKhoiLua`).
+  trượt. Lần 4 (người dùng: "thấy rõ đang bốc cháy + ít khói"): lớp phủ uốn lượn + nhấp nháy (`TocDoLua/XoanLua/NhapNhayLua`, đồng hồ riêng
+  `_ThoiGian` thay `_Time.y`), **lưỡi lửa** (ảnh ngọn lửa đơn `Flipbooks/LuaChayNguoi`) liếm lên từ đầu/vai/tay, **khói xám ĐEN mỏng** sinh ở đỉnh
+  lưỡi lửa (khói xám sáng làm quầng quanh thân / chìm vào nền được ánh lửa rọi). Khối billboard lần 2 chỉ còn là đối chứng (`DoiChungKhoiLua`).
   Hết chạy / bị gỡ: xoá ngay, gỡ đúng lớp của mình. **Nhịp cháy không phun tia trúng đòn** (`Damageable.BoQuaTiaTrungDon`).
   ⚠️ `BurningEffect.Apply` mắc bẫy AddComponent: cháy luôn ≥ 4 s và ≥ 6 máu/giây — CHƯA sửa, đã hỏi người dùng.
   Menu 90 kiểm bằng ẢNH (bóng thân trắng đặc lớp 31 + nới 14 px; TẮT bloom; tính theo DIỆN TÍCH): 99–100% lửa trong viền, đối chứng 69%.

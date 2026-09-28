@@ -8603,6 +8603,37 @@ châm cả bia mộ / nhà mồ (tính năng sáng nay), đầy trần "4 vật 
 
 Ảnh: `PlayTestShots/maygiong_1_dem_can.png`, `maygiong_2_chay_den.png`, `maygiong_3_ngay_goc_choi.png`.
 
+### Bị cháy, lần 4: thấy rõ lửa đang bốc, kèm ít khói (28/09/2026)
+
+**Người dùng:** lớp lửa lần 3 bọc thân chính xác; còn thiếu cảm giác **lửa đang bốc cháy** và **ít khói bay lên**. Họ chọn:
+- "cả hai": lửa trên thân động hơn VÀ lưỡi lửa liếm lên khỏi đầu, vai, tay;
+- "khói xám đen mỏng từ đầu, vai".
+
+**Cách sửa:**
+- **Lửa trên thân động hơn.**
+  - Shader `LuaPhuThan` thêm `_Xoan` (lưỡi lửa uốn lượn ngang theo đám G trôi nhanh) và `_NhapNhay` (từng mảng thân bùng
+    sáng / lụi xuống).
+  - Tốc độ bốc lên 0,9 → 1,5. Giá trị đặt từ code (`LuaToanThan.TocDoLua / XoanLua / NhapNhayLua`), không để trong `.mat`.
+  - Shader dùng đồng hồ riêng `_ThoiGian` (code đặt = `Time.time` mỗi khung) thay `_Time.y`. Nhờ đó phép thử vẽ được hai
+    thời điểm chính xác trong cùng một khung.
+- **Lưỡi lửa liếm lên**, dùng lại ảnh ngọn lửa đơn Blender MCP của lần 1 (`Flipbooks/LuaChayNguoi`, lấy lại từ git).
+  - 34 lưỡi/giây phát từ đầu, đỉnh đầu, cổ, vai, lưng, tay, đầu gối. Mỗi lưỡi chạy trọn đời từ khung 0.
+  - Cỡ 0,38–0,60 m, bốc 0,6–1,0 m/s, mô phỏng cục bộ theo người.
+  - Nhỏ hơn 0,4 m thì lưỡi lửa chìm vào lớp lửa sáng trên thân, không thấy.
+- **Khói xám đen mỏng**: 14 hạt/giây, sinh ở đỉnh lưỡi lửa (0,25 m trên đầu, vai), nhỏ rồi nở ×3,2, alpha 0,38–0,52.
+  - Hai lần thử hỏng:
+    - Khói xám 0,2–0,28 cùng màu nền đất đang được ánh lửa rọi sáng: không thấy.
+    - Sinh cao 0,4 m với hạt to thì thành những cục đen rời, lơ lửng cách đầu 1 m.
+
+**Đo (menu 90, 0 lỗi):**
+- Mục F: 19 lưỡi lửa, 8 lưỡi liếm cao quá đỉnh đầu (cao nhất vượt 0,72 m); 25 làn khói.
+- Mục F2: bật/tắt riêng lớp khói làm đổi 5 457 điểm ảnh (2,1% ảnh), mỗi điểm lệch trung bình 0,059 độ sáng.
+- Mục F3: vẽ lớp lửa ở hai thời điểm cách đúng 0,05 s, trung bình 6 cặp. Độ sáng đổi 0,156, đối chứng thông số lần 3 trên
+  cùng vật liệu là 0,071, tức **×2,20**.
+  - Lần đầu để thời gian trôi theo khung Editor thật (0,04–0,1 s, dài ngắn khác nhau) thì số liệu đảo cả chiều.
+- Lớp lửa trên thân vẫn 100% nằm trong viền, phủ 96–99% thân. Chạy vẫn bám theo người, tắt ngay, 0 tia trúng đòn.
+- Ảnh: `lua_chay_boc_gan.png`, `lua_chay_goc_choi.png`.
+
 ### Bị cháy, lần 3: lửa cháy lan trên chính thân, nằm gọn trong viền người (28/09/2026)
 
 **Người dùng (ảnh, khoanh đường đỏ sát quanh nhân vật):** khối lửa lần 2 đã tốt, nhưng muốn lửa **đốt lan khắp người**, cháy

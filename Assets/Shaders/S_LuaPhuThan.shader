@@ -21,6 +21,9 @@ Shader "Diablo25D/LuaPhuThan"
         _CaoThan ("Chieu cao than (m)", Float) = 1.7
         _DoPhong ("Vo lua phong ra (m)", Float) = 0.07
         _TocDo ("Toc do lua boc len", Float) = 0.9
+        _Xoan ("Do uon luon cua luoi lua", Float) = 0
+        _NhapNhay ("Do nhap nhay sang toi", Float) = 0
+        _ThoiGian ("Dong ho lua (LuaToanThan dat = Time.time moi khung)", Float) = 0
     }
     SubShader
     {
@@ -29,7 +32,9 @@ Shader "Diablo25D/LuaPhuThan"
         CGINCLUDE
         #include "UnityCG.cginc"
         sampler2D _MainTex;
-        float _Do, _SangLua, _CaoThan, _DoPhong, _TocDo;
+        float _Do, _SangLua, _CaoThan, _DoPhong, _TocDo, _Xoan, _NhapNhay;
+        // Dong ho RIENG thay _Time.y: phep thu (menu 90) ve hai thoi diem chinh xac trong CUNG mot khung
+        float _ThoiGian;
         float4 _Goc;
 
         struct appdata { float4 vertex : POSITION; float3 normal : NORMAL; };
@@ -61,10 +66,18 @@ Shader "Diablo25D/LuaPhuThan"
 
         float Nhiet(float2 q, float t)
         {
+            // Uon luon: lech ngang theo dam G troi nhanh -> luoi lua lac lu, liem len (lan 4, nguoi dung: "cho thay ro lua
+            // dang boc chay" - ban lan 3 soc lua troi deu nhu mot tam anh truot)
+            float lech = (tex2D(_MainTex, float2(q.x * 0.7 + 0.11, q.y * 0.6 - t * _TocDo * 0.8)).g - 0.5) * _Xoan;
+            q.x += lech * (0.4 + saturate(q.y));
             float s1 = tex2D(_MainTex, float2(q.x * 1.6, q.y * 0.55 - t * _TocDo * 0.55)).r;
             float s2 = tex2D(_MainTex, float2(q.x * 0.9 + 0.37, q.y * 0.40 - t * _TocDo * 0.33)).g;
             float s3 = tex2D(_MainTex, float2(-q.x * 2.3 + 0.61, q.y * 0.9 - t * _TocDo * 0.9)).r;
-            return s1 * 0.55 + s2 * 0.45 + s3 * 0.30 - 0.55;
+            float h = s1 * 0.55 + s2 * 0.45 + s3 * 0.30 - 0.55;
+            // Nhap nhay: tung mang than bung sang / lu xuong theo nhip nhanh (dam G, toa do thap, troi nhanh)
+            float nhip = tex2D(_MainTex, float2(q.x * 0.35 + 0.53, q.y * 0.25 - t * _TocDo * 1.4)).g;
+            h *= 1.0 + (nhip - 0.5) * 2.0 * _NhapNhay;
+            return h;
         }
         ENDCG
 
@@ -94,7 +107,7 @@ Shader "Diablo25D/LuaPhuThan"
 
             fixed4 frag (v2f i) : SV_Target
             {
-                float t = _Time.y;
+                float t = _ThoiGian;
                 float3 n = normalize(i.nrm);
                 float3 vd = normalize(_WorldSpaceCameraPos - i.wpos);
                 float rim = 1.0 - saturate(dot(n, vd));
@@ -130,7 +143,7 @@ Shader "Diablo25D/LuaPhuThan"
                 float3 n = UnityObjectToWorldNormal(v.normal);
                 float v01;
                 float2 q = ToaDoLua(w, v01);
-                float t = _Time.y;
+                float t = _ThoiGian;
                 float soc = tex2Dlod(_MainTex, float4(q.x * 1.6, q.y * 0.55 - t * _TocDo * 0.55, 0, 0)).r;
                 // phong theo phap tuyen (dao dong theo soc lua) + nhoc len tren (lua boc len)
                 w += n * _DoPhong * (0.45 + soc * 0.9);
@@ -145,7 +158,7 @@ Shader "Diablo25D/LuaPhuThan"
 
             fixed4 frag (v2f i) : SV_Target
             {
-                float t = _Time.y;
+                float t = _ThoiGian;
                 float3 n = normalize(i.nrm);
                 float3 vd = normalize(_WorldSpaceCameraPos - i.wpos);
                 float rim = pow(1.0 - saturate(dot(n, vd)), 1.6);
