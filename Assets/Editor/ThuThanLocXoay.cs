@@ -263,6 +263,21 @@ public static class ThuThanLocXoay
         if (ls.Count > 0) lech = ls[ls.Count / 2];
     }
 
+    /// <summary>Dem hat dang song co do cao (so voi goc loc) tu 0 den caoToi.</summary>
+    static int DemDuoi(ParticleSystem ps, Transform goc, float caoToi)
+    {
+        var hat = new ParticleSystem.Particle[ps.particleCount];
+        int n = ps.GetParticles(hat), dem = 0;
+        bool cucBo = ps.main.simulationSpace == ParticleSystemSimulationSpace.Local;
+        for (int i = 0; i < n; i++)
+        {
+            Vector3 w = cucBo ? ps.transform.TransformPoint(hat[i].position) : hat[i].position;
+            float y = goc.InverseTransformPoint(w).y;
+            if (y >= 0f && y <= caoToi) dem++;
+        }
+        return dem;
+    }
+
     static float Goc(Vector3 v) { return Mathf.Atan2(v.z, v.x) * Mathf.Rad2Deg; }
     static float Boc(float d) { while (d > 180f) d -= 360f; while (d < -180f) d += 360f; return d; }
 
@@ -436,7 +451,45 @@ public static class ThuThanLocXoay
         // DOI CHUNG: lop moi phai len cao hon han bui chan cu (lan dau dat nguong tuyet doi 40% / 60% than - bui chan cu do duoc
         // 48% / 62%: nguong ay khong noi gi ve viec phep do phan biet duoc hai lop; so sanh tuong doi moi la dieu can chung minh)
         Kiem(h90L > 1.4f * h90C, "DOI CHUNG: bui chan cu len cao ngang lop moi - phep do khong phan biet duoc");
-        Kiem(Mathf.Abs(tocLen + tocChan - 120f) < 0.5f, "tong bui Loc xoay khong phai 120 hat/giay (x3)");
+        // B5 (29/09/2026, nguoi dung khoanh THAN DUOI tren anh: "khoi cuon len va bui day dac hon nua"; chon them lop than duoi + bui
+        // chan x2): lop BuiThanDuoi chi toi nua than, bui chan 80. DOI CHUNG CUNG LUOT: con loc thu hai dat ve CAU HINH CU (tat
+        // BuiThanDuoi, bui chan 40 / 120) - dem hat that o NUA THAN DUOI ca hai con.
+        ParticleSystem psDuoi = null;
+        foreach (var ps in loc.GetComponentsInChildren<ParticleSystem>(true)) if (ps.name == "BuiThanDuoi") psDuoi = ps;
+        float tocDuoi = psDuoi != null ? psDuoi.emission.rateOverTime.constant : 0f;
+        float h90D, hMaxD, lechD; int nD;
+        DoBuiTheoCao(psDuoi, loc.transform, 0.5f * caoLx, vo, out h90D, out hMaxD, out lechD, out nD);
+        Ghi(string.Format("B5. lop than duoi: {0} hat, cao 90% {1:F2} m, cao nhat {2:F2} m (nua than {3:F1}), lech ban kinh {4:P0}; so hat/giay chan {5:F0} + cuon len {6:F0} + than duoi {7:F0} = {8:F0}",
+            nD, h90D, hMaxD, 0.5f * caoLx, lechD, tocChan, tocLen, tocDuoi, tocChan + tocLen + tocDuoi));
+        Kiem(psDuoi != null && nD > 100, "khong co lop khoi than duoi tren con loc that");
+        Kiem(h90D > 0.7f * 0.5f * caoLx && hMaxD < 0.75f * caoLx, "lop than duoi khong nam o nua than duoi");
+        Kiem(lechD < 0.35f, "lop than duoi khong om theo than");
+        Kiem(Mathf.Abs(tocChan - 80f) < 0.5f && psChanDo.main.maxParticles == 240, "bui chan Loc xoay khong gap doi (80 / 240)");
+        Kiem(Mathf.Abs(tocChan + tocLen + tocDuoi - 240f) < 0.5f, "tong bui Loc xoay khong phai 240 hat/giay");
+        {
+            var loc2 = ThaLoc(tam + huong * 40f, maskEnemy);
+            yield return null; yield return null;
+            ParticleSystem d2 = null, c2 = null;
+            foreach (var ps in loc2.GetComponentsInChildren<ParticleSystem>(true))
+            {
+                if (ps.name == "BuiThanDuoi") d2 = ps;
+                if (ps.name == "BuiChan") c2 = ps;
+                var m = ps.main; m.cullingMode = ParticleSystemCullingMode.AlwaysSimulate;
+            }
+            foreach (var ps in loc.GetComponentsInChildren<ParticleSystem>(true)) { var m = ps.main; m.cullingMode = ParticleSystemCullingMode.AlwaysSimulate; }
+            if (d2 != null) { var e = d2.emission; e.enabled = false; d2.Clear(); }
+            if (c2 != null) { var m = c2.main; m.maxParticles = 120; var e = c2.emission; e.rateOverTime = 40f; }
+            yield return new WaitForSeconds(4.5f);
+            int demMoi = 0, demCu = 0;
+            foreach (var ps in loc.GetComponentsInChildren<ParticleSystem>(true))
+                if (ps.name == "BuiChan" || ps.name == "BuiCuonLen" || ps.name == "BuiThanDuoi") demMoi += DemDuoi(ps, loc.transform, 0.5f * caoLx);
+            foreach (var ps in loc2.GetComponentsInChildren<ParticleSystem>(true))
+                if (ps.name == "BuiChan" || ps.name == "BuiCuonLen" || ps.name == "BuiThanDuoi") demCu += DemDuoi(ps, loc2.transform, 0.5f * caoLx);
+            Ghi(string.Format("B5. hat bui dang song o NUA THAN DUOI (0 - {0:F1} m): moi {1} / cau hinh cu cung luot {2} = x{3:F2}", 0.5f * caoLx, demMoi, demCu, (float)demMoi / Mathf.Max(1, demCu)));
+            Kiem(demCu > 50, "doi chung: con loc cau hinh cu khong co bui - phep dem vo nghia");
+            Kiem((float)demMoi / Mathf.Max(1, demCu) > 1.8f, "nua than duoi khong day dac hon ro (it nhat x1,8)");
+            Object.Destroy(loc2.gameObject);
+        }
 
         // ================= F. VUNG HUT =================
         float r7 = loc.FunnelRadiusAt(7f);

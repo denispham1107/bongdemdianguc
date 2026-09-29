@@ -8944,6 +8944,22 @@ Người dùng chọn:
 - Menu 71c (độ đen thân Gió lốc) phải tính cả lớp mới, ở chỗ tắt bụi lẫn chỗ dựng bản đối chứng ×2,5. Bỏ sót thì lớp ấy giữ ×2,25 ở CẢ
   HAI bản và pha loãng chênh lệch: đo ra ×0,98 thay vì ×0,91 → báo lỗi oan. Sửa xong: cả cơn lốc đêm ×0,88, ngày ×0,90 so với bản
   ×2,5; thân vẫn nổi trên nền đêm ×1,30 so với bản chìm; bụi chân dày ×1,92. **Menu 71c: 0 lỗi.**
+
+**Lốc xoáy — thân dưới dày đặc hơn nữa** (cùng ngày; người dùng gửi ảnh khoanh phần THÂN DƯỚI: "khói cuốn lên và bụi dày đặc hơn nữa").
+Người dùng chọn: thêm lớp khói thân dưới + bụi chân ×2, **chỉ tăng số hạt** (độ đục từng hạt giữ nguyên).
+- Lớp `BuiThanDuoi`: cùng kiểu ôm thân như `BuiCuonLen`, nhưng chỉ bay tới NỬA THÂN (7,5 m), chậm hơn (sống 2,4–3,0 s), 80 hạt/giây.
+- Bụi chân 40 → **80 hạt/giây** (trần 120 → 240).
+- Cả hai đặt trong `DamBaoBuiCuonLenLocXoay` (gọi từ `Tornado.Start`), một chỗ phủ cả prefab lẫn hình dựng bằng code. Prefab và
+  `BuildLocXoay` vẫn ghi 40 — đó là số GỐC của hàm chung (Gió lốc gấp đôi số gốc ấy, menu 71 vẫn so với 40).
+- **Lốc xoáy tổng: 80 chân + 80 cuộn lên tận đỉnh + 80 thân dưới = 240 hạt/giây.** Phần trên thân giữ nguyên.
+
+**Menu 82: 0 lỗi.**
+- B5: lớp thân dưới 216 hạt, 90% dưới 6,82 m, cao nhất 8,34 m (nửa thân 7,5), lệch bán kính 5%.
+- **Đối chứng CÙNG LƯỢT:** thả con lốc thứ hai, đưa về cấu hình cũ (tắt `BuiThanDuoi`, bụi chân 40 / 120), chờ 4,5 s, đếm hạt thật ở
+  0–7,5 m của cả hai con. Mới **526** / cũ **223** = **×2,36** (ngưỡng ×1,8).
+- B4 giữ: lớp cuộn lên tận đỉnh, 90% tới 13,37 m, lệch 5%.
+
+Ảnh: `PlayTestShots/thanlocxoay_0_dem_can.png`.
 - ⚠️ Lần chạy đầu tôi sửa file phép thử trong lúc 71c đang Play. Unity nạp lại assembly giữa chừng, coroutine chết, kẹt Play ~15 phút.
   Đã ghi vào bộ nhớ: không ghi file dưới `Assets/` khi phép thử đang chạy.
 - Lỗi "Particle Velocity curves must all be in the same mode" tràn log có từ ĐẦU phiên Unity (hạt `Grit` của Gió lốc, lỗi cũ đã biết),

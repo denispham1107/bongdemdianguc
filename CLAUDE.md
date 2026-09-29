@@ -307,8 +307,11 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
   k(z); quỹ đạo vật bị cuốn + tia sét theo công thức mới; vùng hút giữ 5,184; vòng bụi chân 2,0 → 4,0 cả code lẫn prefab),
   thân 15 m + vành → 15,72 m). ⚠️ **29/09/2026 BỤI CUỘN LÊN TẬN ĐỈNH** (cả Lốc xoáy lẫn Gió lốc, người dùng): lớp mới `BuiCuonLen`
   (`VfxFactory.BuiCuonLenTheoThan`) sinh trên vòng ở chân, bay lên đều tới đỉnh trong một đời hạt, dạt ra theo ĐÚNG công thức bán kính
-  thân (vận tốc toả = dr/dt), CỤC BỘ — Lốc xoáy 80 hạt/giây (+ 40 bụi chân = 120), gắn LÚC CHẠY trong `Tornado.Start`
-  (`DamBaoBuiCuonLenLocXoay` — hình trong game lấy từ prefab); Gió lốc 40 (+ 80 = 120 mỗi cơn). ⚠️ Vận tốc toả (radial) của Unity tính
+  thân (vận tốc toả = dr/dt), CỤC BỘ — Lốc xoáy 80 hạt/giây, gắn LÚC CHẠY trong `Tornado.Start`
+  (`DamBaoBuiCuonLenLocXoay` — hình trong game lấy từ prefab); Gió lốc 40 (+ 80 = 120 mỗi cơn). Cùng ngày người dùng khoanh THÂN DƯỚI
+  Lốc xoáy trên ảnh ("dày đặc hơn nữa"): thêm lớp `BuiThanDuoi` 80 hạt/giây chỉ tới nửa thân + bụi chân ×2 (40 → 80, trần 240 — đặt
+  trong `DamBaoBuiCuonLenLocXoay`, prefab/`BuildLocXoay` vẫn ghi 40 là số gốc) → **Lốc xoáy tổng 240 hạt/giây**; nửa thân dưới ×2,36 hạt
+  so với cấu hình cũ đo cùng lượt (menu 82 B5). ⚠️ Vận tốc toả (radial) của Unity tính
   theo hướng **3 CHIỀU** từ tâm → đẩy hạt vọt qua đỉnh; dời tâm (`orbitalOffsetY`) lên theo độ cao hạt để toả nằm ngang. ⚠️ Vòng phun
   `Circle` mặc định **ĐỨNG trong mặt XY**: bụi chân Lốc xoáy (thế giới) từng phun trên vòng đứng, nửa số hạt sinh dưới đất — nay xoay
   −90° cả code lẫn prefab. Menu 82 B3b/B4, menu 71 mục C đo vị trí thật từng hạt. Ảnh gió `GioVo0–3`,

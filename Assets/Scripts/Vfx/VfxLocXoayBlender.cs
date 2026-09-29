@@ -256,15 +256,35 @@ public static partial class VfxFactory
     {
         if (loc == null) return;
         Transform hinh = null;
+        ParticleSystem buiChan = null;
+        bool coLen = false, coDuoi = false;
         foreach (var t in loc.GetComponentsInChildren<Transform>(true))
         {
-            if (t.name == "BuiCuonLen") return;
+            if (t.name == "BuiCuonLen") coLen = true;
+            if (t.name == "BuiThanDuoi") coDuoi = true;
             if (t.name == "LocXoayHinh") hinh = t;
+            if (t.name == "BuiChan") buiChan = t.GetComponent<ParticleSystem>();
         }
         if (hinh == null) return;                                   // hinh cu (BuildTornadoCu) - khong co than Blender
-        BuiCuonLenTheoThan(hinh, "BuiCuonLen", CaoThanLocXoay * scale, h => 0.95f * BanKinhLocXoay(h, scale), TocBuiCuonLenLocXoay,
-                           3.0f, 3.6f, 2.2f * scale, 4.2f * scale, 2.1f, MauBuiXamToi, MauBuiXamSang);
+        if (!coLen)
+            BuiCuonLenTheoThan(hinh, "BuiCuonLen", CaoThanLocXoay * scale, h => 0.95f * BanKinhLocXoay(h, scale), TocBuiCuonLenLocXoay,
+                               3.0f, 3.6f, 2.2f * scale, 4.2f * scale, 2.1f, MauBuiXamToi, MauBuiXamSang);
+        if (coDuoi) return;
+        // THAN DUOI DAY DAC HON (nguoi dung 29/09/2026 khoanh vung than duoi tren anh, chon: them lop khoi than duoi + bui chan x2,
+        // chi tang so hat - do duc giu): lop BuiThanDuoi cung kieu om than nhung chi bay toi NUA THAN (7,5 m), cham hon (~2,8 m/s)
+        BuiCuonLenTheoThan(hinh, "BuiThanDuoi", 0.5f * CaoThanLocXoay * scale, h => 0.95f * BanKinhLocXoay(h, scale), TocBuiThanDuoiLocXoay,
+                           2.4f, 3.0f, 2.2f * scale, 4.2f * scale, 2.1f, MauBuiXamToi, MauBuiXamSang);
+        // Bui chan x2 (40 -> 80 hat/giay, tran 120 -> 240). Dat o day chu khong trong BuildLocXoay: hinh trong game lay tu PREFAB
+        // (so 40 nuong san) - mot cho phu ca prefab lan hinh dung bang code. BuildLocXoay / prefab van ghi 40 (goc cua ham chung).
+        if (buiChan != null)
+        {
+            var m = buiChan.main; m.maxParticles = Mathf.RoundToInt(120 * HeSoBuiChanLocXoay);
+            var e = buiChan.emission; e.rateOverTime = 40f * HeSoBuiChanLocXoay;
+        }
     }
+
+    /// <summary>Lop khoi THAN DUOI Loc xoay (hat/giay) va he so bui chan (29/09/2026): tong bui 80 chan + 80 cuon len + 80 than duoi = 240.</summary>
+    public const float TocBuiThanDuoiLocXoay = 80f, HeSoBuiChanLocXoay = 2f;
 
     /// <summary>Dat 4 dam bui ngau nhien cua anh BuiXam 2x2, khong chay khung (moi hat mot dam).</summary>
     public static void DatKhungBuiXam(ParticleSystem ps)

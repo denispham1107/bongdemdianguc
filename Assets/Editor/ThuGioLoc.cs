@@ -695,7 +695,9 @@ public static class ThuGioLoc
                     Ghi(string.Format("C. bui cuon Gio loc {0:F0} hat/giay (tran {1}) / bui chan Loc xoay that {2:F0} (tran {3}) = x{4:F2} / x{5:F2}",
                         rG, mG, rL, mL, rG / Mathf.Max(1e-3f, rL), (float)mG / Mathf.Max(1, mL)));
                     Kiem(Mathf.Abs(rG / rL - 2f) < 0.01f && mG == 2 * mL, "bui cuon Gio loc khong day gap doi bui Loc xoay");
-                    Kiem(Mathf.Abs(rL - 40f) < 0.01f && mL == 120, "bui chan Loc xoay bi doi theo (chi Gio loc day them)");
+                    // (29/09/2026: locThat dung bang BuildLocXoay - chua qua Tornado.Start, noi bui chan Loc xoay nhan doi len 80;
+                    //  so 40 / 120 day la GOC cua ham chung BuiXamChanLoc, Gio loc van gap doi goc ay)
+                    Kiem(Mathf.Abs(rL - 40f) < 0.01f && mL == 120, "bui chan goc (BuiXamChanLoc) bi doi (Gio loc x2 tinh tren goc 40)");
                 }
                 Object.Destroy(locThat);
             }
