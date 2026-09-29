@@ -205,6 +205,34 @@ public static class ThuGioLoc
         return null;
     }
 
+    /// <summary>Do vi tri THAT tung hat (so voi goc loc): chieu cao h90 / lon nhat, va do lech ban kinh so voi than (trung vi
+    /// |r - R(h)| / R(h), chi hat o 10-95% chieu cao). Hat Local doi qua transform he hat, hat World lay thang.</summary>
+    static void DoBuiTheoCao(ParticleSystem ps, Transform goc, float cao, System.Func<float, float> R, out float h90, out float hMax, out float lech, out int n)
+    {
+        h90 = 0f; hMax = 0f; lech = 99f; n = 0;
+        if (ps == null) return;
+        var hat = new ParticleSystem.Particle[ps.particleCount];
+        n = ps.GetParticles(hat);
+        var cac = new List<float>(); var ls = new List<float>();
+        bool cucBo = ps.main.simulationSpace == ParticleSystemSimulationSpace.Local;
+        for (int i = 0; i < n; i++)
+        {
+            Vector3 w = cucBo ? ps.transform.TransformPoint(hat[i].position) : hat[i].position;
+            Vector3 l = goc.InverseTransformPoint(w);
+            cac.Add(l.y);
+            if (l.y > 0.1f * cao && l.y < 0.95f * cao)
+            {
+                float rr = new Vector2(l.x, l.z).magnitude, rt = R(l.y);
+                ls.Add(Mathf.Abs(rr - rt) / Mathf.Max(0.01f, rt));
+            }
+        }
+        if (cac.Count == 0) return;
+        cac.Sort(); ls.Sort();
+        h90 = cac[Mathf.Min(cac.Count - 1, Mathf.FloorToInt(cac.Count * 0.9f))];
+        hMax = cac[cac.Count - 1];
+        if (ls.Count > 0) lech = ls[ls.Count / 2];
+    }
+
     static IEnumerator Chup(string ten)
     {
         string duong = "PlayTestShots/" + ten + ".png";
@@ -670,6 +698,33 @@ public static class ThuGioLoc
                     Kiem(Mathf.Abs(rL - 40f) < 0.01f && mL == 120, "bui chan Loc xoay bi doi theo (chi Gio loc day them)");
                 }
                 Object.Destroy(locThat);
+            }
+            // C (29/09/2026, nguoi dung: bui "chi den tam nua than la het"): lop BuiCuonLen tren mot Gio loc DUNG YEN (hinh that tu
+            // BuildGioLoc). Do vi tri tung hat; DOI CHUNG la bui chan BuiCuon (cu) - phai van thap.
+            {
+                var glDo = VfxFactory.BuildGioLoc();
+                glDo.name = "TAM_GioLocDoBui";
+                glDo.transform.position = new Vector3(0f, 300f, 0f);
+                ParticleSystem psLen = null, psChanDo = null;
+                foreach (var ps in glDo.GetComponentsInChildren<ParticleSystem>(true)) { if (ps.name == "BuiCuonLen") psLen = ps; if (ps.name == "BuiCuon") psChanDo = ps; }
+                foreach (var ps in new[] { psLen, psChanDo }) if (ps != null) { var m = ps.main; m.cullingMode = ParticleSystemCullingMode.AlwaysSimulate; }
+                yield return new WaitForSeconds(3f);
+                float caoGl = VfxFactory.CaoGioLocHinh;
+                System.Func<float, float> vo = h => 1.15f * VfxFactory.BanKinhVoTrongGioLoc(h);
+                float h90L, hMaxL, lechL, h90C, hMaxC, lechC; int nL, nC;
+                DoBuiTheoCao(psLen, glDo.transform, caoGl, vo, out h90L, out hMaxL, out lechL, out nL);
+                DoBuiTheoCao(psChanDo, glDo.transform, caoGl, vo, out h90C, out hMaxC, out lechC, out nC);
+                float tocLen = psLen != null ? psLen.emission.rateOverTime.constant : 0f, tocChan = psChanDo != null ? psChanDo.emission.rateOverTime.constant : 0f;
+                Ghi(string.Format("C. bui cuon len (than {0:F1} m): {1} hat, cao 90% {2:F2} m, cao nhat {3:F2} m, lech ban kinh so voi than (trung vi) {4:P0}; DOI CHUNG bui chan: {5} hat, cao 90% {6:F2} m, cao nhat {7:F2} m; so hat/giay {8:F0} + {9:F0} = {10:F0}",
+                    caoGl, nL, h90L, hMaxL, lechL, nC, h90C, hMaxC, tocLen, tocChan, tocLen + tocChan));
+                Kiem(psLen != null && nL > 40, "khong co lop bui cuon len tren Gio loc");
+                Kiem(hMaxL > 0.9f * caoGl && h90L > 0.7f * caoGl, "bui Gio loc khong cuon len toi dinh loc");
+                Kiem(lechL < 0.35f, "bui cuon len Gio loc khong om theo than");
+                // DOI CHUNG: lop moi phai len cao hon han bui chan cu (lan dau dat nguong tuyet doi 40% / 60% than - bui chan cu do duoc
+                // 48% / 62%: nguong ay khong noi gi ve viec phep do phan biet duoc hai lop; so sanh tuong doi moi la dieu can chung minh)
+                Kiem(h90L > 1.4f * h90C, "DOI CHUNG: bui chan cu len cao ngang lop moi - phep do khong phan biet duoc");
+                Kiem(Mathf.Abs(tocLen + tocChan - 120f) < 0.5f, "tong bui Gio loc khong phai 120 hat/giay moi con");
+                Object.Destroy(glDo);
             }
             // Vet gio "goc giam khi len cao" + quay lam goc TANG = vet chay LEN
             bool xoanGiam = docGiam > 50 && docTang == 0;

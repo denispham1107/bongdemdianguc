@@ -113,6 +113,8 @@ public class Tornado : MonoBehaviour
             visual = VfxFactory.BuildTornado(scale);
             visual.transform.SetParent(transform, false);
         }
+        // Bui cuon len tan dinh om theo than (29/09/2026) - ca hinh tu prefab lan hinh dung bang code
+        VfxFactory.DamBaoBuiCuonLenLocXoay(transform, scale);
 
         CacheSoilParticles();
         SnapToGround();

@@ -8899,6 +8899,55 @@ Người dùng chọn:
 - Mục F: vùng hút 5,184 giữ; quỹ đạo ở 7 m = 3,46 = 0,9 × 3,84.
 
 Ảnh: `PlayTestShots/thanlocxoay_0_dem_can.png`, `thanlocxoay_1_ngay_goc_choi.png`.
+
+### Bụi khói cuộn lên tận đỉnh lốc: Lốc xoáy và Gió lốc (29/09/2026)
+
+**Người dùng:** Lốc xoáy — bụi khói cuốn lên "dày đặc nhiều hơn nữa lên tận đỉnh lốc"; Gió lốc — bụi "chỉ có đến tầm nửa thân lốc là
+hết", cho cuộn lên tới tận đỉnh.
+
+**Vì sao bụi dừng giữa chừng:** bụi chân (`BuiXamChanLoc`) sống 1,6–3 s, bay lên 0,5–1,6 m/s. Lốc xoáy cao 15,7 m nhưng bụi lên ~1–4 m.
+Gió lốc còn nhân tốc bay ×0,5 nên thân 5 m mà bụi chỉ ~2,5 m.
+
+Người dùng chọn:
+- **Lốc xoáy ×3:** giữ bụi chân 40 hạt/giây, thêm 80 hạt/giây cuộn lên. Tổng 120.
+- **Gió lốc:** giữ bụi chân 80, thêm 40. Tổng 120 mỗi cơn.
+- **Dáng:** ôm theo thân lốc, loe ra theo miệng.
+
+**Cách làm — lớp mới `BuiCuonLen`** (`VfxFactory.BuiCuonLenTheoThan`, dùng chung):
+- Hạt sinh trên VÒNG ở chân, sát thân. Vận tốc đứng = chiều cao / đời hạt trung bình, nên tới đỉnh vừa lúc hết đời.
+- Vận tốc TOẢ = dr/dt, tính từ chính hàm bán kính thân (11 mốc theo đời hạt), nên vòng bụi nở đúng theo thân và loe ra ở miệng.
+- Xoay cùng chiều cuốn. Không gian CỤC BỘ: bụi đi theo con lốc khi nó chạy. Mờ vào 0–12% đời, mờ ra 80–100%.
+- Lốc xoáy: ôm 0,95 × vỏ chính, sống 3,0–3,6 s, hạt 2,2–4,2 m. Gió lốc: ôm 1,15 × vỏ trong (giữa Vo0 và Vo1), sống 1,8–2,2 s, hạt
+  1,2–2,6 m, màu mây giông như bụi chân.
+- ⚠️ Hình Lốc xoáy trong game lấy từ **prefab nướng sẵn** (không chạy `BuildLocXoay`), nên lớp bụi gắn LÚC CHẠY trong `Tornado.Start`
+  (`DamBaoBuiCuonLenLocXoay`, đã có thì bỏ qua). Có cả cho Hoá lốc xoáy.
+
+**Hai cái bẫy đo ra được:**
+1. **Vận tốc toả (radial) của Unity tính theo hướng 3 CHIỀU từ tâm hệ hạt.** Hạt lên cao thì hướng ấy gần như thẳng đứng, nên lực
+   "toả" đẩy hạt VỌT QUA ĐỈNH thay vì dạt ra. Lần đo đầu (menu 82): 90% hạt tới 16,3 m, cao nhất 19,6 m trên thân 15 m; lệch bán kính
+   22%. Sửa: dời tâm (`orbitalOffsetY`) lên theo độ cao của hạt (đường cong theo đời hạt), để lực toả luôn NẰM NGANG.
+2. **Vòng phun `Circle` mặc định ĐỨNG trong mặt XY.** Gió lốc (cục bộ) đã xoay nằm xuống, còn bụi chân Lốc xoáy (thế giới) thì chưa bao
+   giờ. Đo trong Editor: hạt sinh từ **−3,97 đến +3,61 m** quanh hệ hạt, tức nửa số hạt chui dưới đất. Lỗi có từ trước, nhưng việc nới
+   vòng 2 → 4 m hôm nay làm nó rõ hơn. Nay xoay −90° cả code lẫn **prefab** (git diff prefab đúng một dòng `m_Rotation`).
+
+**Đo** (vị trí THẬT từng hạt so với gốc lốc, `AlwaysSimulate` để hạt ngoài khung hình vẫn chạy):
+
+| | Lớp cuộn lên: 90% hạt dưới | Cao nhất | Lệch bán kính so với thân (trung vị) | Đối chứng bụi chân: 90% dưới | Hạt/giây |
+|---|---|---|---|---|---|
+| Lốc xoáy (thân 15 m, menu 82 B4) | **13,49 m** | 17,10 m | **5%** | 3,90 m | 80 + 40 = **120** |
+| Gió lốc (thân 5 m, menu 71 mục C) | **4,55 m** | 5,42 m | **1%** | 3,19 m | 40 + 80 = **120** |
+
+- Ngưỡng đối chứng lần đầu đặt tuyệt đối (bụi chân dưới 40% / 60% thân). Bụi chân cũ đo được 48% / 62%, nên hỏng ở đối chứng chứ
+  không ở lớp mới. Ngưỡng ấy không nói được phép đo có phân biệt hai lớp hay không. Nay: lớp mới phải cao ≥ 1,4 × bụi chân (×3,46 và
+  ×1,43).
+- Menu 82 thêm B3b: vòng phun bụi chân xoay −90°.
+- Menu 71c (độ đen thân Gió lốc) phải tính cả lớp mới, ở chỗ tắt bụi lẫn chỗ dựng bản đối chứng ×2,5. Bỏ sót thì lớp ấy giữ ×2,25 ở CẢ
+  HAI bản và pha loãng chênh lệch: đo ra ×0,98 thay vì ×0,91 → báo lỗi oan. Sửa xong: cả cơn lốc đêm ×0,88, ngày ×0,90 so với bản
+  ×2,5; thân vẫn nổi trên nền đêm ×1,30 so với bản chìm; bụi chân dày ×1,92. **Menu 71c: 0 lỗi.**
+- ⚠️ Lần chạy đầu tôi sửa file phép thử trong lúc 71c đang Play. Unity nạp lại assembly giữa chừng, coroutine chết, kẹt Play ~15 phút.
+  Đã ghi vào bộ nhớ: không ghi file dưới `Assets/` khi phép thử đang chạy.
+- Lỗi "Particle Velocity curves must all be in the same mode" tràn log có từ ĐẦU phiên Unity (hạt `Grit` của Gió lốc, lỗi cũ đã biết),
+  không phải của lớp mới.
 ### Vẽ lại năm icon: Quả cầu lửa, Mưa băng, Sấm sét, Giựt sét, Quả cầu điện (28/09/2026)
 
 **Người dùng:** năm icon này cũng "quá thô và sơ sài" — vẽ lại hợp nội dung từng kỹ năng, không cần Blender MCP.

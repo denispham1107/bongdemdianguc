@@ -1,18 +1,18 @@
-[ban 1] than Gio loc trong hon - 29/09/2026 00:30
-BUI DAY: hat bui cuon dang song (tb 10 lan do) moi 183.8 / doi chung 40 hat/giay 92.8 = x1.98
-dung hinh: 4 lop vo (DaiGio,Vo0,Vo1,Vo2), 2 he bui
+[ban 1] than Gio loc trong hon - 29/09/2026 08:45
+BUI DAY: hat bui cuon dang song (tb 10 lan do) moi 180.7 / doi chung 40 hat/giay 93.9 = x1.92
+dung hinh: 4 lop vo (DaiGio,Vo0,Vo1,Vo2), 3 he bui
 vung do (diem anh 640x360): (x:289, y:118, width:63, height:89)
-MOI (do duc 0.72/0.34/0.26/0.90): bui lo ra 0.0395, do sang than (tat bui) 0.343, diem chay trang 0.0 %, than che nen 0.0841
+MOI (do duc 0.72/0.34/0.26/0.90): bui lo ra 0.0430, do sang than (tat bui) 0.346, diem chay trang 0.0 %, than che nen 0.0856
 anh: PlayTestShots/gioloc_trong_moi.png
-DOI CHUNG (may goc, trong) (do duc 0.42/0.20/0.16/0.70): bui lo ra 0.0933, do sang than (tat bui) 0.233, diem chay trang 0.0 %, than che nen 0.0666
+DOI CHUNG (may goc, trong) (do duc 0.42/0.20/0.16/0.70): bui lo ra 0.1031, do sang than (tat bui) 0.234, diem chay trang 0.1 %, than che nen 0.0658
 anh: PlayTestShots/gioloc_trong_cu.png
-=> bui lo ra x0.42, do sang than x1.47, than che nen x1.26
+=> bui lo ra x0.42, do sang than x1.48, than che nen x1.30
 anh: PlayTestShots/gioloc_den_truoc_dem.png
 anh: PlayTestShots/gioloc_den_truoc_ngay.png
-DOI CHUNG ban truoc (mau may x2.50, ca vo lan bui): do sang ca con loc (co bui) DEM 0.370, NGAY 0.379
+DOI CHUNG ban truoc (mau may x2.50, ca vo lan bui): do sang ca con loc (co bui) DEM 0.371, NGAY 0.367
 anh: PlayTestShots/gioloc_den_moi_dem.png
 anh: PlayTestShots/gioloc_den_moi_ngay.png
-MOI (mau may x2.25, ca vo lan bui): do sang ca con loc (co bui) DEM 0.336, NGAY 0.333
-=> den hon: dem x0.91, ngay x0.88 so ban x2,5
+MOI (mau may x2.25, ca vo lan bui): do sang ca con loc (co bui) DEM 0.327, NGAY 0.331
+=> den hon: dem x0.88, ngay x0.90 so ban x2,5
 
 so loi ghi nhan = 0

@@ -305,7 +305,13 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
   ×0,70/0,84/1,00/1,13 + vành cuộn `Vanh`; vỏ chính ~~r = 1,3 + 5,5·t^1,9~~ → ⚠️ **29/09/2026 r = 2,6 + 4,2·t^1,6** (người dùng: "thân
   dưới như cây kem ốc quế" — chân ×2, thân to dần đều, miệng 6,8 giữ; Blender MCP `loc_xoay_than_rong.blend`, cả 5 lưới nhân cùng
   k(z); quỹ đạo vật bị cuốn + tia sét theo công thức mới; vùng hút giữ 5,184; vòng bụi chân 2,0 → 4,0 cả code lẫn prefab),
-  thân 15 m + vành → 15,72 m), ảnh gió `GioVo0–3`,
+  thân 15 m + vành → 15,72 m). ⚠️ **29/09/2026 BỤI CUỘN LÊN TẬN ĐỈNH** (cả Lốc xoáy lẫn Gió lốc, người dùng): lớp mới `BuiCuonLen`
+  (`VfxFactory.BuiCuonLenTheoThan`) sinh trên vòng ở chân, bay lên đều tới đỉnh trong một đời hạt, dạt ra theo ĐÚNG công thức bán kính
+  thân (vận tốc toả = dr/dt), CỤC BỘ — Lốc xoáy 80 hạt/giây (+ 40 bụi chân = 120), gắn LÚC CHẠY trong `Tornado.Start`
+  (`DamBaoBuiCuonLenLocXoay` — hình trong game lấy từ prefab); Gió lốc 40 (+ 80 = 120 mỗi cơn). ⚠️ Vận tốc toả (radial) của Unity tính
+  theo hướng **3 CHIỀU** từ tâm → đẩy hạt vọt qua đỉnh; dời tâm (`orbitalOffsetY`) lên theo độ cao hạt để toả nằm ngang. ⚠️ Vòng phun
+  `Circle` mặc định **ĐỨNG trong mặt XY**: bụi chân Lốc xoáy (thế giới) từng phun trên vòng đứng, nửa số hạt sinh dưới đất — nay xoay
+  −90° cả code lẫn prefab. Menu 82 B3b/B4, menu 71 mục C đo vị trí thật từng hạt. Ảnh gió `GioVo0–3`,
   `GioVanh` (dải xoắn ốc, mỗi vòng u lệch đúng một dải → **liền mạch theo u**, render mặt phẳng UV trực giao, `filter_width`
   0,01 — bộ lọc 1,5 px làm lệch mép 10 lần), `HaoQuangDinh`, `BuiXam` (2×2). Code `Vfx/VfxLocXoayBlender.cs`
   (`BuildLocXoay`, `BanKinhLocXoay`, `TornadoBolt(Transform, scale)`); `BuildTornado` gọi nó, hình cũ còn ở `BuildTornadoCu`

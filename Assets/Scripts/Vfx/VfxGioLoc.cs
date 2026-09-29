@@ -124,6 +124,10 @@ public static partial class VfxFactory
         // tran 120 -> 240. Chi Gio loc - bui chan Loc xoay giu 40 / 120 (cung ham BuiXamChanLoc).
         bcm.maxParticles = Mathf.RoundToInt(bcm.maxParticles * HeSoBuiDayGioLoc);
         var bce = buiCuon.emission; bce.rateOverTime = bce.rateOverTime.constant * HeSoBuiDayGioLoc;
+        // CUON LEN TAN DINH (29/09/2026, nguoi dung: bui "chi den tam nua than la het"): them 40 hat/giay om than (giua Vo0 va Vo1),
+        // bay len 5 m trong ~2 s, mau may giong nhu bui chan
+        BuiCuonLenTheoThan(root.transform, "BuiCuonLen", CaoGioLocHinh, h => 1.15f * BanKinhVoTrongGioLoc(h), TocBuiCuonLenGioLoc,
+                           1.8f, 2.2f, 1.2f, 2.6f, 3.5f, MauBuiGioLocToi, MauBuiGioLocSang);
 
         // Vet bui o lai phia sau duong loc di (khong gian the gioi) - nay cung BUI XAM cua Loc xoay (truoc: khoi den)
         var vet = BuildKhoiBuiLoc(root.transform, 0.55f * HeSoBanKinhGioLoc * 2f);
@@ -192,6 +196,9 @@ public static partial class VfxFactory
     public static Color MauBuiGioLocSang { get { var c = MauMayGiongSang * HeSoSangMayGioLoc; c.a = 0.90f; return c; } }
 
     /// <summary>Ban kinh vo trong cung (da nhan 1,1) o do cao y tinh tu chan loc.</summary>
+    /// <summary>Chieu cao hinh Gio loc (LocNho.fbx, than 5 m).</summary>
+    public const float CaoGioLocHinh = 5f;
+
     public static float BanKinhVoTrongGioLoc(float y)
     {
         float f = Mathf.Clamp(y / 0.5f, 0f, banKinhVo0.Length - 1.001f);

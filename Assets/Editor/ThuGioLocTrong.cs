@@ -112,9 +112,9 @@ public static class ThuGioLocTrong
         foreach (var mr in loc.GetComponentsInChildren<MeshRenderer>()) vo.Add(mr);
         var bui = new List<Renderer>();
         foreach (var ps in loc.GetComponentsInChildren<ParticleSystem>())
-            if (ps.name == "BuiCuon" || ps.name == "KhoiBui") bui.Add(ps.GetComponent<Renderer>());
+            if (ps.name == "BuiCuon" || ps.name == "KhoiBui" || ps.name == "BuiCuonLen") bui.Add(ps.GetComponent<Renderer>());   // BuiCuonLen: 29/09/2026
         Ghi(string.Format("dung hinh: {0} lop vo ({1}), {2} he bui", vo.Count, string.Join(",", vo.ConvertAll(v => v.name).ToArray()), bui.Count));
-        Kiem(vo.Count == 4 && bui.Count == 2, "khong du 4 lop vo / 2 he bui");
+        Kiem(vo.Count == 4 && bui.Count == 3, "khong du 4 lop vo / 3 he bui (bui chan, vet, cuon len)");
 
         // Vung than duoi 0 - 2,5 m tren man hinh (ban kinh chan moi ~1,1 m)
         int W = 640, H = 360;
@@ -190,7 +190,8 @@ public static class ThuGioLocTrong
             if (chuyen != null) chuyen.enabled = false;
             Kiem(chuyen != null, "khong tim thay ChuyenChieuSangDem - khong chup duoc anh ban ngay");
             var heBui = new List<ParticleSystem>();
-            foreach (var ps in loc.GetComponentsInChildren<ParticleSystem>()) if (ps.name == "BuiCuon" || ps.name == "KhoiBui") heBui.Add(ps);
+            // 29/09/2026: ca lop BuiCuonLen (moi) - bo sot thi lop ay giu x2,25 o CA HAI ban, pha loang chenh lech (do ra x0,98)
+            foreach (var ps in loc.GetComponentsInChildren<ParticleSystem>()) if (ps.name == "BuiCuon" || ps.name == "KhoiBui" || ps.name == "BuiCuonLen") heBui.Add(ps);
             var buiGoc = new Dictionary<ParticleSystem, ParticleSystem.MinMaxGradient>();
             foreach (var ps in heBui) buiGoc[ps] = ps.main.startColor;
             string[] thuTu = { "Vo0", "Vo1", "Vo2", "DaiGio" };

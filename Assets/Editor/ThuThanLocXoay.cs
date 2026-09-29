@@ -235,6 +235,34 @@ public static class ThuThanLocXoay
         return t;
     }
 
+    /// <summary>Do vi tri THAT tung hat (so voi goc loc): chieu cao h90 / lon nhat, va do lech ban kinh so voi than (trung vi
+    /// |r - R(h)| / R(h), chi hat o 10-95% chieu cao). Hat Local doi qua transform he hat, hat World lay thang.</summary>
+    static void DoBuiTheoCao(ParticleSystem ps, Transform goc, float cao, System.Func<float, float> R, out float h90, out float hMax, out float lech, out int n)
+    {
+        h90 = 0f; hMax = 0f; lech = 99f; n = 0;
+        if (ps == null) return;
+        var hat = new ParticleSystem.Particle[ps.particleCount];
+        n = ps.GetParticles(hat);
+        var cac = new List<float>(); var ls = new List<float>();
+        bool cucBo = ps.main.simulationSpace == ParticleSystemSimulationSpace.Local;
+        for (int i = 0; i < n; i++)
+        {
+            Vector3 w = cucBo ? ps.transform.TransformPoint(hat[i].position) : hat[i].position;
+            Vector3 l = goc.InverseTransformPoint(w);
+            cac.Add(l.y);
+            if (l.y > 0.1f * cao && l.y < 0.95f * cao)
+            {
+                float rr = new Vector2(l.x, l.z).magnitude, rt = R(l.y);
+                ls.Add(Mathf.Abs(rr - rt) / Mathf.Max(0.01f, rt));
+            }
+        }
+        if (cac.Count == 0) return;
+        cac.Sort(); ls.Sort();
+        h90 = cac[Mathf.Min(cac.Count - 1, Mathf.FloorToInt(cac.Count * 0.9f))];
+        hMax = cac[cac.Count - 1];
+        if (ls.Count > 0) lech = ls[ls.Count / 2];
+    }
+
     static float Goc(Vector3 v) { return Mathf.Atan2(v.z, v.x) * Mathf.Rad2Deg; }
     static float Boc(float d) { while (d > 180f) d -= 360f; while (d < -180f) d += 360f; return d; }
 
@@ -382,7 +410,33 @@ public static class ThuThanLocXoay
         Object.Destroy(gioLoc);
         Ghi(string.Format("B3. vong bui chan Loc xoay that {0:F2} m (cu 2,00 -> x{1:F2}); doi chung vong bui Gio loc {2:F2} m (giu 1,00)", rBui, rBui / 2f, rBuiGl));
         Kiem(Mathf.Abs(rBui - 4f) < 0.02f, "vong bui chan Loc xoay khong rong theo chan moi (2,0 -> 4,0) - prefab con so cu?");
+        // 29/09/2026: vong phun phai NAM PHANG tren dat (Circle mac dinh dung trong mat XY - nua so hat tung sinh duoi dat)
+        float xoayX = buiChan != null ? buiChan.shape.rotation.x : 0f;
+        Ghi(string.Format("B3b. vong phun bui chan xoay {0:F0} do quanh X (mong -90: nam phang tren dat)", xoayX));
+        Kiem(Mathf.Abs(xoayX + 90f) < 0.5f, "vong phun bui chan Loc xoay con dung (hat sinh duoi dat) - prefab con so cu?");
         Kiem(Mathf.Abs(rBuiGl - 1f) < 0.02f, "vong bui Gio loc bi doi theo (chi Loc xoay doi)");
+
+        // B4 (29/09/2026, nguoi dung: bui cuon len "day dac hon nua len tan dinh"): lop BuiCuonLen tren con loc THAT tu prefab (gan luc
+        // chay trong Tornado.Start). Do vi tri tung hat; DOI CHUNG la bui chan BuiChan (cu) - phai van thap.
+        ParticleSystem psLen = null, psChanDo = null;
+        foreach (var ps in loc.GetComponentsInChildren<ParticleSystem>(true)) { if (ps.name == "BuiCuonLen") psLen = ps; if (ps.name == "BuiChan") psChanDo = ps; }
+        foreach (var ps in new[] { psLen, psChanDo }) if (ps != null) { var m = ps.main; m.cullingMode = ParticleSystemCullingMode.AlwaysSimulate; }
+        yield return new WaitForSeconds(4.5f);
+        float caoLx = VfxFactory.CaoThanLocXoay * loc.scale;
+        System.Func<float, float> vo = h => VfxFactory.BanKinhLocXoay(h, loc.scale);
+        float h90L, hMaxL, lechL, h90C, hMaxC, lechC; int nL, nC;
+        DoBuiTheoCao(psLen, loc.transform, caoLx, vo, out h90L, out hMaxL, out lechL, out nL);
+        DoBuiTheoCao(psChanDo, loc.transform, caoLx, vo, out h90C, out hMaxC, out lechC, out nC);
+        float tocLen = psLen != null ? psLen.emission.rateOverTime.constant : 0f, tocChan = psChanDo != null ? psChanDo.emission.rateOverTime.constant : 0f;
+        Ghi(string.Format("B4. bui cuon len (than {0:F1} m): {1} hat, cao 90% {2:F2} m, cao nhat {3:F2} m, lech ban kinh so voi vo chinh (trung vi) {4:P0}; DOI CHUNG bui chan: {5} hat, cao 90% {6:F2} m, cao nhat {7:F2} m; so hat/giay {8:F0} + {9:F0} = {10:F0} (cu 40)",
+            caoLx, nL, h90L, hMaxL, lechL, nC, h90C, hMaxC, tocLen, tocChan, tocLen + tocChan));
+        Kiem(psLen != null && nL > 100, "khong co lop bui cuon len tren con loc that (prefab?)");
+        Kiem(hMaxL > 0.9f * caoLx && h90L > 0.7f * caoLx, "bui khong cuon len toi dinh loc");
+        Kiem(lechL < 0.35f, "bui cuon len khong om theo than loc");
+        // DOI CHUNG: lop moi phai len cao hon han bui chan cu (lan dau dat nguong tuyet doi 40% / 60% than - bui chan cu do duoc
+        // 48% / 62%: nguong ay khong noi gi ve viec phep do phan biet duoc hai lop; so sanh tuong doi moi la dieu can chung minh)
+        Kiem(h90L > 1.4f * h90C, "DOI CHUNG: bui chan cu len cao ngang lop moi - phep do khong phan biet duoc");
+        Kiem(Mathf.Abs(tocLen + tocChan - 120f) < 0.5f, "tong bui Loc xoay khong phai 120 hat/giay (x3)");
 
         // ================= F. VUNG HUT =================
         float r7 = loc.FunnelRadiusAt(7f);

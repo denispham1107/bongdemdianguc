@@ -182,6 +182,90 @@ public static partial class VfxFactory
     /// <summary>Mau bui xam cua Loc xoay - Gio loc dung y het (nguoi dung 28/09/2026: "cung mau, cung hieu ung").</summary>
     public static readonly Color MauBuiXamToi = new Color(0.80f, 0.81f, 0.84f, 0.70f), MauBuiXamSang = new Color(0.95f, 0.95f, 0.97f, 0.90f);
 
+    /// <summary>So hat/giay cua lop bui CUON LEN TAN DINH (29/09/2026, nguoi dung chon): Loc xoay 80 (+ 40 bui chan = 120),
+    /// Gio loc 40 (+ 80 bui chan = 120 moi con).</summary>
+    public const float TocBuiCuonLenLocXoay = 80f, TocBuiCuonLenGioLoc = 40f;
+
+    /// <summary>
+    /// BUI CUON LEN TAN DINH LOC, OM THEO THAN (nguoi dung 29/09/2026: Loc xoay "bui khoi cuon len day dac hon nua len tan dinh";
+    /// Gio loc "bui chi den tam nua than la het"). Bui chan cu song 1,6-3 s, bay len 0,5-1,6 m/s nen chi toi ~1-4 m (Loc xoay cao
+    /// 15,7) va ~2,5 m (Gio loc cao 5). Lop nay: sinh tren VONG o chan (ban kinh = than), bay len DEU toi dinh trong mot doi hat
+    /// (van toc = cao / doi trung binh), va dat ra ngoai theo DUNG duong cong ban kinh than (van toc toa = dr/dt tinh tu banKinh)
+    /// nen vong bui no rong theo than, loe ra o mieng; xoay cung chieu cuon. Khong gian CUC BO: bui di theo con loc khi no chay.
+    /// ⚠️ Moi truc van toc cung MOT kieu duong cong (Curve) - lech kieu la Unity bo qua ca mo-dun.
+    /// </summary>
+    public static ParticleSystem BuiCuonLenTheoThan(Transform cha, string ten, float cao, System.Func<float, float> banKinh, float tocPhun,
+                                                     float songMin, float songMax, float coMin, float coMax, float quay, Color mauToi, Color mauSang)
+    {
+        var bui = NewPS(ten, cha, Vector3.zero, BuiXamMat, ParticleSystemRenderMode.Billboard);
+        DatKhungBuiXam(bui);
+        float songTB = 0.5f * (songMin + songMax);
+        var bm = bui.main;
+        bm.startLifetime = new ParticleSystem.MinMaxCurve(songMin, songMax);
+        bm.startSpeed = 0f;
+        bm.startSize = new ParticleSystem.MinMaxCurve(coMin, coMax);
+        bm.startRotation = new ParticleSystem.MinMaxCurve(0f, Mathf.PI * 2f);
+        bm.startColor = new ParticleSystem.MinMaxGradient(mauToi, mauSang);
+        bm.simulationSpace = ParticleSystemSimulationSpace.Local;
+        bm.scalingMode = ParticleSystemScalingMode.Hierarchy;
+        bm.maxParticles = Mathf.CeilToInt(tocPhun * songMax * 1.1f);
+        bm.gravityModifier = 0f;
+        var be = bui.emission; be.rateOverTime = tocPhun;
+        var bs = bui.shape; bs.shapeType = ParticleSystemShapeType.Circle; bs.radius = banKinh(0f);
+        bs.radiusThickness = 0f;                                   // chi mep vong = sat than
+        bs.rotation = new Vector3(-90f, 0f, 0f);                   // Circle mac dinh nam trong mat XY
+        var bv = bui.velocityOverLifetime;
+        bv.enabled = true;
+        bv.space = ParticleSystemSimulationSpace.Local;
+        var phang = AnimationCurve.Constant(0f, 1f, 1f);
+        var khong = AnimationCurve.Constant(0f, 1f, 0f);
+        bv.x = new ParticleSystem.MinMaxCurve(1f, khong);
+        bv.y = new ParticleSystem.MinMaxCurve(cao / songTB, phang);
+        bv.z = new ParticleSystem.MinMaxCurve(1f, khong);
+        bv.orbitalX = new ParticleSystem.MinMaxCurve(1f, khong);
+        bv.orbitalY = new ParticleSystem.MinMaxCurve(ChieuQuyDaoGioLoc * quay, phang);
+        bv.orbitalZ = new ParticleSystem.MinMaxCurve(1f, khong);
+        // ⚠️ Van toc TOA (radial) cua Unity tinh theo huong 3 CHIEU tu tam: hat len cao thi huong ay gan nhu thang dung, day hat vot
+        // QUA DINH (menu 82 do lan dau: cao nhat 19,6 m tren than 15). Doi tam (orbitalOffset) len theo do cao cua hat -> toa NAM NGANG.
+        bv.orbitalOffsetX = new ParticleSystem.MinMaxCurve(1f, khong);
+        bv.orbitalOffsetY = new ParticleSystem.MinMaxCurve(cao, AnimationCurve.Linear(0f, 0f, 1f, 1f));
+        bv.orbitalOffsetZ = new ParticleSystem.MinMaxCurve(1f, khong);
+        // van toc toa: dr/dt = (dr/dh) * (dh/dt), lay mau 11 moc theo doi hat
+        var toa = new AnimationCurve();
+        for (int i = 0; i <= 10; i++)
+        {
+            float tau = i / 10f, e = 0.02f;
+            float h0 = cao * Mathf.Max(0f, tau - e), h1 = cao * Mathf.Min(1f, tau + e);
+            toa.AddKey(tau, (banKinh(h1) - banKinh(h0)) / ((h1 - h0) / cao * songTB));
+        }
+        bv.radial = new ParticleSystem.MinMaxCurve(1f, toa);
+        var bc = bui.colorOverLifetime; bc.enabled = true;
+        var g = new Gradient();
+        g.SetKeys(new[] { new GradientColorKey(Color.white, 0f), new GradientColorKey(new Color(0.88f, 0.89f, 0.93f), 1f) },
+                  new[] { new GradientAlphaKey(0f, 0f), new GradientAlphaKey(1f, 0.12f), new GradientAlphaKey(0.85f, 0.80f), new GradientAlphaKey(0f, 1f) });
+        bc.color = new ParticleSystem.MinMaxGradient(g);
+        var bz = bui.sizeOverLifetime; bz.enabled = true;
+        bz.size = new ParticleSystem.MinMaxCurve(1f, new AnimationCurve(new Keyframe(0f, 0.7f), new Keyframe(1f, 1.4f)));
+        var br = bui.rotationOverLifetime; br.enabled = true; br.z = new ParticleSystem.MinMaxCurve(-0.6f, 0.6f);
+        return bui;
+    }
+
+    /// <summary>Lop bui cuon len cua LOC XOAY: om vo chinh (0,95 x BanKinhLocXoay) tu chan len 15 m. Goi tu Tornado.Start - hinh
+    /// Loc xoay trong game lay tu PREFAB nuong san (khong chay BuildLocXoay), nen phai gan luc chay; da co thi bo qua.</summary>
+    public static void DamBaoBuiCuonLenLocXoay(Transform loc, float scale)
+    {
+        if (loc == null) return;
+        Transform hinh = null;
+        foreach (var t in loc.GetComponentsInChildren<Transform>(true))
+        {
+            if (t.name == "BuiCuonLen") return;
+            if (t.name == "LocXoayHinh") hinh = t;
+        }
+        if (hinh == null) return;                                   // hinh cu (BuildTornadoCu) - khong co than Blender
+        BuiCuonLenTheoThan(hinh, "BuiCuonLen", CaoThanLocXoay * scale, h => 0.95f * BanKinhLocXoay(h, scale), TocBuiCuonLenLocXoay,
+                           3.0f, 3.6f, 2.2f * scale, 4.2f * scale, 2.1f, MauBuiXamToi, MauBuiXamSang);
+    }
+
     /// <summary>Dat 4 dam bui ngau nhien cua anh BuiXam 2x2, khong chay khung (moi hat mot dam).</summary>
     public static void DatKhungBuiXam(ParticleSystem ps)
     {
@@ -214,7 +298,9 @@ public static partial class VfxFactory
         bm.gravityModifier = -0.04f;
         var be = bui.emission; be.rateOverTime = 40f;
         var bs = bui.shape; bs.shapeType = ParticleSystemShapeType.Circle; bs.radius = banKinhVong;
-        if (cucBo) { bs.rotation = new Vector3(-90f, 0f, 0f); bs.radiusThickness = 1f; }   // Circle mac dinh dung trong mat XY
+        // Circle mac dinh DUNG trong mat XY -> xoay nam phang tren dat. 29/09/2026: truoc chi xoay khi cucBo - bui chan LOC XOAY (the
+        // gioi) phun tren vong DUNG, do duoc hat sinh tu -3,97 den +3,61 m (nua so hat chui duoi dat); nay nam phang ca hai.
+        bs.rotation = new Vector3(-90f, 0f, 0f); bs.radiusThickness = 1f;
         var bv = bui.velocityOverLifetime;
         bv.enabled = true;
         bv.space = ParticleSystemSimulationSpace.Local;
