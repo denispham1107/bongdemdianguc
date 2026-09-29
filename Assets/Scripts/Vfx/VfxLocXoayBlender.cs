@@ -24,8 +24,13 @@ public static partial class VfxFactory
     /// <summary>Chieu cao than loc (khong ke vanh cuon o mieng, vanh cao them ~0,4 m).</summary>
     public const float CaoThanLocXoay = 15.0f;
 
-    // Duong vien vo chinh Vo2 (cung cong thuc trong loc_xoay.blend): r = 1,3 + 5,5 * t^1,9
-    const float ChanLocXoay = 1.3f, LoeLocXoay = 5.5f, MuLocXoay = 1.9f;
+    // Duong vien vo chinh Vo2: r = 2,6 + 4,2 * t^1,6 (29/09/2026 nguoi dung: "than duoi nhin nhu cay kem oc que" - chan x2, than to
+    // dan deu, mieng 6,8 giu nguyen; Blender MCP CongCu/Blender/loc_xoay_than_rong.blend, ca 5 luoi nhan cung k(z) = r_moi / r_cu).
+    // Truoc: r = 1,3 + 5,5 * t^1,9 (loc_xoay.blend). Qui dao ke bi cuon (Tornado.FunnelRadiusAt) + tia set doc than theo cong thuc nay.
+    const float ChanLocXoay = 2.6f, LoeLocXoay = 4.2f, MuLocXoay = 1.6f;
+
+    /// <summary>Vong phun bui xam o chan Loc xoay (m, nhan scale). 29/09/2026 rong theo chan moi: 2,0 -> 4,0.</summary>
+    public const float BanKinhVongBuiLocXoay = 4.0f;
 
     /// <summary>He so u cua anh gio tren moi lop: -1 = lat, de dai xoan cuon LEN khi quay theo chieu cuon.</summary>
     public const float LatUAnhLocXoay = -1f;
@@ -137,7 +142,7 @@ public static partial class VfxFactory
         fl.baseIntensity = 2.4f; fl.amount = 0.6f; fl.speed = 14f; fl.rangeWobble = 0.12f;
 
         // ---- Bui xam nhat cuon o chan (anh mau: dam bui xam duoi chan, KHONG phai khoi den) ----
-        BuiXamChanLoc(hinh.transform, "BuiChan", new Vector3(0f, 0.3f, 0f), scale, 2.0f * scale, 1f, false);
+        BuiXamChanLoc(hinh.transform, "BuiChan", new Vector3(0f, 0.3f, 0f), scale, BanKinhVongBuiLocXoay * scale, 1f, false);
 
         return root;
     }

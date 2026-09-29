@@ -42,6 +42,7 @@ public static class ThuThanLocXoay
     static int dauVTheoCao;          // +1: v tang theo chieu cao tren luoi Vo2
     static bool anhLienDoc, mauDinhMo;
     static string ghiChuTroi = "";
+    static float rChanLuoi, rGiuaLuoi, rMiengLuoi;   // vo chinh Vo2 do tu DINH LUOI FBX (Editor - trong Play luoi khong doc duoc)
 
     [MenuItem("Diablo 2.5D/82. Chay thu LOC XOAY hinh Blender (mot chieu, cuon len) + Gio loc hat tung 80%", false, 171)]
     public static void Chay()
@@ -84,6 +85,15 @@ public static class ThuThanLocXoay
                     if (Mathf.Sign(dg) == Mathf.Sign(du)) tang++; else giam++;
                 }
             dauGocTheoU = tang > giam ? 1 : -1;
+            // 29/09/2026: ban kinh vo chinh doc thang tu dinh luoi (doc lap voi cong thuc BanKinhLocXoay trong code)
+            rChanLuoi = 0f; rGiuaLuoi = 0f; rMiengLuoi = 0f;
+            for (int i = 0; i < v.Length; i++)
+            {
+                float r = new Vector2(v[i].x, v[i].z).magnitude;
+                if (v[i].y < 0.05f) rChanLuoi = Mathf.Max(rChanLuoi, r);
+                if (Mathf.Abs(v[i].y - 7.5f) < 0.2f) rGiuaLuoi = Mathf.Max(rGiuaLuoi, r);
+                if (v[i].y > 14.95f) rMiengLuoi = Mathf.Max(rMiengLuoi, r);
+            }
             ghiChuEditor += string.Format("luoi Vo2: u tang -> goc TANG {0} cap, GIAM {1} cap; ", tang, giam);
             // v theo chieu cao + mau dinh (tan chan / mieng) - cho muc I
             float vChan = 0f, vDinh = 0f, aChan = 0f, aGiua = 0f; int nc = 0, nd = 0, ng = 0; var cl = vo2.colors;
@@ -353,7 +363,26 @@ public static class ThuThanLocXoay
         Ghi(string.Format("B. cao {0:F2} m (mong 15,4), mieng vo chinh {1:F2} m (mong ~6,8), chan {2:F2} m; ti le be ngang mieng / cao {3:F2} - anh mau ~0,9",
             cao, mieng, chan, 2f * mieng / cao));
         Kiem(Mathf.Abs(cao - 15.4f) < 0.35f, "chieu cao khong phai 15,4 m");
-        Kiem(mieng > 6.3f && mieng < 7.3f && chan < 1.6f, "dang loc khong theo anh (mieng ~6,8, chan ~1,3)");
+        // 29/09/2026 (nguoi dung: "than duoi nhu cay kem oc que"): chan x2 so voi ban cu 1,3 m, than to dan deu, mieng 6,8 giu nguyen.
+        // Do tu DINH LUOI FBX (Editor), so voi SO CU VIET TAY (1,3 / 2,774 o 7,5 m / 6,8) va voi cong thuc trong code.
+        Ghi(string.Format("B2. vo chinh tu dinh luoi: chan {0:F3} m (cu 1,300 -> x{1:F2}), o 7,5 m {2:F3} (cu 2,774 -> x{3:F2}), mieng {4:F3} (cu 6,800); cong thuc code: chan {5:F3}, 7,5 m {6:F3}, mieng {7:F3}",
+            rChanLuoi, rChanLuoi / 1.3f, rGiuaLuoi, rGiuaLuoi / 2.774f, rMiengLuoi, VfxFactory.BanKinhLocXoay(0f, 1f), VfxFactory.BanKinhLocXoay(7.5f, 1f), VfxFactory.BanKinhLocXoay(15f, 1f)));
+        Kiem(Mathf.Abs(rChanLuoi / 1.3f - 2f) < 0.03f, "chan luoi khong to x2 so ban cu (1,3 m)");
+        Kiem(rGiuaLuoi > 2.774f * 1.2f && rGiuaLuoi < rMiengLuoi, "than giua khong to dan deu (7,5 m phai to hon ban cu, nho hon mieng)");
+        Kiem(Mathf.Abs(rMiengLuoi - 6.8f) < 0.02f, "mieng loc bi doi (phai giu 6,8 m)");
+        Kiem(Mathf.Abs(VfxFactory.BanKinhLocXoay(0f, 1f) - rChanLuoi) < 0.02f && Mathf.Abs(VfxFactory.BanKinhLocXoay(7.5f, 1f) - rGiuaLuoi) < 0.03f,
+             "cong thuc BanKinhLocXoay trong code lech luoi FBX (qui dao ke bi cuon / tia set se lech than)");
+        // Vong bui chan: lay tu con loc THAT vua tha (prefab Skill_LocXoay de len code) - rong theo chan moi; DOI CHUNG Gio loc giu 1,0
+        ParticleSystem buiChan = null;
+        foreach (var ps in loc.GetComponentsInChildren<ParticleSystem>(true)) if (ps.name == "BuiChan") buiChan = ps;
+        var gioLoc = VfxFactory.BuildGioLoc();
+        ParticleSystem buiGl = null;
+        foreach (var ps in gioLoc.GetComponentsInChildren<ParticleSystem>(true)) if (ps.name == "BuiCuon") buiGl = ps;
+        float rBui = buiChan != null ? buiChan.shape.radius : -1f, rBuiGl = buiGl != null ? buiGl.shape.radius : -1f;
+        Object.Destroy(gioLoc);
+        Ghi(string.Format("B3. vong bui chan Loc xoay that {0:F2} m (cu 2,00 -> x{1:F2}); doi chung vong bui Gio loc {2:F2} m (giu 1,00)", rBui, rBui / 2f, rBuiGl));
+        Kiem(Mathf.Abs(rBui - 4f) < 0.02f, "vong bui chan Loc xoay khong rong theo chan moi (2,0 -> 4,0) - prefab con so cu?");
+        Kiem(Mathf.Abs(rBuiGl - 1f) < 0.02f, "vong bui Gio loc bi doi theo (chi Loc xoay doi)");
 
         // ================= F. VUNG HUT =================
         float r7 = loc.FunnelRadiusAt(7f);

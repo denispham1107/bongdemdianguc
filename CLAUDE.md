@@ -302,7 +302,10 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
 - ⚠️ **LỐC XOÁY DỰNG LẠI BẰNG BLENDER MCP THEO ẢNH MẪU** (người dùng 25/09/2026: "giống như trên hình 100%, lốc cuốn lên
   chỉ quay xoay theo trục 1 chiều"; chọn cao 15,4 m dáng theo ảnh · bỏ mây giông + khói đen · tia kiểu Giựt sét nhiều nhánh ·
   vùng hút giữ 5,184). `CongCu/Blender/loc_xoay.blend` → `Resources/KyNang/LocXoay/`: `LocXoay.fbx` (4 vỏ phễu `Vo0–3`
-  ×0,70/0,84/1,00/1,13 + vành cuộn `Vanh`; vỏ chính r = 1,3 + 5,5·t^1,9, thân 15 m + vành → 15,72 m), ảnh gió `GioVo0–3`,
+  ×0,70/0,84/1,00/1,13 + vành cuộn `Vanh`; vỏ chính ~~r = 1,3 + 5,5·t^1,9~~ → ⚠️ **29/09/2026 r = 2,6 + 4,2·t^1,6** (người dùng: "thân
+  dưới như cây kem ốc quế" — chân ×2, thân to dần đều, miệng 6,8 giữ; Blender MCP `loc_xoay_than_rong.blend`, cả 5 lưới nhân cùng
+  k(z); quỹ đạo vật bị cuốn + tia sét theo công thức mới; vùng hút giữ 5,184; vòng bụi chân 2,0 → 4,0 cả code lẫn prefab),
+  thân 15 m + vành → 15,72 m), ảnh gió `GioVo0–3`,
   `GioVanh` (dải xoắn ốc, mỗi vòng u lệch đúng một dải → **liền mạch theo u**, render mặt phẳng UV trực giao, `filter_width`
   0,01 — bộ lọc 1,5 px làm lệch mép 10 lần), `HaoQuangDinh`, `BuiXam` (2×2). Code `Vfx/VfxLocXoayBlender.cs`
   (`BuildLocXoay`, `BanKinhLocXoay`, `TornadoBolt(Transform, scale)`); `BuildTornado` gọi nó, hình cũ còn ở `BuildTornadoCu`

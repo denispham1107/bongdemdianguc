@@ -8853,6 +8853,52 @@ của `sinh_icon_ve_lai_3.py`.
 
 - Đủ 22 ô; ô 10 và 15 có hình; Read/Write vẫn bật.
 - Ảnh xem trước (ảnh gốc, trên đĩa nút, 84 px): `PlayTestShots/icon_gio_loc_toc_bien_moi.png`.
+
+### Lốc xoáy (kỹ năng): thân dưới to gấp đôi (29/09/2026)
+
+**Người dùng:** thân Lốc xoáy "nhìn như một cây kem ốc quế" — vỏ chính r = 1,3 + 5,5·t^1,9: chân 1,3 m trong khi miệng 6,8 m. Cho phần
+thân từ đáy trở lên to ra (giống việc đã làm cho Gió lốc hôm 28/09).
+
+Người dùng chọn:
+- **Chân ×2, thân to dần đều**; miệng và chiều cao giữ nguyên.
+- **Vật bị cuốn bay theo thân mới** (quỹ đạo 0,9 × vỏ chính, tia sét dọc thân cũng theo).
+- **Vùng hút giữ 5,184 m, vòng bụi chân rộng theo chân.**
+
+**Lưới (Blender MCP):**
+- Nạp `Vo0–3` + `Vanh` từ `loc_xoay.blend` bằng `libraries.load` vào scene riêng `LocXoayRong`. Không mở file, không đụng scene
+  người dùng; xong trả cửa sổ về scene cũ.
+- Kiểm trước khi sửa:
+  - Công thức cũ khớp lưới `Vo2`: lệch lớn nhất 0,3 mm trên 45 vòng.
+  - Xuất thử bản CHƯA sửa rồi nhập lại cùng `LocXoay.fbx` đang dùng: lệch 0,000001 m, UV và màu đỉnh lệch 0, cả 5 lưới. Thiết lập
+    xuất vẫn là bộ của Gió lốc (`axis_forward='-Z', axis_up='Y', bake_space_transform=True, apply_unit_scale=True,
+    mesh_smooth_type='FACE', colors_type='LINEAR'`).
+- Vỏ chính mới **r = 2,6 + 4,2·t^1,6** (số mũ 1,6 như Gió lốc để thân to đều). Mọi đỉnh của cả 5 lưới nhân CÙNG k(z) = r_mới / r_cũ,
+  k ≥ 1 nên không chỗ nào nhỏ đi:
+
+| Độ cao | 0 m | 3 m | 5 m | 7,5 m | 10 m | 12,5 m | 15 m |
+|---|---|---|---|---|---|---|---|
+| r cũ | 1,30 | 1,56 | 1,98 | 2,77 | 3,85 | 5,19 | 6,80 |
+| r mới | 2,60 | 2,92 | 3,32 | 3,99 | 4,80 | 5,74 | 6,80 |
+| k | ×2,00 | ×1,87 | ×1,68 | ×1,44 | ×1,25 | ×1,11 | ×1,00 |
+
+- Chân bốn lớp: 0,91/1,09/1,30/1,47 → **1,82/2,18/2,60/2,94 m**.
+- Bản Blender lưu riêng `CongCu/Blender/loc_xoay_than_rong.blend` (`save_as_mainfile(copy=True)`). Xuất đè `LocXoay.fbx` (giữ guid,
+  prefab `Skill_LocXoay` tự trỏ lưới mới).
+
+**Unity:**
+- `VfxFactory.BanKinhLocXoay` (hằng `ChanLocXoay/LoeLocXoay/MuLocXoay` 2,6 / 4,2 / 1,6). Công thức này đặt tia sét dọc thân và quỹ đạo
+  vật bị cuốn (`Tornado.FunnelRadiusAt` = 0,9 × vỏ chính), nên cả hai tự theo thân mới.
+- Vòng bụi chân `VfxFactory.BanKinhVongBuiLocXoay` 2,0 → **4,0**. ⚠️ Số này **nằm cả trong prefab** (hệ `BuiChan` nướng sẵn đè code):
+  sửa bằng `PrefabUtility.LoadPrefabContents` → git diff prefab đúng MỘT dòng `radius 2 → 4`.
+- Vùng hút `catchRadius` giữ 5,184. Hoá lốc xoáy phình ra đúng con lốc này nên tự theo.
+
+**Menu 82: 0 lỗi.** Mục B cũ tính "chân" bằng chính công thức trong code (không độc lập với cái đang sửa). Nay:
+- **B2** đọc thẳng ĐỈNH LƯỚI FBX trong Editor (trong Play lưới tắt Read/Write): chân **2,600 (×2,00 so với số cũ 1,300 viết tay)**,
+  7,5 m **3,985 (×1,44)**, miệng **6,800**. Công thức trong code khớp lưới cả ba điểm.
+- **B3** đọc vòng bụi của con lốc THẬT thả từ prefab: **4,00 m (×2)**. Đối chứng vòng bụi Gió lốc giữ 1,00.
+- Mục F: vùng hút 5,184 giữ; quỹ đạo ở 7 m = 3,46 = 0,9 × 3,84.
+
+Ảnh: `PlayTestShots/thanlocxoay_0_dem_can.png`, `thanlocxoay_1_ngay_goc_choi.png`.
 ### Vẽ lại năm icon: Quả cầu lửa, Mưa băng, Sấm sét, Giựt sét, Quả cầu điện (28/09/2026)
 
 **Người dùng:** năm icon này cũng "quá thô và sơ sài" — vẽ lại hợp nội dung từng kỹ năng, không cần Blender MCP.
