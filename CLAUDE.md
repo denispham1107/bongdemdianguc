@@ -322,11 +322,9 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
   ⚠️ **29/09/2026 ĐEN HƠN** (người dùng chọn sau khi menu 93 chụp tối đi 10/20/30%): **Lốc xoáy ×0,8** (`VfxFactory.HeSoToiLocXoay` —
   màu vỏ trong code VÀ 5 vật liệu prefab `Materials/M_P_LX_Vo0–3/Vanh` đã nhân 0,8; màu bụi `MauBuiXamToi/Sang`, bụi chân prefab đặt lại
   lúc chạy; KHÔNG đụng vật liệu bụi dùng chung `BuiXamMat`), **Gió lốc ×0,9** (`HeSoSangMayGioLoc` 2,25 → 2,025). Menu 82 B3c.
-  ⚠️ **DẤU VẾT TRÊN MẶT ĐẤT** (29/09/2026, cả hai kỹ năng, `Vfx/VetLocDat.cs`): dải đất cày (lát cắt 5 điểm bám CHỈ lớp Ground mỗi 1/5 bề
-  rộng; rộng Gió lốc 2,4 · Lốc xoáy 5,6 × hình) + vết cháy xém mỗi nhịp sét; sống **5 s** (mờ 1,5 s cuối). Ảnh Blender MCP
-  `CongCu/Blender/vet_loc_dat.blend` → `Resources/KyNang/VetLoc/` (`VetCayDat` lặp theo chiều dọc, `ChayXem` 2×2). Shader **NHÂN MÀU**
-  `Diablo25D/VetDatNhan` (đất tối đi — trộn alpha thì ban đêm vết sáng hơn đất). ⚠️ Dự án **Gamma**: ảnh sRGB 0,33 × `_NhanMau` 4 kẹp
-  về 1 = VÔ HÌNH dù hình học đúng — nay 1,7 (dải) / 2,0 (cháy); phép thử đo **trên ảnh** (bật/tắt dải cùng khung). Menu 71 C3, 82 B6.
+  ⚠️ **KHÔNG CÓ DẤU VẾT TRÊN MẶT ĐẤT**: 29/09/2026 đã thêm (dải đất cày + vết cháy xém, `VetLocDat`, shader nhân màu `VetDatNhan`,
+  ảnh Blender MCP) rồi cùng ngày người dùng bảo **xoá hết** ("xoá các vết di chuyển của lốc ở cả 2 skill", chọn xoá cả vết cháy) — đã
+  gỡ code, shader, ảnh, vật liệu, file Blender (còn trong git `d2d6da0`). Menu 82 B6 kiểm lốc thật chạy 3 s sinh 0 vật thể dấu vết.
   Ảnh gió `GioVo0–3`,
   `GioVanh` (dải xoắn ốc, mỗi vòng u lệch đúng một dải → **liền mạch theo u**, render mặt phẳng UV trực giao, `filter_width`
   0,01 — bộ lọc 1,5 px làm lệch mép 10 lần), `HaoQuangDinh`, `BuiXam` (2×2). Code `Vfx/VfxLocXoayBlender.cs`

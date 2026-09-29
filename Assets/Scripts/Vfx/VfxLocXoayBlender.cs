@@ -156,8 +156,6 @@ public static partial class VfxFactory
     {
         if (loc == null) return;
         Vector3 goc = loc.position;
-        // Set danh -> mot vet chay xem duoi chan loc (29/09/2026)
-        VetLocDat.ChayXem(goc, 2.2f * scale, 2.0f * scale, 3.2f * scale);
         for (int i = 0; i < 2; i++)
         {
             float a1 = Random.Range(0f, Mathf.PI * 2f);
@@ -275,8 +273,6 @@ public static partial class VfxFactory
             if (t.name == "BuiChan") buiChan = t.GetComponent<ParticleSystem>();
         }
         if (hinh == null) return;                                   // hinh cu (BuildTornadoCu) - khong co than Blender
-        // Dai dat cay theo duong loc di (29/09/2026) - be rong theo hinh (Hoa loc xoay phinh hinh 0,42 -> 1)
-        VetLocDat.Gan(loc, VetLocDat.RongVetLocXoay * scale, () => hinh != null ? hinh.localScale.x : 1f);
         if (!coLen)
             BuiCuonLenTheoThan(hinh, "BuiCuonLen", CaoThanLocXoay * scale, h => 0.95f * BanKinhLocXoay(h, scale), TocBuiCuonLenLocXoay,
                                3.0f, 3.6f, 2.2f * scale, 4.2f * scale, 2.1f, MauBuiXamToi, MauBuiXamSang);

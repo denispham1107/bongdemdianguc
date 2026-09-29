@@ -148,8 +148,6 @@ public static partial class VfxFactory
         gv.orbitalY = new ParticleSystem.MinMaxCurve(ChieuQuyDaoGioLoc * 7f, ChieuQuyDaoGioLoc * 11f);
 
         MayDinhGioLoc(root.transform);
-        // Dai dat cay theo duong loc di (29/09/2026) - song 5 s, xem VetLocDat
-        VetLocDat.Gan(root.transform, VetLocDat.RongVetGioLoc);
         return root;
     }
 
@@ -272,8 +270,6 @@ public static partial class VfxFactory
         // Set danh trong long loc -> may giong tren dinh loe nhe (29/09/2026)
         var loe = loc.GetComponentInChildren<LoeSangMay>();
         if (loe != null) loe.Chop(0.7f);
-        // Set danh xuong -> mot vet chay xem duoi chan loc (29/09/2026)
-        VetLocDat.ChayXem(chan, 0.8f, 1.2f, 1.9f);
         float k = GioLoc.ChieuCao / ChieuCaoLocXoayDo;
         float goc = Random.Range(0f, Mathf.PI * 2f);
         // Hai tia o HAI PHIA DOI DIEN truc, cung goc xoan khi di xuong -> luon doi dien nhau (nguoi dung 17/09/2026: hai tia "gan

@@ -9059,6 +9059,16 @@ Người dùng chọn: vệt **cháy xém + cày đất**, sống **5 giây**, �
 - **Menu 71, 71c, 82, 84: 0 lỗi.**
 
 Ảnh: `PlayTestShots/thanlocxoay_5_vet_dat_dem.png` / `_ngay.png`, `gioloc_5_vet_dat_dem.png` / `_ngay.png`.
+
+**⚠️ Cùng ngày, người dùng bảo XOÁ dấu vết** ("xoá các vết di chuyển của lốc ở cả 2 skill"). Tôi hỏi lại, người dùng chọn **xoá cả vết
+cháy xém**.
+- Đã gỡ: lời gọi trong `BuildGioLoc`, `GioLocSetTrongLoc`, `TornadoBolt`, `DamBaoBuiCuonLenLocXoay`.
+- Đã xoá hẳn: `Vfx/VetLocDat.cs`, shader `S_VetDatNhan.shader`, `Resources/KyNang/VetLoc/` (ảnh + vật liệu — để trong Resources là vào
+  bản build), `CongCu/Blender/vet_loc_dat.blend` + ảnh render, `Editor/ThuVetLocChung.cs`. Tất cả còn trong git ở `d2d6da0` nếu cần.
+- **Phần mức đen giữ nguyên** (Lốc xoáy ×0,8, Gió lốc ×0,9).
+- Menu 71: bỏ khối C3. Menu 82 B6 nay kiểm ngược lại: một Lốc xoáy thật chạy 10,29 m trong 3 s có sét đánh → **0 vật thể dấu vết**
+  (đối chứng: lốc thật sự đã chạy > 8 m).
+- **Menu 71, 82: 0 lỗi.** Ảnh `*_5_vet_dat_*` trong PlayTestShots là của bản đã gỡ.
 ### Vẽ lại năm icon: Quả cầu lửa, Mưa băng, Sấm sét, Giựt sét, Quả cầu điện (28/09/2026)
 
 **Người dùng:** năm icon này cũng "quá thô và sơ sài" — vẽ lại hợp nội dung từng kỹ năng, không cần Blender MCP.

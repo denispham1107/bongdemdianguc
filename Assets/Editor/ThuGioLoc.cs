@@ -1440,69 +1440,6 @@ public static class ThuGioLoc
             XoaLoc();
         }
 
-        Ghi("");
-        {
-            // C3 (o CUOI phep thu - chen giua muc C thi mat 7 s lam loc cua muc C tan truoc khi do vet bui) (29/09/2026, nguoi dung: "moi khi gio loc di qua deu de lai dau vet tren mat dat", chon cay dat + chay xem, 5 s):
-            // mot hinh Gio loc THAT (BuildGioLoc) do phep thu keo ngang 9,5 m/s trong 2 s, set danh moi 0,45 s nhu GioLoc.
-            {
-                Vector3 phaiC3 = Vector3.Cross(Vector3.up, huong).normalized;
-                Vector3 p0 = goc + huong * 9f - phaiC3 * 9f; p0.y = GioLoc.MatDatY(p0, p0.y);
-                var gv = VfxFactory.BuildGioLoc();
-                gv.name = "TAM_GioLocVet";
-                gv.transform.position = p0;
-                float tBatDauC3 = Time.time, henSet = 0f;
-                while (Time.time - tBatDauC3 < 2f)
-                {
-                    Vector3 p = p0 + phaiC3 * (GioLoc.TocDo * (Time.time - tBatDauC3)); p.y = GioLoc.MatDatY(p, p.y);
-                    gv.transform.position = p;
-                    if (Time.time >= henSet) { henSet = Time.time + 0.45f; VfxFactory.GioLocSetTrongLoc(gv.transform); }
-                    yield return null;
-                }
-                Vector3 p1 = gv.transform.position;
-                Vector3 dDi = p1 - p0; dDi.y = 0f;
-                yield return null;
-                var daiC3 = ThuVetLocChung.TimDai(gv.transform);
-                int soLat, soDiem; float rongTB, lechDat;
-                string moTa = ThuVetLocChung.Do(daiC3, out soLat, out rongTB, out lechDat, out soDiem);
-                int soChay = ThuVetLocChung.DemVetChayGan(p0, p1, 2f);
-                Ghi(string.Format("C3. dau vet Gio loc di {0:F2} m trong 2 s: {1}; vet chay xem doc duong {2}", dDi.magnitude, moTa, soChay));
-                Kiem(daiC3 != null && soLat >= 10, "Gio loc di khong de lai dai dau vet");
-                Kiem(daiC3 != null && daiC3.QuangDuong > 0.85f * dDi.magnitude && daiC3.QuangDuong < 1.1f * dDi.magnitude + 0.6f, "dai dau vet khong dai bang quang duong loc di");
-                Kiem(Mathf.Abs(rongTB - VetLocDat.RongVetGioLoc) < 0.1f, "dai dau vet Gio loc khong rong 2,4 m");
-                Kiem(soDiem > 10 && lechDat < 0.08f, "dai dau vet Gio loc khong bam mat dat (lech terrain)");
-                Kiem(soChay >= 3, "set trong Gio loc khong de vet chay xem");
-                var camC3 = Camera.main;
-                var rigC3 = camC3 != null ? camC3.GetComponentInParent<CameraRig>() : null;
-                bool rigBat = rigC3 != null && rigC3.enabled;
-                if (rigC3 != null) rigC3.enabled = false;
-                Vector3 giua = (p0 + p1) * 0.5f;
-                camC3.transform.position = giua - huong * 8f + Vector3.up * 9f;
-                camC3.transform.LookAt(giua);
-                yield return new WaitForEndOfFrame();
-                float sc1, sk1, sc2 = 0f, sk2 = 0f, tlNgay = 1f;
-                float tlDem = ThuVetLocChung.TiLeToiTrenAnh(camC3, daiC3, out sc1, out sk1);
-                yield return Chup("gioloc_5_vet_dat_dem");
-                var chuyenC3 = Object.FindAnyObjectByType<ChuyenChieuSangDem>();
-                if (chuyenC3 != null)
-                {
-                    bool batTruoc = chuyenC3.enabled; chuyenC3.enabled = false;
-                    chuyenC3.ApGiay(ChuyenChieuSangDem.GiayGiuaNgay); yield return null; yield return null;
-                    yield return new WaitForEndOfFrame();
-                    tlNgay = ThuVetLocChung.TiLeToiTrenAnh(camC3, daiC3, out sc2, out sk2);
-                    yield return Chup("gioloc_5_vet_dat_ngay");
-                    chuyenC3.ApGiay(ChuyenChieuSangDem.GiayGiuaDem); yield return null;
-                    chuyenC3.enabled = batTruoc;
-                }
-                Ghi(string.Format("C3. tren ANH (giua dai, co / tat dai cung khung): dem {0:F3} / {1:F3} = x{2:F2}; ngay {3:F3} / {4:F3} = x{5:F2}",
-                    sc1, sk1, tlDem, sc2, sk2, tlNgay));
-                Kiem(tlDem < 0.8f && tlNgay < 0.8f, "dai dau vet Gio loc khong thay tren anh (toi it hon 20%)");
-                if (rigC3 != null) rigC3.enabled = rigBat;
-                Object.Destroy(gv);
-                yield return new WaitForSeconds(5.3f);
-                Ghi(string.Format("C3. 5,3 s sau khi loc tan: dai con {0}, vet chay doc duong con {1}", daiC3 != null ? "CON" : "het", ThuVetLocChung.DemVetChayGan(p0, p1, 2f)));
-                Kiem(daiC3 == null && ThuVetLocChung.DemVetChayGan(p0, p1, 2f) == 0, "dau vet Gio loc khong tan sau 5 s");
-            }
-        }
         toi.DaTungPhep -= dem;
         if (dir != null) dir.enabled = true;
         Ghi("");
