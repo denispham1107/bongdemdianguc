@@ -146,7 +146,51 @@ public static partial class VfxFactory
         var grit = root.transform.Find("Grit").GetComponent<ParticleSystem>();
         var gv = grit.velocityOverLifetime;
         gv.orbitalY = new ParticleSystem.MinMaxCurve(ChieuQuyDaoGioLoc * 7f, ChieuQuyDaoGioLoc * 11f);
+
+        MayDinhGioLoc(root.transform);
         return root;
+    }
+
+    /// <summary>Do cao day dam may tren dinh Gio loc (m) va ban kinh vong sinh may (m) - cho mieng loc ~2 m (29/09/2026).</summary>
+    public const float CaoMayDinhGioLoc = 4.9f, BanKinhMayDinhGioLoc = 1.5f;
+
+    /// <summary>
+    /// MAY GIONG NHE TREN DINH GIO LOC (nguoi dung 29/09/2026: "them hieu ung may giong nhe o tren dinh cac con loc"; chon "may mong co
+    /// mieng loc, loe khi set danh"). Anh MayGiong (4 dam may Blender 2x2) cua ky nang May giong, mau may cua than Gio loc (tang giua,
+    /// x HeSoSangMayGioLoc), mong (do duc hat 0,45 - 0,65), rong ~5 m, xoay cham cung chieu cuon, CUC BO (bay theo loc).
+    /// Moi nhip set trong long loc (GioLocSetTrongLoc) goi LoeSangMay.Chop -> ca dam may loe nhe roi tat 0,15 s.
+    /// </summary>
+    static void MayDinhGioLoc(Transform cha)
+    {
+        var mat = VatLieuMayGiong("MayDinhGioLoc", ThuMucMayGiong, "MayGiong", MauMayGioLoc(0.5f, 1f), false);
+        var ps = NewPS("MayDinh", cha, new Vector3(0f, CaoMayDinhGioLoc, 0f), mat, ParticleSystemRenderMode.Billboard);
+        LuoiAnh2x2(ps);
+        var m = ps.main;
+        m.startLifetime = new ParticleSystem.MinMaxCurve(1.8f, 2.4f);
+        m.startSpeed = 0f;
+        m.startSize = new ParticleSystem.MinMaxCurve(2.4f, 3.6f);
+        m.startRotation = new ParticleSystem.MinMaxCurve(0f, Mathf.PI * 2f);
+        m.startColor = new ParticleSystem.MinMaxGradient(new Color(1f, 1f, 1f, 0.45f), new Color(1f, 1f, 1f, 0.65f));
+        m.simulationSpace = ParticleSystemSimulationSpace.Local;
+        m.scalingMode = ParticleSystemScalingMode.Hierarchy;
+        m.maxParticles = 20;
+        var em = ps.emission; em.rateOverTime = 6f;
+        em.SetBursts(new[] { new ParticleSystem.Burst(0f, (short)8) });   // co may ngay tu luc tung
+        var sh = ps.shape; sh.shapeType = ParticleSystemShapeType.Circle; sh.radius = BanKinhMayDinhGioLoc;
+        sh.rotation = new Vector3(90f, 0f, 0f); sh.radiusThickness = 1f;
+        // Ca ba truc cung kieu Constant (lech kieu la Unity bo ca mo-dun)
+        var v = ps.velocityOverLifetime; v.enabled = true; v.space = ParticleSystemSimulationSpace.Local;
+        v.x = new ParticleSystem.MinMaxCurve(0f); v.y = new ParticleSystem.MinMaxCurve(0.15f); v.z = new ParticleSystem.MinMaxCurve(0f);
+        v.orbitalX = new ParticleSystem.MinMaxCurve(0f); v.orbitalY = new ParticleSystem.MinMaxCurve(ChieuQuyDaoGioLoc * 0.8f); v.orbitalZ = new ParticleSystem.MinMaxCurve(0f);
+        var col = ps.colorOverLifetime; col.enabled = true;
+        var g = new Gradient();
+        g.SetKeys(new[] { new GradientColorKey(Color.white, 0f), new GradientColorKey(Color.white, 1f) },
+                  new[] { new GradientAlphaKey(0f, 0f), new GradientAlphaKey(1f, 0.2f), new GradientAlphaKey(1f, 0.7f), new GradientAlphaKey(0f, 1f) });
+        col.color = new ParticleSystem.MinMaxGradient(g);
+        var sz = ps.sizeOverLifetime; sz.enabled = true;
+        sz.size = new ParticleSystem.MinMaxCurve(1f, new AnimationCurve(new Keyframe(0f, 0.8f), new Keyframe(1f, 1.15f)));
+        var rot = ps.rotationOverLifetime; rot.enabled = true; rot.z = new ParticleSystem.MinMaxCurve(-0.25f, 0.25f);
+        cha.gameObject.AddComponent<LoeSangMay>().Gan(new Renderer[] { ps.GetComponent<Renderer>() });
     }
 
     /// <summary>So nhip set trong loc da phong (moi nhip 2 tia) - phep thu menu 71 doc.</summary>
@@ -220,6 +264,9 @@ public static partial class VfxFactory
     {
         Vector3 chan = loc.position;
         SoNhipSetTrongGioLoc++;
+        // Set danh trong long loc -> may giong tren dinh loe nhe (29/09/2026)
+        var loe = loc.GetComponentInChildren<LoeSangMay>();
+        if (loe != null) loe.Chop(0.7f);
         float k = GioLoc.ChieuCao / ChieuCaoLocXoayDo;
         float goc = Random.Range(0f, Mathf.PI * 2f);
         // Hai tia o HAI PHIA DOI DIEN truc, cung goc xoan khi di xuong -> luon doi dien nhau (nguoi dung 17/09/2026: hai tia "gan

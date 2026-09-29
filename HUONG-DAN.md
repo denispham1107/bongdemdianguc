@@ -8960,6 +8960,41 @@ Người dùng chọn: thêm lớp khói thân dưới + bụi chân ×2, **ch�
 - B4 giữ: lớp cuộn lên tận đỉnh, 90% tới 13,37 m, lệch 5%.
 
 Ảnh: `PlayTestShots/thanlocxoay_0_dem_can.png`.
+
+### Gió lốc: góc quạt 20° và mây giông nhẹ trên đỉnh (29/09/2026)
+
+**Người dùng:** cho các cơn lốc đánh ra "cách xa nhau hơn 1 chút"; thêm "hiệu ứng mây giông nhẹ ở trên đỉnh các cơn lốc".
+
+Người dùng chọn:
+- **20°** giữa hai cơn liền nhau (trước 15°). Cấp 1–4 toả ±20°, cấp 5 toả ±40°. Ở 10 m, hai cơn cạnh nhau cách ~3,5 m (trước 2,6 m).
+- **Mây mỏng cỡ miệng lốc, loé khi sét đánh.**
+
+**Mây** (`VfxFactory.MayDinhGioLoc`, gọi cuối `BuildGioLoc`):
+- Ảnh `MayGiong` (4 đám mây Blender 2×2) của kỹ năng Mây giông. Màu = màu thân Gió lốc (tầng giữa × `HeSoSangMayGioLoc`).
+- Mỏng: độ đục hạt 0,45–0,65. Đám 2,4–3,6 m, sinh trên vòng 1,5 m ở độ cao 4,9 m. 6 đám/giây + 8 đám ngay lúc tung, sống 1,8–2,4 s,
+  tối đa 20.
+- Xoay chậm cùng chiều cuốn, cục bộ (bay theo lốc).
+- **Loé:** `LoeSangMay` (component của Mây giông, đổi màu qua MaterialPropertyBlock) gắn trên gốc hình. Mỗi nhịp sét trong lòng lốc
+  (`GioLocSetTrongLoc`, 0,45 s) gọi `Chop(0,7)`.
+
+**Menu 71: 0 lỗi; menu 84: 0 lỗi.**
+- M: cấp 4 bay −20 / 0 / 20°. Cấp 5 bay −40 / −20 / 0 / 20 / 40°; góc tính từ QUÃNG ĐƯỜNG THẬT đã bay khớp 5/5. Góc mong đợi viết tay,
+  không đọc `GioLoc.GocQuat`.
+- Bia giữa đường vẫn ăn đúng 3 cú. Hai cơn ±20° đi qua cách tâm bia 7·sin20 = 2,39 m, vẫn trong vùng trúng.
+- Menu 84 (hình quạt tung thật): cấp 1 −20 / 0 / 20, cấp 5 ±40, năng lượng 20 / 25.
+- **C2 mây:** 11–12 đám, tâm ở 4,92–5,22 m (thân 5 m), xa trục nhất 1,33–1,45 m. **Loé:** hệ số màu 1,00 trước → **1,56** ngay sau
+  sét → 1,00 sau 0,4 s (đối chứng = trạng thái trước khi sét đánh).
+
+**Hai chỗ phép thử phải sửa trong lúc chạy:**
+1. Đối chứng bụi cuộn lên (mục C) dùng "độ cao 90% lớp mới ≥ 1,4 × bụi chân" (đặt hôm nay theo một lần đo) → chập chờn. Hai lần chạy
+   cùng mã ra ×1,43 rồi ×1,27, vì bụi chân Gió lốc tự nó đã lên 3,2–3,5 m trên thân 5 m. Nay so **tỉ lệ hạt ở 20% trên cùng thân**,
+   đúng chỗ người dùng nói bụi cũ không tới: Gió lốc lớp mới 19–22% so với bụi chân 3–6%; Lốc xoáy 20% so với 0%. Ngưỡng: > 12% và
+   > 2 × bụi chân. Menu 82 dùng cùng cách, 0 lỗi.
+2. Mục H1 (đối chứng "không bị hất thì ra đủ 3 quả cầu lửa") một lần ra 1/3. Lần chạy lại ra 3/3 (đếm 3 3 3). Tôi **chưa xác nhận**
+   nguyên nhân: nghi quả nảy (từ 26/09) làm đếm cùng lúc ra 4 nên nới thành ≥ 3, nhưng lần hỏng chưa ghi số đếm. Nay phép thử ghi
+   số từng lần; tái diễn là biết.
+
+Ảnh `PlayTestShots/gioloc_4_cap5_nam_loc_quat.png` (5 cơn cấp 5; đỉnh lốc khuất ở mép trên màn hình ở góc chơi này).
 - ⚠️ Lần chạy đầu tôi sửa file phép thử trong lúc 71c đang Play. Unity nạp lại assembly giữa chừng, coroutine chết, kẹt Play ~15 phút.
   Đã ghi vào bộ nhớ: không ghi file dưới `Assets/` khi phép thử đang chạy.
 - Lỗi "Particle Velocity curves must all be in the same mode" tràn log có từ ĐẦU phiên Unity (hạt `Grit` của Gió lốc, lỗi cũ đã biết),

@@ -44,7 +44,7 @@ public class GioLoc : MonoBehaviour
     /// quanh huong ngam. Truoc do: 1 loc, cap 5 hai loc song song cach 4 m.
     /// </summary>
     public static int SoLocTheoCap(int capKy) { return capKy >= CapHaiLoc ? 5 : 3; }
-    public const float GocQuat = 15f;
+    public const float GocQuat = 20f;   // 29/09/2026 nguoi dung: "cach xa nhau hon 1 chut" - chon 20 (truoc 15); cap 5 toa +-40
 
     /// <summary>Nhan them vao nang luong (sau he so cap chung). Nay = 1: nguoi dung giu nang luong NHU CU khi doi sang hinh quat
     /// (truoc la nhan theo so loc - 3 loc la gap ba). Cap 5 van co dinh NangLuongCap5.</summary>

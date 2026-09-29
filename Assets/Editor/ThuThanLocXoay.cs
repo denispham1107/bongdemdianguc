@@ -263,6 +263,21 @@ public static class ThuThanLocXoay
         if (ls.Count > 0) lech = ls[ls.Count / 2];
     }
 
+    /// <summary>Ti le hat dang song cao hon nguongY (so voi goc loc).</summary>
+    static float TiLeTren(ParticleSystem ps, Transform goc, float nguongY)
+    {
+        if (ps == null) return 0f;
+        var hat = new ParticleSystem.Particle[ps.particleCount];
+        int n = ps.GetParticles(hat), tren = 0;
+        bool cucBo = ps.main.simulationSpace == ParticleSystemSimulationSpace.Local;
+        for (int i = 0; i < n; i++)
+        {
+            Vector3 w = cucBo ? ps.transform.TransformPoint(hat[i].position) : hat[i].position;
+            if (goc.InverseTransformPoint(w).y > nguongY) tren++;
+        }
+        return n > 0 ? (float)tren / n : 0f;
+    }
+
     /// <summary>Dem hat dang song co do cao (so voi goc loc) tu 0 den caoToi.</summary>
     static int DemDuoi(ParticleSystem ps, Transform goc, float caoToi)
     {
@@ -448,9 +463,11 @@ public static class ThuThanLocXoay
         Kiem(psLen != null && nL > 100, "khong co lop bui cuon len tren con loc that (prefab?)");
         Kiem(hMaxL > 0.9f * caoLx && h90L > 0.7f * caoLx, "bui khong cuon len toi dinh loc");
         Kiem(lechL < 0.35f, "bui cuon len khong om theo than loc");
-        // DOI CHUNG: lop moi phai len cao hon han bui chan cu (lan dau dat nguong tuyet doi 40% / 60% than - bui chan cu do duoc
-        // 48% / 62%: nguong ay khong noi gi ve viec phep do phan biet duoc hai lop; so sanh tuong doi moi la dieu can chung minh)
-        Kiem(h90L > 1.4f * h90C, "DOI CHUNG: bui chan cu len cao ngang lop moi - phep do khong phan biet duoc");
+        // DOI CHUNG: lop moi phai toi PHAN DINH ma bui chan cu khong toi - so TI LE HAT O 20% TREN CUNG THAN (cung cach menu 71;
+        // cao-90% / cao-90% thi chap chon voi Gio loc vi bui chan tu no da len 65-70% than)
+        float trenL = TiLeTren(psLen, loc.transform, 0.8f * caoLx), trenC = TiLeTren(psChanDo, loc.transform, 0.8f * caoLx);
+        Ghi(string.Format("B4. ti le hat tren 80% than: lop cuon len {0:P0}, bui chan {1:P0}", trenL, trenC));
+        Kiem(trenL > 0.12f && trenL > 2f * trenC, "DOI CHUNG: bui chan cu toi dinh ngang lop moi - phep do khong phan biet duoc");
         // B5 (29/09/2026, nguoi dung khoanh THAN DUOI tren anh: "khoi cuon len va bui day dac hon nua"; chon them lop than duoi + bui
         // chan x2): lop BuiThanDuoi chi toi nua than, bui chan 80. DOI CHUNG CUNG LUOT: con loc thu hai dat ve CAU HINH CU (tat
         // BuiThanDuoi, bui chan 40 / 120) - dem hat that o NUA THAN DUOI ca hai con.

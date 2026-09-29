@@ -233,6 +233,21 @@ public static class ThuGioLoc
         if (ls.Count > 0) lech = ls[ls.Count / 2];
     }
 
+    /// <summary>Ti le hat dang song cao hon nguongY (so voi goc loc).</summary>
+    static float TiLeTren(ParticleSystem ps, Transform goc, float nguongY)
+    {
+        if (ps == null) return 0f;
+        var hat = new ParticleSystem.Particle[ps.particleCount];
+        int n = ps.GetParticles(hat), tren = 0;
+        bool cucBo = ps.main.simulationSpace == ParticleSystemSimulationSpace.Local;
+        for (int i = 0; i < n; i++)
+        {
+            Vector3 w = cucBo ? ps.transform.TransformPoint(hat[i].position) : hat[i].position;
+            if (goc.InverseTransformPoint(w).y > nguongY) tren++;
+        }
+        return n > 0 ? (float)tren / n : 0f;
+    }
+
     static IEnumerator Chup(string ten)
     {
         string duong = "PlayTestShots/" + ten + ".png";
@@ -322,9 +337,9 @@ public static class ThuGioLoc
             rChanVo1, rChanGoc, rChanVo1 / rChanGoc, rGiuaVo1, rGiuaGoc, rGiuaVo1 / rGiuaGoc, rDinhVo1, rDinhGoc));
         Kiem(Mathf.Abs(rChanVo1 / rChanGoc - 3.36f) < 0.03f, "chan loc khong to x2 so ban 17/09 (x3,36 so ban goc)");
         Kiem(Mathf.Abs(rDinhVo1 / rDinhGoc - 1f) < 0.01f, "mieng loc bi doi kich thuoc");
-        // 26/09/2026: hinh quat - cap 1-4 ba loc, cap 5 nam loc, 15 do giua hai loc
-        Kiem(GioLoc.SoLocTheoCap(1) == 3 && GioLoc.SoLocTheoCap(4) == 3 && GioLoc.SoLocTheoCap(5) == 5 && Mathf.Approximately(GioLoc.GocQuat, 15f)
-             && Mathf.Approximately(GioLoc.ThoiGianSong, 4.5f), "khong phai 3 loc (cap 5: 5) / 15 do / 4,5 giay");
+        // 26/09/2026: hinh quat - cap 1-4 ba loc, cap 5 nam loc; 29/09/2026 goc 15 -> 20 do giua hai loc (nguoi dung chon)
+        Kiem(GioLoc.SoLocTheoCap(1) == 3 && GioLoc.SoLocTheoCap(4) == 3 && GioLoc.SoLocTheoCap(5) == 5 && Mathf.Approximately(GioLoc.GocQuat, 20f)
+             && Mathf.Approximately(GioLoc.ThoiGianSong, 4.5f), "khong phai 3 loc (cap 5: 5) / 20 do / 4,5 giay");
         Kiem(Mathf.Abs(rGiuaVo1 / rGiuaGoc - 1.724f) < 0.03f, "than giua (2,5 m) khong to dan deu theo dang moi");
         Kiem(Mathf.Abs(GioLoc.TocDo - 9.5f) < 0.001f && Mathf.Abs(GioLoc.BanKinhTrung - 2.42f) < 0.001f, "toc do loc khong phai 9,5 m/s / vung trung khong phai 2,42 m");
         // 17/09/2026: tia set quay lai nhung CHI HIEU UNG - mo ta phai noi ro, va khong con con so 15 cu
@@ -722,10 +737,40 @@ public static class ThuGioLoc
                 Kiem(psLen != null && nL > 40, "khong co lop bui cuon len tren Gio loc");
                 Kiem(hMaxL > 0.9f * caoGl && h90L > 0.7f * caoGl, "bui Gio loc khong cuon len toi dinh loc");
                 Kiem(lechL < 0.35f, "bui cuon len Gio loc khong om theo than");
-                // DOI CHUNG: lop moi phai len cao hon han bui chan cu (lan dau dat nguong tuyet doi 40% / 60% than - bui chan cu do duoc
-                // 48% / 62%: nguong ay khong noi gi ve viec phep do phan biet duoc hai lop; so sanh tuong doi moi la dieu can chung minh)
-                Kiem(h90L > 1.4f * h90C, "DOI CHUNG: bui chan cu len cao ngang lop moi - phep do khong phan biet duoc");
+                // DOI CHUNG: lop moi phai toi PHAN DINH ma bui chan cu khong toi. Lan dau: nguong tuyet doi (bui chan cu 62% than - hong);
+                // lan hai: cao-90% lop moi / bui chan >= 1,4 - chap chon (1,43 roi 1,27 hai lan chay cung ma: bui chan Gio loc tu no da
+                // len 3,2-3,5 m). Nay so TI LE HAT O 20% TREN CUNG THAN - dung cho nguoi dung noi "het o tam nua than".
+                float trenL = TiLeTren(psLen, glDo.transform, 0.8f * caoGl), trenC = TiLeTren(psChanDo, glDo.transform, 0.8f * caoGl);
+                Ghi(string.Format("C. ti le hat tren 80% than: lop cuon len {0:P0}, bui chan {1:P0}", trenL, trenC));
+                Kiem(trenL > 0.12f && trenL > 2f * trenC, "DOI CHUNG: bui chan cu toi dinh ngang lop moi - phep do khong phan biet duoc");
                 Kiem(Mathf.Abs(tocLen + tocChan - 120f) < 0.5f, "tong bui Gio loc khong phai 120 hat/giay moi con");
+                // C2 (29/09/2026, nguoi dung: "may giong nhe o tren dinh cac con loc", chon may mong co mieng loc + loe khi set):
+                // vi tri THAT tung hat may so voi goc loc; loe: DOI CHUNG la he so mau truoc khi set danh (phai = 1)
+                ParticleSystem psMay = null;
+                foreach (var ps in glDo.GetComponentsInChildren<ParticleSystem>(true)) if (ps.name == "MayDinh") psMay = ps;
+                var loeMay = glDo.GetComponentInChildren<LoeSangMay>();
+                float yMin = 99f, yMax = -99f, rMax = 0f; int nMay = 0;
+                if (psMay != null)
+                {
+                    var hatMay = new ParticleSystem.Particle[psMay.particleCount];
+                    nMay = psMay.GetParticles(hatMay);
+                    for (int i = 0; i < nMay; i++)
+                    {
+                        Vector3 l = glDo.transform.InverseTransformPoint(psMay.transform.TransformPoint(hatMay[i].position));
+                        yMin = Mathf.Min(yMin, l.y); yMax = Mathf.Max(yMax, l.y); rMax = Mathf.Max(rMax, new Vector2(l.x, l.z).magnitude);
+                    }
+                }
+                float heSoTruoc = loeMay != null ? loeMay.HeSoHienTai : -1f;
+                VfxFactory.GioLocSetTrongLoc(glDo.transform);
+                yield return null;
+                float heSoSau = loeMay != null ? loeMay.HeSoHienTai : -1f;
+                yield return new WaitForSeconds(0.4f);
+                float heSoTat = loeMay != null ? loeMay.HeSoHienTai : -1f;
+                Ghi(string.Format("C2. may dinh: {0} dam, do cao tam dam {1:F2} - {2:F2} m (than {3:F1}), xa truc nhat {4:F2} m (mieng ~2); loe khi set: he so mau truoc {5:F2} -> ngay sau set {6:F2} -> sau 0,4 s {7:F2}",
+                    nMay, yMin, yMax, caoGl, rMax, heSoTruoc, heSoSau, heSoTat));
+                Kiem(psMay != null && nMay >= 6, "khong co may tren dinh Gio loc");
+                Kiem(yMin > 0.85f * caoGl && yMax < 1.3f * caoGl && rMax < 2.6f, "may khong nam tren dinh loc / rong qua mieng loc");
+                Kiem(Mathf.Abs(heSoTruoc - 1f) < 0.01f && heSoSau > 1.3f && Mathf.Abs(heSoTat - 1f) < 0.05f, "may khong loe khi set danh (hoac khong tat lai)");
                 Object.Destroy(glDo);
             }
             // Vet gio "goc giam khi len cao" + quay lam goc TANG = vet chay LEN
@@ -1019,6 +1064,7 @@ public static class ThuGioLoc
         {
             // H1: nguoi choi dang niem Qua cau lua, bi hat (Apply that) -> khong qua nao
             int nNgat = 0, nDoiChung = 0, soNgatCode0 = PlayerController.SoLanNgatChieu;
+            string demDoiChung = "";
             for (int lan = 0; lan < 3; lan++)
             {
                 toi.mana = toi.maxMana;
@@ -1037,11 +1083,13 @@ public static class ThuGioLoc
                 toi.CastAt(0, goc + huong * 10f);
                 hanH = Time.time + 1f;
                 while (Time.time < hanH) { maxMoi = Mathf.Max(maxMoi, DemCauLua() - truoc); yield return null; }
-                if (maxMoi == 3) nDoiChung++;
+                // >= 3 chu khong == 3 (29/09/2026): tu 26/09 qua trung ke dich sinh them QUA NAY -> co luc dem cung luc ra 4
+                if (maxMoi >= 3) nDoiChung++;
+                demDoiChung += maxMoi + " ";
                 yield return new WaitForSeconds(0.4f);
             }
-            Ghi(string.Format("H1. dang niem Qua cau lua bi hat tung: {0}/3 lan khong qua nao bay ra (bo dem ngat {1}); doi chung khong hat: {2}/3 lan ra du 3 qua",
-                nNgat, PlayerController.SoLanNgatChieu - soNgatCode0, nDoiChung));
+            Ghi(string.Format("H1. dang niem Qua cau lua bi hat tung: {0}/3 lan khong qua nao bay ra (bo dem ngat {1}); doi chung khong hat: {2}/3 lan ra du 3 qua (so qua cung luc: {3})",
+                nNgat, PlayerController.SoLanNgatChieu - soNgatCode0, nDoiChung, demDoiChung));
             Kiem(nNgat == 3 && nDoiChung == 3, "bi hat tung ma chieu dang niem khong bi ngat");
 
             // H2: loc THAT trung nguoi choi dang niem; bi hat thi CastAt bi tu choi
@@ -1323,8 +1371,8 @@ public static class ThuGioLoc
             if (CapDo.DiemKyNang <= 0) CapDo.Them(CapDo.CanDeLenCap(CapDo.Cap));
             CapDo.NangCap(K);
             int cap5 = CapDo.CapCuaKyNang(K);
-            // bia dung ngay tren duong bay cua loc GIUA, 7 m truoc mat: loc giua trung chac chan; hai loc +-15 do di qua cach
-            // tam bia 7 x sin15 = 1,81 m < vung trung 2,42 nen cung trung; hai loc +-30 do cach 3,5 m - tuy be ngang bia
+            // bia dung ngay tren duong bay cua loc GIUA, 7 m truoc mat: loc giua trung chac chan; hai loc +-20 do di qua cach
+            // tam bia 7 x sin20 = 2,39 m < vung trung 2,42 (+ be ngang bia) nen cung trung; hai loc +-40 do cach 4,5 m - truot
             var biaM = TaoBia("TAM_BiaGiuaQuat", gM + hM * 7f);
             yield return new WaitForFixedUpdate();
             float mauM = biaM.health;
@@ -1348,7 +1396,8 @@ public static class ThuGioLoc
             yield return new WaitForSeconds(0.35f);
             string gocViTri = "";
             int dungGocViTri = 0;
-            var gocMong5 = new List<float> { -30f, -15f, 0f, 15f, 30f };
+            // goc mong doi VIET TAY (20 do tu 29/09/2026), khong doc GioLoc.GocQuat - phep kiem doc lap voi hang dang sua
+            var gocMong5 = new List<float> { -40f, -20f, 0f, 20f, 40f };
             var gocDo = new List<float>();
             foreach (var l in nam)
             {
@@ -1370,14 +1419,14 @@ public static class ThuGioLoc
             int soCu = Mathf.RoundToInt(matM / moiCu);
             // CAP 5 nay ton DUNG 25 nang luong (nguoi dung doi 18/09/2026; truoc do 20 x 1,1^4 x 2 = 58,56)
             float mongTon4 = 20f * Mathf.Pow(1.1f, 3), mongTon5 = GioLoc.NangLuongCap5;
-            Ghi(string.Format("M. cap 4 (doi chung): {0} loc, huong bay {1}(mong -15 0 15), ton {2:F2} nang luong (mong {3:F2} - nang luong KHONG nhan theo so loc)",
+            Ghi(string.Format("M. cap 4 (doi chung): {0} loc, huong bay {1}(mong -20 0 20), ton {2:F2} nang luong (mong {3:F2} - nang luong KHONG nhan theo so loc)",
                 bon.Count, goc4, ton4, mongTon4));
-            Ghi(string.Format("M. cap {0}: {1} loc, huong bay {2}(mong -30 -15 0 15 30), goc tinh tu quang duong da bay 0,35 s: {3}(khop {4}/5); ton {5:F2} (mong {6:F2} - con so CO DINH nguoi dung chot 18/09/2026)",
+            Ghi(string.Format("M. cap {0}: {1} loc, huong bay {2}(mong -40 -20 0 20 40), goc tinh tu quang duong da bay 0,35 s: {3}(khop {4}/5); ton {5:F2} (mong {6:F2} - con so CO DINH nguoi dung chot 18/09/2026)",
                 cap5, nam.Count, goc5, gocViTri, dungGocViTri, ton5, mongTon5));
             Ghi(string.Format("M. bia tren duong loc giua mat {0:F1} = {1} cu x {2:F2} (moi loc trung mot lan; mong 3-5 cu: giua + hai loc 15 do chac chan)",
                 matM, soCu, moiCu));
-            Kiem(bon.Count == 3 && goc4 == "-15 0 15 " && Mathf.Abs(ton4 - mongTon4) < 0.05f, "doi chung cap 4 khong phai 3 loc hinh quat 15 do / nang luong thuong");
-            Kiem(cap5 == 5 && nam.Count == 5 && goc5 == "-30 -15 0 15 30 ", "cap 5 khong ra dung 5 loc hinh quat 15 do");
+            Kiem(bon.Count == 3 && goc4 == "-20 0 20 " && Mathf.Abs(ton4 - mongTon4) < 0.05f, "doi chung cap 4 khong phai 3 loc hinh quat 20 do / nang luong thuong");
+            Kiem(cap5 == 5 && nam.Count == 5 && goc5 == "-40 -20 0 20 40 ", "cap 5 khong ra dung 5 loc hinh quat 20 do");
             Kiem(dungGocViTri == 5, "vi tri loc sau khi bay khong toe dung hinh quat");
             Kiem(Mathf.Abs(ton5 - mongTon5) < 0.05f, "cap 5 khong ton dung 25 nang luong");
             // bia co 10 000 000 mau: float o do lon nay chi chinh xac toi 1 don vi, moi cu 155,52 thanh 156
