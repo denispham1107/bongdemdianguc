@@ -1,0 +1,26 @@
+[ban 1] muc den Loc xoay + Gio loc - 29/09/2026 11:53
+Loc xoay: 8 renderer lam toi; Gio loc: 8 renderer
+anh: PlayTestShots/denloc_0_dem.png
+anh: PlayTestShots/denloc_gl_0_dem.png
+DEM  toi di 0%: do sang than Loc xoay 0.549, Gio loc 0.326
+anh: PlayTestShots/denloc_10_dem.png
+anh: PlayTestShots/denloc_gl_10_dem.png
+DEM  toi di 10%: do sang than Loc xoay 0.481, Gio loc 0.306
+anh: PlayTestShots/denloc_20_dem.png
+anh: PlayTestShots/denloc_gl_20_dem.png
+DEM  toi di 20%: do sang than Loc xoay 0.464, Gio loc 0.262
+anh: PlayTestShots/denloc_30_dem.png
+anh: PlayTestShots/denloc_gl_30_dem.png
+DEM  toi di 30%: do sang than Loc xoay 0.353, Gio loc 0.231
+anh: PlayTestShots/denloc_0_ngay.png
+anh: PlayTestShots/denloc_gl_0_ngay.png
+NGAY toi di 0%: do sang than Loc xoay 0.581, Gio loc 0.338
+anh: PlayTestShots/denloc_10_ngay.png
+anh: PlayTestShots/denloc_gl_10_ngay.png
+NGAY toi di 10%: do sang than Loc xoay 0.524, Gio loc 0.298
+anh: PlayTestShots/denloc_20_ngay.png
+anh: PlayTestShots/denloc_gl_20_ngay.png
+NGAY toi di 20%: do sang than Loc xoay 0.475, Gio loc 0.271
+anh: PlayTestShots/denloc_30_ngay.png
+anh: PlayTestShots/denloc_gl_30_ngay.png
+NGAY toi di 30%: do sang than Loc xoay 0.404, Gio loc 0.232

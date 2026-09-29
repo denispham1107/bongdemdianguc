@@ -444,6 +444,20 @@ public static class ThuThanLocXoay
         float xoayX = buiChan != null ? buiChan.shape.rotation.x : 0f;
         Ghi(string.Format("B3b. vong phun bui chan xoay {0:F0} do quanh X (mong -90: nam phang tren dat)", xoayX));
         Kiem(Mathf.Abs(xoayX + 90f) < 0.5f, "vong phun bui chan Loc xoay con dung (hat sinh duoi dat) - prefab con so cu?");
+        // B3c (29/09/2026, nguoi dung chon toi di 20%): mau tren con loc THAT tu prefab, so voi SO VIET TAY (goc x 0,8)
+        {
+            Color vo0 = Color.clear, vanh = Color.clear;
+            foreach (var mr in loc.GetComponentsInChildren<MeshRenderer>(true))
+            {
+                if (mr.name == "Vo0") vo0 = mr.sharedMaterial.GetColor("_TintColor");
+                if (mr.name == "Vanh") vanh = mr.sharedMaterial.GetColor("_TintColor");
+            }
+            Color bui0 = buiChan != null ? buiChan.main.startColor.colorMin : Color.clear;
+            Ghi(string.Format("B3c. mau vo Vo0 ({0:F3} {1:F3} {2:F3}) mong (0,688 0,704 0,736); Vanh {3:F3} mong 0,800; bui chan toi {4:F3} mong 0,640",
+                vo0.r, vo0.g, vo0.b, vanh.r, bui0.r));
+            Kiem(Mathf.Abs(vo0.r - 0.688f) < 0.01f && Mathf.Abs(vo0.b - 0.736f) < 0.01f && Mathf.Abs(vanh.r - 0.8f) < 0.01f, "vo Loc xoay chua toi 20% (vat lieu prefab?)");
+            Kiem(Mathf.Abs(bui0.r - 0.64f) < 0.01f, "bui chan Loc xoay chua toi 20%");
+        }
         Kiem(Mathf.Abs(rBuiGl - 1f) < 0.02f, "vong bui Gio loc bi doi theo (chi Loc xoay doi)");
 
         // B4 (29/09/2026, nguoi dung: bui cuon len "day dac hon nua len tan dinh"): lop BuiCuonLen tren con loc THAT tu prefab (gan luc
@@ -506,6 +520,65 @@ public static class ThuThanLocXoay
             Kiem(demCu > 50, "doi chung: con loc cau hinh cu khong co bui - phep dem vo nghia");
             Kiem((float)demMoi / Mathf.Max(1, demCu) > 1.8f, "nua than duoi khong day dac hon ro (it nhat x1,8)");
             Object.Destroy(loc2.gameObject);
+        }
+
+        // B6 (29/09/2026, nguoi dung: "moi khi gio loc di qua deu de lai dau vet tren mat dat", chon cay dat + chay xem, 5 s):
+        // mot con loc THAT tu prefab CHAY ngang 3,4 m/s trong 3 s -> dai cay dat bam terrain, rong 5,6 m, vet chay; loc tan -> dai
+        // het trong ~5 s.
+        {
+            Vector3 phaiB6 = Vector3.Cross(Vector3.up, huong).normalized;
+            // duong chay o PHIA TRUOC con loc dung yen cua muc A (dat o tam, song 120 s) - lan dau dat SAU no (tam + huong*8): nhin tu
+            // may quay, than loc dung yen che dung dai, do tren anh ra x0,97
+            Vector3 dauB6 = tam - huong * 7f - phaiB6 * 6f; dauB6.y = VfxFactory.GroundY(dauB6);
+            var loc3 = Tornado.Spawn(dauB6, phaiB6, maskEnemy);
+            loc3.moveSpeed = 3.4f; loc3.wanderAmount = 0f; loc3.duration = 60f;
+            yield return null;
+            Vector3 xuatPhat = loc3.transform.position;
+            yield return new WaitForSeconds(3f);
+            Vector3 cuoi = loc3.transform.position;
+            Vector3 dDi = cuoi - xuatPhat; dDi.y = 0f;
+            var dai = ThuVetLocChung.TimDai(loc3.transform);
+            int soLat, soDiem; float rongTB, lechDat;
+            string moTa = ThuVetLocChung.Do(dai, out soLat, out rongTB, out lechDat, out soDiem);
+            int soChay = ThuVetLocChung.DemVetChayGan(xuatPhat, cuoi, 4f);
+            Ghi(string.Format("B6. dau vet Loc xoay chay {0:F2} m trong 3 s: {1}; vet chay xem doc duong {2}", dDi.magnitude, moTa, soChay));
+            Kiem(dai != null && soLat >= 5, "Loc xoay chay khong de lai dai dau vet");
+            Kiem(dai != null && dai.QuangDuong > 0.85f * dDi.magnitude && dai.QuangDuong < 1.1f * dDi.magnitude + 1.2f, "dai dau vet khong dai bang quang duong loc di");
+            Kiem(Mathf.Abs(rongTB - VetLocDat.RongVetLocXoay * loc3.scale) < 0.15f, "dai dau vet khong rong 5,6 m");
+            Kiem(soDiem > 10 && lechDat < 0.08f, "dai dau vet khong bam mat dat (lech terrain)");
+            Kiem(soChay >= 1, "set trong Loc xoay khong de vet chay xem");
+            // chup: may quay nhin xuong duong loc vua di. XOA LOC TRUOC: than 15 m + bui dung o cuoi duong che gan het dai (lan dau
+            // do tren anh ra x0,94 vi mau lay dung cho bi che) - nhu canh loc vua quet qua, dai con song 5 s
+            Object.Destroy(loc3.gameObject);
+            yield return null; yield return null;
+            bool rigBat = rig != null && rig.enabled;
+            if (rig != null) rig.enabled = false;
+            Vector3 giua = (xuatPhat + cuoi) * 0.5f;
+            // may quay CAO + XA (lan dau 13 m cao, 11 m sau: loc cuon ca cay, may quay lot giua canh la)
+            cam.transform.position = giua - huong * 16f - phaiB6 * 10f + Vector3.up * 26f;
+            cam.transform.LookAt(giua);
+            yield return new WaitForEndOfFrame();
+            float sc1, sk1, sc2 = 0f, sk2 = 0f, tlNgay = 1f;
+            float tlDem = ThuVetLocChung.TiLeToiTrenAnh(cam, dai, out sc1, out sk1);
+            yield return Chup("thanlocxoay_5_vet_dat_dem");
+            var chuyenB6 = Object.FindAnyObjectByType<ChuyenChieuSangDem>();
+            if (chuyenB6 != null)
+            {
+                bool batTruoc = chuyenB6.enabled; chuyenB6.enabled = false;
+                chuyenB6.ApGiay(ChuyenChieuSangDem.GiayGiuaNgay); yield return null; yield return null;
+                yield return new WaitForEndOfFrame();
+                tlNgay = ThuVetLocChung.TiLeToiTrenAnh(cam, dai, out sc2, out sk2);
+                yield return Chup("thanlocxoay_5_vet_dat_ngay");
+                chuyenB6.ApGiay(ChuyenChieuSangDem.GiayGiuaDem); yield return null;
+                chuyenB6.enabled = batTruoc;
+            }
+            Ghi(string.Format("B6. tren ANH (giua dai, co / tat dai cung khung): dem {0:F3} / {1:F3} = x{2:F2}; ngay {3:F3} / {4:F3} = x{5:F2}",
+                sc1, sk1, tlDem, sc2, sk2, tlNgay));
+            Kiem(tlDem < 0.8f && tlNgay < 0.8f, "dai dau vet Loc xoay khong thay tren anh (toi it hon 20%)");
+            if (rig != null) rig.enabled = rigBat;
+            yield return new WaitForSeconds(5.3f);
+            Ghi(string.Format("B6. 5,3 s sau khi loc tan: dai con {0}, vet chay doc duong con {1}", dai != null ? "CON" : "het", ThuVetLocChung.DemVetChayGan(xuatPhat, cuoi, 4f)));
+            Kiem(dai == null, "dai dau vet khong tan sau 5 s");
         }
 
         // ================= F. VUNG HUT =================

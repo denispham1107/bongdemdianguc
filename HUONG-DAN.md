@@ -9008,6 +9008,57 @@ người dùng chọn **trong nửa trên thân (2,5–4,7 m)**.
   Đã ghi vào bộ nhớ: không ghi file dưới `Assets/` khi phép thử đang chạy.
 - Lỗi "Particle Velocity curves must all be in the same mode" tràn log có từ ĐẦU phiên Unity (hạt `Grit` của Gió lốc, lỗi cũ đã biết),
   không phải của lớp mới.
+
+### Lốc xoáy + Gió lốc: đen hơn một chút, và dấu vết trên mặt đất (29/09/2026)
+
+**Người dùng:** hai kỹ năng "mỗi khi gió lốc đi qua đều để lại dấu vết trên mặt đất"; "cho đen hơn 1 chút cả 2 skill".
+
+Người dùng chọn: vệt **cháy xém + cày đất**, sống **5 giây**, ảnh dựng bằng **Blender MCP**. Mức đen: tôi chụp 3 mức rồi người dùng chọn.
+
+**Mức đen — menu 93 mới (`ThuDenLoc.cs`):**
+- Đặt một Lốc xoáy thật (prefab) và một Gió lốc cạnh nhau, chụp đêm và ngày ở 4 mức: gốc, tối 10 / 20 / 30%. Làm tối bằng
+  MaterialPropertyBlock, vì vật liệu prefab là asset, sửa trong Play là ghi xuống đĩa.
+- Lần chụp đầu Gió lốc bị gốc cây che, phải thêm khung gần riêng. Ảnh `PlayTestShots/denloc_so_sanh.png`.
+- Độ sáng thân (đêm), gốc → −10 / −20 / −30%: Lốc xoáy 0,549 → 0,481 / 0,464 / 0,353; Gió lốc 0,326 → 0,306 / 0,262 / 0,231.
+- Người dùng chọn **Lốc xoáy tối 20%, Gió lốc tối 10%**.
+  - Gió lốc: `HeSoSangMayGioLoc` 2,25 → 2,025 (thân, bụi, mây trong lốc cùng ăn).
+  - Lốc xoáy: `HeSoToiLocXoay` 0,8 nhân vào màu vỏ trong code **và 5 vật liệu prefab** `M_P_LX_Vo0–3/Vanh` (git diff đúng một dòng mỗi
+    file), và vào `MauBuiXamToi/Sang`. Bụi chân nướng trong prefab thì đặt lại màu trong `DamBaoBuiCuonLenLocXoay`.
+  - ⚠️ Ảnh bụi `BuiXamMat` DÙNG CHUNG hai kỹ năng, nên chỉ đổi màu hạt, không đổi vật liệu.
+- Menu 82 B3c: vỏ Lốc xoáy thật (0,688 0,704 0,736), vành 0,800, bụi chân 0,640 — khớp số viết tay.
+- Menu 71c: cả cơn Gió lốc đêm ×0,79, ngày ×0,81 so với bản ×2,5; thân vẫn nổi trên nền đêm ×1,12 so với bản chìm. 0 lỗi.
+
+**Dấu vết (`Vfx/VetLocDat.cs`):**
+- **Ảnh (Blender MCP)**, `CongCu/Blender/vet_loc_dat.blend`, scene riêng `VetLocDat`, Cycles, nền trong suốt, view transform Standard:
+  - `VetCayDat` 512×1024: đất cày tối, hai lớp rãnh cong xoáy + gò đất, mép loang lổ. Liền mạch theo chiều dọc nhờ lấy nhiễu trên
+    HÌNH TRỤ (cos 2πv, sin 2πv, u). Bản đầu đều như bậc thang và sáng hơn nền tối — làm lại: rãnh cong mạnh, lệch nhiễu, màu tối.
+  - `ChayXem0–3` 512×512 (xếp thành `ChayXem.png` 2×2): lõi cháy đen, mép răng cưa, tia xém toả (nhiễu trên HƯỚNG).
+- **Dải cày:** lốc đi được 1/5 bề rộng thì thêm một lát cắt ngang 5 điểm. Mỗi điểm dò tia CHỈ lớp Ground (+4 cm) nên bám đất gồ ghề.
+  Bề rộng: Gió lốc 2,4 m, Lốc xoáy 5,6 m × hình (Hoá lốc xoáy phình theo). Lát sống 5 s: hiện 0,2 s, mờ 1,5 s cuối. Lốc tan thì dải
+  mờ nốt rồi tự xoá. Nhảy chỗ > 8 m (lúc sinh) không kéo dải.
+- **Vết cháy:** mỗi nhịp sét trong lòng lốc (`GioLocSetTrongLoc`, `TornadoBolt`) sinh một lưới 5×5 bám đất dưới chân lốc, 1 trong 4
+  ô, xoay ngẫu nhiên. Trần 70 vết cùng lúc.
+- **Shader `Diablo25D/VetDatNhan` — NHÂN MÀU** (`Blend DstColor Zero`): đất × lerp(1, ảnh × `_NhanMau`, alpha). Trộn alpha thường
+  (shader không nhận sáng) thì ban đêm vệt nâu sáng hơn đất như tự phát sáng — lỗi cũ của vũng máu. Sương mù kéo hệ số về 1.
+  Vật liệu ở `Resources/KyNang/VetLoc/` nên shader vào bản build.
+- ⚠️ **Lần đầu dải VÔ HÌNH dù hình học đúng hết.** Dự án dùng không gian màu **Gamma**: ảnh lưu sRGB, giữa dải ≈ 0,33 × `_NhanMau` 4 =
+  1,32 → kẹp 1 = không tối gì (vết cháy 0,20 × 4 = 0,78 thì vẫn thấy). Nay `_NhanMau` 1,7 (dải) / 2,0 (cháy). Phép thử cũ chỉ đo hình
+  học nên không bắt được → thêm **đo trên ảnh**: render cùng khung hai lần (bật / tắt dải), đo độ sáng quanh điểm giữa mỗi lát.
+
+**Đo:**
+
+| | Dải | Bề rộng | Lệch so với terrain (SampleHeight, độc lập với tia dò) | Trên ảnh: đêm / ngày | Vết cháy | Sau 5,3 s |
+|---|---|---|---|---|---|---|
+| Lốc xoáy (menu 82 B6: lốc thật chạy 3,4 m/s, 3 s) | 9 lát, 9,2–9,6 m / đi 10,2 m | **5,60 m** | **0,000 m** (45 điểm) | **×0,61 / ×0,59** | 7 | hết |
+| Gió lốc (menu 71 C3: kéo 9,5 m/s, 2 s, sét mỗi 0,45 s) | 31–33 lát, 18,5 m / đi 18,9 m | **2,40 m** | **0,000 m** (155–165 điểm) | **×0,76 / ×0,76** | 6–10 | hết |
+
+- B6 lần đầu đo trên ảnh ra ×0,94, rồi ×0,97. Trước tiên thân con lốc đang chạy che dải → xoá lốc trước khi chụp. Rồi đến **con lốc
+  đứng yên của mục A** (sống 120 s) che, vì đường chạy nằm sau nó → dời đường chạy ra trước nó.
+- Menu 71: khối đo dấu vết (mất 7 s) chèn giữa mục C làm cơn lốc của mục C tan trước khi đo vệt bụi → dời xuống cuối phép thử. Mục H2
+  (đua thời gian hất tung / tung chiêu) một lần hỏng, lần chạy lại đạt — chập chờn, không lặp lại.
+- **Menu 71, 71c, 82, 84: 0 lỗi.**
+
+Ảnh: `PlayTestShots/thanlocxoay_5_vet_dat_dem.png` / `_ngay.png`, `gioloc_5_vet_dat_dem.png` / `_ngay.png`.
 ### Vẽ lại năm icon: Quả cầu lửa, Mưa băng, Sấm sét, Giựt sét, Quả cầu điện (28/09/2026)
 
 **Người dùng:** năm icon này cũng "quá thô và sơ sài" — vẽ lại hợp nội dung từng kỹ năng, không cần Blender MCP.

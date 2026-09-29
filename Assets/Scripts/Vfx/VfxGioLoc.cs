@@ -148,6 +148,8 @@ public static partial class VfxFactory
         gv.orbitalY = new ParticleSystem.MinMaxCurve(ChieuQuyDaoGioLoc * 7f, ChieuQuyDaoGioLoc * 11f);
 
         MayDinhGioLoc(root.transform);
+        // Dai dat cay theo duong loc di (29/09/2026) - song 5 s, xem VetLocDat
+        VetLocDat.Gan(root.transform, VetLocDat.RongVetGioLoc);
         return root;
     }
 
@@ -226,7 +228,7 @@ public static partial class VfxFactory
     /// <summary>So hat bui cuon quanh chan Gio loc gap bao nhieu lan bui chan Loc xoay (nguoi dung 29/09/2026 chon x2).</summary>
     public const float HeSoBuiDayGioLoc = 2f;
 
-    public const float HeSoSangMayGioLoc = 2.25f;
+    public const float HeSoSangMayGioLoc = 2.025f;   // 29/09/2026 toi di 10% (2,25 x 0,9) - menu 93 chup 10/20/30%, nguoi dung chon 10%
     // ^ x1,5 van chim (noi x1,02) - menu 71c quet 1,5/2/2,5/3, nguoi dung chon 2,5 (noi x1,53). 29/09/2026 nguoi dung: "cho toan than
     //   den hon 1 chut" - quet 2,5/2,25/2,0/1,75 (bui da day x2), chon 2,25 CHO CA THAN LAN BUI (dem van noi x1,13 so ban chim).
 
@@ -270,6 +272,8 @@ public static partial class VfxFactory
         // Set danh trong long loc -> may giong tren dinh loe nhe (29/09/2026)
         var loe = loc.GetComponentInChildren<LoeSangMay>();
         if (loe != null) loe.Chop(0.7f);
+        // Set danh xuong -> mot vet chay xem duoi chan loc (29/09/2026)
+        VetLocDat.ChayXem(chan, 0.8f, 1.2f, 1.9f);
         float k = GioLoc.ChieuCao / ChieuCaoLocXoayDo;
         float goc = Random.Range(0f, Mathf.PI * 2f);
         // Hai tia o HAI PHIA DOI DIEN truc, cung goc xoan khi di xuong -> luon doi dien nhau (nguoi dung 17/09/2026: hai tia "gan

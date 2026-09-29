@@ -82,11 +82,12 @@ public static partial class VfxFactory
             string anh; Color mau; float quay, truot;
             switch (mf.name)
             {
-                case "Vo0":  anh = "GioVo0";  mau = new Color(0.86f, 0.88f, 0.92f, 1.00f); quay = 210f; truot = TruotLenLocXoay[0]; break;
-                case "Vo1":  anh = "GioVo1";  mau = new Color(0.92f, 0.94f, 0.97f, 1.00f); quay = 165f; truot = TruotLenLocXoay[1]; break;
-                case "Vo2":  anh = "GioVo2";  mau = new Color(0.97f, 0.98f, 1.00f, 1.00f); quay = 130f; truot = TruotLenLocXoay[2]; break;
-                case "Vo3":  anh = "GioVo3";  mau = new Color(1.00f, 1.00f, 1.00f, 0.90f); quay = 100f; truot = TruotLenLocXoay[3]; break;
-                case "Vanh": anh = "GioVanh"; mau = new Color(1.00f, 1.00f, 1.00f, 0.95f); quay = 120f; truot = 0f; break;   // vanh: ong vong, khong truot
+                // Mau goc x HeSoToiLocXoay (29/09/2026 toi di 20%). ⚠️ Hinh trong game lay tu PREFAB: vat lieu M_P_LX_Vo0-3/Vanh da nhan cung he so
+                case "Vo0":  anh = "GioVo0";  mau = ToiLocXoay(new Color(0.86f, 0.88f, 0.92f, 1.00f)); quay = 210f; truot = TruotLenLocXoay[0]; break;
+                case "Vo1":  anh = "GioVo1";  mau = ToiLocXoay(new Color(0.92f, 0.94f, 0.97f, 1.00f)); quay = 165f; truot = TruotLenLocXoay[1]; break;
+                case "Vo2":  anh = "GioVo2";  mau = ToiLocXoay(new Color(0.97f, 0.98f, 1.00f, 1.00f)); quay = 130f; truot = TruotLenLocXoay[2]; break;
+                case "Vo3":  anh = "GioVo3";  mau = ToiLocXoay(new Color(1.00f, 1.00f, 1.00f, 0.90f)); quay = 100f; truot = TruotLenLocXoay[3]; break;
+                case "Vanh": anh = "GioVanh"; mau = ToiLocXoay(new Color(1.00f, 1.00f, 1.00f, 0.95f)); quay = 120f; truot = 0f; break;   // vanh: ong vong, khong truot
                 default: continue;
             }
             var go = new GameObject(mf.name);
@@ -155,6 +156,8 @@ public static partial class VfxFactory
     {
         if (loc == null) return;
         Vector3 goc = loc.position;
+        // Set danh -> mot vet chay xem duoi chan loc (29/09/2026)
+        VetLocDat.ChayXem(goc, 2.2f * scale, 2.0f * scale, 3.2f * scale);
         for (int i = 0; i < 2; i++)
         {
             float a1 = Random.Range(0f, Mathf.PI * 2f);
@@ -179,8 +182,14 @@ public static partial class VfxFactory
         get { return VatLieuLocXoay("BuiXam", "BuiXam", new Color(0.86f, 0.87f, 0.90f, 0.75f), false); }
     }
 
-    /// <summary>Mau bui xam cua Loc xoay - Gio loc dung y het (nguoi dung 28/09/2026: "cung mau, cung hieu ung").</summary>
-    public static readonly Color MauBuiXamToi = new Color(0.80f, 0.81f, 0.84f, 0.70f), MauBuiXamSang = new Color(0.95f, 0.95f, 0.97f, 0.90f);
+    /// <summary>LOC XOAY DEN HON (nguoi dung 29/09/2026: "cho den hon 1 chut ca 2 skill"; menu 93 chup toi di 10/20/30%, chon 20%):
+    /// mau vo + mau bui x 0,8. Khong dong vat lieu bui dung chung BuiXamMat (Gio loc cung dung) - chi mau hat.</summary>
+    public const float HeSoToiLocXoay = 0.8f;
+
+    static Color ToiLocXoay(Color c) { return new Color(c.r * HeSoToiLocXoay, c.g * HeSoToiLocXoay, c.b * HeSoToiLocXoay, c.a); }
+
+    /// <summary>Mau bui xam cua Loc xoay (goc 0,80 - 0,95 x HeSoToiLocXoay). Gio loc tu 28/09 ghi de bang mau may giong cua no.</summary>
+    public static readonly Color MauBuiXamToi = ToiLocXoay(new Color(0.80f, 0.81f, 0.84f, 0.70f)), MauBuiXamSang = ToiLocXoay(new Color(0.95f, 0.95f, 0.97f, 0.90f));
 
     /// <summary>So hat/giay cua lop bui CUON LEN TAN DINH (29/09/2026, nguoi dung chon): Loc xoay 80 (+ 40 bui chan = 120),
     /// Gio loc 40 (+ 80 bui chan = 120 moi con).</summary>
@@ -266,6 +275,8 @@ public static partial class VfxFactory
             if (t.name == "BuiChan") buiChan = t.GetComponent<ParticleSystem>();
         }
         if (hinh == null) return;                                   // hinh cu (BuildTornadoCu) - khong co than Blender
+        // Dai dat cay theo duong loc di (29/09/2026) - be rong theo hinh (Hoa loc xoay phinh hinh 0,42 -> 1)
+        VetLocDat.Gan(loc, VetLocDat.RongVetLocXoay * scale, () => hinh != null ? hinh.localScale.x : 1f);
         if (!coLen)
             BuiCuonLenTheoThan(hinh, "BuiCuonLen", CaoThanLocXoay * scale, h => 0.95f * BanKinhLocXoay(h, scale), TocBuiCuonLenLocXoay,
                                3.0f, 3.6f, 2.2f * scale, 4.2f * scale, 2.1f, MauBuiXamToi, MauBuiXamSang);
@@ -279,6 +290,7 @@ public static partial class VfxFactory
         if (buiChan != null)
         {
             var m = buiChan.main; m.maxParticles = Mathf.RoundToInt(120 * HeSoBuiChanLocXoay);
+            m.startColor = new ParticleSystem.MinMaxGradient(MauBuiXamToi, MauBuiXamSang);   // prefab nuong mau cu (chua toi 20%)
             var e = buiChan.emission; e.rateOverTime = 40f * HeSoBuiChanLocXoay;
         }
     }

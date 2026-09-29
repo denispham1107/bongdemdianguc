@@ -5,13 +5,17 @@ B. cao 15.72 m (mong 15,4), mieng vo chinh 6.80 m (mong ~6,8), chan 2.60 m; ti l
 B2. vo chinh tu dinh luoi: chan 2.600 m (cu 1,300 -> x2.00), o 7,5 m 3.985 (cu 2,774 -> x1.44), mieng 6.800 (cu 6,800); cong thuc code: chan 2.600, 7,5 m 3.985, mieng 6.800
 B3. vong bui chan Loc xoay that 4.00 m (cu 2,00 -> x2.00); doi chung vong bui Gio loc 1.00 m (giu 1,00)
 B3b. vong phun bui chan xoay -90 do quanh X (mong -90: nam phang tren dat)
-B4. bui cuon len (than 15.0 m): 265 hat, cao 90% 13.56 m, cao nhat 16.89 m, lech ban kinh so voi vo chinh (trung vi) 5 %; DOI CHUNG bui chan: 180 hat, cao 90% 3.99 m, cao nhat 6.48 m; so hat/giay 80 + 80 = 160 (cu 40)
-B4. ti le hat tren 80% than: lop cuon len 20 %, bui chan 0 %
-B5. lop than duoi: 212 hat, cao 90% 6.63 m, cao nhat 8.15 m (nua than 7.5), lech ban kinh 5 %; so hat/giay chan 80 + cuon len 80 + than duoi 80 = 240
-B5. hat bui dang song o NUA THAN DUOI (0 - 7.5 m): moi 508 / cau hinh cu cung luot 228 = x2.23
+B3c. mau vo Vo0 (0.688 0.704 0.736) mong (0,688 0,704 0,736); Vanh 0.800 mong 0,800; bui chan toi 0.640 mong 0,640
+B4. bui cuon len (than 15.0 m): 270 hat, cao 90% 13.80 m, cao nhat 16.66 m, lech ban kinh so voi vo chinh (trung vi) 5 %; DOI CHUNG bui chan: 182 hat, cao 90% 4.48 m, cao nhat 7.00 m; so hat/giay 80 + 80 = 160 (cu 40)
+B4. ti le hat tren 80% than: lop cuon len 21 %, bui chan 0 %
+B5. lop than duoi: 213 hat, cao 90% 6.68 m, cao nhat 8.42 m (nua than 7.5), lech ban kinh 5 %; so hat/giay chan 80 + cuon len 80 + than duoi 80 = 240
+B5. hat bui dang song o NUA THAN DUOI (0 - 7.5 m): moi 524 / cau hinh cu cung luot 232 = x2.26
+B6. dau vet Loc xoay chay 10.20 m trong 3 s: 9 lat, quang duong 9.18 m, be rong TB 5.60 m, lech so voi terrain lon nhat 0.000 m (45 diem), lat cu nhat 2.67 s; vet chay xem doc duong 7
+B6. tren ANH (giua dai, co / tat dai cung khung): dem 0.126 / 0.206 = x0.61; ngay 0.244 / 0.415 = x0.59
+B6. 5,3 s sau khi loc tan: dai con het, vet chay doc duong con 0
 F. catchRadius 5.184 (giu 5,184); quy dao ke bi cuon o 7 m 3.46 = 0,9 x vo chinh 3.84
 
-C1. bia bi cuon quay +59.5 do trong 12 khung -> chieu cuon: goc atan2(z,x) TANG
+C1. bia bi cuon quay +55.8 do trong 12 khung -> chieu cuon: goc atan2(z,x) TANG
 C2. LOC XOAY: 6/6 muc cung chieu cuon; Vo0 +210 Vo1 +165 Vo2 +130 Vo3 +100 Vanh +120 BuiChan 100 % cung chieu (180 hat)
 
 D0. (do o Editor) luoi Vo2: u tang -> goc TANG 2520 cap, GIAM 0 cap; anh GioVo2 1024x512: song dai manh nhat N = 8; di het mot vong u, pha dai doi +1.00 vong (mot vong lech dung mot dai = +-1)
@@ -20,7 +24,7 @@ D2. DOI CHUNG tiling +1 (khong lat): dai di len thi goc TANG -> dai TROI XUONG
 
 I0. (do o Editor) luoi Vo2: v o chan 0.00, o dinh 1.00; mau dinh alpha chan 0.00, giua 1.00 (5040 mau). GioVo0: mep tren-duoi 0.0077 (hai hang giua 0.0086); GioVo1: mep tren-duoi 0.0152 (hai hang giua 0.0174); GioVo2: mep tren-duoi 0.0166 (hai hang giua 0.0262); GioVo3: mep tren-duoi 0.0114 (hai hang giua 0.0116); 
 I1. toc do dai khoi di len (tu doi offset anh x chieu cao than 15 m): Vo0 +3.00 m/s Vo1 +2.40 m/s Vo2 +1.95 m/s Vo3 +1.50 m/s; vanh +0.00 m/s
-C3. DOI CHUNG (dao chieu Vo1): 5/6 muc cung chieu cuon; Vo0 +210 Vo1 -165 Vo2 +130 Vo3 +100 Vanh +120 BuiChan 100 % cung chieu (98 hat)
+C3. DOI CHUNG (dao chieu Vo1): 5/6 muc cung chieu cuon; Vo0 +210 Vo1 -165 Vo2 +130 Vo3 +100 Vanh +120 BuiChan 100 % cung chieu (96 hat)
 I2. DOI CHUNG dao truot Vo2: Vo2 -1.95 m/s (phai AM = troi xuong), Vo1 +2.40
 
 E1. 1,2 giay: 5 tia moi (2 con song luc dem), kieu anh Blender 2, >= 3 nhanh 2, nhanh TB 3.5
