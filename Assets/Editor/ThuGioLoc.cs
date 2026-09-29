@@ -744,12 +744,13 @@ public static class ThuGioLoc
                 Ghi(string.Format("C. ti le hat tren 80% than: lop cuon len {0:P0}, bui chan {1:P0}", trenL, trenC));
                 Kiem(trenL > 0.12f && trenL > 2f * trenC, "DOI CHUNG: bui chan cu toi dinh ngang lop moi - phep do khong phan biet duoc");
                 Kiem(Mathf.Abs(tocLen + tocChan - 120f) < 0.5f, "tong bui Gio loc khong phai 120 hat/giay moi con");
-                // C2 (29/09/2026, nguoi dung: "may giong nhe o tren dinh cac con loc", chon may mong co mieng loc + loe khi set):
-                // vi tri THAT tung hat may so voi goc loc; loe: DOI CHUNG la he so mau truoc khi set danh (phai = 1)
+                // C2 (29/09/2026, nguoi dung: may giong nhe o dinh loc -> cung ngay doi "cho may nam TRONG con loc", chon nua tren than
+                // 2,5 - 4,7 m): vi tri THAT tung hat may so voi goc loc - do cao, va ti le (xa truc / ban kinh vo trong o DUNG do cao hat
+                // do); loe: DOI CHUNG la he so mau truoc khi set danh (phai = 1)
                 ParticleSystem psMay = null;
-                foreach (var ps in glDo.GetComponentsInChildren<ParticleSystem>(true)) if (ps.name == "MayDinh") psMay = ps;
+                foreach (var ps in glDo.GetComponentsInChildren<ParticleSystem>(true)) if (ps.name == "MayTrongLoc") psMay = ps;
                 var loeMay = glDo.GetComponentInChildren<LoeSangMay>();
-                float yMin = 99f, yMax = -99f, rMax = 0f; int nMay = 0;
+                float yMin = 99f, yMax = -99f, rMax = 0f, tlVoMax = 0f; int nMay = 0;
                 if (psMay != null)
                 {
                     var hatMay = new ParticleSystem.Particle[psMay.particleCount];
@@ -757,7 +758,9 @@ public static class ThuGioLoc
                     for (int i = 0; i < nMay; i++)
                     {
                         Vector3 l = glDo.transform.InverseTransformPoint(psMay.transform.TransformPoint(hatMay[i].position));
-                        yMin = Mathf.Min(yMin, l.y); yMax = Mathf.Max(yMax, l.y); rMax = Mathf.Max(rMax, new Vector2(l.x, l.z).magnitude);
+                        float rr = new Vector2(l.x, l.z).magnitude;
+                        yMin = Mathf.Min(yMin, l.y); yMax = Mathf.Max(yMax, l.y); rMax = Mathf.Max(rMax, rr);
+                        tlVoMax = Mathf.Max(tlVoMax, rr / VfxFactory.BanKinhVoTrongGioLoc(l.y));
                     }
                 }
                 float heSoTruoc = loeMay != null ? loeMay.HeSoHienTai : -1f;
@@ -766,10 +769,11 @@ public static class ThuGioLoc
                 float heSoSau = loeMay != null ? loeMay.HeSoHienTai : -1f;
                 yield return new WaitForSeconds(0.4f);
                 float heSoTat = loeMay != null ? loeMay.HeSoHienTai : -1f;
-                Ghi(string.Format("C2. may dinh: {0} dam, do cao tam dam {1:F2} - {2:F2} m (than {3:F1}), xa truc nhat {4:F2} m (mieng ~2); loe khi set: he so mau truoc {5:F2} -> ngay sau set {6:F2} -> sau 0,4 s {7:F2}",
-                    nMay, yMin, yMax, caoGl, rMax, heSoTruoc, heSoSau, heSoTat));
-                Kiem(psMay != null && nMay >= 6, "khong co may tren dinh Gio loc");
-                Kiem(yMin > 0.85f * caoGl && yMax < 1.3f * caoGl && rMax < 2.6f, "may khong nam tren dinh loc / rong qua mieng loc");
+                Ghi(string.Format("C2. may trong loc: {0} dam, do cao tam dam {1:F2} - {2:F2} m (than {3:F1}, mong 2,5 - 4,7), xa truc nhat {4:F2} m = {5:P0} ban kinh vo trong o do cao ay; loe khi set: he so mau truoc {6:F2} -> ngay sau set {7:F2} -> sau 0,4 s {8:F2}",
+                    nMay, yMin, yMax, caoGl, rMax, tlVoMax, heSoTruoc, heSoSau, heSoTat));
+                Kiem(psMay != null && nMay >= 6, "khong co may trong Gio loc");
+                Kiem(yMin > 2.4f && yMax < 4.7f, "may khong nam trong nua tren than loc (2,5 - 4,7 m)");
+                Kiem(tlVoMax < 0.8f, "may lo ra ngoai vo loc (xa truc qua 80% ban kinh vo trong)");
                 Kiem(Mathf.Abs(heSoTruoc - 1f) < 0.01f && heSoSau > 1.3f && Mathf.Abs(heSoTat - 1f) < 0.05f, "may khong loe khi set danh (hoac khong tat lai)");
                 Object.Destroy(glDo);
             }

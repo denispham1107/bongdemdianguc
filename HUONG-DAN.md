@@ -8995,6 +8995,15 @@ Người dùng chọn:
    số từng lần; tái diễn là biết.
 
 Ảnh `PlayTestShots/gioloc_4_cap5_nam_loc_quat.png` (5 cơn cấp 5; đỉnh lốc khuất ở mép trên màn hình ở góc chơi này).
+
+**Cùng ngày: mây chuyển VÀO TRONG lốc.** Người dùng: "cho mây giông nằm trong cơn lốc luôn chứ không phải trên đầu cơn lốc". Tôi hỏi lại;
+người dùng chọn **trong nửa trên thân (2,5–4,7 m)**.
+- Hệ hạt đổi tên `MayDinh` → `MayTrongLoc`. Hạt sinh trong KHỐI HỘP quanh trục: cao 2,5–4,3 m, ngang ±0,65 m. Vỏ trong ở 2,5 m rộng
+  1,28 m, ở 4,3 m rộng 1,72 m.
+- Đám mây nhỏ lại 2,4–3,6 → **1,4–2,2 m** để gọn trong vỏ. Bỏ trôi lên (trước 0,15 m/s). Vẫn xoay chậm cùng chiều cuốn, vẫn loé
+  khi sét đánh.
+- **Menu 71: 0 lỗi.** C2: 12 đám, tâm ở **2,53–4,10 m**. Xa trục nhất 0,82 m = **52%** bán kính vỏ trong ở đúng độ cao của hạt ấy
+  (ngưỡng < 80%). Loé 1,00 → 1,56 → 1,00. Mục H1 lần này đếm 3 3 3.
 - ⚠️ Lần chạy đầu tôi sửa file phép thử trong lúc 71c đang Play. Unity nạp lại assembly giữa chừng, coroutine chết, kẹt Play ~15 phút.
   Đã ghi vào bộ nhớ: không ghi file dưới `Assets/` khi phép thử đang chạy.
 - Lỗi "Particle Velocity curves must all be in the same mode" tràn log có từ ĐẦU phiên Unity (hạt `Grit` của Gió lốc, lỗi cũ đã biết),

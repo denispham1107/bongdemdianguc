@@ -151,24 +151,26 @@ public static partial class VfxFactory
         return root;
     }
 
-    /// <summary>Do cao day dam may tren dinh Gio loc (m) va ban kinh vong sinh may (m) - cho mieng loc ~2 m (29/09/2026).</summary>
-    public const float CaoMayDinhGioLoc = 4.9f, BanKinhMayDinhGioLoc = 1.5f;
+    /// <summary>May giong TRONG LONG nua tren than Gio loc: tam hat sinh trong khoi quanh truc tu CaoDuoiMayGioLoc den CaoTrenMayGioLoc (m),
+    /// ngang +-NuaNgangMayGioLoc (m) - vo trong o 2,5 m rong 1,28 m, o 4,3 m 1,72 m (29/09/2026).</summary>
+    public const float CaoDuoiMayGioLoc = 2.5f, CaoTrenMayGioLoc = 4.3f, NuaNgangMayGioLoc = 0.65f;
 
     /// <summary>
-    /// MAY GIONG NHE TREN DINH GIO LOC (nguoi dung 29/09/2026: "them hieu ung may giong nhe o tren dinh cac con loc"; chon "may mong co
-    /// mieng loc, loe khi set danh"). Anh MayGiong (4 dam may Blender 2x2) cua ky nang May giong, mau may cua than Gio loc (tang giua,
-    /// x HeSoSangMayGioLoc), mong (do duc hat 0,45 - 0,65), rong ~5 m, xoay cham cung chieu cuon, CUC BO (bay theo loc).
+    /// MAY GIONG NHE TRONG CON GIO LOC (nguoi dung 29/09/2026: "them hieu ung may giong nhe o tren dinh cac con loc", chon "may mong co
+    /// mieng loc, loe khi set danh"; cung ngay doi: "cho may giong nam TRONG con loc, khong phai tren dau", chon "trong nua tren than
+    /// 2,5 - 4,7 m"). Anh MayGiong (4 dam may Blender 2x2) cua ky nang May giong, mau may cua than Gio loc (tang giua,
+    /// x HeSoSangMayGioLoc), mong (do duc hat 0,45 - 0,65), dam 1,4 - 2,2 m cho gon trong vo, xoay cham cung chieu cuon, CUC BO.
     /// Moi nhip set trong long loc (GioLocSetTrongLoc) goi LoeSangMay.Chop -> ca dam may loe nhe roi tat 0,15 s.
     /// </summary>
     static void MayDinhGioLoc(Transform cha)
     {
         var mat = VatLieuMayGiong("MayDinhGioLoc", ThuMucMayGiong, "MayGiong", MauMayGioLoc(0.5f, 1f), false);
-        var ps = NewPS("MayDinh", cha, new Vector3(0f, CaoMayDinhGioLoc, 0f), mat, ParticleSystemRenderMode.Billboard);
+        var ps = NewPS("MayTrongLoc", cha, new Vector3(0f, 0.5f * (CaoDuoiMayGioLoc + CaoTrenMayGioLoc), 0f), mat, ParticleSystemRenderMode.Billboard);
         LuoiAnh2x2(ps);
         var m = ps.main;
         m.startLifetime = new ParticleSystem.MinMaxCurve(1.8f, 2.4f);
         m.startSpeed = 0f;
-        m.startSize = new ParticleSystem.MinMaxCurve(2.4f, 3.6f);
+        m.startSize = new ParticleSystem.MinMaxCurve(1.4f, 2.2f);
         m.startRotation = new ParticleSystem.MinMaxCurve(0f, Mathf.PI * 2f);
         m.startColor = new ParticleSystem.MinMaxGradient(new Color(1f, 1f, 1f, 0.45f), new Color(1f, 1f, 1f, 0.65f));
         m.simulationSpace = ParticleSystemSimulationSpace.Local;
@@ -176,11 +178,12 @@ public static partial class VfxFactory
         m.maxParticles = 20;
         var em = ps.emission; em.rateOverTime = 6f;
         em.SetBursts(new[] { new ParticleSystem.Burst(0f, (short)8) });   // co may ngay tu luc tung
-        var sh = ps.shape; sh.shapeType = ParticleSystemShapeType.Circle; sh.radius = BanKinhMayDinhGioLoc;
-        sh.rotation = new Vector3(90f, 0f, 0f); sh.radiusThickness = 1f;
-        // Ca ba truc cung kieu Constant (lech kieu la Unity bo ca mo-dun)
+        // Khoi hop quanh truc: cao CaoDuoi -> CaoTren, ngang +-NuaNgang (sinh trong THE TICH hop) - gon trong vo trong
+        var sh = ps.shape; sh.shapeType = ParticleSystemShapeType.Box;
+        sh.scale = new Vector3(2f * NuaNgangMayGioLoc, CaoTrenMayGioLoc - CaoDuoiMayGioLoc, 2f * NuaNgangMayGioLoc);
+        // Ca ba truc cung kieu Constant (lech kieu la Unity bo ca mo-dun); khong troi len (giu trong than)
         var v = ps.velocityOverLifetime; v.enabled = true; v.space = ParticleSystemSimulationSpace.Local;
-        v.x = new ParticleSystem.MinMaxCurve(0f); v.y = new ParticleSystem.MinMaxCurve(0.15f); v.z = new ParticleSystem.MinMaxCurve(0f);
+        v.x = new ParticleSystem.MinMaxCurve(0f); v.y = new ParticleSystem.MinMaxCurve(0f); v.z = new ParticleSystem.MinMaxCurve(0f);
         v.orbitalX = new ParticleSystem.MinMaxCurve(0f); v.orbitalY = new ParticleSystem.MinMaxCurve(ChieuQuyDaoGioLoc * 0.8f); v.orbitalZ = new ParticleSystem.MinMaxCurve(0f);
         var col = ps.colorOverLifetime; col.enabled = true;
         var g = new Gradient();

@@ -201,9 +201,10 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
   co đường cong mọc để giữ tốc độ trồi lên, và nổ sớm hơn mốc ấy **0,12 s** (`NoSomHon`) rồi xoá cả tảng. Menu 68 mục N2 đo từng khung. ⚠️ Vụ nổ **không được**
   gọi `VfxFactory.NoQuaCauBang` (hàm ấy gọi `IceImpact` → tảng băng nổ ra tảng băng, vô tận). Menu 68 mục L + N, menu 61 ca B2b.
 - **Gió lốc** (`Skills/GioLoc.cs`, hình `Vfx/VfxGioLoc.cs`, hiệu ứng `Combat/BiHatTung.cs`, 16/09/2026): ⚠️ **HÌNH QUẠT: cấp 1–4 tung 3 lốc, cấp 5 tung 5 lốc**, cách nhau `GioLoc.GocQuat` **20°** quanh hướng ngắm (29/09/2026 người dùng "xa nhau hơn 1 chút", trước 15°; cấp 5 toả ±40°;
-26/09/2026: trước đó 1 lốc, cấp 5 hai lốc song song cách 4 m). ⚠️ **Mây giông nhẹ trên đỉnh mỗi cơn** (29/09/2026, `VfxFactory.MayDinhGioLoc`:
-ảnh `MayGiong` 2×2 của Mây giông, màu thân Gió lốc, mỏng, ~12 đám quanh 4,9–5,2 m, rộng cỡ miệng, cục bộ; **loé khi sét trong lốc đánh**
-— `LoeSangMay` trên gốc hình, `GioLocSetTrongLoc` gọi `Chop(0,7)`; menu 71 mục C2). Năng lượng **không** nhân theo số lốc (20; cấp 5 vẫn 25). **Hình dựng bằng
+26/09/2026: trước đó 1 lốc, cấp 5 hai lốc song song cách 4 m). ⚠️ **Mây giông nhẹ TRONG LÒNG nửa trên thân** (29/09/2026, lúc đầu trên đỉnh rồi người dùng
+đổi "nằm trong cơn lốc": hệ `MayTrongLoc`, `VfxFactory.MayDinhGioLoc`; ảnh `MayGiong` 2×2 của Mây giông, màu thân Gió lốc, mỏng, đám
+1,4–2,2 m sinh trong khối hộp quanh trục 2,5–4,3 m, ±0,65 m, cục bộ; **loé khi sét trong lốc đánh** — `LoeSangMay` trên gốc hình,
+`GioLocSetTrongLoc` gọi `Chop(0,7)`; menu 71 mục C2 đo từng hạt so với bán kính vỏ trong ở đúng độ cao). Năng lượng **không** nhân theo số lốc (20; cấp 5 vẫn 25). **Hình dựng bằng
   Blender MCP** (17/09/2026, `CongCu/Blender/gio_loc.blend` → `Resources/KyNang/GioLoc/`: `LocNho.fbx` 3 vỏ + dải gió cao 5 m, ảnh gió liền mạch
   `GioDai`/`GioSoi`, flipbook `BuiDenCuon`; chân ×1,68 so với gốc, nhỏ dần về 0 ở 2,3 m; toàn bộ bề ngang ×1,1 lúc chạy `HeSoBanKinhGioLoc`), xám trắng như Lốc xoáy, **xoáy MỘT chiều đi lên** (mọi lớp quay âm quanh +Y + UV trượt âm — chiều
   chọn bằng số đo trên lưới, `VfxFactory.ChieuQuayGioLoc`), khói bụi đen cuộn quanh thân + vệt phía sau, **2 tia sét luôn đánh từ đỉnh xuống trong lòng lốc** mỗi 0,45 s như Lốc xoáy, bề dày ×5/15,37, **bám theo lốc** (`LightningArc.BamTheo` — tia ghim toạ độ thế giới bị bỏ lại 1,2–2,7 m), hai tia đối diện cách ~1,2 m ở đỉnh, thu vào theo vỏ trong cùng ở chân (`VfxFactory.GioLocSetTrongLoc`, chỉ hình; tia khi trúng đối thủ đã bỏ). Bay **9,5 m/s**
