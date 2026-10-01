@@ -1,0 +1,22 @@
+[ban 2] may giong trong Gio loc - 01/10/2026 10:39
+Muc cu: 12 dam (tran 20, 6.0/giay), tam dam cao 2.64 - 4.26 m (0 dam duoi 2,4 m), xa truc nhat = 51 % ban kinh vo trong, do duc 0.45 - 0.65
+   anh: PlayTestShots/maygl_cu_dem.png
+   DEM : may lam vung than doi do sang trung binh 0.0054 (bat / tat renderer may cung khung)
+   anh: PlayTestShots/maygl_cu_ngay.png
+   NGAY: may lam vung than doi do sang trung binh 0.0035 (bat / tat renderer may cung khung)
+Muc 13: 22 dam (tran 36, 10.8/giay), tam dam cao 1.85 - 4.18 m (9 dam duoi 2,4 m), xa truc nhat = 63 % ban kinh vo trong, do duc 0.52 - 0.75
+   anh: PlayTestShots/maygl_13_dem.png
+   DEM : may lam vung than doi do sang trung binh 0.0059 (bat / tat renderer may cung khung)
+   anh: PlayTestShots/maygl_13_ngay.png
+   NGAY: may lam vung than doi do sang trung binh 0.0047 (bat / tat renderer may cung khung)
+Muc 15: 26 dam (tran 42, 12.5/giay), tam dam cao 1.85 - 4.25 m (4 dam duoi 2,4 m), xa truc nhat = 64 % ban kinh vo trong, do duc 0.56 - 0.81
+   anh: PlayTestShots/maygl_15_dem.png
+   DEM : may lam vung than doi do sang trung binh 0.0099 (bat / tat renderer may cung khung)
+   anh: PlayTestShots/maygl_15_ngay.png
+   NGAY: may lam vung than doi do sang trung binh 0.0057 (bat / tat renderer may cung khung)
+Muc 18: 31 dam (tran 50, 15.0/giay), tam dam cao 1.84 - 4.25 m (7 dam duoi 2,4 m), xa truc nhat = 64 % ban kinh vo trong, do duc 0.63 - 0.91
+   anh: PlayTestShots/maygl_18_dem.png
+   DEM : may lam vung than doi do sang trung binh 0.0122 (bat / tat renderer may cung khung)
+   anh: PlayTestShots/maygl_18_ngay.png
+   NGAY: may lam vung than doi do sang trung binh 0.0108 (bat / tat renderer may cung khung)
+KET QUA: 0 loi

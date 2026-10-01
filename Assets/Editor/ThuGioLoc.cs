@@ -770,10 +770,12 @@ public static class ThuGioLoc
                 float heSoSau = loeMay != null ? loeMay.HeSoHienTai : -1f;
                 yield return new WaitForSeconds(0.4f);
                 float heSoTat = loeMay != null ? loeMay.HeSoHienTai : -1f;
-                Ghi(string.Format("C2. may trong loc: {0} dam, do cao tam dam {1:F2} - {2:F2} m (than {3:F1}, mong 2,5 - 4,7), xa truc nhat {4:F2} m = {5:P0} ban kinh vo trong o do cao ay; loe khi set: he so mau truoc {6:F2} -> ngay sau set {7:F2} -> sau 0,4 s {8:F2}",
+                Ghi(string.Format("C2. may trong loc: {0} dam, do cao tam dam {1:F2} - {2:F2} m (than {3:F1}, mong 1,8 - 4,3), xa truc nhat {4:F2} m = {5:P0} ban kinh vo trong o do cao ay; loe khi set: he so mau truoc {6:F2} -> ngay sau set {7:F2} -> sau 0,4 s {8:F2}",
                     nMay, yMin, yMax, caoGl, rMax, tlVoMax, heSoTruoc, heSoSau, heSoTat));
                 Kiem(psMay != null && nMay >= 6, "khong co may trong Gio loc");
-                Kiem(yMin > 2.4f && yMax < 4.7f, "may khong nam trong nua tren than loc (2,5 - 4,7 m)");
+                // 01/10/2026 vung may mo xuong 1,8 m: DOI CHUNG ban cu (2,5 - 4,3) khong co dam nao duoi 2,4 m
+                Kiem(yMin > 1.7f && yMax < 4.45f, "may khong nam trong than loc (1,8 - 4,3 m)");
+                Kiem(yMin < 2.3f, "may chua mo xuong duoi 2,5 m (van vung cu)");
                 Kiem(tlVoMax < 0.8f, "may lo ra ngoai vo loc (xa truc qua 80% ban kinh vo trong)");
                 Kiem(Mathf.Abs(heSoTruoc - 1f) < 0.01f && heSoSau > 1.3f && Mathf.Abs(heSoTat - 1f) < 0.05f, "may khong loe khi set danh (hoac khong tat lai)");
                 Object.Destroy(glDo);

@@ -9069,6 +9069,32 @@ cháy xém**.
 - Menu 71: bỏ khối C3. Menu 82 B6 nay kiểm ngược lại: một Lốc xoáy thật chạy 10,29 m trong 3 s có sét đánh → **0 vật thể dấu vết**
   (đối chứng: lốc thật sự đã chạy > 8 m).
 - **Menu 71, 82: 0 lỗi.** Ảnh `*_5_vet_dat_*` trong PlayTestShots là của bản đã gỡ.
+### Gió lốc: mây giông trong thân nhiều và dày hơn, mở xuống 1,8 m (01/10/2026)
+
+**Người dùng:** "cho mây giông bên trong nhiều và dày hơn 1 chút nhưng vẫn phải bên trong thân lốc". Tôi hỏi lại; người dùng chọn
+**chụp 3 mức rồi chọn** và **mở vùng mây xuống 1,8–4,3 m** (trước 2,5–4,3 m).
+
+- Vùng sinh đổi từ khối hộp ±0,65 m sang **khối NÓN** (`ConeVolume`, xoay −90° quanh X cho trục nón đứng lên). Bán kính nón = **62% bán
+  kính vỏ trong** ở đáy (1,8 m) và ở đỉnh (4,3 m), tính từ `BanKinhVoTrongGioLoc` (`TiLeMayTrongVo`). Hộp cũ không dùng được ở 1,8 m:
+  góc hộp xa trục 0,92 m = 81% vỏ trong (1,13 m), vượt ngưỡng 80%.
+- Số đám tính theo **mật độ trên mỗi mét chiều cao** của bản cũ (20 đám · 6/giây · đợt đầu 8 trên 1,8 m), nhân hệ số k; độ đục ×(1 + 0,5(k − 1)).
+- **Menu 94 mới (`ThuMayGioLoc.cs`):** một Gió lốc đứng yên, mỗi mức dựng lại hệ `MayTrongLoc`. Đối chứng "cũ" = cấu hình 29/09 dựng tay
+  trong phép thử. Đo mây "lộ ra bao nhiêu" bằng cách render cùng khung hai lần (bật / tắt renderer mây), lấy chênh lệch độ sáng vùng
+  thân, trung bình 12 khung trong 3 s. Lần chụp đầu (máy quay 9 m, 6 khung trong 0,9 s) cho số không theo thứ tự (×1,5 > ×1,8) vì thân lốc
+  chiếm hết khung → lùi ra 13 m, đo lâu hơn.
+
+| Mức | Đám (trần) | Tâm đám | Xa trục nhất / vỏ trong | Độ đục | Mây lộ ra: đêm / ngày |
+|---|---|---|---|---|---|
+| cũ | 12 (20) | 2,64–4,26 m | 51% | 0,45–0,65 | 0,0054 / 0,0035 |
+| ×1,3 | 22 (36) | 1,85–4,18 m | 63% | 0,52–0,75 | 0,0059 / 0,0047 |
+| **×1,5 (chọn)** | **26 (42)** | **1,85–4,25 m** | **64%** | **0,56–0,81** | **0,0099 / 0,0057** (×1,83 / ×1,63) |
+| ×1,8 | 31 (50) | 1,84–4,25 m | 64% | 0,63–0,91 | 0,0122 / 0,0108 |
+
+- Người dùng chọn **×1,5** (`HeSoDayMayGioLoc`). Ảnh `PlayTestShots/maygl_<mức>_<buổi>.png`, số đo `maygl.txt`.
+- **Menu 71: 0 lỗi.** C2 nay kiểm tâm đám trong 1,7–4,45 m và có đối chứng "đã mở xuống" (đám thấp nhất < 2,3 m — bản cũ không có đám
+  nào dưới 2,4 m): 25 đám, tâm 1,93–4,27 m, xa trục nhất 1,05 m = 63% vỏ trong; loé 1,00 → 1,56 → 1,00.
+- Điện thoại: mỗi cơn thêm ~14 đám mây lớn (1,4–2,2 m) → 3 cơn thêm ~42 tấm trong suốt chồng lên, cấp 5 (5 cơn) ~70. Chưa đo trên máy thật.
+
 ### Vẽ lại năm icon: Quả cầu lửa, Mưa băng, Sấm sét, Giựt sét, Quả cầu điện (28/09/2026)
 
 **Người dùng:** năm icon này cũng "quá thô và sơ sài" — vẽ lại hợp nội dung từng kỹ năng, không cần Blender MCP.
@@ -12376,6 +12402,8 @@ Lần chạy đầu phép thử báo cả 10 con "lơ lửng": tia chiếu từ 
 | **91. Chay thu DAC TINH QUAI (Quy cay choang, Quy du nga, Bo xuong do don)** | Bộ xương ×1,35 tốc · ×1,30 sát thương so với PREFAB gốc, chạy / đánh thật; Quỷ cây 200 tia thật → ~15% choáng 1 s (đối chứng tỉ lệ 0); Quỷ dữ thiên thạch thật 15% ngã 1 s; Bộ xương 400 đòn kỹ năng → ~25% đỡ, đỡ thì không dính cháy (đối chứng rỉ · đòn quái · Phù thủy = 0), hất tung ~75%; bit gói quái. `dac_tinh_quai.txt`. |
 | **92. Chay thu CHE DO DON - DOI (6 nguoi, dong doi, ket tran doi)** | Hàm thuần xếp đội / cân bằng / đội thắng / JSON phòng cũ / gói kết trận 15 byte; 10 kỹ năng thật vào đồng đội → 0 máu 0 hiệu ứng (đối chứng đội kia trúng); gói phép mạng của đồng đội; tự nhắm bỏ qua đồng đội gần; chỗ xuất phát theo đội; kết trận Đôi 6 ghế qua kênh giả lập (chưa đủ người chưa xét, máy khách hai đội, phòng một đội, Đơn 6 người); tên màu đội + HUD. `che_do_doi.txt`, ảnh `che_do_doi_*.png`. |
 | **92b. Chay thu SANH DON - DOI tren Firebase that** | Hai tài khoản chạy thử + ghế giả: tạo phòng Đơn / Đôi, luật Firebase (đối chứng ghi sai bị từ chối), người bản cũ được xếp đội, vào đội ít người, tự đổi đội, khách không sửa được đội người khác, đội đủ 3 bị chặn, chủ phòng cân bằng khi 4 người một đội; chụp sảnh / phòng Đôi / phòng Đơn 6 người (0 chữ bị cắt). Xoá sạch phòng thử. `sanh_doi.txt`, ảnh `sanh_doi_*.png`. |
+| **93. Chup MUC DEN Loc xoay + Gio loc (3 muc de chon)** | Lốc xoáy thật + Gió lốc đứng yên, chụp đêm / ngày ở gốc và tối 10 / 20 / 30% (MaterialPropertyBlock), đo độ sáng thân. `denloc.txt`, ảnh `denloc_*.png`. |
+| **94. Chup MAY GIONG trong Gio loc (3 muc day de chon)** | Dựng lại hệ `MayTrongLoc` ở cũ / ×1,3 / ×1,5 / ×1,8: số đám, độ cao tâm, xa trục / vỏ trong ở đúng độ cao (< 80%); mây lộ ra = render bật / tắt renderer mây cùng khung, 12 khung, đêm + ngày. `maygl.txt`, ảnh `maygl_*.png`. |
 | **56. Chay thu DOT QUAI Act2 + cho xuat phat** | *(13/09/2026: thêm đo chờ 30 giây và 10 con xa 55–65 m)*  Kiểm chỗ xuất phát ngẫu nhiên (hai máy cùng mã phòng ra cùng danh sách, cách nhau ≥ 22 m, trên đất, ngoài nước, không vướng vật cản) và luật đợt quái Act2 (đợt 1 bốn con quanh mỗi người; đợt sau cộng dồn quái và mạnh thêm 5% máu · sát thương). Số đo `dotquai_act2.txt`. |
 | **55. Chay thu KET TRAN (nguoi song sot cuoi cung)** | Mở kênh giả lập như menu 45: kiểm gói tin kết trận/chết, máy chủ phòng phán quyết đúng lúc còn một người, bảng điểm cộng đúng người, máy khách không tự kết luận và hiện đúng kết quả nghe được, chết rồi camera chuyển sang người còn sống, chụp màn kết trận. Số đo `kettran.txt`, ảnh `kettran_*.png`. |
 | **54c. Chay thu LOC XOAY cuon lo lua** | Vào Play Act2, thả một cơn lốc đi thẳng vào lò: đo mốc thời gian lửa tắt / lò nhấc lên / lò biến mất / lò mọc lại, kiểm than trong chậu tắt bằng độ sáng trên ảnh, và kiểm vật có hệ hạt khác vẫn không bị cuốn. Ảnh `locxoay_*.png`, số đo `locxoay_lolua.txt`. |

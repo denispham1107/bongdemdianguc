@@ -151,9 +151,14 @@ public static partial class VfxFactory
         return root;
     }
 
-    /// <summary>May giong TRONG LONG nua tren than Gio loc: tam hat sinh trong khoi quanh truc tu CaoDuoiMayGioLoc den CaoTrenMayGioLoc (m),
-    /// ngang +-NuaNgangMayGioLoc (m) - vo trong o 2,5 m rong 1,28 m, o 4,3 m 1,72 m (29/09/2026).</summary>
-    public const float CaoDuoiMayGioLoc = 2.5f, CaoTrenMayGioLoc = 4.3f, NuaNgangMayGioLoc = 0.65f;
+    /// <summary>May giong TRONG LONG than Gio loc: tam hat sinh trong khoi NON quanh truc tu CaoDuoiMayGioLoc den CaoTrenMayGioLoc (m),
+    /// ban kinh non = TiLeMayTrongVo x ban kinh vo trong o day / dinh non (vo trong o 1,8 m 1,13 m, o 4,3 m 1,79 m).
+    /// 29/09/2026: hop 2,5 - 4,3 m, ngang +-0,65; 01/10/2026 nguoi dung "nhieu va day hon 1 chut, van trong than", chon mo xuong 1,8 m.</summary>
+    public const float CaoDuoiMayGioLoc = 1.8f, CaoTrenMayGioLoc = 4.3f, TiLeMayTrongVo = 0.62f;
+
+    /// <summary>Mat do may so voi ban 29/09/2026 (so dam moi met chieu cao x k, do duc x (1 + 0,5 (k - 1))). Nguoi dung chon x1,5
+    /// (01/10/2026, menu 94 chup cu / 1,3 / 1,5 / 1,8: may lo ro hon x1,83 dem, x1,63 ngay so ban cu).</summary>
+    public const float HeSoDayMayGioLoc = 1.5f;
 
     /// <summary>
     /// MAY GIONG NHE TRONG CON GIO LOC (nguoi dung 29/09/2026: "them hieu ung may giong nhe o tren dinh cac con loc", chon "may mong co
@@ -162,25 +167,32 @@ public static partial class VfxFactory
     /// x HeSoSangMayGioLoc), mong (do duc hat 0,45 - 0,65), dam 1,4 - 2,2 m cho gon trong vo, xoay cham cung chieu cuon, CUC BO.
     /// Moi nhip set trong long loc (GioLocSetTrongLoc) goi LoeSangMay.Chop -> ca dam may loe nhe roi tat 0,15 s.
     /// </summary>
-    static void MayDinhGioLoc(Transform cha)
+    public static void MayDinhGioLoc(Transform cha, float k = HeSoDayMayGioLoc)
     {
         var mat = VatLieuMayGiong("MayDinhGioLoc", ThuMucMayGiong, "MayGiong", MauMayGioLoc(0.5f, 1f), false);
-        var ps = NewPS("MayTrongLoc", cha, new Vector3(0f, 0.5f * (CaoDuoiMayGioLoc + CaoTrenMayGioLoc), 0f), mat, ParticleSystemRenderMode.Billboard);
+        var ps = NewPS("MayTrongLoc", cha, new Vector3(0f, CaoDuoiMayGioLoc, 0f), mat, ParticleSystemRenderMode.Billboard);
         LuoiAnh2x2(ps);
+        // Ban cu: 20 dam / 6 moi giay / dot dau 8 tren 1,8 m chieu cao -> giu mat do theo chieu cao moi roi nhan k
+        float cao = CaoTrenMayGioLoc - CaoDuoiMayGioLoc, n = cao / 1.8f * k, duc = 1f + 0.5f * (k - 1f);
         var m = ps.main;
         m.startLifetime = new ParticleSystem.MinMaxCurve(1.8f, 2.4f);
         m.startSpeed = 0f;
         m.startSize = new ParticleSystem.MinMaxCurve(1.4f, 2.2f);
         m.startRotation = new ParticleSystem.MinMaxCurve(0f, Mathf.PI * 2f);
-        m.startColor = new ParticleSystem.MinMaxGradient(new Color(1f, 1f, 1f, 0.45f), new Color(1f, 1f, 1f, 0.65f));
+        m.startColor = new ParticleSystem.MinMaxGradient(new Color(1f, 1f, 1f, Mathf.Min(1f, 0.45f * duc)), new Color(1f, 1f, 1f, Mathf.Min(1f, 0.65f * duc)));
         m.simulationSpace = ParticleSystemSimulationSpace.Local;
         m.scalingMode = ParticleSystemScalingMode.Hierarchy;
-        m.maxParticles = 20;
-        var em = ps.emission; em.rateOverTime = 6f;
-        em.SetBursts(new[] { new ParticleSystem.Burst(0f, (short)8) });   // co may ngay tu luc tung
-        // Khoi hop quanh truc: cao CaoDuoi -> CaoTren, ngang +-NuaNgang (sinh trong THE TICH hop) - gon trong vo trong
-        var sh = ps.shape; sh.shapeType = ParticleSystemShapeType.Box;
-        sh.scale = new Vector3(2f * NuaNgangMayGioLoc, CaoTrenMayGioLoc - CaoDuoiMayGioLoc, 2f * NuaNgangMayGioLoc);
+        m.maxParticles = Mathf.RoundToInt(20f * n);
+        var em = ps.emission; em.rateOverTime = 6f * n;
+        em.SetBursts(new[] { new ParticleSystem.Burst(0f, (short)Mathf.RoundToInt(8f * n)) });   // co may ngay tu luc tung
+        // Khoi NON quanh truc (sinh trong THE TICH non): day o CaoDuoi, cao toi CaoTren, ban kinh theo vo trong - gon trong vo.
+        // Non mac dinh phun theo +Z -> xoay -90 quanh X cho truc non dung len +Y.
+        float rDay = TiLeMayTrongVo * BanKinhVoTrongGioLoc(CaoDuoiMayGioLoc), rDinh = TiLeMayTrongVo * BanKinhVoTrongGioLoc(CaoTrenMayGioLoc);
+        var sh = ps.shape; sh.shapeType = ParticleSystemShapeType.ConeVolume;
+        sh.rotation = new Vector3(-90f, 0f, 0f);
+        sh.radius = rDay; sh.radiusThickness = 1f;
+        sh.angle = Mathf.Atan2(rDinh - rDay, cao) * Mathf.Rad2Deg;
+        sh.length = cao;
         // Ca ba truc cung kieu Constant (lech kieu la Unity bo ca mo-dun); khong troi len (giu trong than)
         var v = ps.velocityOverLifetime; v.enabled = true; v.space = ParticleSystemSimulationSpace.Local;
         v.x = new ParticleSystem.MinMaxCurve(0f); v.y = new ParticleSystem.MinMaxCurve(0f); v.z = new ParticleSystem.MinMaxCurve(0f);
@@ -193,7 +205,9 @@ public static partial class VfxFactory
         var sz = ps.sizeOverLifetime; sz.enabled = true;
         sz.size = new ParticleSystem.MinMaxCurve(1f, new AnimationCurve(new Keyframe(0f, 0.8f), new Keyframe(1f, 1.15f)));
         var rot = ps.rotationOverLifetime; rot.enabled = true; rot.z = new ParticleSystem.MinMaxCurve(-0.25f, 0.25f);
-        cha.gameObject.AddComponent<LoeSangMay>().Gan(new Renderer[] { ps.GetComponent<Renderer>() });
+        var loe = cha.GetComponent<LoeSangMay>();
+        if (loe == null) loe = cha.gameObject.AddComponent<LoeSangMay>();
+        loe.Gan(new Renderer[] { ps.GetComponent<Renderer>() });
     }
 
     /// <summary>So nhip set trong loc da phong (moi nhip 2 tia) - phep thu menu 71 doc.</summary>
