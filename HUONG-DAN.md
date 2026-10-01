@@ -9095,6 +9095,51 @@ cháy xém**.
   nào dưới 2,4 m): 25 đám, tâm 1,93–4,27 m, xa trục nhất 1,05 m = 63% vỏ trong; loé 1,00 → 1,56 → 1,00.
 - Điện thoại: mỗi cơn thêm ~14 đám mây lớn (1,4–2,2 m) → 3 cơn thêm ~42 tấm trong suốt chồng lên, cấp 5 (5 cơn) ~70. Chưa đo trên máy thật.
 
+### Gió lốc thành Lốc xoáy thu nhỏ (01/10/2026)
+
+**Người dùng:** "Hãy thử cho Skill Gió lốc có hiệu ứng giống hoàn toàn skill Lốc xoáy, chỉ có điều cho kích thước Lốc xoáy bằng với kích
+thước của Gió lốc hiện giờ". Tôi hỏi lại; người dùng chọn: **thu đều ×0,32** (giữ dáng), **bỏ hết** màu mây giông và mây trong thân,
+**giữ nguyên 240 hạt/giây** như Lốc xoáy (dù nặng hơn trên điện thoại), Hoá lốc xoáy **phình từ ×0,32**.
+
+- Tỉ lệ: thân Lốc xoáy cao 15,72 m (vỏ 15 m + vành) → 5 m = **×0,318**. Chân vỏ chính 2,6 → 0,83 m, miệng 6,8 → 2,16 m — gần trùng Gió
+  lốc cũ (0,91 / 2,03), nên vùng trúng 2,42 m vẫn hợp hình. Gameplay không đổi gì.
+- `VfxFactory.BuildGioLoc` **nhân bản đúng phần hình của prefab `Skill_LocXoay`** (thứ Lốc xoáy trong game dùng), thêm các lớp bụi mà
+  `Tornado.Start` thêm lúc chạy, rồi phóng cả cụm. Không dựng lại bằng code: hai đường dựng là hai chỗ để lệch nhau.
+- Ba chỗ phải sửa để "thu nhỏ" đúng nghĩa:
+  1. Mọi hệ hạt **mô phỏng cục bộ + tỉ lệ Hierarchy** — khi đó cả vận tốc, toả, quỹ đạo thu theo. Bụi chân Lốc xoáy vốn ở không gian
+     THẾ GIỚI (nó đi 3,4 m/s); Gió lốc bay 9,5 m/s, so với cỡ mình nhanh gấp ~9 lần Lốc xoáy → để thế giới thì thành vệt dài sau lưng.
+  2. **Trọng lực hạt** là m/s² thế giới, không thu theo tỉ lệ. Lần đo đầu bụi chân bay cao **×1,47** (độ cao 90%: 6,34 so với 4,26 m,
+     đơn vị Lốc xoáy) → nhân `gravityModifierMultiplier` × 0,318 → 4,35 / 4,10.
+  3. Đèn `StormLight`: `LightFlicker` chụp tầm 18 m trong Awake → thêm `DatTamGoc`. Gió lốc tan thì tắt đèn ngay (trước không có đèn).
+- Tia sét: `TornadoBolt(loc, 0,318, "SetTrongGioLoc")` — chính tia Lốc xoáy. Hình cũ còn ở `BuildGioLocCu` để làm đối chứng.
+
+**Menu 71 viết lại mục C — so mọi thứ với một Lốc xoáy THẬT** (prefab qua `Tornado.Spawn`, đứng yên), không so với hằng số:
+
+| | Lốc xoáy thật | Gió lốc mới | Đối chứng Gió lốc cũ |
+|---|---|---|---|
+| Thành phần (lưới, màu, quay, trượt ảnh, hạt, đèn) | 10 | **10/10 khớp** | — |
+| Cao | 15,72 m | **5,00 m (×0,318)** | 5,00 m |
+| Bụi chân: cao 50% / 90%, bán kính (đơn vị Lốc xoáy) | 2,00 / 4,10 / 3,60 | 1,91 / 4,35 / 3,69 | — |
+| Bụi cuộn lên | 7,49 / 13,77 / 3,81 | 7,55 / 13,63 / 3,78 | — |
+| Bụi thân dưới | 3,71 / 6,72 / 2,90 | 3,76 / 6,87 / 2,91 | — |
+| Tổng hạt bụi đang sống | 661 | **663 (×1,00)** | 260 (×0,39) |
+| Ảnh cùng khung (theo chiều cao): trùng hình IoU / độ sáng | — | **0,94 / ×1,01** | 0,49 / ×0,52 |
+| Tia sét (trung bình, chia chiều cao): đầu / đuôi | 0,876 / 0,342 | 0,869 / 0,371 | — |
+| Bề dày lõi tia | 0,216 | 0,069 = **×0,318** | — |
+
+- Ảnh chụp trên trời (nền đồng đều), máy quay cách 2,4 × chiều cao mỗi con: `PlayTestShots/gioloc_6a_locxoay_that.png`,
+  `gioloc_6b_gioloc_moi.png`, `gioloc_6c_gioloc_cu.png`.
+- Hai chỗ phép thử tự sai, đã sửa:
+  1. Đếm đèn ra 2: tính cả đèn sinh đôi `DenMatDat` → so với số đèn của Lốc xoáy thật.
+  2. Tia sét: lấy khoảng min–max của 10 tia Lốc xoáy làm chuẩn thì 7/10 tia Gió lốc "ra ngoài" — 10 mẫu ngẫu nhiên không phủ hết
+     khoảng thật. Nay so TRUNG BÌNH (~18 tia Lốc xoáy, dung sai ~2,5–3σ).
+- Mục L (không có tia bắn sang đối thủ) báo nhầm 1 lần: tia Lốc xoáy giăng dọc MẶT NGOÀI thân, có đuôi tình cờ nằm cạnh bia → nay
+  chỉ đếm tia KHÁC tên `SetTrongGioLoc`.
+- Menu 75: Hoá lốc xoáy bắt đầu ×0,318 = đúng cỡ Gió lốc đang bay (đo `lossyScale` của Gió lốc), phình lên 1,00 sau 0,55 s.
+- **Menu 71, 75, 82: 0 lỗi.**
+- ⚠️ Điện thoại: mỗi cơn nay ~660 hạt bụi sống (cũ ~260) + 1 đèn chớp (+ đèn sinh đôi mặt đất) → 3 cơn ~2 000 hạt + 3 đèn, cấp 5
+  ~3 300 hạt + 5 đèn. Chưa đo trên máy thật.
+
 ### Vẽ lại năm icon: Quả cầu lửa, Mưa băng, Sấm sét, Giựt sét, Quả cầu điện (28/09/2026)
 
 **Người dùng:** năm icon này cũng "quá thô và sơ sài" — vẽ lại hợp nội dung từng kỹ năng, không cần Blender MCP.
@@ -12403,7 +12448,7 @@ Lần chạy đầu phép thử báo cả 10 con "lơ lửng": tia chiếu từ 
 | **92. Chay thu CHE DO DON - DOI (6 nguoi, dong doi, ket tran doi)** | Hàm thuần xếp đội / cân bằng / đội thắng / JSON phòng cũ / gói kết trận 15 byte; 10 kỹ năng thật vào đồng đội → 0 máu 0 hiệu ứng (đối chứng đội kia trúng); gói phép mạng của đồng đội; tự nhắm bỏ qua đồng đội gần; chỗ xuất phát theo đội; kết trận Đôi 6 ghế qua kênh giả lập (chưa đủ người chưa xét, máy khách hai đội, phòng một đội, Đơn 6 người); tên màu đội + HUD. `che_do_doi.txt`, ảnh `che_do_doi_*.png`. |
 | **92b. Chay thu SANH DON - DOI tren Firebase that** | Hai tài khoản chạy thử + ghế giả: tạo phòng Đơn / Đôi, luật Firebase (đối chứng ghi sai bị từ chối), người bản cũ được xếp đội, vào đội ít người, tự đổi đội, khách không sửa được đội người khác, đội đủ 3 bị chặn, chủ phòng cân bằng khi 4 người một đội; chụp sảnh / phòng Đôi / phòng Đơn 6 người (0 chữ bị cắt). Xoá sạch phòng thử. `sanh_doi.txt`, ảnh `sanh_doi_*.png`. |
 | **93. Chup MUC DEN Loc xoay + Gio loc (3 muc de chon)** | Lốc xoáy thật + Gió lốc đứng yên, chụp đêm / ngày ở gốc và tối 10 / 20 / 30% (MaterialPropertyBlock), đo độ sáng thân. `denloc.txt`, ảnh `denloc_*.png`. |
-| **94. Chup MAY GIONG trong Gio loc (3 muc day de chon)** | Dựng lại hệ `MayTrongLoc` ở cũ / ×1,3 / ×1,5 / ×1,8: số đám, độ cao tâm, xa trục / vỏ trong ở đúng độ cao (< 80%); mây lộ ra = render bật / tắt renderer mây cùng khung, 12 khung, đêm + ngày. `maygl.txt`, ảnh `maygl_*.png`. |
+| **94. Chup MAY GIONG trong Gio loc (3 muc day de chon)** | (Hình Gió lốc CŨ — `BuildGioLocCu`.) Dựng lại hệ `MayTrongLoc` ở cũ / ×1,3 / ×1,5 / ×1,8: số đám, độ cao tâm, xa trục / vỏ trong ở đúng độ cao (< 80%); mây lộ ra = render bật / tắt renderer mây cùng khung, 12 khung, đêm + ngày. `maygl.txt`, ảnh `maygl_*.png`. |
 | **56. Chay thu DOT QUAI Act2 + cho xuat phat** | *(13/09/2026: thêm đo chờ 30 giây và 10 con xa 55–65 m)*  Kiểm chỗ xuất phát ngẫu nhiên (hai máy cùng mã phòng ra cùng danh sách, cách nhau ≥ 22 m, trên đất, ngoài nước, không vướng vật cản) và luật đợt quái Act2 (đợt 1 bốn con quanh mỗi người; đợt sau cộng dồn quái và mạnh thêm 5% máu · sát thương). Số đo `dotquai_act2.txt`. |
 | **55. Chay thu KET TRAN (nguoi song sot cuoi cung)** | Mở kênh giả lập như menu 45: kiểm gói tin kết trận/chết, máy chủ phòng phán quyết đúng lúc còn một người, bảng điểm cộng đúng người, máy khách không tự kết luận và hiện đúng kết quả nghe được, chết rồi camera chuyển sang người còn sống, chụp màn kết trận. Số đo `kettran.txt`, ảnh `kettran_*.png`. |
 | **54c. Chay thu LOC XOAY cuon lo lua** | Vào Play Act2, thả một cơn lốc đi thẳng vào lò: đo mốc thời gian lửa tắt / lò nhấc lên / lò biến mất / lò mọc lại, kiểm than trong chậu tắt bằng độ sáng trên ảnh, và kiểm vật có hệ hạt khác vẫn không bị cuốn. Ảnh `locxoay_*.png`, số đo `locxoay_lolua.txt`. |

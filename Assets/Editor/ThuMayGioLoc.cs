@@ -90,7 +90,7 @@ public static class ThuMayGioLoc
         Vector3 huong = toi != null ? toi.transform.forward : Vector3.forward; huong.y = 0f; huong.Normalize();
         Vector3 pGl = goc + huong * 8f;
         pGl.y = GioLoc.MatDatY(pGl, pGl.y);
-        var gl = VfxFactory.BuildGioLoc();
+        var gl = VfxFactory.BuildGioLocCu();
         gl.name = "TAM_GioLocMay";
         gl.transform.position = pGl;
         // Lan 1 may quay 9 m: than loc chiem het khung, khong phan biet duoc cac muc -> lui ra 13 m thay ca con loc

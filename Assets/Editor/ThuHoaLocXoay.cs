@@ -284,7 +284,7 @@ public static class ThuHoaLocXoay
             Vector3 choLocCuoi = locGiua != null ? locGiua.transform.position : Vector3.zero;
             Vector3 choLocKhiHoa = Vector3.zero, choXoayLucDau = Vector3.zero;
             bool daThayXoay = false;
-            float coNhoNhat = 9f, coLonNhat = -9f;
+            float coNhoNhat = 9f, coLonNhat = -9f, coDatDau = -1f;
             Tornado xoay = null;
             float hanHoa = Time.time + 1.2f;
             while (Time.time < hanHoa)
@@ -303,6 +303,8 @@ public static class ThuHoaLocXoay
                         choXoayLucDau = tn.transform.position;
                         choLocKhiHoa = choLocCuoi;
                     }
+                    var ph = tn.GetComponent<PhinhToThanhLoc>();
+                    if (ph != null) coDatDau = ph.coDau;    // co khoi dau (khung dau da phinh them mot dt nen khong do bang hinh)
                     if (tn.transform.childCount > 0)
                     {
                         float co = tn.transform.GetChild(0).localScale.x;
@@ -330,6 +332,13 @@ public static class ThuHoaLocXoay
             // TO DAN: doc o TRONG vong theo doi tren (coNhoNhat luc vua hoa, coLonNhat luc phinh xong)
             float coDau = coNhoNhat < 9f ? coNhoNhat : -1f;
             float coSau = coLonNhat > -9f ? coLonNhat : -1f;
+            // 01/10/2026 Gio loc LA Loc xoay thu nho: co hinh cua hai con Gio loc hai ben (con bay) - Loc xoay phai bat dau DUNG co ay
+            float coGioLoc = -1f;
+            foreach (var l in Object.FindObjectsByType<GioLoc>(FindObjectsInactive.Exclude))
+            {
+                var h = l.transform.Find("GioLocHinh/LocXoayHinh");
+                if (h != null) coGioLoc = h.lossyScale.y;
+            }
             yield return Chup("hoalocxoay_1_da_hoa");
 
             // E. sat thuong: doi con loc cuon qua bia
@@ -343,7 +352,7 @@ public static class ThuHoaLocXoay
                 soGioLocTruoc, soGioLocSau, xoay != null, lechCho, manaTruocHoa - toi.mana, coGiua, conGiuaSau, soXoayD));
             Ghi(string.Format("D. Loc xoay hoa ra: toc do {0:F1} m/s (Gio loc {1}, Loc xoay goc 3,4), song {2:F1} s, don cham mot lan {3:F1} (mong {4:F1}), sat thuong moi giay {5:F1}",
                 tocDo, GioLoc.TocDo, song, donCham, donMong, dps));
-            Ghi(string.Format("D. TO DAN: ti le hinh ngay sau khi hoa {0:F2} -> sau {1} giay {2:F2}", coDau, HoaLocXoay.GiayPhongTo, coSau));
+            Ghi(string.Format("D. TO DAN: ti le hinh ngay sau khi hoa {0:F3} -> sau {1} giay {2:F2}; co khoi dau dat {4:F3}, co hinh Gio loc dang bay {3:F3}", coDau, HoaLocXoay.GiayPhongTo, coSau, coGioLoc, coDatDau));
             Ghi(string.Format("E. bia dung yen mat {0:F0} mau (don cham {1:F0} + sat thuong moi giay cua Loc xoay)", mat, donMong));
 
             Kiem(soGioLocTruoc == 3 && coGiua, "doi chung hong: khong co du 3 con Gio loc (co con giua) de hoa");
@@ -351,7 +360,8 @@ public static class ThuHoaLocXoay
             Kiem(lechCho >= 0f && lechCho < 2f, "Loc xoay khong hien ra ngay cho con Gio loc");
             Kiem(Mathf.Abs(tocDo - GioLoc.TocDo) < 0.01f, "Loc xoay hoa ra khong giu toc do bay cua Gio loc");
             Kiem(Mathf.Abs(donCham - donMong) < 0.5f, "don cham mot lan khong bang sat thuong Gio loc cap hien tai");
-            Kiem(coDau > 0f && coDau < 0.6f && coSau > 0.95f, "hinh khong TO DAN sau khi hoa (phai tu ~0,42 len 1,00)");
+            Kiem(coDau > 0f && coDau < 0.6f && coSau > 0.95f, "hinh khong TO DAN sau khi hoa (phai tu co Gio loc len 1,00)");
+            Kiem(coGioLoc > 0f && Mathf.Abs(coDatDau - coGioLoc) < 0.005f && coDau >= coGioLoc - 0.005f, "Loc xoay hoa ra khong bat dau dung co Gio loc (giat co)");
             Kiem(mat > donMong, "bia khong an ca don cham lan sat thuong moi giay");
             if (bia != null) Object.Destroy(bia.gameObject);
             DonLoc();

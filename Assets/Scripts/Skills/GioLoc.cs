@@ -290,6 +290,8 @@ public class GioLoc : MonoBehaviour
         daTan = true;
         if (visual == null) { Destroy(gameObject); return; }
 
+        // Den chop cua Loc xoay thu nho (01/10/2026) tat cung luc than co lai - khong thi con sang them doi hat bui (~3,6 s)
+        foreach (var lt in visual.GetComponentsInChildren<Light>()) lt.enabled = false;
         float conLauNhat = 0.35f;
         foreach (var ps in visual.GetComponentsInChildren<ParticleSystem>())
         {

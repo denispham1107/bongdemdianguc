@@ -152,7 +152,7 @@ public static partial class VfxFactory
     /// TIA SET tren than Loc xoay moi nhip (Tornado.Zap, 0,45 s): HAI tia kieu GIUT SET (loi trang + quang xanh, anh Blender)
     /// giang tu mieng loc xuong doc than, nhieu nhanh - nhu anh mau. Hai dau BAM theo con loc (loc chay 3,4 - 9,5 m/s).
     /// </summary>
-    public static void TornadoBolt(Transform loc, float scale)
+    public static void TornadoBolt(Transform loc, float scale, string ten = null)
     {
         if (loc == null) return;
         Vector3 goc = loc.position;
@@ -168,6 +168,7 @@ public static partial class VfxFactory
             Vector3 p1 = goc + new Vector3(Mathf.Cos(a1) * r1, h1, Mathf.Sin(a1) * r1);
             Vector3 p2 = goc + new Vector3(Mathf.Cos(a2) * r2, h2, Mathf.Sin(a2) * r2);
             var arc = LightningArc.Create(p1, p2, 1f, Random.Range(0.28f, 0.42f));
+            if (ten != null) arc.name = ten;
             GiatSet.KieuTia(arc, 1.35f * scale, loc, loc);
             arc.branches = Random.Range(3, 6);      // nhieu nhanh chang chit nhu anh mau
             arc.branchLength = 0.42f;

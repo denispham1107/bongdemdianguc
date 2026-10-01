@@ -433,7 +433,7 @@ public static class ThuThanLocXoay
         // Vong bui chan: lay tu con loc THAT vua tha (prefab Skill_LocXoay de len code) - rong theo chan moi; DOI CHUNG Gio loc giu 1,0
         ParticleSystem buiChan = null;
         foreach (var ps in loc.GetComponentsInChildren<ParticleSystem>(true)) if (ps.name == "BuiChan") buiChan = ps;
-        var gioLoc = VfxFactory.BuildGioLoc();
+        var gioLoc = VfxFactory.BuildGioLocCu();   // doi chung: hinh Gio loc CU (01/10/2026 Gio loc moi la Loc xoay thu nho)
         ParticleSystem buiGl = null;
         foreach (var ps in gioLoc.GetComponentsInChildren<ParticleSystem>(true)) if (ps.name == "BuiCuon") buiGl = ps;
         float rBui = buiChan != null ? buiChan.shape.radius : -1f, rBuiGl = buiGl != null ? buiGl.shape.radius : -1f;

@@ -79,14 +79,14 @@ public static class ThuGioLocTrong
         Vector3 huong = toi != null ? toi.transform.forward : Vector3.forward; huong.y = 0f; huong.Normalize();
         Vector3 P = goc + huong * 8f;
         P.y = GioLoc.MatDatY(P, P.y);
-        var loc = VfxFactory.BuildGioLoc();
+        var loc = VfxFactory.BuildGioLocCu();
         loc.name = "TAM_GioLocHinh";
         loc.transform.position = P;
         cam.transform.position = P - huong * 9f + Vector3.up * 3.2f;
         cam.transform.LookAt(P + Vector3.up * 1.8f);
         // 29/09/2026 BUI DAY x2: DOI CHUNG = mot Gio loc nua, bui cuon tra ve muc cu 40 hat/giay, tran 120 - dat SAU LUNG may quay
         // (ngoai anh). Ca hai AlwaysSimulate: ngoai khung hinh, culling Automatic dung mo phong va dem ra 0.
-        var locDc = VfxFactory.BuildGioLoc();
+        var locDc = VfxFactory.BuildGioLocCu();
         locDc.name = "TAM_GioLocDoiChung";
         locDc.transform.position = cam.transform.position - huong * 30f;
         ParticleSystem buiMoi = null, buiDc = null;

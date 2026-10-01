@@ -18,6 +18,13 @@ public class LightFlicker : MonoBehaviour
         if (lt != null) baseRange = lt.range;
     }
 
+    /// <summary>Doi tam goc sau Awake (Gio loc thu nho den Loc xoay - Awake da chup tam 18 m).</summary>
+    public void DatTamGoc(float tam)
+    {
+        baseRange = tam;
+        if (lt != null) lt.range = tam;
+    }
+
     void Update()
     {
         if (lt == null) return;

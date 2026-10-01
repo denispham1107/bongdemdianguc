@@ -71,8 +71,63 @@ public static partial class VfxFactory
         return kho;
     }
 
-    /// <summary>Dung hinh mot con loc nho. Goc = chan loc tren mat dat.</summary>
+    /// <summary>Chieu cao hinh Loc xoay that (4 vo 15 m + vanh cuon) - lay ti le thu nho cho Gio loc.</summary>
+    public const float ChieuCaoLocXoayHinh = 15.72f;
+
+    /// <summary>Gio loc = Loc xoay thu deu bao nhieu lan: than 5 m (GioLoc.ChieuCao) / 15,72 = 0,318. Chan vo chinh 2,6 -> 0,83 m,
+    /// mieng 6,8 -> 2,16 m - gan trung Gio loc cu (0,91 / 2,03). Hoa loc xoay phinh tu dung co nay.</summary>
+    public const float HeSoHinhGioLoc = 5f / ChieuCaoLocXoayHinh;
+
+    /// <summary>
+    /// GIO LOC = LOC XOAY THU NHO (nguoi dung 01/10/2026: "thu cho Gio loc co hieu ung giong hoan toan Lốc xoáy, chi co dieu cho kich
+    /// thuoc Lốc xoáy bang kich thuoc Gio loc hien gio"; chon: thu DEU x0,318 giu dang, BO mau may giong + may trong than, GIU 240 hat
+    /// moi giay nhu Loc xoay, Hoa loc xoay phinh tu x0,318). Lay DUNG phan hinh "LocXoayHinh" cua prefab Skill_LocXoay (thu Loc xoay
+    /// that trong game dung), them cac lop bui cua Tornado.Start (DamBaoBuiCuonLenLocXoay), roi phong ca cum x HeSoHinhGioLoc.
+    /// Moi he hat MO PHONG CUC BO + ti le Hierarchy -> ca chuyen dong (bay len, toa, quy dao) thu dung ti le, va hat di theo lốc
+    /// 9,5 m/s (bui chan Loc xoay o khong gian THE GIOI vi no di 3,4 m/s - de the gioi o Gio loc thi thanh vet dai sau lung).
+    /// Den StormLight thu tam theo. Tia set: GioLocSetTrongLoc -> TornadoBolt(x0,318). Ban cu: BuildGioLocCu (tam giu de doi chung).
+    /// </summary>
     public static GameObject BuildGioLoc()
+    {
+        var root = new GameObject("GioLocHinh");
+        Transform hinh = null;
+        var pf = GameAssets.I != null ? GameAssets.I.tornadoPrefab : null;
+        if (pf != null && pf.transform.childCount > 0)
+        {
+            hinh = Object.Instantiate(pf.transform.GetChild(0), root.transform, false);
+            hinh.name = "LocXoayHinh";
+        }
+        else
+        {
+            var tam = BuildLocXoay(1f);
+            hinh = tam.transform.Find("LocXoayHinh");
+            if (hinh == null) { Object.Destroy(root); return BuildGioLocCu(); }   // thieu FBX Loc xoay
+            hinh.SetParent(root.transform, false);
+            Object.Destroy(tam);
+        }
+        DamBaoBuiCuonLenLocXoay(root.transform, 1f);
+        hinh.localScale = Vector3.one * HeSoHinhGioLoc;
+        foreach (var ps in hinh.GetComponentsInChildren<ParticleSystem>(true))
+        {
+            ps.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);   // PlayOnStart bat lai o khung dau
+            var m = ps.main;
+            m.simulationSpace = ParticleSystemSimulationSpace.Local;
+            m.scalingMode = ParticleSystemScalingMode.Hierarchy;
+            // Trong luc tinh bang m/s^2 THE GIOI, khong thu theo ti le -> bui chan (gravity -0,04 = boc len) bay cao x1,47 (menu 71 C3)
+            m.gravityModifierMultiplier *= HeSoHinhGioLoc;
+        }
+        foreach (var lt in hinh.GetComponentsInChildren<Light>(true))
+        {
+            float tam = lt.range * HeSoHinhGioLoc;
+            var fl = lt.GetComponent<LightFlicker>();
+            if (fl != null) fl.DatTamGoc(tam); else lt.range = tam;
+        }
+        return root;
+    }
+
+    /// <summary>Hinh Gio loc CU (luoi Blender LocNho, mau may giong, may trong than) - 17/09 - 30/09/2026. Khong con dung trong game;
+    /// giu tam cho phep thu doi chung (menu 71) va menu 71c / 94 cho toi khi nguoi dung chot ban moi.</summary>
+    public static GameObject BuildGioLocCu()
     {
         var root = new GameObject("GioLocHinh");
         var kho = KhoLocNho;
@@ -213,12 +268,6 @@ public static partial class VfxFactory
     /// <summary>So nhip set trong loc da phong (moi nhip 2 tia) - phep thu menu 71 doc.</summary>
     public static int SoNhipSetTrongGioLoc;
 
-    /// <summary>Moi dau tia set trong loc lech truc toi da 0,6 m -> hai tia doi dien cach nhau ~1,2 m.</summary>
-    public const float LechTiaSetGioLoc = 0.6f;
-
-    /// <summary>Dau tia khong qua ti le nay cua ban kinh vo trong cung o cung do cao (con nam trong long loc).</summary>
-    public const float TiLeTrongVoGioLoc = 0.85f;
-
     // Ban kinh vo TRONG CUNG Vo0 cua LocNho.fbx moi 0,5 m do cao (chua nhan HeSoBanKinhGioLoc). 28/09/2026 THAN TO RA (nguoi
     // dung: "nhin loc nhu cay kem oc que"): chan x2 (0,413 -> 0,827), to dan deu r = 0,826 + 1,019 (z/5)^1,6, mieng giu 1,845 -
     // sua trong Blender (CongCu/Blender/gio_loc_than_rong.blend). Bang cu 17/09: 0,41 0,42 0,445 0,48 0,53 0,67 0,87 1,05 1,30 1,54 1,85.
@@ -267,48 +316,15 @@ public static partial class VfxFactory
         return Mathf.Lerp(banKinhVo0[i], banKinhVo0[i + 1], f - i) * HeSoBanKinhGioLoc;
     }
 
-    /// <summary>Chieu cao Loc xoay lon do duoc (menu 71, 17/09/2026: 15,37 m) - lay ti le thu nho tia set cho Gio loc cao 5 m.</summary>
-    public const float ChieuCaoLocXoayDo = 15.37f;
-
     /// <summary>
-    /// HAI TIA SET TRONG LONG GIO LOC, danh tu DINH loc xuong (nguoi dung 17/09/2026: "luon cho 2 tia set xuat hien trong loc,
-    /// xuat phat tu tren dinh loc danh xuong, giong 2 tia set cua Loc xoay, nhung kich thuoc phu hop voi loc nho"). Chep cach
-    /// dung tia cua <see cref="TornadoBolt"/> (do day 0,85 / 0,70, doi 0,16-0,28 / 0,13-0,22 s, 16 / 22 doan, giat 1,5 / 1,05,
-    /// nhanh 1-2 / 2-3) nhung: CA HAI tia deu tu dinh xuong va nam gan truc; BE DAY nhan ti le chieu cao 5 / 15,37 (do giat va
-    /// nhanh la ti le theo do dai tia nen tu nho theo). CHI HINH, khong sat thuong. Goi moi 0,45 s nhu Loc xoay.
+    /// HAI TIA SET tren than Gio loc moi nhip (GioLoc.Update, 0,45 s): tu 01/10/2026 Gio loc la Loc xoay thu nho nen tia CHINH LA tia
+    /// Loc xoay (TornadoBolt - kieu Giut set, 3-5 nhanh, giang tu mieng xuong doc than, bam theo loc) thu x HeSoHinhGioLoc.
+    /// Ten "SetTrongGioLoc" de phep thu loc rieng. Ban 17/09 (tia trong long vo, may loe) con trong git 146c16c.
     /// </summary>
     public static void GioLocSetTrongLoc(Transform loc)
     {
-        Vector3 chan = loc.position;
+        if (loc == null) return;
         SoNhipSetTrongGioLoc++;
-        // Set danh trong long loc -> may giong tren dinh loe nhe (29/09/2026)
-        var loe = loc.GetComponentInChildren<LoeSangMay>();
-        if (loe != null) loe.Chop(0.7f);
-        float k = GioLoc.ChieuCao / ChieuCaoLocXoayDo;
-        float goc = Random.Range(0f, Mathf.PI * 2f);
-        // Hai tia o HAI PHIA DOI DIEN truc, cung goc xoan khi di xuong -> luon doi dien nhau (nguoi dung 17/09/2026: hai tia "gan
-        // sat nhau qua", xin cach ~1,2 m nhung van trong long loc). Moi dau tia lech truc LechTiaSetGioLoc (0,6 m), nhung khong qua
-        // TiLeTrongVoGioLoc x ban kinh vo TRONG CUNG o do cao do - chan loc hep (0,46 m) nen doan duoi tu thu vao.
-        float xoan = Random.Range(0.8f, 1.8f);                 // xuong thap thi lech goc - tia nghieng theo chieu xoay
-        for (int i = 0; i < 2; i++)
-        {
-            float a1 = goc + i * Mathf.PI;
-            float a2 = a1 + xoan;
-            float yDinh = GioLoc.ChieuCao * Random.Range(0.86f, 0.96f);
-            float yDuoi = i == 0 ? Random.Range(0.3f, 1.2f) : Random.Range(1.0f, 2.2f);
-            float r1 = Mathf.Min(LechTiaSetGioLoc, TiLeTrongVoGioLoc * BanKinhVoTrongGioLoc(yDinh));
-            float r2 = Mathf.Min(LechTiaSetGioLoc, TiLeTrongVoGioLoc * BanKinhVoTrongGioLoc(yDuoi));
-            Vector3 dinh = chan + new Vector3(Mathf.Cos(a1) * r1, yDinh, Mathf.Sin(a1) * r1);
-            Vector3 duoi = chan + new Vector3(Mathf.Cos(a2) * r2, yDuoi, Mathf.Sin(a2) * r2);
-            var arc = i == 0
-                ? LightningArc.Create(dinh, duoi, 0.85f * k, Random.Range(0.16f, 0.28f))
-                : LightningArc.Create(dinh, duoi, 0.70f * k, Random.Range(0.13f, 0.22f));
-            arc.name = "SetTrongGioLoc";
-            // Tia BAM THEO loc (nguoi dung 17/09/2026: tia "luon bi bo lai phia sau" - loc 9,5 m/s di mat 1,2-2,7 m trong doi tia)
-            arc.BamTheo(loc);
-            arc.segments = i == 0 ? 16 : 22;
-            arc.jitter = i == 0 ? 1.5f : 1.05f;
-            arc.branches = i == 0 ? Random.Range(1, 3) : Random.Range(2, 4);
-        }
+        TornadoBolt(loc, HeSoHinhGioLoc, "SetTrongGioLoc");
     }
 }

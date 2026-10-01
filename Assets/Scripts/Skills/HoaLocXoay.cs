@@ -92,7 +92,7 @@ public static class HoaLocXoay
             // TO DAN: bat dau bang co con gio loc roi phinh len co loc xoay
             var to = xoay.gameObject.AddComponent<PhinhToThanhLoc>();
             to.giay = GiayPhongTo;
-            to.coDau = GioLoc.ChieuCao / 12f;      // than gio loc cao 5 m, loc xoay ~12 m
+            to.coDau = VfxFactory.HeSoHinhGioLoc;   // 01/10/2026: Gio loc LA Loc xoay thu x0,318 -> phinh tu dung co ay (truoc 5/12 = 0,42)
 
             // Con gio loc cu bien mat ngay - hinh cua no do PhinhToThanhLoc thay the
             Object.Destroy(loc.gameObject);
