@@ -210,6 +210,8 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
   Hình cũ còn ở `BuildGioLocCu` (đối chứng menu 71, dùng cho 71c / 94) cùng ảnh `Resources/KyNang/GioLoc/` — chờ người dùng chốt rồi
   xoá. Menu 71 mục C so từng thứ với **Lốc xoáy thật**: 10/10 thành phần, phân bố bụi khử tỉ lệ, ảnh IoU 0,94 / sáng ×1,01 (cũ 0,49 / ×0,52).
   Mọi dòng bên dưới về lưới `LocNho`, màu mây giông, mây trong thân, bụi ×2, tia trong lòng vỏ là **LỊCH SỬ** (gameplay vẫn đúng).
+  ⚠️ **01/10/2026 (lần hai): tia sét Lốc xoáy + Gió lốc = KIỂU SẤM SÉT** (xem mục Lốc xoáy) và bụi lên đỉnh ×2 — Gió lốc theo luôn
+  (cùng `TornadoBolt` ×0,318, cùng `DamBaoBuiCuonLenLocXoay`): mỗi cơn ~930 hạt bụi sống.
   ⚠️ **HÌNH QUẠT: cấp 1–4 tung 3 lốc, cấp 5 tung 5 lốc**, cách nhau `GioLoc.GocQuat` **20°** quanh hướng ngắm (29/09/2026 người dùng "xa nhau hơn 1 chút", trước 15°; cấp 5 toả ±40°;
 26/09/2026: trước đó 1 lốc, cấp 5 hai lốc song song cách 4 m). ⚠️ **Mây giông nhẹ TRONG LÒNG nửa trên thân** (29/09/2026, lúc đầu trên đỉnh rồi người dùng
 đổi "nằm trong cơn lốc": hệ `MayTrongLoc`, `VfxFactory.MayDinhGioLoc`; ảnh `MayGiong` 2×2 của Mây giông, màu thân Gió lốc, mỏng, đám
@@ -348,7 +350,14 @@ hơn ×1,5 và mở xuống 1,8–4,3 m** (người dùng chọn sau menu 94 ch�
   **cả theo v** (nhiễu 4D trên hình xuyến), phần mờ chân/miệng + xám dưới chân chuyển sang **MÀU ĐỈNH** của FBX (xuất
   `colors_type='LINEAR'`, shader nhân thẳng) nên không trôi theo ảnh; `ScrollUV` v âm `TruotLenLocXoay` 0,20/0,16/0,13/0,10
   (= 3,0/2,4/1,95/1,5 m/s); vành không trượt.
-  Tia sét: 2 tia/nhịp `GiatSet.KieuTia` 3–5 nhánh, bám hai đầu vào lốc; tia vào kẻ bị cuốn cũng kiểu Giựt sét.
+  ~~Tia sét: 2 tia/nhịp `GiatSet.KieuTia` 3–5 nhánh, bám hai đầu vào lốc; tia vào kẻ bị cuốn cũng kiểu Giựt sét.~~
+  ⚠️ **01/10/2026 TIA SÉT = KIỂU SẤM SÉT** (người dùng: "giống tia sét trong Sấm sét"; chọn "từ miệng lốc xuống đất", không vết cháy):
+  `TornadoBolt` 2 tia/nhịp `LightningArc` MẶC ĐỊNH (như `LightningStrike.Strike`: 20 đoạn, 2–3 nhánh, 0,30 s, bề ngang × scale) từ miệng
+  xuống ĐẤT cạnh chân + loé chạm đất `VfxFactory.LoeSetChamDat` (prefab `Vfx_SetChamDat`, KHÔNG vết cháy — `LightningImpact` có 15% vết
+  cháy) bán kính 2,1 × scale; loé **`DiTheo`** con lốc (không làm con: Hoá lốc xoáy phóng con đầu, Gió lốc thu nhỏ); Gió lốc: hạt loé
+  đặt Hierarchy + tầm đèn × scale (`ThuLoeSet`). Tia vào kẻ bị cuốn (`Tornado.Zap`) cũng kiểu Sấm sét. Menu 82 E1 tung SẤM SÉT THẬT để so
+  từng thông số; menu 71 C5 so loé Gió lốc / Lốc xoáy thật (×0,326). **Bụi lên tận đỉnh ×2** (`TocBuiCuonLenLocXoay` 80 → 160, tổng 320 —
+  menu 82 B7: thân trên ×1,93, 20% trên cùng ×1,85 so với cấu hình hôm qua cùng lượt).
   `FunnelRadiusAt` = 0,9 × vỏ chính. Lúc tan tắt MỌI hệ hạt + đèn (trước chỉ của `visual`, loc prefab thì null).
   ⚠️ Nướng prefab bằng **menu 13**; `AssetBaker.SaveMeshes` nay **bỏ qua lưới đã là asset** (lưới FBX — CreateAsset trên nó là lỗi).
   ⚠️ Menu 13 cũ sinh ảnh trùng `Tex_*_N.png` và trỏ vật liệu sang; trả về bằng git rồi **ImportAsset ForceUpdate mọi prefab dùng

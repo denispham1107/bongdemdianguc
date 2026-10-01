@@ -1994,19 +1994,20 @@ public static partial class VfxFactory
     }
     static int mLopChuongNgai = -1;
 
-    public static void LightningImpact(Vector3 pos, float radius)
+    /// <summary>Loe sang + tia lua + bui cho set cham dat (prefab Vfx_SetChamDat), KHONG vet chay xem. Tra ve vat da sinh.</summary>
+    public static GameObject LoeSetChamDat(Vector3 pos, float radius)
     {
         var pf = GameAssets.I != null ? GameAssets.I.lightningImpactPrefab : null;
-        if (pf != null)
-        {
-            var go = GameAssets.Make(pf, pos);
-            float k = radius / 2.1f;                  // prefab duoc nuong o ban kinh 2.1
-            if (Mathf.Abs(k - 1f) > 0.05f) go.transform.localScale = Vector3.one * k;
-        }
-        else
-        {
-            BuildLightningImpact(pos, radius);
-        }
+        if (pf == null) return BuildLightningImpact(pos, radius);
+        var go = GameAssets.Make(pf, pos);
+        float k = radius / 2.1f;                  // prefab duoc nuong o ban kinh 2.1
+        if (Mathf.Abs(k - 1f) > 0.05f) go.transform.localScale = Vector3.one * k;
+        return go;
+    }
+
+    public static void LightningImpact(Vector3 pos, float radius)
+    {
+        LoeSetChamDat(pos, radius);
 
         // Thinh thoang de lai vet chay xem tren dat
         if (Random.value < 0.15f)

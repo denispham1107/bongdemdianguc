@@ -294,6 +294,12 @@ public static class ThuThanLocXoay
     }
 
     static float Goc(Vector3 v) { return Mathf.Atan2(v.z, v.x) * Mathf.Rad2Deg; }
+
+    /// <summary>Vat la loe set cham dat: prefab Vfx_SetChamDat (GameAssets.Make dat ten theo prefab) hoac BuildLightningImpact.</summary>
+    static bool LaLoe(GameObject g)
+    {
+        return g.name == "Vfx_SetChamDat" || g.name == "LightningImpact";
+    }
     static float Boc(float d) { while (d > 180f) d -= 360f; while (d < -180f) d += 360f; return d; }
 
     static readonly string[] tenLop = { "Vo0", "Vo1", "Vo2", "Vo3", "Vanh" };
@@ -496,7 +502,8 @@ public static class ThuThanLocXoay
         Kiem(h90D > 0.7f * 0.5f * caoLx && hMaxD < 0.75f * caoLx, "lop than duoi khong nam o nua than duoi");
         Kiem(lechD < 0.35f, "lop than duoi khong om theo than");
         Kiem(Mathf.Abs(tocChan - 80f) < 0.5f && psChanDo.main.maxParticles == 240, "bui chan Loc xoay khong gap doi (80 / 240)");
-        Kiem(Mathf.Abs(tocChan + tocLen + tocDuoi - 240f) < 0.5f, "tong bui Loc xoay khong phai 240 hat/giay");
+        // 01/10/2026 nguoi dung: "bui khoi nhieu hon va bay cuon len tan dinh" - chon lop len dinh x2 (80 -> 160): tong 320
+        Kiem(Mathf.Abs(tocLen - 160f) < 0.5f && Mathf.Abs(tocChan + tocLen + tocDuoi - 320f) < 0.5f, "lop bui len dinh khong phai 160 / tong bui Loc xoay khong phai 320 hat/giay");
         {
             var loc2 = ThaLoc(tam + huong * 40f, maskEnemy);
             yield return null; yield return null;
@@ -510,7 +517,27 @@ public static class ThuThanLocXoay
             foreach (var ps in loc.GetComponentsInChildren<ParticleSystem>(true)) { var m = ps.main; m.cullingMode = ParticleSystemCullingMode.AlwaysSimulate; }
             if (d2 != null) { var e = d2.emission; e.enabled = false; d2.Clear(); }
             if (c2 != null) { var m = c2.main; m.maxParticles = 120; var e = c2.emission; e.rateOverTime = 40f; }
+            // B7 (01/10/2026): DOI CHUNG CUNG LUOT thu hai - cau hinh HOM QUA (lop len dinh 80 hat/giay, tran theo cong thuc cu)
+            var loc4 = ThaLoc(tam + huong * 40f - Vector3.Cross(Vector3.up, huong) * 18f, maskEnemy);
+            yield return null; yield return null;
+            foreach (var ps in loc4.GetComponentsInChildren<ParticleSystem>(true))
+            {
+                var m = ps.main; m.cullingMode = ParticleSystemCullingMode.AlwaysSimulate;
+                if (ps.name == "BuiCuonLen") { m.maxParticles = Mathf.CeilToInt(80f * 3.6f * 1.1f); var e = ps.emission; e.rateOverTime = 80f; }
+            }
             yield return new WaitForSeconds(4.5f);
+            {
+                int trenMoi = 0, trenCu = 0, dinhMoi = 0, dinhCu = 0;
+                foreach (var ps in loc.GetComponentsInChildren<ParticleSystem>(true))
+                    if (ps.name.StartsWith("Bui")) { trenMoi += DemDuoi(ps, loc.transform, 99f) - DemDuoi(ps, loc.transform, 0.5f * caoLx); dinhMoi += DemDuoi(ps, loc.transform, 99f) - DemDuoi(ps, loc.transform, 0.8f * caoLx); }
+                foreach (var ps in loc4.GetComponentsInChildren<ParticleSystem>(true))
+                    if (ps.name.StartsWith("Bui")) { trenCu += DemDuoi(ps, loc4.transform, 99f) - DemDuoi(ps, loc4.transform, 0.5f * caoLx); dinhCu += DemDuoi(ps, loc4.transform, 99f) - DemDuoi(ps, loc4.transform, 0.8f * caoLx); }
+                Ghi(string.Format("B7. hat bui dang song o NUA THAN TREN (> {0:F1} m): moi {1} / cau hinh hom qua cung luot {2} = x{3:F2}; o 20% tren cung (> {4:F1} m): {5} / {6} = x{7:F2}",
+                    0.5f * caoLx, trenMoi, trenCu, (float)trenMoi / Mathf.Max(1, trenCu), 0.8f * caoLx, dinhMoi, dinhCu, (float)dinhMoi / Mathf.Max(1, dinhCu)));
+                Kiem(trenCu > 50 && dinhCu > 15, "doi chung: cau hinh hom qua khong co bui o than tren - phep dem vo nghia");
+                Kiem((float)trenMoi / Mathf.Max(1, trenCu) > 1.7f && (float)dinhMoi / Mathf.Max(1, dinhCu) > 1.7f, "bui o than tren / tan dinh khong day hon ro (it nhat x1,7)");
+            }
+            Object.Destroy(loc4.gameObject);
             int demMoi = 0, demCu = 0;
             foreach (var ps in loc.GetComponentsInChildren<ParticleSystem>(true))
                 if (ps.name == "BuiChan" || ps.name == "BuiCuonLen" || ps.name == "BuiThanDuoi") demMoi += DemDuoi(ps, loc.transform, 0.5f * caoLx);
@@ -624,19 +651,67 @@ public static class ThuThanLocXoay
         // ================= E. TIA SET =================
         Ghi("");
         if (cam != null) { cam.transform.position = tam - huong * 26f + Vector3.up * 8f; cam.transform.LookAt(tam + Vector3.up * 7f); }
+        // E1 (01/10/2026 nguoi dung: tia trong Loc xoay "giong tia set trong Sam set", chon tu mieng loc xuong dat, khong vet chay):
+        // DOI CHUNG la mot cu SAM SET THAT (LightningStrike.Spawn, sat thuong 0, o xa) - so tung thong so tia voi no. Moi tia cham dat
+        // phai co mot LOE cham dat (vat co con "BoltLight" nhu loe cua Sam set that) dinh vao loc.
+        // Thong so tia Sam set CHEP RA ngay khi bat duoc (tia song 0,30 s - doc lai sau thi da bi xoa)
+        bool coSS = false; bool ssAnh = true; int ssDoan = 0, ssNhanh = 0, loeSS = 0;
+        float ssLoi = 0f, ssQuang = 0f, ssSong = 0f, ssGiat = 0f, ssNhanhDai = 0f; Color ssMauLoi = Color.clear, ssMauQuang = Color.clear;
+        {
+            var arcTruocSS = new HashSet<LightningArc>(Object.FindObjectsByType<LightningArc>(FindObjectsInactive.Exclude));
+            var gocTruocSS = new HashSet<GameObject>(UnityEngine.SceneManagement.SceneManager.GetActiveScene().GetRootGameObjects());
+            Vector3 choSS = tam + huong * 60f; choSS.y = VfxFactory.GroundY(choSS);
+            var ss = LightningStrike.Spawn(choSS, 20f, 0f);
+            ss.damage = 0f;
+            for (int i = 0; i < 60 && !coSS; i++)
+            {
+                yield return null;
+                foreach (var x in Object.FindObjectsByType<LightningArc>(FindObjectsInactive.Exclude))
+                {
+                    if (arcTruocSS.Contains(x) || (x.end - choSS).magnitude > 0.5f) continue;    // chi tia cua cu Sam set (tia loc khong cham choSS)
+                    coSS = true; ssAnh = x.anhBlender; ssDoan = x.segments; ssNhanh = x.branches; ssLoi = x.coreWidth; ssQuang = x.glowWidth;
+                    ssSong = x.lifetime; ssGiat = x.jitter; ssNhanhDai = x.branchLength; ssMauLoi = x.coreColor; ssMauQuang = x.glowColor;
+                }
+            }
+            foreach (var g in UnityEngine.SceneManagement.SceneManager.GetActiveScene().GetRootGameObjects())
+                if (!gocTruocSS.Contains(g) && LaLoe(g) && (g.transform.position - choSS).magnitude < 1f) loeSS++;
+        }
         var truocDo = new HashSet<LightningArc>(Object.FindObjectsByType<LightningArc>(FindObjectsInactive.Exclude));
+        var loeTruoc = new HashSet<DiTheo>(Object.FindObjectsByType<DiTheo>(FindObjectsInactive.Exclude));
+        int conTruoc = loc.transform.childCount;
         float het = Time.time + 1.2f; var moi = new List<LightningArc>();
+        int kieuSS = 0, soChamDat = 0, dauMieng = 0;
+        yield return new WaitForEndOfFrame();
         while (Time.time < het)
         {
             foreach (var a in Object.FindObjectsByType<LightningArc>(FindObjectsInactive.Exclude))
-                if (!truocDo.Contains(a)) { truocDo.Add(a); moi.Add(a); }
-            yield return null;
+            {
+                if (truocDo.Contains(a)) continue;
+                truocDo.Add(a); moi.Add(a);
+                if (coSS && !a.anhBlender && a.segments == ssDoan && a.branches >= 2 && a.branches <= 3
+                    && Mathf.Abs(a.coreWidth - ssLoi * loc.scale) < 1e-4f && Mathf.Abs(a.glowWidth - ssQuang * loc.scale) < 1e-4f
+                    && a.coreColor == ssMauLoi && a.glowColor == ssMauQuang && Mathf.Abs(a.lifetime - ssSong) < 1e-4f
+                    && Mathf.Abs(a.jitter - ssGiat) < 1e-4f && Mathf.Abs(a.branchLength - ssNhanhDai) < 1e-4f) kieuSS++;
+                // Mat dat doc THANG tu terrain (doc lap voi tia do dat cua code)
+                var ter = Terrain.activeTerrain;
+                float datY = ter != null ? ter.SampleHeight(a.end) + ter.transform.position.y : VfxFactory.GroundY(a.end);
+                if (Mathf.Abs(a.end.y - datY) < 0.3f) soChamDat++;
+                if (a.start.y - loc.transform.position.y > 12.2f) dauMieng++;
+            }
+            yield return new WaitForEndOfFrame();
         }
-        int anhBlender = 0, nhieuNhanh = 0, soCon = 0; float nhanhTB = 0f;
-        foreach (var a in moi) { if (a == null) continue; soCon++; if (a.anhBlender) anhBlender++; if (a.branches >= 3) nhieuNhanh++; nhanhTB += a.branches; }
-        Ghi(string.Format("E1. 1,2 giay: {0} tia moi ({1} con song luc dem), kieu anh Blender {2}, >= 3 nhanh {3}, nhanh TB {4:F1}",
-            moi.Count, soCon, anhBlender, nhieuNhanh, soCon > 0 ? nhanhTB / soCon : 0f));
-        Kiem(moi.Count >= 4 && anhBlender == soCon && nhieuNhanh * 2 >= soCon, "tia set tren than loc khong phai kieu Giut set nhieu nhanh");
+        int loeMoi = 0;
+        foreach (var d in Object.FindObjectsByType<DiTheo>(FindObjectsInactive.Exclude))
+            if (!loeTruoc.Contains(d) && d.theo == loc.transform && LaLoe(d.gameObject)) loeMoi++;
+        Ghi(string.Format("E1. DOI CHUNG Sam set that: tia {0} (rong loi {1:F3} / quang {2:F3}, {3} doan, {4} nhanh, song {5:F2} s, anh Blender {6}), {7} loe cham dat",
+            coSS ? "co" : "KHONG", ssLoi, ssQuang, ssDoan, ssNhanh, ssSong, ssAnh, loeSS));
+        Ghi(string.Format("E1. Loc xoay 1,2 giay: {0} tia moi; dung kieu Sam set {1}; dau o mieng (> 12,2 m) {2}; cham dat {3}; loe cham dat moi di theo loc {4}; so con cua loc {5} -> {6}",
+            moi.Count, kieuSS, dauMieng, soChamDat, loeMoi, conTruoc, loc.transform.childCount));
+        Kiem(coSS && !ssAnh && loeSS == 1, "doi chung: khong bat duoc tia / loe cua mot cu Sam set that");
+        Kiem(moi.Count >= 4 && kieuSS == moi.Count, "tia set Loc xoay khong dung kieu tia Sam set");
+        Kiem(soChamDat >= 4 && dauMieng >= soChamDat, "tia set khong danh tu mieng loc xuong dat");
+        Kiem(loeMoi == soChamDat, "moi tia cham dat khong co dung mot loe cham dat di theo loc");
+        Kiem(loc.transform.childCount == conTruoc, "loe cham dat lam con cua loc (Hoa loc xoay se phong ca loe)");
         // Bam theo loc: tha mot nhip moi, doi loc 2 m, dau tia phai doi theo
         truocDo = new HashSet<LightningArc>(Object.FindObjectsByType<LightningArc>(FindObjectsInactive.Exclude));
         VfxFactory.TornadoBolt(loc.transform, 1f);

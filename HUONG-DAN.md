@@ -9095,6 +9095,36 @@ cháy xém**.
   nào dưới 2,4 m): 25 đám, tâm 1,93–4,27 m, xa trục nhất 1,05 m = 63% vỏ trong; loé 1,00 → 1,56 → 1,00.
 - Điện thoại: mỗi cơn thêm ~14 đám mây lớn (1,4–2,2 m) → 3 cơn thêm ~42 tấm trong suốt chồng lên, cấp 5 (5 cơn) ~70. Chưa đo trên máy thật.
 
+### Lốc xoáy + Gió lốc: tia sét kiểu Sấm sét, bụi lên đỉnh dày gấp đôi (01/10/2026)
+
+**Người dùng:** "Cho các tia sét trong Lốc xoáy và Gió lốc giống như các tia sét trong Sấm sét"; "Lốc xoáy: bụi khói nhiều hơn và bay
+cuốn lên tận đỉnh lốc". Tôi hỏi lại; người dùng chọn: tia **từ miệng lốc xuống đất** có loé chạm đất (không vết cháy xém — đã xoá dấu
+vết trên đất hôm 29/09), Gió lốc thu tia ×0,32, **lớp bụi lên đỉnh ×2**, Gió lốc theo luôn.
+
+- **Tia** (`VfxFactory.TornadoBolt`): hai tia mỗi nhịp 0,45 s, đúng kiểu `LightningStrike.Strike` của Sấm sét — `LightningArc`
+  mặc định (không ảnh Blender, màu mặc định), 20 đoạn, 2–3 nhánh, sống 0,30 s, bề ngang × tỉ lệ lốc. Đầu tia ở miệng (12,5–14,8 m ×
+  tỉ lệ), đuôi chạm đất cạnh chân (0,6–1,15 bán kính chân, lệch góc theo chiều cuốn). Tia vào kẻ bị cuốn cũng đổi sang kiểu này.
+- **Loé chạm đất:** tách `VfxFactory.LoeSetChamDat` ra khỏi `LightningImpact` (hàm cũ còn 15% để vết cháy — không dùng). Loé
+  **đi theo lốc** bằng component mới `DiTheo` chứ không làm con: làm con thì phép kiểm "hình nằm gọn dưới một con LocXoayHinh"
+  báo sót đồ (loé có hạt tên `Dust`), và Hoá lốc xoáy / Gió lốc thu nhỏ sẽ phóng luôn cái loé. Prefab loé để hạt tỉ lệ **Local** (không
+  ăn tỉ lệ cha) → với Gió lốc đặt Hierarchy + tầm đèn ×0,318.
+- **Bụi:** `TocBuiCuonLenLocXoay` 80 → 160 hạt/giây, tổng 240 → **320**. Gió lốc dùng chung nên cũng 320 (mỗi cơn ~930 hạt sống).
+
+**Đo:**
+- Menu 82 E1 — tung **một cú Sấm sét thật** (sát thương 0) làm chuẩn, chép thông số ngay lúc bắt được (tia sống 0,30 s, đọc lại sau là
+  đã bị xoá — lần chạy đầu báo "không bắt được tia" vì thế): tia Sấm sét lõi 0,220 / quầng 1,050, 20 đoạn, 0,30 s. Lốc xoáy 1,2 s:
+  5 tia, **5/5 đúng kiểu Sấm sét**, 5 đầu ở miệng, 4 chạm đất (mặt đất đọc thẳng từ Terrain) — 1 tia là tia vào kẻ bị cuốn —
+  **4 loé** đi theo lốc, lốc vẫn 1 con.
+- Menu 82 B7 — đối chứng CÙNG LƯỢT một Lốc xoáy thứ hai đặt về cấu hình hôm qua (lớp lên đỉnh 80): hạt ở **nửa thân trên ×1,93**, ở
+  **20% trên cùng ×1,85**.
+- Menu 71 C5 — Gió lốc so với Lốc xoáy thật: tia trung bình (chia chiều cao) đầu 0,856 / 0,870, đuôi 0,002 / −0,008, bề dày ×0,318;
+  loé chạm đất: tia lửa ở tuổi 0,2 s toả 0,63 m so với 1,93 m = **×0,326** (mong ×0,318; tâm đo từ chỗ loé sinh vì tâm loé chạy theo
+  Gió lốc 9,5 m/s còn hạt ở không gian thế giới). C3: tổng bụi Gió lốc ×0,99 Lốc xoáy thật (934 / 929). Ảnh IoU 0,95.
+- Menu 71 mục L: loé chạm đất của tia THÂN lốc (có `DiTheo`) không tính là "chớp khi trúng đối thủ".
+- **Menu 71, 75, 82: 0 lỗi.**
+- ⚠️ Điện thoại: mỗi Lốc xoáy / Gió lốc ~930 hạt bụi sống + ~2 loé (mỗi loé một đèn `BoltLight`) cùng lúc. 3 cơn Gió lốc ~2 800 hạt,
+  cấp 5 ~4 600. Chưa đo trên máy thật.
+
 ### Gió lốc thành Lốc xoáy thu nhỏ (01/10/2026)
 
 **Người dùng:** "Hãy thử cho Skill Gió lốc có hiệu ứng giống hoàn toàn skill Lốc xoáy, chỉ có điều cho kích thước Lốc xoáy bằng với kích

@@ -149,8 +149,12 @@ public static partial class VfxFactory
     }
 
     /// <summary>
-    /// TIA SET tren than Loc xoay moi nhip (Tornado.Zap, 0,45 s): HAI tia kieu GIUT SET (loi trang + quang xanh, anh Blender)
-    /// giang tu mieng loc xuong doc than, nhieu nhanh - nhu anh mau. Hai dau BAM theo con loc (loc chay 3,4 - 9,5 m/s).
+    /// TIA SET cua Loc xoay moi nhip (Tornado.Zap, 0,45 s) - Gio loc (Loc xoay thu nho) dung chung voi scale 0,318.
+    /// 01/10/2026 nguoi dung: "cho cac tia set trong Loc xoay va Gio loc giong nhu tia set trong Sam set"; chon "tu mieng loc xuong dat"
+    /// (khong vet chay xem - nguoi dung da xoa dau vet tren dat), Gio loc thu tia theo loc. Nay HAI tia KIEU SAM SET (LightningStrike.Strike):
+    /// LightningArc MAC DINH (khong anh Blender, mau mac dinh), 20 doan, 2-3 nhanh, song 0,30 s, be ngang x scale; tu MIENG loc giang xuong
+    /// cham DAT canh chan loc (lech goc theo chieu cuon) va loe sang cham dat (Vfx_SetChamDat ban kinh 2,1 x scale). Ca tia lan loe
+    /// BAM THEO loc (Gio loc bay 9,5 m/s). Truoc: kieu Giut set (anh Blender, 3-5 nhanh) giang doc than - git 7c45d73.
     /// </summary>
     public static void TornadoBolt(Transform loc, float scale, string ten = null)
     {
@@ -159,20 +163,40 @@ public static partial class VfxFactory
         for (int i = 0; i < 2; i++)
         {
             float a1 = Random.Range(0f, Mathf.PI * 2f);
-            // Tia xuong CHEO theo chieu cuon: goc lech 40-110 do
-            float a2 = a1 + ChieuQuayGioLoc * -1f * Random.Range(0.7f, 1.9f);
             float h1 = Random.Range(12.5f, 14.8f) * scale;
-            float h2 = Random.Range(2.5f, 8.5f) * scale;
             float r1 = BanKinhLocXoay(h1, scale) * Random.Range(0.55f, 0.95f);
-            float r2 = BanKinhLocXoay(h2, scale) * Random.Range(0.95f, 1.12f);
+            // Cham dat canh chan loc: lech goc theo chieu cuon, 0,6 - 1,15 ban kinh chan
+            float a2 = a1 + ChieuQuayGioLoc * -1f * Random.Range(0.3f, 1.0f);
+            float r2 = BanKinhLocXoay(0f, scale) * Random.Range(0.6f, 1.15f);
             Vector3 p1 = goc + new Vector3(Mathf.Cos(a1) * r1, h1, Mathf.Sin(a1) * r1);
-            Vector3 p2 = goc + new Vector3(Mathf.Cos(a2) * r2, h2, Mathf.Sin(a2) * r2);
-            var arc = LightningArc.Create(p1, p2, 1f, Random.Range(0.28f, 0.42f));
+            Vector3 p2 = goc + new Vector3(Mathf.Cos(a2) * r2, 0f, Mathf.Sin(a2) * r2);
+            p2.y = GioLoc.MatDatY(p2, goc.y);
+            var arc = LightningArc.Create(p1, p2, scale, 0.30f);
             if (ten != null) arc.name = ten;
-            GiatSet.KieuTia(arc, 1.35f * scale, loc, loc);
-            arc.branches = Random.Range(3, 6);      // nhieu nhanh chang chit nhu anh mau
-            arc.branchLength = 0.42f;
+            arc.segments = 20;
+            arc.branches = Random.Range(2, 4);
+            arc.BamTheo(loc);
+            var loe = LoeSetChamDat(p2, LightningStrikeBanKinh * scale);
+            if (loe != null)
+            {
+                DiTheo.Gan(loe, loc);       // chay theo loc, KHONG lam con (Hoa loc xoay / thu nho se phong ca loe)
+                if (scale < 0.95f) ThuLoeSet(loe, scale);
+            }
         }
+    }
+
+    /// <summary>Ban kinh loe cham dat cua tia Sam set (LightningStrike.impactRadius mac dinh).</summary>
+    public const float LightningStrikeBanKinh = 2.1f;
+
+    /// <summary>Loe cham dat thu nho (Gio loc): he hat prefab ti le Local khong an ti le cha -> dat Hierarchy; tam den x scale.</summary>
+    static void ThuLoeSet(GameObject loe, float scale)
+    {
+        foreach (var ps in loe.GetComponentsInChildren<ParticleSystem>(true))
+        {
+            var m = ps.main;
+            m.scalingMode = ParticleSystemScalingMode.Hierarchy;
+        }
+        foreach (var lt in loe.GetComponentsInChildren<Light>(true)) lt.range *= scale;
     }
 
     /// <summary>Vat lieu bui xam chan loc (anh BuiXam 2x2 cua Loc xoay) - Gio loc dung chung tu 28/09/2026.</summary>
@@ -192,7 +216,9 @@ public static partial class VfxFactory
 
     /// <summary>So hat/giay cua lop bui CUON LEN TAN DINH (29/09/2026, nguoi dung chon): Loc xoay 80 (+ 40 bui chan = 120),
     /// Gio loc 40 (+ 80 bui chan = 120 moi con).</summary>
-    public const float TocBuiCuonLenLocXoay = 80f, TocBuiCuonLenGioLoc = 40f;
+    // 01/10/2026 nguoi dung: Loc xoay "bui khoi nhieu hon va bay cuon len tan dinh" - chon lop len dinh x2: 80 -> 160 (Gio loc moi = Loc
+    // xoay thu nho nen theo luon; TocBuiCuonLenGioLoc chi con cho hinh Gio loc CU).
+    public const float TocBuiCuonLenLocXoay = 160f, TocBuiCuonLenGioLoc = 40f;
 
     /// <summary>
     /// BUI CUON LEN TAN DINH LOC, OM THEO THAN (nguoi dung 29/09/2026: Loc xoay "bui khoi cuon len day dac hon nua len tan dinh";
@@ -292,7 +318,7 @@ public static partial class VfxFactory
         }
     }
 
-    /// <summary>Lop khoi THAN DUOI Loc xoay (hat/giay) va he so bui chan (29/09/2026): tong bui 80 chan + 80 cuon len + 80 than duoi = 240.</summary>
+    /// <summary>Lop khoi THAN DUOI Loc xoay (hat/giay) va he so bui chan (29/09/2026): tong bui 80 chan + 160 cuon len (01/10/2026, truoc 80) + 80 than duoi = 320.</summary>
     public const float TocBuiThanDuoiLocXoay = 80f, HeSoBuiChanLocXoay = 2f;
 
     /// <summary>Dat 4 dam bui ngau nhien cua anh BuiXam 2x2, khong chay khung (moi hat mot dam).</summary>

@@ -360,11 +360,13 @@ public class Tornado : MonoBehaviour
         var d = victim.GetComponent<Damageable>();
         if (d == null || d.IsDead) return;
 
-        // Tu mieng loc (hinh Blender 25/09/2026 cao 15 m) giang xuong ke bi cuon - cung kieu tia Giut set nhu tia tren than
+        // Tu mieng loc (hinh Blender 25/09/2026 cao 15 m) giang xuong ke bi cuon - cung KIEU SAM SET nhu tia tren than (01/10/2026,
+        // truoc la kieu Giut set): tia mac dinh, 20 doan, 2-3 nhanh, 0,30 s; bam mieng loc va ke bi cuon
         var top = transform.position + Vector3.up * 14.4f * scale;
-        var arc = LightningArc.Create(top, d.transform.position + Vector3.up * 0.9f, 1f, 0.3f);
-        GiatSet.KieuTia(arc, 1.2f, transform, d.transform);
-        arc.branches = 3;
+        var arc = LightningArc.Create(top, d.transform.position + Vector3.up * 0.9f, scale, 0.3f);
+        arc.segments = 20;
+        arc.branches = Random.Range(2, 4);
+        arc.BamHaiDau(transform, d.transform);
 
         // He PHONG chu khong phai SET: tia nay la mot phan cua Loc xoay / Gio loc, ma hai ky nang ay
         // nam nhom PHONG trong Sach phep - nguoi dung chot 19/09/2026 la Khang Phong chan no.

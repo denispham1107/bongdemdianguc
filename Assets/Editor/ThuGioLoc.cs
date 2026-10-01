@@ -162,12 +162,51 @@ public static class ThuGioLoc
         return t;
     }
 
-    /// <summary>So den cua vat - KHONG tinh den sinh doi chieu mat dat (DenMatDat tu them luc ve).</summary>
+    /// <summary>So den cua vat - KHONG tinh den sinh doi chieu mat dat (DenMatDat tu them luc ve) va den loe set cham dat.</summary>
     static int DemDen(GameObject go)
     {
         int n = 0;
-        foreach (var l in go.GetComponentsInChildren<Light>(true)) if (l.name != DenMatDat.TenDenDoi) n++;
+        // khong tinh den sinh doi mat dat, va den cua LOE SET cham dat (BoltLight - 01/10/2026 dinh vao loc, song 3,5 s)
+        foreach (var l in go.GetComponentsInChildren<Light>(true)) if (l.name != DenMatDat.TenDenDoi && l.name != "BoltLight") n++;
         return n;
+    }
+
+    /// <summary>Loe cham dat (DiTheo con loc) moi: ghi luc + CHO thay; o tuoi 0,2 s do trung vi khoang cach NGANG tu cac hat tia lua toi
+    /// tam loe - hat THE GIOI tinh tu cho luc sinh (tam loe chay theo Gio loc 9,5 m/s, hat the gioi thi khong), hat CUC BO tu tam hien tai.</summary>
+    static void TheoDoiLoe(Transform loc, Dictionary<DiTheo, Vector4> theoDoi, List<float> ketQua)
+    {
+        foreach (var d in Object.FindObjectsByType<DiTheo>(FindObjectsInactive.Exclude))
+            if (d.theo == loc && !theoDoi.ContainsKey(d)) { var p = d.transform.position; theoDoi[d] = new Vector4(p.x, p.y, p.z, Time.time); }
+        var xong = new List<DiTheo>();
+        foreach (var kv in theoDoi)
+        {
+            if (kv.Value.w < 0f || Time.time - kv.Value.w < 0.2f) continue;
+            xong.Add(kv.Key);
+            if (kv.Key == null) continue;
+            var ds = new List<float>();
+            foreach (var ps in kv.Key.GetComponentsInChildren<ParticleSystem>())
+            {
+                if (ps.name != "Sparks") continue;
+                var hat = new ParticleSystem.Particle[ps.particleCount];
+                int n = ps.GetParticles(hat);
+                bool cucBo = ps.main.simulationSpace == ParticleSystemSimulationSpace.Local;
+                Vector3 tam = cucBo ? kv.Key.transform.position : (Vector3)kv.Value;
+                for (int i = 0; i < n; i++)
+                {
+                    Vector3 w = cucBo ? ps.transform.TransformPoint(hat[i].position) : hat[i].position;
+                    ds.Add(new Vector2(w.x - tam.x, w.z - tam.z).magnitude);
+                }
+            }
+            if (ds.Count >= 5) ketQua.Add(TrungVi(ds));
+        }
+        foreach (var d in xong) theoDoi[d] = new Vector4(0f, 0f, 0f, -1f);
+    }
+
+    static float TrungVi(List<float> ds)
+    {
+        if (ds.Count == 0) return 0f;
+        var c = new List<float>(ds); c.Sort();
+        return c[c.Count / 2];
     }
 
     static SoTia TrungBinh(List<SoTia> ds)
@@ -421,10 +460,12 @@ public static class ThuGioLoc
             var tiaLon = new List<SoTia>();
             float hanLon = Time.time + 4.5f;
             yield return new WaitForEndOfFrame();
+            var loeLon = new Dictionary<DiTheo, Vector4>(); var rongLoeLon = new List<float>();
             while (Time.time < hanLon)
             {
                 foreach (var a in Object.FindObjectsByType<LightningArc>(FindObjectsInactive.Exclude))
                     if (arcDaThay.Add(a)) tiaLon.Add(DoTia(a, locXoay.transform.position, caoLon));
+                TheoDoiLoe(locXoay.transform, loeLon, rongLoeLon);
                 yield return new WaitForEndOfFrame();
             }
 
@@ -638,8 +679,10 @@ public static class ThuGioLoc
             // Do o CUOI khung (sau LateUpdate - tia da bam theo loc buoc moi), xem ghi chu 26/09/2026
             yield return new WaitForEndOfFrame();
             float hanS = Time.time + 3.6f;
+            var loeNho = new Dictionary<DiTheo, Vector4>(); var rongLoeNho = new List<float>();
             while (Time.time < hanS && loc != null)
             {
+                TheoDoiLoe(loc.transform, loeNho, rongLoeNho);
                 Vector3 tl = loc.transform.position;
                 int trongKhung = 0;
                 foreach (var a in Object.FindObjectsByType<LightningArc>(FindObjectsInactive.Exclude))
@@ -688,6 +731,11 @@ public static class ThuGioLoc
                 soArc, soKhungCoTia, soKhungDung2, soNhip, tbG.hDau, tbG.rDau, tbG.hDuoi, tbG.rDuoi, nhanhDung, dayG, dayL > 0 ? dayG / dayL : 0f, caoNho / caoLon));
             Ghi(string.Format("C5. tia bam theo loc ({0} lan do): troi lon nhat {1:F3} m (o tuoi {2:F3} s, {3} tia); DOI CHUNG tia khong bam theo bi bo lai {4:F2} m",
                 soKhungDoLech, troiMax, tuoiTroiMax, lechBanDau.Count, lechDoiChungMax));
+            float rongL = TrungVi(rongLoeLon), rongG = TrungVi(rongLoeNho);
+            Ghi(string.Format("C5. loe cham dat (tia lua o tuoi 0,2 s, trung vi khoang cach ngang toi tam loe): Loc xoay that {0:F2} m ({1} loe), Gio loc {2:F2} m ({3} loe) = x{4:F3} (mong x{5:F3})",
+                rongL, rongLoeLon.Count, rongG, rongLoeNho.Count, rongL > 0 ? rongG / rongL : 0f, k));
+            Kiem(rongLoeLon.Count >= 5 && rongLoeNho.Count >= 5, "khong bat duoc loe cham dat cua tia set (Loc xoay that / Gio loc)");
+            Kiem(rongL > 0f && Mathf.Abs(rongG / rongL / k - 1f) < 0.3f, "loe cham dat cua Gio loc khong thu nho theo loc");
             Ghi(string.Format("D. toc do do {0:F2} m/s; ngung di sau {1:F2} s", toc, song));
             Kiem(soDen == soDenLx, "Gio loc bay khong co dung so den nhu Loc xoay that");
             Kiem(quayTang == sps.Length && quayGiam == 0 && sps.Length >= 5, "cac lop khong xoay cung mot chieu di len");
@@ -705,7 +753,13 @@ public static class ThuGioLoc
             Kiem(Mathf.Abs(song - 4.5f) < 0.12f, "loc khong tan sau 4,5 giay");
             // Tan: den tat ngay cung luc than co lai
             float hanDen = Time.time + 0.5f; bool denTat = false;
-            while (loc != null && Time.time < hanDen) { var lt = loc.GetComponentInChildren<Light>(); if (lt != null && !lt.enabled) { denTat = true; break; } yield return null; }
+            while (loc != null && Time.time < hanDen)
+            {
+                Light lt = null;
+                foreach (var l in loc.GetComponentsInChildren<Light>(true)) if (l.name == "StormLight") lt = l;
+                if (lt != null && !lt.enabled) { denTat = true; break; }
+                yield return null;
+            }
             Kiem(denTat, "loc tan ma den chop van sang");
             float hanX = Time.time + 7f;
             while (loc != null && Time.time < hanX) yield return null;
@@ -843,7 +897,8 @@ public static class ThuGioLoc
                 {
                     if (!gocCu.Add(g)) continue;
                     if (g.name == "SetChayDen") soChaySem++;
-                    if (g.name.StartsWith("Vfx_SetChamDat") || g.name.StartsWith("LightningImpact")) soChop++;
+                    // 01/10/2026: loe cham dat cua tia THAN loc (kieu Sam set) la chu dich - no DiTheo con loc; chi dem loe khac
+                    if ((g.name.StartsWith("Vfx_SetChamDat") || g.name.StartsWith("LightningImpact")) && g.GetComponent<DiTheo>() == null) soChop++;
                 }
                 if (!daChupL && soArc >= 2 && Time.time > hanL - 2.2f) { daChupL = true; yield return Chup("gioloc_3_set_trong_loc"); }
                 yield return null;
