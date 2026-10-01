@@ -9095,6 +9095,32 @@ cháy xém**.
   nào dưới 2,4 m): 25 đám, tâm 1,93–4,27 m, xa trục nhất 1,05 m = 63% vỏ trong; loé 1,00 → 1,56 → 1,00.
 - Điện thoại: mỗi cơn thêm ~14 đám mây lớn (1,4–2,2 m) → 3 cơn thêm ~42 tấm trong suốt chồng lên, cấp 5 (5 cơn) ~70. Chưa đo trên máy thật.
 
+### Gió lốc: khói liền một dải từ đáy lên đỉnh, hết "2 tầng" (02/10/2026)
+
+**Người dùng** gửi ảnh khoanh ngang giữa thân ba cơn Gió lốc: "bụi khói phải liền luôn 1 dải xuyên suốt từ dưới đáy lên tới đỉnh, hiện
+có 1 đoạn ở phần thân lốc bụi khói bị mỏng hơn làm lốc chia thành 2 tầng".
+
+- **Đo lần đầu SAI CHỖ**: menu 95b bản 1 dựng lốc đứng yên, đợi 3,5 s, đo độ dày khói theo từng mét chiều cao (bụi tách lớp trên nền đen,
+  máy quay ngang giữa thân) — **mọi cấu hình đều phẳng 0,35–0,37**, kể cả bản người dùng thấy 2 tầng. Ảnh tĩnh cũng không thấy.
+- **Nguyên nhân thật — theo THỜI GIAN**: Gió lốc chỉ sống 4,5 s; mọi lớp bụi bắt đầu từ 0 hạt lúc tung và mọc dần từ chỗ sinh
+  (~2,8 m/s đơn vị Lốc xoáy). Bụi chân / thân dưới / lên đỉnh mọc từ ĐÁY, còn lớp thân trên (thêm hôm qua) mọc từ GIỮA thân → giây đầu
+  có khói dưới, có khói trên, giữa trống. Bản 2 của menu 95b đo lúc 0,5 / 1 / 1,5 / 2,5 / 3,5 s sau khi tung, chỉ số "lõm kẹp giữa" =
+  độ dày một dải / min(dày nhất bên dưới, dày nhất bên trên) — 1 là liền, profile chỉ mọc dần từ đáy không bị tính là lõm:
+
+| Sau khi tung | 0,5 s | 1 s | 1,5 s | 2,5 s | 3,5 s |
+|---|---|---|---|---|---|
+| A — lớp thân trên sinh 7,5 m (bản người dùng chơi; đối chứng) | ×0,00 | ×0,10 | ×0,87 | ×1,00 | ×0,99 |
+| B — sinh 5 m, không prewarm | ×0,07 | ×0,84 | ×0,96 | ×1,00 | ×0,98 |
+| **Bản trong game: sinh 5 m + prewarm** | **×0,99** | **×1,00** | **×0,99** | **×0,98** | **×1,00** |
+
+- Người dùng xem ảnh lúc 1 s (`PlayTestShots/builienmach_*_1s.png`) và chọn **khói có sẵn ngay lúc tung**: mọi hệ `Bui*` của Gió lốc
+  `loop = true, prewarm = true` trong `BuildGioLoc` (Unity mô phỏng trước một chu kỳ lúc Play). Lớp thân trên sinh ở **5 m**
+  (`CaoBatDauThanTrenGioLoc`, hàm `DungBuiThanTren` — tự làm tối 30%, gọi SAU vòng làm tối chung), hạt/giây giữ mật độ mỗi mét:
+  240 × (15 − 5) / 7,5 = **320**.
+- **Menu 71: 0 lỗi** — C2 kiểm 4/4 lớp bụi prewarm, lớp thân trên 320 hạt/giây ở 5,00 m; C3 864 hạt, cao 50% 9,98 / 90% 14,03.
+- Bài học: hiệu ứng ngắn đời (4,5 s) phải đo **theo thời gian sau khi sinh**, không chỉ ở trạng thái ổn định.
+- ⚠️ Prewarm tốn thời gian máy lúc tung (3–5 cơn × 4 lớp) — chưa đo khựng trên điện thoại thật.
+
 ### Gió lốc: lớp khói thân trên (01/10/2026, lần bốn)
 
 **Người dùng** gửi ảnh khoanh hai ô: "phần thân trên (đỏ) chưa phủ bụi khói như phần thân dưới (xanh), hãy cho thêm hiệu ứng bụi khói
@@ -12531,6 +12557,7 @@ Lần chạy đầu phép thử báo cả 10 con "lơ lửng": tia chiếu từ 
 | **93. Chup MUC DEN Loc xoay + Gio loc (3 muc de chon)** | Lốc xoáy thật + Gió lốc đứng yên, chụp đêm / ngày ở gốc và tối 10 / 20 / 30% (MaterialPropertyBlock), đo độ sáng thân. `denloc.txt`, ảnh `denloc_*.png`. |
 | **94. Chup MAY GIONG trong Gio loc (3 muc day de chon)** | (Hình Gió lốc CŨ — `BuildGioLocCu`.) Dựng lại hệ `MayTrongLoc` ở cũ / ×1,3 / ×1,5 / ×1,8: số đám, độ cao tâm, xa trục / vỏ trong ở đúng độ cao (< 80%); mây lộ ra = render bật / tắt renderer mây cùng khung, 12 khung, đêm + ngày. `maygl.txt`, ảnh `maygl_*.png`. |
 | **95. Chup KHOI THAN TREN Gio loc (chon so hat theo than duoi)** | Gió lốc đứng yên ban đêm, quét lớp `BuiThanTren` 0/80/160/240/320 hạt/giây: bụi + vỏ lên lớp 31 vẽ trên nền đen, máy quay ngang giữa thân → độ dày khói nửa trên / nửa dưới trong viền thân; ảnh góc chơi `buithantren_*.png`, `buithantren.txt`. |
+| **95b. Do KHOI LIEN MACH Gio loc (do day theo do cao, chon cho sinh lop than tren)** | Đo độ dày khói theo từng mét chiều cao (bụi tách lớp trên nền đen, máy quay ngang giữa thân) lúc 0,5 / 1 / 1,5 / 2,5 / 3,5 s sau khi tung; "lõm kẹp giữa"; đối chứng A (sinh 7,5 m) và B (5 m) tắt prewarm, "Code" = đúng bản trong game. `builienmach.txt`, ảnh `builienmach_*_1s.png`. |
 | **56. Chay thu DOT QUAI Act2 + cho xuat phat** | *(13/09/2026: thêm đo chờ 30 giây và 10 con xa 55–65 m)*  Kiểm chỗ xuất phát ngẫu nhiên (hai máy cùng mã phòng ra cùng danh sách, cách nhau ≥ 22 m, trên đất, ngoài nước, không vướng vật cản) và luật đợt quái Act2 (đợt 1 bốn con quanh mỗi người; đợt sau cộng dồn quái và mạnh thêm 5% máu · sát thương). Số đo `dotquai_act2.txt`. |
 | **55. Chay thu KET TRAN (nguoi song sot cuoi cung)** | Mở kênh giả lập như menu 45: kiểm gói tin kết trận/chết, máy chủ phòng phán quyết đúng lúc còn một người, bảng điểm cộng đúng người, máy khách không tự kết luận và hiện đúng kết quả nghe được, chết rồi camera chuyển sang người còn sống, chụp màn kết trận. Số đo `kettran.txt`, ảnh `kettran_*.png`. |
 | **54c. Chay thu LOC XOAY cuon lo lua** | Vào Play Act2, thả một cơn lốc đi thẳng vào lò: đo mốc thời gian lửa tắt / lò nhấc lên / lò biến mất / lò mọc lại, kiểm than trong chậu tắt bằng độ sáng trên ảnh, và kiểm vật có hệ hạt khác vẫn không bị cuốn. Ảnh `locxoay_*.png`, số đo `locxoay_lolua.txt`. |

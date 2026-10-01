@@ -114,6 +114,11 @@ public static partial class VfxFactory
             var m = ps.main;
             m.simulationSpace = ParticleSystemSimulationSpace.Local;
             m.scalingMode = ParticleSystemScalingMode.Hierarchy;
+            // KHOI CO SAN NGAY LUC TUNG (nguoi dung 02/10/2026: "bui khoi phai lien 1 dai tu day len dinh, hien co doan than mong lam loc chia
+            // 2 tang"): Gio loc chi song 4,5 s ma cac lop bui mo dan tu cho sinh (~2,8 m/s don vi Loc xoay) -> 1,5 s dau than giua TRONG
+            // (menu 95b do theo thoi gian: lom x0,00 / 0,08 / 0,85 o 0,5 / 1 / 1,5 s). Prewarm (lap + mo phong truoc mot chu ky luc Play) ->
+            // lien mach x0,99-1,00 suot doi loc. Chon: "khoi co san ngay luc tung" (nguoi dung, sau anh so sanh 1 s).
+            if (ps.name.StartsWith("Bui")) { m.loop = true; m.prewarm = true; }
             // Trong luc tinh bang m/s^2 THE GIOI, khong thu theo ti le -> bui chan (gravity -0,04 = boc len) bay cao x1,47 (menu 71 C3)
             m.gravityModifierMultiplier *= HeSoHinhGioLoc;
         }
@@ -138,6 +143,10 @@ public static partial class VfxFactory
     /// mo). Chon 240: ~90% muc toi da, 320 ton them 33% hat chi hon 0,01.</summary>
     public const float TocBuiThanTrenGioLoc = 240f;
 
+    /// <summary>Do cao SINH cua lop khoi than tren (don vi Loc xoay goc, than 15 m). 01/10/2026 sinh o giua than 7,5 -> ngay giua co dai mong
+    /// (lop than duoi mo dan + lop nay hien dan cung cho); 02/10/2026 ha xuong 5 de phan hien dan chong len phan mo dan (menu 95b, cung prewarm).</summary>
+    public const float CaoBatDauThanTrenGioLoc = 5f;
+
     /// <summary>
     /// GIO LOC KHAC LOC XOAY o ba cho (nguoi dung 01/10/2026, lan ba - sau khi Gio loc thanh Loc xoay thu nho):
     ///   1) BO HIEU UNG SANG: quang sang trang o mieng (HaoQuang) + den chop (StormLight); loe cham dat cua tia tat o GioLocSetTrongLoc.
@@ -154,15 +163,6 @@ public static partial class VfxFactory
             var t = hinh.Find(ten);
             if (t != null) Object.DestroyImmediate(t.gameObject);
         }
-        // 4) KHOI THAN TREN (nguoi dung 01/10/2026 khoanh than tren tren anh: "chua phu bui khoi nhu than duoi"): than duoi co 3 lop chong
-        //    nhau, than tren chi co BuiCuonLen ma than loe rong ra -> thua. Lop moi cung kieu om than nhu BuiThanDuoi nhung SINH O GIUA
-        //    THAN (7,5 m don vi Loc xoay) bay len tan dinh; hat to theo ban kinh than tren (~x1,4), xoay x HeSoQuayBuiGioLoc nhu lop len dinh.
-        //    Mau dat Loc xoay roi vong duoi lam toi 30% cung cac lop khac.
-        float giua = 0.5f * CaoThanLocXoay;
-        var tren = BuiCuonLenTheoThan(hinh, "BuiThanTren", CaoThanLocXoay - giua, h => 0.95f * BanKinhLocXoay(giua + h, 1f), TocBuiThanTrenGioLoc,
-                                      2.4f, 3.0f, 3.0f, 5.8f, 2.1f * HeSoQuayBuiGioLoc, MauBuiXamToi, MauBuiXamSang);
-        tren.transform.localPosition = new Vector3(0f, giua, 0f);
-
         var mpb = new MaterialPropertyBlock();
         foreach (var mr in hinh.GetComponentsInChildren<MeshRenderer>(true))
         {
@@ -184,6 +184,29 @@ public static partial class VfxFactory
             var e = ps.emission; e.rateOverTimeMultiplier *= HeSoBuiLenGioLoc;
             var v = ps.velocityOverLifetime; v.orbitalYMultiplier *= HeSoQuayBuiGioLoc;
         }
+        // 4) KHOI THAN TREN - dung SAU vong lam toi (ham tu lam toi mau cua no)
+        DungBuiThanTren(hinh, CaoBatDauThanTrenGioLoc);
+    }
+
+    /// <summary>
+    /// KHOI THAN TREN (nguoi dung 01/10/2026 khoanh than tren tren anh: "chua phu bui khoi nhu than duoi"): than duoi co 3 lop chong nhau,
+    /// than tren chi co BuiCuonLen ma than loe rong ra -> thua. Lop cung kieu om than (BuiCuonLenTheoThan), sinh o do cao
+    /// <paramref name="batDau"/> (don vi Loc xoay goc) bay len tan dinh, hat to theo than tren (x1,4), xoay x HeSoQuayBuiGioLoc, toi 30%.
+    /// So hat/giay = TocBuiThanTrenGioLoc x (doan duong / 7,5) -> giu mat do moi met nhu ban dau (sinh o 7,5 m, 240 hat/giay).
+    /// ⚠️ Lan dau sinh DUNG o giua than (7,5): lop than duoi MO DAN o 6-7,5 m, lop nay HIEN DAN o 7,5-8,4 m -> mot dai MONG ngang giua than,
+    /// loc chia hai tang (nguoi dung bao, anh khoanh). Nay sinh THAP HON de phan hien dan chong len phan mo dan - chon bang menu 95.
+    /// </summary>
+    public static ParticleSystem DungBuiThanTren(Transform hinh, float batDau)
+    {
+        float cao = CaoThanLocXoay - batDau;
+        float toc = TocBuiThanTrenGioLoc * cao / (0.5f * CaoThanLocXoay);
+        Color t0 = MauBuiXamToi, t1 = MauBuiXamSang;
+        t0.r *= HeSoToiGioLoc; t0.g *= HeSoToiGioLoc; t0.b *= HeSoToiGioLoc;
+        t1.r *= HeSoToiGioLoc; t1.g *= HeSoToiGioLoc; t1.b *= HeSoToiGioLoc;
+        var tren = BuiCuonLenTheoThan(hinh, "BuiThanTren", cao, h => 0.95f * BanKinhLocXoay(batDau + h, 1f), toc,
+                                      2.4f, 3.0f, 3.0f, 5.8f, 2.1f * HeSoQuayBuiGioLoc, t0, t1);
+        tren.transform.localPosition = new Vector3(0f, batDau, 0f);
+        return tren;
     }
 
     /// <summary>Hinh Gio loc CU (luoi Blender LocNho, mau may giong, may trong than) - 17/09 - 30/09/2026. Khong con dung trong game;
