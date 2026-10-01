@@ -1,0 +1,7 @@
+[ban 2 - tach lop bui tren nen den] khoi than tren Gio loc - 01/10/2026 21:45
+Gio loc cao 5.00 m, tach nua than o 2.39 m; lop BuiThanTren mac dinh 160 hat/giay
+BuiThanTren   0 hat/giay: khoi trong vien than - duoi 0.3583 / tren 0.2613 = x0.73; phu - duoi 100 % / tren 99 %; hat dang song lop than tren 0
+BuiThanTren  80 hat/giay: khoi trong vien than - duoi 0.3596 / tren 0.3007 = x0.84; phu - duoi 100 % / tren 100 %; hat dang song lop than tren 218
+BuiThanTren 160 hat/giay: khoi trong vien than - duoi 0.3586 / tren 0.3154 = x0.88; phu - duoi 100 % / tren 100 %; hat dang song lop than tren 435
+BuiThanTren 240 hat/giay: khoi trong vien than - duoi 0.3589 / tren 0.3260 = x0.91; phu - duoi 100 % / tren 100 %; hat dang song lop than tren 651
+BuiThanTren 320 hat/giay: khoi trong vien than - duoi 0.3593 / tren 0.3313 = x0.92; phu - duoi 100 % / tren 100 %; hat dang song lop than tren 861

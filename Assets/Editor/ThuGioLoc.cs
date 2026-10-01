@@ -573,7 +573,25 @@ public static class ThuGioLoc
             int soDenGl = DemDen(glDo), soDenLx = DemDen(locXoay.gameObject);
             Ghi(string.Format("C2. cau truc: Loc xoay that {0} thanh phan, Gio loc da bo {1}/2 (HaoQuang, StormLight), khop (mau x0,7, bui len x2, quay x2) {2} (thieu: {3}| lech: {4}| thua: {5}); ti le hinh {6:F3} (mong {7:F3}); cao Gio loc {8:F2} m / Loc xoay {9:F2} m = x{10:F3}; he hat cuc bo + Hierarchy {11}/{12}; den {13} (Loc xoay that {14})",
                 soThanhPhan, daBo, soKhop, thieu, lech, thua, hinhGl != null ? hinhGl.localScale.y : -1f, k, caoNhoDung, caoLon, caoNhoDung / caoLon, soCucBo, soHe, soDenGl, soDenLx));
-            Kiem(hinhLx != null && hinhGl != null && soThanhPhan >= 8 && daBo == 2 && soKhop == soThanhPhan - 2 && thua == "", "Gio loc khong dung Loc xoay that (bo sang, toi 30%, bui len x2 quay x2)");
+            // Lop KHOI THAN TREN (01/10/2026, chi Gio loc): sinh o giua than (7,5 m don vi Loc xoay), 240 hat/giay, quay = lop len dinh Loc xoay x2,
+            // mau = bui than duoi Loc xoay x0,7 - so voi he THAT cua Loc xoay, so viet tay
+            bool trenDung = false; string moTaTren = "khong co";
+            var tTren = hinhGl != null ? hinhGl.Find("BuiThanTren") : null;
+            var lenLx = hinhLx != null ? hinhLx.Find("BuiCuonLen") : null;
+            var duoiLx = hinhLx != null ? hinhLx.Find("BuiThanDuoi") : null;
+            if (tTren != null && lenLx != null && duoiLx != null)
+            {
+                var pT = tTren.GetComponent<ParticleSystem>(); var pLen = lenLx.GetComponent<ParticleSystem>(); var pDuoi = duoiLx.GetComponent<ParticleSystem>();
+                trenDung = Mathf.Abs(pT.emission.rateOverTime.constant - 240f) < 0.01f && Mathf.Abs(tTren.localPosition.y - 7.5f) < 0.01f
+                           && Mathf.Abs(pT.velocityOverLifetime.orbitalYMultiplier - pLen.velocityOverLifetime.orbitalYMultiplier * quayMong) < 1e-3f
+                           && toiDung(pT.main.startColor.colorMin, pDuoi.main.startColor.colorMin) && toiDung(pT.main.startColor.colorMax, pDuoi.main.startColor.colorMax)
+                           && pT.main.simulationSpace == ParticleSystemSimulationSpace.Local;
+                moTaTren = string.Format("{0:F0} hat/giay o {1:F2} m, quy dao {2:F2} (len dinh Loc xoay {3:F2})", pT.emission.rateOverTime.constant,
+                    tTren.localPosition.y, pT.velocityOverLifetime.orbitalYMultiplier, pLen.velocityOverLifetime.orbitalYMultiplier);
+            }
+            Ghi("C2. lop khoi than tren: " + moTaTren + (trenDung ? " -> dung" : " -> SAI"));
+            Kiem(hinhLx != null && hinhGl != null && soThanhPhan >= 8 && daBo == 2 && soKhop == soThanhPhan - 2 && thua == "BuiThanTren ", "Gio loc khong dung Loc xoay that (bo sang, toi 30%, bui len x2 quay x2, + khoi than tren)");
+            Kiem(trenDung, "lop khoi than tren khong dung (240 hat/giay, giua than, quay x2, toi 30%)");
             Kiem(Mathf.Abs(caoNhoDung - 5f) < 0.2f && Mathf.Abs(caoNhoDung / caoLon - k) < 0.02f, "Gio loc khong phai Loc xoay thu deu cao 5 m");
             Kiem(soCucBo == soHe && soHe > 0, "con he hat khong mo phong cuc bo (bui se roi lai sau lung loc bay 9,5 m/s / khong thu ti le)");
             Kiem(soDenGl == 0 && soDenLx >= 1, "Gio loc con den chop (doi chung: Loc xoay that co den)");
@@ -597,6 +615,12 @@ public static class ThuGioLoc
                     ten, nL, h50L, h90L, r50L, nG, h50G, h90G, r50G, dat ? "khop" : "LECH", (float)nG / Mathf.Max(1, nL), hsHat));
             }
             foreach (var ps in glCu.GetComponentsInChildren<ParticleSystem>(true)) if (ps.name.StartsWith("Bui")) tongCu += ps.particleCount;
+            {
+                int nTr; float h50Tr, h90Tr, r50Tr;
+                PhanBo(hinhGl, "BuiThanTren", out nTr, out h50Tr, out h90Tr, out r50Tr);
+                Ghi(string.Format("C3. BuiThanTren (Gio loc): {0} hat, cao 50% {1:F2} / 90% {2:F2} m, ban kinh trung vi {3:F2} m (don vi Loc xoay; giua than 7,5, dinh 15)", nTr, h50Tr, h90Tr, r50Tr));
+                Kiem(nTr > 300 && h50Tr > 7.5f && h90Tr > 12.5f, "lop khoi than tren khong nam o nua tren / khong bay len toi dinh");
+            }
             // XOAY: toc goc THAT cua hat bui len dinh quanh truc (theo doi tung hat 0,25 s, he LocXoayHinh) - Gio loc / Loc xoay phai ~x2
             var quayL = new Dictionary<uint, Vector3>(); var quayG = new Dictionary<uint, Vector3>();
             ChupHat(hinhLx, "BuiCuonLen", quayL); ChupHat(hinhGl, "BuiCuonLen", quayG);

@@ -133,6 +133,11 @@ public static partial class VfxFactory
     /// "bui khoi nhieu day hon, cuon len xoay tron xung quanh len tan dinh" - chon "len dinh x2, quay x2").</summary>
     public const float HeSoBuiLenGioLoc = 2f, HeSoQuayBuiGioLoc = 2f;
 
+    /// <summary>Lop khoi THAN TREN cua Gio loc (hat/giay) - chon bang menu 95 (bui tach lop tren nen den, do day trong vien than): khong
+    /// co lop nay than tren chi bang x0,73 than duoi; 80 / 160 / 240 / 320 -> x0,84 / 0,88 / 0,91 / 0,92 (bao hoa - mieng + vanh bui tu
+    /// mo). Chon 240: ~90% muc toi da, 320 ton them 33% hat chi hon 0,01.</summary>
+    public const float TocBuiThanTrenGioLoc = 240f;
+
     /// <summary>
     /// GIO LOC KHAC LOC XOAY o ba cho (nguoi dung 01/10/2026, lan ba - sau khi Gio loc thanh Loc xoay thu nho):
     ///   1) BO HIEU UNG SANG: quang sang trang o mieng (HaoQuang) + den chop (StormLight); loe cham dat cua tia tat o GioLocSetTrongLoc.
@@ -149,6 +154,15 @@ public static partial class VfxFactory
             var t = hinh.Find(ten);
             if (t != null) Object.DestroyImmediate(t.gameObject);
         }
+        // 4) KHOI THAN TREN (nguoi dung 01/10/2026 khoanh than tren tren anh: "chua phu bui khoi nhu than duoi"): than duoi co 3 lop chong
+        //    nhau, than tren chi co BuiCuonLen ma than loe rong ra -> thua. Lop moi cung kieu om than nhu BuiThanDuoi nhung SINH O GIUA
+        //    THAN (7,5 m don vi Loc xoay) bay len tan dinh; hat to theo ban kinh than tren (~x1,4), xoay x HeSoQuayBuiGioLoc nhu lop len dinh.
+        //    Mau dat Loc xoay roi vong duoi lam toi 30% cung cac lop khac.
+        float giua = 0.5f * CaoThanLocXoay;
+        var tren = BuiCuonLenTheoThan(hinh, "BuiThanTren", CaoThanLocXoay - giua, h => 0.95f * BanKinhLocXoay(giua + h, 1f), TocBuiThanTrenGioLoc,
+                                      2.4f, 3.0f, 3.0f, 5.8f, 2.1f * HeSoQuayBuiGioLoc, MauBuiXamToi, MauBuiXamSang);
+        tren.transform.localPosition = new Vector3(0f, giua, 0f);
+
         var mpb = new MaterialPropertyBlock();
         foreach (var mr in hinh.GetComponentsInChildren<MeshRenderer>(true))
         {

@@ -9095,6 +9095,35 @@ cháy xém**.
   nào dưới 2,4 m): 25 đám, tâm 1,93–4,27 m, xa trục nhất 1,05 m = 63% vỏ trong; loé 1,00 → 1,56 → 1,00.
 - Điện thoại: mỗi cơn thêm ~14 đám mây lớn (1,4–2,2 m) → 3 cơn thêm ~42 tấm trong suốt chồng lên, cấp 5 (5 cơn) ~70. Chưa đo trên máy thật.
 
+### Gió lốc: lớp khói thân trên (01/10/2026, lần bốn)
+
+**Người dùng** gửi ảnh khoanh hai ô: "phần thân trên (đỏ) chưa phủ bụi khói như phần thân dưới (xanh), hãy cho thêm hiệu ứng bụi khói
+cuốn bay lên tới tận đỉnh cho phần thân trên". Tôi hỏi lại; người dùng chọn **thêm lớp khói thân trên**, **chỉ Gió lốc**.
+
+- Nguyên nhân: thân dưới có ba lớp chồng nhau (bụi chân, khói thân dưới, bụi lên đỉnh); thân trên chỉ có lớp lên đỉnh, mà thân loe
+  rộng (bán kính trung bình ~5,3 so với ~3,2 đơn vị Lốc xoáy) nên cùng số hạt trải mỏng hơn.
+- Lớp mới `BuiThanTren` (trong `VfxFactory.KhacLocXoay`): cùng hàm ôm thân `BuiCuonLenTheoThan`, hệ hạt đặt ở **giữa thân** (7,5 m đơn
+  vị Lốc xoáy), bán kính theo thân từ đó lên đỉnh, sống 2,4–3,0 s, hạt to 3,0–5,8 (×1,4 lớp thân dưới cho hợp thân trên), quay ×2 như
+  lớp lên đỉnh, tối 30% cùng các lớp khác.
+- **Chọn số hạt bằng menu 95 mới (`ThuBuiThanTren.cs`)**: một Gió lốc đứng yên ban đêm, quét 0 / 80 / 160 / 240 / 320 hạt/giây.
+  - ⚠️ Bản 1 của phép đo sai: đo **chênh độ sáng** do bụi gây ra trên ảnh đầy đủ → thân trên gần như không đổi (0,037 → 0,048 dù ảnh
+    thấy rõ dày lên), vì bụi xám đè lên VỎ cũng xám; thân dưới bụi đè lên đất tối nên chênh nhiều. Thêm nữa máy quay góc cao làm mép
+    miệng lốc gần máy chiếu xuống dưới đường chia.
+  - Bản 2: đưa bụi + vỏ lên **lớp 31**, máy quay chỉ vẽ lớp ấy trên **nền đen** (tắt sương mù, bloom, thu nhỏ), máy quay **ngang tầm
+    giữa thân** để đường chia đúng độ cao giữa thân. Ảnh "chỉ vỏ" cho viền thân, ảnh "chỉ bụi" cho độ dày khói.
+
+| Lớp thân trên (hạt/giây) | 0 (đối chứng = đúng ảnh người dùng) | 80 | 160 | **240** | 320 |
+|---|---|---|---|---|---|
+| Khói thân trên / thân dưới | ×0,73 | ×0,84 | ×0,88 | **×0,91** | ×0,92 |
+
+  Bão hoà quanh ×0,92 (phần trên cùng là miệng + vành, bụi tự mờ dần khi tới đỉnh). Chọn **240**: ~90% mức tối đa; 320 tốn thêm 33% hạt
+  chỉ hơn 0,01. Ảnh góc chơi `PlayTestShots/buithantren_0.png` … `_320.png`.
+- **Menu 71: 0 lỗi** — C2 kiểm lớp mới (240 hạt/giây, ở 7,50 m, quỹ đạo −4,20 = lớp lên đỉnh Lốc xoáy −2,10 × 2, màu = khói thân
+  dưới Lốc xoáy × 0,7, cục bộ); C3: 655 hạt, cao 50% 11,29 / 90% 14,38 (đơn vị Lốc xoáy, đỉnh 15). Ảnh vẫn trùng hình IoU 0,90, sáng ×0,72.
+- ⚠️ Lần này tôi ghi file code vào `Assets/` khi người dùng **đang tự Play** → Unity nạp lại code giữa phiên chơi của họ. Đã ghi bộ nhớ:
+  đọc `isPlaying` trước khi ghi bất kỳ file nào dưới `Assets/`.
+- ⚠️ Điện thoại: Gió lốc nay 720 hạt/giây, ~2 100 hạt sống mỗi cơn (3 cơn ~6 300, cấp 5 ~10 500). Chưa đo máy thật.
+
 ### Gió lốc: bỏ hiệu ứng sáng, bụi xoáy dày lên đỉnh, xám đen hơn (01/10/2026, lần ba)
 
 **Người dùng:** "Bỏ hiệu ứng sáng đi, chỉ cần để lại 2 tia sét bên trong lốc"; "bụi khói nhiều dày hơn và phải cuộn lên xoáy tròn
@@ -12501,6 +12530,7 @@ Lần chạy đầu phép thử báo cả 10 con "lơ lửng": tia chiếu từ 
 | **92b. Chay thu SANH DON - DOI tren Firebase that** | Hai tài khoản chạy thử + ghế giả: tạo phòng Đơn / Đôi, luật Firebase (đối chứng ghi sai bị từ chối), người bản cũ được xếp đội, vào đội ít người, tự đổi đội, khách không sửa được đội người khác, đội đủ 3 bị chặn, chủ phòng cân bằng khi 4 người một đội; chụp sảnh / phòng Đôi / phòng Đơn 6 người (0 chữ bị cắt). Xoá sạch phòng thử. `sanh_doi.txt`, ảnh `sanh_doi_*.png`. |
 | **93. Chup MUC DEN Loc xoay + Gio loc (3 muc de chon)** | Lốc xoáy thật + Gió lốc đứng yên, chụp đêm / ngày ở gốc và tối 10 / 20 / 30% (MaterialPropertyBlock), đo độ sáng thân. `denloc.txt`, ảnh `denloc_*.png`. |
 | **94. Chup MAY GIONG trong Gio loc (3 muc day de chon)** | (Hình Gió lốc CŨ — `BuildGioLocCu`.) Dựng lại hệ `MayTrongLoc` ở cũ / ×1,3 / ×1,5 / ×1,8: số đám, độ cao tâm, xa trục / vỏ trong ở đúng độ cao (< 80%); mây lộ ra = render bật / tắt renderer mây cùng khung, 12 khung, đêm + ngày. `maygl.txt`, ảnh `maygl_*.png`. |
+| **95. Chup KHOI THAN TREN Gio loc (chon so hat theo than duoi)** | Gió lốc đứng yên ban đêm, quét lớp `BuiThanTren` 0/80/160/240/320 hạt/giây: bụi + vỏ lên lớp 31 vẽ trên nền đen, máy quay ngang giữa thân → độ dày khói nửa trên / nửa dưới trong viền thân; ảnh góc chơi `buithantren_*.png`, `buithantren.txt`. |
 | **56. Chay thu DOT QUAI Act2 + cho xuat phat** | *(13/09/2026: thêm đo chờ 30 giây và 10 con xa 55–65 m)*  Kiểm chỗ xuất phát ngẫu nhiên (hai máy cùng mã phòng ra cùng danh sách, cách nhau ≥ 22 m, trên đất, ngoài nước, không vướng vật cản) và luật đợt quái Act2 (đợt 1 bốn con quanh mỗi người; đợt sau cộng dồn quái và mạnh thêm 5% máu · sát thương). Số đo `dotquai_act2.txt`. |
 | **55. Chay thu KET TRAN (nguoi song sot cuoi cung)** | Mở kênh giả lập như menu 45: kiểm gói tin kết trận/chết, máy chủ phòng phán quyết đúng lúc còn một người, bảng điểm cộng đúng người, máy khách không tự kết luận và hiện đúng kết quả nghe được, chết rồi camera chuyển sang người còn sống, chụp màn kết trận. Số đo `kettran.txt`, ảnh `kettran_*.png`. |
 | **54c. Chay thu LOC XOAY cuon lo lua** | Vào Play Act2, thả một cơn lốc đi thẳng vào lò: đo mốc thời gian lửa tắt / lò nhấc lên / lò biến mất / lò mọc lại, kiểm than trong chậu tắt bằng độ sáng trên ảnh, và kiểm vật có hệ hạt khác vẫn không bị cuốn. Ảnh `locxoay_*.png`, số đo `locxoay_lolua.txt`. |
