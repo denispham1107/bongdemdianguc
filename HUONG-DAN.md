@@ -9095,6 +9095,28 @@ cháy xém**.
   nào dưới 2,4 m): 25 đám, tâm 1,93–4,27 m, xa trục nhất 1,05 m = 63% vỏ trong; loé 1,00 → 1,56 → 1,00.
 - Điện thoại: mỗi cơn thêm ~14 đám mây lớn (1,4–2,2 m) → 3 cơn thêm ~42 tấm trong suốt chồng lên, cấp 5 (5 cơn) ~70. Chưa đo trên máy thật.
 
+### Gió lốc: bỏ hiệu ứng sáng, bụi xoáy dày lên đỉnh, xám đen hơn (01/10/2026, lần ba)
+
+**Người dùng:** "Bỏ hiệu ứng sáng đi, chỉ cần để lại 2 tia sét bên trong lốc"; "bụi khói nhiều dày hơn và phải cuộn lên xoáy tròn
+xung quanh lên đến tận đỉnh"; "màu lốc xám đen hơn nữa, còn trắng quá". Tôi hỏi lại; người dùng chọn: **bỏ cả 3** thứ sáng (quầng sáng
+trắng ở miệng, đèn chớp, loé chạm đất), **giữ đường tia** (miệng → đất), **bụi lên đỉnh ×2 + quay ×2**, **tối đi 30%**.
+
+Gió lốc vẫn là Lốc xoáy thu nhỏ — chỉ khác ba chỗ, gom ở `VfxFactory.KhacLocXoay` (gọi trong `BuildGioLoc` trước khi phóng ×0,318):
+1. Xoá con `HaoQuang` và `StormLight`; `GioLocSetTrongLoc` gọi `TornadoBolt(..., coLoe: false)`.
+2. `BuiCuonLen`: số hạt và trần ×2, `orbitalYMultiplier` ×2. Lốc xoáy giữ nguyên.
+3. Vỏ: `_TintColor` × 0,7 qua **MaterialPropertyBlock** — vật liệu `M_P_LX_*` là asset dùng chung với Lốc xoáy, sửa thẳng là Lốc
+   xoáy tối theo (và ghi xuống đĩa). Bụi: màu hạt × 0,7.
+
+**Đo (menu 71, mọi số so với một Lốc xoáy THẬT cùng lượt, hệ số mong đợi viết tay — không đọc hằng trong code):**
+- C2: 10 thành phần của Lốc xoáy → Gió lốc **đã bỏ 2/2**, 8/8 còn lại khớp (màu vẽ thật đọc từ khối thuộc tính = Lốc xoáy × 0,7 và vật
+  liệu dùng chung KHÔNG đổi; bụi lên đỉnh 320 / trần ×2; quỹ đạo ×2); **0 đèn** (Lốc xoáy thật 1).
+- C3: bụi lên đỉnh 1 060 / 537 hạt sống = **×1,97**, hình phân bố khớp (cao 90% 13,64 / 13,61, bán kính 3,78 / 3,82 đơn vị Lốc xoáy);
+  hai lớp kia ×1,03. **Tốc góc thật** (theo dõi từng hạt 0,25 s): 4,19 / 2,09 rad/s = **×2,00**.
+- C4: ảnh chụp cùng khung theo chiều cao — trùng hình IoU **0,94**, độ sáng trong hình **×0,73** (tối 30% + không còn quầng sáng miệng).
+- C5: Gió lốc bay **0 loé** chạm đất (đối chứng: Lốc xoáy thật 20 loé trong 4,5 s); tia vẫn 2/nhịp, đúng kiểu, bám theo lốc.
+- **Menu 71: 0 lỗi.** Ảnh `PlayTestShots/gioloc_6b_gioloc_moi.png`, `gioloc_1_bay.png`.
+- ⚠️ Điện thoại: mỗi cơn ~1 460 hạt bụi sống (3 cơn ~4 400, cấp 5 ~7 300) — bỏ đèn và loé thì đỡ được phần đèn. Chưa đo máy thật.
+
 ### Lốc xoáy + Gió lốc: tia sét kiểu Sấm sét, bụi lên đỉnh dày gấp đôi (01/10/2026)
 
 **Người dùng:** "Cho các tia sét trong Lốc xoáy và Gió lốc giống như các tia sét trong Sấm sét"; "Lốc xoáy: bụi khói nhiều hơn và bay

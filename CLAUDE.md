@@ -212,6 +212,12 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
   Mọi dòng bên dưới về lưới `LocNho`, màu mây giông, mây trong thân, bụi ×2, tia trong lòng vỏ là **LỊCH SỬ** (gameplay vẫn đúng).
   ⚠️ **01/10/2026 (lần hai): tia sét Lốc xoáy + Gió lốc = KIỂU SẤM SÉT** (xem mục Lốc xoáy) và bụi lên đỉnh ×2 — Gió lốc theo luôn
   (cùng `TornadoBolt` ×0,318, cùng `DamBaoBuiCuonLenLocXoay`): mỗi cơn ~930 hạt bụi sống.
+  ⚠️ **01/10/2026 (lần ba): GIÓ LỐC KHÁC LỐC XOÁY BA CHỖ** (người dùng; `VfxFactory.KhacLocXoay`, gọi trong `BuildGioLoc` trước khi
+  phóng): (1) **BỎ HIỆU ỨNG SÁNG** — xoá `HaoQuang` + `StormLight`, tia không loé chạm đất (`TornadoBolt(..., coLoe: false)`); chỉ còn
+  2 tia sét, đường tia giữ (miệng → đất); (2) **bụi lên đỉnh ×2 hạt, quay quanh thân ×2** (`HeSoBuiLenGioLoc`, `HeSoQuayBuiGioLoc` —
+  tổng 480 hạt/giây, ~1 460 hạt sống mỗi cơn); (3) **TỐI 30%** (`HeSoToiGioLoc` 0,7): vỏ qua **MaterialPropertyBlock** (vật liệu
+  `M_P_LX_*` là asset dùng chung với Lốc xoáy — không sửa), bụi qua màu hạt. Menu 71 C2/C3/C4/C5 so với Lốc xoáy thật bằng hệ số
+  viết tay: đã bỏ 2/2, 8/8 thành phần khớp, bụi lên đỉnh ×1,97, tốc góc ×2,00, ảnh sáng ×0,73 IoU 0,94, 0 đèn, 0 loé.
   ⚠️ **HÌNH QUẠT: cấp 1–4 tung 3 lốc, cấp 5 tung 5 lốc**, cách nhau `GioLoc.GocQuat` **20°** quanh hướng ngắm (29/09/2026 người dùng "xa nhau hơn 1 chút", trước 15°; cấp 5 toả ±40°;
 26/09/2026: trước đó 1 lốc, cấp 5 hai lốc song song cách 4 m). ⚠️ **Mây giông nhẹ TRONG LÒNG nửa trên thân** (29/09/2026, lúc đầu trên đỉnh rồi người dùng
 đổi "nằm trong cơn lốc": hệ `MayTrongLoc`, `VfxFactory.MayDinhGioLoc`; ảnh `MayGiong` 2×2 của Mây giông, màu thân Gió lốc, mỏng, đám

@@ -202,6 +202,38 @@ public static class ThuGioLoc
         foreach (var d in xong) theoDoi[d] = new Vector4(0f, 0f, 0f, -1f);
     }
 
+    /// <summary>Chup vi tri tung hat (theo randomSeed) cua he ten trong toa do he hinh.</summary>
+    static void ChupHat(Transform hinh, string ten, Dictionary<uint, Vector3> ra)
+    {
+        ra.Clear();
+        if (hinh == null) return;
+        foreach (var ps in hinh.GetComponentsInChildren<ParticleSystem>(true))
+        {
+            if (ps.name != ten) continue;
+            var hat = new ParticleSystem.Particle[ps.particleCount];
+            int n = ps.GetParticles(hat);
+            bool cucBo = ps.main.simulationSpace == ParticleSystemSimulationSpace.Local;
+            for (int i = 0; i < n; i++)
+                ra[hat[i].randomSeed] = hinh.InverseTransformPoint(cucBo ? ps.transform.TransformPoint(hat[i].position) : hat[i].position);
+        }
+    }
+
+    /// <summary>Toc goc trung binh (rad/s) quanh truc Y cua cac hat con song tu lan chup truoc.</summary>
+    static float TocGocTB(Transform hinh, string ten, Dictionary<uint, Vector3> truoc, float dt)
+    {
+        var bay = new Dictionary<uint, Vector3>();
+        ChupHat(hinh, ten, bay);
+        double tong = 0; int n = 0;
+        foreach (var kv in bay)
+        {
+            Vector3 p0;
+            if (!truoc.TryGetValue(kv.Key, out p0)) continue;
+            float d = Mathf.DeltaAngle(Mathf.Atan2(p0.z, p0.x) * Mathf.Rad2Deg, Mathf.Atan2(kv.Value.z, kv.Value.x) * Mathf.Rad2Deg);
+            tong += d * Mathf.Deg2Rad; n++;
+        }
+        return n > 0 && dt > 0f ? (float)(tong / n / dt) : 0f;
+    }
+
     static float TrungVi(List<float> ds)
     {
         if (ds.Count == 0) return 0f;
@@ -483,33 +515,51 @@ public static class ThuGioLoc
             yield return null; yield return null;
             var hinhGl = glDo.transform.Find("LocXoayHinh");
             float caoNhoDung = CaoHinh(glDo);
-            int soThanhPhan = 0, soKhop = 0; string thieu = "", lech = "", thua = "";
+            // 01/10/2026 lan ba (nguoi dung): Gio loc KHAC Loc xoay that o dung cac cho nay - so DUNG HE SO NGUOI DUNG CHON (viet tay,
+            // khong doc hang trong code): BO HaoQuang + StormLight; mau vo / bui x0,7 (toi 30%); BuiCuonLen so hat x2, quay x2. Moi thu khac y het.
+            const float mauMong = 0.7f, buiLenMong = 2f, quayMong = 2f;
+            var phaiBo = new HashSet<string> { "HaoQuang", "StormLight" };
+            int soThanhPhan = 0, soKhop = 0, daBo = 0; string thieu = "", lech = "", thua = "";
+            var mpbDo = new MaterialPropertyBlock();
+            System.Func<Color, Color, bool> toiDung = (g, l) => Mathf.Abs(g.r - l.r * mauMong) < 0.005f && Mathf.Abs(g.g - l.g * mauMong) < 0.005f
+                                                                && Mathf.Abs(g.b - l.b * mauMong) < 0.005f && Mathf.Abs(g.a - l.a) < 0.005f;
             if (hinhLx != null && hinhGl != null)
             {
                 foreach (Transform cL in hinhLx)
                 {
                     soThanhPhan++;
                     var cG = hinhGl.Find(cL.name);
+                    if (phaiBo.Contains(cL.name)) { if (cG == null) daBo++; else lech += cL.name + "(con) "; continue; }
                     if (cG == null) { thieu += cL.name + " "; continue; }
                     bool ok = (cG.localPosition - cL.localPosition).magnitude < 0.01f;
                     var mfL = cL.GetComponent<MeshFilter>(); var mfG = cG.GetComponent<MeshFilter>();
                     if (mfL != null && (mfG == null || mfG.sharedMesh != mfL.sharedMesh)) ok = false;
                     var mrL = cL.GetComponent<MeshRenderer>(); var mrG = cG.GetComponent<MeshRenderer>();
-                    if (mrL != null && (mrG == null || mrG.sharedMaterial.mainTexture != mrL.sharedMaterial.mainTexture
-                        || !GanBang(mrG.sharedMaterial.GetColor("_TintColor"), mrL.sharedMaterial.GetColor("_TintColor")))) ok = false;
+                    if (mrL != null)
+                    {
+                        // Mau THAT Gio loc ve = khoi thuoc tinh (MaterialPropertyBlock); vat lieu dung chung phai GIU nguyen mau Loc xoay
+                        Color mauVe = Color.clear;
+                        if (mrG != null) { mrG.GetPropertyBlock(mpbDo); mauVe = mpbDo.GetColor("_TintColor"); }
+                        if (mrG == null || mrG.sharedMaterial.mainTexture != mrL.sharedMaterial.mainTexture
+                            || !toiDung(mauVe, mrL.sharedMaterial.GetColor("_TintColor"))
+                            || !GanBang(mrG.sharedMaterial.GetColor("_TintColor"), mrL.sharedMaterial.GetColor("_TintColor"))) ok = false;
+                    }
                     var spL = cL.GetComponent<Spin>(); var spG = cG.GetComponent<Spin>();
                     if (spL != null && (spG == null || Mathf.Abs(spG.degreesPerSecond - spL.degreesPerSecond) > 0.01f)) ok = false;
                     var suL = cL.GetComponent<ScrollUV>(); var suG = cG.GetComponent<ScrollUV>();
                     if (suL != null && (suG == null || (suG.speed - suL.speed).magnitude > 1e-4f)) ok = false;
                     var psL = cL.GetComponent<ParticleSystem>(); var psG = cG.GetComponent<ParticleSystem>();
-                    if (psL != null && (psG == null || Mathf.Abs(psG.emission.rateOverTime.constant - psL.emission.rateOverTime.constant) > 0.01f
-                        || psG.main.maxParticles != psL.main.maxParticles
-                        || !GanBang(psG.main.startColor.colorMin, psL.main.startColor.colorMin) || !GanBang(psG.main.startColor.colorMax, psL.main.startColor.colorMax)
-                        || psG.GetComponent<ParticleSystemRenderer>().sharedMaterial.mainTexture != psL.GetComponent<ParticleSystemRenderer>().sharedMaterial.mainTexture
-                        || Mathf.Abs(psG.shape.radius - psL.shape.radius) > 0.01f)) ok = false;
-                    var ltL = cL.GetComponent<Light>(); var ltG = cG.GetComponent<Light>();
-                    // tam den rung +-12% (LightFlicker) - so trong khoang
-                    if (ltL != null && (ltG == null || ltG.range / ltL.range < 0.7f * k || ltG.range / ltL.range > 1.3f * k)) ok = false;
+                    if (psL != null)
+                    {
+                        float hsHat = cL.name == "BuiCuonLen" ? buiLenMong : 1f, hsQuay = cL.name == "BuiCuonLen" ? quayMong : 1f;
+                        if (psG == null || Mathf.Abs(psG.emission.rateOverTime.constant - psL.emission.rateOverTime.constant * hsHat) > 0.01f
+                            || Mathf.Abs(psG.main.maxParticles - psL.main.maxParticles * hsHat) > 1.01f
+                            || !toiDung(psG.main.startColor.colorMin, psL.main.startColor.colorMin) || !toiDung(psG.main.startColor.colorMax, psL.main.startColor.colorMax)
+                            || psG.GetComponent<ParticleSystemRenderer>().sharedMaterial.mainTexture != psL.GetComponent<ParticleSystemRenderer>().sharedMaterial.mainTexture
+                            || Mathf.Abs(psG.shape.radius - psL.shape.radius) > 0.01f
+                            || Mathf.Abs(psG.velocityOverLifetime.orbitalYMultiplier - psL.velocityOverLifetime.orbitalYMultiplier * hsQuay) > 1e-3f) ok = false;
+                    }
+                    if (cL.GetComponent<Light>() != null) ok = false;     // den chi o StormLight (da bo)
                     if (ok) soKhop++; else lech += cL.name + " ";
                 }
                 foreach (Transform cG in hinhGl) if (hinhLx.Find(cG.name) == null) thua += cG.name + " ";
@@ -521,12 +571,12 @@ public static class ThuGioLoc
                 if (ps.main.simulationSpace == ParticleSystemSimulationSpace.Local && ps.main.scalingMode == ParticleSystemScalingMode.Hierarchy) soCucBo++;
             }
             int soDenGl = DemDen(glDo), soDenLx = DemDen(locXoay.gameObject);
-            Ghi(string.Format("C2. cau truc: Loc xoay that {0} thanh phan, Gio loc khop {1} (thieu: {2}| lech: {3}| thua: {4}); ti le hinh {5:F3} (mong {6:F3}); cao Gio loc {7:F2} m / Loc xoay {8:F2} m = x{9:F3}; he hat cuc bo + Hierarchy {10}/{11}; den {12} (Loc xoay that {13})",
-                soThanhPhan, soKhop, thieu, lech, thua, hinhGl != null ? hinhGl.localScale.y : -1f, k, caoNhoDung, caoLon, caoNhoDung / caoLon, soCucBo, soHe, soDenGl, soDenLx));
-            Kiem(hinhLx != null && hinhGl != null && soThanhPhan >= 8 && soKhop == soThanhPhan && thua == "", "Gio loc khong co dung tung thanh phan cua Loc xoay that (luoi, mau, quay, truot anh, hat, den)");
+            Ghi(string.Format("C2. cau truc: Loc xoay that {0} thanh phan, Gio loc da bo {1}/2 (HaoQuang, StormLight), khop (mau x0,7, bui len x2, quay x2) {2} (thieu: {3}| lech: {4}| thua: {5}); ti le hinh {6:F3} (mong {7:F3}); cao Gio loc {8:F2} m / Loc xoay {9:F2} m = x{10:F3}; he hat cuc bo + Hierarchy {11}/{12}; den {13} (Loc xoay that {14})",
+                soThanhPhan, daBo, soKhop, thieu, lech, thua, hinhGl != null ? hinhGl.localScale.y : -1f, k, caoNhoDung, caoLon, caoNhoDung / caoLon, soCucBo, soHe, soDenGl, soDenLx));
+            Kiem(hinhLx != null && hinhGl != null && soThanhPhan >= 8 && daBo == 2 && soKhop == soThanhPhan - 2 && thua == "", "Gio loc khong dung Loc xoay that (bo sang, toi 30%, bui len x2 quay x2)");
             Kiem(Mathf.Abs(caoNhoDung - 5f) < 0.2f && Mathf.Abs(caoNhoDung / caoLon - k) < 0.02f, "Gio loc khong phai Loc xoay thu deu cao 5 m");
             Kiem(soCucBo == soHe && soHe > 0, "con he hat khong mo phong cuc bo (bui se roi lai sau lung loc bay 9,5 m/s / khong thu ti le)");
-            Kiem(soDenGl == soDenLx && soDenLx >= 1, "Gio loc khong co dung so den nhu Loc xoay that");
+            Kiem(soDenGl == 0 && soDenLx >= 1, "Gio loc con den chop (doi chung: Loc xoay that co den)");
 
             // ---- C3. Phan bo hat bui (dung yen 4 s): toa do trong he LocXoayHinh = don vi Loc xoay goc (da khu ti le) ----
             foreach (var go in new[] { locXoay.gameObject, glDo, glCu })
@@ -539,18 +589,26 @@ public static class ThuGioLoc
                 PhanBo(hinhLx, ten, out nL, out h50L, out h90L, out r50L);
                 PhanBo(hinhGl, ten, out nG, out h50G, out h90G, out r50G);
                 tongL += nL; tongG += nG;
-                bool dat = nL > 20 && Mathf.Abs((float)nG / nL - 1f) < 0.25f && Mathf.Abs(h90G / h90L - 1f) < 0.15f
+                float hsHat = ten == "BuiCuonLen" ? buiLenMong : 1f;
+                bool dat = nL > 20 && Mathf.Abs((float)nG / nL / hsHat - 1f) < 0.25f && Mathf.Abs(h90G / h90L - 1f) < 0.15f
                            && Mathf.Abs(h50G / Mathf.Max(0.01f, h50L) - 1f) < 0.2f && Mathf.Abs(r50G / r50L - 1f) < 0.2f;
                 if (dat) lopDat++;
-                Ghi(string.Format("C3. {0}: Loc xoay that {1} hat, cao 50% {2:F2} / 90% {3:F2} m, ban kinh trung vi {4:F2} m | Gio loc (don vi Loc xoay) {5} hat, {6:F2} / {7:F2} m, {8:F2} m -> {9}",
-                    ten, nL, h50L, h90L, r50L, nG, h50G, h90G, r50G, dat ? "khop" : "LECH"));
+                Ghi(string.Format("C3. {0}: Loc xoay that {1} hat, cao 50% {2:F2} / 90% {3:F2} m, ban kinh trung vi {4:F2} m | Gio loc (don vi Loc xoay) {5} hat (x{10:F2}, mong x{11}), {6:F2} / {7:F2} m, {8:F2} m -> {9}",
+                    ten, nL, h50L, h90L, r50L, nG, h50G, h90G, r50G, dat ? "khop" : "LECH", (float)nG / Mathf.Max(1, nL), hsHat));
             }
             foreach (var ps in glCu.GetComponentsInChildren<ParticleSystem>(true)) if (ps.name.StartsWith("Bui")) tongCu += ps.particleCount;
-            Ghi(string.Format("C3. tong hat bui dang song: Loc xoay that {0}, Gio loc {1} (x{2:F2}); DOI CHUNG Gio loc cu {3} (x{4:F2})",
-                tongL, tongG, (float)tongG / Mathf.Max(1, tongL), tongCu, (float)tongCu / Mathf.Max(1, tongL)));
-            Kiem(lopDat == 3, "phan bo bui Gio loc (da khu ti le) khong khop Loc xoay that");
-            Kiem(Mathf.Abs((float)tongG / Mathf.Max(1, tongL) - 1f) < 0.2f, "Gio loc khong day bui nhu Loc xoay (240 hat/giay)");
+            // XOAY: toc goc THAT cua hat bui len dinh quanh truc (theo doi tung hat 0,25 s, he LocXoayHinh) - Gio loc / Loc xoay phai ~x2
+            var quayL = new Dictionary<uint, Vector3>(); var quayG = new Dictionary<uint, Vector3>();
+            ChupHat(hinhLx, "BuiCuonLen", quayL); ChupHat(hinhGl, "BuiCuonLen", quayG);
+            float tQuay0 = Time.time;
+            yield return new WaitForSeconds(0.25f);
+            float dtQuay = Time.time - tQuay0;
+            float wL = TocGocTB(hinhLx, "BuiCuonLen", quayL, dtQuay), wG = TocGocTB(hinhGl, "BuiCuonLen", quayG, dtQuay);
+            Ghi(string.Format("C3. tong hat bui dang song: Loc xoay that {0}, Gio loc {1} (x{2:F2}); DOI CHUNG Gio loc cu {3} (x{4:F2}); toc goc bui len dinh quanh truc: Loc xoay {5:F2} rad/s, Gio loc {6:F2} rad/s = x{7:F2} (mong x{8})",
+                tongL, tongG, (float)tongG / Mathf.Max(1, tongL), tongCu, (float)tongCu / Mathf.Max(1, tongL), wL, wG, Mathf.Abs(wL) > 1e-3f ? wG / wL : 0f, quayMong));
+            Kiem(lopDat == 3, "phan bo bui Gio loc (da khu ti le) khong khop Loc xoay that (lop len dinh x2)");
             Kiem((float)tongCu / Mathf.Max(1, tongL) < 0.75f, "DOI CHUNG: Gio loc cu cung day bui nhu Loc xoay - phep dem khong phan biet duoc");
+            Kiem(Mathf.Abs(wL) > 0.3f && Mathf.Abs(wG / wL / quayMong - 1f) < 0.25f, "bui len dinh Gio loc khong xoay nhanh gap doi Loc xoay");
 
             // ---- C4. Anh: dua ca ba len troi (nen dong deu), chup cung khung theo chieu cao moi con; bat / tat renderer cung khung -> mat na ----
             bool suongCu = RenderSettings.fog;
@@ -582,8 +640,9 @@ public static class ThuGioLoc
             Ghi(string.Format("C4. anh (chup theo chieu cao moi con, {0} lan): Loc xoay that phu {1:P0} khung; Gio loc moi trung hinh IoU {2:F2}, do sang trong hinh x{3:F2}; DOI CHUNG Gio loc cu IoU {4:F2}, x{5:F2}",
                 SoLan, phuL, iouG, sangG, iouC, sangC));
             Kiem(phuL > 0.05f, "doi chung: Loc xoay that khong hien trong anh - phep chup vo nghia");
-            Kiem(iouG > 0.7f && Mathf.Abs(sangG - 1f) < 0.12f, "anh Gio loc khong giong Loc xoay that thu nho");
-            Kiem(iouC < iouG - 0.1f || Mathf.Abs(sangC - 1f) > 0.12f, "DOI CHUNG: anh Gio loc cu cung 'giong' Loc xoay - phep so anh khong phan biet duoc");
+            // 01/10/2026 lan ba: Gio loc toi 30% + bo quang sang mieng -> do sang trong hinh phai THAP hon ro (hinh van la Loc xoay thu nho)
+            Kiem(iouG > 0.65f && sangG < 0.85f && sangG > 0.4f, "anh Gio loc khong phai Loc xoay thu nho TOI HON (hinh / do sang)");
+            Kiem(iouC < iouG - 0.1f, "DOI CHUNG: anh Gio loc cu cung 'giong' Loc xoay - phep so anh khong phan biet duoc");
             Object.Destroy(locXoay.gameObject); Object.Destroy(glDo); Object.Destroy(glCu);
             yield return new WaitForSeconds(0.3f);
 
@@ -731,13 +790,12 @@ public static class ThuGioLoc
                 soArc, soKhungCoTia, soKhungDung2, soNhip, tbG.hDau, tbG.rDau, tbG.hDuoi, tbG.rDuoi, nhanhDung, dayG, dayL > 0 ? dayG / dayL : 0f, caoNho / caoLon));
             Ghi(string.Format("C5. tia bam theo loc ({0} lan do): troi lon nhat {1:F3} m (o tuoi {2:F3} s, {3} tia); DOI CHUNG tia khong bam theo bi bo lai {4:F2} m",
                 soKhungDoLech, troiMax, tuoiTroiMax, lechBanDau.Count, lechDoiChungMax));
-            float rongL = TrungVi(rongLoeLon), rongG = TrungVi(rongLoeNho);
-            Ghi(string.Format("C5. loe cham dat (tia lua o tuoi 0,2 s, trung vi khoang cach ngang toi tam loe): Loc xoay that {0:F2} m ({1} loe), Gio loc {2:F2} m ({3} loe) = x{4:F3} (mong x{5:F3})",
-                rongL, rongLoeLon.Count, rongG, rongLoeNho.Count, rongL > 0 ? rongG / rongL : 0f, k));
-            Kiem(rongLoeLon.Count >= 5 && rongLoeNho.Count >= 5, "khong bat duoc loe cham dat cua tia set (Loc xoay that / Gio loc)");
-            Kiem(rongL > 0f && Mathf.Abs(rongG / rongL / k - 1f) < 0.3f, "loe cham dat cua Gio loc khong thu nho theo loc");
+            Ghi(string.Format("C5. loe cham dat: Loc xoay that {0} loe do duoc trong 4,5 s (doi chung), Gio loc bay {1} loe (mong 0 - nguoi dung bo hieu ung sang)",
+                rongLoeLon.Count, loeNho.Count));
+            Kiem(rongLoeLon.Count >= 5, "doi chung: khong bat duoc loe cham dat cua Loc xoay that");
+            Kiem(loeNho.Count == 0, "Gio loc van loe sang cho tia set cham dat");
             Ghi(string.Format("D. toc do do {0:F2} m/s; ngung di sau {1:F2} s", toc, song));
-            Kiem(soDen == soDenLx, "Gio loc bay khong co dung so den nhu Loc xoay that");
+            Kiem(soDen == 0, "Gio loc bay con den chop");
             Kiem(quayTang == sps.Length && quayGiam == 0 && sps.Length >= 5, "cac lop khong xoay cung mot chieu di len");
             Kiem(truotSai == 0 && truotLen == 4, "anh gio truot khong cung chieu di len (4 vo)");
             Kiem(hatLen + hatXuong > 10 && hatXuong == 0, "bui khong bay len");
@@ -751,16 +809,6 @@ public static class ThuGioLoc
             Kiem(soKhungDoLech > 20 && troiMax < 0.05f, "tia set bi bo lai phia sau con loc");
             Kiem(Mathf.Abs(toc - 9.5f) < 0.35f, "toc do loc khong phai 9,5 m/s");
             Kiem(Mathf.Abs(song - 4.5f) < 0.12f, "loc khong tan sau 4,5 giay");
-            // Tan: den tat ngay cung luc than co lai
-            float hanDen = Time.time + 0.5f; bool denTat = false;
-            while (loc != null && Time.time < hanDen)
-            {
-                Light lt = null;
-                foreach (var l in loc.GetComponentsInChildren<Light>(true)) if (l.name == "StormLight") lt = l;
-                if (lt != null && !lt.enabled) { denTat = true; break; }
-                yield return null;
-            }
-            Kiem(denTat, "loc tan ma den chop van sang");
             float hanX = Time.time + 7f;
             while (loc != null && Time.time < hanX) yield return null;
             Kiem(loc == null, "loc tan roi ma vat the khong bi xoa");

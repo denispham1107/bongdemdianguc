@@ -156,7 +156,7 @@ public static partial class VfxFactory
     /// cham DAT canh chan loc (lech goc theo chieu cuon) va loe sang cham dat (Vfx_SetChamDat ban kinh 2,1 x scale). Ca tia lan loe
     /// BAM THEO loc (Gio loc bay 9,5 m/s). Truoc: kieu Giut set (anh Blender, 3-5 nhanh) giang doc than - git 7c45d73.
     /// </summary>
-    public static void TornadoBolt(Transform loc, float scale, string ten = null)
+    public static void TornadoBolt(Transform loc, float scale, string ten = null, bool coLoe = true)
     {
         if (loc == null) return;
         Vector3 goc = loc.position;
@@ -176,6 +176,7 @@ public static partial class VfxFactory
             arc.segments = 20;
             arc.branches = Random.Range(2, 4);
             arc.BamTheo(loc);
+            if (!coLoe) continue;                       // Gio loc: chi tia, khong loe (nguoi dung 01/10/2026)
             var loe = LoeSetChamDat(p2, LightningStrikeBanKinh * scale);
             if (loe != null)
             {

@@ -106,6 +106,7 @@ public static partial class VfxFactory
             Object.Destroy(tam);
         }
         DamBaoBuiCuonLenLocXoay(root.transform, 1f);
+        KhacLocXoay(hinh);
         hinh.localScale = Vector3.one * HeSoHinhGioLoc;
         foreach (var ps in hinh.GetComponentsInChildren<ParticleSystem>(true))
         {
@@ -123,6 +124,52 @@ public static partial class VfxFactory
             if (fl != null) fl.DatTamGoc(tam); else lt.range = tam;
         }
         return root;
+    }
+
+    /// <summary>Gio loc toi hon Loc xoay bao nhieu (mau vo + bui, nguoi dung 01/10/2026 "xam den hon nua, con trang qua" - chon toi 30%).</summary>
+    public const float HeSoToiGioLoc = 0.7f;
+
+    /// <summary>Lop bui len tan dinh (BuiCuonLen) cua Gio loc: so hat x2 va toc quay quanh than x2 so voi Loc xoay (nguoi dung 01/10/2026:
+    /// "bui khoi nhieu day hon, cuon len xoay tron xung quanh len tan dinh" - chon "len dinh x2, quay x2").</summary>
+    public const float HeSoBuiLenGioLoc = 2f, HeSoQuayBuiGioLoc = 2f;
+
+    /// <summary>
+    /// GIO LOC KHAC LOC XOAY o ba cho (nguoi dung 01/10/2026, lan ba - sau khi Gio loc thanh Loc xoay thu nho):
+    ///   1) BO HIEU UNG SANG: quang sang trang o mieng (HaoQuang) + den chop (StormLight); loe cham dat cua tia tat o GioLocSetTrongLoc.
+    ///      Chi con 2 tia set (duong tia giu nguyen: mieng -> dat canh chan).
+    ///   2) Lop bui len tan dinh x HeSoBuiLenGioLoc hat, quay quanh than x HeSoQuayBuiGioLoc.
+    ///   3) Than + bui TOI x HeSoToiGioLoc: vo qua MaterialPropertyBlock (vat lieu M_P_LX_* la asset dung chung voi Loc xoay - KHONG sua),
+    ///      bui qua mau hat.
+    /// Goi TRUOC khi phong x0,318 (gia tri trong don vi Loc xoay goc).
+    /// </summary>
+    static void KhacLocXoay(Transform hinh)
+    {
+        foreach (var ten in new[] { "HaoQuang", "StormLight" })
+        {
+            var t = hinh.Find(ten);
+            if (t != null) Object.DestroyImmediate(t.gameObject);
+        }
+        var mpb = new MaterialPropertyBlock();
+        foreach (var mr in hinh.GetComponentsInChildren<MeshRenderer>(true))
+        {
+            if (mr.sharedMaterial == null || !mr.sharedMaterial.HasProperty("_TintColor")) continue;
+            var c = mr.sharedMaterial.GetColor("_TintColor");
+            mr.GetPropertyBlock(mpb);
+            mpb.SetColor("_TintColor", new Color(c.r * HeSoToiGioLoc, c.g * HeSoToiGioLoc, c.b * HeSoToiGioLoc, c.a));
+            mr.SetPropertyBlock(mpb);
+        }
+        foreach (var ps in hinh.GetComponentsInChildren<ParticleSystem>(true))
+        {
+            var m = ps.main;
+            var c0 = m.startColor.colorMin; var c1 = m.startColor.colorMax;
+            m.startColor = new ParticleSystem.MinMaxGradient(
+                new Color(c0.r * HeSoToiGioLoc, c0.g * HeSoToiGioLoc, c0.b * HeSoToiGioLoc, c0.a),
+                new Color(c1.r * HeSoToiGioLoc, c1.g * HeSoToiGioLoc, c1.b * HeSoToiGioLoc, c1.a));
+            if (ps.name != "BuiCuonLen") continue;
+            m.maxParticles = Mathf.CeilToInt(m.maxParticles * HeSoBuiLenGioLoc);
+            var e = ps.emission; e.rateOverTimeMultiplier *= HeSoBuiLenGioLoc;
+            var v = ps.velocityOverLifetime; v.orbitalYMultiplier *= HeSoQuayBuiGioLoc;
+        }
     }
 
     /// <summary>Hinh Gio loc CU (luoi Blender LocNho, mau may giong, may trong than) - 17/09 - 30/09/2026. Khong con dung trong game;
@@ -325,6 +372,6 @@ public static partial class VfxFactory
     {
         if (loc == null) return;
         SoNhipSetTrongGioLoc++;
-        TornadoBolt(loc, HeSoHinhGioLoc, "SetTrongGioLoc");
+        TornadoBolt(loc, HeSoHinhGioLoc, "SetTrongGioLoc", false);   // 01/10/2026 lan ba: Gio loc KHONG loe cham dat (nguoi dung bo hieu ung sang)
     }
 }
