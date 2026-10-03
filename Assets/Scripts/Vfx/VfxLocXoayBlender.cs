@@ -301,6 +301,7 @@ public static partial class VfxFactory
             if (t.name == "BuiChan") buiChan = t.GetComponent<ParticleSystem>();
         }
         if (hinh == null) return;                                   // hinh cu (BuildTornadoCu) - khong co than Blender
+        HatDenCuonLen(hinh, scale);
         if (!coLen)
             BuiCuonLenTheoThan(hinh, "BuiCuonLen", CaoThanLocXoay * scale, h => 0.95f * BanKinhLocXoay(h, scale), TocBuiCuonLenLocXoay,
                                3.0f, 3.6f, 2.2f * scale, 4.2f * scale, 2.1f, MauBuiXamToi, MauBuiXamSang);
@@ -316,6 +317,53 @@ public static partial class VfxFactory
             var m = buiChan.main; m.maxParticles = Mathf.RoundToInt(120 * HeSoBuiChanLocXoay);
             m.startColor = new ParticleSystem.MinMaxGradient(MauBuiXamToi, MauBuiXamSang);   // prefab nuong mau cu (chua toi 20%)
             var e = buiChan.emission; e.rateOverTime = 40f * HeSoBuiChanLocXoay;
+        }
+    }
+
+    /// <summary>Hat DAT VUN den (trong / ngoai than) va CUM BUI DEN (trong / ngoai than): hat moi giay moi lop. Nguoi dung 04/10/2026
+    /// chon "vua phai": tong 120 hat/giay (80 dat vun + 40 cum bui), Gio loc cung so (thu theo co).</summary>
+    public const float TocHatDenLocXoay = 40f, TocCumBuiDenLocXoay = 20f;
+
+    /// <summary>Ban kinh lop TRONG / NGOAI so voi vo chinh (BanKinhLocXoay).</summary>
+    public const float BanKinhTrongHatDen = 0.55f, BanKinhNgoaiHatDen = 1.18f;
+
+    /// <summary>
+    /// HAT BUI DEN BI CUON LEN (nguoi dung 04/10/2026: "cho them cac hat bui mau den bi cuon tu duoi len ben trong va ca ben ngoai tu duoi
+    /// day len tan dinh cua loc" - Loc xoay + Gio loc; chon "ca hai loai", "vua phai", Gio loc "nhu Loc xoay, thu theo co"). Bon lop
+    /// (dung lai quy dao BuiCuonLenTheoThan: sinh o chan, bay len deu toi dinh, dat ra theo dung cong thuc ban kinh than, quay cung chieu):
+    ///   - HatDenTrong / HatDenNgoai: DAT VUN, SOI den (anh Blender MCP CongCu/Blender/gio_loc_xoan.blend scene HatDenAnh -> HatDen.png 2x2:
+    ///     vien soi, cuc dat, manh dai, chum hat li ti), lon nhao nhanh, quay nhanh hon bui.
+    ///   - DenCuonTrong / DenCuonNgoai: CUM BUI DEN mem (flipbook BuiDenCuon 6x6 - anh Blender MCP cua Gio loc cu, GIU LAI khi xoa hinh cu).
+    /// Trong = 0,55 vo chinh (sinh trai 0,36-0,55 - lo qua vo trong suot), ngoai = 1,18. Goi trong DamBaoBuiCuonLenLocXoay -> Loc xoay
+    /// (Tornado.Start) va Gio loc (BuildGioLoc, roi phong x0,318 theo Hierarchy) deu co; da co thi bo qua.
+    /// </summary>
+    static void HatDenCuonLen(Transform hinh, float scale)
+    {
+        if (hinh.Find("HatDenTrong") != null) return;
+        float cao = CaoThanLocXoay * scale;
+        var matHat = VatLieuLocXoay("HatDen", "HatDen", Color.white, false);
+        Color h0 = new Color(0.10f, 0.09f, 0.08f, 1f), h1 = new Color(0.22f, 0.20f, 0.18f, 1f);
+        foreach (var lop in new[] { ("HatDenTrong", BanKinhTrongHatDen, 0.4f), ("HatDenNgoai", BanKinhNgoaiHatDen, 0f) })
+        {
+            float f = lop.Item2;
+            var ps = BuiCuonLenTheoThan(hinh, lop.Item1, cao, h => f * BanKinhLocXoay(h, scale), TocHatDenLocXoay,
+                                        2.8f, 3.6f, 0.12f * scale, 0.40f * scale, 2.6f, h0, h1);
+            ps.GetComponent<ParticleSystemRenderer>().sharedMaterial = matHat;
+            var sh = ps.shape; sh.radiusThickness = lop.Item3;
+            var ro = ps.rotationOverLifetime; ro.z = new ParticleSystem.MinMaxCurve(-4f, 4f);   // lon nhao
+            var sz = ps.sizeOverLifetime; sz.enabled = false;                                  // hat cung, khong no
+        }
+        var matBui = BuiDenCuonMat;
+        if (matBui == null) return;
+        Color b0 = new Color(0.08f, 0.08f, 0.09f, 0.55f), b1 = new Color(0.16f, 0.15f, 0.15f, 0.75f);
+        foreach (var lop in new[] { ("DenCuonTrong", BanKinhTrongHatDen, 0.4f), ("DenCuonNgoai", BanKinhNgoaiHatDen, 0f) })
+        {
+            float f = lop.Item2;
+            var ps = BuiCuonLenTheoThan(hinh, lop.Item1, cao, h => f * BanKinhLocXoay(h, scale), TocCumBuiDenLocXoay,
+                                        3.0f, 3.8f, 1.0f * scale, 2.4f * scale, 2.1f, b0, b1);
+            ps.GetComponent<ParticleSystemRenderer>().sharedMaterial = matBui;
+            BatFlipbook(ps, 6, 6, 1);
+            var sh = ps.shape; sh.radiusThickness = lop.Item3;
         }
     }
 

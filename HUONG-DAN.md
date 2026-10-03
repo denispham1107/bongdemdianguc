@@ -9095,6 +9095,30 @@ cháy xém**.
   nào dưới 2,4 m): 25 đám, tâm 1,93–4,27 m, xa trục nhất 1,05 m = 63% vỏ trong; loé 1,00 → 1,56 → 1,00.
 - Điện thoại: mỗi cơn thêm ~14 đám mây lớn (1,4–2,2 m) → 3 cơn thêm ~42 tấm trong suốt chồng lên, cấp 5 (5 cơn) ~70. Chưa đo trên máy thật.
 
+### Lốc xoáy + Gió lốc: hạt bụi đen bị cuốn từ đáy lên tận đỉnh, trong lẫn ngoài thân (04/10/2026, lần ba)
+
+**Người dùng:** "Cho thêm các hạt bụi màu đen bị cuốn từ dưới lên bên trong và cả bên ngoài từ dưới đáy lên tận đỉnh của lốc" (cả hai kỹ
+năng). Hỏi lại; người dùng chọn **cả hai loại hạt** (đất vụn li ti + cụm bụi đen mềm), **vừa phải** (~120 hạt/giây), Gió lốc **như Lốc
+xoáy, thu theo cỡ**.
+
+- **Ảnh hạt (Blender MCP, `gio_loc_xoan.blend`, scene `HatDenAnh`):** 4 hạt 3D đẽo từ icosphere biến dạng, chất đá đen nhám, nắng chéo,
+  render Cycles nền trong → `Resources/KyNang/LocXoay/HatDen.png` 2×2: viên sỏi góc cạnh, cục đất, mảnh dài, chùm hạt li ti.
+  Cụm bụi đen dùng lại flipbook Blender `GioLoc/BuiDenCuon.png` 6×6 (giữ lại khi xoá hình Gió lốc cũ).
+- **Code `VfxFactory.HatDenCuonLen`** (trong `DamBaoBuiCuonLenLocXoay` → Lốc xoáy lúc `Tornado.Start`, Gió lốc lúc dựng rồi phóng ×0,318):
+  4 lớp dùng lại quỹ đạo `BuiCuonLenTheoThan` (sinh ở chân, lên đều tới đỉnh trong một đời hạt, dạt ra đúng công thức bán kính thân, quay
+  cùng chiều, cục bộ):
+  - `HatDenTrong` / `HatDenNgoai`: đất vụn 0,12–0,40 m (Gió lốc 4–13 cm), màu 0,10–0,22, lộn nhào ±4 rad/s, quay 2,6 rad/s, 40 hạt/giây mỗi lớp.
+  - `DenCuonTrong` / `DenCuonNgoai`: cụm bụi đen 1,0–2,4 m (Gió lốc 0,32–0,76), đục 0,55–0,75, 20 hạt/giây mỗi lớp.
+  - Trong = 0,55 × vỏ chính (sinh rải 0,36–0,55, thấy qua vỏ trong suốt), ngoài = 1,18 ×.
+  - Tên không bắt đầu bằng "Bui" để các phép thử đếm bụi xám (menu 71 C2/C3, menu 82 B4–B7) không lẫn.
+- **Đo (menu 98 mới, Lốc xoáy + Gió lốc THẬT, vị trí từng hạt sau 3 s, đơn vị Lốc xoáy):** mỗi lớp có hạt ở **cả 5 phần cao** 0–15 m
+  (vd. Lốc xoáy `HatDenNgoai` 26/26/26/26/15); lớp trong r/vỏ trung bình **0,47–0,48** (100% < 0,8), lớp ngoài **1,17–1,18** (100% > 1,0);
+  bay lên + quay cùng chiều thân **97–100%**; độ sáng màu **0,11–0,20**, đối chứng bụi xám `BuiCuonLen` 0,76. 0 lỗi.
+- Menu 71: 0 lỗi. Menu 82: lần 1 lỗi B5 "nửa thân dưới ×1,79 < 1,8", lần 2 ×1,82, 0 lỗi — B5 chỉ đếm `Bui*` (không đếm lớp mới), dao động
+  quanh ngưỡng (phép thử cũ chập chờn).
+- Ảnh động (menu 98b): `PlayTestShots/hatden_cuon_*.gif`, `hatden_cuon_tohop.png`.
+- Thêm ~376 hạt sống mỗi cơn lốc (Gió lốc 3–5 cơn mỗi lần tung) — chưa đo trên điện thoại.
+
 ### Gió lốc: thân phải CUỘN LÊN theo một hướng, không chỉ là một hình trôi tới (04/10/2026, lần hai)
 
 **Người dùng:** "sau khi đánh Lốc ra, Lốc chỉ là 1 hình được dựng lên và tiến về phía trước, chứ không hề có hiệu ứng cuộn từ dưới lên

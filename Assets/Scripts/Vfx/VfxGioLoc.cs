@@ -116,7 +116,7 @@ public static partial class VfxFactory
             m.scalingMode = ParticleSystemScalingMode.Hierarchy;
             // KHOI CO SAN NGAY LUC TUNG (nguoi dung 02/10/2026 chon, khi con bui cuon len than): Gio loc chi song 4,5 s, bui moc dan tu cho
             // sinh -> prewarm (lap + mo phong truoc mot chu ky luc Play). 03/10/2026 chi con bui chan - giu prewarm de chan co bui ngay.
-            if (ps.name.StartsWith("Bui")) { m.loop = true; m.prewarm = true; }
+            if (ps.name.StartsWith("Bui") || ps.name.StartsWith("HatDen") || ps.name.StartsWith("DenCuon")) { m.loop = true; m.prewarm = true; }
             // Trong luc tinh bang m/s^2 THE GIOI, khong thu theo ti le -> bui chan (gravity -0,04 = boc len) bay cao x1,47 (menu 71 C3)
             m.gravityModifierMultiplier *= HeSoHinhGioLoc;
         }
