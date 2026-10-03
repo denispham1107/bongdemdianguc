@@ -331,7 +331,7 @@ hơn ×1,5 và mở xuống 1,8–4,3 m** (người dùng chọn sau menu 94 ch�
   + icon `Resources/Icons/MayGiong.png` (Read/Write bật). Mây ở ~~7 m~~ → ⚠️ **8 m** (04/10/2026 người dùng "bay cao hơn 1 chút", chọn 8 m) + **mưa 200 vệt/giây** (trước 160, `VfxFactory.VetMuaMoiGiay`).
   ⚠️ Menu 100 đo ở máy quay game thật: ở CẢ HAI góc mặc định ("3D tự do" nghiêng 22°, "2.5D" nghiêng 48°) tâm + đỉnh mọi đám mây — kể cả bản
   7 m cũ — đều nằm TRÊN mép màn hình, chỉ phần ĐÁY thò vào khung; 8 m thò ít hơn (3D tự do, ngắm 6 m: 21/42 đám, đáy thấp nhất ở 0,80 chiều cao
-  màn hình — 7 m: 37/42, 0,69; 2.5D: 2/42 so với 3/42). Đã báo người dùng.
+  màn hình — 7 m: 37/42, 0,69; 2.5D: 2/42 so với 3/42). Đã báo — người dùng **chốt giữ 8 m**.
   ⚠️⚠️ **28/09/2026: TIA MÂY GIÔNG NAY Y NHƯ TIA SẤM SÉT** (người dùng, chỉ đổi hình): `VfxFactory.TiaMayGiong` vẽ như
   `LightningStrike.Strike` — `LightningArc` kiểu MẶC ĐỊNH (không ảnh Blender, màu mặc định), 20 đoạn, 2–3 nhánh, 0,30 s, KHÔNG bám
   mục tiêu, + `LightningImpact` chỗ chạm đất; tia ngang trong mây cũng kiểu mặc định. Các đoạn "y Giựt sét / quầng xanh sẫm

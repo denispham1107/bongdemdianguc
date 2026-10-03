@@ -9122,7 +9122,7 @@ mưa **200 vệt/giây**.
   - "3D tự do" (cao 3,9 m, nghiêng 22°): ngắm 6 m — 8 m: 21/42 đám thò đáy, đáy thấp nhất ở 0,80 chiều cao màn hình; 7 m: 37/42, 0,69. Ngắm
     12 m: 30/42 (0,80) so với 41/42 (0,72).
   - "2.5D" (cao 10,6 m, nghiêng 48°): 2/42 so với 3/42; ngắm 12 m: 0 cả hai.
-  - Tức là nâng lên 8 m làm mây **thò vào khung ít hơn** ở góc mặc định. Đã báo người dùng.
+  - Tức là nâng lên 8 m làm mây **thò vào khung ít hơn** ở góc mặc định. Đã báo người dùng — người dùng **chốt giữ 8 m**.
 
 ### Lốc xoáy hiện ngay tại đối thủ (tầm Thiên thạch) · Gió lốc hất cao 3 m, ngã ngửa trên không (04/10/2026, lần bốn)
 
