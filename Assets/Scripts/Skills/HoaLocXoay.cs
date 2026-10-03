@@ -31,7 +31,9 @@ public static class HoaLocXoay
     /// Cac con Gio loc con song thuoc LAN TUNG GAN NHAT cua <paramref name="nguoiTung"/>.
     /// Danh sach rong = nguoi ay khong co con loc nao dang bay.
     /// </summary>
-    public static List<GioLoc> LanTungGanNhat(Damageable nguoiTung)
+    /// 04/10/2026: Gio loc cap 1-4 chi con 2 loc (khong co loc GIUA) -> chon MOT con GAN <paramref name="choNgam"/> nhat (nguoi dung chon
+    /// "hoa con gan cho ngam"); khong co cho ngam (hoi truoc khi tru mana) thi con dau tien. Cap 5 (3 loc) van hoa con giua.
+    public static List<GioLoc> LanTungGanNhat(Damageable nguoiTung, Vector3? choNgam = null)
     {
         var ra = new List<GioLoc>();
         float moiNhat = float.MinValue;
@@ -50,6 +52,16 @@ public static class HoaLocXoay
             // Chi loc GIUA hinh quat (26/09/2026) - ba / nam Loc xoay cung luc qua nang cho dien thoai
             if (Mathf.Abs(loc.lucTung - moiNhat) < 0.05f && loc.laLocGiua) ra.Add(loc);
         }
+        if (ra.Count > 0) return ra;
+        // Khong co loc giua (so loc chan): con cung lan tung gan cho ngam nhat
+        GioLoc gan = null; float xaNhat = float.MaxValue;
+        foreach (var loc in Object.FindObjectsByType<GioLoc>(FindObjectsInactive.Exclude))
+        {
+            if (loc == null || loc.boQua != nguoiTung || Mathf.Abs(loc.lucTung - moiNhat) >= 0.05f) continue;
+            float kc = choNgam.HasValue ? new Vector2(loc.transform.position.x - choNgam.Value.x, loc.transform.position.z - choNgam.Value.z).sqrMagnitude : 0f;
+            if (gan == null || kc < xaNhat) { gan = loc; xaNhat = kc; }
+        }
+        if (gan != null) ra.Add(gan);
         return ra;
     }
 
@@ -64,9 +76,9 @@ public static class HoaLocXoay
     /// </summary>
     /// <param name="heSoGioLoc">He so sat thuong theo cap HIEN TAI cua Gio loc (don cham mot lan).</param>
     /// <param name="heSoLocXoay">He so sat thuong theo cap HIEN TAI cua Loc xoay (moi giay + tia set).</param>
-    public static int Hoa(Damageable nguoiTung, LayerMask damageMask, float heSoGioLoc, float heSoLocXoay)
+    public static int Hoa(Damageable nguoiTung, LayerMask damageMask, float heSoGioLoc, float heSoLocXoay, Vector3? choNgam = null)
     {
-        var ds = LanTungGanNhat(nguoiTung);
+        var ds = LanTungGanNhat(nguoiTung, choNgam);
         if (ds.Count == 0) return 0;
 
         SoLanHoa++;

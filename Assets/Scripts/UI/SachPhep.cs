@@ -469,7 +469,7 @@ public static class SachPhep
                      + "Hồi chiêu nhanh như Quả cầu lửa — đổi sức thiêu đốt lấy khả năng ghìm "
                      + "chân kẻ địch.";
             case CapDo.KyGioLoc:
-                return "BA cơn lốc xoáy cùng phóng ra, toè thành hình quạt về phía trước — mỗi cơn là một cơn lốc XÁM ĐEN "
+                return "HAI cơn lốc xoáy cùng phóng ra, toè thành hình quạt về phía trước — mỗi cơn là một cơn lốc XÁM ĐEN "
                      + "nhỏ: các luồng gió xoắn quay một chiều, vệt gió cuộn từ chân lên tận đỉnh lốc; bụi xám cuộn sát chân và "
                      + "để lại vệt bụi, khói đen xám phía sau mỗi khi lốc lướt qua. Lốc đi "
                      + "XUYÊN QUA mọi vật cản và người chơi, rồi tự tan sau 4,5 giây.\n\n"
@@ -479,7 +479,7 @@ public static class SachPhep
                      + "Mỗi lần trúng có 80% khả năng HẤT TUNG kẻ địch lên cao 3 mét, ngã ngửa ra sau giữa không trung trong 0,7 giây: không "
                      + "đi, không đánh được, và chiêu đang niệm dở bị NGẮT NGAY.\n\n"
                      + "Lốc lướt qua lò lửa thì dập tắt lửa, 30 giây sau lò cháy lại.\n\n"
-                     + "CẤP 5: phóng cùng lúc NĂM cơn lốc hình quạt.";
+                     + "CẤP 5: phóng cùng lúc BA cơn lốc hình quạt.";
             case CapDo.KyTocBien:
                 return "Nhân vật tan đi ở chỗ đang đứng và hiện ra ngay tại nơi bạn ngắm, xa nhất 15 m. Đi được XUYÊN QUA tường, bia mộ và mọi vật cản — chỉ cần chỗ đến đứng được.\n\n"
                      + "Ngắm vào chỗ không đứng được thì bạn dừng ở điểm trống gần nơi ngắm nhất trên đường thẳng. Bấm là đi ngay, không có động tác niệm, nên dùng để né đòn đang bay tới.\n\n"
@@ -493,7 +493,7 @@ public static class SachPhep
                      + "Sát thương cộng cả hai: kẻ địch chạm vào ăn ngay đòn 75 của Gió lốc (một lần mỗi kẻ), rồi bị cuốn "
                      + "lên và tiếp tục chịu 20 sát thương mỗi giây cùng những tia sét trong lòng lốc. Mỗi phần mạnh theo "
                      + "CẤP HIỆN TẠI của kỹ năng tương ứng.\n\n"
-                     + "Gió lốc phóng ra nhiều cơn hình quạt thì chỉ cơn Ở GIỮA hoá thành Lốc xoáy. Cơn lốc mới sống 6 giây.\n\n"
+                     + "Gió lốc phóng ra nhiều cơn hình quạt thì chỉ MỘT cơn hoá thành Lốc xoáy: cơn Ở GIỮA (cấp 5), hai cơn thì cơn gần điểm ngắm hơn. Cơn lốc mới sống 6 giây.\n\n"
                      + "Không có cơn Gió lốc nào đang bay thì kỹ năng không tung ra và KHÔNG tốn năng lượng.\n\n"
                      + "Tốn 45 năng lượng, hồi chiêu 0,5 giây.";
             case CapDo.KyCauDien:

@@ -36,7 +36,7 @@ public class MayGiong : MonoBehaviour
     /// Do cao day may (chan tia set) tren mat dat. 7 m chu khong 10: may quay "3D tu do" (sau lung 7,5 m, cui 22 do, goc nhin
     /// 55 do) o cho cach nhan vat 10 - 12 m chi thay toi ~5,5 m - may o 10 m nam han tren mep man hinh (anh ban ngay dau tien).
     /// </summary>
-    public const float CaoMay = 7f;
+    public const float CaoMay = 8f;   // 04/10/2026 nguoi dung "bay cao hon 1 chut" - chon 8 (truoc 7; 10 thi nam tren mep man hinh)
     /// <summary>May ket lai bao lau truoc tia dau.</summary>
     public const float GiayTuMay = 0.35f;
     /// <summary>Khoang cach giua hai tia: 5 giay / 20 tia.</summary>

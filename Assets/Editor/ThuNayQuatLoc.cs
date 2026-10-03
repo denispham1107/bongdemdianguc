@@ -276,15 +276,17 @@ public static class ThuNayQuatLoc
             }
             goc2.Sort();
             var sb = new StringBuilder(); foreach (var a in goc2) sb.Append(a.ToString("F1") + " ");
-            int mong = cap >= 5 ? 5 : 3;
+            // 04/10/2026 nguoi dung: cap 1-4 HAI loc +-15, cap 5 BA loc -30 / 0 / +30 - goc VIET TAY (khong doc GioLoc.GocQuat)
+            int mong = cap >= 5 ? 3 : 2;
+            float[] gocMong = cap >= 5 ? new[] { -30f, 0f, 30f } : new[] { -15f, 15f };
             float mongTon = cap >= 5 ? GioLoc.NangLuongCap5 : toi.gioLocCost * CapDo.ManaTheoCap(cap);
             Ghi(string.Format("C. cap {0}: {1} loc (mong {2}); goc so voi huong ngam: {3}; cung moc {4}; loc giua {5} (goc {6:F1}); ton {7:F2} nang luong (mong {8:F2})",
                 cap, moi.Count, mong, sb, cungMoc, giua, gocGiua, ton, mongTon));
             bool gocDung = goc2.Count == mong;
-            for (int i = 0; gocDung && i < mong; i++) if (Mathf.Abs(goc2[i] - (i - (mong - 1) * 0.5f) * GioLoc.GocQuat) > 1.5f) gocDung = false;
+            for (int i = 0; gocDung && i < mong; i++) if (Mathf.Abs(goc2[i] - gocMong[i]) > 1.5f) gocDung = false;
             Kiem(moi.Count == mong, "Gio loc cap " + cap + " khong ra dung " + mong + " loc");
-            Kiem(gocDung, "cac loc khong toe dung 15 do");
-            Kiem(cungMoc && giua == 1 && Mathf.Abs(gocGiua) < 1.5f, "khong co dung MOT loc giua / khac moc tung");
+            Kiem(gocDung, "cac loc khong toe dung goc (2 loc +-15 / cap 5 -30 0 30)");
+            Kiem(cungMoc && (mong == 2 ? giua == 0 : giua == 1 && Mathf.Abs(gocGiua) < 1.5f), "so loc giua sai (2 loc: 0, 3 loc: 1 o 0 do) / khac moc tung");
             Kiem(Mathf.Abs(ton - mongTon) < 0.05f, "nang luong Gio loc khong giu nhu cu");
 
             // ================= D. HOA LOC XOAY (sau lan cap 5) =================
@@ -302,7 +304,7 @@ public static class ThuNayQuatLoc
                 int conGioLoc = 0; foreach (var g in moi) if (g != null) conGioLoc++;
                 Ghi(string.Format("D. Hoa loc xoay: {0} Loc xoay moi (cach cho loc giua luc bam {1:F2} m, loc bay 9,5 m/s trong 0,7 s + niem); con {2} Gio loc", soXoay, kcGiua, conGioLoc));
                 Kiem(soXoay == 1, "Hoa loc xoay khong hoa DUNG MOT (loc giua)");
-                Kiem(kcGiua >= 0f && kcGiua < 12f && conGioLoc == 4, "Loc xoay khong o cho loc giua / cac loc kia bi hoa theo");
+                Kiem(kcGiua >= 0f && kcGiua < 12f && conGioLoc == 2, "Loc xoay khong o cho loc giua / cac loc kia bi hoa theo");
                 foreach (var t in Object.FindObjectsByType<Tornado>(FindObjectsInactive.Exclude)) if (!xoayCu.Contains(t)) Object.Destroy(t.gameObject);
             }
             foreach (var g in moi) if (g != null) Object.Destroy(g.gameObject);

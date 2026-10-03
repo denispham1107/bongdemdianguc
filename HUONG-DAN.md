@@ -9095,6 +9095,35 @@ cháy xém**.
   nào dưới 2,4 m): 25 đám, tâm 1,93–4,27 m, xa trục nhất 1,05 m = 63% vỏ trong; loé 1,00 → 1,56 → 1,00.
 - Điện thoại: mỗi cơn thêm ~14 đám mây lớn (1,4–2,2 m) → 3 cơn thêm ~42 tấm trong suốt chồng lên, cấp 5 (5 cơn) ~70. Chưa đo trên máy thật.
 
+### Gió lốc 2 lốc (cấp 5: 3 lốc) cách xa hơn · Mây giông cao 8 m, mưa dày hơn (04/10/2026, lần năm)
+
+**Người dùng:** Gió lốc "cấp đầu tiên chỉ cho đánh ra 2 lốc, mỗi lốc cách xa nhau ra 1 chút; cấp 5 đánh ra 3 lốc"; Mây giông "đám mây bay cao
+hơn 1 chút, hạt mưa rơi nhiều hơn 1 chút". Hỏi lại; người dùng chọn: lệch **30°** (±15°), cấp 5 **cùng khoảng cách mới** (−30 / 0 / +30);
+Hoá lốc xoáy (vốn chỉ hoá cơn GIỮA — 2 lốc thì không có cơn giữa, Hoá lốc xoáy sẽ hỏng ở cấp 1–4): hoá **cơn gần chỗ ngắm**; mây **8 m**,
+mưa **200 vệt/giây**.
+
+- `GioLoc.SoLocTheoCap`: 2 (cấp 1–4) / 3 (cấp 5); `GocQuat` 20 → 30. Ở 10 m hai lốc cách nhau ~5,2 m (trước hai lốc cạnh nhau ~3,5 m).
+  Năng lượng không đổi (20 × cấp; cấp 5 cố định 25).
+- `HoaLocXoay.LanTungGanNhat(nguoiTung, choNgam)`: có cơn giữa (cấp 5) thì như cũ; không có thì lấy cơn cùng lần tung gần `castAim` nhất —
+  bản sao mạng phát lại cùng `castAim` nên chọn cùng cơn.
+- `MayGiong.CaoMay` 7 → 8; `VfxFactory.VetMuaMoiGiay` 160 → 200 (trần 300 hạt vẫn dư: 200 × 0,69 s ≈ 138 sống).
+- Sách phép: "HAI cơn lốc…", "CẤP 5: … BA cơn", Hoá lốc xoáy "chỉ MỘT cơn hoá: cơn giữa (cấp 5), hai cơn thì cơn gần điểm ngắm hơn".
+
+**Đo:**
+- Menu 71 (0 lỗi): cấp 1 tung thật ra **2 lốc**, bia 8 m trước mặt ăn 150 (cả hai lốc); cấp 4: hướng **−15 15**; cấp 5: **−30 0 30**, góc tính từ
+  quãng đường lốc bay thật −30,0 / 0,0 / 30,0; bia trên đường lốc giữa ăn đúng 1 cú (hai lốc bên cách 3,5 m); qua mạng máy kia ra 2 / 3 lốc.
+- Menu 75 (0 lỗi): ngắm lệch PHẢI 15° → hoá đúng cơn phải (Lốc xoáy hiện đúng chỗ, 0,00 m), cơn trái bay tiếp; **D2 mới** ngắm lệch TRÁI → hoá
+  cơn trái, cơn phải bay tiếp; cấp 5: 3 cơn, hoá 1, còn 2.
+- Menu 84 (0 lỗi; góc mong đợi viết tay, không đọc `GocQuat`): cấp 1 −15 / 15, 0 cơn giữa; cấp 5 −30 / 0 / 30, 1 cơn giữa.
+- Menu 83 (0 lỗi): đáy mây 8 m; mưa đang rơi cùng thời điểm 67 → 105 vệt.
+- ⚠️ **Menu 100 mới — mây có trong khung máy quay game không** (tung thật, máy quay game đứng yên sau khi ổn định, chiếu từng đám mây lên màn
+  hình; đối chứng: cùng các đám hạ 1 m = 7 m cũ): ở **cả hai góc mặc định** tâm và đỉnh MỌI đám mây (kể cả 7 m) nằm **trên mép màn hình** —
+  chỉ phần đáy thò vào:
+  - "3D tự do" (cao 3,9 m, nghiêng 22°): ngắm 6 m — 8 m: 21/42 đám thò đáy, đáy thấp nhất ở 0,80 chiều cao màn hình; 7 m: 37/42, 0,69. Ngắm
+    12 m: 30/42 (0,80) so với 41/42 (0,72).
+  - "2.5D" (cao 10,6 m, nghiêng 48°): 2/42 so với 3/42; ngắm 12 m: 0 cả hai.
+  - Tức là nâng lên 8 m làm mây **thò vào khung ít hơn** ở góc mặc định. Đã báo người dùng.
+
 ### Lốc xoáy hiện ngay tại đối thủ (tầm Thiên thạch) · Gió lốc hất cao 3 m, ngã ngửa trên không (04/10/2026, lần bốn)
 
 **Người dùng:** Lốc xoáy "tầm đánh bằng Thiên thạch" và "thay vì di chuyển từ vị trí người chơi về phía trước thì tự động xuất hiện ngay

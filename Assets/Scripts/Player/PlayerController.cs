@@ -1407,7 +1407,7 @@ public class PlayerController : MonoBehaviour
             // cua Gio loc (don cham) + cap hien tai cua Loc xoay (moi giay + tia set) - nguoi dung chot.
             float capGioLoc = CapDo.SatThuongTheoCap(Mathf.Max(1, CapDo.CapCuaKyNang(CapDo.KyGioLoc)));
             float capLocXoay = CapDo.SatThuongTheoCap(Mathf.Max(1, CapDo.CapCuaKyNang(3)));
-            HoaLocXoay.Hoa(health, enemyMask, capGioLoc, capLocXoay);
+            HoaLocXoay.Hoa(health, enemyMask, capGioLoc, capLocXoay, castAim);   // 2 loc: hoa con gan cho ngam (04/10/2026)
         }
         else if (castingSkill == CapDo.KyMayGiong)
         {
@@ -1450,7 +1450,7 @@ public class PlayerController : MonoBehaviour
             if (dir.sqrMagnitude < 0.01f) dir = transform.forward;
             dir.Normalize();
             Vector3 chan = transform.position + dir * 1.2f;
-            // HINH QUAT (nguoi dung 26/09/2026): cap 1-4 ba loc, cap 5 nam loc, GioLoc.GocQuat (20 do tu 29/09/2026) giua hai loc. capPhep la cap cua NGUOI TUNG
+            // HINH QUAT (nguoi dung 26/09/2026; 04/10/2026: cap 1-4 HAI loc, cap 5 BA loc, GioLoc.GocQuat 30 do giua hai loc). capPhep la cap cua NGUOI TUNG
             // (di qua goi tin) nen moi may ra cung so loc.
             GioLoc.SpawnChum(chan, dir, enemyMask, health, GioLoc.SoLocTheoCap(capPhep), GioLoc.GocQuat, manhHon, themGiay);
         }

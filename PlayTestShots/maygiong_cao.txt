@@ -1,0 +1,9 @@
+== Goc may 3D tu do
+May quay game: cao 3.9 m tren nhan vat, cach 7.0 m, nghieng 22 do, fov 55; may giong MayGiong.CaoMay = 8
+Ngam 6 m: 42 dam may; TAM trong khung 0/42, DINH 0/42, DAY (phan thap nhat) 21/42, day thap nhat o 0.80 chieu cao man hinh | DOI CHUNG may 7 m: tam 0/42, dinh 0/42, day 37/42, day thap nhat 0.69
+Ngam 12 m: 42 dam may; TAM trong khung 0/42, DINH 0/42, DAY (phan thap nhat) 30/42, day thap nhat o 0.80 chieu cao man hinh | DOI CHUNG may 7 m: tam 0/42, dinh 0/42, day 41/42, day thap nhat 0.72
+== Goc may 2.5D (Diablo)
+May quay game: cao 10.6 m tren nhan vat, cach 8.7 m, nghieng 48 do, fov 36; may giong MayGiong.CaoMay = 8
+Ngam 6 m: 42 dam may; TAM trong khung 0/42, DINH 0/42, DAY (phan thap nhat) 2/42, day thap nhat o 0.80 chieu cao man hinh | DOI CHUNG may 7 m: tam 0/42, dinh 0/42, day 3/42, day thap nhat 0.70
+Ngam 12 m: 42 dam may; TAM trong khung 0/42, DINH 0/42, DAY (phan thap nhat) 0/42, day thap nhat o 1.12 chieu cao man hinh | DOI CHUNG may 7 m: tam 0/42, dinh 0/42, day 0/42, day thap nhat 1.03
+so loi ghi nhan = 0

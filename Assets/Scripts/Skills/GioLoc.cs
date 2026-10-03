@@ -35,16 +35,18 @@ public class GioLoc : MonoBehaviour
     /// <summary>Loc tu tan sau 4,5 giay (nguoi dung 17/09/2026, truoc do 3,5).</summary>
     public const float ThoiGianSong = 4.5f;
 
-    /// <summary>Cap ky nang tu do tung NAM loc thay vi ba (va ton co dinh NangLuongCap5). Moi loc tinh rieng:
+    /// <summary>Cap ky nang tu do tung BA loc thay vi hai (04/10/2026; truoc: nam thay vi ba) va ton co dinh NangLuongCap5. Moi loc tinh rieng:
     /// dung o cho hai loc cung quet qua la trung hai lan.</summary>
     public const int CapHaiLoc = 5;
 
     /// <summary>
     /// HINH QUAT (nguoi dung 26/09/2026): cap 1-4 tung BA loc, cap 5 tung NAM loc cung luc, toe GocQuat do giua hai loc (chon 15)
     /// quanh huong ngam. Truoc do: 1 loc, cap 5 hai loc song song cach 4 m.
+    /// 04/10/2026 nguoi dung: "cap dau chi danh ra 2 loc, moi loc cach xa nhau ra 1 chut; cap 5 danh ra 3 loc" - chon lech 30 do
+    /// (+-15; cap 5: -30 / 0 / +30). Truoc: 3 loc / 5 loc, 20 do.
     /// </summary>
-    public static int SoLocTheoCap(int capKy) { return capKy >= CapHaiLoc ? 5 : 3; }
-    public const float GocQuat = 20f;   // 29/09/2026 nguoi dung: "cach xa nhau hon 1 chut" - chon 20 (truoc 15); cap 5 toa +-40
+    public static int SoLocTheoCap(int capKy) { return capKy >= CapHaiLoc ? 3 : 2; }
+    public const float GocQuat = 30f;   // 29/09/2026: 15 -> 20; 04/10/2026: 20 -> 30 (2 loc +-15, cap 5 toa +-30)
 
     /// <summary>Nhan them vao nang luong (sau he so cap chung). Nay = 1: nguoi dung giu nang luong NHU CU khi doi sang hinh quat
     /// (truoc la nhan theo so loc - 3 loc la gap ba). Cap 5 van co dinh NangLuongCap5.</summary>
@@ -167,7 +169,8 @@ public class GioLoc : MonoBehaviour
             var loc = Spawn(chan, h, damageMask);
             loc.boQua = boQua;
             loc.lucTung = luc;                            // cung MOT moc: Hoa loc xoay tim lan tung gan nhat theo so nay
-            loc.laLocGiua = Mathf.Abs(i - giua) < 0.01f;  // Hoa loc xoay chi hoa loc GIUA (nguoi dung 26/09/2026)
+            loc.laLocGiua = Mathf.Abs(i - giua) < 0.01f;  // Hoa loc xoay chi hoa loc GIUA (nguoi dung 26/09/2026); so loc CHAN (2) thi
+                                                          // khong co loc giua -> Hoa loc xoay chon con gan cho ngam (04/10/2026)
             loc.tuaTruoc = BuTre.TuaTruocGiay;
             loc.damage *= heSoSatThuong;
             loc.giayHatTung += themGiay;     // luat chung: hieu ung +0,15 s moi cap ky nang

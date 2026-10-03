@@ -49,7 +49,8 @@ public static partial class VfxFactory
     /// <summary>Dam may TO HON 15% (nguoi dung 26/09/2026, chon "chi hinh" - vung mua / uot / set van 6 m).</summary>
     public const float HeSoToMay = 1.15f;
     /// <summary>Mua: so vet mua moi giay, toc do roi (m/s), be ngang / dai vet thay duoc (m).</summary>
-    public const float VetMuaMoiGiay = 160f, TocDoMua = 16f, BeNgangVetMua = 0.22f;
+    /// 04/10/2026 nguoi dung "mua nhieu hon 1 chut" - chon 200 vet/giay (truoc 160).
+    public const float VetMuaMoiGiay = 200f, TocDoMua = 16f, BeNgangVetMua = 0.22f;
     /// <summary>
     /// MAY GIONG DEN (nguoi dung 25/09/2026 toi: "toan may giong mau toi den hon, giong may giong den that"; chon "xam den,
     /// set roi sang"): mau moi lop may = mau cu x 0,26 (day may xam cu da toi hon dinh nen van toi hon). Set roi sang: LoeSangMay.
