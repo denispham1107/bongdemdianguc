@@ -178,8 +178,9 @@ public static class ThuGioLoc
                 float phu = PhuVongToiDa(v, ds, 0.25f);
                 phuVongDaiMax = Mathf.Max(phuVongDaiMax, phu);
                 if (phu >= 0.95f) soDaiKinVong++;
-                // Goc TANG theo do cao = cung chieu quay cua loc (ChieuQuayGioLoc lam goc atan2 TANG) - nhu duong di hat bi cuon
-                if (xoan > 0.3f) soDaiXoanDung++;
+                // 04/10/2026: dai xoan NGUOC chieu quay (goc GIAM theo do cao; ChieuQuayGioLoc lam goc atan2 TANG) -> quay la vet dai LEO
+                // LEN (menu 97: ban cung chieu troi XUONG -0,04 than/giay). Truoc: xoan > 0,3 (cung chieu).
+                if (xoan < -0.3f) soDaiXoanDung++;
                 if (svz > 0) soDaiVLen++;
                 // Mo hai dau: dinh co v nho nhat va lon nhat (dau / cuoi dai) phai gan trong suot
                 float aDau = c.Length > 0 ? c[ds[0]].a : 1f, aCuoi = c.Length > 0 ? c[ds[ds.Count - 1]].a : 1f;
@@ -686,19 +687,29 @@ public static class ThuGioLoc
                 var mong = mauVoGoc[i] * 0.56f;
                 bool ok = mr != null && mr.sharedMaterial.mainTexture != null && mr.sharedMaterial.mainTexture.name == "GioXoan"
                           && Mathf.Abs(tint.r - mong.r) < 0.005f && Mathf.Abs(tint.g - mong.g) < 0.005f && Mathf.Abs(tint.b - mong.b) < 0.005f
-                          && sp != null && spLx != null && Mathf.Sign(sp.degreesPerSecond) == Mathf.Sign(spLx.degreesPerSecond) && Mathf.Abs(sp.degreesPerSecond) < 60f
+                          && sp != null && spLx != null && Mathf.Sign(sp.degreesPerSecond) == Mathf.Sign(spLx.degreesPerSecond) && Mathf.Abs(sp.degreesPerSecond) > 90f
                           && su != null && su.speed.y < 0f && Mathf.Abs(d.lossyScale.y - 1f) < 0.001f;
                 if (ok) daiDung++;
                 moTaDai += string.Format("{0}: mau ({1:F2} {2:F2} {3:F2}) quay {4:F0} do/s truot {5:F2} ", tenDai[i], tint.r, tint.g, tint.b, sp != null ? sp.degreesPerSecond : 0f, su != null ? su.speed.y : 0f);
             }
             Ghi("C2. than dai gio xoan: " + moTaDai + "(vo Loc xoay that quay " + (spLx != null ? spLx.degreesPerSecond.ToString("F0") : "?") + " do/s)");
-            Ghi(string.Format("C2. luoi dai xoan (do ngoai Play): {0} dai, cao toi {1:F2} m; kin vong (phu >= 95% mot lat 0,25 m) {2}, phu vong lon nhat {3:P0} - DOI CHUNG vo pheu Loc xoay Vo1 {4:P0}; xoan cung chieu quay {5}/{0}, v tang theo cao {6}/{0}, mo hai dau {7}/{0};{8}",
+            Ghi(string.Format("C2. luoi dai xoan (do ngoai Play): {0} dai, cao toi {1:F2} m; kin vong (phu >= 95% mot lat 0,25 m) {2}, phu vong lon nhat {3:P0} - DOI CHUNG vo pheu Loc xoay Vo1 {4:P0}; xoan NGUOC chieu quay (leo len khi quay) {5}/{0}, v tang theo cao {6}/{0}, mo hai dau {7}/{0};{8}",
                 soDaiXoan, caoXoanMax, soDaiKinVong, phuVongDaiMax, phuVongVoCu, soDaiXoanDung, soDaiVLen, soDaiMoHaiDau, baoXoan));
             Kiem(thanXoan != null && thanXoan.parent == glDo.transform && daiDung == 3, "than Gio loc khong phai 3 nhom dai gio xoan dung (anh, mau toi 30%, quay cham cung chieu, truot len)");
             Kiem(phuVongVoCu >= 0.95f, "doi chung: vo pheu Loc xoay khong kin vong - phep do phu vong vo nghia");
             // 03/10/2026 lan ba: 12 -> 18 dai rong hon (nguoi dung khoanh khoang trong) - moi dai van HO
             Kiem(soDaiXoan == 18 && soDaiKinVong == 0 && phuVongDaiMax < 0.6f, "con dai gio kin vong tron (nhin ro hinh tron) / khong du 18 dai");
-            Kiem(soDaiXoanDung == soDaiXoan && soDaiVLen == soDaiXoan && soDaiMoHaiDau == soDaiXoan, "dai xoan nguoc chieu quay / anh truot sai chieu / dau dai khong mo");
+            Kiem(soDaiXoanDung == soDaiXoan && soDaiVLen == soDaiXoan && soDaiMoHaiDau == soDaiXoan, "dai xoan CUNG chieu quay (quay la troi xuong) / anh truot sai chieu / dau dai khong mo");
+            // VET GIO XOAN LEN (04/10/2026): con cua goc hinh, cuc bo, chi ve duoi (anh VetGio), lap + prewarm
+            var vetGio = glDo.transform.Find("VetGioXoan");
+            var psVg = vetGio != null ? vetGio.GetComponent<ParticleSystem>() : null;
+            var rVg = psVg != null ? psVg.GetComponent<ParticleSystemRenderer>() : null;
+            bool vgDung = psVg != null && psVg.main.simulationSpace == ParticleSystemSimulationSpace.Local && psVg.trails.enabled && !psVg.trails.worldSpace
+                          && rVg.renderMode == ParticleSystemRenderMode.None && rVg.trailMaterial != null && rVg.trailMaterial.mainTexture != null
+                          && rVg.trailMaterial.mainTexture.name == "VetGio" && psVg.main.loop && psVg.main.prewarm;
+            Ghi("C2. vet gio xoan len: " + (psVg == null ? "THIEU" : string.Format("cuc bo {0}, duoi {1} ({2}), che do ve {3}, lap+prewarm {4}",
+                psVg.main.simulationSpace == ParticleSystemSimulationSpace.Local, psVg.trails.enabled, rVg.trailMaterial != null ? rVg.trailMaterial.mainTexture.name : "-", rVg.renderMode, psVg.main.loop && psVg.main.prewarm)));
+            Kiem(vgDung, "thieu / sai lop vet gio xoan len (cuc bo, chi ve duoi anh VetGio, lap + prewarm)");
             Kiem(Mathf.Abs(caoXoanMax - 5f) < 0.2f, "than dai xoan khong cao ~5 m");
             // Bui chan prewarm (co bui ngay luc tung) - 02/10/2026 nguoi dung chon "khoi co san"; nay chi con mot lop bui
             int soBuiGl = 0, soPrewarmGl = 0;
@@ -753,7 +764,7 @@ public static class ThuGioLoc
             }
             // Loc DUNG YEN khong de vet (vet sinh theo quang duong)
             int vetDungYen = 0;
-            foreach (var ps in glDo.GetComponentsInChildren<ParticleSystem>(true)) if (ps.name.StartsWith("Vet")) vetDungYen += ps.particleCount;
+            foreach (var ps in glDo.GetComponentsInChildren<ParticleSystem>(true)) if (ps.name == "VetBuiXam" || ps.name == "VetKhoiDen") vetDungYen += ps.particleCount;
             Ghi(string.Format("C3. hat bui tren 40% than (6 m don vi Loc xoay): Gio loc {0}, DOI CHUNG Loc xoay that {1}; hat vet sau lung khi Gio loc DUNG YEN 4 s: {2}",
                 trenG, trenL, vetDungYen));
             Kiem(lopDat == 1, "bui chan Gio loc (da khu ti le) khong khop bui chan Loc xoay that");

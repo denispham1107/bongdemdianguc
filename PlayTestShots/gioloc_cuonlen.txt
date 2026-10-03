@@ -1,0 +1,8 @@
+GIO LOC muc 1 - dai gio: thay doi moi 0,1 s 50 % | dich chuyen bieu kien doc +0.127 than/giay (LEN o 12/12 cap khung), ngang +0.000 than/giay | phan thay doi giai thich duoc boi dich chuyen 9 %
+GIO LOC muc 1.5 - dai gio: thay doi moi 0,1 s 56 % | dich chuyen bieu kien doc +0.170 than/giay (LEN o 12/12 cap khung), ngang +0.037 than/giay | phan thay doi giai thich duoc boi dich chuyen 6 %
+GIO LOC muc 2 - dai gio: thay doi moi 0,1 s 62 % | dich chuyen bieu kien doc +0.243 than/giay (LEN o 12/12 cap khung), ngang -0.010 than/giay | phan thay doi giai thich duoc boi dich chuyen 5 %
+DOI CHUNG dung im (khong quay, khong truot): thay doi moi 0,1 s 0 % | dich chuyen bieu kien doc +0.000 than/giay (LEN o 0/12 cap khung), ngang +0.000 than/giay | phan thay doi giai thich duoc boi dich chuyen 0 %
+VET GIO muc 1: 63 hat song, len 0.99 m/s = +0.199 than/giay (LEN 63/63), quay 149 do/s, cung chieu dai gio 63/63; ve duoi: VetGio, che do ve hat None
+VET GIO muc 1.5: 65 hat song, len 1.50 m/s = +0.300 than/giay (LEN 65/65), quay 223 do/s, cung chieu dai gio 65/65; ve duoi: VetGio, che do ve hat None
+VET GIO muc 2: 61 hat song, len 1.99 m/s = +0.397 than/giay (LEN 61/61), quay 298 do/s, cung chieu dai gio 61/61; ve duoi: VetGio, che do ve hat None
+DOI CHUNG Loc xoay that: thay doi moi 0,1 s 35 % | dich chuyen bieu kien doc +0.137 than/giay (LEN o 12/12 cap khung), ngang -0.010 than/giay | phan thay doi giai thich duoc boi dich chuyen 21 %

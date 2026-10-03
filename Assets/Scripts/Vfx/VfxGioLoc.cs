@@ -127,6 +127,7 @@ public static partial class VfxFactory
             if (fl != null) fl.DatTamGoc(tam); else lt.range = tam;
         }
         ThanGioXoan(root.transform);
+        VetGioXoanLen(root.transform);
         VetSauGioLoc(root.transform);
         return root;
     }
@@ -176,6 +177,19 @@ public static partial class VfxFactory
     /// Quay CHAM: dai xoan cung chieu xoay ma quay nhanh thi hinh dai trong nhu troi XUONG (giao diem dai voi mot goc co dinh tut xuong
     /// w/c m/s) - luong gio di len la nho anh TRUOT doc dai.</summary>
     static readonly float[] QuayGioXoan = { 45f, 35f, 28f }, TruotGioXoan = { 1.25f, 1.05f, 0.9f };
+
+    /// <summary>
+    /// THAN CUON LEN (nguoi dung 04/10/2026: "loc chi la 1 hinh dung len va tien ve phia truoc, khong he co hieu ung cuon tu duoi len theo
+    /// 1 huong nhat dinh"). Menu 97 do ban 03/10: dich chuyen bieu kien -0,04 than/giay (TROI XUONG, 0/12 cap khung len) - dai xoan CUNG
+    /// chieu quay nen quay la giao diem dai voi mot goc co dinh tut xuong; anh gio soi keo doc nen truot doc dai gan nhu khong thay.
+    /// Sua: dai dung lai XOAN NGUOC chieu quay (Blender guong x) -> quay la vet dai LEO LEN; anh gio co tung CUM dut doan; quay nhanh
+    /// x HeSoQuayCuonGioLoc; them lop VET GIO hat bay xoan oc len (VetGioXoanLen). MucCuonGioLoc = muc toc do (1 = bang Loc xoay theo
+    /// ti le than, nguoi dung chon trong 3 muc chup).
+    /// </summary>
+    public static float MucCuonGioLoc = 1f;
+
+    /// <summary>Quay dai x bao nhieu so voi QuayGioXoan o muc 1 (hieu chinh bang menu 97 cho bang Loc xoay theo ti le than).</summary>
+    public const float HeSoQuayCuonGioLoc = 4.5f;
 
     /// <summary>Mau 3 nhom dai: mau vo Loc xoay tuong ung (Vo0 / Vo1 / Vo2, da toi x0,8) x HeSoToiGioLoc.</summary>
     static readonly Color[] MauGioXoan = { new Color(0.86f, 0.88f, 0.92f), new Color(0.92f, 0.94f, 0.97f), new Color(0.97f, 0.98f, 1.00f) };
@@ -227,10 +241,57 @@ public static partial class VfxFactory
             mr.receiveShadows = false;
             var sp = go.AddComponent<Spin>();
             sp.axis = Vector3.up;
-            sp.degreesPerSecond = ChieuQuayGioLoc * QuayGioXoan[i];
+            sp.degreesPerSecond = ChieuQuayGioLoc * QuayGioXoan[i] * HeSoQuayCuonGioLoc * MucCuonGioLoc;
             var sc = go.AddComponent<ScrollUV>();
             sc.speed = new Vector2(0f, -TruotGioXoan[i]);
         }
+    }
+
+    /// <summary>Toc vet gio bay LEN (m/s) va quay quanh truc (rad/s) o muc 1; nhan MucCuonGioLoc.</summary>
+    public const float TocLenVetGio = 1.0f, QuayVetGio = 2.6f;
+
+    /// <summary>So vet gio moi giay va do dai vet (giay).</summary>
+    public const float SoVetGioMoiGiay = 14f, GiayDuoiVetGio = 0.35f;
+
+    /// <summary>Vet gio sang hon dai gio bao nhieu lan.</summary>
+    public const float SangVetGio = 1.4f;
+
+    static Material matVetGio;
+
+    /// <summary>
+    /// VET GIO BAY XOAN OC LEN quanh than (nguoi dung 04/10/2026 chon "dai gio + vet gio hat", khong phai bui khoi): hat KHONG ve, chi
+    /// ve DUOI (Trails) bang anh VetGio.png (Blender MCP CongCu/Blender/gio_loc_xoan.blend, scene VetGioAnh: soi gio keo dai, dau day,
+    /// duoi mo - luu lat ngang de dau o u = 0 nhu Trails). Quy dao dung lai BuiCuonLenTheoThan: sinh tren vong o chan sat than, bay len
+    /// deu, dat ra theo dung cong thuc ban kinh than (x1,08 - ngay ngoai nhom dai ngoai), quay CUNG chieu loc. Cuc bo (duoi khong bi keo
+    /// dai khi loc bay 9,5 m/s). Lap + prewarm: co vet tren ca than ngay luc tung.
+    /// </summary>
+    static void VetGioXoanLen(Transform goc)
+    {
+        float k = HeSoHinhGioLoc, cao = ChieuCaoLocXoayHinh * k * (15f / 15.72f);
+        float len = TocLenVetGio * MucCuonGioLoc, songTB = cao / len;
+        // vet sang hon dai x SangVetGio: cung toi nhu dai thi ban ngay chim vao nen dat (anh menu 97b)
+        var c = MauGioXoan[2] * (HeSoToiLocXoay * HeSoToiGioLoc * SangVetGio); c.a = 0.9f;
+        var ps = BuiCuonLenTheoThan(goc, "VetGioXoan", cao, h => 1.08f * BanKinhLocXoay(h, k), SoVetGioMoiGiay * MucCuonGioLoc,   // doi hat ngan lai theo muc -> giu so vet
+                                    0.85f * songTB, 1.15f * songTB, 0.22f, 0.40f, QuayVetGio * MucCuonGioLoc, c, c);
+        var m = ps.main; m.loop = true; m.prewarm = true;
+        var ts = ps.textureSheetAnimation; ts.enabled = false;
+        var ro = ps.rotationOverLifetime; ro.enabled = false;
+        var tr = ps.trails;
+        tr.enabled = true;
+        tr.mode = ParticleSystemTrailMode.PerParticle;
+        tr.worldSpace = false;
+        tr.lifetime = new ParticleSystem.MinMaxCurve(Mathf.Clamp01(GiayDuoiVetGio / (1.15f * songTB)), Mathf.Clamp01(GiayDuoiVetGio / (0.85f * songTB)));
+        tr.minVertexDistance = 0.08f;
+        tr.textureMode = ParticleSystemTrailTextureMode.Stretch;
+        tr.sizeAffectsWidth = true;
+        tr.inheritParticleColor = true;
+        tr.dieWithParticles = true;
+        tr.widthOverTrail = new ParticleSystem.MinMaxCurve(1f, new AnimationCurve(new Keyframe(0f, 1f), new Keyframe(1f, 0.35f)));
+        var r = ps.GetComponent<ParticleSystemRenderer>();
+        r.renderMode = ParticleSystemRenderMode.None;
+        // Kiem bang null cua Unity: vat lieu tao luc Play bi xoa khi thoat Play
+        if (matVetGio == null) matVetGio = Mats.Alpha("P_VetGio", Resources.Load<Texture2D>(ThuMucGioLoc + "VetGio"), Color.white);
+        r.trailMaterial = matVetGio;
     }
 
     /// <summary>Vet sau lung Gio loc song bao lau (giay) - nguoi dung 03/10/2026 chon ~2 s (loc bay 9,5 m/s -> vet ~15-20 m).</summary>

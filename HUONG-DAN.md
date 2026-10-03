@@ -9095,6 +9095,40 @@ cháy xém**.
   nào dưới 2,4 m): 25 đám, tâm 1,93–4,27 m, xa trục nhất 1,05 m = 63% vỏ trong; loé 1,00 → 1,56 → 1,00.
 - Điện thoại: mỗi cơn thêm ~14 đám mây lớn (1,4–2,2 m) → 3 cơn thêm ~42 tấm trong suốt chồng lên, cấp 5 (5 cơn) ~70. Chưa đo trên máy thật.
 
+### Gió lốc: thân phải CUỘN LÊN theo một hướng, không chỉ là một hình trôi tới (04/10/2026, lần hai)
+
+**Người dùng:** "sau khi đánh Lốc ra, Lốc chỉ là 1 hình được dựng lên và tiến về phía trước, chứ không hề có hiệu ứng cuộn từ dưới lên
+theo 1 hướng nhất định. Hãy kiểm tra toàn bộ và thiết kế dựng lại".
+
+- **Đo trước (menu 97 mới):** dựng hình trong một PreviewScene ngoài Play (không đụng cảnh đang mở), giả lập đúng việc `Spin` (quay góc
+  ω·t) và `ScrollUV` (dời ảnh v·t) làm, chụp chỉ thân (lớp 31, nền đen, camera trực giao) ở hai thời điểm cách 0,1 s rồi tìm dịch
+  chuyển (dx, dy) làm hai khung khớp nhau nhất → "dịch chuyển biểu kiến" theo thân/giây. 12 cặp khung mỗi cấu hình.
+  - Bản 03/10: **−0,040 thân/giây (TRÔI XUỐNG), 0/12 cặp đi lên**; tắt trượt ảnh vẫn −0,040, tắt quay thì 0.
+  - Đối chứng **Lốc xoáy thật: +0,137 thân/giây, 12/12 đi lên**; đối chứng đứng im (không quay, không trượt): 0.
+- **Nguyên nhân:** (1) 18 dải xoắn **cùng chiều quay** — một dải xoắn quay theo chiều xoắn của chính nó thì chỗ nó cắt qua một góc cố định
+  tụt xuống (hiệu ứng "cột đèn cắt tóc" chạy ngược); (2) ảnh gió là **sợi kéo dọc** — trượt dọc dải là trượt dọc theo sợi, ảnh gần như
+  không đổi (dịch 0,047 v chỉ đổi 0,085, dịch ngang đổi 0,17); (3) bụi cuộn lên thân đã bỏ hôm 03/10 nên không còn gì khác báo chiều.
+- Thử nhanh trên phép đo: lật gương dải (giữ chiều quay thế giới) → **+0,040, 12/12 đi lên**; quay ×3 → +0,100.
+- Hỏi lại; người dùng chọn **dải gió + vệt gió hạt** và **chụp 3 mức để chọn**.
+- **Dựng lại:**
+  - **Dải (Blender MCP, `gio_loc_xoan.blend`):** cùng 18 dải, cùng hạt giống, nhưng **gương x — xoắn NGƯỢC chiều quay** (đảo thứ tự đỉnh
+    mặt để giữ mặt thuận). Độ phủ không đổi: C6 chân 88% / giữa 100% / trên 89%.
+  - **Ảnh `GioXoan.png` (Blender MCP, scene `GioXoanAnh`, vật liệu `MatGio2`):** sợi ngắn hơn + **từng cụm gió** (nhiễu biến đổi mạnh theo v,
+    hơi chéo) để mắt bắt được trượt lên. Bản nền cụm 0,10 thủng 35% giữa dải — vừa trái yêu cầu lấp khoảng trống hôm qua — nên nâng nền 0,45:
+    lỗ giữa dải 11% (bản cũ 8,6%), độ sáng trung bình 0,249 (cũ 0,240), dịch dọc 0,047 v đổi **0,131** (cũ 0,085, ×1,54). Liền mạch theo v.
+  - **Quay nhanh:** ×4,5 (`HeSoQuayCuonGioLoc`) × mức (`MucCuonGioLoc`) — mức 1: 203 / 158 / 126°/s (Lốc xoáy vỏ trong 210°/s).
+  - **Vệt gió hạt `VetGioXoan`:** chỉ vẽ ĐUÔI hạt (Trails, cục bộ — không bị kéo dài khi lốc bay 9,5 m/s) bằng ảnh Blender MCP `VetGio.png`
+    (scene `VetGioAnh`: sợi gió kéo dài, đầu dày, đuôi mờ); quỹ đạo dùng lại `BuiCuonLenTheoThan` (sinh sát thân ở chân, lên đều, dạt ra theo
+    đúng công thức bán kính thân ×1,08), 14 vệt/giây × mức, đuôi 0,35 s, sáng ×1,4 thân (cùng tối thì ban ngày chìm vào đất — ảnh lần đầu).
+- **Số đo (menu 97), mức 1 / 1,5 / 2:**
+  - Dải: **+0,127 / +0,170 / +0,243 thân/giây**, 12/12 cặp khung đi lên ở cả ba mức (Lốc xoáy +0,137; đứng im 0).
+  - Vệt gió (đọc vị trí thật từng hạt ở 3 s và 3,1 s): ~63 vệt, lên **0,99 / 1,50 / 1,99 m/s**, quay 149 / 223 / 298°/s, **100% cùng chiều quay
+    với dải**.
+- **Menu 71 (0 lỗi):** phép kiểm chiều xoắn đổi thành "góc GIẢM theo độ cao" (18/18, −1,75 … −2,33 rad/m), quay > 90°/s, thêm kiểm lớp
+  `VetGioXoan`; C3 không đếm vệt gió là "vệt sau lưng"; C4 IoU 0,74, sáng ×0,78; C6 phủ 88 / 100 / 89%.
+- **Ảnh động (menu 97b mới):** Play Act2 ban ngày, Gió lốc thật bay ngang, chụp 30 khung / 0,06 s bằng máy quay game và máy quay cận →
+  `PlayTestShots/gioloc_cuon_m1.0_game.gif` … `m2.0_can.gif`, tổ hợp `gioloc_cuon_tohop.png`. Mức đang để: 1 (chờ người dùng chọn).
+
 ### Gió lốc: lấp khoảng trống trong thân dải gió (04/10/2026)
 
 **Người dùng** gửi lại ảnh 4 góc Blender, khoanh đỏ khoảng trống ở giữa thân, ở chân và dải trên (nhìn bên): "còn quá nhiều khoảng trống,
