@@ -215,7 +215,7 @@ public class XacNam : MonoBehaviour
         posGoc = posDau; rotGoc = rotDau;
         // Dang nga / dang bay: tu the DUNG goc nam trong hai hieu ung ay, khong phai tu the luc nay
         var hat = GetComponent<BiHatTung>();
-        if (hat != null && hat.CoPosGoc) posGoc = hat.PosGoc;
+        if (hat != null && hat.CoPosGoc) { posGoc = hat.PosGoc; rotGoc = hat.RotGoc; }   // 04/10/2026: bi hat thi dang nga ngua - goc dung o day
         var nga = GetComponent<BiDanhNga>();
         if (nga != null && nga.CoGoc)
         {

@@ -15,12 +15,20 @@ using UnityEngine;
 /// dung khi hoi), bay tiep tu DO CAO HIEN TAI chu khong giat ve dat.
 ///
 /// Chay SAU BiDanhNga (10000) - neu vua nga vua bi hat thi cong do cao len tren hinh nga.
+///
+/// 04/10/2026 nguoi dung: "bi hat tung cao hon nua" - chon 3 m, bay 0,7 giay (truoc 1,5 m / 0,5 s), "dong thoi doi thu bi hat tung
+/// se co tu the bi NGA NGUA ra sau tren khong trung thay vi tu the dung": hinh lat ngua toi GocNgua 75 do (cung chieu lat cua
+/// BiDanhNga: quanh truc X cua GOC nhan vat - dinh dau ve sau lung) quanh diem HONG (TamXoayNgua 0,9 m tren chan) trong 30% dau
+/// duong bay, giu ngua, 28% cuoi dung lai de cham dat bang chan. Dang bi danh nga thi BiDanhNga giu goc xoay, cai nay chi cong do cao.
 /// </summary>
 [DefaultExecutionOrder(10001)]
 public class BiHatTung : MonoBehaviour
 {
-    public const float GiayMacDinh = 0.5f;
-    public const float CaoBay = 1.5f;
+    public const float GiayMacDinh = 0.7f;
+    public const float CaoBay = 3f;
+
+    /// <summary>Goc nga ngua toi da tren khong (do) va do cao diem xoay (hong) tren chan model (m).</summary>
+    public const float GocNgua = 75f, TamXoayNgua = 0.9f;
 
     /// <summary>Tong thoi gian bay (tinh tu lan hat gan nhat).</summary>
     public float thoiGian = GiayMacDinh;
@@ -30,6 +38,12 @@ public class BiHatTung : MonoBehaviour
 
     /// <summary>Do cao luc bat dau lan hat nay (khac 0 khi bi hat tiep giua khong trung).</summary>
     float caoLucDau;
+
+    /// <summary>Muc nga ngua (0-1) luc bat dau lan hat nay - hat tiep giua khong trung thi khong dung bat day roi nga lai.</summary>
+    float nguaLucDau;
+
+    /// <summary>Muc nga ngua (0-1) o khung vua ve.</summary>
+    public float NguaHienTai { get; private set; }
 
     /// <summary>Do cao hinh dang o khung hinh vua ve.</summary>
     public float CaoHienTai { get; private set; }
@@ -49,9 +63,11 @@ public class BiHatTung : MonoBehaviour
 
     Transform hinh;
     Vector3 posGoc;
+    Quaternion rotGoc;
     bool coPosGoc;
-    /// <summary>Vi tri dung goc cua model - XacNam doc khi chet giua luc bay.</summary>
+    /// <summary>Vi tri / goc xoay dung goc cua model - XacNam doc khi chet giua luc bay.</summary>
     public Vector3 PosGoc { get { return posGoc; } }
+    public Quaternion RotGoc { get { return rotGoc; } }
     public bool CoPosGoc { get { return coPosGoc; } }
 
     /// <summary>
@@ -86,6 +102,7 @@ public class BiHatTung : MonoBehaviour
         else
         {
             h.caoLucDau = h.CaoHienTai;
+            h.nguaLucDau = h.NguaHienTai;
         }
         h.thoiGian = giay;
         h.daTroi = 0f;
@@ -125,7 +142,7 @@ public class BiHatTung : MonoBehaviour
         if (hinh == null)
             foreach (Transform c in transform)
                 if (c.GetComponentInChildren<Renderer>() != null) { hinh = c; break; }
-        if (hinh != null) { posGoc = hinh.localPosition; coPosGoc = true; }
+        if (hinh != null) { posGoc = hinh.localPosition; rotGoc = hinh.localRotation; coPosGoc = true; }
     }
 
     void LateUpdate()
@@ -135,13 +152,23 @@ public class BiHatTung : MonoBehaviour
         // Parabol len CaoBay roi ve dat; bat dau tu do cao dang co (bi hat tiep giua khong trung)
         CaoHienTai = Mathf.Lerp(caoLucDau, 0f, u) + CaoBay * 4f * u * (1f - u);
         if (CaoHienTai > CaoLonNhat) CaoLonNhat = CaoHienTai;
+        // Nga ngua: nhanh trong 30% dau, giu, dung lai trong 28% cuoi (cham dat bang chan)
+        float vao = Mathf.Max(nguaLucDau, Mathf.SmoothStep(0f, 1f, u / 0.3f));
+        NguaHienTai = vao * (1f - Mathf.SmoothStep(0f, 1f, (u - 0.72f) / 0.28f));
 
         if (hinh != null && coPosGoc)
         {
             // Dang bi danh nga: BiDanhNga (chay truoc) da dat vi tri tuyet doi cua hinh nam - cong them len
             var nga = GetComponent<BiDanhNga>();
             if (nga != null && nga.DangNga) hinh.localPosition += Vector3.up * CaoHienTai;
-            else hinh.localPosition = posGoc + Vector3.up * CaoHienTai;
+            else
+            {
+                // -GocNgua quanh truc X cua GOC (nhan ben trai rotGoc - xem BiDanhNga: model Meshy xoay san 180 do), quanh diem hong
+                var xoay = Quaternion.Euler(-GocNgua * NguaHienTai, 0f, 0f);
+                Vector3 tam = posGoc + Vector3.up * TamXoayNgua;
+                hinh.localRotation = xoay * rotGoc;
+                hinh.localPosition = tam + xoay * (posGoc - tam) + Vector3.up * CaoHienTai;
+            }
         }
 
         if (!DangBay) Destroy(this);
@@ -153,6 +180,6 @@ public class BiHatTung : MonoBehaviour
         if (dm != null) ketThucLuc[dm] = Time.time;
         var nga = GetComponent<BiDanhNga>();
         if (nga != null && nga.DangNga) return;
-        if (hinh != null && coPosGoc) hinh.localPosition = posGoc;
+        if (hinh != null && coPosGoc) { hinh.localPosition = posGoc; hinh.localRotation = rotGoc; }
     }
 }

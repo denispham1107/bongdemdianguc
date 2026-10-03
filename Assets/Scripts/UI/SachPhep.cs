@@ -399,8 +399,9 @@ public static class SachPhep
                      + "và không tung phép được.\n\n"
                      + "Chỗ nào sét đánh xuống thì chỗ đó cháy sém và bốc khói.";
             case 3:
-                return "Một cột lốc xoáy hình thành ngay trước mặt rồi trượt về phía "
-                     + "ngắm, cuốn theo mọi thứ nó đi qua.\n\n"
+                return "Một cột lốc xoáy bùng lên NGAY TẠI CHỖ ĐỐI THỦ gần điểm ngắm nhất (tầm 18 m, bằng Thiên thạch) "
+                     + "rồi bám đuổi theo đối thủ ấy, cuốn theo mọi thứ nó đi qua. Không có đối thủ nào trong tầm thì lốc "
+                     + "hiện ngay tại điểm ngắm.\n\n"
                      + "Kẻ địch bị nhấc bổng lên trời, quay tròn rồi rơi xuống. Cây cối, "
                      + "bia mộ và cả lò lửa cũng bị cuốn đi — lò lửa thì bị dập tắt "
                      + "trước, và 30 giây sau mới mọc lại rồi cháy tiếp.\n\n"
@@ -475,7 +476,7 @@ public static class SachPhep
                      + "Trên thân lốc luôn lóe hai tia sét giăng từ miệng xuống (chỉ là hiệu ứng, không gây thêm sát thương).\n\n"
                      + "Mỗi cơn lốc lướt qua một kẻ địch thì gây 75 sát thương — mỗi cơn chỉ đánh mỗi kẻ một lần, "
                      + "kẻ bị nhiều cơn quét qua thì trúng nhiều lần.\n\n"
-                     + "Mỗi lần trúng có 80% khả năng HẤT TUNG kẻ địch lên khỏi mặt đất trong 0,5 giây: không "
+                     + "Mỗi lần trúng có 80% khả năng HẤT TUNG kẻ địch lên cao 3 mét, ngã ngửa ra sau giữa không trung trong 0,7 giây: không "
                      + "đi, không đánh được, và chiêu đang niệm dở bị NGẮT NGAY.\n\n"
                      + "Lốc lướt qua lò lửa thì dập tắt lửa, 30 giây sau lò cháy lại.\n\n"
                      + "CẤP 5: phóng cùng lúc NĂM cơn lốc hình quạt.";

@@ -78,6 +78,40 @@ public class Tornado : MonoBehaviour
 
     static readonly Collider[] buffer = new Collider[64];
 
+    /// <summary>Tam danh cua ky nang Loc xoay = tam Thien thach (PlayerController.TamNgam case 4) - nguoi dung 04/10/2026.</summary>
+    public const float TamDanh = 18f;
+
+    /// <summary>Doi thu loc dang bam theo (ky nang cua nguoi choi - hien ngay tai doi thu). null = troi theo travelDir nhu cu
+    /// (Hoa loc xoay, loc khong co ai trong tam).</summary>
+    public Damageable bamTheo;
+
+    /// <summary>Huong troi luc tung - doi thu bi cuon / chet thi troi tiep theo huong nay.</summary>
+    Vector3 huongGoc;
+
+    static readonly Collider[] boChon = new Collider[128];
+
+    /// <summary>
+    /// Chon doi thu cho ky nang Loc xoay (nguoi dung 04/10/2026, chon "gan cho ngam nhat"): moi doi thu con song (quai, nguoi choi
+    /// khac - tru nguoi tung va dong doi, CheDoTran.BoQua) trong <see cref="TamDanh"/> quanh nguoi tung, lay con GAN CHO NGAM nhat.
+    /// Khong co ai -> null (loc hien tai cho ngam).
+    /// </summary>
+    public static Damageable ChonMucTieu(Vector3 nguoiTung, Vector3 choNgam, LayerMask mask, Damageable boQua)
+    {
+        Damageable tot = null;
+        float xaNhat = float.MaxValue;
+        int n = Physics.OverlapSphereNonAlloc(nguoiTung, TamDanh, boChon, mask, QueryTriggerInteraction.Collide);
+        for (int i = 0; i < n; i++)
+        {
+            var d = boChon[i].GetComponentInParent<Damageable>();
+            if (d == null || d.IsDead || CheDoTran.BoQua(boQua, d)) continue;
+            Vector3 p = d.transform.position;
+            if (new Vector2(p.x - nguoiTung.x, p.z - nguoiTung.z).magnitude > TamDanh) continue;
+            float kc = new Vector2(p.x - choNgam.x, p.z - choNgam.z).sqrMagnitude;
+            if (kc < xaNhat) { xaNhat = kc; tot = d; }
+        }
+        return tot;
+    }
+
     public static Tornado Spawn(Vector3 pos, Vector3 dir, LayerMask damageMask)
     {
         GameObject go;
@@ -99,6 +133,7 @@ public class Tornado : MonoBehaviour
 
         dir.y = 0f;
         t.travelDir = dir.sqrMagnitude > 0.001f ? dir.normalized : Vector3.forward;
+        t.huongGoc = t.travelDir;
         t.damageMask = damageMask;
         return t;
     }
@@ -232,6 +267,14 @@ public class Tornado : MonoBehaviour
 
     void Move(float dt)
     {
+        // BAM THEO doi thu (ky nang nguoi choi 04/10/2026): con song va CHUA bi cuon thi huong troi = ve phia no; dang bi cuon (no
+        // dang quay quanh chinh loc nay) hay da chet thi troi theo huong luc tung
+        if (bamTheo != null)
+        {
+            Vector3 toi = bamTheo.transform.position - transform.position; toi.y = 0f;
+            if (!bamTheo.IsDead && bamTheo.GetComponent<WhirledEffect>() == null && toi.sqrMagnitude > 0.25f) travelDir = toi.normalized;
+            else if (bamTheo.IsDead || bamTheo.GetComponent<WhirledEffect>() != null) travelDir = huongGoc;
+        }
         // Luon lon nhe sang hai ben cho duong di khong thang bang
         float w = (Mathf.PerlinNoise(wanderSeed, Time.time * 0.35f) - 0.5f) * 2f;
         Vector3 side = new Vector3(-travelDir.z, 0f, travelDir.x);

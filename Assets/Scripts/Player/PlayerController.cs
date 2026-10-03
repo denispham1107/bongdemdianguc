@@ -541,9 +541,9 @@ public class PlayerController : MonoBehaviour
     /// </summary>
     public bool DonThang(int skill)
     {
-        // 0 qua cau lua, 3 loc xoay, 6 giut set - deu di theo mot duong tu
-        // nguoi choi ra. Con lai roi xuong mot diem da chon.
-        return skill == 0 || skill == 3 || skill == 6 || skill == CapDo.KyQuaCauBang || skill == CapDo.KyGioLoc
+        // 0 qua cau lua, 6 giut set - deu di theo mot duong tu nguoi choi ra. Con lai roi xuong mot diem da chon.
+        // Loc xoay (3) tu 04/10/2026 la phep THEO DIEM: hien ngay tai doi thu gan cho ngam nhat (Tornado.ChonMucTieu).
+        return skill == 0 || skill == 6 || skill == CapDo.KyQuaCauBang || skill == CapDo.KyGioLoc
             || skill == CapDo.KyLuaDiaNguc;
     }
 
@@ -565,7 +565,7 @@ public class PlayerController : MonoBehaviour
             case CapDo.KyLuaDiaNguc: return LuaDiaNguc.TamTim;   // tu di ke dich trong 20 m
             case 1: return iceRange;         // 12
             case 2: return boltRange;        // 12
-            case 3: return 12f;              // loc xoay truot ve phia ngam
+            case 3: return Tornado.TamDanh;  // 18 m = Thien thach (nguoi dung 04/10/2026)
             case 4: return 18f;              // thien thach roi tu tren troi
             case CapDo.KyCauDien: return QuaCauDien.Tam;   // 18 m - nguoi dung chon "bang tam Thien thach"
             case CapDo.KyTocBien: return TocBien.Tam;      // 15 m
@@ -779,6 +779,8 @@ public class PlayerController : MonoBehaviour
     {
         if (skill == 1) return iceRange;
         if (skill == 2) return boltRange;
+        // Loc xoay: tam BANG THIEN THACH (nguoi dung 04/10/2026) - hien tai doi thu trong tam
+        if (skill == 3) return Tornado.TamDanh;
         // Qua cau dien: nguoi dung chon tam BANG THIEN THACH (18 m)
         if (skill == CapDo.KyCauDien) return QuaCauDien.Tam;
         // Toc bien: nhay xa nhat 15 m
@@ -1477,18 +1479,21 @@ public class PlayerController : MonoBehaviour
         }
         else if (castingSkill == 3)
         {
-            // Loc xoay sinh ra ngay truoc mat phu thuy roi truot ve phia ngam
-            Vector3 dir = castAim - transform.position;
+            // 04/10/2026 nguoi dung: thay vi sinh truoc mat roi truot di, loc HIEN NGAY TAI DOI THU (gan cho ngam nhat, trong tam
+            // 18 m = Thien thach) roi BAM THEO doi thu ay; khong co ai thi hien tai cho ngam (da keo vao tam o CastAt). Ban sao mang
+            // phat lai voi cung castAim nen chon cung doi thu (nhu Qua cau dien).
+            var mucTieu = Tornado.ChonMucTieu(transform.position, castAim, enemyMask, health);
+            Vector3 spawnAt = mucTieu != null ? mucTieu.transform.position : castAim;
+            spawnAt.y = VfxFactory.GroundY(spawnAt);
+            Vector3 dir = spawnAt - transform.position;
             dir.y = 0f;
             if (dir.sqrMagnitude < 0.01f) dir = transform.forward;
             dir.Normalize();
 
-            Vector3 spawnAt = transform.position + dir * 3f;
-            spawnAt.y = VfxFactory.GroundY(spawnAt);
-
             var loc = Tornado.Spawn(spawnAt, dir, enemyMask);
             if (loc != null)
             {
+                loc.bamTheo = mucTieu;
                 loc.boQua = health;
                 loc.damagePerSecond *= manhHon;
                 loc.boltDamage *= manhHon;

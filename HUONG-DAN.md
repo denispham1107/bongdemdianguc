@@ -9095,6 +9095,37 @@ cháy xém**.
   nào dưới 2,4 m): 25 đám, tâm 1,93–4,27 m, xa trục nhất 1,05 m = 63% vỏ trong; loé 1,00 → 1,56 → 1,00.
 - Điện thoại: mỗi cơn thêm ~14 đám mây lớn (1,4–2,2 m) → 3 cơn thêm ~42 tấm trong suốt chồng lên, cấp 5 (5 cơn) ~70. Chưa đo trên máy thật.
 
+### Lốc xoáy hiện ngay tại đối thủ (tầm Thiên thạch) · Gió lốc hất cao 3 m, ngã ngửa trên không (04/10/2026, lần bốn)
+
+**Người dùng:** Lốc xoáy "tầm đánh bằng Thiên thạch" và "thay vì di chuyển từ vị trí người chơi về phía trước thì tự động xuất hiện ngay
+tại vị trí đối thủ trong tầm đánh"; Gió lốc "đối thủ bị hất tung cao hơn nữa". Hỏi lại; người dùng chọn: đối thủ **gần chỗ ngắm nhất**,
+không có ai thì **hiện tại chỗ ngắm**, sau đó **bám theo** đối thủ ấy; hất **3 m, bay 0,7 giây** và thêm: **ngã ngửa ra sau trên không**
+thay vì tư thế đứng.
+
+- **Lốc xoáy:**
+  - Tầm ngắm 12 → **18 m** (`Tornado.TamDanh`, bằng `TamNgam(4)` của Thiên thạch); điểm ngắm kẹp vào 18 m (`TamCuaKyNang(3)`); bỏ khỏi nhóm
+    phép "đơn thẳng" — kéo ngắm bây giờ chọn ĐIỂM, không chỉ chọn hướng.
+  - `Tornado.ChonMucTieu`: mọi đối thủ còn sống trong 18 m quanh người tung (bỏ người tung, đồng đội), lấy con gần chỗ ngắm nhất; lốc hiện
+    đúng chân nó (nên bị cuốn ngay), không ai thì hiện tại chỗ ngắm.
+  - `Tornado.bamTheo`: mỗi khung hướng trôi = về phía đối thủ (vẫn 3,4 m/s, vẫn lắc lư); đối thủ đang bị cuốn (quay quanh chính lốc) hoặc đã
+    chết → trôi theo hướng lúc tung. Hoá lốc xoáy không đặt `bamTheo` nên giữ nguyên.
+  - Mạng: bản sao phát lại `Release` với cùng `castAim` → chọn cùng đối thủ trên máy kia (cách Quả cầu điện đã làm).
+- **Gió lốc:** `BiHatTung` 1,5 m / 0,5 s → **3 m / 0,7 s**; hình (model con) **lật ngửa 75°** quanh hông (0,9 m trên chân), cùng chiều lật với
+  `BiDanhNga` (đầu về sau lưng, mặt ngửa lên trời): ngửa nhanh trong 30% đầu, giữ, 28% cuối dựng lại để chạm đất bằng chân. Bị hất tiếp giữa
+  không trung thì không dựng thẳng rồi ngã lại. Chết giữa lúc bay: `XacNam` lấy góc đứng gốc từ `BiHatTung.RotGoc`.
+- Sách phép viết lại cả hai mô tả.
+
+**Đo:**
+- **Menu 99 mới (0 lỗi, tung THẬT bằng `CastAt`):** A tầm 18 = Thiên thạch, không còn đơn thẳng · B ngắm gần bia phải → lốc cách bia **0,23 m**,
+  bia bị cuốn trong 0,5 s; gần bia trái → **0,09 m**; ngắm sát bia NGOÀI tầm (26 m) → không chọn nó (cách 11,6 m) mà chọn bia trong tầm gần
+  chỗ ngắm nhất (0,08 m) · C không ai, ngắm 30 m → hiện cách người tung **18,09 m**, lệch hướng 0° · E bám theo (bia ngoài mặt nạ sát thương
+  để không bị cuốn, lệch 8 m vuông góc): khoảng cách giảm **5,13 m / 1,5 s**, đối chứng không bám **−2,23 m**; bia chết → trôi lệch 4° so
+  với hướng lúc tung.
+- **Menu 71 (0 lỗi):** mục G đo **điểm hông** từ tư thế thật của hình (không đọc biến): cao **3,00 m**, bay **0,71 s** (164 lần); ngã lớn
+  nhất **75°**, 3605/3605 mẫu ngã > 30° đều **đầu về SAU**, 164/164 lần đứng thẳng lại khi rơi xuống; I3 bản sao mạng cũng cao 3,00 m.
+- **Menu 85 (0 lỗi):** chết lúc đang bay vẫn nằm đúng.
+- Ảnh động (menu 99b mới): `PlayTestShots/hattung_gioloc0_can.gif`, `hattung_locxoay_can.gif`, `hattung_khung_can.png`.
+
 ### Lốc xoáy + Gió lốc: hạt bụi đen bị cuốn từ đáy lên tận đỉnh, trong lẫn ngoài thân (04/10/2026, lần ba)
 
 **Người dùng:** "Cho thêm các hạt bụi màu đen bị cuốn từ dưới lên bên trong và cả bên ngoài từ dưới đáy lên tận đỉnh của lốc" (cả hai kỹ

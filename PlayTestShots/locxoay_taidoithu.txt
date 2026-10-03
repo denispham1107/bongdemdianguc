@@ -1,0 +1,5 @@
+A. tam ngam Loc xoay 18 m, Thien thach 18 m; don thang (truot tu nguoi choi) False
+B. ngam gan bia PHAI: loc hien cach bia 0.23 m, bia bi cuon trong 0,5 s True | ngam gan bia TRAI: cach 0.09 m | ngam sat bia NGOAI tam (26 m): loc cach bia ay 11.6 m, cach bia phai (trong tam, gan cho ngam nhat) 0.08 m
+C. khong ai trong tam, ngam 30 m: loc hien cach nguoi tung 18.09 m, lech huong ngam 0.0 do (mong 18 m, 0 do)
+E. bia lech 8 m vuong goc: co bam theo -> khoang cach giam 5.13 m trong 1,5 s | DOI CHUNG khong bam -2.23 m | bia chet -> loc troi lech huong luc tung 4 do (lac lu ngau nhien +-30)
+so loi ghi nhan = 0

@@ -1260,6 +1260,10 @@ public static class ThuGioLoc
             for (int i = 0; i < 19; i++) hang.Add(TaoBia("TAM_G" + i, tu + huong * (4f + i * 1.3f)));
             yield return new WaitForFixedUpdate();
             int soTrung = 0, soHat = 0; float caoMax = 0f; float tongGiay = 0f; int soDoGiay = 0;
+            // 04/10/2026 (cao 3 m, 0,7 s, NGA NGUA tren khong): do cao = do cao DIEM HONG cua hinh (diem xoay, 0,9 m tren chan) so voi
+            // luc dung - doc tu tu the that cua hinh (TransformPoint), khong doc bien CaoHienTai; nga = goc giua truc len cua hinh va
+            // cua goc, "ngua" = dau nga ve SAU (truc len cua hinh nghieng nguoc huong mat goc); roi xuong phai dung thang lai
+            float ngaMax = 0f; int mauNga = 0, mauNguaSau = 0, soDungLai = 0;
             int hat0 = GioLoc.SoLanHat, trung0 = GioLoc.SoLanTrung;
             bool daChupHat = false;
             for (int lan = 0; lan < 10; lan++)
@@ -1274,7 +1278,14 @@ public static class ThuGioLoc
                     {
                         var h = d.GetComponent<BiHatTung>();
                         var hinh = d.transform.Find("Hinh");
-                        if (hinh != null) caoMax = Mathf.Max(caoMax, hinh.localPosition.y - 1f);
+                        if (hinh != null)
+                        {
+                            float hong = hinh.TransformPoint(new Vector3(0f, BiHatTung.TamXoayNgua / 2f, 0f)).y - (d.transform.position.y + 1f + BiHatTung.TamXoayNgua);
+                            caoMax = Mathf.Max(caoMax, hong);
+                            float nga = Vector3.Angle(hinh.up, d.transform.up);
+                            ngaMax = Mathf.Max(ngaMax, nga);
+                            if (nga > 30f) { mauNga++; if (Vector3.Dot(hinh.up, d.transform.forward) < 0f) mauNguaSau++; }
+                        }
                         if (h != null && !dangCo.Contains(d))
                         {
                             dangCo.Add(d); batDau[d] = Time.time; soHat++;
@@ -1283,6 +1294,7 @@ public static class ThuGioLoc
                         if (h == null && batDau.ContainsKey(d))
                         {
                             tongGiay += Time.time - batDau[d]; soDoGiay++;
+                            if (hinh != null && Vector3.Angle(hinh.up, d.transform.up) < 1f && Mathf.Abs(hinh.localPosition.y - 1f) < 0.01f) soDungLai++;
                             batDau.Remove(d);
                         }
                     }
@@ -1297,8 +1309,12 @@ public static class ThuGioLoc
             Kiem(soTrung == 190, "khong du 190 lan trung (19 bia x 10 loc)");
             Kiem(Mathf.Abs(tile - GioLoc.XacSuatHatTung) < 0.08f, "ti le hat tung khong quanh GioLoc.XacSuatHatTung");
             Kiem(soHat == GioLoc.SoLanHat - hat0, "dem doc lap khac bo dem trong code");
-            Kiem(Mathf.Abs(caoMax - 1.5f) < 0.08f, "do cao hat tung khong phai 1,5 m");
-            Kiem(soDoGiay > 50 && Mathf.Abs(tongGiay / soDoGiay - 0.5f) < 0.06f, "thoi gian bay khong phai 0,5 giay");
+            Ghi(string.Format("G. tu the tren khong: nga lon nhat {0:F0} do; {1} mau nga > 30 do, trong do dau nga ve SAU {2}; roi xuong dung thang lai {3}/{4}",
+                ngaMax, mauNga, mauNguaSau, soDungLai, soDoGiay));
+            Kiem(Mathf.Abs(caoMax - 3f) < 0.15f, "do cao hat tung khong phai 3 m (nguoi dung 04/10/2026)");
+            Kiem(soDoGiay > 50 && Mathf.Abs(tongGiay / soDoGiay - 0.7f) < 0.06f, "thoi gian bay khong phai 0,7 giay");
+            Kiem(ngaMax > 65f && mauNga > 100 && mauNguaSau == mauNga, "bi hat tung khong nga NGUA ra sau tren khong");
+            Kiem(soDungLai == soDoGiay, "roi xuong khong dung thang lai");
             foreach (var d in hang) Object.Destroy(d.gameObject);
             yield return new WaitForSeconds(0.3f);
 
