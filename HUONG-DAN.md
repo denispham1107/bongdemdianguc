@@ -9095,6 +9095,28 @@ cháy xém**.
   nào dưới 2,4 m): 25 đám, tâm 1,93–4,27 m, xa trục nhất 1,05 m = 63% vỏ trong; loé 1,00 → 1,56 → 1,00.
 - Điện thoại: mỗi cơn thêm ~14 đám mây lớn (1,4–2,2 m) → 3 cơn thêm ~42 tấm trong suốt chồng lên, cấp 5 (5 cơn) ~70. Chưa đo trên máy thật.
 
+### Gió lốc: lấp khoảng trống trong thân dải gió (04/10/2026)
+
+**Người dùng** gửi lại ảnh 4 góc Blender, khoanh đỏ khoảng trống ở giữa thân, ở chân và dải trên (nhìn bên): "còn quá nhiều khoảng trống,
+hãy làm đầy thêm nhưng vẫn phải giữ trông như gió cuộn lên thực sự".
+
+- Nguyên nhân: 12 dải hẹp (0,42–0,72 m); dải bắt đầu từ chân **mờ dần suốt 22% chiều dài đầu** — đúng vùng chân; pha các dải chọn tay nên
+  có góc trống.
+- Phép đo (chung cho Blender và Unity): ảnh **trực giao** nhìn ngang, 1 px = 1 cm, chỉ dải gió; trong viền thân |x| ≤ 0,95 × vỏ chính, chia
+  chân / giữa / trên; "phủ" = tỉ lệ điểm ảnh có gió.
+  - Bản 12 dải (Blender, nhìn trước / bên): chân **61–63%**, giữa 85–94%, trên **77%**.
+  - Thử 20 dải đậm (độ đậm mỗi dải 1): 96–100% nhưng độ dày 0,94 — **thành khối bông**, mất hẳn luồng gió, chân phẳng như cắt → bỏ.
+  - **Bản chốt — 18 dải** (Blender MCP, `gio_loc_xoan.blend`): 8 dải bắt đầu từ chân **so le 0–0,24 m** và **đầu thon 25%** (chân không
+    phẳng); rộng 0,55–0,90 m; pha theo **góc vàng** (2,4 rad) nên trải đều quanh trục; cùng độ dốc ~1,7 vòng / cả thân (một dòng gió
+    thống nhất); đầu dải mờ theo **độ dài tuyệt đối 0,35 m**, cuối 0,6 m; **độ đậm mỗi dải ≤ 0,62** (nướng trong màu đỉnh) để chỗ chồng nhau
+    vẫn đọc ra từng luồng. Blender: chân **87–89%**, giữa 99–100%, trên **86–90%**, độ dày 0,43–0,72.
+- **Menu 71 (0 lỗi):**
+  - Mục mới **C6** đo trong Unity cùng cách (vẽ 3 nhóm dải lên lớp 31, nền đen, camera trực giao): chân **85%** / giữa **100%** / trên
+    **94%**; đối chứng chỉ bật nhóm ngoài: 70 / 98 / 81% (phép đo phân biệt được).
+  - Lưới ngoài Play: 18 dải, 0 dải kín vòng, phủ vòng lớn nhất **42%** (vỏ phễu 100%), 18/18 xoắn cùng chiều quay, v tăng theo cao,
+    mờ hai đầu. Ảnh: IoU 0,71 với Lốc xoáy thật, sáng ×0,73.
+- Ảnh: `PlayTestShots/gioloc_1_bay.png`, `gioloc_6b_gioloc_moi.png`.
+
 ### Gió lốc: thân vẽ lại thành các luồng gió xoắn, hết "hình tròn" (03/10/2026, lần hai)
 
 **Người dùng:** "Phần thân lốc từ đáy đến đỉnh thấy quá rõ là hình tròn, hãy vẽ lại sao cho thật tự nhiên là các luồng gió cuộn lên

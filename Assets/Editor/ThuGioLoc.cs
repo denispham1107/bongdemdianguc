@@ -696,7 +696,8 @@ public static class ThuGioLoc
                 soDaiXoan, caoXoanMax, soDaiKinVong, phuVongDaiMax, phuVongVoCu, soDaiXoanDung, soDaiVLen, soDaiMoHaiDau, baoXoan));
             Kiem(thanXoan != null && thanXoan.parent == glDo.transform && daiDung == 3, "than Gio loc khong phai 3 nhom dai gio xoan dung (anh, mau toi 30%, quay cham cung chieu, truot len)");
             Kiem(phuVongVoCu >= 0.95f, "doi chung: vo pheu Loc xoay khong kin vong - phep do phu vong vo nghia");
-            Kiem(soDaiXoan == 12 && soDaiKinVong == 0 && phuVongDaiMax < 0.6f, "con dai gio kin vong tron (nhin ro hinh tron)");
+            // 03/10/2026 lan ba: 12 -> 18 dai rong hon (nguoi dung khoanh khoang trong) - moi dai van HO
+            Kiem(soDaiXoan == 18 && soDaiKinVong == 0 && phuVongDaiMax < 0.6f, "con dai gio kin vong tron (nhin ro hinh tron) / khong du 18 dai");
             Kiem(soDaiXoanDung == soDaiXoan && soDaiVLen == soDaiXoan && soDaiMoHaiDau == soDaiXoan, "dai xoan nguoc chieu quay / anh truot sai chieu / dau dai khong mo");
             Kiem(Mathf.Abs(caoXoanMax - 5f) < 0.2f, "than dai xoan khong cao ~5 m");
             // Bui chan prewarm (co bui ngay luc tung) - 02/10/2026 nguoi dung chon "khoi co san"; nay chi con mot lop bui
@@ -793,6 +794,58 @@ public static class ThuGioLoc
             // 03/10/2026 than la dai xoan ho (khong con vo kin) -> chi doi hinh van chiem dang loc (IoU > 0,5) va toi hon
             Kiem(iouG > 0.5f && sangG < 0.85f && sangG > 0.3f, "anh Gio loc khong con dang loc / khong toi hon Loc xoay");
             Kiem(iouC < iouG - 0.1f, "DOI CHUNG: anh Gio loc cu cung 'giong' Loc xoay - phep so anh khong phan biet duoc");
+            // ---- C6 (03/10/2026, nguoi dung khoanh KHOANG TRONG o than / chan / tren): DO PHU cua than dai gio - chi ve 3 nhom dai (lop 31)
+            // tren nen DEN, may quay TRUC GIAO nhin ngang (1 px = 1 cm); trong vien than |x| <= 0,95 x vo chinh, chia chan / giua / tren:
+            // "phu" = ti le diem anh sang > 0,05. DOI CHUNG: chi bat NHOM NGOAI -> phai thua ro hon (phep do phan biet duoc).
+            {
+                var thanX = glDo.transform.Find("GioXoan");
+                var rsDai = thanX != null ? thanX.GetComponentsInChildren<MeshRenderer>() : new MeshRenderer[0];
+                var lopCu = new Dictionary<MeshRenderer, int>();
+                foreach (var r in rsDai) { lopCu[r] = r.gameObject.layer; r.gameObject.layer = 31; }
+                var goCam = new GameObject("TAM_CamPhu");
+                var cp = goCam.AddComponent<Camera>();
+                cp.enabled = false; cp.orthographic = true; cp.orthographicSize = 3f; cp.cullingMask = 1 << 31;
+                cp.clearFlags = CameraClearFlags.SolidColor; cp.backgroundColor = Color.black; cp.nearClipPlane = 0.3f; cp.farClipPlane = 60f;
+                cp.transform.position = qG + Vector3.up * 2.5f - huong * 20f; cp.transform.rotation = Quaternion.LookRotation(huong);
+                bool suong2 = RenderSettings.fog; RenderSettings.fog = false;
+                System.Func<float[]> doPhu = () =>
+                {
+                    const int N = 600;
+                    var rt = new RenderTexture(N, N, 24); cp.targetTexture = rt; cp.Render(); cp.targetTexture = null;
+                    var tr = RenderTexture.active; RenderTexture.active = rt;
+                    var tx = new Texture2D(N, N, TextureFormat.RGB24, false); tx.ReadPixels(new Rect(0, 0, N, N), 0, 0); tx.Apply();
+                    RenderTexture.active = tr;
+                    var px = tx.GetPixels(); Object.Destroy(tx); Object.Destroy(rt);
+                    var kq = new float[3]; var n = new int[3];
+                    for (int y = 0; y < N; y++)
+                    {
+                        float z = 2.5f + (y - N / 2 + 0.5f) * 0.01f;
+                        int ph = z < 0.05f ? -1 : z < 1.65f ? 0 : z < 3.25f ? 1 : z < 4.85f ? 2 : -1;
+                        if (ph < 0) continue;
+                        float rr = 0.95f * VfxFactory.BanKinhLocXoay(z, k);
+                        for (int x = 0; x < N; x++)
+                        {
+                            float X = (x - N / 2 + 0.5f) * 0.01f;
+                            if (Mathf.Abs(X) > rr) continue;
+                            var c = px[y * N + x];
+                            n[ph]++; if (0.299f * c.r + 0.587f * c.g + 0.114f * c.b > 0.05f) kq[ph] += 1f;
+                        }
+                    }
+                    for (int i = 0; i < 3; i++) kq[i] /= Mathf.Max(1, n[i]);
+                    return kq;
+                };
+                var phuDu = doPhu();
+                foreach (var r in rsDai) if (r.name != "DaiNgoai") r.enabled = false;
+                var phuNgoai = doPhu();
+                foreach (var r in rsDai) r.enabled = true;
+                foreach (var kv in lopCu) kv.Key.gameObject.layer = kv.Value;
+                RenderSettings.fog = suong2;
+                Object.Destroy(goCam);
+                Ghi(string.Format("C6. phu than dai gio (truc giao, trong vien than): chan {0:P0}, giua {1:P0}, tren {2:P0} | DOI CHUNG chi nhom ngoai: {3:P0} / {4:P0} / {5:P0} (Blender cung cach do: ban 12 dai 61-63% / 85-94% / 77%)",
+                    phuDu[0], phuDu[1], phuDu[2], phuNgoai[0], phuNgoai[1], phuNgoai[2]));
+                Kiem(rsDai.Length == 3 && phuDu[0] > 0.8f && phuDu[1] > 0.8f && phuDu[2] > 0.8f, "than dai gio con nhieu khoang trong (chan / giua / tren < 80%)");
+                Kiem(phuNgoai[0] < phuDu[0] - 0.1f || phuNgoai[1] < phuDu[1] - 0.1f || phuNgoai[2] < phuDu[2] - 0.1f, "doi chung: chi nhom ngoai ma phu nhu du - phep do khong phan biet duoc");
+            }
             Object.Destroy(locXoay.gameObject); Object.Destroy(glDo); Object.Destroy(glCu);
             yield return new WaitForSeconds(0.3f);
 

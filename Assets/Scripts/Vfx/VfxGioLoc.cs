@@ -185,6 +185,10 @@ public static partial class VfxFactory
     /// <summary>
     /// THAN GIO LOC = CAC DAI GIO XOAN (nguoi dung 03/10/2026: "phan than loc tu day den dinh thay qua ro la hinh tron, ve lai sao cho
     /// that tu nhien la cac luong gio cuon len thanh loc"; chon dung lai bang Blender MCP, chi Gio loc). Blender MCP
+    /// 03/10/2026 lan ba (nguoi dung khoanh KHOANG TRONG o than / chan / tren): 12 -> 18 dai rong 0,55-0,90 m, 8 dai bat dau tu CHAN (so le
+    /// 0-0,24 m, dau thon 25%), dai trai deu quanh truc theo goc vang, cung do doc ~1,7 vong / ca than; mo dau dai theo DO DAI TUYET DOI 0,35 m
+    /// (truoc 22% dai -> chan thua), do dam toi da moi dai 0,62 (mau dinh) de cho chong nhau van thay tung luong. Do phu (anh truc giao,
+    /// trong vien than) chan / giua / tren 87-89 / 99-100 / 86-90% (ban 12 dai 61-63 / 85-94 / 77%). Mo ta ban dau ben duoi:
     /// CongCu/Blender/gio_loc_xoan.blend (scene GioLocXoan) -> Resources/KyNang/GioLoc/GioXoan.fbx: 12 DAI XOAN OC HO (khong khep vong),
     /// 3 nhom DaiTrong / DaiGiua / DaiNgoai o 0,70-0,74 / 0,86-0,92 / 1,02-1,08 x ban kinh vo chinh Loc xoay thu nho (2,6 + 4,2 t^1,6) x 0,318;
     /// moi dai bat dau / ket thuc o do cao khac nhau (dinh so le 0,80-1,03 than), 0,6-1,4 vong, rong 0,42-0,72 m thon hai dau, duong tam luon

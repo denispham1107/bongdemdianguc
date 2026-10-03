@@ -247,6 +247,12 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
   vỏ Lốc xoáy ×0,8 ×0,7. Menu 71 đo lưới NGOÀI Play: 12 dải, phủ vòng lớn nhất **33–39%** mỗi lát 0,25 m (đối chứng vỏ phễu 100%),
   12/12 xoắn cùng chiều quay, v tăng theo cao, mờ hai đầu. ⚠️ FBX đổ bóng PHẲNG → Unity tách đỉnh theo từng mặt: tách dải phải gộp
   đỉnh trùng vị trí (không thì ra 967 mảnh).
+  ⚠️ **04/10/2026: 12 → 18 DẢI, LẤP KHOẢNG TRỐNG** (người dùng khoanh khoảng trống giữa thân / chân / trên): 8 dải bắt đầu từ chân (so le
+  0–0,24 m, đầu thon), dải rộng 0,55–0,90 m trải đều theo góc vàng, cùng độ dốc ~1,7 vòng / thân; đầu dải mờ theo **độ dài tuyệt đối
+  0,35 m** (trước 22% chiều dài → chân thưa); độ đậm mỗi dải ≤ 0,62 (màu đỉnh) để chồng nhau vẫn thấy từng luồng (bản thử 20 dải đậm phủ
+  97–100% nhưng thành KHỐI BÔNG, mất luồng gió — bỏ). Menu 71 **C6** đo phủ (trực giao, trong viền thân, chỉ vẽ dải trên nền đen): chân
+  **85%** / giữa **100%** / trên **94%** (Blender cùng cách đo: bản 12 dải 61–63 / 85–94 / 77%); đối chứng chỉ nhóm ngoài 70 / 98 / 81%.
+  Mỗi dải vẫn hở: phủ vòng lớn nhất 42% (vỏ phễu 100%).
   ⚠️ **HÌNH QUẠT: cấp 1–4 tung 3 lốc, cấp 5 tung 5 lốc**, cách nhau `GioLoc.GocQuat` **20°** quanh hướng ngắm (29/09/2026 người dùng "xa nhau hơn 1 chút", trước 15°; cấp 5 toả ±40°;
 26/09/2026: trước đó 1 lốc, cấp 5 hai lốc song song cách 4 m). ⚠️ **Mây giông nhẹ TRONG LÒNG nửa trên thân** (29/09/2026, lúc đầu trên đỉnh rồi người dùng
 đổi "nằm trong cơn lốc": hệ `MayTrongLoc`, `VfxFactory.MayDinhGioLoc`; ảnh `MayGiong` 2×2 của Mây giông, màu thân Gió lốc, mỏng, đám
