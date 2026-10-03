@@ -9095,6 +9095,31 @@ cháy xém**.
   nào dưới 2,4 m): 25 đám, tâm 1,93–4,27 m, xa trục nhất 1,05 m = 63% vỏ trong; loé 1,00 → 1,56 → 1,00.
 - Điện thoại: mỗi cơn thêm ~14 đám mây lớn (1,4–2,2 m) → 3 cơn thêm ~42 tấm trong suốt chồng lên, cấp 5 (5 cơn) ~70. Chưa đo trên máy thật.
 
+### Gió lốc: bỏ bụi cuốn lên thân, chỉ bụi sát chân + vệt bụi / khói đen xám sau lưng (03/10/2026)
+
+**Người dùng:** "bỏ tất cả hiệu ứng bụi khói cuốn từ chân lốc đến tận đỉnh lốc"; "chỉ cho bụi khói cuốn ở dưới sát chân lốc và khi lốc
+di chuyển để lại phía sau"; "thêm cả bụi khói đen xám để lại phía sau mỗi khi lốc đi qua". Tôi hỏi lại; người dùng chọn: **bỏ 3 lớp
+cuốn lên thân** (khói thân dưới, bụi lên đỉnh, khói thân trên), **hai lớp vệt** (bụi xám + khói đen xám), vệt sống **~2 s**.
+
+- `VfxFactory.KhacLocXoay` xoá thêm `BuiThanDuoi` + `BuiCuonLen` (cùng `HaoQuang`, `StormLight`); lớp thân trên (`DungBuiThanTren`) và
+  các hệ số "lên đỉnh ×2 / quay ×2" gỡ khỏi code. Menu 95 / 95b (đo lớp thân trên) **đã xoá** — còn trong git `282e20f`. Các mục 01–02/10
+  bên dưới về lớp thân trên / khói liền mạch là lịch sử.
+- Giữ `BuiChan` (cuộn sát chân, prewarm — có bụi ngay lúc tung).
+- **Vệt sau lưng** (`VfxFactory.VetSauGioLoc`): hai hệ hạt **không gian THẾ GIỚI**, là con của gốc hình (không nằm dưới `LocXoayHinh`
+  nên không ăn tỉ lệ 0,318 — số đo là mét thật), sinh theo **quãng đường** (`rateOverDistance`) nên lốc đứng yên không để vệt:
+  - `VetBuiXam`: ảnh bụi xám 2×2 + màu y bụi chân Gió lốc (tối 30%), vòng sinh 1,27 m (= vòng bụi chân 4 × 0,318), 6 hạt/m, nở 0,8 → 1,6.
+  - `VetKhoiDen`: flipbook `KhoiCuon` màu xám đen (0,16–0,28), 4 hạt/m, bốc lên chậm, nở 0,7 → 1,8.
+  - Sống 1,6–2,2 s (`GiayVetGioLoc` 2). Vòng phun `Circle` xoay −90° cho nằm phẳng (bài học bụi chân Lốc xoáy).
+
+**Đo (menu 71, 0 lỗi):**
+- C2: Gió lốc đã bỏ 4/4 thành phần (đèn, quầng sáng, 2 lớp cuốn lên), 6/6 thành phần còn lại khớp Lốc xoáy thật × 0,7 màu; còn 1 lớp bụi
+  (prewarm); hai vệt đúng cấu hình (thế giới, theo quãng đường, vệt bụi = bụi chân, khói sáng 0,28 < 0,7 × bụi chân 0,45).
+- C3: hạt bụi ở trên 40% thân: **Gió lốc 6**, đối chứng Lốc xoáy thật 368. Lốc **đứng yên 4 s: 0 hạt vệt**.
+- C5 (Gió lốc bay 9,5 m/s, chụp giây 2,6): vệt bụi 112 hạt + khói 77 hạt, nằm **sau lưng từ −0,5 tới 20,6 m** (trung vị 9,4), lệch ngang
+  ≤ 1,77 m, cao ≤ 2,33 m, tuổi lớn nhất 2,04 s.
+- Ảnh: `PlayTestShots/gioloc_4_cap5_nam_loc_quat.png` (5 cơn, vệt khói đen xám sau lưng).
+- Điện thoại: mỗi cơn nay chỉ ~190 hạt bụi chân + ~190 hạt vệt (trước ~2 100) — nhẹ hơn nhiều.
+
 ### Gió lốc: khói liền một dải từ đáy lên đỉnh, hết "2 tầng" (02/10/2026)
 
 **Người dùng** gửi ảnh khoanh ngang giữa thân ba cơn Gió lốc: "bụi khói phải liền luôn 1 dải xuyên suốt từ dưới đáy lên tới đỉnh, hiện
@@ -12556,8 +12581,8 @@ Lần chạy đầu phép thử báo cả 10 con "lơ lửng": tia chiếu từ 
 | **92b. Chay thu SANH DON - DOI tren Firebase that** | Hai tài khoản chạy thử + ghế giả: tạo phòng Đơn / Đôi, luật Firebase (đối chứng ghi sai bị từ chối), người bản cũ được xếp đội, vào đội ít người, tự đổi đội, khách không sửa được đội người khác, đội đủ 3 bị chặn, chủ phòng cân bằng khi 4 người một đội; chụp sảnh / phòng Đôi / phòng Đơn 6 người (0 chữ bị cắt). Xoá sạch phòng thử. `sanh_doi.txt`, ảnh `sanh_doi_*.png`. |
 | **93. Chup MUC DEN Loc xoay + Gio loc (3 muc de chon)** | Lốc xoáy thật + Gió lốc đứng yên, chụp đêm / ngày ở gốc và tối 10 / 20 / 30% (MaterialPropertyBlock), đo độ sáng thân. `denloc.txt`, ảnh `denloc_*.png`. |
 | **94. Chup MAY GIONG trong Gio loc (3 muc day de chon)** | (Hình Gió lốc CŨ — `BuildGioLocCu`.) Dựng lại hệ `MayTrongLoc` ở cũ / ×1,3 / ×1,5 / ×1,8: số đám, độ cao tâm, xa trục / vỏ trong ở đúng độ cao (< 80%); mây lộ ra = render bật / tắt renderer mây cùng khung, 12 khung, đêm + ngày. `maygl.txt`, ảnh `maygl_*.png`. |
-| **95. Chup KHOI THAN TREN Gio loc (chon so hat theo than duoi)** | Gió lốc đứng yên ban đêm, quét lớp `BuiThanTren` 0/80/160/240/320 hạt/giây: bụi + vỏ lên lớp 31 vẽ trên nền đen, máy quay ngang giữa thân → độ dày khói nửa trên / nửa dưới trong viền thân; ảnh góc chơi `buithantren_*.png`, `buithantren.txt`. |
-| **95b. Do KHOI LIEN MACH Gio loc (do day theo do cao, chon cho sinh lop than tren)** | Đo độ dày khói theo từng mét chiều cao (bụi tách lớp trên nền đen, máy quay ngang giữa thân) lúc 0,5 / 1 / 1,5 / 2,5 / 3,5 s sau khi tung; "lõm kẹp giữa"; đối chứng A (sinh 7,5 m) và B (5 m) tắt prewarm, "Code" = đúng bản trong game. `builienmach.txt`, ảnh `builienmach_*_1s.png`. |
+| ~~**95. Chup KHOI THAN TREN Gio loc**~~ (đã xoá 03/10/2026 cùng lớp thân trên) | Gió lốc đứng yên ban đêm, quét lớp `BuiThanTren` 0/80/160/240/320 hạt/giây: bụi + vỏ lên lớp 31 vẽ trên nền đen, máy quay ngang giữa thân → độ dày khói nửa trên / nửa dưới trong viền thân; ảnh góc chơi `buithantren_*.png`, `buithantren.txt`. |
+| ~~**95b. Do KHOI LIEN MACH Gio loc**~~ (đã xoá 03/10/2026) | Đo độ dày khói theo từng mét chiều cao (bụi tách lớp trên nền đen, máy quay ngang giữa thân) lúc 0,5 / 1 / 1,5 / 2,5 / 3,5 s sau khi tung; "lõm kẹp giữa"; đối chứng A (sinh 7,5 m) và B (5 m) tắt prewarm, "Code" = đúng bản trong game. `builienmach.txt`, ảnh `builienmach_*_1s.png`. |
 | **56. Chay thu DOT QUAI Act2 + cho xuat phat** | *(13/09/2026: thêm đo chờ 30 giây và 10 con xa 55–65 m)*  Kiểm chỗ xuất phát ngẫu nhiên (hai máy cùng mã phòng ra cùng danh sách, cách nhau ≥ 22 m, trên đất, ngoài nước, không vướng vật cản) và luật đợt quái Act2 (đợt 1 bốn con quanh mỗi người; đợt sau cộng dồn quái và mạnh thêm 5% máu · sát thương). Số đo `dotquai_act2.txt`. |
 | **55. Chay thu KET TRAN (nguoi song sot cuoi cung)** | Mở kênh giả lập như menu 45: kiểm gói tin kết trận/chết, máy chủ phòng phán quyết đúng lúc còn một người, bảng điểm cộng đúng người, máy khách không tự kết luận và hiện đúng kết quả nghe được, chết rồi camera chuyển sang người còn sống, chụp màn kết trận. Số đo `kettran.txt`, ảnh `kettran_*.png`. |
 | **54c. Chay thu LOC XOAY cuon lo lua** | Vào Play Act2, thả một cơn lốc đi thẳng vào lò: đo mốc thời gian lửa tắt / lò nhấc lên / lò biến mất / lò mọc lại, kiểm than trong chậu tắt bằng độ sáng trên ảnh, và kiểm vật có hệ hạt khác vẫn không bị cuốn. Ảnh `locxoay_*.png`, số đo `locxoay_lolua.txt`. |

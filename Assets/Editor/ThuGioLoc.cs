@@ -518,7 +518,8 @@ public static class ThuGioLoc
             // 01/10/2026 lan ba (nguoi dung): Gio loc KHAC Loc xoay that o dung cac cho nay - so DUNG HE SO NGUOI DUNG CHON (viet tay,
             // khong doc hang trong code): BO HaoQuang + StormLight; mau vo / bui x0,7 (toi 30%); BuiCuonLen so hat x2, quay x2. Moi thu khac y het.
             const float mauMong = 0.7f, buiLenMong = 2f, quayMong = 2f;
-            var phaiBo = new HashSet<string> { "HaoQuang", "StormLight" };
+            // 03/10/2026: bo them 2 lop cuon len than (nguoi dung: "bo tat ca bui khoi cuon tu chan len tan dinh") - chi giu BuiChan
+            var phaiBo = new HashSet<string> { "HaoQuang", "StormLight", "BuiThanDuoi", "BuiCuonLen" };
             int soThanhPhan = 0, soKhop = 0, daBo = 0; string thieu = "", lech = "", thua = "";
             var mpbDo = new MaterialPropertyBlock();
             System.Func<Color, Color, bool> toiDung = (g, l) => Mathf.Abs(g.r - l.r * mauMong) < 0.005f && Mathf.Abs(g.g - l.g * mauMong) < 0.005f
@@ -565,40 +566,38 @@ public static class ThuGioLoc
                 foreach (Transform cG in hinhGl) if (hinhLx.Find(cG.name) == null) thua += cG.name + " ";
             }
             int soCucBo = 0, soHe = 0;
-            foreach (var ps in glDo.GetComponentsInChildren<ParticleSystem>(true))
+            // Chi he hat TRONG THAN (LocXoayHinh) - hai vet sau lung (03/10/2026) co y o khong gian THE GIOI, la con cua goc hinh
+            foreach (var ps in hinhGl != null ? hinhGl.GetComponentsInChildren<ParticleSystem>(true) : new ParticleSystem[0])
             {
                 soHe++;
                 if (ps.main.simulationSpace == ParticleSystemSimulationSpace.Local && ps.main.scalingMode == ParticleSystemScalingMode.Hierarchy) soCucBo++;
             }
             int soDenGl = DemDen(glDo), soDenLx = DemDen(locXoay.gameObject);
-            Ghi(string.Format("C2. cau truc: Loc xoay that {0} thanh phan, Gio loc da bo {1}/2 (HaoQuang, StormLight), khop (mau x0,7, bui len x2, quay x2) {2} (thieu: {3}| lech: {4}| thua: {5}); ti le hinh {6:F3} (mong {7:F3}); cao Gio loc {8:F2} m / Loc xoay {9:F2} m = x{10:F3}; he hat cuc bo + Hierarchy {11}/{12}; den {13} (Loc xoay that {14})",
+            Ghi(string.Format("C2. cau truc: Loc xoay that {0} thanh phan, Gio loc da bo {1}/4 (HaoQuang, StormLight, BuiThanDuoi, BuiCuonLen), khop (mau x0,7) {2} (thieu: {3}| lech: {4}| thua: {5}); ti le hinh {6:F3} (mong {7:F3}); cao Gio loc {8:F2} m / Loc xoay {9:F2} m = x{10:F3}; he hat cuc bo + Hierarchy {11}/{12}; den {13} (Loc xoay that {14})",
                 soThanhPhan, daBo, soKhop, thieu, lech, thua, hinhGl != null ? hinhGl.localScale.y : -1f, k, caoNhoDung, caoLon, caoNhoDung / caoLon, soCucBo, soHe, soDenGl, soDenLx));
-            // Lop KHOI THAN TREN (01/10/2026, chi Gio loc): sinh o giua than (7,5 m don vi Loc xoay), 240 hat/giay, quay = lop len dinh Loc xoay x2,
-            // mau = bui than duoi Loc xoay x0,7 - so voi he THAT cua Loc xoay, so viet tay
-            bool trenDung = false; string moTaTren = "khong co";
-            var tTren = hinhGl != null ? hinhGl.Find("BuiThanTren") : null;
-            var lenLx = hinhLx != null ? hinhLx.Find("BuiCuonLen") : null;
-            var duoiLx = hinhLx != null ? hinhLx.Find("BuiThanDuoi") : null;
-            if (tTren != null && lenLx != null && duoiLx != null)
-            {
-                var pT = tTren.GetComponent<ParticleSystem>(); var pLen = lenLx.GetComponent<ParticleSystem>(); var pDuoi = duoiLx.GetComponent<ParticleSystem>();
-                // 02/10/2026: sinh o 5 m (truoc 7,5 - dai mong giua than), so hat giu mat do moi met: 240 x 10 / 7,5 = 320
-                trenDung = Mathf.Abs(pT.emission.rateOverTime.constant - 320f) < 0.01f && Mathf.Abs(tTren.localPosition.y - 5f) < 0.01f
-                           && Mathf.Abs(pT.velocityOverLifetime.orbitalYMultiplier - pLen.velocityOverLifetime.orbitalYMultiplier * quayMong) < 1e-3f
-                           && toiDung(pT.main.startColor.colorMin, pDuoi.main.startColor.colorMin) && toiDung(pT.main.startColor.colorMax, pDuoi.main.startColor.colorMax)
-                           && pT.main.simulationSpace == ParticleSystemSimulationSpace.Local;
-                moTaTren = string.Format("{0:F0} hat/giay o {1:F2} m, quy dao {2:F2} (len dinh Loc xoay {3:F2})", pT.emission.rateOverTime.constant,
-                    tTren.localPosition.y, pT.velocityOverLifetime.orbitalYMultiplier, pLen.velocityOverLifetime.orbitalYMultiplier);
-            }
-            Ghi("C2. lop khoi than tren: " + moTaTren + (trenDung ? " -> dung" : " -> SAI"));
-            Kiem(hinhLx != null && hinhGl != null && soThanhPhan >= 8 && daBo == 2 && soKhop == soThanhPhan - 2 && thua == "BuiThanTren ", "Gio loc khong dung Loc xoay that (bo sang, toi 30%, bui len x2 quay x2, + khoi than tren)");
-            Kiem(trenDung, "lop khoi than tren khong dung (320 hat/giay, sinh o 5 m, quay x2, toi 30%)");
-            // 02/10/2026 khoi CO SAN ngay luc tung (prewarm) - nguoi dung chon; menu 95b do lien mach theo thoi gian
+            Kiem(hinhLx != null && hinhGl != null && soThanhPhan >= 8 && daBo == 4 && soKhop == soThanhPhan - 4 && thua == "", "Gio loc khong dung Loc xoay that (bo sang + 2 lop cuon len, toi 30%)");
+            // Bui chan prewarm (co bui ngay luc tung) - 02/10/2026 nguoi dung chon "khoi co san"; nay chi con mot lop bui
             int soBuiGl = 0, soPrewarmGl = 0;
             foreach (var ps in glDo.GetComponentsInChildren<ParticleSystem>(true))
                 if (ps.name.StartsWith("Bui")) { soBuiGl++; if (ps.main.prewarm && ps.main.loop) soPrewarmGl++; }
-            Ghi(string.Format("C2. lop bui prewarm (khoi co san ngay luc tung): {0}/{1}", soPrewarmGl, soBuiGl));
-            Kiem(soBuiGl >= 4 && soPrewarmGl == soBuiGl, "lop bui Gio loc chua prewarm - giay dau than giua trong (2 tang)");
+            // VET SAU LUNG (03/10/2026): hai he THE GIOI sinh theo QUANG DUONG, con cua goc hinh; khoi den xam TOI hon bui chan ro
+            ParticleSystem vetBui = null, vetKhoi = null, buiChanGl = null;
+            foreach (var ps in glDo.GetComponentsInChildren<ParticleSystem>(true))
+            { if (ps.name == "VetBuiXam") vetBui = ps; if (ps.name == "VetKhoiDen") vetKhoi = ps; if (ps.name == "BuiChan") buiChanGl = ps; }
+            System.Func<Color, float> sangMau = c => 0.299f * c.r + 0.587f * c.g + 0.114f * c.b;
+            bool vetDung = vetBui != null && vetKhoi != null && buiChanGl != null
+                           && vetBui.transform.parent == glDo.transform && vetKhoi.transform.parent == glDo.transform
+                           && vetBui.main.simulationSpace == ParticleSystemSimulationSpace.World && vetKhoi.main.simulationSpace == ParticleSystemSimulationSpace.World
+                           && vetBui.emission.rateOverTime.constant == 0f && vetKhoi.emission.rateOverTime.constant == 0f
+                           && vetBui.emission.rateOverDistance.constant > 0f && vetKhoi.emission.rateOverDistance.constant > 0f
+                           && vetBui.GetComponent<ParticleSystemRenderer>().sharedMaterial.mainTexture == buiChanGl.GetComponent<ParticleSystemRenderer>().sharedMaterial.mainTexture
+                           && GanBang(vetBui.main.startColor.colorMin, buiChanGl.main.startColor.colorMin)
+                           && sangMau(vetKhoi.main.startColor.colorMax) < 0.7f * sangMau(buiChanGl.main.startColor.colorMin);
+            Ghi(string.Format("C2. lop bui: {0} (prewarm {1}); vet sau lung: bui xam {2} hat/m, khoi den xam {3} hat/m (khong gian the gioi, theo quang duong); do sang mau khoi {4:F2} / bui chan {5:F2}",
+                soBuiGl, soPrewarmGl, vetBui != null ? vetBui.emission.rateOverDistance.constant : -1f, vetKhoi != null ? vetKhoi.emission.rateOverDistance.constant : -1f,
+                vetKhoi != null ? sangMau(vetKhoi.main.startColor.colorMax) : -1f, buiChanGl != null ? sangMau(buiChanGl.main.startColor.colorMin) : -1f));
+            Kiem(soBuiGl == 1 && soPrewarmGl == 1, "Gio loc con lop bui cuon len than / bui chan chua prewarm");
+            Kiem(vetDung, "vet sau lung khong dung (2 he the gioi theo quang duong, bui = bui chan, khoi den xam toi hon)");
             Kiem(Mathf.Abs(caoNhoDung - 5f) < 0.2f && Mathf.Abs(caoNhoDung / caoLon - k) < 0.02f, "Gio loc khong phai Loc xoay thu deu cao 5 m");
             Kiem(soCucBo == soHe && soHe > 0, "con he hat khong mo phong cuc bo (bui se roi lai sau lung loc bay 9,5 m/s / khong thu ti le)");
             Kiem(soDenGl == 0 && soDenLx >= 1, "Gio loc con den chop (doi chung: Loc xoay that co den)");
@@ -608,38 +607,34 @@ public static class ThuGioLoc
                 foreach (var ps in go.GetComponentsInChildren<ParticleSystem>(true)) { var m = ps.main; m.cullingMode = ParticleSystemCullingMode.AlwaysSimulate; }
             yield return new WaitForSeconds(4f);
             int tongL = 0, tongG = 0, tongCu = 0, lopDat = 0;
-            foreach (var ten in new[] { "BuiChan", "BuiCuonLen", "BuiThanDuoi" })
             {
                 int nL, nG; float h50L, h90L, r50L, h50G, h90G, r50G;
-                PhanBo(hinhLx, ten, out nL, out h50L, out h90L, out r50L);
-                PhanBo(hinhGl, ten, out nG, out h50G, out h90G, out r50G);
+                PhanBo(hinhLx, "BuiChan", out nL, out h50L, out h90L, out r50L);
+                PhanBo(hinhGl, "BuiChan", out nG, out h50G, out h90G, out r50G);
                 tongL += nL; tongG += nG;
-                float hsHat = ten == "BuiCuonLen" ? buiLenMong : 1f;
-                bool dat = nL > 20 && Mathf.Abs((float)nG / nL / hsHat - 1f) < 0.25f && Mathf.Abs(h90G / h90L - 1f) < 0.15f
+                bool dat = nL > 20 && Mathf.Abs((float)nG / nL - 1f) < 0.25f && Mathf.Abs(h90G / h90L - 1f) < 0.15f
                            && Mathf.Abs(h50G / Mathf.Max(0.01f, h50L) - 1f) < 0.2f && Mathf.Abs(r50G / r50L - 1f) < 0.2f;
                 if (dat) lopDat++;
-                Ghi(string.Format("C3. {0}: Loc xoay that {1} hat, cao 50% {2:F2} / 90% {3:F2} m, ban kinh trung vi {4:F2} m | Gio loc (don vi Loc xoay) {5} hat (x{10:F2}, mong x{11}), {6:F2} / {7:F2} m, {8:F2} m -> {9}",
-                    ten, nL, h50L, h90L, r50L, nG, h50G, h90G, r50G, dat ? "khop" : "LECH", (float)nG / Mathf.Max(1, nL), hsHat));
+                Ghi(string.Format("C3. BuiChan: Loc xoay that {0} hat, cao 50% {1:F2} / 90% {2:F2} m, ban kinh trung vi {3:F2} m | Gio loc (don vi Loc xoay) {4} hat, {5:F2} / {6:F2} m, {7:F2} m -> {8}",
+                    nL, h50L, h90L, r50L, nG, h50G, h90G, r50G, dat ? "khop" : "LECH"));
             }
-            foreach (var ps in glCu.GetComponentsInChildren<ParticleSystem>(true)) if (ps.name.StartsWith("Bui")) tongCu += ps.particleCount;
+            // BO cuon len than: dem hat bui o tren 40% than (6 m don vi Loc xoay) - Gio loc ~0; DOI CHUNG Loc xoay that (con 3 lop) phai nhieu
+            int trenL = 0, trenG = 0;
+            foreach (var ten in new[] { "BuiChan", "BuiCuonLen", "BuiThanDuoi", "BuiThanTren" })
             {
-                int nTr; float h50Tr, h90Tr, r50Tr;
-                PhanBo(hinhGl, "BuiThanTren", out nTr, out h50Tr, out h90Tr, out r50Tr);
-                Ghi(string.Format("C3. BuiThanTren (Gio loc): {0} hat, cao 50% {1:F2} / 90% {2:F2} m, ban kinh trung vi {3:F2} m (don vi Loc xoay; sinh o 5, dinh 15)", nTr, h50Tr, h90Tr, r50Tr));
-                Kiem(nTr > 300 && h50Tr > 7.5f && h90Tr > 12.5f, "lop khoi than tren khong nam o nua tren / khong bay len toi dinh");
+                var dsL = new Dictionary<uint, Vector3>(); var dsG = new Dictionary<uint, Vector3>();
+                ChupHat(hinhLx, ten, dsL); ChupHat(hinhGl, ten, dsG);
+                foreach (var v in dsL.Values) if (v.y > 6f) trenL++;
+                foreach (var v in dsG.Values) if (v.y > 6f) trenG++;
             }
-            // XOAY: toc goc THAT cua hat bui len dinh quanh truc (theo doi tung hat 0,25 s, he LocXoayHinh) - Gio loc / Loc xoay phai ~x2
-            var quayL = new Dictionary<uint, Vector3>(); var quayG = new Dictionary<uint, Vector3>();
-            ChupHat(hinhLx, "BuiCuonLen", quayL); ChupHat(hinhGl, "BuiCuonLen", quayG);
-            float tQuay0 = Time.time;
-            yield return new WaitForSeconds(0.25f);
-            float dtQuay = Time.time - tQuay0;
-            float wL = TocGocTB(hinhLx, "BuiCuonLen", quayL, dtQuay), wG = TocGocTB(hinhGl, "BuiCuonLen", quayG, dtQuay);
-            Ghi(string.Format("C3. tong hat bui dang song: Loc xoay that {0}, Gio loc {1} (x{2:F2}); DOI CHUNG Gio loc cu {3} (x{4:F2}); toc goc bui len dinh quanh truc: Loc xoay {5:F2} rad/s, Gio loc {6:F2} rad/s = x{7:F2} (mong x{8})",
-                tongL, tongG, (float)tongG / Mathf.Max(1, tongL), tongCu, (float)tongCu / Mathf.Max(1, tongL), wL, wG, Mathf.Abs(wL) > 1e-3f ? wG / wL : 0f, quayMong));
-            Kiem(lopDat == 3, "phan bo bui Gio loc (da khu ti le) khong khop Loc xoay that (lop len dinh x2)");
-            Kiem((float)tongCu / Mathf.Max(1, tongL) < 0.75f, "DOI CHUNG: Gio loc cu cung day bui nhu Loc xoay - phep dem khong phan biet duoc");
-            Kiem(Mathf.Abs(wL) > 0.3f && Mathf.Abs(wG / wL / quayMong - 1f) < 0.25f, "bui len dinh Gio loc khong xoay nhanh gap doi Loc xoay");
+            // Loc DUNG YEN khong de vet (vet sinh theo quang duong)
+            int vetDungYen = 0;
+            foreach (var ps in glDo.GetComponentsInChildren<ParticleSystem>(true)) if (ps.name.StartsWith("Vet")) vetDungYen += ps.particleCount;
+            Ghi(string.Format("C3. hat bui tren 40% than (6 m don vi Loc xoay): Gio loc {0}, DOI CHUNG Loc xoay that {1}; hat vet sau lung khi Gio loc DUNG YEN 4 s: {2}",
+                trenG, trenL, vetDungYen));
+            Kiem(lopDat == 1, "bui chan Gio loc (da khu ti le) khong khop bui chan Loc xoay that");
+            Kiem(trenL > 100 && trenG < 0.03f * trenL, "Gio loc van con bui cuon len than (doi chung Loc xoay that phai nhieu)");
+            Kiem(vetDungYen == 0, "loc dung yen ma van de vet sau lung");
 
             // ---- C4. Anh: dua ca ba len troi (nen dong deu), chup cung khung theo chieu cao moi con; bat / tat renderer cung khung -> mat na ----
             bool suongCu = RenderSettings.fog;
@@ -689,9 +684,10 @@ public static class ThuGioLoc
             // CHIEU QUAY THAT cua tung lop + CHIEU TRUOT anh
             var gocTruoc = new Dictionary<Transform, float>();
             var sps = loc.GetComponentsInChildren<Spin>();
-            // Bui cuon len: theo doi tung hat (randomSeed) - bay LEN va quay CUNG chieu than
-            ParticleSystem psLen = null, psChan = null;
-            foreach (var ps in loc.GetComponentsInChildren<ParticleSystem>()) { if (ps.name == "BuiCuonLen") psLen = ps; if (ps.name == "BuiChan") psChan = ps; }
+            // Bui CHAN (03/10/2026 lop duy nhat con lai): theo doi tung hat (randomSeed) - bay LEN va quay CUNG chieu than
+            ParticleSystem psChan = null;
+            foreach (var ps in loc.GetComponentsInChildren<ParticleSystem>()) { if (ps.name == "BuiChan") psChan = ps; }
+            ParticleSystem psLen = psChan;
             yield return new WaitForSeconds(0.5f);
             var hat0 = new ParticleSystem.Particle[psLen != null ? psLen.main.maxParticles : 1];
             int n0 = psLen != null ? psLen.GetParticles(hat0) : 0;
@@ -770,8 +766,35 @@ public static class ThuGioLoc
             yield return new WaitForEndOfFrame();
             float hanS = Time.time + 3.6f;
             var loeNho = new Dictionary<DiTheo, Vector4>(); var rongLoeNho = new List<float>();
+            // VET SAU LUNG: chup mot lan o giay 2,6 sau khi tung (truoc khi tan o 4,5): vi tri THE GIOI tung hat so voi loc - sau lung bao xa,
+            // lech ngang, cao, tuoi lon nhat
+            bool daDoVet = false; int soVetBui = 0, soVetKhoi = 0; float sauMax = 0f, sauMin = 99f, ngangMax = 0f, caoVetMax = 0f, tuoiMax = 0f;
+            var dsSau = new List<float>();
             while (Time.time < hanS && loc != null)
             {
+                if (!daDoVet && Time.time - lucSinh > 2.6f)
+                {
+                    daDoVet = true;
+                    Vector3 hv = loc.dir; hv.y = 0f; hv.Normalize();
+                    Vector3 tam = loc.transform.position;
+                    foreach (var ps in loc.GetComponentsInChildren<ParticleSystem>())
+                    {
+                        if (ps.name != "VetBuiXam" && ps.name != "VetKhoiDen") continue;
+                        var hat = new ParticleSystem.Particle[ps.particleCount];
+                        int n = ps.GetParticles(hat);
+                        if (ps.name == "VetBuiXam") soVetBui += n; else soVetKhoi += n;
+                        for (int i = 0; i < n; i++)
+                        {
+                            Vector3 d = hat[i].position - tam;
+                            float doc = Vector3.Dot(new Vector3(d.x, 0f, d.z), hv);
+                            float sau = -doc;
+                            float ngang = (new Vector3(d.x, 0f, d.z) - hv * doc).magnitude;
+                            dsSau.Add(sau); sauMax = Mathf.Max(sauMax, sau); sauMin = Mathf.Min(sauMin, sau);
+                            ngangMax = Mathf.Max(ngangMax, ngang); caoVetMax = Mathf.Max(caoVetMax, d.y);
+                            tuoiMax = Mathf.Max(tuoiMax, hat[i].startLifetime - hat[i].remainingLifetime);
+                        }
+                    }
+                }
                 TheoDoiLoe(loc.transform, loeNho, rongLoeNho);
                 Vector3 tl = loc.transform.position;
                 int trongKhung = 0;
@@ -814,7 +837,7 @@ public static class ThuGioLoc
             float dayL = tbL.day, dayG = tbG.day;
             Ghi(string.Format("C5. Gio loc bay: cao hinh {0:F2} m, den {1}, tong hat {2}; quay that sau 0,1 s: goc tang {3} lop / giam {4}; truot anh len {5} / sai {6}",
                 caoNho, soDen, tongHat, quayTang, quayGiam, truotLen, truotSai));
-            Ghi(string.Format("C5. bui cuon len: {0} hat so sanh duoc - bay len {1} / xuong {2}, quay cung chieu {3} / nguoc {4}; vong phun bui chan ({5} hat thu) lech doc {6:F3}, ban kinh toi da {7:F2} (don vi he hat; Loc xoay that {8:F2})",
+            Ghi(string.Format("C5. bui chan: {0} hat so sanh duoc - bay len {1} / xuong {2}, quay cung chieu {3} / nguoc {4}; vong phun bui chan ({5} hat thu) lech doc {6:F3}, ban kinh toi da {7:F2} (don vi he hat; Loc xoay that {8:F2})",
                 hatLen + hatXuong, hatLen, hatXuong, hatCungChieu, hatNguoc, soSinhMoi, yMaxLucSinh, rMaxLucSinh, rVongLx));
             Ghi(string.Format("C5. tia set (trung binh, chia chieu cao than): Loc xoay that {0} tia - dau cao {1:F3} xa truc {2:F3}, duoi cao {3:F3} xa truc {4:F3}, nhanh {5}-{6}, day {7:F3} | Gio loc {8} tia trong {9} khung ({10} khung dung 2), nhip +{11} - dau {12:F3} / {13:F3}, duoi {14:F3} / {15:F3}, nhanh trong khoang {16}/{8}, day {17:F3} = x{18:F3} (ti le cao x{19:F3})",
                 tiaLon.Count, tbL.hDau, tbL.rDau, tbL.hDuoi, tbL.rDuoi, nhanhMin, nhanhMax, dayL,
@@ -825,6 +848,12 @@ public static class ThuGioLoc
                 rongLoeLon.Count, loeNho.Count));
             Kiem(rongLoeLon.Count >= 5, "doi chung: khong bat duoc loe cham dat cua Loc xoay that");
             Kiem(loeNho.Count == 0, "Gio loc van loe sang cho tia set cham dat");
+            Ghi(string.Format("C5. vet sau lung (giay 2,6 sau khi tung): bui xam {0} hat, khoi den xam {1} hat; sau lung loc tu {2:F2} den {3:F2} m (trung vi {4:F2}), lech ngang toi da {5:F2} m, cao toi da {6:F2} m, tuoi lon nhat {7:F2} s",
+                soVetBui, soVetKhoi, sauMin, sauMax, TrungVi(dsSau), ngangMax, caoVetMax, tuoiMax));
+            // ~2 s o 9,5 m/s -> vet dai ~15-21 m; khong hat nao o PHIA TRUOC loc (qua 1,5 m - vong sinh 1,27 m)
+            Kiem(soVetBui > 50 && soVetKhoi > 30, "khong co vet bui xam / khoi den xam sau lung loc dang bay");
+            Kiem(sauMin > -1.5f && TrungVi(dsSau) > 4f && sauMax > 12f && sauMax < 23f, "vet khong nam SAU LUNG loc / khong dai ~2 giay");
+            Kiem(ngangMax < 3.5f && caoVetMax < 3.5f && tuoiMax < 2.35f, "vet loe rong / bay cao / song lau qua");
             Ghi(string.Format("D. toc do do {0:F2} m/s; ngung di sau {1:F2} s", toc, song));
             Kiem(soDen == 0, "Gio loc bay con den chop");
             Kiem(quayTang == sps.Length && quayGiam == 0 && sps.Length >= 5, "cac lop khong xoay cung mot chieu di len");

@@ -114,10 +114,8 @@ public static partial class VfxFactory
             var m = ps.main;
             m.simulationSpace = ParticleSystemSimulationSpace.Local;
             m.scalingMode = ParticleSystemScalingMode.Hierarchy;
-            // KHOI CO SAN NGAY LUC TUNG (nguoi dung 02/10/2026: "bui khoi phai lien 1 dai tu day len dinh, hien co doan than mong lam loc chia
-            // 2 tang"): Gio loc chi song 4,5 s ma cac lop bui mo dan tu cho sinh (~2,8 m/s don vi Loc xoay) -> 1,5 s dau than giua TRONG
-            // (menu 95b do theo thoi gian: lom x0,00 / 0,08 / 0,85 o 0,5 / 1 / 1,5 s). Prewarm (lap + mo phong truoc mot chu ky luc Play) ->
-            // lien mach x0,99-1,00 suot doi loc. Chon: "khoi co san ngay luc tung" (nguoi dung, sau anh so sanh 1 s).
+            // KHOI CO SAN NGAY LUC TUNG (nguoi dung 02/10/2026 chon, khi con bui cuon len than): Gio loc chi song 4,5 s, bui moc dan tu cho
+            // sinh -> prewarm (lap + mo phong truoc mot chu ky luc Play). 03/10/2026 chi con bui chan - giu prewarm de chan co bui ngay.
             if (ps.name.StartsWith("Bui")) { m.loop = true; m.prewarm = true; }
             // Trong luc tinh bang m/s^2 THE GIOI, khong thu theo ti le -> bui chan (gravity -0,04 = boc len) bay cao x1,47 (menu 71 C3)
             m.gravityModifierMultiplier *= HeSoHinhGioLoc;
@@ -128,37 +126,27 @@ public static partial class VfxFactory
             var fl = lt.GetComponent<LightFlicker>();
             if (fl != null) fl.DatTamGoc(tam); else lt.range = tam;
         }
+        VetSauGioLoc(root.transform);
         return root;
     }
 
     /// <summary>Gio loc toi hon Loc xoay bao nhieu (mau vo + bui, nguoi dung 01/10/2026 "xam den hon nua, con trang qua" - chon toi 30%).</summary>
     public const float HeSoToiGioLoc = 0.7f;
 
-    /// <summary>Lop bui len tan dinh (BuiCuonLen) cua Gio loc: so hat x2 va toc quay quanh than x2 so voi Loc xoay (nguoi dung 01/10/2026:
-    /// "bui khoi nhieu day hon, cuon len xoay tron xung quanh len tan dinh" - chon "len dinh x2, quay x2").</summary>
-    public const float HeSoBuiLenGioLoc = 2f, HeSoQuayBuiGioLoc = 2f;
-
-    /// <summary>Lop khoi THAN TREN cua Gio loc (hat/giay) - chon bang menu 95 (bui tach lop tren nen den, do day trong vien than): khong
-    /// co lop nay than tren chi bang x0,73 than duoi; 80 / 160 / 240 / 320 -> x0,84 / 0,88 / 0,91 / 0,92 (bao hoa - mieng + vanh bui tu
-    /// mo). Chon 240: ~90% muc toi da, 320 ton them 33% hat chi hon 0,01.</summary>
-    public const float TocBuiThanTrenGioLoc = 240f;
-
-    /// <summary>Do cao SINH cua lop khoi than tren (don vi Loc xoay goc, than 15 m). 01/10/2026 sinh o giua than 7,5 -> ngay giua co dai mong
-    /// (lop than duoi mo dan + lop nay hien dan cung cho); 02/10/2026 ha xuong 5 de phan hien dan chong len phan mo dan (menu 95b, cung prewarm).</summary>
-    public const float CaoBatDauThanTrenGioLoc = 5f;
-
     /// <summary>
-    /// GIO LOC KHAC LOC XOAY o ba cho (nguoi dung 01/10/2026, lan ba - sau khi Gio loc thanh Loc xoay thu nho):
+    /// GIO LOC KHAC LOC XOAY (nguoi dung 01/10/2026 lan ba, 03/10/2026):
     ///   1) BO HIEU UNG SANG: quang sang trang o mieng (HaoQuang) + den chop (StormLight); loe cham dat cua tia tat o GioLocSetTrongLoc.
     ///      Chi con 2 tia set (duong tia giu nguyen: mieng -> dat canh chan).
-    ///   2) Lop bui len tan dinh x HeSoBuiLenGioLoc hat, quay quanh than x HeSoQuayBuiGioLoc.
+    ///   2) 03/10/2026 nguoi dung: "bo tat ca hieu ung bui khoi cuon tu chan loc den tan dinh, chi cho bui khoi cuon o duoi sat chan loc va
+    ///      khi loc di chuyen de lai phia sau" - chon BO 3 lop cuon len than (BuiThanDuoi, BuiCuonLen, BuiThanTren); CHI GIU BuiChan.
+    ///      (Lich su: 01-02/10 lop len dinh x2 + quay x2, lop than tren 240 -> 320 hat/giay sinh 5 m, prewarm - menu 95 / 95b, git 282e20f.)
     ///   3) Than + bui TOI x HeSoToiGioLoc: vo qua MaterialPropertyBlock (vat lieu M_P_LX_* la asset dung chung voi Loc xoay - KHONG sua),
     ///      bui qua mau hat.
-    /// Goi TRUOC khi phong x0,318 (gia tri trong don vi Loc xoay goc).
+    /// Goi TRUOC khi phong x0,318 (gia tri trong don vi Loc xoay goc). Vet sau lung: VetSauGioLoc.
     /// </summary>
     static void KhacLocXoay(Transform hinh)
     {
-        foreach (var ten in new[] { "HaoQuang", "StormLight" })
+        foreach (var ten in new[] { "HaoQuang", "StormLight", "BuiThanDuoi", "BuiCuonLen" })
         {
             var t = hinh.Find(ten);
             if (t != null) Object.DestroyImmediate(t.gameObject);
@@ -179,34 +167,74 @@ public static partial class VfxFactory
             m.startColor = new ParticleSystem.MinMaxGradient(
                 new Color(c0.r * HeSoToiGioLoc, c0.g * HeSoToiGioLoc, c0.b * HeSoToiGioLoc, c0.a),
                 new Color(c1.r * HeSoToiGioLoc, c1.g * HeSoToiGioLoc, c1.b * HeSoToiGioLoc, c1.a));
-            if (ps.name != "BuiCuonLen") continue;
-            m.maxParticles = Mathf.CeilToInt(m.maxParticles * HeSoBuiLenGioLoc);
-            var e = ps.emission; e.rateOverTimeMultiplier *= HeSoBuiLenGioLoc;
-            var v = ps.velocityOverLifetime; v.orbitalYMultiplier *= HeSoQuayBuiGioLoc;
         }
-        // 4) KHOI THAN TREN - dung SAU vong lam toi (ham tu lam toi mau cua no)
-        DungBuiThanTren(hinh, CaoBatDauThanTrenGioLoc);
     }
 
+    /// <summary>Vet sau lung Gio loc song bao lau (giay) - nguoi dung 03/10/2026 chon ~2 s (loc bay 9,5 m/s -> vet ~15-20 m).</summary>
+    public const float GiayVetGioLoc = 2f;
+
+    /// <summary>Hat moi MET loc di duoc: bui xam / khoi den xam. Theo QUANG DUONG (rateOverDistance) - loc dung yen khong de vet.</summary>
+    public const float HatMoiMetBuiVet = 6f, HatMoiMetKhoiVet = 4f;
+
     /// <summary>
-    /// KHOI THAN TREN (nguoi dung 01/10/2026 khoanh than tren tren anh: "chua phu bui khoi nhu than duoi"): than duoi co 3 lop chong nhau,
-    /// than tren chi co BuiCuonLen ma than loe rong ra -> thua. Lop cung kieu om than (BuiCuonLenTheoThan), sinh o do cao
-    /// <paramref name="batDau"/> (don vi Loc xoay goc) bay len tan dinh, hat to theo than tren (x1,4), xoay x HeSoQuayBuiGioLoc, toi 30%.
-    /// So hat/giay = TocBuiThanTrenGioLoc x (doan duong / 7,5) -> giu mat do moi met nhu ban dau (sinh o 7,5 m, 240 hat/giay).
-    /// ⚠️ Lan dau sinh DUNG o giua than (7,5): lop than duoi MO DAN o 6-7,5 m, lop nay HIEN DAN o 7,5-8,4 m -> mot dai MONG ngang giua than,
-    /// loc chia hai tang (nguoi dung bao, anh khoanh). Nay sinh THAP HON de phan hien dan chong len phan mo dan - chon bang menu 95.
+    /// VET SAU LUNG GIO LOC (nguoi dung 03/10/2026: "bui khoi cuon ... khi loc di chuyen de lai phia sau" + "them ca bui khoi den xam de lai
+    /// phia sau moi khi loc di qua"; chon HAI LOP + ~2 s). Hai he hat KHONG GIAN THE GIOI, con truc tiep cua goc hinh (khong nam duoi
+    /// LocXoayHinh nen khong an ti le 0,318 - so do o day la met that), sinh theo QUANG DUONG:
+    ///   - VetBuiXam: bui xam y bui chan Gio loc (anh BuiXam 2x2, mau bui Loc xoay x0,7), vong 1,27 m (= vong bui chan 4 x 0,318), ha
+    ///     dan tai cho roi tan.
+    ///   - VetKhoiDen: khoi DEN XAM (flipbook KhoiCuon), boc len cham, no to roi tan.
+    /// Vong phun Circle mac dinh DUNG trong mat XY -> xoay -90 quanh X (bai hoc bui chan Loc xoay 29/09/2026).
+    /// GioLoc.Tan tat phat hat moi he trong hinh (ke ca hai he nay) va giu vat them doi hat dai nhat -> vet tan tu nhien.
     /// </summary>
-    public static ParticleSystem DungBuiThanTren(Transform hinh, float batDau)
+    static void VetSauGioLoc(Transform goc)
     {
-        float cao = CaoThanLocXoay - batDau;
-        float toc = TocBuiThanTrenGioLoc * cao / (0.5f * CaoThanLocXoay);
+        float k = HeSoHinhGioLoc;
         Color t0 = MauBuiXamToi, t1 = MauBuiXamSang;
         t0.r *= HeSoToiGioLoc; t0.g *= HeSoToiGioLoc; t0.b *= HeSoToiGioLoc;
         t1.r *= HeSoToiGioLoc; t1.g *= HeSoToiGioLoc; t1.b *= HeSoToiGioLoc;
-        var tren = BuiCuonLenTheoThan(hinh, "BuiThanTren", cao, h => 0.95f * BanKinhLocXoay(batDau + h, 1f), toc,
-                                      2.4f, 3.0f, 3.0f, 5.8f, 2.1f * HeSoQuayBuiGioLoc, t0, t1);
-        tren.transform.localPosition = new Vector3(0f, batDau, 0f);
-        return tren;
+
+        var bui = NewPS("VetBuiXam", goc, new Vector3(0f, 0.15f, 0f), BuiXamMat, ParticleSystemRenderMode.Billboard);
+        DatKhungBuiXam(bui);
+        var m = bui.main;
+        m.startLifetime = new ParticleSystem.MinMaxCurve(0.8f * GiayVetGioLoc, 1.1f * GiayVetGioLoc);
+        m.startSpeed = new ParticleSystem.MinMaxCurve(0.1f, 0.5f);
+        m.startSize = new ParticleSystem.MinMaxCurve(2.6f * k, 5.5f * k);
+        m.startRotation = new ParticleSystem.MinMaxCurve(0f, Mathf.PI * 2f);
+        m.startColor = new ParticleSystem.MinMaxGradient(t0, t1);
+        m.simulationSpace = ParticleSystemSimulationSpace.World;
+        m.scalingMode = ParticleSystemScalingMode.Local;
+        m.maxParticles = 220;
+        m.gravityModifier = -0.02f;
+        var e = bui.emission; e.rateOverTime = 0f; e.rateOverDistance = HatMoiMetBuiVet;
+        var sh = bui.shape; sh.shapeType = ParticleSystemShapeType.Circle; sh.radius = BanKinhVongBuiLocXoay * k; sh.radiusThickness = 1f;
+        sh.rotation = new Vector3(-90f, 0f, 0f);
+        var col = bui.colorOverLifetime; col.enabled = true;
+        col.color = new ParticleSystem.MinMaxGradient(Grad(Color.white, 0f, Color.white, 0.5f, new Color(0.85f, 0.86f, 0.9f), 1f, 0f, 0.85f, 0.55f, 0f));
+        var sz = bui.sizeOverLifetime; sz.enabled = true;
+        sz.size = new ParticleSystem.MinMaxCurve(1f, new AnimationCurve(new Keyframe(0f, 0.8f), new Keyframe(1f, 1.6f)));
+        var rot = bui.rotationOverLifetime; rot.enabled = true; rot.z = new ParticleSystem.MinMaxCurve(-0.5f, 0.5f);
+
+        var matKhoi = KhoiCuonMat;
+        var khoi = NewPS("VetKhoiDen", goc, new Vector3(0f, 0.3f, 0f), matKhoi != null ? matKhoi : SmokeMat, ParticleSystemRenderMode.Billboard);
+        if (matKhoi != null) BatFlipbook(khoi, 6, 6, 1);
+        var mk = khoi.main;
+        mk.startLifetime = new ParticleSystem.MinMaxCurve(0.8f * GiayVetGioLoc, 1.1f * GiayVetGioLoc);
+        mk.startSpeed = new ParticleSystem.MinMaxCurve(0.2f, 0.7f);
+        mk.startSize = new ParticleSystem.MinMaxCurve(1.0f, 2.0f);
+        mk.startRotation = new ParticleSystem.MinMaxCurve(0f, Mathf.PI * 2f);
+        mk.startColor = new ParticleSystem.MinMaxGradient(new Color(0.16f, 0.16f, 0.17f, 0.75f), new Color(0.28f, 0.28f, 0.29f, 0.90f));
+        mk.simulationSpace = ParticleSystemSimulationSpace.World;
+        mk.scalingMode = ParticleSystemScalingMode.Local;
+        mk.maxParticles = 160;
+        mk.gravityModifier = -0.05f;                // boc len cham
+        var ek = khoi.emission; ek.rateOverTime = 0f; ek.rateOverDistance = HatMoiMetKhoiVet;
+        var shk = khoi.shape; shk.shapeType = ParticleSystemShapeType.Circle; shk.radius = 0.9f; shk.radiusThickness = 1f;
+        shk.rotation = new Vector3(-90f, 0f, 0f);
+        var ck = khoi.colorOverLifetime; ck.enabled = true;
+        ck.color = new ParticleSystem.MinMaxGradient(Grad(Color.white, 0f, new Color(0.85f, 0.85f, 0.85f), 0.4f, new Color(0.6f, 0.6f, 0.6f), 1f, 0f, 0.8f, 0.55f, 0f));
+        var szk = khoi.sizeOverLifetime; szk.enabled = true;
+        szk.size = new ParticleSystem.MinMaxCurve(1f, new AnimationCurve(new Keyframe(0f, 0.7f), new Keyframe(1f, 1.8f)));
+        var rk = khoi.rotationOverLifetime; rk.enabled = true; rk.z = new ParticleSystem.MinMaxCurve(-0.4f, 0.4f);
     }
 
     /// <summary>Hinh Gio loc CU (luoi Blender LocNho, mau may giong, may trong than) - 17/09 - 30/09/2026. Khong con dung trong game;
