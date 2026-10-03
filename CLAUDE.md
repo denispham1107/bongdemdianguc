@@ -266,7 +266,8 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
   lên 1 m/s × mức, quay 2,6 rad/s × mức, sáng ×1,4 dải (cùng tối thì ban ngày chìm vào đất). Mức 1 / 1,5 / 2: dải **+0,127 / 0,170 /
   0,243 thân/giây** (12/12 lên; đứng im 0), vệt gió đo vị trí thật từng hạt: lên 0,99 / 1,50 / 1,99 m/s, **100% cùng chiều quay dải**.
   Ảnh động **menu 97b** (Play Act2 ban ngày, Gió lốc thật bay, máy quay game + máy quay cận) → `PlayTestShots/gioloc_cuon_m*_*.gif`.
-  `MucCuonGioLoc` là biến tĩnh để menu 97/97b đặt — chốt mức người dùng chọn.
+  `MucCuonGioLoc` là biến tĩnh để menu 97/97b đặt — **người dùng chọn MỨC 1,5** (dải quay 304 / 236 / 189°/s, menu 71 0 lỗi); mô tả
+  Gió lốc trong Sách phép viết lại (luồng gió xoắn một chiều, vệt gió cuộn lên đỉnh, bụi sát chân + vệt bụi / khói đen xám phía sau).
   ⚠️ **HÌNH QUẠT: cấp 1–4 tung 3 lốc, cấp 5 tung 5 lốc**, cách nhau `GioLoc.GocQuat` **20°** quanh hướng ngắm (29/09/2026 người dùng "xa nhau hơn 1 chút", trước 15°; cấp 5 toả ±40°;
 26/09/2026: trước đó 1 lốc, cấp 5 hai lốc song song cách 4 m). ⚠️ **Mây giông nhẹ TRONG LÒNG nửa trên thân** (29/09/2026, lúc đầu trên đỉnh rồi người dùng
 đổi "nằm trong cơn lốc": hệ `MayTrongLoc`, `VfxFactory.MayDinhGioLoc`; ảnh `MayGiong` 2×2 của Mây giông, màu thân Gió lốc, mỏng, đám

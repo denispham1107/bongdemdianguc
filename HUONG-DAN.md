@@ -9127,7 +9127,11 @@ theo 1 hướng nhất định. Hãy kiểm tra toàn bộ và thiết kế dự
 - **Menu 71 (0 lỗi):** phép kiểm chiều xoắn đổi thành "góc GIẢM theo độ cao" (18/18, −1,75 … −2,33 rad/m), quay > 90°/s, thêm kiểm lớp
   `VetGioXoan`; C3 không đếm vệt gió là "vệt sau lưng"; C4 IoU 0,74, sáng ×0,78; C6 phủ 88 / 100 / 89%.
 - **Ảnh động (menu 97b mới):** Play Act2 ban ngày, Gió lốc thật bay ngang, chụp 30 khung / 0,06 s bằng máy quay game và máy quay cận →
-  `PlayTestShots/gioloc_cuon_m1.0_game.gif` … `m2.0_can.gif`, tổ hợp `gioloc_cuon_tohop.png`. Mức đang để: 1 (chờ người dùng chọn).
+  `PlayTestShots/gioloc_cuon_m1.0_game.gif` … `m2.0_can.gif`, tổ hợp `gioloc_cuon_tohop.png`.
+- **Người dùng chọn mức 1,5** (`MucCuonGioLoc` = 1,5): menu 71 chạy lại 0 lỗi — dải quay 304 / 236 / 189°/s, C4 IoU 0,76 sáng ×0,80, C6 phủ
+  90 / 100 / 93%. Mô tả Gió lốc trong Sách phép viết lại cho khớp hình mới: "cơn lốc XÁM ĐEN nhỏ: các luồng gió xoắn quay một chiều, vệt gió
+  cuộn từ chân lên tận đỉnh lốc; bụi xám cuộn sát chân và để lại vệt bụi, khói đen xám phía sau" (trước: "LỐC XOÁY THU NHỎ … bụi xám cuộn
+  dày lên tận đỉnh" — bụi lên thân đã bỏ từ 03/10).
 
 ### Gió lốc: lấp khoảng trống trong thân dải gió (04/10/2026)
 

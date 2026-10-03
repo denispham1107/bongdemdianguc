@@ -186,7 +186,7 @@ public static partial class VfxFactory
     /// x HeSoQuayCuonGioLoc; them lop VET GIO hat bay xoan oc len (VetGioXoanLen). MucCuonGioLoc = muc toc do (1 = bang Loc xoay theo
     /// ti le than, nguoi dung chon trong 3 muc chup).
     /// </summary>
-    public static float MucCuonGioLoc = 1f;
+    public static float MucCuonGioLoc = 1.5f;   // nguoi dung 04/10/2026 chon muc 1,5 (anh dong menu 97b)
 
     /// <summary>Quay dai x bao nhieu so voi QuayGioXoan o muc 1 (hieu chinh bang menu 97 cho bang Loc xoay theo ti le than).</summary>
     public const float HeSoQuayCuonGioLoc = 4.5f;

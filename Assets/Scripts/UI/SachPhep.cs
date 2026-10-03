@@ -468,8 +468,9 @@ public static class SachPhep
                      + "Hồi chiêu nhanh như Quả cầu lửa — đổi sức thiêu đốt lấy khả năng ghìm "
                      + "chân kẻ địch.";
             case CapDo.KyGioLoc:
-                return "BA cơn lốc xoáy cùng phóng ra, toè thành hình quạt về phía trước — mỗi cơn là một LỐC XOÁY "
-                     + "THU NHỎ: gió cuộn một chiều từ chân lên miệng lốc, bụi xám cuộn dày lên tận đỉnh. Lốc đi "
+                return "BA cơn lốc xoáy cùng phóng ra, toè thành hình quạt về phía trước — mỗi cơn là một cơn lốc XÁM ĐEN "
+                     + "nhỏ: các luồng gió xoắn quay một chiều, vệt gió cuộn từ chân lên tận đỉnh lốc; bụi xám cuộn sát chân và "
+                     + "để lại vệt bụi, khói đen xám phía sau mỗi khi lốc lướt qua. Lốc đi "
                      + "XUYÊN QUA mọi vật cản và người chơi, rồi tự tan sau 4,5 giây.\n\n"
                      + "Trên thân lốc luôn lóe hai tia sét giăng từ miệng xuống (chỉ là hiệu ứng, không gây thêm sát thương).\n\n"
                      + "Mỗi cơn lốc lướt qua một kẻ địch thì gây 75 sát thương — mỗi cơn chỉ đánh mỗi kẻ một lần, "
