@@ -237,6 +237,16 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
   `VetBuiXam` (ảnh/màu bụi chân, 6 hạt/m) + `VetKhoiDen` (flipbook KhoiCuon xám đen, 4 hạt/m), sống ~2 s (`GiayVetGioLoc`). Menu 71
   (0 lỗi): đã bỏ 4/4, bụi trên 40% thân 6 hạt (đối chứng Lốc xoáy thật 368), đứng yên 0 hạt vệt, bay 9,5 m/s: vệt sau lưng tới 20,6 m
   (trung vị 9,4), lệch ngang ≤ 1,8 m, tuổi ≤ 2,04 s.
+  ⚠️⚠️ **03/10/2026 (lần hai): THÂN = 12 DẢI GIÓ XOẮN, BỎ VỎ PHỄU + VÀNH** (người dùng: "thân lốc thấy quá rõ là hình tròn, vẽ lại
+  thật tự nhiên là các luồng gió cuộn lên"; chọn Blender MCP, chỉ Gió lốc). Blender MCP `CongCu/Blender/gio_loc_xoan.blend` (scene
+  `GioLocXoan` lưới, `GioXoanAnh` ảnh) → `Resources/KyNang/GioLoc/GioXoan.fbx` (3 nhóm `DaiTrong/DaiGiua/DaiNgoai`, 12 dải xoắn ốc HỞ
+  0,6–1,4 vòng, đầu–cuối ở độ cao khác nhau, rộng 0,42–0,72 m thon hai đầu, mặt cắt NGHIÊNG theo chiều xoắn — dựng thẳng thì ở mép
+  thân lộ vạch đứng; bán kính theo vỏ chính Lốc xoáy ×0,318 lượn ±7%; màu đỉnh mờ hai đầu) + `GioXoan.png` (sợi gió kéo dọc, mép rách,
+  liền mạch theo v). `VfxFactory.ThanGioXoan` (con của gốc hình, mét thật): `KhacLocXoay` xoá `Vo0–3` + `Vanh`; mỗi nhóm quay CHẬM
+  45/35/28°/s cùng chiều (quay nhanh thì dải xoắn trông như trôi xuống) + ảnh trượt dọc dải v âm 1,25/1,05/0,9 (gió chạy lên); màu = màu
+  vỏ Lốc xoáy ×0,8 ×0,7. Menu 71 đo lưới NGOÀI Play: 12 dải, phủ vòng lớn nhất **33–39%** mỗi lát 0,25 m (đối chứng vỏ phễu 100%),
+  12/12 xoắn cùng chiều quay, v tăng theo cao, mờ hai đầu. ⚠️ FBX đổ bóng PHẲNG → Unity tách đỉnh theo từng mặt: tách dải phải gộp
+  đỉnh trùng vị trí (không thì ra 967 mảnh).
   ⚠️ **HÌNH QUẠT: cấp 1–4 tung 3 lốc, cấp 5 tung 5 lốc**, cách nhau `GioLoc.GocQuat` **20°** quanh hướng ngắm (29/09/2026 người dùng "xa nhau hơn 1 chút", trước 15°; cấp 5 toả ±40°;
 26/09/2026: trước đó 1 lốc, cấp 5 hai lốc song song cách 4 m). ⚠️ **Mây giông nhẹ TRONG LÒNG nửa trên thân** (29/09/2026, lúc đầu trên đỉnh rồi người dùng
 đổi "nằm trong cơn lốc": hệ `MayTrongLoc`, `VfxFactory.MayDinhGioLoc`; ảnh `MayGiong` 2×2 của Mây giông, màu thân Gió lốc, mỏng, đám

@@ -9095,6 +9095,35 @@ cháy xém**.
   nào dưới 2,4 m): 25 đám, tâm 1,93–4,27 m, xa trục nhất 1,05 m = 63% vỏ trong; loé 1,00 → 1,56 → 1,00.
 - Điện thoại: mỗi cơn thêm ~14 đám mây lớn (1,4–2,2 m) → 3 cơn thêm ~42 tấm trong suốt chồng lên, cấp 5 (5 cơn) ~70. Chưa đo trên máy thật.
 
+### Gió lốc: thân vẽ lại thành các luồng gió xoắn, hết "hình tròn" (03/10/2026, lần hai)
+
+**Người dùng:** "Phần thân lốc từ đáy đến đỉnh thấy quá rõ là hình tròn, hãy vẽ lại sao cho thật tự nhiên là các luồng gió cuộn lên
+thành lốc chứ không hiện ra rõ vòng tròn như vậy". Tôi hỏi lại; người dùng chọn **dựng lại bằng Blender MCP**, **chỉ Gió lốc**.
+
+- Nguyên nhân: thân Gió lốc (Lốc xoáy thu nhỏ) là 4 lớp **vỏ phễu khép kín** + một **vành tròn** ở miệng — mỗi lát cao là một vòng tròn đủ 360°.
+- **Blender MCP** (`CongCu/Blender/gio_loc_xoan.blend`, scene riêng):
+  - Ảnh `GioXoan.png` 256×1024 (scene `GioXoanAnh`): sợi gió kéo dọc (nhiễu 4D lấy trên đường tròn theo v → **liền mạch theo v**, dòng
+    đầu / cuối lệch 0,8/255), mép ngang rách theo nhiễu, xám trắng (tô màu lúc chạy).
+  - Lưới `GioXoan.fbx` (scene `GioLocXoan`): **12 dải xoắn ốc HỞ** chia 3 nhóm `DaiTrong` / `DaiGiua` / `DaiNgoai` (0,70–0,74 / 0,86–0,92 /
+    1,02–1,08 × bán kính vỏ chính Lốc xoáy thu nhỏ). Mỗi dải 0,6–1,4 vòng, bắt đầu / kết thúc ở độ cao khác nhau (đỉnh so le 0,80–1,03 thân),
+    rộng 0,42–0,72 m thon hai đầu, đường tâm lượn sóng, bán kính lệch ±7% theo góc, độ trong ở màu đỉnh mờ 22% hai đầu + sát đất.
+  - Bản đầu (8 dải, mặt cắt dựng ĐỨNG): ở mép thân hiện **vạch thẳng đứng** (dải quay ngang tầm nhìn) và mép trên các dải gần miệng nằm
+    ngang (lại ra "vành") → bản hai: 12 dải mảnh hơn, **mặt cắt nghiêng theo chiều xoắn**, mép lượn, đỉnh so le.
+  - Xuất `axis_forward='-Z', axis_up='Y', bake_space_transform=True, colors_type='LINEAR'`.
+- Unity (`VfxFactory.ThanGioXoan`, gọi trong `BuildGioLoc`): `KhacLocXoay` xoá `Vo0–3` + `Vanh`; 3 nhóm dải là con của gốc hình (mét thật,
+  không ăn 0,318). Mỗi nhóm **quay CHẬM** 45 / 35 / 28°/s cùng chiều lốc — dải xoắn cùng chiều quay mà quay nhanh thì giao điểm dải với một
+  góc cố định tụt xuống, trông như gió trôi xuống — luồng gió đi lên là nhờ **ảnh trượt dọc dải** (v âm 1,25 / 1,05 / 0,9). Màu = màu vỏ Lốc
+  xoáy Vo0/1/2 × 0,8 × 0,7 (giữ tối 30%).
+
+**Đo (menu 71, 0 lỗi):**
+- Lưới đo NGOÀI Play (FBX tắt Read/Write): 12 dải, cao tới 5,11 m; **phủ vòng lớn nhất mỗi lát 0,25 m: 33–39%**, **0 dải kín vòng** —
+  đối chứng vỏ phễu Lốc xoáy `Vo1`: **100%**. 12/12 xoắn cùng chiều quay (góc tăng theo độ cao 1,9–2,35 rad/m), 12/12 v tăng theo cao
+  (trượt v âm = lên), 12/12 mờ hai đầu.
+  - ⚠️ Lần chạy đầu ra "967 dải": FBX đổ bóng PHẲNG nên Unity tách đỉnh theo từng mặt — tách dải phải **gộp đỉnh trùng vị trí** trước.
+- C2: đã bỏ 9/9 thành phần Lốc xoáy (đèn, quầng sáng, 2 lớp cuốn lên, 4 vỏ, vành); 3 nhóm dải đúng ảnh, màu, quay chậm cùng chiều, trượt lên.
+- C4: ảnh chụp cùng khung vẫn chiếm dáng lốc (IoU 0,70 với Lốc xoáy thật), sáng ×0,70.
+- Ảnh: `PlayTestShots/gioloc_1_bay.png`, `gioloc_6b_gioloc_moi.png`.
+
 ### Gió lốc: bỏ bụi cuốn lên thân, chỉ bụi sát chân + vệt bụi / khói đen xám sau lưng (03/10/2026)
 
 **Người dùng:** "bỏ tất cả hiệu ứng bụi khói cuốn từ chân lốc đến tận đỉnh lốc"; "chỉ cho bụi khói cuốn ở dưới sát chân lốc và khi lốc

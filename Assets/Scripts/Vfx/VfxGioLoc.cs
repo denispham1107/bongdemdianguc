@@ -126,6 +126,7 @@ public static partial class VfxFactory
             var fl = lt.GetComponent<LightFlicker>();
             if (fl != null) fl.DatTamGoc(tam); else lt.range = tam;
         }
+        ThanGioXoan(root.transform);
         VetSauGioLoc(root.transform);
         return root;
     }
@@ -146,7 +147,8 @@ public static partial class VfxFactory
     /// </summary>
     static void KhacLocXoay(Transform hinh)
     {
-        foreach (var ten in new[] { "HaoQuang", "StormLight", "BuiThanDuoi", "BuiCuonLen" })
+        // 03/10/2026 (lan hai): bo ca 4 VO PHEU + VANH cua Loc xoay - than thay bang cac DAI GIO XOAN (ThanGioXoan)
+        foreach (var ten in new[] { "HaoQuang", "StormLight", "BuiThanDuoi", "BuiCuonLen", "Vo0", "Vo1", "Vo2", "Vo3", "Vanh" })
         {
             var t = hinh.Find(ten);
             if (t != null) Object.DestroyImmediate(t.gameObject);
@@ -167,6 +169,63 @@ public static partial class VfxFactory
             m.startColor = new ParticleSystem.MinMaxGradient(
                 new Color(c0.r * HeSoToiGioLoc, c0.g * HeSoToiGioLoc, c0.b * HeSoToiGioLoc, c0.a),
                 new Color(c1.r * HeSoToiGioLoc, c1.g * HeSoToiGioLoc, c1.b * HeSoToiGioLoc, c1.a));
+        }
+    }
+
+    /// <summary>Toc do quay (do/giay, nhan ChieuQuayGioLoc) va toc do anh truot LEN doc dai (uv/giay) cua 3 nhom dai trong / giua / ngoai.
+    /// Quay CHAM: dai xoan cung chieu xoay ma quay nhanh thi hinh dai trong nhu troi XUONG (giao diem dai voi mot goc co dinh tut xuong
+    /// w/c m/s) - luong gio di len la nho anh TRUOT doc dai.</summary>
+    static readonly float[] QuayGioXoan = { 45f, 35f, 28f }, TruotGioXoan = { 1.25f, 1.05f, 0.9f };
+
+    /// <summary>Mau 3 nhom dai: mau vo Loc xoay tuong ung (Vo0 / Vo1 / Vo2, da toi x0,8) x HeSoToiGioLoc.</summary>
+    static readonly Color[] MauGioXoan = { new Color(0.86f, 0.88f, 0.92f), new Color(0.92f, 0.94f, 0.97f), new Color(0.97f, 0.98f, 1.00f) };
+
+    static readonly Material[] matGioXoan = new Material[3];
+
+    /// <summary>
+    /// THAN GIO LOC = CAC DAI GIO XOAN (nguoi dung 03/10/2026: "phan than loc tu day den dinh thay qua ro la hinh tron, ve lai sao cho
+    /// that tu nhien la cac luong gio cuon len thanh loc"; chon dung lai bang Blender MCP, chi Gio loc). Blender MCP
+    /// CongCu/Blender/gio_loc_xoan.blend (scene GioLocXoan) -> Resources/KyNang/GioLoc/GioXoan.fbx: 12 DAI XOAN OC HO (khong khep vong),
+    /// 3 nhom DaiTrong / DaiGiua / DaiNgoai o 0,70-0,74 / 0,86-0,92 / 1,02-1,08 x ban kinh vo chinh Loc xoay thu nho (2,6 + 4,2 t^1,6) x 0,318;
+    /// moi dai bat dau / ket thuc o do cao khac nhau (dinh so le 0,80-1,03 than), 0,6-1,4 vong, rong 0,42-0,72 m thon hai dau, duong tam luon
+    /// song, mat cat NGHIENG theo chieu xoan (dung thang thi o mep than hien vach doc), ban kinh lech 7% + 4% theo goc; do trong o mau dinh
+    /// mo 22% hai dau dai + 0,25 m sat dat. Anh GioXoan.png (Blender MCP, scene GioXoanAnh): soi gio keo doc, mep rach, LIEN MACH theo v
+    /// (nhieu tren duong tron). UV: u ngang dai, v doc dai (tang theo chieu len) -> ScrollUV v AM = gio chay len. Dai khong nam duoi
+    /// LocXoayHinh nen KHONG an ti le 0,318 - luoi dung o met that.
+    /// </summary>
+    static void ThanGioXoan(Transform goc)
+    {
+        var kho = Resources.Load<GameObject>(ThuMucGioLoc + "GioXoan");
+        if (kho == null) return;
+        var than = new GameObject("GioXoan");
+        than.transform.SetParent(goc, false);
+        var anh = Resources.Load<Texture2D>(ThuMucGioLoc + "GioXoan");
+        string[] ten = { "DaiTrong", "DaiGiua", "DaiNgoai" };
+        foreach (var mf in kho.GetComponentsInChildren<MeshFilter>(true))
+        {
+            int i = System.Array.IndexOf(ten, mf.name);
+            if (i < 0) continue;
+            // Kiem bang null cua Unity: vat lieu tao luc Play bi xoa khi thoat Play
+            if (matGioXoan[i] == null)
+            {
+                var c = MauGioXoan[i] * (HeSoToiLocXoay * HeSoToiGioLoc); c.a = 1f;
+                matGioXoan[i] = Mats.Alpha("P_GioXoan_" + mf.name, anh, c);
+            }
+            var go = new GameObject(mf.name);
+            go.transform.SetParent(than.transform, false);
+            go.transform.localPosition = mf.transform.localPosition;
+            go.transform.localRotation = mf.transform.localRotation;
+            go.transform.localScale = mf.transform.localScale;
+            go.AddComponent<MeshFilter>().sharedMesh = mf.sharedMesh;
+            var mr = go.AddComponent<MeshRenderer>();
+            mr.sharedMaterial = matGioXoan[i];
+            mr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+            mr.receiveShadows = false;
+            var sp = go.AddComponent<Spin>();
+            sp.axis = Vector3.up;
+            sp.degreesPerSecond = ChieuQuayGioLoc * QuayGioXoan[i];
+            var sc = go.AddComponent<ScrollUV>();
+            sc.speed = new Vector2(0f, -TruotGioXoan[i]);
         }
     }
 
