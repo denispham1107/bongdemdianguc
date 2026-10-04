@@ -1,0 +1,2 @@
+LeftHand: 717 dinh ban tay; tam (0.000, 0.128, -0.007); huong ngon (cuc bo Hand) (-0.247, 0.967, 0.056); PHAP TUYEN LONG (cuc bo Hand) (-0.720, -0.144, -0.679); dau ngon lech ve phia long 0.0002 m; do day theo ba truc dai/ngang/mong 0.040/0.029/0.020 m
+RightHand: 722 dinh ban tay; tam (0.002, 0.127, -0.007); huong ngon (cuc bo Hand) (0.212, 0.975, -0.062); PHAP TUYEN LONG (cuc bo Hand) (-0.754, 0.204, 0.624); dau ngon lech ve phia long 0.0000 m; do day theo ba truc dai/ngang/mong 0.045/0.029/0.020 m

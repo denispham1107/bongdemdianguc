@@ -34,6 +34,9 @@ public class MainMenuUI : MonoBehaviour
         // thi choi don lan sau van tuong minh dang trong mot phong nao do.
         TranHienTai.Xoa();
 
+        // Tu the trung bay: hai tay ngua nang qua cau lua / qua cau bang (nguoi dung 04/10/2026) - gan luc chay, khong sua scene
+        if (showcase != null && showcase.GetComponent<TuTheTrungBay>() == null) showcase.gameObject.AddComponent<TuTheTrungBay>();
+
         if (!batChoiMang) return;
 
         manDangNhap = gameObject.AddComponent<ManDangNhap>();

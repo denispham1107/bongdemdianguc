@@ -1,0 +1,6 @@
+TuTheTrungBay gan tu MainMenuUI: True
+LeftHand (LUA): long tay . len = 1.000; cao 1.07 m (hong 0.90, xuong spine 1.22); ra ngoai 0.37 m, ra truoc 0.43 m; man hinh x 0.55
+RightHand (BANG): long tay . len = 1.000; cao 1.06 m (hong 0.90, xuong spine 1.22); ra ngoai 0.37 m, ra truoc 0.41 m; man hinh x 0.45
+Den cua hai qua cau: tam lon nhat 2.71 m, do sang lon nhat 2.41 (mong <= 2.6 m / ~2.2)
+Qua cau LUA: man hinh x 0.56, cao tren long tay 0.19 m, 2 den, 88 hat | Qua cau BANG: man hinh x 0.44, cao tren long tay 0.20 m, 2 den, 106 hat
+so loi ghi nhan = 0

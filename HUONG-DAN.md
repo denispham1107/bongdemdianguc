@@ -9095,6 +9095,31 @@ cháy xém**.
   nào dưới 2,4 m): 25 đám, tâm 1,93–4,27 m, xa trục nhất 1,05 m = 63% vỏ trong; loé 1,00 → 1,56 → 1,00.
 - Điện thoại: mỗi cơn thêm ~14 đám mây lớn (1,4–2,2 m) → 3 cơn thêm ~42 tấm trong suốt chồng lên, cấp 5 (5 cơn) ~70. Chưa đo trên máy thật.
 
+### Màn chính: phù thuỷ ngửa hai tay nâng quả cầu lửa và quả cầu băng (04/10/2026)
+
+**Người dùng** (kèm ảnh sảnh): "cho 2 bàn tay của nhân vật phù thuỷ ngửa lên trời và hơi co cao lên 1 chút; 1 bên bàn tay phát sáng hiệu ứng
+quả cầu băng và 1 bên bàn tay phát sáng hiệu ứng quả cầu lửa". Hỏi lại; người dùng chọn: **lửa bên phải màn hình, băng bên trái**; **quả cầu y
+như trong trận, thu nhỏ**; **bàn tay ngang bụng, chìa sang hai bên**.
+
+- **Không sửa scene MainMenu** (dựng bằng menu 51 — chạy lại menu ấy thì mặt đất lại dùng chung với Act2): component `UI/TuTheTrungBay.cs`
+  gắn lúc chạy từ `MainMenuUI.Start` lên nhân vật trưng bày.
+- **Tư thế**: chạy sau `NguoiChoiHoatHinh` (nó đặt tư thế đứng + thở mỗi khung). Cánh tay trên buông xuống, hơi ra ngoài + ra trước; cẳng tay ra
+  trước + ra hai bên, hơi lên — ngắm hướng xương bằng `NgamHuongKhop` (cách của Giựt sét, không đoán góc Euler theo trục khớp Meshy). Rồi
+  **xoắn cẳng tay quanh trục của nó** (không dời bàn tay) và bẻ cổ tay phần còn lại cho lòng bàn tay ngửa thẳng lên. Vào tư thế trong 0,8 s.
+- **Lòng bàn tay ở đâu?** Khung xương Meshy không có xương ngón, lưới tắt Read/Write nên không đọc được trọng số xương. **Menu 101**: dựng nhân
+  vật trong PreviewScene, BakeMesh, xoay xương Hand 20° rồi BakeMesh lần nữa — đỉnh nào dịch đúng như "xoay cứng theo Hand" là đỉnh bàn tay
+  (717 / 722 đỉnh); PCA trong hệ xương Hand: trục dài = ngón tay (+Y), trục mỏng = pháp tuyến lòng (độ dày 0,020 m so với ngang 0,029). Ngón
+  duỗi thẳng nên không suy được dấu → **menu 101b** chụp cận cả hai phía: phía có **nhẫn ở mu ngón** là mu tay.
+- **Quả cầu**: dùng chính hình kỹ năng (`BuildFireballVisual`, `BuildQuaCauBangVisual`) bán kính 0,13 m, lơ lửng 0,07 m trên lòng tay, nhấp
+  nhô nhẹ. Hai chỗ phải chỉnh so với quả cầu BAY: (1) đèn quả cầu lửa 6 / 12 m nhuộm cam gần cả nền màn chính (ảnh lần đầu) → kẹp tầm 2,6 m,
+  sáng 2,2; (2) tia lửa `Sparks` có trọng lực 0,35 (rắc lửa xuống đường bay) → trên tay đứng yên thành vệt chảy xuống đất, đổi −0,25 cho bốc
+  lên như tàn lửa. Mảnh băng vẫn rơi vụn xuống như lúc bay.
+- Nhân vật vẫn xoay chậm 18°/s như trước, nên lúc quay lưng hai quả cầu đổi bên.
+
+**Đo — menu 101c** (Play màn chính, dừng xoay, quay mặt về máy quay): lòng tay · hướng lên = **1,000** cả hai tay; bàn tay cao **1,06–1,07 m**
+(xương hông 0,90, xương ngực 1,22 → ngang bụng), ra trước 0,41–0,43 m, ra hai bên 0,37 m; quả cầu lửa ở **x 0,56**, băng **x 0,44** màn hình;
+quả cầu cách lòng tay 0,19–0,20 m; 88–106 hạt mỗi quả; 0 lỗi. Ảnh: `PlayTestShots/tay_trungbay_can.png`, `tay_trungbay_man_chinh.png`.
+
 ### Gió lốc 2 lốc (cấp 5: 3 lốc) cách xa hơn · Mây giông cao 8 m, mưa dày hơn (04/10/2026, lần năm)
 
 **Người dùng:** Gió lốc "cấp đầu tiên chỉ cho đánh ra 2 lốc, mỗi lốc cách xa nhau ra 1 chút; cấp 5 đánh ra 3 lốc"; Mây giông "đám mây bay cao

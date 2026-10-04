@@ -372,6 +372,9 @@ public class NguoiChoiHoatHinh : MonoBehaviour
         Nghieng(head, -6f * day, 0f, 0f);
     }
 
+    /// <summary>Ban cong khai cua NgamHuong - TuTheTrungBay (tu the man chinh) dung chung cach ngam huong xuong.</summary>
+    public static void NgamHuongKhop(Transform khop, Transform con, Vector3 muon, float w) { NgamHuong(khop, con, muon, w); }
+
     /// <summary>Xoay <paramref name="khop"/> de doan khop -> <paramref name="con"/> chi theo huong <paramref name="muon"/> (the gioi), tron theo w.</summary>
     static void NgamHuong(Transform khop, Transform con, Vector3 muon, float w)
     {
