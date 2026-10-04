@@ -9122,6 +9122,10 @@ Blender dựng lại các vết lửa này cho thật giống ngọn lửa thậ
 - **Menu 102 mới** — ảnh một khung của menu 70 có ×2,9 điểm cháy trắng so với ảnh cũ, nên đo lại cho chắc: ba quả cầu lửa thật bay song song
   trên cao (A ngọn lửa thật / B tàn lửa cũ dựng lại bằng code / C không tàn lửa), mỗi quả một lớp + một máy quay đi theo nền đen, 20 khung × 3
   lượt: tổng sáng **×1,05** (B ×1,02) so với C, điểm cháy trắng **×1,00** cả ba — ảnh một khung chỉ là dao động, quả cầu không chói hơn.
+- **Cùng ngày, lửa trên tay phải BÁM QUANH quả cầu** (người dùng gửi ảnh: một ngọn lửa còn tách ra bay lơ lửng phía trên; chọn chỉ sửa quả cầu
+  trên tay — trong trận giữ đuôi lửa khi bay 17 m/s): `Sparks` + `Flames` trên tay mô phỏng **cục bộ** (đi theo quả cầu khi nhấp nhô / nhân vật
+  xoay), không vận tốc, không bốc lên, tắt nhiễu, gốc mọi ngọn lửa trên mặt cầu 0,85 bán kính. Menu 101c đo vị trí thật: 19 ngọn lửa, gốc xa tâm
+  nhất **0,85 bán kính**, tốc độ lớn nhất **0** — 0 lỗi.
 
 ### Màn chính: phù thuỷ ngửa hai tay nâng quả cầu lửa và quả cầu băng (04/10/2026)
 

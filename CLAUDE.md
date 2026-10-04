@@ -804,6 +804,9 @@ hơn ×1,5 và mở xuống 1,8–4,3 m** (người dùng chọn sau menu 94 ch�
   đo bằng **menu 101** (xoay xương Hand, BakeMesh hai lần, PCA các đỉnh đi theo — ngón tay = +Y cục bộ) và chọn dấu bằng ảnh **101b** (phía
   có NHẪN là mu tay): `LongTayTrai (0,72 0,14 0,68)`, `LongTayPhai (−0,75 0,20 0,62)`. Quả cầu: `BuildFireballVisual` / `BuildQuaCauBangVisual`
   r = 0,13, đèn kẹp 2,6 m / 2,2 (để nguyên 6 / 12 m thì nhuộm cam cả nền); tàn lửa + lửa lõi = NGỌN LỬA THẬT (xem mục Quả cầu lửa).
+  ⚠️ **Lửa trên tay BÁM QUANH quả cầu** (người dùng 04/10/2026: "vệt lửa phải bao quanh quả cầu, không bay lơ lửng"; chọn chỉ màn chính — trong
+  trận giữ đuôi lửa khi bay): `Sparks` + `Flames` của quả cầu trên tay mô phỏng CỤC BỘ, không vận tốc / bốc lên / nhiễu, gốc lửa trên mặt cầu
+  0,85 r (`BanKinhGocLua`). Menu 101c: 19 ngọn lửa, gốc xa tâm nhất 0,85 r, tốc độ 0.
   Nhân vật vẫn xoay 18°/s (`MainMenuUI.spinSpeed`) nên quay lưng thì hai bên đổi chỗ. Menu 101c (0 lỗi): lòng tay · lên = 1,000 cả hai,
   tay cao 1,06–1,07 m (hông 0,90, ngực 1,22), ra trước 0,41–0,43, ra ngoài 0,37; lửa x 0,56 / băng x 0,44 màn hình; cầu cách lòng tay 0,19–0,20 m.
   ⚠️ Mặt đất Màn chính là file RIÊNG `Terrain/ManChinh_MatDat.asset` (bản Act2 trước khi mở rộng, 27/09/2026) — trước đó dùng chung

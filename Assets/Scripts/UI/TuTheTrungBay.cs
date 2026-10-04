@@ -29,6 +29,9 @@ public class TuTheTrungBay : MonoBehaviour
     /// - de nguyen thi nhuom cam ca nen dat man chinh (anh menu 101c lan dau); o day chi can hat sang len tay, ao va mat dat quanh chan.</summary>
     public const float TamDenCau = 2.6f, DoSangDenCau = 2.2f;
 
+    /// <summary>Goc ngon lua nam tren mat cau ban kinh BanKinhCau x BanKinhGocLua (sat mat loi lua sang).</summary>
+    public const float BanKinhGocLua = 0.85f;
+
     /// <summary>Nhan vat vao tu the trong bao lau (giay).</summary>
     public const float GiayVaoTuThe = 0.8f;
 
@@ -67,6 +70,21 @@ public class TuTheTrungBay : MonoBehaviour
         VfxFactory.TanLuaThanhNgonLua(goLua.transform, BanKinhCau);
         var loi = goLua.transform.Find("Flames");
         if (loi != null) VfxFactory.DoiThanhNgonLuaThat(loi.GetComponent<ParticleSystem>(), BanKinhCau * 2.6f, BanKinhCau * 4.2f, 34f, 0.12f, 0.45f);
+        // LUA BAM QUANH QUA CAU (nguoi dung 04/10/2026: "cac vet lua phai bao quanh lay qua cau lua, khong duoc bay lo lung o tren khong"
+        // - chon chi qua cau tren tay; trong tran giu duoi lua khi bay): moi ngon lua MOC TU MAT QUA CAU va DI THEO no - mo phong CUC BO
+        // (qua cau nhap nho / nhan vat xoay thi lua khong bi bo lai), khong van toc, khong boc len, khong nhieu day trot.
+        foreach (var ten in new[] { "Sparks", "Flames" })
+        {
+            var t = goLua.transform.Find(ten);
+            var ps = t != null ? t.GetComponent<ParticleSystem>() : null;
+            if (ps == null) continue;
+            var m = ps.main;
+            m.simulationSpace = ParticleSystemSimulationSpace.Local;
+            m.startSpeed = 0f;
+            m.gravityModifier = 0f;
+            var sh = ps.shape; sh.shapeType = ParticleSystemShapeType.Sphere; sh.radius = BanKinhCau * BanKinhGocLua; sh.radiusThickness = 0f;
+            var nz = ps.noise; nz.enabled = false;
+        }
         foreach (var goCau in new[] { goLua, goBang })
             foreach (var lt in goCau.GetComponentsInChildren<Light>(true))
             {

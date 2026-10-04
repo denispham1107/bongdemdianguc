@@ -203,6 +203,24 @@ public static class ThuTayTrungBay
                     if (rr != null && rr.renderMode == ParticleSystemRenderMode.Billboard && tx != null && tx.name == "NgonLuaThat") ngonThat++;
                 }
                 sb.AppendLine("Lua tren tay: " + moTa);
+                // BAM QUANH QUA CAU: moi hat lua (goc ngon lua) phai nam sat mat qua cau, va dang ngung (khong troi di) - doc vi tri THAT
+                float xaMax = 0f, tocMax = 0f; int soHatLua = 0;
+                foreach (var ten in new[] { "Sparks", "Flames" })
+                {
+                    var t = lua.transform.Find(ten); var ps = t != null ? t.GetComponent<ParticleSystem>() : null;
+                    if (ps == null) continue;
+                    var arr = new ParticleSystem.Particle[ps.particleCount]; int n = ps.GetParticles(arr);
+                    bool cucBo = ps.main.simulationSpace == ParticleSystemSimulationSpace.Local;
+                    for (int i = 0; i < n; i++)
+                    {
+                        Vector3 p = cucBo ? t.TransformPoint(arr[i].position) : arr[i].position;
+                        xaMax = Mathf.Max(xaMax, Vector3.Distance(p, lua.transform.position));
+                        tocMax = Mathf.Max(tocMax, arr[i].totalVelocity.magnitude); soHatLua++;
+                    }
+                }
+                sb.AppendLine(string.Format("Lua bam qua cau: {0} ngon lua, goc xa tam qua cau nhat {1:F3} m ({2:F2} ban kinh cau), toc do lon nhat {3:F3} m/s",
+                    soHatLua, xaMax, xaMax / TuTheTrungBay.BanKinhCau, tocMax));
+                kiem(soHatLua > 10 && xaMax <= TuTheTrungBay.BanKinhCau * 1.0f && tocMax < 0.05f, "ngon lua tach khoi qua cau, bay lo lung");
                 kiem(ngonThat == 2, "tan lua / lua loi tren tay chua phai ngon lua that");
             }
             string anh = "PlayTestShots/tay_trungbay_man_chinh.png";
