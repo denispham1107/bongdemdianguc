@@ -193,6 +193,17 @@ public static class ThuTayTrungBay
                 kiem(xLua > xBang, "lua khong o ben PHAI man hinh");
                 kiem(caoLua > 0.1f && caoLua < 0.35f && caoBang > 0.1f && caoBang < 0.35f, "qua cau khong lo lung ngay tren long tay");
                 kiem(hatLua > 0 && hatBang > 0, "qua cau khong co hat (khong sang)");
+                // 04/10/2026: tan lua + lua loi cua qua cau tren tay = NGON LUA THAT (khong con vet keo dai / anh tam giac Tex_flame)
+                int ngonThat = 0; string moTa = "";
+                foreach (var ten in new[] { "Sparks", "Flames" })
+                {
+                    var t = lua.transform.Find(ten); var rr = t != null ? t.GetComponent<ParticleSystemRenderer>() : null;
+                    var tx = rr != null && rr.sharedMaterial != null ? rr.sharedMaterial.mainTexture : null;
+                    moTa += ten + ": " + (rr != null ? rr.renderMode.ToString() : "-") + " anh " + (tx != null ? tx.name : "-") + "; ";
+                    if (rr != null && rr.renderMode == ParticleSystemRenderMode.Billboard && tx != null && tx.name == "NgonLuaThat") ngonThat++;
+                }
+                sb.AppendLine("Lua tren tay: " + moTa);
+                kiem(ngonThat == 2, "tan lua / lua loi tren tay chua phai ngon lua that");
             }
             string anh = "PlayTestShots/tay_trungbay_man_chinh.png";
             if (File.Exists(anh)) File.Delete(anh);

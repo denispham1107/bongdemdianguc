@@ -1,0 +1,3 @@
+A moi (ngon lua that): tong do sang 142942 (x1.05 so voi khong tan lua), diem chay trang 42522 (x1.00)
+B tan lua CU (vet keo dai): tong do sang 138949 (x1.02 so voi khong tan lua), diem chay trang 42694 (x1.00)
+C khong tan lua: tong do sang 135815 (x1.00 so voi khong tan lua), diem chay trang 42487 (x1.00)

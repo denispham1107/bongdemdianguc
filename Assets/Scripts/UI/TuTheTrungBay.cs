@@ -62,10 +62,11 @@ public class TuTheTrungBay : MonoBehaviour
         var goBang = new GameObject("CauBangTrenTay");
         VfxFactory.BuildQuaCauBangVisual(goBang.transform, BanKinhCau);
         cauBang = goBang.transform;
-        // Tia lua Sparks cua qua cau BAY co trong luc 0,35 (rac lua xuong duong bay) - dung yen tren tay thi thanh vet chay XUONG dat
-        // (anh can menu 101c lan hai): cho boc LEN nhu tan lua
-        foreach (var ps in goLua.GetComponentsInChildren<ParticleSystem>(true))
-            if (ps.name == "Sparks") { var m = ps.main; m.gravityModifier = -0.25f; }
+        // Tan lua (Sparks - vet keo dai, "thanh nho mau lua") VA lua loi (Flames - anh tam giac cu Tex_flame) -> NGON LUA THAT (flipbook
+        // mo phong Mantaflow, Blender MCP) - nguoi dung 04/10/2026. Trong tran lua loi da la flipbook LuaDuoi tu truoc (NangCapDuoiLua).
+        VfxFactory.TanLuaThanhNgonLua(goLua.transform, BanKinhCau);
+        var loi = goLua.transform.Find("Flames");
+        if (loi != null) VfxFactory.DoiThanhNgonLuaThat(loi.GetComponent<ParticleSystem>(), BanKinhCau * 2.6f, BanKinhCau * 4.2f, 34f, 0.12f, 0.45f);
         foreach (var goCau in new[] { goLua, goBang })
             foreach (var lt in goCau.GetComponentsInChildren<Light>(true))
             {

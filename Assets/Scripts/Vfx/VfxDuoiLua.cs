@@ -17,7 +17,79 @@ using UnityEngine;
 /// </summary>
 public static partial class VfxFactory
 {
-    static Material mLuaDuoiFlipbook, mVetLuaDai;
+    static Material mLuaDuoiFlipbook, mVetLuaDai, mNgonLuaThat;
+
+    /// <summary>
+    /// NGON LUA THAT (nguoi dung 04/10/2026: tan lua cua qua cau lua "qua so sai, giong cac thanh nho mau lua chu khong phai lua that;
+    /// dung MCP Blender dung lai cho that giong ngon lua that, khong duoc nhu hinh tam giac"; chon ap CA man chinh lan trong tran, va thay
+    /// luon lua loi cua qua cau tren tay o man chinh). Blender MCP CongCu/Blender/ngon_lua_that.blend (scene NgonLuaThat): MO PHONG LUA
+    /// MANTAFLOW (mien 0,8 x 0,8 x 2 m, do phan giai 96, nguon cau r ~0,19 o day, lua chay lau + xoay xoay manh -> ngon lua cao co loi
+    /// vang sang o chan, dau ngon xe soi), vat lieu the tich phat sang theo truong "flame" (doc mau den -> do tham -> cam -> vang trang),
+    /// render Cycles may quay truc giao khung DUNG 1:2 -> 16 khung lien tiep (khung 40..70 buoc 2) ghep KyNang/QuaCauLua/NgonLuaThat.png
+    /// 4 x 4 (128 x 256 moi o, nen den - ve cong sang).
+    /// </summary>
+    static Material NgonLuaThatMat
+    {
+        get
+        {
+            // Kiem bang null cua Unity: vat lieu tao luc Play bi xoa khi thoat Play
+            if (mNgonLuaThat == null)
+            {
+                var tex = Resources.Load<Texture2D>("KyNang/QuaCauLua/NgonLuaThat");
+                if (tex != null) mNgonLuaThat = Mats.FlipbookAdd("P_NgonLuaThat", tex, Color.white, 0.9f);
+            }
+            return mNgonLuaThat;
+        }
+    }
+
+    /// <summary>
+    /// Doi mot he hat cua qua cau lua sang NGON LUA THAT: hat billboard DUNG (khong xoay, khong keo dai), o ti le 1:2 nhu khung anh,
+    /// chay het 16 khung trong mot doi hat (lua liem, doi dang), boc len, lon dan roi tan. <paramref name="coMin"/>/<paramref name="coMax"/>
+    /// la chieu CAO ngon lua (m); <paramref name="soMoiGiay"/> hat/giay.
+    /// </summary>
+    public static void DoiThanhNgonLuaThat(ParticleSystem ps, float coMin, float coMax, float soMoiGiay, float bocLen = 0.2f, float songMax = 0.45f)
+    {
+        var mat = NgonLuaThatMat;
+        if (ps == null || mat == null) return;
+        var r = ps.GetComponent<ParticleSystemRenderer>();
+        r.renderMode = ParticleSystemRenderMode.Billboard;
+        r.sharedMaterial = mat;
+        // Goc hat o CHAN ngon lua (chan lua nam 11% tu day khung): tam hat giua tam anh thi nua duoi ngon lua chim vao loi sang cua
+        // qua cau, chi con mot dom sang (anh menu 101c lan hai) - doi pivot len 0,38 chieu cao de ngon lua liem LEN tren mat qua cau
+        r.pivot = new Vector3(0f, 0.38f, 0f);
+        BatFlipbook(ps, 4, 4, 1);
+        var m = ps.main;
+        // Doi ngan + boc len nhe: lan dau (0,35-0,6 s, trong luc -0,35) ngon lua bay len thanh mot COT NGON NEN roi rac qua dau nhan
+        // vat (anh menu 101c) - lua phai OM qua cau, ngon tach ra ngan roi tan
+        m.startLifetime = new ParticleSystem.MinMaxCurve(songMax * 0.55f, songMax);
+        m.startSpeed = new ParticleSystem.MinMaxCurve(0f, 0.25f);
+        m.startSize3D = true;
+        m.startSizeX = new ParticleSystem.MinMaxCurve(coMin * 0.5f, coMax * 0.5f);
+        m.startSizeY = new ParticleSystem.MinMaxCurve(coMin, coMax);
+        m.startSizeZ = 1f;
+        m.startRotation = 0f;                     // ngon lua luon DUNG
+        m.startColor = Color.white;
+        m.gravityModifier = -bocLen;              // boc len
+        m.maxParticles = Mathf.CeilToInt(soMoiGiay * 0.7f) + 4;
+        var e = ps.emission; e.rateOverTime = soMoiGiay;
+        var rot = ps.rotationOverLifetime; rot.enabled = false;
+        var sol = ps.sizeOverLifetime; sol.enabled = true; sol.separateAxes = false;
+        sol.size = new ParticleSystem.MinMaxCurve(1f, new AnimationCurve(new Keyframe(0f, 0.55f), new Keyframe(0.35f, 1f), new Keyframe(1f, 0.85f)));
+        var col = ps.colorOverLifetime; col.enabled = true;
+        var g = new Gradient();
+        g.SetKeys(new[] { new GradientColorKey(Color.white, 0f), new GradientColorKey(Color.white, 1f) },
+                  new[] { new GradientAlphaKey(0f, 0f), new GradientAlphaKey(1f, 0.12f), new GradientAlphaKey(0.8f, 0.65f), new GradientAlphaKey(0f, 1f) });
+        col.color = new ParticleSystem.MinMaxGradient(g);
+        var nz = ps.noise; nz.enabled = true; nz.strength = 0.25f; nz.frequency = 1.2f;
+    }
+
+    /// <summary>Doi lop TAN LUA "Sparks" (vet keo dai - "thanh nho mau lua") cua qua cau lua sang ngon lua that. Moi qua cau lua (tran dau
+    /// qua NangCapDuoiLua, man chinh qua TuTheTrungBay).</summary>
+    public static void TanLuaThanhNgonLua(Transform qua, float radius)
+    {
+        var t = qua != null ? qua.Find("Sparks") : null;
+        if (t != null) DoiThanhNgonLuaThat(t.GetComponent<ParticleSystem>(), radius * 1.2f, radius * 2.2f, 22f, 0.25f, 0.42f);
+    }
 
     static Material LuaDuoiMat
     {
@@ -49,6 +121,9 @@ public static partial class VfxFactory
     public static void NangCapDuoiLua(Transform qua, float radius)
     {
         if (qua == null) return;
+
+        // 0) TAN LUA -> ngon lua that (04/10/2026)
+        TanLuaThanhNgonLua(qua, radius);
 
         // 1) Hat LUA CUON (thay anh tam giac)
         var flames = qua.Find("Flames");

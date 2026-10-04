@@ -9095,6 +9095,34 @@ cháy xém**.
   nào dưới 2,4 m): 25 đám, tâm 1,93–4,27 m, xa trục nhất 1,05 m = 63% vỏ trong; loé 1,00 → 1,56 → 1,00.
 - Điện thoại: mỗi cơn thêm ~14 đám mây lớn (1,4–2,2 m) → 3 cơn thêm ~42 tấm trong suốt chồng lên, cấp 5 (5 cơn) ~70. Chưa đo trên máy thật.
 
+### Quả cầu lửa: tàn lửa là ngọn lửa thật dựng bằng mô phỏng Mantaflow (04/10/2026)
+
+**Người dùng** (kèm ảnh màn đăng nhập): "các vết tàn lửa nhìn quá sơ sài giống như các thanh nhỏ màu lửa chứ không phải lửa thật, hãy dùng MCP
+Blender dựng lại các vết lửa này cho thật giống ngọn lửa thật, chú ý không được làm ngọn lửa như hình tam giác". Hỏi lại; người dùng chọn: áp
+**cả màn chính lẫn trong trận**, và **thay luôn lửa lõi** của quả cầu trên tay ở màn chính (còn dùng ảnh tam giác cũ `Tex_flame`).
+
+- "Thanh nhỏ" là lớp hạt `Sparks` của hình quả cầu lửa: hạt kéo dài theo vận tốc (Stretch) — trên quả bay là tia tàn lửa, trên tay đứng yên
+  thành que.
+- **Blender MCP** (`CongCu/Blender/ngon_lua_that.blend`, scene `NgonLuaThat`): mô phỏng lửa **Mantaflow** — miền 0,8 × 0,8 × 2 m, phân giải 96,
+  nguồn cầu nhỏ ở đáy (nhiên liệu 1,8, nhiệt 2,2), lửa cháy lâu, xoáy lửa mạnh, nhiễu chi tiết. Ba lần chỉnh: (1) đặt nguồn NGOÀI miền mô phỏng →
+  trường lửa toàn 0 (kiểm bằng `flame_grid`); (2) ngọn thấp, chẻ đôi ở chân (vận tốc phun theo mặt cầu) → bỏ vận tốc ban đầu, lửa bốc mạnh
+  hơn; (3) quá mảnh (cao/rộng ~5:1 — thu nhỏ lại thành "que") → nguồn rộng hơn, ngọn ngắn lại thành hình giọt lửa, lõi vàng sáng hơn. Vật liệu
+  thể tích phát sáng theo trường `flame` (đen → đỏ thẫm → cam → vàng trắng), Cycles, máy quay trực giao khung đứng 1:2, 16 khung liên tiếp →
+  flipbook `KyNang/QuaCauLua/NgonLuaThat.png` 4 × 4 (128 × 256 mỗi ô, nền đen, cộng sáng).
+- **Unity** (`VfxFactory.DoiThanhNgonLuaThat`): hạt billboard đứng thẳng (không xoay, không kéo dài), cỡ 1:2 như ảnh, chạy hết 16 khung trong
+  một đời hạt (lửa liếm, đổi dáng). Hai lần chỉnh trên ảnh màn chính: đời 0,6 s + bốc lên mạnh thì thành **cột ngọn nến rời bay quá đầu** →
+  đời 0,23–0,42 s, bốc nhẹ; tâm hạt giữa ảnh thì **nửa ngọn lửa chìm vào lõi sáng** chỉ còn một đốm → đặt **pivot 0,38** (gốc hạt ở chân lửa)
+  cho ngọn liếm lên trên mặt quả cầu.
+- Áp dụng: lớp `Sparks` của mọi quả cầu lửa trong trận (`NangCapDuoiLua` — kỹ năng, Lửa địa ngục, quả của quái) và quả cầu trên tay màn chính;
+  màn chính thêm lớp lửa lõi `Flames` (trong trận lõi vẫn là lửa cuộn `LuaDuoi` đã làm từ trước).
+
+**Đo:**
+- Menu 70 (0 lỗi): mục C mới — `Sparks` vẽ Billboard, ảnh `NgonLuaThat`, flipbook 4 × 4, tỉ lệ rộng/cao 0,50.
+- Menu 101c (0 lỗi): lửa trên tay cả `Sparks` lẫn `Flames` là ngọn lửa thật. Ảnh `PlayTestShots/tay_trungbay_can.png`.
+- **Menu 102 mới** — ảnh một khung của menu 70 có ×2,9 điểm cháy trắng so với ảnh cũ, nên đo lại cho chắc: ba quả cầu lửa thật bay song song
+  trên cao (A ngọn lửa thật / B tàn lửa cũ dựng lại bằng code / C không tàn lửa), mỗi quả một lớp + một máy quay đi theo nền đen, 20 khung × 3
+  lượt: tổng sáng **×1,05** (B ×1,02) so với C, điểm cháy trắng **×1,00** cả ba — ảnh một khung chỉ là dao động, quả cầu không chói hơn.
+
 ### Màn chính: phù thuỷ ngửa hai tay nâng quả cầu lửa và quả cầu băng (04/10/2026)
 
 **Người dùng** (kèm ảnh sảnh): "cho 2 bàn tay của nhân vật phù thuỷ ngửa lên trời và hơi co cao lên 1 chút; 1 bên bàn tay phát sáng hiệu ứng

@@ -161,6 +161,19 @@ public static class ThuQuaCauLua
             Kiem(tex != null && tex.name != "Tex_flame", "vet lua van dung anh tam giac Tex_flame");
             Kiem(flames != null && tsa.enabled && tsa.numTilesX * tsa.numTilesY >= 16, "vet lua khong phai flipbook");
             Kiem(tr != null && trTex != null, "khong co vet lua dai");
+            // 04/10/2026: TAN LUA (Sparks) khong con la vet keo dai ("thanh nho mau lua") ma la NGON LUA THAT (flipbook Mantaflow Blender MCP)
+            var sp = that.transform.Find("Sparks");
+            var rs = sp != null ? sp.GetComponent<ParticleSystemRenderer>() : null;
+            var texS = rs != null && rs.sharedMaterial != null ? rs.sharedMaterial.mainTexture : null;
+            var psS = sp != null ? sp.GetComponent<ParticleSystem>() : null;
+            Ghi(string.Format("C. tan lua Sparks: che do ve {0}, anh \"{1}\", flipbook {2}x{3}, ti le rong/cao {4:F2}, trong luc {5:F2} (am = boc len)",
+                rs != null ? rs.renderMode.ToString() : "-", texS != null ? texS.name : "KHONG",
+                psS != null ? psS.textureSheetAnimation.numTilesX : 0, psS != null ? psS.textureSheetAnimation.numTilesY : 0,
+                psS != null && psS.main.startSize3D ? psS.main.startSizeX.constantMax / psS.main.startSizeY.constantMax : -1f,
+                psS != null ? psS.main.gravityModifier.constant : 0f));
+            Kiem(rs != null && rs.renderMode == ParticleSystemRenderMode.Billboard && texS != null && texS.name == "NgonLuaThat"
+                 && psS.textureSheetAnimation.enabled && psS.textureSheetAnimation.numTilesX * psS.textureSheetAnimation.numTilesY == 16,
+                 "tan lua van la vet keo dai, khong phai ngon lua that");
             // Doi qua cau bay xa ~5 m moi chup: lan chay doi chung chup ngay luc sinh chi ra mot dom sang trum nguoi
             float hanBay = Time.time + 1f;
             while (that != null && Vector3.Distance(that.transform.position, goc) < 5f && Time.time < hanBay) yield return null;
