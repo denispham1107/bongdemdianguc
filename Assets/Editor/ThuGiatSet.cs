@@ -445,7 +445,8 @@ public static class ThuGiatSet
              "Quy cay THAT (prefab) chua co tam danh 9,6 m - prefab de len so trong code?");
         Kiem(Mathf.Abs(ai.tamTiaSet - 12f) < 0.01f, "tia Quy cay THAT chua bay toi 12 m");
 
-        // Doi no phong: bat vat GiatSet do quai tao (xac suat choang 0 - chi quai moi tat choang)
+        // Doi no phong: bat vat GiatSet do QUAI tao (PhongCuaQuai tat tangKhiUot). Truoc loc "xac suat choang 0" - tu 28/09/2026
+        // Quy cay co 15% choang (EnemyFactory.ApDacTinh) nen bo loc ay khong bat duoc tia nao (5 loi gia o muc I)
         GiatSet gs = null;
         float xaKhiPhong = -1f;
         float han = Time.time + 12f;
@@ -453,7 +454,7 @@ public static class ThuGiatSet
         {
             yield return null;
             foreach (var g in Object.FindObjectsByType<GiatSet>(FindObjectsInactive.Exclude))
-                if (g.xacSuatChoang == 0f && g.boQua == null) { gs = g; break; }
+                if (!g.tangKhiUot && g.boQua == null) { gs = g; break; }
             if (gs != null)
             {
                 Vector3 d = go.transform.position - toi.transform.position; d.y = 0f;

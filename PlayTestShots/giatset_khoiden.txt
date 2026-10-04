@@ -1,0 +1,11 @@
+may quay '2.5D (Diablo)', muc do hoa TrungBinh, bia cach 9 m
+MOI: tia dai 8.2 m, nhanhNho 8 (mong doi 8)
+MOI: lat cat dau tay (0,35-0,95 m, do trang loi) [rong 1.09] 0.87 0.69 0.68 0.93 1.00 | [rong 0.97] 0.89 0.82 0.78 0.79 0.92 | [rong 1.00] 0.71 0.78 0.78 0.92 1.00 | [rong 0.92] 0.84 0.78 0.87 0.85 0.89 | 
+MOI: lat cat cho trung (0,65-0,95 m) 0.69 0.61 0.69 | 0.96 0.84 0.76 | 0.87 0.75 0.70 | 1.00 1.00 0.74 | 
+DOI CHUNG cu: tia dai 8.2 m, nhanhNho 8 (mong doi 8)
+DOI CHUNG cu: lat cat dau tay (0,35-0,95 m, do trang loi) [rong 0.40] 0.39 0.85 0.85 0.77 0.71 | [rong 0.34] 0.16 0.62 0.79 0.88 1.00 | [rong 0.29] 0.15 0.82 0.76 0.68 0.76 | [rong 0.33] 0.18 0.77 0.78 0.74 0.74 | 
+DOI CHUNG cu: lat cat cho trung (0,65-0,95 m) 0.94 0.78 0.64 | 0.76 0.78 0.68 | 1.00 0.87 0.76 | 0.79 0.71 0.75 | 
+dau tay: MOI thap nhat 0.68 trung binh 0.84 | CU thap nhat 0.15 trung binh 0.67
+cho trung: MOI thap nhat 0.61 | CU thap nhat 0.64
+be ngang quang o 0,35 m tu tay / o giua tia (thap nhat): MOI 0.92 | CU 0.29
+so loi ghi nhan = 0

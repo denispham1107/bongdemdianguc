@@ -1,0 +1,5 @@
+muc 0 nhanh nho / met: tia dai 8.2 m, nhanhNho = 0
+muc 0.5 nhanh nho / met: tia dai 8.2 m, nhanhNho = 4
+muc 1 nhanh nho / met: tia dai 8.2 m, nhanhNho = 8
+muc 1.5 nhanh nho / met: tia dai 8.2 m, nhanhNho = 12
+so loi ghi nhan = 0

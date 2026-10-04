@@ -326,7 +326,15 @@ public class GiatSet : MonoBehaviour
         arc.segments = Mathf.Clamp(Mathf.RoundToInt(dai * 1.1f), 5, 18);
         arc.jitter = Mathf.Clamp(dai * 0.05f, 0.15f, 0.42f);
         arc.branches = 2;
+        // Nhanh nho phu doc than tia (nguoi dung 05/10/2026: "them nhieu nhanh set nho phu tren tia set chinh"),
+        // so theo do dai tia: SoNhanhNhoMoiMet x met
+        arc.nhanhNho = Mathf.RoundToInt(SoNhanhNhoMoiMet * dai);
     }
+
+    /// <summary>So nhanh nho phu moi met tia: 1 (nguoi dung chon 05/10/2026 sau anh menu 105b 0 / 0,5 / 1 / 1,5; ap cho CA BA tia dung
+    /// KieuTia - Giut set nguoi choi, Qua cau dien, Quy cay). Bien tinh de menu 105b dat tam cac muc.</summary>
+    public const float SoNhanhNhoMoiMetChon = 1f;
+    public static float SoNhanhNhoMoiMet = SoNhanhNhoMoiMetChon;
 
     /// <summary>
     /// Lay toi da <paramref name="soLuong"/> muc tieu trong tam, xep theo diem.

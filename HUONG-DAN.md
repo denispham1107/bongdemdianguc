@@ -9095,6 +9095,37 @@ cháy xém**.
   nào dưới 2,4 m): 25 đám, tâm 1,93–4,27 m, xa trục nhất 1,05 m = 63% vỏ trong; loé 1,00 → 1,56 → 1,00.
 - Điện thoại: mỗi cơn thêm ~14 đám mây lớn (1,4–2,2 m) → 3 cơn thêm ~42 tấm trong suốt chồng lên, cấp 5 (5 cơn) ~70. Chưa đo trên máy thật.
 
+### Giựt sét: "khối đen" che hai đầu tia · thêm nhánh sét nhỏ (05/10/2026)
+
+**Người dùng** (hai ảnh, khoanh hai đầu tia): "khi sử dụng skill, tia sét bị che mất hình bởi khối đen" và "cho thêm nhiều nhánh sét nhỏ phụ trên
+tia sét chính để nhìn giống tia sét hơn".
+
+- **Nguyên nhân thật — không có vật gì màu đen.** Mọi lớp của tia đều là cộng sáng, không tự làm tối được. Menu 105 (bản chẩn đoán) tắt lần lượt
+  từng lớp rồi chụp: "khối đen" là chính đầu tia. Tia 10 m chỉ có khoảng 11 khúc gấp, mỗi khúc gần 0,9 m, mà cả ba lớp (lõi trắng, viền xanh, hào
+  quang) đều vuốt nhọn về 0 ngay trong khúc đầu và khúc cuối. Mỗi lớp vì vậy thành một **tam giác cạnh thẳng**: ảnh tia bị ép mỏng tới mức mất lõi
+  trắng, hào quang xanh xung quanh bị cắt bằng một đường thẳng sắc. Phần nền không có quầng xanh nằm cạnh quầng sáng nên trông như một khối tối
+  hình tam giác che mất tia.
+- **Sửa** (`LightningArc`, chế độ ảnh — dùng cho Giựt sét, Quả cầu điện và tia xanh lá của Quỷ cây): chia nhỏ đường đi thành đoạn ≤ 0,15 m; đầu
+  tia chỉ vuốt 0,3 m tính theo **mét** (trước: 12% / 7% chiều dài) và **mờ dần** thay vì thu nhọn — bề ngang chỉ thu còn 45%; hào quang cũng vuốt
+  theo mét + mờ dần (trước vuốt 14% theo **số thứ tự đỉnh**). Cụm sét bùng ở tay vẫn che chỗ nối.
+- **Nhánh nhỏ phụ:** menu 105b chụp 4 mức (0 / 0,5 / 1 / 1,5 nhánh mỗi mét), người dùng chọn **1 nhánh mỗi mét** và áp cho **cả ba** tia dùng chung
+  kiểu Giựt sét. Mỗi nhánh dài 0,35–1 m, mọc ở 8–92% thân tia, ngang bằng 0,38 thân chính, nhọn và mờ dần về cuối. Hai nhánh lớn cũ giữ nguyên.
+
+**Đo — menu 105** (tung Giựt sét thật ở Act2 ban đêm, máy quay 2.5D như ảnh người dùng; vẽ riêng tia lên nền đen bằng máy quay phụ đặt đúng chỗ
+máy quay game; 4 lần tung mỗi kiểu, có **đối chứng cách vuốt cũ** chạy cùng lượt):
+
+| | Mới | Cũ (đối chứng) |
+|---|---|---|
+| Độ trắng lõi thấp nhất, 0,35–0,95 m từ tay | **0,68** | 0,15 |
+| Bề ngang quầng ở 0,35 m so với giữa tia | **0,92** | 0,29 (tam giác) |
+| Độ trắng lõi thấp nhất, 0,65–0,95 m trước chỗ trúng | 0,61 | 0,64 |
+| Số nhánh nhỏ trên tia 8,2 m | 8 | — |
+
+0 lỗi. (Thước đo đầu tiên lấy "kênh sáng nhất" bị bão hoà — quầng xanh lúc nào cũng 1,0 — nên đổi sang độ trắng `min(r,g,b)` + bề ngang quầng.)
+Menu 69 (Giựt sét) và 74 (Quả cầu điện) chạy lại 0 lỗi. Menu 69 mục I từng báo 5 lỗi **giả**: phép thử tìm tia của Quỷ cây theo "xác suất choáng 0",
+mà từ 28/09 Quỷ cây có 15% choáng — nay lọc theo `tangKhiUot` (chỉ tia của quái tắt). Mục F một lần ra −1 (không bắt được cú tung — đợt quái đầu đã
+ra sau 30 giây), chạy lại đạt. Ảnh: `PlayTestShots/giatset_khoiden_so_cu_moi.png`, `giatset_nhanhnho_4muc.png`.
+
 ### Sảnh: chữ "ĐƠN" bị cắt thành "Đ…" · máu khởi đầu 700 (05/10/2026)
 
 **Người dùng** (ảnh sảnh trên điện thoại): "chỗ chế độ "Đơn", chữ "Đơn" không hiển thị ra đủ mà chỉ ghi thành ... phía sau"; "cho máu các nhân vật

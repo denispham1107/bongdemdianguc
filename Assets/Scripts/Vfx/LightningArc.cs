@@ -38,6 +38,8 @@ public class LightningArc : MonoBehaviour
     [Header("Nhanh re ra hai ben")]
     public int branches = 2;
     public float branchLength = 0.34f;
+    [Tooltip("So NHANH NHO PHU (chi che do anh): soi ngan 0,35-1 m moc doc than chinh - nguoi dung 05/10/2026 xin them cho giong tia set")]
+    public int nhanhNho;
 
     [Header("Mau")]
     public Color coreColor = new Color(1f, 1f, 1f, 1f);
@@ -292,15 +294,73 @@ public class LightningArc : MonoBehaviour
     /// <summary>Dem cho phep thu: so lan dung luoi che do anh.</summary>
     public static int SoLanDungAnh;
 
+    /// <summary>
+    /// KHOI DEN O HAI DAU TIA (nguoi dung 05/10/2026, anh khoanh hai dau tia Giut set): tia 10 m chi co ~11 khuc gap,
+    /// moi khuc ~0,9 m, ma ca ba lop (loi, vien, hao quang) vuot nhon ve 0 trong khuc DAU / CUOI -> moi lop thanh mot
+    /// TAM GIAC canh thang; anh bi ep mong thi loi trang mat han (mip), hao quang dut canh sac -> nhin nhu mot khoi toi
+    /// hinh tam giac che mat tia. Nay chia nho duong di (moi doan <= BuocChiaNho) va vuot theo DO DAI THAT kem MO DAN
+    /// (alpha dinh), be ngang chi thu ve TiLeNgangDau chu khong ve 0.
+    /// </summary>
+    public const float BuocChiaNho = 0.15f;
+    /// <summary>Do dai vuot dau tia (o tay) / cuoi tia (cho trung), met - cum dien bung (o tay ban kinh 0,22 m) che cho noi.
+    /// 0,55 thi o 0,30 m loi trang con mo 0,27-0,42 (menu 105) - nguoi dung muon thay tia lien tu tay.</summary>
+    public const float MetVuotDau = 0.3f, MetVuotCuoi = 0.3f;
+    /// <summary>Be ngang con lai o chinh dau mut (phan cua be ngang day du).</summary>
+    public const float TiLeNgangDau = 0.45f;
+
+    /// <summary>DOI CHUNG cho phep thu (menu 105): dung lai cach vuot CU (khong chia nho, vuot theo % chieu dai ve 0, hao quang
+    /// vuot 14% theo chi so dinh) de so cung luot.</summary>
+    public static bool DoiChungDauCu;
+
+    static readonly List<Vector3> chiaNho = new List<Vector3>();
+
+    /// <summary>Chia moi doan cua duong gap khuc thanh cac doan ngan &lt;= <paramref name="buoc"/> (giu nguyen cac dinh cu).</summary>
+    public static Vector3[] ChiaNho(Vector3[] pts, float buoc)
+    {
+        if (pts == null || pts.Length < 2) return pts;
+        chiaNho.Clear();
+        for (int i = 0; i < pts.Length - 1; i++)
+        {
+            int n = Mathf.Max(1, Mathf.CeilToInt(Vector3.Distance(pts[i], pts[i + 1]) / buoc));
+            for (int j = 0; j < n; j++) chiaNho.Add(Vector3.Lerp(pts[i], pts[i + 1], j / (float)n));
+        }
+        chiaNho.Add(pts[pts.Length - 1]);
+        return chiaNho.ToArray();
+    }
+
+    /// <summary>Muc vuot (0..1) tai quang duong <paramref name="daDi"/> tren tong <paramref name="tong"/> met.</summary>
+    static float MucVuot(float daDi, float tong, float metDau, float metCuoi)
+    {
+        float dau = metDau > 0f ? Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(daDi / metDau)) : 1f;
+        float cuoi = metCuoi > 0f ? Mathf.SmoothStep(0f, 1f, Mathf.Clamp01((tong - daDi) / metCuoi)) : 1f;
+        return dau * cuoi;
+    }
+
     void BuildAnh(Mesh mesh, Vector3[] path)
     {
         if (mesh == null) return;
         SoLanDungAnh++;
 
+        // Nhanh tach tu duong GOC (MakeBranch chon dinh theo chi so), roi moi chia nho than chinh
+        var nhanhGoc = new List<Vector3[]>();
+        for (int i = 0; i < branches; i++)
+        {
+            var b = MakeBranch(path);
+            if (b != null) nhanhGoc.Add(DoiChungDauCu ? b : ChiaNho(b, BuocChiaNho));
+        }
+        if (!DoiChungDauCu) path = ChiaNho(path, BuocChiaNho);
+        soNhanhNhoDung = 0;
+        for (int i = 0; i < nhanhNho; i++)
+        {
+            var b = MakeNhanhNho(path);
+            if (b != null) { nhanhGoc.Add(ChiaNho(b, BuocChiaNho)); soNhanhNhoDung++; }
+        }
+
         if (auraMesh != null)
         {
             verts.Clear(); uvs.Clear(); cols.Clear(); tris.Clear();
-            AppendRibbon(path, beNgang * heSoHaoQuang);
+            if (DoiChungDauCu) AppendRibbon(path, beNgang * heSoHaoQuang);
+            else AppendHaoQuang(path, beNgang * heSoHaoQuang);
             auraMesh.Clear();
             auraMesh.SetVertices(verts);
             auraMesh.SetUVs(0, uvs);
@@ -313,12 +373,9 @@ public class LightningArc : MonoBehaviour
         // Gieo MOT LAN roi dung cho CA HAI luoi (loi trang, vien xanh): vien rong hon nhung phai trung tung khuc.
         daiChinh = Random.Range(0, 4); uChinh = Random.value; latChinh = Random.value < 0.5f;
         nhanhAnh.Clear();
-        for (int i = 0; i < branches; i++)
-        {
-            var b = MakeBranch(path);
-            if (b == null) continue;
-            nhanhAnh.Add(new NhanhAnh { pts = b, dai = Random.Range(0, 4), u = Random.value, lat = Random.value < 0.5f });
-        }
+        for (int i = 0; i < nhanhGoc.Count; i++)
+            nhanhAnh.Add(new NhanhAnh { pts = nhanhGoc[i], dai = Random.Range(0, 4), u = Random.value, lat = Random.value < 0.5f,
+                                        nho = i >= nhanhGoc.Count - soNhanhNhoDung });
         gocBungDau = Random.Range(0f, Mathf.PI * 2f); oBungDau = Random.Range(0, 4);
         gocBungCuoi = Random.Range(0f, Mathf.PI * 2f); oBungCuoi = Random.Range(0, 4);
 
@@ -326,7 +383,31 @@ public class LightningArc : MonoBehaviour
         if (glowMesh != null && glowMesh != mesh) DungLuoiAnh(glowMesh, path, heSoVien);
     }
 
-    struct NhanhAnh { public Vector3[] pts; public int dai; public float u; public bool lat; }
+    struct NhanhAnh { public Vector3[] pts; public int dai; public float u; public bool lat, nho; }
+    int soNhanhNhoDung;
+    /// <summary>Be ngang nhanh nho so voi than chinh (nhanh lon 0,6).</summary>
+    public const float NgangNhanhNho = 0.38f;
+
+    /// <summary>
+    /// Mot NHANH NHO PHU: moc tu mot diem ngau nhien 8-92% than chinh (da chia nho), toa ra mot ben, hoi xuoi theo tia,
+    /// dai 0,35-1,0 m, gap khuc rieng. Khac MakeBranch (nhanh lon, dai theo phan con lai cua tia, chon theo dinh goc).
+    /// </summary>
+    Vector3[] MakeNhanhNho(Vector3[] path)
+    {
+        if (path.Length < 8) return null;
+        int i = Random.Range(Mathf.RoundToInt(path.Length * 0.08f), Mathf.RoundToInt(path.Length * 0.92f));
+        i = Mathf.Clamp(i, 1, path.Length - 2);
+        Vector3 from = path[i];
+        Vector3 dir = path[i + 1] - path[i - 1];
+        if (dir.sqrMagnitude < 1e-6f) return null;
+        dir.Normalize();
+        Vector3 side, up;
+        Frame(dir, out side, out up);
+        float ang = Random.Range(0f, Mathf.PI * 2f);
+        Vector3 outward = (side * Mathf.Cos(ang) + up * Mathf.Sin(ang)).normalized;
+        Vector3 to = from + (outward + dir * Random.Range(0.3f, 0.9f)).normalized * Random.Range(0.35f, 1.0f);
+        return MakePath(from, to, 4, jitter * 1.4f);
+    }
     readonly List<NhanhAnh> nhanhAnh = new List<NhanhAnh>();
     int daiChinh, oBungDau, oBungCuoi;
     float uChinh, gocBungDau, gocBungCuoi;
@@ -338,11 +419,21 @@ public class LightningArc : MonoBehaviour
     {
         verts.Clear(); uvs.Clear(); cols.Clear(); tris.Clear();
 
-        // Dau tia vuot DAI hon (12%): moi tia deu moc tu cung mot diem giua hai tay, vuot ngan thi ba bon dai
-        // anh chong kin nhau ngay truoc mat may quay.
-        AppendRibbonAnh(path, beNgang * noi, beNgang, daiChinh, uChinh, latChinh, 0.12f, 0.07f);
+        // Dau tia vuot DAI hon cuoi: moi tia deu moc tu cung mot diem giua hai tay, vuot ngan thi ba bon dai
+        // anh chong kin nhau ngay truoc mat may quay. Vuot theo MET (khong theo % chieu dai) + mo dan - xem BuocChiaNho.
+        if (DoiChungDauCu)
+        {
+            float l = DoDai(path);
+            AppendRibbonAnh(path, beNgang * noi, beNgang, daiChinh, uChinh, latChinh, 0.12f * l, 0.07f * l, true);
+        }
+        else AppendRibbonAnh(path, beNgang * noi, beNgang, daiChinh, uChinh, latChinh, MetVuotDau, MetVuotCuoi, false);
+        // Nhanh: goc liem vao than (than chinh da sang o do), ngon nhon dan + mo dan ve cuoi
         foreach (var nh in nhanhAnh)
-            AppendRibbonAnh(nh.pts, beNgang * 0.6f * noi, beNgang * 0.6f, nh.dai, nh.u, nh.lat, 0.12f, 0.35f);
+        {
+            float ng = nh.nho ? NgangNhanhNho : 0.6f;
+            AppendRibbonAnh(nh.pts, beNgang * ng * noi, beNgang * ng, nh.dai, nh.u, nh.lat,
+                            (nh.nho ? 0.06f : 0.12f) * (DoiChungDauCu ? DoDai(nh.pts) : 1f), (nh.nho ? 0.5f : 0.35f) * DoDai(nh.pts), true);
+        }
 
         if (coBungDau > 0f) AppendBung(path[0], coBungDau * noi, gocBungDau, oBungDau);
         if (coBungCuoi > 0f) AppendBung(path[path.Length - 1], coBungCuoi * noi, gocBungCuoi, oBungCuoi);
@@ -358,8 +449,10 @@ public class LightningArc : MonoBehaviour
     /// <summary>
     /// Dai anh doc theo duong di, mat quay ve may quay nhu AppendRibbon. u = met da di / (4 x be ngang)
     /// nen anh giu dung ti le, lap lai tren tia dai; v nam trong mot dai (1/8 anh).
+    /// Vuot hai dau theo MET (<paramref name="metDau"/>, <paramref name="metCuoi"/>): than chinh thu ve TiLeNgangDau va MO DAN
+    /// (alpha dinh) - thu ve 0 thi anh bi ep mat loi trang; nhanh (<paramref name="laNhanh"/>) thi ngon nhon dan ve 0.
     /// </summary>
-    void AppendRibbonAnh(Vector3[] pts, float width, float beNgangChuKy, int dai, float lechU, bool latDoc, float mepDau, float mepCuoi)
+    void AppendRibbonAnh(Vector3[] pts, float width, float beNgangChuKy, int dai, float lechU, bool latDoc, float metDau, float metCuoi, bool laNhanh)
     {
         int n = pts.Length;
         if (n < 2) return;
@@ -375,6 +468,9 @@ public class LightningArc : MonoBehaviour
         tong = Mathf.Max(0.001f, tong);
         float daDi = 0f;
         float chuKy = 4f * Mathf.Max(0.05f, beNgangChuKy);
+        // Tia ngan (nhip lan 1-2 m) thi thu hai doan vuot cho vua
+        float hai = metDau + metCuoi;
+        if (!DoiChungDauCu && hai > tong * 0.8f) { float co = tong * 0.8f / hai; metDau *= co; metCuoi *= co; }
 
         for (int i = 0; i < n; i++)
         {
@@ -391,9 +487,9 @@ public class LightningArc : MonoBehaviour
 
             float k = daDi / tong;
             // Vuot NGAN o hai dau: cum dien bung da che cho noi, tia phai day dan ngay tu tay
-            float vuot = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(k / Mathf.Max(0.001f, mepDau)))
-                       * Mathf.SmoothStep(0f, 1f, Mathf.Clamp01((1f - k) / Mathf.Max(0.001f, mepCuoi)));
-            float w = width * 0.5f * Mathf.Lerp(1f, 0.85f, k) * vuot;
+            float vuot = MucVuot(daDi, tong, metDau, metCuoi);
+            float w = width * 0.5f * Mathf.Lerp(1f, 0.85f, k) * (laNhanh ? vuot : Mathf.Lerp(TiLeNgangDau, 1f, vuot));
+            Color mau = new Color(1f, 1f, 1f, laNhanh ? 1f : vuot);
 
             Vector3 p = space.InverseTransformPoint(pts[i]);
             Vector3 off = space.InverseTransformDirection(s) * w;
@@ -401,9 +497,61 @@ public class LightningArc : MonoBehaviour
 
             verts.Add(p - off); verts.Add(p + off);
             uvs.Add(new Vector2(u, v0)); uvs.Add(new Vector2(u, v1));
-            cols.Add(Color.white); cols.Add(Color.white);
+            cols.Add(mau); cols.Add(mau);
         }
 
+        for (int i = 0; i < n - 1; i++)
+        {
+            int a = baseIndex + i * 2;
+            tris.Add(a); tris.Add(a + 2); tris.Add(a + 1);
+            tris.Add(a + 1); tris.Add(a + 2); tris.Add(a + 3);
+        }
+    }
+
+    static float DoDai(Vector3[] pts)
+    {
+        float d = 0f;
+        for (int i = 1; i < pts.Length; i++) d += Vector3.Distance(pts[i], pts[i - 1]);
+        return d;
+    }
+
+    /// <summary>
+    /// Hao quang mem duoi dai anh (che do anh): nhu AppendRibbon nhung vuot theo MET + mo dan, khong vuot 14% theo CHI SO
+    /// dinh (duong goc chi ~11 dinh nen 14% roi trong mot khuc 0,9 m -> hao quang dut thanh tam giac canh sac).
+    /// </summary>
+    void AppendHaoQuang(Vector3[] pts, float width)
+    {
+        int n = pts.Length;
+        if (n < 2) return;
+        int baseIndex = verts.Count;
+        Transform space = transform;
+        Vector3 mat = ChoMayQuay();
+        float tong = Mathf.Max(0.001f, DoDai(pts)), daDi = 0f;
+        float metDau = MetVuotDau * 1.6f, metCuoi = MetVuotCuoi * 1.6f;
+        float hai = metDau + metCuoi;
+        if (hai > tong * 0.8f) { float co = tong * 0.8f / hai; metDau *= co; metCuoi *= co; }
+
+        for (int i = 0; i < n; i++)
+        {
+            if (i > 0) daDi += Vector3.Distance(pts[i], pts[i - 1]);
+            Vector3 t = i == 0 ? pts[1] - pts[0] : i == n - 1 ? pts[n - 1] - pts[n - 2] : pts[i + 1] - pts[i - 1];
+            if (t.sqrMagnitude < 1e-6f) t = Vector3.down;
+            t.Normalize();
+            Vector3 s = Vector3.Cross(t, mat - pts[i]);
+            if (s.sqrMagnitude < 1e-8f) { Vector3 a1, a2; Frame(t, out a1, out a2); s = a1; }
+            s.Normalize();
+
+            float k = daDi / tong;
+            float vuot = MucVuot(daDi, tong, metDau, metCuoi);
+            float w = width * Mathf.Lerp(1f, 0.62f, k) * Mathf.Lerp(TiLeNgangDau, 1f, vuot);
+            Color mau = new Color(1f, 1f, 1f, vuot);
+
+            Vector3 p = space.InverseTransformPoint(pts[i]);
+            Vector3 off = space.InverseTransformDirection(s) * w;
+            verts.Add(p - off); verts.Add(p + off);
+            uvs.Add(new Vector2(0f, k)); uvs.Add(new Vector2(1f, k));
+            cols.Add(mau); cols.Add(mau);
+        }
         for (int i = 0; i < n - 1; i++)
         {
             int a = baseIndex + i * 2;
