@@ -9143,6 +9143,11 @@ Blender dựng lại các vết lửa này cho thật giống ngọn lửa thậ
   trên tay — trong trận giữ đuôi lửa khi bay 17 m/s): `Sparks` + `Flames` trên tay mô phỏng **cục bộ** (đi theo quả cầu khi nhấp nhô / nhân vật
   xoay), không vận tốc, không bốc lên, tắt nhiễu, gốc mọi ngọn lửa trên mặt cầu 0,85 bán kính. Menu 101c đo vị trí thật: 19 ngọn lửa, gốc xa tâm
   nhất **0,85 bán kính**, tốc độ lớn nhất **0** — 0 lỗi.
+- **Thêm lửa giữa tâm + khói đen** (người dùng gửi ảnh: "trong hình đang cháy qua 2 bên nhiều quá — vẫn giữ lượng lửa cháy qua 2 bên, nhưng tăng
+  vết lửa ở giữa trung tâm quả cầu"; "thêm 1 ít hiệu ứng khói đen bay lên"): lớp `LuaGiua` (nhân bản lớp lửa lõi đã chỉnh, gốc lửa gom vào lòng
+  cầu 0,3 bán kính, 26 ngọn/giây — ngọn lửa mọc từ giữa liếm lên qua đỉnh cầu; hai lớp cũ giữ nguyên) và `KhoiDenBocLen` (flipbook khói cuộn xám
+  đen, sinh ở đỉnh cầu, mô phỏng THẾ GIỚI để bốc thành làn như khói thật, 0,44–0,69 m/s, 9 làn/giây, nở ×3,2 rồi tan). Menu 101c (0 lỗi): 8 ngọn
+  lửa giữa, gốc ≤ 0,30 bán kính; khói 15 làn, 15/15 nằm trên quả cầu và đang bốc lên, cao tới 0,87 m, độ sáng màu 0,10 (đen).
 
 ### Màn chính: phù thuỷ ngửa hai tay nâng quả cầu lửa và quả cầu băng (04/10/2026)
 

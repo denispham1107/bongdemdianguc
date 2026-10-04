@@ -221,6 +221,34 @@ public static class ThuTayTrungBay
                 sb.AppendLine(string.Format("Lua bam qua cau: {0} ngon lua, goc xa tam qua cau nhat {1:F3} m ({2:F2} ban kinh cau), toc do lon nhat {3:F3} m/s",
                     soHatLua, xaMax, xaMax / TuTheTrungBay.BanKinhCau, tocMax));
                 kiem(soHatLua > 10 && xaMax <= TuTheTrungBay.BanKinhCau * 1.0f && tocMax < 0.05f, "ngon lua tach khoi qua cau, bay lo lung");
+                // LUA GIUA + KHOI DEN (04/10/2026): goc lua giua nam trong long qua cau; khoi den o TREN qua cau va dang boc LEN
+                {
+                    var tg = lua.transform.Find("LuaGiua"); var psG = tg != null ? tg.GetComponent<ParticleSystem>() : null;
+                    int nG = 0; float xaG = 0f;
+                    if (psG != null)
+                    {
+                        var arr = new ParticleSystem.Particle[psG.particleCount]; nG = psG.GetParticles(arr);
+                        for (int i = 0; i < nG; i++) xaG = Mathf.Max(xaG, Vector3.Distance(tg.TransformPoint(arr[i].position), lua.transform.position));
+                    }
+                    var tk = lua.transform.Find("KhoiDenBocLen"); var psK = tk != null ? tk.GetComponent<ParticleSystem>() : null;
+                    int nK = 0, khoiTren = 0, khoiLen = 0; float caoK = 0f;
+                    if (psK != null)
+                    {
+                        var arr = new ParticleSystem.Particle[psK.particleCount]; nK = psK.GetParticles(arr);
+                        for (int i = 0; i < nK; i++)
+                        {
+                            float dy = arr[i].position.y - lua.transform.position.y;   // khong gian the gioi
+                            if (dy > 0f) khoiTren++;
+                            if (arr[i].totalVelocity.y > 0.2f) khoiLen++;
+                            caoK = Mathf.Max(caoK, dy);
+                        }
+                    }
+                    float sangK = psK != null ? 0.299f * psK.main.startColor.colorMax.r + 0.587f * psK.main.startColor.colorMax.g + 0.114f * psK.main.startColor.colorMax.b : 1f;
+                    sb.AppendLine(string.Format("Lua GIUA: {0} ngon, goc xa tam nhat {1:F3} m ({2:F2} r) | Khoi den: {3} lan, {4} tren qua cau, {5} dang boc len, cao nhat {6:F2} m tren tam, do sang mau {7:F2}",
+                        nG, xaG, xaG / TuTheTrungBay.BanKinhCau, nK, khoiTren, khoiLen, caoK, sangK));
+                    kiem(nG >= 5 && xaG <= TuTheTrungBay.BanKinhCau * 0.35f, "thieu lua o giua tam qua cau");
+                    kiem(nK >= 5 && khoiTren == nK && khoiLen >= nK * 0.9f && caoK > 0.4f && sangK < 0.2f, "khong co khoi DEN boc len tu qua cau");
+                }
                 kiem(ngonThat == 2, "tan lua / lua loi tren tay chua phai ngon lua that");
             }
             string anh = "PlayTestShots/tay_trungbay_man_chinh.png";

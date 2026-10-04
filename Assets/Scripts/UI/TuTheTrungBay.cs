@@ -32,6 +32,57 @@ public class TuTheTrungBay : MonoBehaviour
     /// <summary>Goc ngon lua nam tren mat cau ban kinh BanKinhCau x BanKinhGocLua (sat mat loi lua sang).</summary>
     public const float BanKinhGocLua = 0.85f;
 
+    /// <summary>Lop lua GIUA: goc lua trong long qua cau ban kinh BanKinhCau x BanKinhLuaGiua, so ngon moi giay.</summary>
+    public const float BanKinhLuaGiua = 0.3f, LuaGiuaMoiGiay = 26f;
+
+    /// <summary>Khoi den boc len tu qua cau lua: hat / giay, toc boc len (m/s).</summary>
+    public const float KhoiDenMoiGiay = 9f, TocKhoiLen = 0.55f;
+
+    /// <summary>
+    /// KHOI DEN BOC LEN tu qua cau lua (nguoi dung 04/10/2026: "them 1 it hieu ung khoi den bay len tu qua cau lua"): flipbook khoi cuon
+    /// (KhoiCuon 6x6) mau xam den, sinh o dinh qua cau, KHONG GIAN THE GIOI (boc len thanh lan, qua cau nhap nho / nhan vat xoay thi khoi
+    /// o lai troi len nhu khoi that), no to dan roi tan. Lop "Smoke" cu cua hinh qua cau giu nguyen.
+    /// </summary>
+    static void TaoKhoiDen(Transform cau)
+    {
+        var mat = VfxFactory.KhoiCuonMat;
+        if (mat == null) return;
+        var go = new GameObject("KhoiDenBocLen");
+        go.transform.SetParent(cau, false);
+        go.transform.localPosition = Vector3.up * BanKinhCau * 0.8f;
+        var ps = go.AddComponent<ParticleSystem>();
+        ps.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+        var m = ps.main;
+        m.loop = true; m.playOnAwake = true;
+        m.startLifetime = new ParticleSystem.MinMaxCurve(1.3f, 1.9f);
+        m.startSpeed = 0f;
+        m.startSize = new ParticleSystem.MinMaxCurve(BanKinhCau * 1.0f, BanKinhCau * 1.6f);
+        m.startRotation = new ParticleSystem.MinMaxCurve(0f, Mathf.PI * 2f);
+        m.startColor = new ParticleSystem.MinMaxGradient(new Color(0.05f, 0.045f, 0.04f, 0.50f), new Color(0.11f, 0.10f, 0.09f, 0.65f));
+        m.simulationSpace = ParticleSystemSimulationSpace.World;
+        m.maxParticles = 30;
+        var e = ps.emission; e.rateOverTime = KhoiDenMoiGiay;
+        var sh = ps.shape; sh.shapeType = ParticleSystemShapeType.Sphere; sh.radius = BanKinhCau * 0.35f;
+        // Moi truc van toc CUNG kieu TwoConstants (lech kieu la Unity bo ca mo-dun)
+        var v = ps.velocityOverLifetime; v.enabled = true; v.space = ParticleSystemSimulationSpace.World;
+        v.x = new ParticleSystem.MinMaxCurve(-0.06f, 0.06f);
+        v.y = new ParticleSystem.MinMaxCurve(TocKhoiLen * 0.8f, TocKhoiLen * 1.25f);
+        v.z = new ParticleSystem.MinMaxCurve(-0.06f, 0.06f);
+        var sol = ps.sizeOverLifetime; sol.enabled = true;
+        sol.size = new ParticleSystem.MinMaxCurve(1f, new AnimationCurve(new Keyframe(0f, 0.6f), new Keyframe(1f, 3.2f)));
+        var col = ps.colorOverLifetime; col.enabled = true;
+        var g = new Gradient();
+        g.SetKeys(new[] { new GradientColorKey(Color.white, 0f), new GradientColorKey(Color.white, 1f) },
+                  new[] { new GradientAlphaKey(0f, 0f), new GradientAlphaKey(1f, 0.15f), new GradientAlphaKey(0.6f, 0.6f), new GradientAlphaKey(0f, 1f) });
+        col.color = new ParticleSystem.MinMaxGradient(g);
+        var rot = ps.rotationOverLifetime; rot.enabled = true; rot.z = new ParticleSystem.MinMaxCurve(-0.6f, 0.6f);
+        var r = go.GetComponent<ParticleSystemRenderer>();
+        r.sharedMaterial = mat;
+        r.renderMode = ParticleSystemRenderMode.Billboard;
+        VfxFactory.BatFlipbook(ps, 6, 6, 1);
+        ps.Play();
+    }
+
     /// <summary>Nhan vat vao tu the trong bao lau (giay).</summary>
     public const float GiayVaoTuThe = 0.8f;
 
@@ -85,6 +136,19 @@ public class TuTheTrungBay : MonoBehaviour
             var sh = ps.shape; sh.shapeType = ParticleSystemShapeType.Sphere; sh.radius = BanKinhCau * BanKinhGocLua; sh.radiusThickness = 0f;
             var nz = ps.noise; nz.enabled = false;
         }
+        // LUA GIUA TAM (nguoi dung 04/10/2026: "lua chay qua 2 ben nhieu qua - giu luong lua 2 ben, tang lua o GIUA tam qua cau"): them
+        // mot lop ngon lua that nhan ban tu lop Flames da chinh, goc lua gom vao long qua cau (ban kinh 0,3 r) -> ngon lua moc tu giua
+        // liem len qua dinh qua cau; hai lop cu giu nguyen.
+        if (loi != null)
+        {
+            var giua = Instantiate(loi.gameObject, goLua.transform, false);
+            giua.name = "LuaGiua";
+            var ps = giua.GetComponent<ParticleSystem>();
+            var sh = ps.shape; sh.radius = BanKinhCau * BanKinhLuaGiua;
+            var e = ps.emission; e.rateOverTime = LuaGiuaMoiGiay;
+            ps.Play();
+        }
+        TaoKhoiDen(goLua.transform);
         foreach (var goCau in new[] { goLua, goBang })
             foreach (var lt in goCau.GetComponentsInChildren<Light>(true))
             {

@@ -1,8 +1,9 @@
 TuTheTrungBay gan tu MainMenuUI: True
 LeftHand (LUA): long tay . len = 1.000; cao 1.07 m (hong 0.90, xuong spine 1.22); ra ngoai 0.37 m, ra truoc 0.43 m; man hinh x 0.55
 RightHand (BANG): long tay . len = 1.000; cao 1.06 m (hong 0.90, xuong spine 1.22); ra ngoai 0.37 m, ra truoc 0.41 m; man hinh x 0.45
-Den cua hai qua cau: tam lon nhat 2.63 m, do sang lon nhat 2.27 (mong <= 2.6 m / ~2.2)
-Qua cau LUA: man hinh x 0.56, cao tren long tay 0.19 m, 2 den, 39 hat | Qua cau BANG: man hinh x 0.44, cao tren long tay 0.20 m, 2 den, 103 hat
+Den cua hai qua cau: tam lon nhat 2.60 m, do sang lon nhat 2.20 (mong <= 2.6 m / ~2.2)
+Qua cau LUA: man hinh x 0.56, cao tren long tay 0.19 m, 2 den, 61 hat | Qua cau BANG: man hinh x 0.44, cao tren long tay 0.20 m, 2 den, 101 hat
 Lua tren tay: Sparks: Billboard anh NgonLuaThat; Flames: Billboard anh NgonLuaThat; 
 Lua bam qua cau: 19 ngon lua, goc xa tam qua cau nhat 0.111 m (0.85 ban kinh cau), toc do lon nhat 0.000 m/s
+Lua GIUA: 8 ngon, goc xa tam nhat 0.039 m (0.30 r) | Khoi den: 15 lan, 15 tren qua cau, 15 dang boc len, cao nhat 0.87 m tren tam, do sang mau 0.10
 so loi ghi nhan = 0
