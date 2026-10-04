@@ -1,0 +1,6 @@
+samset: 19 cho cham, 171 tia con (mong 171 = cho cham x 9), luot vet gach dang bat 0
+maygiong: 26 cho cham, 234 tia con (mong 234 = cho cham x 9), luot vet gach dang bat 0
+B. mot cho cham (ban kinh 2,1): 6 tia con dot 1, dau mut lech mat dat 0, dau xa nhat cach 1.72 m
+C. vet nut theo tuoi: t 0.06: quang RGBA(1.00, 0.92, 0.75, 1.00) (bat) den a 0.55 | t 0.41: quang RGBA(1.00, 0.56, 0.26, 0.96) (bat) den a 0.85 | t 1.01: quang RGBA(0.80, 0.24, 0.05, 0.81) (bat) den a 0.85 | t 1.81: quang RGBA(0.65, 0.08, 0.02, 0.34) (bat) den a 0.85 | t 2.50: quang RGBA(0.65, 0.08, 0.02, 0.00) (tat) den a 0.85 | t 5.01: quang RGBA(0.65, 0.08, 0.02, 0.00) (tat) den a 0.42 | 
+A. doi chung LoeSetChamDat (duong Loc xoay / Gio loc): lop vet gach dang bat 2
+so loi ghi nhan = 0

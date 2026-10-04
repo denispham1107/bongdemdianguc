@@ -2005,14 +2005,32 @@ public static partial class VfxFactory
         return go;
     }
 
+    /// <summary>
+    /// Cho tia SAM SET / MAY GIONG cham dat (chi hai ky nang nay goi ham nay - Loc xoay / Gio loc goi thang LoeSetChamDat).
+    /// Nguoi dung 05/10/2026 chon mau A + vet nut cua mau B: TAT hai lop hat keo dai "Sparks" / "Jet" (ve thanh vet gach thang
+    /// "rat khong tu nhien"), thay bang TIA SET CON BO TREN DAT (TiaBoDat) + VET NUT DAT PHAT SANG roi nguoi (VetNutSet - thay
+    /// vet chay xem 15% cu). Vong sang, quang, cot sang, bui, den cua prefab giu nguyen.
+    /// </summary>
     public static void LightningImpact(Vector3 pos, float radius)
     {
-        LoeSetChamDat(pos, radius);
+        var loe = LoeSetChamDat(pos, radius);
+        TatVetGach(loe);
+        TiaBoDat.Tao(pos, radius);
+        VetNutSet.Tao(pos, radius);
+    }
 
-        // Thinh thoang de lai vet chay xem tren dat
-        if (Random.value < 0.15f)
-            GroundDecal.Spawn(new Vector3(pos.x, GroundY(pos), pos.z), radius * 0.55f,
-                              new Material(ScorchMat), 8f, 4f);
+    /// <summary>Ten hai lop hat ve thanh vet gach (prefab Vfx_SetChamDat lan BuildLightningImpact).</summary>
+    public static readonly string[] LopVetGach = { "Sparks", "Jet" };
+
+    static void TatVetGach(GameObject loe)
+    {
+        if (loe == null) return;
+        foreach (var ps in loe.GetComponentsInChildren<ParticleSystem>(true))
+            if (System.Array.IndexOf(LopVetGach, ps.name) >= 0)
+            {
+                ps.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+                ps.gameObject.SetActive(false);
+            }
     }
 
     /// <summary>Hieu ung bam tren nguoi quai dang BI CHOANG (uu tien dung prefab).</summary>

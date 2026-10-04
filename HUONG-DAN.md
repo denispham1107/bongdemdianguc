@@ -9095,6 +9095,29 @@ cháy xém**.
   nào dưới 2,4 m): 25 đám, tâm 1,93–4,27 m, xa trục nhất 1,05 m = 63% vỏ trong; loé 1,00 → 1,56 → 1,00.
 - Điện thoại: mỗi cơn thêm ~14 đám mây lớn (1,4–2,2 m) → 3 cơn thêm ~42 tấm trong suốt chồng lên, cấp 5 (5 cơn) ~70. Chưa đo trên máy thật.
 
+### Sấm sét + Mây giông: chỗ sét chạm đất — tia điện bò trên đất + vết nứt phát sáng (05/10/2026)
+
+**Người dùng** (ảnh Sấm sét): "khi đánh trúng mục tiêu vỡ ra các hạt hoặc hình giống dấu gạch sáng rất không tự nhiên", nhờ gợi ý vài mẫu, duyệt
+mẫu nào mới code. Bốn mẫu phác thảo: A tia điện bò trên đất · B vòng sóng điện + vết nứt · C quầng plasma + đốm điện tròn · D đất đá vỡ + khói
+bụi. Người dùng chọn **A + vết nứt của B**, áp cho **Sấm sét và Mây giông**.
+
+- **"Dấu gạch" là gì:** prefab chỗ chạm `Vfx_SetChamDat` có hai lớp hạt `Sparks` (toả ra) và `Jet` (phụt lên) vẽ kiểu **kéo dài theo hướng bay**
+  — mỗi hạt thành một vệt thẳng cứng.
+- **Phạm vi:** `VfxFactory.LightningImpact` chỉ có hai nơi gọi — tia Sấm sét (`LightningStrike`) và tia Mây giông. Lốc xoáy / Gió lốc gọi thẳng
+  `LoeSetChamDat` nên giữ nguyên như cũ.
+- **Sửa:** tắt `Sparks` + `Jet` ngay khung sinh. **Tia điện bò trên đất** (`TiaBoDat`): 6 tia sét con cùng kiểu tia chính toả quanh chỗ chạm, dài
+  0,6–1,05 bán kính, hai đầu bám mặt đất; 0,09 s sau thêm 3 tia mọc từ giữa các tia trước bò tiếp ra ngoài 0,5–1 m, nên trông như điện lan trên
+  đất. **Vết nứt** (`VetNutSet`, thay vết cháy xém 15% cũ): ảnh dựng bằng Blender MCP — đường nứt toả từ tâm, gãy góc, rẽ nhánh, mảnh dần ra ngoài,
+  4 biến thể — trải trên đĩa bám đất, chọn biến thể + xoay ngẫu nhiên; khe nứt sáng **trắng nóng → cam (0,5 s) → đỏ sẫm (1,4 s) → tắt (2,2 s)**,
+  vết nứt đen còn lại rồi mờ hẳn ở 6 s. Sấm sét đánh 22 tia / 2,4 s, Mây giông 36 tia nên giới hạn 12 vết cùng lúc, tia đánh lại gần vết cũ
+  (< 0,8 m) thì làm nóng lại vết ấy. Vòng sáng loang, quầng, cột sáng, bụi, đèn chớp của prefab giữ nguyên; khói đen của `SetChayDen` giữ.
+
+**Đo — menu 106** (tung Sấm sét rồi Mây giông THẬT ở Act2 ban đêm, máy quay 2.5D): Sấm sét 19 chỗ chạm, Mây giông 26 — **0** lần lớp vệt gạch
+còn bật; mỗi chỗ đúng 9 tia con (171 / 234); một chỗ chạm riêng: 6 tia đợt 1, đầu tia lệch mặt đất 0, xa nhất 1,72 m (bán kính 2,1); màu vết nứt
+đo trên vết thật: 0,06 s trắng (1,00 0,92 0,75), 0,41 s cam (1,00 0,56 0,26), 1,01 s đỏ (0,80 0,24 0,05), 2,5 s quầng tắt + vết đen 0,85, 5 s vết
+đen 0,42, sau 6 s vết biến mất. **Đối chứng:** `LoeSetChamDat` gọi thẳng (đường Lốc xoáy) vẫn còn 2 lớp vệt gạch. Menu 58 (Sấm sét) và 83 (Mây
+giông) chạy lại 0 lỗi. Ảnh `PlayTestShots/setchamdat_samset_0/1.png`, `setchamdat_maygiong_0/1.png`.
+
 ### Giựt sét: "khối đen" che hai đầu tia · thêm nhánh sét nhỏ (05/10/2026)
 
 **Người dùng** (hai ảnh, khoanh hai đầu tia): "khi sử dụng skill, tia sét bị che mất hình bởi khối đen" và "cho thêm nhiều nhánh sét nhỏ phụ trên
