@@ -30,6 +30,10 @@ using UnityEngine;
 /// (<see cref="TocDoLua"/>, <see cref="XoanLua"/>, <see cref="NhapNhayLua"/>); them LUOI LUA liem len tu dau, vai, tay (anh
 /// ngon lua don Blender MCP cua lan 1 - Flipbooks/LuaChayNguoi, moi hat chay tron doi tu khung 0) va KHOI XAM DEN MONG boc
 /// tu dau, vai. Ca hai cuc bo theo nguoi (khong bi bo lai khi chay).
+/// Lan 5 (04/10/2026, nguoi dung: "khi nhan vat va quai bi boc chay, cac vet lua cung phai BAO QUANH lay TOAN THAN, khong duoc bay
+/// lo lung tren khong"): luoi lua KHONG con bay len (van toc 0,6-1,0 m/s x doi 0,45-0,7 s -> ngon lua vot qua dinh dau 0,72 m, menu 90
+/// lan truoc) - nay dung yen tai cho sinh tren than, doi ngan, va sinh KHAP NGUOI (them hong, vai, dui, cang chan, ban chan; bot dau).
+/// Khoi xam den boc tu dau (lan 4) giu nguyen.
 /// Kich thuoc theo chieu cao than do tu XUONG (rig.bodyHeight sai: bo xuong 2,36 m trong khi hinh cao 1,67). Vat khong co
 /// xuong (bia thu) thi dung h, r truyen vao.
 /// </summary>
@@ -57,7 +61,7 @@ public class LuaToanThan : MonoBehaviour
     /// <summary>Thong so dong cua lop phu (lan 4). Lan 3: 0,9 / 0 / 0 - phep thu dung lam doi chung.</summary>
     public const float TocDoLua = 1.5f, XoanLua = 0.35f, NhapNhayLua = 0.45f;
     /// <summary>Luoi lua liem len moi giay / khoi moi giay (than 1,7 m).</summary>
-    const float LuoiMoiGiay = 34f, KhoiMoiGiay2 = 14f;
+    const float LuoiMoiGiay = 46f, KhoiMoiGiay2 = 14f;
 
     struct DiemLuoi { public Transform x; public float w, r; }
     readonly List<DiemLuoi> diemLuoi = new List<DiemLuoi>(), diemKhoi = new List<DiemLuoi>();
@@ -143,9 +147,17 @@ public class LuaToanThan : MonoBehaviour
 
         ten.TryGetValue("Hips", out hong);
         ten.TryGetValue("head_end", out dauDinh);
-        // Luoi lua: phan TREN co the (lua boc len tu dau, vai, lung, tay) + it o dau goi
-        ThemDiem(diemLuoi, ref tongLuoi, ten, "Head", 4f, 0.10f);
-        ThemDiem(diemLuoi, ref tongLuoi, ten, "head_end", 2f, 0.06f);
+        // Luoi lua: KHAP NGUOI (04/10/2026 - truoc chi phan tren + dau goi): dau, vai, lung, tay, hong, dui, cang chan, ban chan
+        ThemDiem(diemLuoi, ref tongLuoi, ten, "Head", 2.5f, 0.10f);
+        ThemDiem(diemLuoi, ref tongLuoi, ten, "head_end", 2f, 0.06f);   // dinh dau cung phai co lua bao quanh
+        ThemDiem(diemLuoi, ref tongLuoi, ten, "LeftShoulder", 1.2f, 0.08f);
+        ThemDiem(diemLuoi, ref tongLuoi, ten, "RightShoulder", 1.2f, 0.08f);
+        ThemDiem(diemLuoi, ref tongLuoi, ten, "Spine", 1.5f, 0.14f);
+        ThemDiem(diemLuoi, ref tongLuoi, ten, "Hips", 2f, 0.14f);
+        ThemDiem(diemLuoi, ref tongLuoi, ten, "LeftUpLeg", 1.5f, 0.09f);
+        ThemDiem(diemLuoi, ref tongLuoi, ten, "RightUpLeg", 1.5f, 0.09f);
+        ThemDiem(diemLuoi, ref tongLuoi, ten, "LeftFoot", 0.6f, 0.06f);
+        ThemDiem(diemLuoi, ref tongLuoi, ten, "RightFoot", 0.6f, 0.06f);
         ThemDiem(diemLuoi, ref tongLuoi, ten, "neck", 1.5f, 0.10f);
         ThemDiem(diemLuoi, ref tongLuoi, ten, "LeftArm", 2f, 0.09f);
         ThemDiem(diemLuoi, ref tongLuoi, ten, "RightArm", 2f, 0.09f);
@@ -155,8 +167,8 @@ public class LuaToanThan : MonoBehaviour
         ThemDiem(diemLuoi, ref tongLuoi, ten, "RightForeArm", 1.2f, 0.07f);
         ThemDiem(diemLuoi, ref tongLuoi, ten, "LeftHand", 1f, 0.06f);
         ThemDiem(diemLuoi, ref tongLuoi, ten, "RightHand", 1f, 0.06f);
-        ThemDiem(diemLuoi, ref tongLuoi, ten, "LeftLeg", 0.7f, 0.07f);
-        ThemDiem(diemLuoi, ref tongLuoi, ten, "RightLeg", 0.7f, 0.07f);
+        ThemDiem(diemLuoi, ref tongLuoi, ten, "LeftLeg", 1.2f, 0.07f);
+        ThemDiem(diemLuoi, ref tongLuoi, ten, "RightLeg", 1.2f, 0.07f);
         // Khoi: dau, vai
         ThemDiem(diemKhoi, ref tongKhoi, ten, "Head", 2f, 0.08f);
         ThemDiem(diemKhoi, ref tongKhoi, ten, "LeftArm", 1f, 0.08f);
@@ -411,7 +423,9 @@ public class LuaToanThan : MonoBehaviour
         luoi = TaoHe("LuoiLua", matLuoi != null ? matLuoi : VfxFactory.FlameMat, 80, -6f);
         {
             var m = luoi.main;
-            m.startLifetime = new ParticleSystem.MinMaxCurve(0.45f, 0.7f);
+            // Doi NGAN: luoi lua sinh o diem tren xuong roi dung yen trong he cuc bo cua than - xuong cu dong (tay vung, chan buoc)
+            // thi luoi lua song lau se tach khoi chi. 0,3-0,45 s thi luon sat than.
+            m.startLifetime = new ParticleSystem.MinMaxCurve(0.30f, 0.45f);
             m.startSpeed = 0f;
             m.startRotation = new ParticleSystem.MinMaxCurve(-0.2f, 0.2f);
             var em = luoi.emission; em.rateOverTime = 0f;       // phat bang tay theo xuong (LateUpdate)
@@ -459,9 +473,10 @@ public class LuaToanThan : MonoBehaviour
         for (int i = 0; i < n && diemLuoi.Count > 0; i++)
         {
             ep.position = transform.InverseTransformPoint(ChonDiem(diemLuoi, tongLuoi, s));
-            // Luoi lua to, boc nhanh: nho hon 0,4 m thi chim vao lop lua sang tren than, khong con thay "dang boc chay"
-            ep.startSize = Random.Range(0.38f, 0.60f) * s;
-            ep.velocity = new Vector3(Random.Range(-0.08f, 0.08f), Random.Range(0.6f, 1.0f) * s, Random.Range(-0.08f, 0.08f));
+            // Luoi lua cao 0,32-0,5 m: nho hon thi chim vao lop lua sang tren than. KHONG BAY LEN (04/10/2026, nguoi dung: lua phai bao
+            // quanh than, khong lo lung tren khong) - chi lay nhe tai cho, ngon lua tu liem len trong flipbook
+            ep.startSize = Random.Range(0.32f, 0.50f) * s;
+            ep.velocity = new Vector3(Random.Range(-0.03f, 0.03f), 0f, Random.Range(-0.03f, 0.03f));
             luoi.Emit(ep, 1);
         }
         var ek = new ParticleSystem.EmitParams();

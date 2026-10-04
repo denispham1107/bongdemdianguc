@@ -112,6 +112,8 @@ public static class ThuLuaChay
             var ai = go.GetComponent<EnemyAI>(); if (ai != null) ai.enabled = false;
             var d = go.GetComponent<Damageable>();
             d.maxHealth = 100000f; d.health = 100000f;
+            // Bo xuong 45% DO DON (28/09/2026) chan ca hieu ung chay -> lua luc co luc khong (A "khong co LuaToanThan", doi chung B -100%)
+            d.tiLeDoDon = 0f;
             quai.Add(d);
         }
         yield return new WaitForSeconds(0.6f);
@@ -156,26 +158,69 @@ public static class ThuLuaChay
             if (l == null || l.LuoiLua == null || l.KhoiBoc == null || l.DinhDau == null) { Ghi("[LOI] F: thieu luoi lua / khoi / xuong dau"); loi++; }
             else
             {
-                float yDau = l.DinhDau.position.y;
                 var hat = new ParticleSystem.Particle[l.LuoiLua.main.maxParticles];
-                int k = l.LuoiLua.GetParticles(hat);
+                int k = 0;
                 int trenDau = 0; float vuot = -9f;
+                // 04/10/2026 (nguoi dung: lua phai BAO QUANH TOAN THAN, khong lo lung tren khong): goc moi luoi lua phai SAT XUONG (khoang
+                // cach toi doan xuong gan nhat), dung yen, va co luoi lua ca o THAN DUOI (duoi xuong Hips) lan THAN TREN
+                var smrF = mauPc.GetComponentInChildren<SkinnedMeshRenderer>();
+                var doanXuong = new List<KeyValuePair<Vector3, Vector3>>();
+                Transform hipsF = null;
+                if (smrF != null)
+                {
+                    var tapXuong = new HashSet<Transform>(smrF.bones);
+                    foreach (var b in smrF.bones)
+                    {
+                        if (b == null) continue;
+                        if (b.name == "Hips") hipsF = b;
+                        if (b.parent != null && tapXuong.Contains(b.parent)) doanXuong.Add(new KeyValuePair<Vector3, Vector3>(b.parent.position, b.position));
+                    }
+                }
+                float xaXuongMax = 0f, tocMax = 0f; int thanDuoi = 0, thanTren = 0;
+                // lay mau 12 khung (0,6 s): mot khung chi co ~15 luoi lua, co luc khong luoi nao o dinh dau
+                float yDau = 0f;
+                for (int khung = 0; khung < 12; khung++)
+                {
+                if (khung > 0) yield return new WaitForSeconds(0.05f);
+                yDau = l.DinhDau.position.y;
+                k = l.LuoiLua.GetParticles(hat);
+                if (doanXuong.Count > 0 && smrF != null)
+                {
+                    doanXuong.Clear();
+                    var tapXuong2 = new HashSet<Transform>(smrF.bones);
+                    foreach (var b in smrF.bones) if (b != null && b.parent != null && tapXuong2.Contains(b.parent)) doanXuong.Add(new KeyValuePair<Vector3, Vector3>(b.parent.position, b.position));
+                }
                 for (int i = 0; i < k; i++)
                 {
                     Vector3 w = l.LuoiLua.transform.TransformPoint(hat[i].position);
                     float dinhLua = w.y + hat[i].GetCurrentSize(l.LuoiLua) * 0.45f;   // dinh ngon lua (pivot 0,3 + 0,15 nua tren)
                     if (dinhLua > yDau) trenDau++;
                     vuot = Mathf.Max(vuot, dinhLua - yDau);
+                    float gan = 9f;
+                    foreach (var dx in doanXuong)
+                    {
+                        Vector3 ab = dx.Value - dx.Key; float t = Mathf.Clamp01(Vector3.Dot(w - dx.Key, ab) / Mathf.Max(1e-6f, ab.sqrMagnitude));
+                        gan = Mathf.Min(gan, Vector3.Distance(w, dx.Key + ab * t));
+                    }
+                    xaXuongMax = Mathf.Max(xaXuongMax, gan);
+                    tocMax = Mathf.Max(tocMax, hat[i].totalVelocity.magnitude);
+                    if (hipsF != null && w.y < hipsF.position.y) thanDuoi++; else thanTren++;
                 }
+                }
+                Ghi(string.Format("F. bam than (12 khung): goc luoi lua xa doan xuong gan nhat toi da {0:F2} m, toc do lon nhat {1:F2} m/s; luot luoi lua than duoi (duoi hong) {2}, than tren {3}",
+                    xaXuongMax, tocMax, thanDuoi, thanTren));
                 var hk = new ParticleSystem.Particle[l.KhoiBoc.main.maxParticles];
                 int nk = l.KhoiBoc.GetParticles(hk);
                 float yKhoi = 0f;
                 for (int i = 0; i < nk; i++) yKhoi += l.KhoiBoc.transform.TransformPoint(hk[i].position).y - yDau;
                 yKhoi = nk > 0 ? yKhoi / nk : -9f;
-                Ghi(string.Format("F. luoi lua dang song {0}, {1} luoi liem cao qua dinh dau (cao nhat vuot {2:F2} m); khoi {3} lan, trung binh cao hon dinh dau {4:F2} m",
+                Ghi(string.Format("F. luoi lua dang song {0} (khung cuoi), {1} luot luoi liem cao qua dinh dau (cao nhat vuot {2:F2} m); khoi {3} lan, trung binh cao hon dinh dau {4:F2} m",
                     k, trenDau, vuot, nk, yKhoi));
                 Kiem(k >= 8, "qua it luoi lua boc len");
-                Kiem(trenDau >= 1 && vuot > 0.1f, "luoi lua khong liem len khoi dau");
+                // 04/10/2026: luoi lua van liem len tren dau (ngon lua o dau) nhung KHONG vot cao lo lung (lan truoc 0,72 m)
+                Kiem(trenDau >= 1 && vuot > 0.05f && vuot < 0.45f, "luoi lua tren dau khong liem len / vot cao lo lung tren khong");
+                Kiem(xaXuongMax < 0.30f && tocMax < 0.1f, "luoi lua tach khoi than, bay lo lung");
+                Kiem(thanDuoi >= 2 && thanTren >= 2, "luoi lua khong bao quanh toan than (thieu than duoi / than tren)");
                 Kiem(nk >= 3 && yKhoi > 0f, "khong co khoi boc len tren dau");
 
                 var c = mauPc.transform.position;

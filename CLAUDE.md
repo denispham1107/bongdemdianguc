@@ -549,6 +549,11 @@ hơn ×1,5 và mở xuống 1,8–4,3 m** (người dùng chọn sau menu 94 ch�
   trượt. Lần 4 (người dùng: "thấy rõ đang bốc cháy + ít khói"): lớp phủ uốn lượn + nhấp nháy (`TocDoLua/XoanLua/NhapNhayLua`, đồng hồ riêng
   `_ThoiGian` thay `_Time.y`), **lưỡi lửa** (ảnh ngọn lửa đơn `Flipbooks/LuaChayNguoi`) liếm lên từ đầu/vai/tay, **khói xám ĐEN mỏng** sinh ở đỉnh
   lưỡi lửa (khói xám sáng làm quầng quanh thân / chìm vào nền được ánh lửa rọi). Khối billboard lần 2 chỉ còn là đối chứng (`DoiChungKhoiLua`).
+  ⚠️ **04/10/2026: LƯỠI LỬA BAO QUANH TOÀN THÂN, KHÔNG BAY LƠ LỬNG** (người dùng: "vết lửa phải bao quanh lấy toàn thân, không được bay lơ
+  lửng trên không" — mọi nhân vật + quái): lưỡi lửa KHÔNG còn bay lên (0,6–1,0 m/s × 0,45–0,7 s → vọt quá đầu 0,72 m), nay vận tốc ~0, đời
+  0,30–0,45 s (xương cử động thì lưỡi sống lâu tách khỏi chi), sinh KHẮP NGƯỜI (thêm hông, vai, đùi, cẳng chân, bàn chân), 46/giây. Khói xám
+  đen bốc từ đầu (lần 4) giữ. Menu 90 F (12 khung): gốc lưỡi lửa cách đoạn xương gần nhất ≤ 0,12 m, tốc độ ≤ 0,04 m/s, 55 lượt thân dưới /
+  138 thân trên, vượt đỉnh đầu ≤ 0,19 m; menu 90 nay đặt `tiLeDoDon = 0` cho Bộ xương (45% đỡ đòn chặn cả cháy → lỗi chập chờn A / B). 0 lỗi.
   Hết chạy / bị gỡ: xoá ngay, gỡ đúng lớp của mình. **Nhịp cháy không phun tia trúng đòn** (`Damageable.BoQuaTiaTrungDon`).
   ⚠️ `BurningEffect.Apply` mắc bẫy AddComponent: cháy luôn ≥ 4 s và ≥ 6 máu/giây — CHƯA sửa, đã hỏi người dùng.
   Menu 90 kiểm bằng ẢNH (bóng thân trắng đặc lớp 31 + nới 14 px; TẮT bloom; tính theo DIỆN TÍCH): 99–100% lửa trong viền, đối chứng 69%.

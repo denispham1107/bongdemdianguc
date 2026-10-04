@@ -9095,6 +9095,23 @@ cháy xém**.
   nào dưới 2,4 m): 25 đám, tâm 1,93–4,27 m, xa trục nhất 1,05 m = 63% vỏ trong; loé 1,00 → 1,56 → 1,00.
 - Điện thoại: mỗi cơn thêm ~14 đám mây lớn (1,4–2,2 m) → 3 cơn thêm ~42 tấm trong suốt chồng lên, cấp 5 (5 cơn) ~70. Chưa đo trên máy thật.
 
+### Bốc cháy: lưỡi lửa bao quanh toàn thân, không bay lơ lửng (04/10/2026)
+
+**Người dùng:** "Trong game khi các nhân vật và tất cả quái vật bị hiệu ứng bốc cháy, các vết lửa cũng phải bao quanh lấy toàn thân, không được
+cho bay lơ lửng trên không".
+
+- Nguyên nhân: lưỡi lửa của `LuaToanThan` (lần 4, 28/09) sinh ở đầu, vai, tay rồi **bay lên** 0,6–1,0 m/s trong 0,45–0,7 s — lần đo trước ngọn
+  lửa vọt cao hơn đỉnh đầu **0,72 m**; lại chỉ sinh ở phần trên cơ thể (+ chút đầu gối).
+- Sửa (`Vfx/LuaToanThan.cs`): lưỡi lửa vận tốc ~0 (chỉ lắc ±0,03 m/s), đời **0,30–0,45 s** (hệ hạt cục bộ theo hông — xương tay chân cử động thì
+  lưỡi sống lâu sẽ tách khỏi chi), cỡ 0,32–0,5 m, **sinh khắp người**: đầu + đỉnh đầu, vai, lưng, hông, tay, đùi, cẳng chân, bàn chân; 46 lưỡi/giây
+  (thân 1,7 m). Lớp lửa phủ trên da và khói xám đen bốc từ đầu (người dùng xin lần 4) giữ nguyên.
+- Phép thử menu 90 sửa thêm: Bộ xương có 45% đỡ đòn (28/09) chặn luôn hiệu ứng cháy → mục A "không có LuaToanThan" và đối chứng mục B −100%
+  xuất hiện chập chờn; nay đặt `tiLeDoDon = 0` như các phép thử khác.
+
+**Đo — menu 90 (0 lỗi)**, mục F lấy mẫu 12 khung (0,6 s) trên phù thuỷ đang cháy: gốc mọi lưỡi lửa cách đoạn xương gần nhất **≤ 0,12 m**, tốc
+độ **≤ 0,04 m/s**; 55 lượt lưỡi lửa ở thân dưới (dưới hông), 138 ở thân trên; đỉnh lưỡi lửa cao hơn đỉnh đầu nhiều nhất **0,19 m** (trước 0,72).
+Lửa trong viền thân 100% cả ba (phù thuỷ, bộ xương, quỷ cây), phủ thân 98–99%. Ảnh `PlayTestShots/lua_chay_boc_gan.png`.
+
 ### Quả cầu lửa: tàn lửa là ngọn lửa thật dựng bằng mô phỏng Mantaflow (04/10/2026)
 
 **Người dùng** (kèm ảnh màn đăng nhập): "các vết tàn lửa nhìn quá sơ sài giống như các thanh nhỏ màu lửa chứ không phải lửa thật, hãy dùng MCP

@@ -1,17 +1,18 @@
 A. Player: phu lop lua len 1 renderer; than cao theo xuong 1.56 m / hinh that 1.66 m; vung co lua NAM TRONG VIEN than 100 % (theo nang luong 100 %); than duoc lua phu 99 %
 A. TAM_Quai_Skeleton: phu lop lua len 1 renderer; than cao theo xuong 1.56 m / hinh that 1.71 m; vung co lua NAM TRONG VIEN than 100 % (theo nang luong 100 %); than duoc lua phu 98 %
-A. TAM_Quai_QuyCay: phu lop lua len 1 renderer; than cao theo xuong 1.79 m / hinh that 1.82 m; vung co lua NAM TRONG VIEN than 100 % (theo nang luong 100 %); than duoc lua phu 96 %
-F. luoi lua dang song 19, 8 luoi liem cao qua dinh dau (cao nhat vuot 0.72 m); khoi 25 lan, trung binh cao hon dinh dau 0.82 m
-F2. khoi lam doi 5457 diem anh (2.11 % anh 480x540), moi diem doi trung binh 0.059
-F3. lua tren than doi trong dung 0,05 s (TB 6 cap): 0.1562 (doi chung thong so lan 3: 0.0711) -> x2.20
+A. TAM_Quai_QuyCay: phu lop lua len 1 renderer; than cao theo xuong 1.79 m / hinh that 1.82 m; vung co lua NAM TRONG VIEN than 100 % (theo nang luong 100 %); than duoc lua phu 98 %
+F. bam than (12 khung): goc luoi lua xa doan xuong gan nhat toi da 0.12 m, toc do lon nhat 0.04 m/s; luot luoi lua than duoi (duoi hong) 55, than tren 138
+F. luoi lua dang song 16 (khung cuoi), 12 luot luoi liem cao qua dinh dau (cao nhat vuot 0.19 m); khoi 24 lan, trung binh cao hon dinh dau 0.72 m
+F2. khoi lam doi 8773 diem anh (3.38 % anh 480x540), moi diem doi trung binh 0.054
+F3. lua tren than doi trong dung 0,05 s (TB 6 cap): 0.1589 (doi chung thong so lan 3: 0.0709) -> x2.24
 C1. het chay (4.00 s): khung dau khong con BurningEffect -> vat hinh lua con: False
 C1. vat lieu lua con tren than sau khi het: 0
-A. DOI CHUNG khoi lua lan 2 Player: vung co lua nam trong vien 64 % (theo nang luong 78 %); phu than 95 %
-A. DOI CHUNG khoi lua lan 2 TAM_Quai_Skeleton: vung co lua nam trong vien 82 % (theo nang luong 89 %); phu than 54 %
-A. DOI CHUNG khoi lua lan 2 TAM_Quai_QuyCay: vung co lua nam trong vien 62 % (theo nang luong 79 %); phu than 96 %
-A. DOI CHUNG trung binh: 69 %
-B. BAN SUA (lop lua tren than): chay 6 m/s trong 1 s -> lua nam trong vien than 100 %, phu than 97 %; goc toa do lua lech Hips toi da 0.000 m
-B. DOI CHUNG khoi billboard + mo phong the gioi (lan 1-2): chay 6 m/s trong 1 s -> lua nam trong vien than 1 %, phu than 0 %
+A. DOI CHUNG khoi lua lan 2 Player: vung co lua nam trong vien 63 % (theo nang luong 80 %); phu than 94 %
+A. DOI CHUNG khoi lua lan 2 TAM_Quai_Skeleton: vung co lua nam trong vien 82 % (theo nang luong 89 %); phu than 57 %
+A. DOI CHUNG khoi lua lan 2 TAM_Quai_QuyCay: vung co lua nam trong vien 66 % (theo nang luong 80 %); phu than 96 %
+A. DOI CHUNG trung binh: 70 %
+B. BAN SUA (lop lua tren than): chay 6 m/s trong 1 s -> lua nam trong vien than 100 %, phu than 98 %; goc toa do lua lech Hips toi da 0.000 m
+B. DOI CHUNG khoi billboard + mo phong the gioi (lan 1-2): chay 6 m/s trong 1 s -> lua nam trong vien than 0 %, phu than 0 %
 C2. go giua chung: truoc co lua True -> khung ke tiep con lua False
-E. 2 s chay: mat 9.6 mau, 0 chum tia trung don | DOI CHUNG 1 don lua thuong: 1 chum
+E. 2 s chay: mat 9.4 mau, 0 chum tia trung don | DOI CHUNG 1 don lua thuong: 1 chum
 so loi ghi nhan = 0
