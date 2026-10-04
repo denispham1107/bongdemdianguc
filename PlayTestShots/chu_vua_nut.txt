@@ -1,0 +1,9 @@
+1616x587 (Screen 1616x587, ti le 0.54, nut 59.8 px, chu mau 13 / da 11): BAN SUA cat 0 lan | DOI CHUNG ban cu cat 1 lan ("ĐƠN")
+1619x588 (Screen 1619x588, ti le 0.54, nut 59.9 px, chu mau 13 / da 11): BAN SUA cat 0 lan | DOI CHUNG ban cu cat 1 lan ("ĐƠN")
+844x390 (Screen 844x390, ti le 0.36, nut 39.7 px, chu mau 10 / da 10): BAN SUA cat 0 lan | DOI CHUNG ban cu cat 2 lan ("ĐƠN")
+740x360 (Screen 740x360, ti le 0.35, nut 38.5 px, chu mau 10 / da 10): BAN SUA cat 0 lan | DOI CHUNG ban cu cat 4 lan ("ĐÔI")
+1280x720 (Screen 1280x720, ti le 0.67, nut 73.3 px, chu mau 15 / da 13): BAN SUA cat 0 lan | DOI CHUNG ban cu cat 0 lan
+1920x1080 (Screen 1902x973, ti le 0.90, nut 99.1 px, chu mau 21 / da 18): BAN SUA cat 0 lan | DOI CHUNG ban cu cat 1 lan ("ĐƠN")
+2400x1080 (Screen 1902x973, ti le 0.90, nut 99.1 px, chu mau 21 / da 18): BAN SUA cat 0 lan | DOI CHUNG ban cu cat 1 lan ("ĐƠN")
+2532x1170 (Screen 1902x973, ti le 0.90, nut 99.1 px, chu mau 21 / da 18): BAN SUA cat 0 lan | DOI CHUNG ban cu cat 1 lan ("ĐƠN")
+so loi ghi nhan = 0

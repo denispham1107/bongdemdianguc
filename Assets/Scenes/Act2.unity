@@ -36207,7 +36207,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameBootstrap
   arenaRadius: 62
-  playerMaxHealth: 10000
+  playerMaxHealth: 700
   playerMaxMana: 250
   useBloom: 1
   bloomIntensity: 0.9

@@ -9095,6 +9095,24 @@ cháy xém**.
   nào dưới 2,4 m): 25 đám, tâm 1,93–4,27 m, xa trục nhất 1,05 m = 63% vỏ trong; loé 1,00 → 1,56 → 1,00.
 - Điện thoại: mỗi cơn thêm ~14 đám mây lớn (1,4–2,2 m) → 3 cơn thêm ~42 tấm trong suốt chồng lên, cấp 5 (5 cơn) ~70. Chưa đo trên máy thật.
 
+### Sảnh: chữ "ĐƠN" bị cắt thành "Đ…" · máu khởi đầu 700 (05/10/2026)
+
+**Người dùng** (ảnh sảnh trên điện thoại): "chỗ chế độ "Đơn", chữ "Đơn" không hiển thị ra đủ mà chỉ ghi thành ... phía sau"; "cho máu các nhân vật
+chính trở về 700HP mỗi khi vào game".
+
+- **Nguyên nhân chữ bị cắt:** `GiaoDien.VuaO` (co chữ cho vừa ô, quá nhỏ thì cắt thêm "…") nhận chỗ trống ĐÃ trừ phần đệm của nút, rồi so với
+  `GUIStyle.CalcSize` — mà `CalcSize` lại CỘNG phần đệm. Phần đệm bị tính hai lần: ở màn 1616 × 587 nút có 39,8 px cho chữ, "ĐƠN" (kiểu nút
+  đang chọn, chữ to hơn) bị tính 29 + 16 = 45 px → co chữ vẫn "không vừa" → "Đ…". "ĐÔI" hẹp hơn và đang ở kiểu chữ nhỏ nên lọt. Không riêng
+  điện thoại: ảnh sảnh 1619 × 588 người dùng gửi hôm trước cũng bị. Sửa: hàm `RongChu` trừ phần đệm khỏi `CalcSize` (áp cho mọi nút, ô, tab).
+- **Đo — menu 103 mới:** mở một cửa sổ Editor tạm ở 8 cỡ màn (`Screen` trong OnGUI = cỡ cửa sổ), gọi `GiaoDien.ChuanBi` rồi vẽ ĐÚNG hai nút bằng
+  `GiaoDien.Nut` ở cả hai kiểu, đếm `SoLanCat`. Bản sửa: **0 lần cắt ở cả 8 cỡ**; đối chứng (cờ `DoiChungTruDemHaiLan` = cách tính cũ): cắt "ĐƠN" ở
+  1616×587, 1619×588, 844×390, màn lớn (cửa sổ bị kẹp còn 1902×973), cắt cả "ĐÔI" ở 740×360. Menu 50 (giao diện đăng nhập · sảnh · phòng): 0 lỗi,
+  0 chữ bị cắt ở mọi màn; ảnh `PlayTestShots/gd_3_sanh_nut_cheDo.png`.
+- **Máu 700:** `GameBootstrap.playerMaxHealth`, scene Act2, `Player_Sorceress.prefab` và `ThuMauKhoiDau.MauMongDoi`. Menu 40 (0 lỗi): nhân vật của
+  mình 700 / 700, bản sao người chơi khác 700 / 700, ăn đòn 250 còn 450.
+- Phát hiện kèm: các lần sửa file bằng Python trong mấy ngày nay đổi cả file sang xuống dòng CRLF (dự án dùng LF) — 28 file `.cs` + `CLAUDE.md` +
+  `HUONG-DAN.md`, git hiện mỗi commit như "sửa cả file". Đã đưa cả 30 file về LF (nội dung không đổi).
+
 ### Bốc cháy: lưỡi lửa bao quanh toàn thân, không bay lơ lửng (04/10/2026)
 
 **Người dùng:** "Trong game khi các nhân vật và tất cả quái vật bị hiệu ứng bốc cháy, các vết lửa cũng phải bao quanh lấy toàn thân, không được

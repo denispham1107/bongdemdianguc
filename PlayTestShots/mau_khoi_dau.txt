@@ -1,8 +1,8 @@
-[ban 1] vao man la co du mau khoi dau (mong doi 10000)
+[ban 1] vao man la co du mau khoi dau (mong doi 700)
 
 --- man Act2 ---
-1. nhan vat cua minh: 10000 / 10000
-2. ban sao nguoi choi khac: 10000 / 10000 (lay thang tu prefab)
-3. an mot don 250 -> mat 250 mau, con 9750
-4. chu "10000 / 10000" rong 69 diem, thanh mau rong 172 diem (man hinh cao 589)
+1. nhan vat cua minh: 700 / 700
+2. ban sao nguoi choi khac: 700 / 700 (lay thang tu prefab)
+3. an mot don 250 -> mat 250 mau, con 450
+4. chu "700 / 700" rong 45 diem, thanh mau rong 174 diem (man hinh cao 593)
 so loi ghi nhan = 0

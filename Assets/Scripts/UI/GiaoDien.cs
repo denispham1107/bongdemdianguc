@@ -579,17 +579,29 @@ public static class GiaoDien
     /// Thu nho co chu (sua thang k.fontSize - nguoi goi tra lai) va cat chu
     /// cho vua be rong. Tra ve chuoi se ve.
     /// </summary>
+    /// <summary>Phep thu (menu 103) bat de lam DOI CHUNG: tinh nhu ban cu - tru phan dem HAI LAN.</summary>
+    public static bool DoiChungTruDemHaiLan;
+
+    /// <summary>Be ngang CHU (khong tinh phan dem) cua <paramref name="chu"/> o kieu <paramref name="k"/>.</summary>
+    static float RongChu(GUIStyle k, string chu)
+    {
+        noiDung.text = chu;
+        // CalcSize da CONG phan dem cua kieu; noi goi da tru phan dem khoi "rong" -> phai tru o day. Truoc 05/10/2026 tru HAI LAN:
+        // nut ĐƠN o sanh (nguoi dung: "chu Đơn chi ghi thanh ... phia sau") - man 1616 x 588: cho chu 39,8, chu 29 + dem 16 = 45 -> cat
+        return k.CalcSize(noiDung).x - (DoiChungTruDemHaiLan ? 0f : k.padding.horizontal);
+    }
+
     static string VuaO(string chu, GUIStyle k, float rong)
     {
         if (rong <= 4f) return "";
         int goc = k.fontSize;
         noiDung.text = chu;
-        float w = k.CalcSize(noiDung).x;
+        float w = RongChu(k, chu);
         if (w <= rong) return chu;
 
         int moi = Mathf.Max(Mathf.RoundToInt(goc * 0.62f), Mathf.FloorToInt(goc * rong / w));
         k.fontSize = moi;
-        w = k.CalcSize(noiDung).x;
+        w = RongChu(k, chu);
         if (Event.current == null || Event.current.type == EventType.Repaint)
         {
             SoLanThuNho++;
@@ -603,8 +615,8 @@ public static class GiaoDien
         // Van dai: cat dan tung chu
         for (int n = chu.Length - 1; n > 0; n--)
         {
-            noiDung.text = chu.Substring(0, n).TrimEnd() + "…";
-            if (k.CalcSize(noiDung).x <= rong) return noiDung.text;
+            string thu = chu.Substring(0, n).TrimEnd() + "…";
+            if (RongChu(k, thu) <= rong) return thu;
         }
         return "…";
     }
