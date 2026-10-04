@@ -9118,6 +9118,23 @@ còn bật; mỗi chỗ đúng 9 tia con (171 / 234); một chỗ chạm riêng:
 đen 0,42, sau 6 s vết biến mất. **Đối chứng:** `LoeSetChamDat` gọi thẳng (đường Lốc xoáy) vẫn còn 2 lớp vệt gạch. Menu 58 (Sấm sét) và 83 (Mây
 giông) chạy lại 0 lỗi. Ảnh `PlayTestShots/setchamdat_samset_0/1.png`, `setchamdat_maygiong_0/1.png`.
 
+### Lốc xoáy: cùng mẫu chỗ sét chạm đất (05/10/2026)
+
+**Người dùng:** "Chọn mẫu A + vết nứt của B. Áp dụng thêm cho Lốc xoáy".
+
+- Tia sét của Lốc xoáy chạm đất qua đường riêng (`VfxFactory.TornadoBolt`, 2 tia mỗi 0,45 s từ miệng lốc xuống đất cạnh chân), không qua
+  `LightningImpact`. Sửa đúng nhánh có lóe chạm đất: tắt hai lớp vệt gạch, thêm tia điện bò trên đất và vết nứt phát sáng. Gió lốc dùng chung hàm
+  nhưng **không có lóe** (người dùng bỏ từ 01/10) nên không đổi; Hoá lốc xoáy là một cơn Lốc xoáy nên cũng có.
+- **Tia con bám theo lốc:** lốc đi 3,4 m/s (Hoá lốc xoáy 9,5 m/s), tia con đứng yên thì 0,3 s sau đã tụt lại 1–3 m sau lóe. Nay mỗi tia con
+  `BamTheo` con lốc như tia chính, đợt 2 dời theo quãng lốc đã đi. **Vết nứt thì nằm yên** trên đất — đất nứt không chạy theo lốc. Đây là ngoại lệ
+  có chủ ý của luật "Lốc xoáy không để dấu vết trên mặt đất" (29/09 người dùng xoá vết lốc di chuyển; vết nứt này là chỗ sét đánh, người dùng xin).
+
+**Đo — menu 106** (thêm Lốc xoáy; các cửa sổ đo nay **tách riêng**: lần đầu Mây giông còn bay và đánh thêm ~2 s sang cửa sổ của Lốc xoáy, đếm
+lệch 18 tia): Sấm sét 19 / Mây giông 36 / Lốc xoáy 14 chỗ chạm, mỗi chỗ đúng 9 tia con, 0 vệt gạch; tia con so với lốc lệch đổi **0,000 m** khi
+lốc đã đi 0,56 m (lần đầu đo ra 0,061 m — đúng một khung lốc đi, vì phép thử đọc giữa Update và LateUpdate; nay đọc cuối khung); đối chứng Gió lốc
+0 tia con. Menu 82 E1 từng báo 3 lỗi giả vì đếm lẫn tia con vào "tia từ miệng lốc" — tia con nay mang tên `TiaBoDat`, phép thử bỏ qua; menu 71
+C5 đếm lóe Lốc xoáy theo chính lóe (không cần lớp `Sparks` đã tắt). Menu 71, 82: 0 lỗi. Ảnh `PlayTestShots/setchamdat_locxoay_0/1.png`.
+
 ### Giựt sét: "khối đen" che hai đầu tia · thêm nhánh sét nhỏ (05/10/2026)
 
 **Người dùng** (hai ảnh, khoanh hai đầu tia): "khi sử dụng skill, tia sét bị che mất hình bởi khối đen" và "cho thêm nhiều nhánh sét nhỏ phụ trên

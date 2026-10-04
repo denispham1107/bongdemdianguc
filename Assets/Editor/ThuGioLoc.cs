@@ -291,7 +291,8 @@ public static class ThuGioLoc
                     ds.Add(new Vector2(w.x - tam.x, w.z - tam.z).magnitude);
                 }
             }
-            if (ds.Count >= 5) ketQua.Add(TrungVi(ds));
+            // 05/10/2026: loe cua Loc xoay da TAT lop Sparks (mau A + vet nut) - van dem loe, rong = -1 khi khong con hat tia lua
+            ketQua.Add(ds.Count >= 5 ? TrungVi(ds) : -1f);
         }
         foreach (var d in xong) theoDoi[d] = new Vector4(0f, 0f, 0f, -1f);
     }
@@ -591,7 +592,7 @@ public static class ThuGioLoc
             while (Time.time < hanLon)
             {
                 foreach (var a in Object.FindObjectsByType<LightningArc>(FindObjectsInactive.Exclude))
-                    if (arcDaThay.Add(a)) tiaLon.Add(DoTia(a, locXoay.transform.position, caoLon));
+                    if (arcDaThay.Add(a) && a.name != TiaBoDat.TenTia) tiaLon.Add(DoTia(a, locXoay.transform.position, caoLon));   // bo tia con bo tren dat (05/10/2026)
                 TheoDoiLoe(locXoay.transform, loeLon, rongLoeLon);
                 yield return new WaitForEndOfFrame();
             }

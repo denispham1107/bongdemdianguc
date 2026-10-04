@@ -687,7 +687,10 @@ public static class ThuThanLocXoay
             foreach (var a in Object.FindObjectsByType<LightningArc>(FindObjectsInactive.Exclude))
             {
                 if (truocDo.Contains(a)) continue;
-                truocDo.Add(a); moi.Add(a);
+                truocDo.Add(a);
+                // 05/10/2026: tia set con BO TREN DAT quanh cho cham (mau A) khong phai tia tu mieng loc
+                if (a.name == TiaBoDat.TenTia) continue;
+                moi.Add(a);
                 if (coSS && !a.anhBlender && a.segments == ssDoan && a.branches >= 2 && a.branches <= 3
                     && Mathf.Abs(a.coreWidth - ssLoi * loc.scale) < 1e-4f && Mathf.Abs(a.glowWidth - ssQuang * loc.scale) < 1e-4f
                     && a.coreColor == ssMauLoi && a.glowColor == ssMauQuang && Mathf.Abs(a.lifetime - ssSong) < 1e-4f

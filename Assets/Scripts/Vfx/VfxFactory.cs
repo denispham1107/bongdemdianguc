@@ -2006,7 +2006,8 @@ public static partial class VfxFactory
     }
 
     /// <summary>
-    /// Cho tia SAM SET / MAY GIONG cham dat (chi hai ky nang nay goi ham nay - Loc xoay / Gio loc goi thang LoeSetChamDat).
+    /// Cho tia SAM SET / MAY GIONG cham dat (chi hai ky nang nay goi ham nay - Loc xoay goi rieng trong TornadoBolt, cung mau nay
+    /// tu 05/10/2026; Gio loc khong loe).
     /// Nguoi dung 05/10/2026 chon mau A + vet nut cua mau B: TAT hai lop hat keo dai "Sparks" / "Jet" (ve thanh vet gach thang
     /// "rat khong tu nhien"), thay bang TIA SET CON BO TREN DAT (TiaBoDat) + VET NUT DAT PHAT SANG roi nguoi (VetNutSet - thay
     /// vet chay xem 15% cu). Vong sang, quang, cot sang, bui, den cua prefab giu nguyen.
@@ -2022,7 +2023,7 @@ public static partial class VfxFactory
     /// <summary>Ten hai lop hat ve thanh vet gach (prefab Vfx_SetChamDat lan BuildLightningImpact).</summary>
     public static readonly string[] LopVetGach = { "Sparks", "Jet" };
 
-    static void TatVetGach(GameObject loe)
+    public static void TatVetGach(GameObject loe)
     {
         if (loe == null) return;
         foreach (var ps in loe.GetComponentsInChildren<ParticleSystem>(true))

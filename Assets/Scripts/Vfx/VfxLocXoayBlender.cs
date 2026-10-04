@@ -183,6 +183,11 @@ public static partial class VfxFactory
                 DiTheo.Gan(loe, loc);       // chay theo loc, KHONG lam con (Hoa loc xoay / thu nho se phong ca loe)
                 if (scale < 0.95f) ThuLoeSet(loe, scale);
             }
+            // 05/10/2026 nguoi dung: Loc xoay cung mau "A + vet nut cua B" nhu Sam set / May giong - tat vet gach Sparks / Jet,
+            // TIA DIEN BO TREN DAT bam theo loc (loc di 3,4-9,5 m/s, tia dung yen thi tut lai sau 1-3 m) + VET NUT dung yen tren dat
+            TatVetGach(loe);
+            TiaBoDat.Tao(p2, LightningStrikeBanKinh * scale, loc);
+            VetNutSet.Tao(p2, LightningStrikeBanKinh * scale);
         }
     }
 
