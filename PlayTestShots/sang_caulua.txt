@@ -1,0 +1,7 @@
+nen (khong hieu ung): sang 0.1694, choi 0.003%
+BAY muc 100% / NO muc 100%: BAY sang them 0.0118 (x1.00 so voi hien tai), choi 0.06% | NO sang them 0.0568 (x1.00), choi 0.87% (10 + 11 khung)
+BAY muc 70% / NO muc 40%: BAY sang them 0.0071 (x0.60 so voi hien tai), choi 0.05% | NO sang them 0.0352 (x0.62), choi 0.31% (11 + 13 khung)
+BAY muc 55% / NO muc 25%: BAY sang them 0.0040 (x0.34 so voi hien tai), choi 0.03% | NO sang them 0.0258 (x0.45), choi 0.19% (11 + 13 khung)
+BAY muc 40% / NO muc 15%: BAY sang them 0.0015 (x0.12 so voi hien tai), choi 0.01% | NO sang them 0.0132 (x0.23), choi 0.03% (12 + 13 khung)
+KIEM tung that (muc chon): den qua cau khi bay 3.30 (prefab 6 x 0.55 = 3.30), den vu no dinh 5.50 (prefab 22 x 0.25 = 5.50)
+so loi ghi nhan = 0

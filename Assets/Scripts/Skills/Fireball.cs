@@ -221,6 +221,8 @@ public class Fireball : MonoBehaviour
 
         // Vet lua moi (flipbook lua cuon + vet lua dai dung trong Blender) - thay anh tam giac cu
         VfxFactory.NangCapDuoiLua(go.transform, fb.bodyRadius);
+        // Diu sang (nguoi dung 05/10/2026) - sau NangCapDuoiLua de gom ca lop lua / vet lua moi
+        VfxFactory.DiuSang(go, VfxFactory.HeSoSangQuaCauLua);
 
         fb.dir = direction.normalized;
         fb.hitMask = hitMask;

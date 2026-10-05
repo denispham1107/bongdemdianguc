@@ -200,4 +200,44 @@ public static partial class VfxFactory
             AutoDestroy.Add(c.gameObject, 1.2f);
         }
     }
+
+    // ================================================================
+    //  DIU SANG QUA CAU LUA + VU NO (nguoi dung 05/10/2026: "anh sang tu cac qua cau lua va khi va cham no qua sang, choi bi choi mat";
+    //  chon ap MOI qua cau lua - nguoi choi, quai Phu thuy, Lua dia nguc; muc chon qua anh chup menu 108)
+    // ================================================================
+
+    /// <summary>He so do sang qua cau lua KHI BAY: 0,55 (nguoi dung chon "giam 45%" qua anh menu 108; do sang them vao canh x0,37).
+    /// Bien tinh de menu 108 dat cac muc.</summary>
+    public const float HeSoSangQuaCauLuaChon = 0.55f;
+    public static float HeSoSangQuaCauLua = HeSoSangQuaCauLuaChon;
+    /// <summary>He so do sang VU NO qua cau lua: 0,25 (nguoi dung chon "giam 75%"; 0,4 van trang chui - vo lua + hat bung bao hoa; do sang
+    /// them x0,39, diem anh trang chui 1,21% -> 0,19%).</summary>
+    public const float HeSoSangNoLuaChon = 0.25f;
+    public static float HeSoSangNoLua = HeSoSangNoLuaChon;
+
+    static MaterialPropertyBlock mpbDiu;
+    static readonly int idCuongDo = Shader.PropertyToID("_Intensity");
+
+    /// <summary>
+    /// Nhan do sang moi lop PHAT SANG duoi <paramref name="goc"/> voi <paramref name="k"/>: vat lieu co _Intensity (Fire, ParticleAdditive,
+    /// flipbook cong sang - qua MaterialPropertyBlock, KHONG sua vat lieu dung chung), den diem (LightFlicker.baseIntensity / LightBurst.peak /
+    /// Light.intensity). Khoi (alpha, khong _Intensity) giu nguyen. Goi SAU khi da gan du lop (NangCapDuoiLua).
+    /// </summary>
+    public static void DiuSang(GameObject goc, float k)
+    {
+        if (goc == null || Mathf.Abs(k - 1f) < 0.001f) return;
+        if (mpbDiu == null) mpbDiu = new MaterialPropertyBlock();
+        foreach (var r in goc.GetComponentsInChildren<Renderer>(true))
+        {
+            var m = r.sharedMaterial;
+            if (m == null || !m.HasProperty(idCuongDo)) continue;
+            r.GetPropertyBlock(mpbDiu);
+            mpbDiu.SetFloat(idCuongDo, m.GetFloat(idCuongDo) * k);
+            r.SetPropertyBlock(mpbDiu);
+        }
+        foreach (var lf in goc.GetComponentsInChildren<LightFlicker>(true)) lf.baseIntensity *= k;
+        foreach (var lb in goc.GetComponentsInChildren<LightBurst>(true)) lb.peak *= k;
+        foreach (var lt in goc.GetComponentsInChildren<Light>(true))
+            if (lt.GetComponent<LightFlicker>() == null && lt.GetComponent<LightBurst>() == null) lt.intensity *= k;
+    }
 }

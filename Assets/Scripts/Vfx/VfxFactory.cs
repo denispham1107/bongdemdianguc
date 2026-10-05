@@ -575,6 +575,7 @@ public static partial class VfxFactory
         {
             go = BuildFireExplosion(pos, radius);
         }
+        DiuSang(go, HeSoSangNoLua);   // vu no qua cau lua diu sang (05/10/2026) - Thien thach goi thang BuildFireExplosion, khong doi
 
         // Vet chay den in xuong dat
         GroundDecal.Spawn(new Vector3(pos.x, GroundY(pos), pos.z), radius * 1.1f,

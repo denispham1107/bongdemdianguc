@@ -9118,6 +9118,26 @@ còn bật; mỗi chỗ đúng 9 tia con (171 / 234); một chỗ chạm riêng:
 đen 0,42, sau 6 s vết biến mất. **Đối chứng:** `LoeSetChamDat` gọi thẳng (đường Lốc xoáy) vẫn còn 2 lớp vệt gạch. Menu 58 (Sấm sét) và 83 (Mây
 giông) chạy lại 0 lỗi. Ảnh `PlayTestShots/setchamdat_samset_0/1.png`, `setchamdat_maygiong_0/1.png`.
 
+### Quả cầu lửa: ánh sáng khi bay và khi nổ dịu lại (05/10/2026)
+
+**Người dùng:** "cho ánh sáng từ các quả cầu lửa dịu lại và ánh sáng khi va chạm nổ cũng dịu lại, bây giờ quá sáng làm khi chơi bị chói và khó chịu
+mắt". Người dùng chọn áp cho **mọi quả cầu lửa** (của mình, của quái Phù thuỷ, Lửa địa ngục) và **chụp các mức để chọn**.
+
+- **Nguồn sáng:** khi bay có đèn `FireLight` (cường độ 6, tầm 12 m), lõi + vỏ cầu shader Fire, lửa và tàn lửa cộng sáng; khi nổ có đèn `BlastLight`
+  vọt lên 22 (tầm 27 m), quả cầu nổ `Blast`, vòng lửa, tia lửa và lớp bùng. Mọi lớp sáng đều có thuộc tính `_Intensity`.
+- **Cách dịu:** `VfxFactory.DiuSang` nhân `_Intensity` của từng renderer bằng MaterialPropertyBlock (không đụng vật liệu dùng chung) và nhân cường
+  độ đèn; khói (alpha) giữ nguyên. Gọi ở cuối `Fireball.Spawn` (sau khi gắn lửa thật / vệt lửa) và trong `FireExplosion`.
+- **Chọn mức — menu 108:** lần chụp đầu tung quả thật thì mỗi vụ nổ rơi vào một chỗ, một thời điểm khác nhau — ảnh "hiện tại" còn tối hơn ảnh "dịu
+  30%", không so được. Đổi sang: đặt quả cầu đứng yên và vụ nổ ở **cùng một chỗ**, máy quay đứng yên, đo **mọi khung** rồi lấy trung bình và trừ nền.
+  Khi bay các mức khác nhau rõ; khi nổ thì ngay mức ×0,4 vẫn là khối trắng chói (vỏ lửa và hạt bùng cộng sáng chồng nhau đến bão hoà) nên chụp thêm
+  các mức mạnh tay hơn. Người dùng chọn **khi bay giảm 45% (×0,55)** và **vụ nổ giảm 75% (×0,25)**.
+
+**Đo:** độ sáng thêm vào cảnh khi bay **×0,34** so với cũ, khi nổ **×0,45**; điểm ảnh trắng chói lúc nổ **0,87% → 0,19%**. Tung thật: đèn quả cầu khi bay
+**3,30** (6 × 0,55), đèn vụ nổ đỉnh **5,50** (22 × 0,25). Thiên thạch (dùng `BuildFireExplosion` trực tiếp) và quả cầu lửa trên tay phù thuỷ ở màn chính
+không đổi. Menu 70 chạy lại 0 lỗi. Menu 72 (Lửa địa ngục) hai lần chạy hỏng ở hai mục khác nhau do chọn ngẫu nhiên — mục C (đường dí), mục K4 (bia thật
+chọn ngẫu nhiên: quả vẫn xuyên bia, bay 15,6 m so với quả thường 8,2 m, rồi trúng vật phía sau) — không liên quan tới ánh sáng. Ảnh
+`PlayTestShots/sang_caulua_bay_4muc.png`, `sang_caulua_no_4muc.png`.
+
 ### Quả cầu lửa: nảy tới 6 lần (05/10/2026)
 
 **Người dùng:** "các quả cầu lửa khi đánh trúng đối thủ có thể nảy qua nảy lại 6 lần khi có các đối thủ khác ở gần phạm vi nảy". Hỏi lại; người dùng
