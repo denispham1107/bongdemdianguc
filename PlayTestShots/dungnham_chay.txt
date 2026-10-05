@@ -1,4 +1,4 @@
-Vat lieu: Diablo25D/DungNham, huong gan True, toc 1.5 m/s, quang troi moi chu ky 2 m
+Vat lieu: Diablo25D/DungNham, huong gan True, toc 0.8 m/s, quang troi moi chu ky 2 m
 --- Vung tam (0; -90), dong chay vong quanh (1.00; 0.00) ---
   CU (doi chung) toc 1.5: chuyen dong (RMS phan du / TB) 0.036; o tren gan 120, co dich 79 %, doc gan 61 %, xuoi dong 43 %, toc trung vi 0.43 m/s
   MOI toc 0.8: chuyen dong (RMS phan du / TB) 0.242; o tren gan 97, co dich 100 %, doc gan 69 %, xuoi dong 79 %, toc trung vi 0.72 m/s

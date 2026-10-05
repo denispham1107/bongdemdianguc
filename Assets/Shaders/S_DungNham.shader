@@ -21,7 +21,7 @@ Shader "Diablo25D/DungNham"
         _TroiA ("Troi lop 1 (xz, m/s)", Vector) = (0.12, 0.05, 0, 0)
         _TroiB ("Troi lop 2 (xz, m/s)", Vector) = (-0.07, 0.10, 0, 0)
         _SuongMu ("Muc suong mu ap len (0..1)", Range(0,1)) = 0.45
-        _TocChay ("Toc do chay theo gan (m/s)", Float) = 1.5
+        _TocChay ("Toc do chay theo gan (m/s) - nguoi dung chon 0,8 qua anh dong menu 111b", Float) = 0.8
         _QuangChuKy ("Quang troi moi chu ky flow map (m)", Float) = 2.0
         _DoChay ("Do ro cua dot sang chay (0 = hinh cu)", Range(0,1)) = 1
     }

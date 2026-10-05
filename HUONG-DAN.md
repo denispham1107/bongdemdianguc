@@ -9365,6 +9365,7 @@ không có gì chảy (đối chứng 61–80%, ngẫu nhiên 41%): chỉ là ki
 26–43%) và tốc tăng theo mức đặt. 0 lỗi.
 
 **Ảnh động menu 111b** (Play Act2, máy quay từ mép vực nam nhìn xuống — giống ảnh người dùng — và máy quay gần trên vực): `PlayTestShots/dungnham_chay_cu|0.8|1.5|2.5.gif`.
+**Người dùng chọn 0,8 m/s** (chảy chậm, đặc quánh) — `_TocChay` 0,8 trong `DungNham.mat` và mặc định của shader.
 Shader nay ~9 lần đọc ảnh mỗi điểm (trước 4) — chưa đo trên điện thoại.
 
 ### Bị cháy: lửa mỏng bớt — mật độ 0,4 (05/10/2026)

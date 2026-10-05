@@ -167,7 +167,7 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
   ⚠️ **Cùng ngày: DUNG NHAM CHẢY THEO CÁC ĐƯỜNG GÂN** (người dùng: "cho thấy rõ các dòng dung nham đang chuyển động và chảy"; chọn "chảy theo các
   đường gân trong hình", tốc độ chọn qua ảnh động): ảnh `Resources/DiaNguc/HuongGan.png` (Blender MCP, numpy trên `DungNham.png`: RG = hướng tiếp tuyến
   gân dạng GÓC KÉP × độ kết hợp từ tensor cấu trúc, B = nhiễu dải tần lặp liền mạch); `S_DungNham.LopChay` lấy hướng gân, dấu theo dòng chảy vòng
-  quanh bản đồ, **flow map hai pha** dời nhiễu → đợt sáng chạy dọc gân (`_TocChay` m/s, `_QuangChuKy` 2 m — chu kỳ = 2 m / tốc; chu kỳ cố định làm
+  quanh bản đồ, **flow map hai pha** dời nhiễu → đợt sáng chạy dọc gân (`_TocChay` **0,8 m/s — người dùng chọn qua ảnh động** 0,8 / 1,5 / 2,5, `_QuangChuKy` 2 m — chu kỳ = 2 m / tốc; chu kỳ cố định làm
   mẫu méo ở tốc cao); đồng hồ toàn cục `_DN_ThoiGian` (`DiaNguc.Update`; phép thử giữ bằng `GiuDongHoDungNham`). Menu 111 (0 lỗi, hướng gân + chuyển động
   tính lại từ ẢNH CHỤP, đối chứng `_DoChay` 0): chuyển động ×6–7 hình cũ, xuôi dòng 64–90% (cũ 26–43%), tốc trung vị 0,42–0,72 / 1,0–1,48 / 2,2–3,0
   ở 0,8 / 1,5 / 2,5 m/s. ⚠️ "Dọc gân" bị hiệu ứng khẩu độ (đối chứng cũng 61–80%) — không dùng để phân biệt. Ảnh động menu 111b
