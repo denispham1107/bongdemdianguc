@@ -23,15 +23,22 @@ Material:
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
+    - _HuongGan:
+        m_Texture: {fileID: 2800000, guid: 888bf6714fbded64684522b1e801b925, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _MainTex:
         m_Texture: {fileID: 2800000, guid: 1ad437b1aa019c7439aafaa16728ea10, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _DoChay: 1
+    - _QuangChuKy: 2
     - _Sang: 0.85
     - _SuongMu: 0.45
     - _TiLe: 0.022
+    - _TocChay: 1.5
     m_Colors:
     - _TroiA: {r: 0.12, g: 0.05, b: 0, a: 0}
     - _TroiB: {r: -0.07, g: 0.1, b: 0, a: 0}

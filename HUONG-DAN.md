@@ -9327,6 +9327,46 @@ bay lên nhiều một chút**.
 **Đo — menu 110** (0 lỗi): 0 cột đá trong hình; tàn lửa đang sống **1 265** (mức cũ tính từ tốc sinh × đời hạt ~832 → **×1,52**), bay lên TB 3,23 m/s;
 khói **288** (cũ ~180, **×1,60**), 1,77 m/s. E / F / A như trước (qua khe rơi, rào nguyên chặn, chết 4,79 s).
 
+#### Dung nham chảy theo các đường gân (05/10/2026)
+
+**Người dùng** (ảnh nhìn xuống dung nham sát mép vực): "Cho thấy rõ hiệu ứng các dòng dung nham đang chuyển động và chảy ở dưới này". Hỏi kiểu
+chảy → chọn **"chảy theo các đường gân trong hình"** (các khe nứt sáng); tốc độ → chọn qua **ảnh động 3 mức**.
+
+Bản cũ chỉ có hai lớp ảnh trôi 0,12 m/s — ở ô ảnh 45 m gần như đứng im. Cách làm:
+
+- **Ảnh hướng gân** `Resources/DiaNguc/HuongGan.png` (512, tuyến tính, không nén) tính trong **Blender MCP** bằng numpy từ chính `DungNham.png`:
+  độ sáng → làm mờ σ 1,5 px → gradient (cuộn vòng, giữ lặp liền mạch) → **tensor cấu trúc** làm mờ σ 6 px → hướng TIẾP TUYẾN của gân lưu dạng **góc
+  kép** (cos 2θ, sin 2θ) × độ kết hợp trong RG — góc kép thì lọc song tuyến / mip trung bình đúng, không bị "hai nửa gân ngược nhau". B = nhiễu dải tần
+  (FFT, tự lặp liền mạch, ~19 chu kỳ / ô = ~2,4 m). Kiểm bằng mắt: vạch hướng vẽ chồng lên ảnh nằm dọc theo gân.
+- **Shader** `S_DungNham` (`LopChay`, cho cả hai lớp): nửa góc → hướng gân, lấy dấu theo **dòng chảy vòng quanh bản đồ** (ngược chiều kim đồng hồ nhìn
+  từ trên, lệch ±~0,5 rad theo nhiễu cỡ ~18 m) — gân nằm ngang dòng thì chảy chậm (0,4 + 0,6·|cos|), vùng dung nham đặc (độ kết hợp thấp) theo
+  dòng chung. **Flow map hai pha** (lệch nửa chu kỳ, trộn tam giác, chuẩn hoá phương sai để không nhấp nháy tương phản) dời nhiễu B dọc hướng ấy →
+  các **đợt sáng** (sáng ×0,30–1,85 + ánh vàng trắng ở đỉnh) chỉ hiện trên gân / vùng sáng. `_DoChay` 0 = hình cũ.
+  Đồng hồ là biến toàn cục `_DN_ThoiGian` (`DiaNguc.Update` đặt = `Time.time`; phép thử giữ bằng `DiaNguc.GiuDongHoDungNham`).
+- ⚠️ **Chu kỳ = quãng trôi cố định 2 m / tốc độ** (`_QuangChuKy`). Bản đầu chu kỳ cố định 1,6 s: ở 2,5 m/s mẫu bị kéo 4 m mỗi chu kỳ (> bước sóng
+  nhiễu 2,4 m) trong khi hướng gân đổi trong ~1 m → mẫu méo, menu 111 đo tốc chỉ ~1,6 m/s và "dọc gân" tụt 68%. Lợi thêm: lớp chảy lặp lại sau đúng
+  một chu kỳ → ảnh động quay tròn số chu kỳ thì lặp liền mạch.
+
+**Đo — menu 111** (ngoài Play, PreviewScene, máy quay trực giao nhìn thẳng xuống 12 × 12 m trong vực, đồng hồ shader đặt tay, 12 khung cách
+0,15 s / tốc độ; đối chứng `_DoChay` 0 cùng chỗ). Độc lập với ảnh hướng: hướng gân tính lại từ **ảnh chụp** (tensor cấu trúc của ảnh trung bình),
+chuyển động từ **hiệu hai khung liên tiếp** (phần đứng yên tự triệt tiêu) tương quan chéo chuẩn hoá ≥ 0,3, nội suy dưới điểm ảnh. Hai vùng:
+
+| vùng | bản | chuyển động (RMS hiệu khung / sáng TB) | xuôi dòng | dọc gân | tốc trung vị |
+|---|---|---|---|---|---|
+| nam (0; −90) | cũ | 0,036 | 43% | 61% | — |
+| | 0,8 / 1,5 / 2,5 m/s | 0,24 / 0,23 / 0,23 | 79 / 90 / 89% | 69 / 82 / 82% | 0,72 / 1,48 / 2,99 m/s |
+| đông (90; 0) | cũ | 0,037 | 26% | 80% | — |
+| | 0,8 / 1,5 / 2,5 m/s | 0,26 / 0,25 / 0,24 | 64 / 73 / 84% | 67 / 79 / 84% | 0,42 / 1,00 / 2,20 m/s |
+
+⚠️ Ba cái bẫy của phép đo: (1) vật liệu gán ảnh ngay sau khi nhập shader mới không giữ (thuộc tính chưa có) — cả 3 mức ra số y hệt nhau mới lộ;
+(2) **trừ xu hướng tuyến tính** theo thời gian xoá luôn chuyển động cần đo (đợt sáng trôi chưa hết một bước sóng trong 1 s → gần như tuyến tính) →
+dùng hiệu khung; (3) "dọc gân" bị **hiệu ứng khẩu độ** — dọc một gân thẳng ảnh gần như không đổi nên đỉnh tương quan nghiêng về hướng gân cả khi
+không có gì chảy (đối chứng 61–80%, ngẫu nhiên 41%): chỉ là kiểm hợp lý; phân biệt thật là năng lượng chuyển động ×6–7, xuôi dòng (đối chứng
+26–43%) và tốc tăng theo mức đặt. 0 lỗi.
+
+**Ảnh động menu 111b** (Play Act2, máy quay từ mép vực nam nhìn xuống — giống ảnh người dùng — và máy quay gần trên vực): `PlayTestShots/dungnham_chay_cu|0.8|1.5|2.5.gif`.
+Shader nay ~9 lần đọc ảnh mỗi điểm (trước 4) — chưa đo trên điện thoại.
+
 ### Bị cháy: lửa mỏng bớt — mật độ 0,4 (05/10/2026)
 
 **Người dùng:** "Hiệu ứng thiêu đốt trên các nhân vật người chơi và trên quái vật: cho giảm bớt mật độ lửa phủ trên người, hiện đang nhiều quá

@@ -38,6 +38,7 @@ public class DiaNguc : MonoBehaviour
     {
         if (ins != null) return ins;
         SoLanRoi = 0;
+        GiuDongHoDungNham = false;
         var go = new GameObject("DiaNguc");
         ins = go.AddComponent<DiaNguc>();
         // Day vuc: tam va cham rong (ban do 135 m, vuc toa ra ngoai), mat tren thap hon mat dung nham 0,5 m (chim nua bap chan)
@@ -229,8 +230,12 @@ public class DiaNguc : MonoBehaviour
     /// <summary>Damageable nay da roi xuong vuc chua.</summary>
     public static bool DaRoi(Damageable d) { return d != null && d.transform.position.y < NguongRoi; }
 
+    /// <summary>Dong ho cua dong dung nham chay theo gan (shader DungNham doc bien toan cuc nay). Phep thu dat true roi tu dat gio.</summary>
+    public static bool GiuDongHoDungNham;
+
     void Update()
     {
+        if (!GiuDongHoDungNham) Shader.SetGlobalFloat("_DN_ThoiGian", Time.time);
         hen -= Time.deltaTime;
         if (hen > 0f) return;
         hen += Nhip;
