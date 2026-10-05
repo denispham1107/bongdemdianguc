@@ -9338,6 +9338,43 @@ như trong trận, thu nhỏ**; **bàn tay ngang bụng, chìa sang hai bên**.
 (xương hông 0,90, xương ngực 1,22 → ngang bụng), ra trước 0,41–0,43 m, ra hai bên 0,37 m; quả cầu lửa ở **x 0,56**, băng **x 0,44** màn hình;
 quả cầu cách lòng tay 0,19–0,20 m; 88–106 hạt mỗi quả; 0 lỗi. Ảnh: `PlayTestShots/tay_trungbay_can.png`, `tay_trungbay_man_chinh.png`.
 
+### Màn chính: phù thuỷ đứng yên, hai chân bằng nhau chạm đất, nhìn thẳng người chơi (05/10/2026)
+
+**Người dùng:** "cho nhân vật phù thủy đứng 2 chân bằng nhau (lưu ý không cho lơ lửng trên không trung như hiện giờ) nhìn thẳng chính diện về
+phía người chơi; không cần cho nhân vật tự quay 1 chỗ".
+
+**Nguyên nhân lơ lửng** (đo trong scene): menu 51 đặt gốc nhân vật **cao 0,2 m** trên mặt đất (`cho + Vector3.up * 0.2f`) và
+`CharacterController` tắt nên không rơi xuống; tư thế gốc của prefab là **bước dở** — chân trái nhấc, hai gối gập 75° / 53°, cổ chân lệch cao
+0,079 m → đế giày hở đất 0,163 m (trái) / 0,152 m (phải). Nhân vật quay lệch máy quay 20° rồi `MainMenuUI` còn xoay 18°/s.
+
+**Sửa** (vẫn không sửa tay scene MainMenu):
+- `MainMenuUI`: bỏ xoay (xoá `spinSpeed`).
+- `TuTheTrungBay.Start`: quay mặt thẳng vào `Camera.main` (chỉ quanh trục đứng).
+- Mỗi khung (`DungThangChan`): mọi xương chân về góc **bind pose** của model (tư thế dựng của Meshy — bàn chân phẳng, cổ giày thẳng, đầu gối
+  hướng trước), rồi đùi + cẳng chân **ngắm thẳng xuống** (bind pose dạng chân chữ A, bàn chân cách 0,40 m; thẳng xuống thì dưới hông, 0,23 m),
+  bàn chân + mũi chân trả về đúng góc bind. Góc bind **ghi cứng** (`GocChanBind`, đọc từ `Mesh.bindposes` trong Editor): lưới Meshy tắt Read/Write,
+  bản build có thể không đọc được `bindposes`, mà ngoại lệ trên WebGL là đứng hình.
+- Khung đầu (`HaChanXuongDat`): BakeMesh một lần, lấy đỉnh thấp nhất mỗi bên so với mặt đất (tia lớp Ground), hạ gốc cho **bên hở nhiều nhất
+  vừa chạm đất**. Đất chỗ đứng hơi dốc nên bên kia lún 1,6 cm — lấy trung bình thì một bên hở 1,7 cm, trái ý "không lơ lửng".
+- ⚠️ Lần thử đầu lấy độ dốc bàn chân từ chân đang chạm đất trong tư thế gốc (đối xứng sang chân kia) → số đo "bằng nhau, chạm đất" đạt hết nhưng
+  ảnh cận cho thấy **kiễng mũi, cổ giày nghiêng** (xoay tối thiểu giữ nguyên độ xoắn của tư thế bước). Bind pose sửa được cả hai.
+- Menu 51 (`DungManChinh`): đặt sát đất, nhìn thẳng (`HuongNhin + 180`) — chưa chạy lại (chạy lại thì mặt đất màn chính dùng chung Act2).
+
+**Đo — menu 101c** (Play, nhân vật TỰ đặt hướng, không còn dừng xoay hộ; mặt đất đọc bằng `Terrain.SampleHeight` — code dùng tia Ground;
+**đối chứng = tư thế cũ trong scene, đo trước khi vào Play**):
+
+| | cũ (đối chứng) | mới (1,5 s và 3,5 s) |
+|---|---|---|
+| lệch hướng máy quay | 20,0° | **0,0°** |
+| đế giày hở đất trái / phải | 0,163 / 0,152 m | **0,000 / −0,016 m** |
+| cổ chân lệch cao · mũi chân | 0,079 · 0,023 m | **0,000 · 0,005 m** |
+| gối gập trái / phải | 74,6° / 52,7° | **0,0° / 0,0°** |
+| đế giày chạm đất dài trái / phải (trong 1,5 cm) | 0,00 / 0,33 m | **0,32 / 0,32 m** |
+| quay thêm sau 2 s | — | **0,00°** |
+
+Tay + hai quả cầu giữ nguyên (lòng tay · lên 1,000; lửa x 0,56, băng x 0,44). 0 lỗi. Ảnh: `PlayTestShots/manchinh_chan_cu_truoc|ben.png`
+(cũ), `manchinh_chan_moi_truoc|ben.png` (mới).
+
 ### Gió lốc 2 lốc (cấp 5: 3 lốc) cách xa hơn · Mây giông cao 8 m, mưa dày hơn (04/10/2026, lần năm)
 
 **Người dùng:** Gió lốc "cấp đầu tiên chỉ cho đánh ra 2 lốc, mỗi lốc cách xa nhau ra 1 chút; cấp 5 đánh ra 3 lốc"; Mây giông "đám mây bay cao

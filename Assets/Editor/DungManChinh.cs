@@ -146,7 +146,8 @@ public static class DungManChinh
         var nv = (GameObject)PrefabUtility.InstantiatePrefab(pfNv, moi);
         nv.name = "PhuThuy_TrungBay";
         nv.tag = "Untagged";
-        nv.transform.SetPositionAndRotation(cho + Vector3.up * 0.2f, Quaternion.Euler(0f, HuongNhin + 200f, 0f));
+        // Dat sat dat, nhin thang may quay (05/10/2026 - truoc cao 0,2 m va lech 20 do; luc chay TuTheTrungBay con quay mat + ha de giay cham dat)
+        nv.transform.SetPositionAndRotation(cho, Quaternion.Euler(0f, HuongNhin + 180f, 0f));
         TatDieuKhien(nv);
 
         var camGo = new GameObject("Main Camera");

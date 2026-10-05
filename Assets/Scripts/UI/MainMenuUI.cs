@@ -11,8 +11,9 @@ public class MainMenuUI : MonoBehaviour
     public string act2Scene = "Act2";
 
     [Header("Nhan vat dung lam nen")]
-    public Transform showcase;          // phu thuy dung xoay tron o man hinh chinh
-    public float spinSpeed = 18f;
+    // Phu thuy dung YEN, nhin thang vao may quay (nguoi dung 05/10/2026: "khong can cho nhan vat tu quay 1 cho" - truoc xoay 18 do/giay).
+    // Huong mat + chan cham dat do TuTheTrungBay dat.
+    public Transform showcase;
 
     [Header("Choi nhieu nguoi")]
     [Tooltip("Bat len thi phai dang nhap moi vao duoc menu; tat thi choi don nhu cu")]
@@ -55,9 +56,6 @@ public class MainMenuUI : MonoBehaviour
 
     void Update()
     {
-        if (showcase != null)
-            showcase.Rotate(Vector3.up, spinSpeed * Time.deltaTime, Space.World);
-
         // Choi mang thi man nay CHI CO dang nhap va sanh cho - menu choi don cu
         // (nut VAO CHOI, phim Enter vao thang man choi) khong con nua.
         if (batChoiMang) return;

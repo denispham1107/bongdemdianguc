@@ -118,12 +118,90 @@ public static class ThuTayTrungBay
     static bool daBatDau101c;
     const string Ra101c = "PlayTestShots/tay_trungbay_play.txt";
 
+    /// <summary>So do chan + huong cua nhan vat trung bay (05/10/2026: dung hai chan bang nhau, cham dat, nhin thang may quay).</summary>
+    struct SoChan { public float lechMayQuay, kheTrai, khePhai, lechCoChan, lechMuiChan, rongChan, gapGoiTrai, gapGoiPhai, deTrai, dePhai; }
+
+    /// <summary>
+    /// Do DOC LAP voi TuTheTrungBay: mat dat lay bang Terrain.SampleHeight (code dung tia lop Ground), xuong chan doc thang tu khung
+    /// xuong (khong qua mang huong cua code), de giay = dinh thap nhat moi ben (BakeMesh) - ben chia theo mat phang giua cua XUONG HONG.
+    /// </summary>
+    static SoChan DoChan(Transform nv, Camera cam)
+    {
+        var s = new SoChan();
+        Vector3 veCam = cam.transform.position - nv.position; veCam.y = 0f;
+        Vector3 truoc = nv.forward; truoc.y = 0f;
+        s.lechMayQuay = Vector3.Angle(truoc, veCam);
+        Transform[] co = new Transform[2], mui = new Transform[2], dui = new Transform[2], cang = new Transform[2];
+        string[] ben = { "Left", "Right" };
+        foreach (var t in nv.GetComponentsInChildren<Transform>(true))
+            for (int i = 0; i < 2; i++)
+            {
+                if (t.name == ben[i] + "Foot") co[i] = t;
+                if (t.name == ben[i] + "ToeBase") mui[i] = t;
+                if (t.name == ben[i] + "UpLeg") dui[i] = t;
+                if (t.name == ben[i] + "Leg") cang[i] = t;
+            }
+        s.lechCoChan = Mathf.Abs(co[0].position.y - co[1].position.y);
+        s.lechMuiChan = Mathf.Abs(mui[0].position.y - mui[1].position.y);
+        s.rongChan = Mathf.Abs(Vector3.Dot(co[0].position - co[1].position, nv.right));
+        s.gapGoiTrai = Vector3.Angle(cang[0].position - dui[0].position, co[0].position - cang[0].position);
+        s.gapGoiPhai = Vector3.Angle(cang[1].position - dui[1].position, co[1].position - cang[1].position);
+        Vector3 giua = (dui[0].position + dui[1].position) * 0.5f, phai = (dui[1].position - dui[0].position); phai.y = 0f; phai.Normalize();
+        var thap = new[] { Vector3.up * 1e6f, Vector3.up * 1e6f };
+        var luoi = new UnityEngine.Mesh(); var dinh = new List<Vector3>(); var tatCa = new List<Vector3>();
+        foreach (var smr in nv.GetComponentsInChildren<SkinnedMeshRenderer>())
+        {
+            smr.BakeMesh(luoi, true); luoi.GetVertices(dinh);
+            foreach (var v in dinh)
+            {
+                Vector3 p = smr.transform.position + smr.transform.rotation * v;
+                tatCa.Add(p);
+                int i = Vector3.Dot(p - giua, phai) >= 0f ? 1 : 0;
+                if (p.y < thap[i].y) thap[i] = p;
+            }
+        }
+        Object.DestroyImmediate(luoi);
+        // DE GIAY PHANG: chieu dai (theo huong nhin) cua phan de nam trong 1,5 cm tren dinh thap nhat moi ben - dat phang thi ca de giay
+        // tu got toi mui cham dat (dai), kieng mui / nhac got thi chi mot diem (ngan)
+        var deMin = new[] { 1e6f, 1e6f }; var deMax = new[] { -1e6f, -1e6f };
+        Vector3 truocNv = nv.forward; truocNv.y = 0f; truocNv.Normalize();
+        foreach (var p in tatCa)
+        {
+            int i = Vector3.Dot(p - giua, phai) >= 0f ? 1 : 0;
+            if (p.y > thap[i].y + 0.015f) continue;
+            float z = Vector3.Dot(p, truocNv);
+            deMin[i] = Mathf.Min(deMin[i], z); deMax[i] = Mathf.Max(deMax[i], z);
+        }
+        s.deTrai = deMax[0] - deMin[0]; s.dePhai = deMax[1] - deMin[1];
+        var ter = Terrain.activeTerrain;
+        System.Func<Vector3, float> dat = p => ter != null ? ter.SampleHeight(p) + ter.transform.position.y : 0f;
+        s.kheTrai = thap[0].y - dat(thap[0]);
+        s.khePhai = thap[1].y - dat(thap[1]);
+        return s;
+    }
+
+    static string MoTa(SoChan s)
+    {
+        return string.Format("lech may quay {0:F1} do; khe de giay - dat: trai {1:F3} / phai {2:F3} m; co chan lech cao {3:F3} m, mui chan {4:F3} m; hai chan cach {5:F2} m; goi gap trai {6:F1} / phai {7:F1} do; de giay cham dat dai trai {8:F2} / phai {9:F2} m",
+            s.lechMayQuay, s.kheTrai, s.khePhai, s.lechCoChan, s.lechMuiChan, s.rongChan, s.gapGoiTrai, s.gapGoiPhai, s.deTrai, s.dePhai);
+    }
+
+    /// <summary>Doi chung: tu the CU dat san trong scene (doc truoc khi vao Play).</summary>
+    static string doiChung101c; static SoChan soCu101c;
+
     [MenuItem("Diablo 2.5D/101c Chay thu tu the tay + hai qua cau o man chinh", false, 169)]
     public static void ChayTuThe()
     {
         if (EditorApplication.isPlaying || EditorSceneManager.GetActiveScene().isDirty) return;
         if (EditorSceneManager.GetActiveScene().path != "Assets/Scenes/MainMenu.unity") EditorSceneManager.OpenScene("Assets/Scenes/MainMenu.unity");
         if (File.Exists(Ra101c)) File.Delete(Ra101c);
+        var menuCu = Object.FindAnyObjectByType<MainMenuUI>();
+        doiChung101c = null;
+        if (menuCu != null && menuCu.showcase != null && Camera.main != null)
+        {
+            soCu101c = DoChan(menuCu.showcase, Camera.main);
+            doiChung101c = MoTa(soCu101c);
+        }
         daBatDau101c = false;
         EditorApplication.update -= Nhip101c;
         EditorApplication.update += Nhip101c;
@@ -151,12 +229,53 @@ public static class ThuTayTrungBay
         kiem(tt != null, "MainMenuUI khong gan TuTheTrungBay");
         if (tt != null)
         {
-            // Dung xoay, quay mat ve may quay nhu luc dung scene (menu 51) de do ben man hinh
-            float quay = menu.spinSpeed; menu.spinSpeed = 0f;
+            // 05/10/2026: KHONG con dat tay huong / dung xoay - nhan vat phai TU nhin thang may quay, dung yen, hai chan cham dat
             var cam = Camera.main;
-            Vector3 veCam = cam.transform.position - nv.position; veCam.y = 0f;
-            nv.rotation = Quaternion.LookRotation(veCam.normalized);
             yield return new WaitForSeconds(1.5f);
+            {
+                float yaw0 = nv.eulerAngles.y; float y0 = nv.position.y;
+                var moi = DoChan(nv, cam);
+                yield return new WaitForSeconds(2f);
+                yield return new WaitForEndOfFrame();
+                var sau = DoChan(nv, cam);
+                float quayThem = Mathf.Abs(Mathf.DeltaAngle(yaw0, nv.eulerAngles.y));
+                sb.AppendLine("DOI CHUNG (tu the cu trong scene, truoc Play): " + (doiChung101c ?? "KHONG DO DUOC"));
+                sb.AppendLine("MOI (Play 1,5 s): " + MoTa(moi));
+                sb.AppendLine("MOI (them 2 s):  " + MoTa(sau) + string.Format("; quay them {0:F2} do, goc dich {1:F3} m", quayThem, nv.position.y - y0));
+                var tt2 = nv.GetComponent<TuTheTrungBay>();
+                sb.AppendLine(string.Format("TuTheTrungBay: da dich goc {0:F3} m, khe de giay theo code trai {1:F3} / phai {2:F3}", tt2.DaDichGoc, tt2.KheDeGiay.x, tt2.KheDeGiay.y));
+                kiem(doiChung101c != null && soCu101c.lechMayQuay > 5f && Mathf.Max(soCu101c.kheTrai, soCu101c.khePhai) > 0.05f && soCu101c.lechCoChan > 0.05f
+                    && Mathf.Min(soCu101c.deTrai, soCu101c.dePhai) < 0.2f,
+                    "doi chung (tu the cu) khong lo loi -> phep do khong phan biet duoc");
+                foreach (var s in new[] { moi, sau })
+                {
+                    kiem(s.lechMayQuay < 1f, "nhan vat khong nhin thang may quay");
+                    // khong ben nao ho (> 5 mm); dat doc nen ben dat cao duoc lun toi 4,5 cm
+                    kiem(Mathf.Max(s.kheTrai, s.khePhai) <= 0.005f && Mathf.Max(s.kheTrai, s.khePhai) >= -0.005f, "de giay ho dat (lo lung) hoac ca hai lun");
+                    kiem(Mathf.Min(s.kheTrai, s.khePhai) >= -0.045f, "mot ben lun qua sau");
+                    // de giay phang: doi chung tu the cu - chan dang nhac 0,00 m, chan cham dat 0,33 m
+                    kiem(s.deTrai >= 0.2f && s.dePhai >= 0.2f, "de giay khong dat phang (kieng mui / nhac got)");
+                    kiem(s.lechCoChan <= 0.015f && s.lechMuiChan <= 0.015f, "hai chan khong bang nhau");
+                    kiem(s.gapGoiTrai < 5f && s.gapGoiPhai < 5f, "goi con gap (chan khong thang)");
+                    kiem(s.rongChan > 0.12f && s.rongChan < 0.40f, "hai ban chan qua sat / qua xa");
+                }
+                kiem(quayThem < 0.1f, "nhan vat van tu xoay");
+                // anh can chan: truoc mat va canh ben
+                var goC = new GameObject("TAM_CamChan"); var cc = goC.AddComponent<Camera>(); cc.CopyFrom(cam); cc.enabled = false; cc.fieldOfView = 30f; cc.nearClipPlane = 0.05f;
+                var rtC = new RenderTexture(800, 800, 24);
+                Vector3 tamC = nv.position + Vector3.up * 0.5f;
+                foreach (var cap in new[] { new KeyValuePair<string, Vector3>("truoc", nv.forward), new KeyValuePair<string, Vector3>("ben", nv.right) })
+                {
+                    goC.transform.position = tamC + cap.Value * 3.2f; goC.transform.LookAt(tamC);
+                    cc.targetTexture = rtC; cc.Render(); cc.targetTexture = null;
+                    var cu = RenderTexture.active; RenderTexture.active = rtC;
+                    var tx = new Texture2D(800, 800, TextureFormat.RGB24, false); tx.ReadPixels(new Rect(0, 0, 800, 800), 0, 0); tx.Apply();
+                    RenderTexture.active = cu;
+                    File.WriteAllBytes("PlayTestShots/manchinh_chan_moi_" + cap.Key + ".png", tx.EncodeToPNG());
+                    Object.Destroy(tx);
+                }
+                Object.Destroy(rtC); Object.Destroy(goC);
+            }
             var hh = nv.GetComponentInChildren<NguoiChoiHoatHinh>();
             Transform hong = hh.hips, nguc = hh.spine;
             foreach (var tay in new[] { tt.BanTayLua, tt.BanTayBang })
@@ -268,7 +387,6 @@ public static class ThuTayTrungBay
                 File.WriteAllBytes("PlayTestShots/tay_trungbay_can.png", tx.EncodeToPNG());
                 Object.Destroy(tx); Object.Destroy(rt); Object.Destroy(goC);
             }
-            menu.spinSpeed = quay;
         }
         sb.AppendLine("so loi ghi nhan = " + loi);
         File.WriteAllText(Ra101c, sb.ToString());
