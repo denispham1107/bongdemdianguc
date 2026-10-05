@@ -1,13 +1,13 @@
 TuTheTrungBay gan tu MainMenuUI: True
-DOI CHUNG (tu the cu trong scene, truoc Play): lech may quay 20.0 do; khe de giay - dat: trai 0.163 / phai 0.152 m; co chan lech cao 0.079 m, mui chan 0.023 m; hai chan cach 0.33 m; goi gap trai 74.6 / phai 52.7 do; de giay cham dat dai trai 0.00 / phai 0.33 m
-MOI (Play 1,5 s): lech may quay 0.0 do; khe de giay - dat: trai 0.000 / phai -0.016 m; co chan lech cao 0.000 m, mui chan 0.005 m; hai chan cach 0.23 m; goi gap trai 0.0 / phai 0.0 do; de giay cham dat dai trai 0.32 / phai 0.32 m
-MOI (them 2 s):  lech may quay 0.0 do; khe de giay - dat: trai 0.000 / phai -0.016 m; co chan lech cao 0.000 m, mui chan 0.005 m; hai chan cach 0.23 m; goi gap trai 0.0 / phai 0.0 do; de giay cham dat dai trai 0.32 / phai 0.32 m; quay them 0.00 do, goc dich 0.000 m
-TuTheTrungBay: da dich goc -0.105 m, khe de giay theo code trai 0.000 / phai -0.016
+DOI CHUNG (tu the cu trong scene, truoc Play): lech may quay 20.0 do; khe de giay - dat: trai 0.163 / phai 0.152 m; co chan lech cao 0.079 m, mui chan 0.023 m; hai chan cach 0.33 m; goi gap trai 74.6 / phai 52.7 do (tu the dung cua model 48.6 / 46.1); de giay cham dat dai trai 0.00 / phai 0.33 m
+MOI (Play 1,5 s): lech may quay 0.0 do; khe de giay - dat: trai 0.000 / phai -0.028 m; co chan lech cao 0.006 m, mui chan 0.001 m; hai chan cach 0.33 m; goi gap trai 48.6 / phai 46.1 do (tu the dung cua model 48.6 / 46.1); de giay cham dat dai trai 0.33 / phai 0.33 m
+MOI (them 2 s):  lech may quay 0.0 do; khe de giay - dat: trai 0.000 / phai -0.028 m; co chan lech cao 0.006 m, mui chan 0.001 m; hai chan cach 0.33 m; goi gap trai 48.6 / phai 46.1 do (tu the dung cua model 48.6 / 46.1); de giay cham dat dai trai 0.33 / phai 0.33 m; quay them 0.00 do, goc dich 0.000 m
+TuTheTrungBay: da dich goc -0.180 m, khe de giay theo code trai 0.000 / phai -0.028
 LeftHand (LUA): long tay . len = 1.000; cao 1.06 m (hong 0.90, xuong spine 1.22); ra ngoai 0.37 m, ra truoc 0.44 m; man hinh x 0.55
 RightHand (BANG): long tay . len = 1.000; cao 1.07 m (hong 0.90, xuong spine 1.22); ra ngoai 0.37 m, ra truoc 0.41 m; man hinh x 0.45
 Den cua hai qua cau: tam lon nhat 2.60 m, do sang lon nhat 2.20 (mong <= 2.6 m / ~2.2)
-Qua cau LUA: man hinh x 0.56, cao tren long tay 0.21 m, 2 den, 65 hat | Qua cau BANG: man hinh x 0.44, cao tren long tay 0.19 m, 2 den, 103 hat
+Qua cau LUA: man hinh x 0.56, cao tren long tay 0.21 m, 2 den, 57 hat | Qua cau BANG: man hinh x 0.44, cao tren long tay 0.19 m, 2 den, 102 hat
 Lua tren tay: Sparks: Billboard anh NgonLuaThat; Flames: Billboard anh NgonLuaThat; 
-Lua bam qua cau: 20 ngon lua, goc xa tam qua cau nhat 0.111 m (0.85 ban kinh cau), toc do lon nhat 0.000 m/s
-Lua GIUA: 10 ngon, goc xa tam nhat 0.039 m (0.30 r) | Khoi den: 14 lan, 14 tren qua cau, 14 dang boc len, cao nhat 1.26 m tren tam, do sang mau 0.10
+Lua bam qua cau: 19 ngon lua, goc xa tam qua cau nhat 0.111 m (0.85 ban kinh cau), toc do lon nhat 0.000 m/s
+Lua GIUA: 8 ngon, goc xa tam nhat 0.039 m (0.30 r) | Khoi den: 14 lan, 14 tren qua cau, 14 dang boc len, cao nhat 1.04 m tren tam, do sang mau 0.10
 so loi ghi nhan = 0

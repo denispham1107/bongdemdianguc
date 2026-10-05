@@ -16,8 +16,8 @@ using UnityEngine;
 /// DUNG HAI CHAN BANG NHAU, CHAM DAT, NHIN THANG MAY QUAY (nguoi dung 05/10/2026: "dung 2 chan bang nhau, khong lo lung tren khong trung,
 /// nhin thang chinh dien ve phia nguoi choi; khong can tu quay"). Truoc do: menu 51 dat goc nhan vat CAO 0,2 m tren dat va quay lech may quay
 /// 20 do, tu the goc cua prefab la buoc do (chan trai nhac cao hon chan phai 0,10 m) -> de giay ho dat 0,15 m. Nay: Start quay mat thang vao
-/// may quay; moi khung xuong chan ve goc BIND POSE cua model (GocChanBind), dui + cang chan NGAM THANG XUONG, ban chan dat phang theo bind
-/// pose; khung dau tien BakeMesh mot lan, ha / nang goc cho de giay cham mat dat (Ground), khong ben nao ho.
+/// may quay; moi khung xuong chan ve goc BIND POSE cua model (GocChanBind), ca chan khep bot chu A (HeSoKhepChan), ban chan dat phang theo
+/// bind pose; khung dau tien BakeMesh mot lan, ha / nang goc cho de giay cham mat dat (Ground), khong ben nao ho.
 /// </summary>
 [DefaultExecutionOrder(10020)]
 public class TuTheTrungBay : MonoBehaviour
@@ -149,19 +149,26 @@ public class TuTheTrungBay : MonoBehaviour
         coChan = true;
     }
 
+    /// <summary>Thu hep chan chu A cua bind pose ve phia thang dung bao nhieu (0 = nguyen bind, co chan cach 0,40 m; 1 = thang dung, 0,23 m).
+    /// 0,4 -> cach ~0,33 m, bang tu the cu nguoi dung muon giu (0,34 m).</summary>
+    public const float HeSoKhepChan = 0.4f;
+
     /// <summary>
-    /// Hai chan bang nhau: moi xuong chan ve goc bind pose (dau goi huong truoc, khong xoan), roi dui + cang chan NGAM THANG XUONG (bind pose
-    /// dang chan chu A - ban chan cach 0,40 m; thang xuong thi duoi hong, cach 0,23 m), cuoi cung ban chan + mui chan ve dung goc bind (dat phang).
+    /// Hai chan bang nhau, THANG: moi xuong chan ve goc bind pose (luoi chan thang nhu model dung), roi xoay CA CHAN quanh hong (giu nguyen goc
+    /// goi cua bind) khep bot chu A theo HeSoKhepChan, cuoi cung ban chan + mui chan ve dung goc bind (dat phang).
+    /// ⚠️ KHONG ngam rieng dui + cang chan thang xuong: xuong Meshy o bind pose da GAP GOI 48,6 do trong khi luoi chan thang - be thang xuong
+    /// thi LUOI chan cong ra hai ben (nguoi dung 05/10/2026: "2 chan nhan vat qua cong").
     /// </summary>
     void DungThangChan()
     {
         Quaternion q = transform.rotation;
         for (int i = 0; i < 2; i++)
         {
-            duiTren[i].rotation = q * GocChanBind[i, 0];
-            cangChan[i].rotation = q * GocChanBind[i, 1];
-            NguoiChoiHoatHinh.NgamHuongKhop(duiTren[i], cangChan[i], Vector3.down, 1f);
-            NguoiChoiHoatHinh.NgamHuongKhop(cangChan[i], banChan[i], Vector3.down, 1f);
+            for (int k = 0; k < 4; k++)
+                (k == 0 ? duiTren[i] : k == 1 ? cangChan[i] : k == 2 ? banChan[i] : muiChan[i]).rotation = q * GocChanBind[i, k];
+            Vector3 chan = (banChan[i].position - duiTren[i].position).normalized;
+            Vector3 muon = Vector3.Slerp(chan, Vector3.down, HeSoKhepChan);
+            duiTren[i].rotation = Quaternion.FromToRotation(chan, muon) * duiTren[i].rotation;
             banChan[i].rotation = q * GocChanBind[i, 2];
             muiChan[i].rotation = q * GocChanBind[i, 3];
         }

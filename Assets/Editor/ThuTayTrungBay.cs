@@ -119,7 +119,7 @@ public static class ThuTayTrungBay
     const string Ra101c = "PlayTestShots/tay_trungbay_play.txt";
 
     /// <summary>So do chan + huong cua nhan vat trung bay (05/10/2026: dung hai chan bang nhau, cham dat, nhin thang may quay).</summary>
-    struct SoChan { public float lechMayQuay, kheTrai, khePhai, lechCoChan, lechMuiChan, rongChan, gapGoiTrai, gapGoiPhai, deTrai, dePhai; }
+    struct SoChan { public float lechMayQuay, kheTrai, khePhai, lechCoChan, lechMuiChan, rongChan, gapGoiTrai, gapGoiPhai, deTrai, dePhai, goiBindTrai, goiBindPhai; }
 
     /// <summary>
     /// Do DOC LAP voi TuTheTrungBay: mat dat lay bang Terrain.SampleHeight (code dung tia lop Ground), xuong chan doc thang tu khung
@@ -146,6 +146,20 @@ public static class ThuTayTrungBay
         s.rongChan = Mathf.Abs(Vector3.Dot(co[0].position - co[1].position, nv.right));
         s.gapGoiTrai = Vector3.Angle(cang[0].position - dui[0].position, co[0].position - cang[0].position);
         s.gapGoiPhai = Vector3.Angle(cang[1].position - dui[1].position, co[1].position - cang[1].position);
+        // Goc goi o TU THE DUNG CUA MODEL (bind pose) - doc thang Mesh.bindposes (Editor doc duoc), khong qua hang so GocChanBind cua code.
+        // Xuong Meshy o bind pose da gap goi ~48,6 do trong khi LUOI chan thang: goi khac goc nay = luoi chan cong (ban 05/10 lan 1: 0 do).
+        {
+            var smr0 = nv.GetComponentInChildren<SkinnedMeshRenderer>();
+            var bp = smr0.sharedMesh.bindposes;
+            var viTri = new Dictionary<string, Vector3>();
+            for (int i = 0; i < smr0.bones.Length; i++) viTri[smr0.bones[i].name] = (Vector3)bp[i].inverse.GetColumn(3);
+            for (int i = 0; i < 2; i++)
+            {
+                Vector3 u = viTri[ben[i] + "UpLeg"], l = viTri[ben[i] + "Leg"], f = viTri[ben[i] + "Foot"];
+                float g = Vector3.Angle(l - u, f - l);
+                if (i == 0) s.goiBindTrai = g; else s.goiBindPhai = g;
+            }
+        }
         Vector3 giua = (dui[0].position + dui[1].position) * 0.5f, phai = (dui[1].position - dui[0].position); phai.y = 0f; phai.Normalize();
         var thap = new[] { Vector3.up * 1e6f, Vector3.up * 1e6f };
         var luoi = new UnityEngine.Mesh(); var dinh = new List<Vector3>(); var tatCa = new List<Vector3>();
@@ -182,8 +196,8 @@ public static class ThuTayTrungBay
 
     static string MoTa(SoChan s)
     {
-        return string.Format("lech may quay {0:F1} do; khe de giay - dat: trai {1:F3} / phai {2:F3} m; co chan lech cao {3:F3} m, mui chan {4:F3} m; hai chan cach {5:F2} m; goi gap trai {6:F1} / phai {7:F1} do; de giay cham dat dai trai {8:F2} / phai {9:F2} m",
-            s.lechMayQuay, s.kheTrai, s.khePhai, s.lechCoChan, s.lechMuiChan, s.rongChan, s.gapGoiTrai, s.gapGoiPhai, s.deTrai, s.dePhai);
+        return string.Format("lech may quay {0:F1} do; khe de giay - dat: trai {1:F3} / phai {2:F3} m; co chan lech cao {3:F3} m, mui chan {4:F3} m; hai chan cach {5:F2} m; goi gap trai {6:F1} / phai {7:F1} do (tu the dung cua model {10:F1} / {11:F1}); de giay cham dat dai trai {8:F2} / phai {9:F2} m",
+            s.lechMayQuay, s.kheTrai, s.khePhai, s.lechCoChan, s.lechMuiChan, s.rongChan, s.gapGoiTrai, s.gapGoiPhai, s.deTrai, s.dePhai, s.goiBindTrai, s.goiBindPhai);
     }
 
     /// <summary>Doi chung: tu the CU dat san trong scene (doc truoc khi vao Play).</summary>
@@ -256,8 +270,10 @@ public static class ThuTayTrungBay
                     // de giay phang: doi chung tu the cu - chan dang nhac 0,00 m, chan cham dat 0,33 m
                     kiem(s.deTrai >= 0.2f && s.dePhai >= 0.2f, "de giay khong dat phang (kieng mui / nhac got)");
                     kiem(s.lechCoChan <= 0.015f && s.lechMuiChan <= 0.015f, "hai chan khong bang nhau");
-                    kiem(s.gapGoiTrai < 5f && s.gapGoiPhai < 5f, "goi con gap (chan khong thang)");
-                    kiem(s.rongChan > 0.12f && s.rongChan < 0.40f, "hai ban chan qua sat / qua xa");
+                    kiem(Mathf.Abs(s.gapGoiTrai - s.goiBindTrai) < 3f && Mathf.Abs(s.gapGoiPhai - s.goiBindPhai) < 3f,
+                         "goi khac tu the dung cua model (luoi chan cong / gap)");
+                    // tu the cu (nguoi dung muon giu do rong): 0,34 m
+                    kiem(s.rongChan > 0.28f && s.rongChan < 0.40f, "hai ban chan qua sat / qua xa so voi ban cu");
                 }
                 kiem(quayThem < 0.1f, "nhan vat van tu xoay");
                 // anh can chan: truoc mat va canh ben

@@ -9375,6 +9375,25 @@ phía người chơi; không cần cho nhân vật tự quay 1 chỗ".
 Tay + hai quả cầu giữ nguyên (lòng tay · lên 1,000; lửa x 0,56, băng x 0,44). 0 lỗi. Ảnh: `PlayTestShots/manchinh_chan_cu_truoc|ben.png`
 (cũ), `manchinh_chan_moi_truoc|ben.png` (mới).
 
+#### Lần hai cùng ngày: "2 chân nhân vật hiện giờ quá cong" — xương gối Meshy gập sẵn
+
+**Người dùng** (kèm ảnh sảnh và ảnh bản cũ): "cho 2 chân nhân vật đứng thẳng như trong bản cũ, 2 chân nhân vật hiện giờ quá cong".
+
+**Nguyên nhân:** ở bind pose của model (lưới chân THẲNG), xương Meshy đã **gập gối 48,6° (trái) / 46,1° (phải)** — khớp gối đặt lệch khỏi
+trục chân của lưới. Bản trên ngắm riêng đùi và cẳng chân thẳng xuống (gối xương 0°) → **lưới** chân cong ra hai bên, dải vải đỏ cong theo. Phép
+kiểm "gối gập < 5°" khi ấy đo XƯƠNG nên báo đạt — lại là phép kiểm dựa trên chính giả thiết sai.
+
+**Sửa:** đặt mọi xương chân về góc bind (giữ nguyên góc gối của model), rồi xoay **cả chân** quanh hông khép bớt chữ A theo `HeSoKhepChan` 0,4
+(0 = bind nguyên, cổ chân cách 0,40 m; 1 = thẳng đứng, 0,23 m; 0,4 → 0,33 m, bản cũ 0,34 m); bàn chân, mũi chân về góc bind.
+
+⚠️ **Chụp so sánh tư thế SkinnedMesh:** vẽ nhiều tư thế trong CÙNG một lệnh thì cả 4 ảnh y hệt nhau (lưới skin chỉ cập nhật mỗi khung). Phải
+BakeMesh từng tư thế ra lưới tĩnh rồi mới vẽ — `PlayTestShots/manchinh_chan_cac_muc.png` (5 cột: tư thế gốc prefab · bản ngắm thẳng từng đoạn
+(cong) · bind nguyên · bind khép 1/2 · bind thẳng đứng; hàng trên nhìn trước, hàng dưới nhìn ngang).
+
+**Đo — menu 101c**, phép kiểm gối đổi thành **gối = góc gối bind đọc thẳng từ `Mesh.bindposes`** (không qua hằng số `GocChanBind` của code; bản
+cong ra 0° sẽ bị bắt), độ rộng chân 0,28–0,40 m: lệch máy quay 0,0°; hở đất 0,000 / −0,028 m (đất dốc, chân rộng hơn nên bên phải lún sâu hơn
+lần trước); cổ chân lệch cao 0,006 m; gối 48,6 / 46,1° = bind; cổ chân cách 0,33 m; đế giày chạm đất dài 0,33 / 0,33 m; quay thêm 0,00°. 0 lỗi.
+
 ### Gió lốc 2 lốc (cấp 5: 3 lốc) cách xa hơn · Mây giông cao 8 m, mưa dày hơn (04/10/2026, lần năm)
 
 **Người dùng:** Gió lốc "cấp đầu tiên chỉ cho đánh ra 2 lốc, mỗi lốc cách xa nhau ra 1 chút; cấp 5 đánh ra 3 lốc"; Mây giông "đám mây bay cao

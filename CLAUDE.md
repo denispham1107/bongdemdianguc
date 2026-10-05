@@ -867,11 +867,15 @@ hơn ×1,5 và mở xuống 1,8–4,3 m** (người dùng chọn sau menu 94 ch�
   giữa gốc ≤ 0,30 r; khói 15 làn, 15/15 trên quả cầu và đang bốc lên, cao tới 0,87 m, độ sáng màu 0,10 — 0 lỗi.
   ⚠️ **05/10/2026: ĐỨNG YÊN, NHÌN THẲNG MÁY QUAY, HAI CHÂN BẰNG NHAU CHẠM ĐẤT** (người dùng: "không lơ lửng", "không cần tự quay"): bỏ xoay
   18°/s (`MainMenuUI.spinSpeed` đã xoá); `TuTheTrungBay` quay mặt vào `Camera.main`, mỗi khung đặt xương chân về góc **bind pose** của model
-  (`GocChanBind` — ghi CỨNG, lưới Read/Write tắt nên bản build có thể không đọc được `bindposes`), đùi + cẳng chân ngắm thẳng xuống, bàn chân phẳng;
-  khung đầu BakeMesh một lần rồi hạ gốc cho bên hở nhất vừa chạm đất (đất dốc: bên kia lún 1,6 cm). Trước: menu 51 đặt gốc cao 0,2 m, lệch 20°,
-  tư thế bước dở → đế giày hở 0,15–0,16 m. Menu 51 nay đặt sát đất, nhìn thẳng. Menu 101c đo (đối chứng = tư thế cũ trong scene): lệch 0,0° (cũ 20),
-  hở đất 0,000 / −0,016 m (cũ 0,163 / 0,152), cổ chân lệch cao 0,000 (cũ 0,079), gối 0° (cũ 75 / 53), đế giày chạm đất dài 0,32 / 0,32 m (cũ 0,00 /
-  0,33), 2 s sau quay thêm 0,00°. Menu 101c (0 lỗi): lòng tay · lên = 1,000 cả hai,
+  (`GocChanBind` — ghi CỨNG, lưới Read/Write tắt nên bản build có thể không đọc được `bindposes`), xoay CẢ CHÂN quanh hông khép bớt chữ A
+  (`HeSoKhepChan` 0,4 → cổ chân cách 0,33 m như bản cũ 0,34), bàn chân phẳng; khung đầu BakeMesh một lần rồi hạ gốc cho bên hở nhất vừa chạm đất
+  (đất dốc: bên kia lún 2,8 cm). ⚠️ **ĐỪNG ngắm riêng đùi + cẳng chân thẳng xuống**: xương Meshy ở bind pose đã GẬP GỐI 48,6° / 46,1° trong khi
+  LƯỚI chân thẳng — bẻ xương thẳng thì lưới chân CONG ra hai bên (bản đầu cùng ngày, người dùng: "2 chân quá cong"; menu 101c khi ấy kiểm "gối 0°"
+  nên vẫn xanh). Ảnh so 5 cách: `PlayTestShots/manchinh_chan_cac_muc.png` (vẽ từ lưới BakeMesh — SkinnedMesh vẽ nhiều tư thế trong CÙNG lệnh ra
+  y hệt nhau). Trước: menu 51 đặt gốc cao 0,2 m, lệch 20°, tư thế bước dở → đế giày hở 0,15–0,16 m. Menu 51 nay đặt sát đất, nhìn thẳng. Menu 101c
+  đo (đối chứng = tư thế cũ trong scene): lệch 0,0° (cũ 20), hở đất 0,000 / −0,028 m (cũ 0,163 / 0,152), cổ chân lệch cao 0,006 (cũ 0,079), gối =
+  góc bind đọc từ `Mesh.bindposes` (48,6 / 46,1; cũ 75 / 53), đế giày chạm đất dài 0,33 / 0,33 m (cũ 0,00 / 0,33), 2 s sau quay thêm 0,00°.
+  Menu 101c (0 lỗi): lòng tay · lên = 1,000 cả hai,
   tay cao 1,06–1,07 m (hông 0,90, ngực 1,22), ra trước 0,41–0,43, ra ngoài 0,37; lửa x 0,56 / băng x 0,44 màn hình; cầu cách lòng tay 0,19–0,20 m.
   ⚠️ Mặt đất Màn chính là file RIÊNG `Terrain/ManChinh_MatDat.asset` (bản Act2 trước khi mở rộng, 27/09/2026) — trước đó dùng chung
   `Act2_MatDat.asset` nên menu 86 làm Màn chính mất đất. Chạy lại menu 51 thì nó lại dùng chung — sửa Act2 phải kiểm cả Màn chính.
