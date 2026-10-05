@@ -128,8 +128,8 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
   chọn; trước là 11 viên đá vòm rời lơ lửng + tường thấp) — song cắm xuống đất từng chỗ, rào kín 0/2096 đường lọt.
   ⚠️ **Nhà mồ dùng LƯỚI VA CHẠM HAI MẶT** (menu 88, `BlenderMaps/GraveyardAct2/VaCham/`): lưới Blender có mặt lật pháp tuyến vào
   trong, CharacterController xuyên tường vào được rồi KẸT (menu 87: 18/18 lần; nay 0). Thêm nhà mồ mới / nhập lại map → chạy lại menu 88.
-- ⚠️ **Máu người chơi = 700** (05/10/2026 người dùng: "cho máu các nhân vật chính trở về 700 HP mỗi khi vào game"; 27/09 là 10 000 để chạy
-  thử, 12/09 mức thật 600) — sửa đủ cả ba chỗ và `ThuMauKhoiDau.MauMongDoi`; menu 40: mình 700/700, bản sao người chơi khác 700/700. Con số nằm ở ba chỗ —
+- ⚠️ **Máu người chơi = 1000** (05/10/2026 người dùng: "khi mới vào game cho máu người chơi là 1000"; cùng ngày trước đó 700; 27/09 là 10 000
+  để chạy thử, 12/09 mức thật 600) — sửa đủ cả ba chỗ và `ThuMauKhoiDau.MauMongDoi`; menu 40: mình 1000/1000, bản sao người chơi khác 1000/1000. Con số nằm ở ba chỗ —
   `GameBootstrap.playerMaxHealth`, scene Act2, `Player_Sorceress.prefab` — và menu 40 kiểm cả ba (kể cả bản sao
   người chơi khác, vì nó lấy máu thẳng từ prefab).
 - **LUẬT ĐỢT QUÁI** (luật duy nhất của `GameDirector` từ khi xoá Act1): mỗi đợt sinh quanh **từng**

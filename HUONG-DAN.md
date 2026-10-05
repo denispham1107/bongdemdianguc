@@ -9118,6 +9118,12 @@ còn bật; mỗi chỗ đúng 9 tia con (171 / 234); một chỗ chạm riêng:
 đen 0,42, sau 6 s vết biến mất. **Đối chứng:** `LoeSetChamDat` gọi thẳng (đường Lốc xoáy) vẫn còn 2 lớp vệt gạch. Menu 58 (Sấm sét) và 83 (Mây
 giông) chạy lại 0 lỗi. Ảnh `PlayTestShots/setchamdat_samset_0/1.png`, `setchamdat_maygiong_0/1.png`.
 
+### Máu khởi đầu 1000 (05/10/2026)
+
+**Người dùng:** "khi mới vào game cho máu người chơi là 1000" (cùng ngày trước đó đặt 700). Đổi ở cả ba chỗ con số nằm: `GameBootstrap.playerMaxHealth`
+trong code, cùng trường ấy trong cảnh Act2 (sửa qua Unity rồi lưu — lưu cảnh chỉ đổi đúng một dòng), và `Damageable` của prefab `Player_Sorceress`
+(bản sao người chơi khác lấy máu thẳng từ đây). **Menu 40:** nhân vật của mình 1000 / 1000, bản sao người chơi khác 1000 / 1000, ăn đòn 250 còn 750. 0 lỗi.
+
 ### Xoá hình Gió lốc cũ · hạt cát quay · Lửa địa ngục nảy 6 lần (05/10/2026)
 
 **Người dùng:** "xoá hình Gió lốc cũ", "hạt cát của Gió lốc không quay", "quả cầu lửa của Lửa địa ngục cũng cho nảy giống Quả cầu lửa".

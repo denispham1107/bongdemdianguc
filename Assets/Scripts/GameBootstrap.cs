@@ -22,7 +22,8 @@ public class GameBootstrap : MonoBehaviour
     // o day. Sua moi mot cho la khong doi gi ca.
     // 27/09/2026 nguoi dung: 10 000 de chay thu; 05/10/2026 nguoi dung: "cho mau cac nhan vat chinh tro ve 700 HP moi khi vao game"
     // (muc that cu 600, chot 12/09/2026).
-    public float playerMaxHealth = 700f;
+    // 05/10/2026 (lan hai) nguoi dung: "khi moi vao game cho mau nguoi choi la 1000"
+    public float playerMaxHealth = 1000f;
     public float playerMaxMana = 250f;
 
     [Header("Do hoa")]
