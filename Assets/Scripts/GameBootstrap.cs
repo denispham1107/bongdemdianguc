@@ -43,6 +43,8 @@ public class GameBootstrap : MonoBehaviour
         WorldFactory.BuildSkyAndFog();
 
         BuildSun();
+        // Vuc dia nguc ngoai ban do: roi xuong la mat 20% mau / giay toi chet (nguoi dung 05/10/2026)
+        DiaNguc.Dung();
         var playerGo = EnsurePlayer();
         BuildCamera(playerGo.transform);
         EnsureDirector(playerGo.transform);

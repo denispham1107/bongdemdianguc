@@ -9259,6 +9259,34 @@ chính trở về 700HP mỗi khi vào game".
 - Phát hiện kèm: các lần sửa file bằng Python trong mấy ngày nay đổi cả file sang xuống dòng CRLF (dự án dùng LF) — 28 file `.cs` + `CLAUDE.md` +
   `HUONG-DAN.md`, git hiện mỗi commit như "sửa cả file". Đã đưa cả 30 file về LF (nội dung không đổi).
 
+### Địa ngục ngoài bản đồ: rơi xuống vực là mất máu tới chết (05/10/2026 — phần luật chơi)
+
+**Người dùng** (kèm ảnh mép bản đồ: ngoài hàng rào là khoảng đen trống): "Hãy vẽ thiết kế thêm cho bên dưới ngoài vùng bản đồ là địa ngục, khi
+người chơi bị té ngã xuống là bị mất máu cho đến chết". Hỏi lại; người dùng chọn: **vực thẳm + dung nham** (ngoài rào đất sụp thành vách đá, sâu
+~25 m là biển dung nham), **mở vài đoạn rào sập** để rơi được, **20% máu tối đa / giây**, **quái cũng mất máu tới chết**.
+
+Đo mép bản đồ: đất Act2 trải −67,31 … +67,31 m, hàng rào (một lưới 89 960 đỉnh, MeshCollider) ở ±66,4 m → ngoài rào chỉ còn dải đất 0,9 m rồi
+trống không.
+
+**Luật chơi** (`Combat/DiaNguc.cs`, `GameBootstrap.Awake` gọi `DiaNguc.Dung()`):
+- Xuống dưới `NguongRoi` −6 m = đã rơi xuống vực (đất trong bản đồ thấp nhất −2,9 m). Cứ `Nhip` 0,25 s trừ 5% máu TỐI ĐA → chết sau ~5 s bất kể
+  máu nhiều ít. Loại Physical (không kháng nào giảm), đánh dấu sát thương rỉ (Bộ xương không đỡ đòn được), không phun tia trúng đòn.
+- Chỉ máy quyết máu trừ (người chơi: máy của chính họ; quái: chủ phòng) — bản sao bỏ qua, máu đi theo gói tin như mọi đòn khác.
+- Kẻ hạ: `keDanhCuoi` chụp lại LÚC VỪA RƠI qua ngưỡng, ghi lại trước mỗi nhịp → đẩy người / quái xuống vực vẫn được kinh nghiệm, bảng điểm.
+- Đáy vực: BoxCollider lớp Ground, mặt trên −26,5 m (dung nham −26) — người / quái rơi chạm đáy, xác nằm, vũng máu có chỗ bám. Hệ quả: Tốc biến /
+  Gió lốc / Lốc xoáy ra ngoài mép giờ tìm thấy "đất" ở đáy vực.
+
+**Đo — menu 110** (Play Act2 thật, tắt GameDirector, đồng hồ game; 0 lỗi):
+- đối chứng: đứng trong bản đồ (x 60) 3 s — máu 1000 → 1000;
+- Bộ xương (giữ 45% đỡ đòn) được người chơi đánh rồi đặt ra ngoài mép (z 69,5): qua ngưỡng 0,82 s, đáy −26,42 m, **chết 4,84 s** sau khi qua ngưỡng,
+  kẻ hạ = người chơi;
+- bản sao quái (`mauDoMayKhacQuyet`) ở y −12: máu 70 → 70;
+- nhân vật ra ngoài mép (x 68,6): qua ngưỡng 0,77 s, chạm đáy 1,50 s; máu 1000 / 800 / 600 / 400 / 200 mỗi giây, **chết 4,98 s**.
+
+**Chưa làm — phần hình** (vách vực đá quanh mép đất, biển dung nham + khói lửa + ánh đỏ hắt lên vách, các đoạn rào sập): theo quy tắc phải dựng
+bằng Blender MCP; phiên này Blender MCP mất kết nối (hết giờ chờ) — đã nhờ người dùng mở lại. Tới lúc ấy hàng rào vẫn kín: chỉ rơi được khi Tốc
+biến / bị đẩy ra ngoài rào.
+
 ### Bị cháy: lửa mỏng bớt — mật độ 0,4 (05/10/2026)
 
 **Người dùng:** "Hiệu ứng thiêu đốt trên các nhân vật người chơi và trên quái vật: cho giảm bớt mật độ lửa phủ trên người, hiện đang nhiều quá
