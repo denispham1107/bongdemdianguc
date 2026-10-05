@@ -1,5 +1,8 @@
 // BIEN DUNG NHAM DUOI VUC (05/10/2026, xem S_VachDiaNguc). Anh dung nham Blender MCP (vo nguoi den do chia mang, khe nut + vung
-// long cam vang - lap lien mach) to theo toa do the gioi XZ, HAI LOP troi cham khac huong + nhip sang toi; khong nhan sang (tu phat).
+// long cam vang - lap lien mach) to theo toa do the gioi XZ, lop gan + lop loang mo troi cham khac huong + nhip sang toi; khong nhan sang (tu phat).
+// Anh VE LAI cung ngay (nguoi dung: "duong dung nham con thang va tron qua"): gan Voronoi be meo nhieu tang (lom chom), do rong doi
+// theo cho (phinh / that / doan nguoi), nhanh nut phu, vung nong chay, MAU THEO DO NONG (trang vang -> cam -> do sam loang vao mep vo)
+// - xem CongCu/Blender/dung_nham_gan.py.
 // Suong mu: chi ap MOT PHAN (_SuongMu) - suong dem phu kin thi dung nham o xa chim vao mau xanh dem, mat cam giac dia nguc.
 //
 // DUNG NHAM CHAY THEO CAC DUONG GAN (05/10/2026, nguoi dung: "cho thay ro cac dong dung nham dang chuyen dong va chay"; chon "chay
@@ -34,6 +37,7 @@ Shader "Diablo25D/DungNham"
             #pragma vertex vert
             #pragma fragment frag
             #pragma multi_compile_fog
+            #pragma target 3.0
             #include "UnityCG.cginc"
             sampler2D _MainTex, _HuongGan;
             float _TiLe, _Sang, _SuongMu, _TocChay, _QuangChuKy, _DoChay;
@@ -95,9 +99,10 @@ Shader "Diablo25D/DungNham"
                 D = float2(D.x * cs - D.y * sn, D.x * sn + D.y * cs);
 
                 fixed3 a = LopChay((q + _TroiA.xy * t) * _TiLe, _TiLe, D, t);
-                fixed3 b = LopChay((q * 0.73 + float2(17.3, 5.1) + _TroiB.xy * t) * _TiLe, _TiLe * 0.73, D, t + 0.8);
-                // ket hop: lay noi sang hon (khe nut cua hai lop dan cheo) + mot phan trung binh
-                fixed3 c = max(a, b) * 0.75 + (a + b) * 0.125;
+                // LOP DUOI chi con la VET LOANG DO MO (05/10/2026, nguoi dung chon): truoc la lop gan thu hai dan cheo lop tren -> nhin
+                // nhu tam luoi. Nay doc mip rat mo (~1,4 m) cua chinh anh: chi con quang do am o duoi vo, khong con duong gan nao.
+                fixed3 b = tex2Dlod(_MainTex, float4((q * 0.73 + float2(17.3, 5.1) + _TroiB.xy * t) * _TiLe, 0, 5.0)).rgb;
+                fixed3 c = a + b * 0.18;
                 // LOANG CO LON (o ~110 m): pha the lap cua anh - lan anh dau mat dung nham deu nhu tam tham
                 fixed3 lon = tex2D(_MainTex, q * _TiLe * 0.2 + float2(0.37, 0.71)).rgb;
                 float loang = smoothstep(0.04, 0.35, dot(lon, float3(0.3, 0.5, 0.2)));

@@ -95,6 +95,9 @@ public static class ThuDungNhamChay
         var ps = EditorSceneManager.NewPreviewScene();
         var mat = new Material(matGoc);
         mat.SetFloat("_TocChay", toc); mat.SetFloat("_DoChay", doChay); mat.SetFloat("_SuongMu", 0f);
+        // TAT vo troi cham (0,13 m/s) ca hai ban: anh ve lai co vo nhieu chi tiet -> tuong quan bam vao vo troi, do ra 0,18-0,2 m/s
+        // (dung bang toc vo) thay vi dot sang chay theo gan. Phep do nay chi do phan CHAY THEO GAN.
+        mat.SetVector("_TroiA", Vector4.zero); mat.SetVector("_TroiB", Vector4.zero);
         var rt = new RenderTexture(N, N, 24, RenderTextureFormat.ARGB32);
         var tx = new Texture2D(N, N, TextureFormat.RGB24, false);
         var khung = new float[SoKhung][];

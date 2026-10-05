@@ -9368,6 +9368,29 @@ không có gì chảy (đối chứng 61–80%, ngẫu nhiên 41%): chỉ là ki
 **Người dùng chọn 0,8 m/s** (chảy chậm, đặc quánh) — `_TocChay` 0,8 trong `DungNham.mat` và mặc định của shader.
 Shader nay ~9 lần đọc ảnh mỗi điểm (trước 4) — chưa đo trên điện thoại.
 
+#### Vẽ lại ảnh dung nham: gân lởm chởm, màu theo độ nóng, bỏ lớp gân thứ hai (05/10/2026)
+
+**Người dùng:** "Các đường dung nham vẫn còn thẳng và trơn quá, gợi ý làm sao giống thật hơn". Tôi gợi ý 5 hướng, người dùng chọn **1 + 2 + 4**:
+(1) vẽ lại ảnh — gân ngoằn ngoèo răng cưa, độ rộng đổi theo chỗ, nhánh nứt phụ, mép vỡ; (2) màu theo độ nóng; (4) bỏ lớp gân thứ hai đan chéo.
+
+Nguyên nhân thẳng / trơn: ảnh cũ là cạnh Voronoi (đoạn thẳng), rộng đều, viền sáng cắt sắc, và shader chồng **hai lớp** gân lệch tỉ lệ 0,73 → lưới
+đan chéo.
+
+- **Ảnh mới** `DungNham.png` (Blender MCP, numpy, script `CongCu/Blender/dung_nham_gan.py` — chạy bằng `bpy.app.timers`, tính khoảng cách Voronoi mất
+  ~3,5 phút, lệnh MCP thẳng hết giờ): khoảng cách CHÍNH XÁC tới cạnh Voronoi (12 × 12 điểm lưới rung, cuộn vòng) trên toạ độ **bẻ méo 3 tầng**
+  (uốn lớn 0,011 · răng cưa 0,0035 · răng cưa nhỏ 0,0016); độ rộng gân theo nhiễu (×0,25–1,85, đoạn "nguội" ×0,35); nhánh nứt phụ (Voronoi 26 × 26,
+  chỉ gần khe chính + theo nhiễu); vết vụn mờ trên vỏ (55 × 55); vũng nóng chảy ở nút giao / ven khe; vỏ loang, mép vỏ ấm hơn. Độ nóng → **bảng màu**
+  nâu đen → đỏ sẫm → cam → vàng → trắng vàng, quầng đỏ loang 1,5 × độ rộng gân vào mép vỏ. Ảnh hướng gân `HuongGan.png` tính lại từ ảnh mới (nhiễu B
+  giữ nguyên seed).
+  ⚠️ Bản thử đầu bẻ méo gấp đôi (0,022 / 0,006): mất hình tảng vỏ, gân xoắn như giun, quầng phủ 26% ảnh; vũng có nhiễu tần số cao → lốm đốm chấm tròn.
+- **Shader** (mục 4): lớp thứ hai không còn là gân — đọc **mip 5** (~1,4 m) của chính ảnh, cộng ×0,18 làm quầng đỏ âm dưới vỏ (`tex2Dlod`, `#pragma target 3.0`).
+  Shader bớt 4 lần đọc ảnh mỗi điểm (lớp gân thứ hai đã bỏ).
+
+**Đo — menu 111** (0 lỗi). ⚠️ Vỏ mới nhiều chi tiết nên tương quan bám vào **vỏ trôi chậm 0,13 m/s** (đo ra 0,18–0,2 m/s, 11 lỗi) — phép đo nay TẮT
+`_TroiA/_TroiB` ở cả hai bản, chỉ đo phần chảy theo gân. Chuyển động 0,23–0,25 (đối chứng 0,013–0,014, ×18); xuôi dòng 69–86%; tốc trung vị 0,55–0,62 /
+1,08–1,14 / 1,78–2,02 m/s ở 0,8 / 1,5 / 2,5. Ảnh trong game ở cùng góc (`PlayTestShots/dungnham_gan_truoc_sau.png`, trên cũ / dưới mới; ảnh động
+`dungnham_gan_moi_0.8.gif`): độ sáng TB giữ (đỏ 51 → 51 / 46 → 44, điểm sáng > 150: 0,2 → 0,3% / 0,6 → 0,6%), ngả đỏ hơn.
+
 ### Bị cháy: lửa mỏng bớt — mật độ 0,4 (05/10/2026)
 
 **Người dùng:** "Hiệu ứng thiêu đốt trên các nhân vật người chơi và trên quái vật: cho giảm bớt mật độ lửa phủ trên người, hiện đang nhiều quá

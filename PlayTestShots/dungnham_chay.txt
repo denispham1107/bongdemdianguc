@@ -1,12 +1,12 @@
 Vat lieu: Diablo25D/DungNham, huong gan True, toc 0.8 m/s, quang troi moi chu ky 2 m
 --- Vung tam (0; -90), dong chay vong quanh (1.00; 0.00) ---
-  CU (doi chung) toc 1.5: chuyen dong (RMS phan du / TB) 0.036; o tren gan 120, co dich 79 %, doc gan 61 %, xuoi dong 43 %, toc trung vi 0.43 m/s
-  MOI toc 0.8: chuyen dong (RMS phan du / TB) 0.242; o tren gan 97, co dich 100 %, doc gan 69 %, xuoi dong 79 %, toc trung vi 0.72 m/s
-  MOI toc 1.5: chuyen dong (RMS phan du / TB) 0.234; o tren gan 111, co dich 97 %, doc gan 82 %, xuoi dong 90 %, toc trung vi 1.48 m/s
-  MOI toc 2.5: chuyen dong (RMS phan du / TB) 0.233; o tren gan 106, co dich 96 %, doc gan 82 %, xuoi dong 89 %, toc trung vi 2.99 m/s
+  CU (doi chung) toc 1.5: chuyen dong (RMS phan du / TB) 0.013; o tren gan 74, co dich 96 %, doc gan 82 %, xuoi dong 52 %, toc trung vi 2.92 m/s
+  MOI toc 0.8: chuyen dong (RMS phan du / TB) 0.234; o tren gan 76, co dich 87 %, doc gan 73 %, xuoi dong 80 %, toc trung vi 0.55 m/s
+  MOI toc 1.5: chuyen dong (RMS phan du / TB) 0.231; o tren gan 73, co dich 84 %, doc gan 77 %, xuoi dong 84 %, toc trung vi 1.08 m/s
+  MOI toc 2.5: chuyen dong (RMS phan du / TB) 0.231; o tren gan 74, co dich 77 %, doc gan 81 %, xuoi dong 86 %, toc trung vi 1.78 m/s
 --- Vung tam (90; 0), dong chay vong quanh (0.00; 1.00) ---
-  CU (doi chung) toc 1.5: chuyen dong (RMS phan du / TB) 0.037; o tren gan 93, co dich 95 %, doc gan 80 %, xuoi dong 26 %, toc trung vi 0.32 m/s
-  MOI toc 0.8: chuyen dong (RMS phan du / TB) 0.261; o tren gan 99, co dich 100 %, doc gan 67 %, xuoi dong 64 %, toc trung vi 0.42 m/s
-  MOI toc 1.5: chuyen dong (RMS phan du / TB) 0.248; o tren gan 91, co dich 98 %, doc gan 79 %, xuoi dong 73 %, toc trung vi 1.00 m/s
-  MOI toc 2.5: chuyen dong (RMS phan du / TB) 0.241; o tren gan 101, co dich 95 %, doc gan 84 %, xuoi dong 84 %, toc trung vi 2.20 m/s
+  CU (doi chung) toc 1.5: chuyen dong (RMS phan du / TB) 0.014; o tren gan 78, co dich 99 %, doc gan 74 %, xuoi dong 48 %, toc trung vi 2.75 m/s
+  MOI toc 0.8: chuyen dong (RMS phan du / TB) 0.254; o tren gan 69, co dich 86 %, doc gan 86 %, xuoi dong 69 %, toc trung vi 0.62 m/s
+  MOI toc 1.5: chuyen dong (RMS phan du / TB) 0.249; o tren gan 69, co dich 83 %, doc gan 79 %, xuoi dong 77 %, toc trung vi 1.14 m/s
+  MOI toc 2.5: chuyen dong (RMS phan du / TB) 0.250; o tren gan 68, co dich 82 %, doc gan 80 %, xuoi dong 79 %, toc trung vi 2.02 m/s
 KET QUA: 0 loi

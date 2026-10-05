@@ -171,7 +171,11 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
   mẫu méo ở tốc cao); đồng hồ toàn cục `_DN_ThoiGian` (`DiaNguc.Update`; phép thử giữ bằng `GiuDongHoDungNham`). Menu 111 (0 lỗi, hướng gân + chuyển động
   tính lại từ ẢNH CHỤP, đối chứng `_DoChay` 0): chuyển động ×6–7 hình cũ, xuôi dòng 64–90% (cũ 26–43%), tốc trung vị 0,42–0,72 / 1,0–1,48 / 2,2–3,0
   ở 0,8 / 1,5 / 2,5 m/s. ⚠️ "Dọc gân" bị hiệu ứng khẩu độ (đối chứng cũng 61–80%) — không dùng để phân biệt. Ảnh động menu 111b
-  `PlayTestShots/dungnham_chay_*.gif`. Shader ~9 lần đọc ảnh (trước 4), chưa đo trên điện thoại.
+  `PlayTestShots/dungnham_chay_*.gif`.
+  ⚠️ **Cùng tối: ẢNH DUNG NHAM VẼ LẠI** (người dùng: "đường dung nham còn thẳng và trơn quá"; chọn gân lởm chởm + màu theo độ nóng + bỏ lớp gân thứ
+  hai): `CongCu/Blender/dung_nham_gan.py` (Blender MCP numpy, chạy bằng timers ~3,5 phút) — cạnh Voronoi trên toạ độ bẻ méo 3 tầng, độ rộng đổi theo
+  chỗ, nhánh nứt phụ, vũng nóng chảy, bảng màu theo độ nóng; `HuongGan.png` tính lại. Shader: lớp thứ hai = mip 5 mờ ×0,18 (quầng đỏ dưới vỏ), ~5 lần
+  đọc ảnh mỗi điểm. Menu 111 TẮT vỏ trôi khi đo (vỏ mới nhiều chi tiết — tương quan bám vào vỏ trôi 0,13 m/s): 0 lỗi, ×18 đối chứng, xuôi dòng 69–86%.
 - **LUẬT ĐỢT QUÁI** (luật duy nhất của `GameDirector` từ khi xoá Act1): mỗi đợt sinh quanh **từng**
   người chơi bốn con (bộ xương · phù thủy · quỷ cây · quỷ dữ), giết hết → 30 giây → đợt sau cộng dồn thêm quái bất kì
   (+1, +3, +6…) và mạnh thêm 5% máu · sát thương mỗi đợt. ⚠️ **Sát thương quái Act2 = 0,65 × 1,05^(đợt−1)** (27/09/2026 người dùng: đợt đầu −35%, máu giữ
