@@ -439,12 +439,16 @@ public static class ThuThanLocXoay
         // Vong bui chan: lay tu con loc THAT vua tha (prefab Skill_LocXoay de len code) - rong theo chan moi; DOI CHUNG Gio loc giu 1,0
         ParticleSystem buiChan = null;
         foreach (var ps in loc.GetComponentsInChildren<ParticleSystem>(true)) if (ps.name == "BuiChan") buiChan = ps;
-        var gioLoc = VfxFactory.BuildGioLocCu();   // doi chung: hinh Gio loc CU (01/10/2026 Gio loc moi la Loc xoay thu nho)
+        // Doi chung: Gio loc (Loc xoay thu nho, nhan ban LocXoayHinh cua prefab) - vong BuiChan cung so (don vi Loc xoay, thu x0,318 o goc hinh).
+        // Truoc 05/10/2026 la "BuiCuon" cua hinh Gio loc CU (da xoa).
+        var gioLoc = VfxFactory.BuildGioLoc();
         ParticleSystem buiGl = null;
-        foreach (var ps in gioLoc.GetComponentsInChildren<ParticleSystem>(true)) if (ps.name == "BuiCuon") buiGl = ps;
+        foreach (var ps in gioLoc.GetComponentsInChildren<ParticleSystem>(true)) if (ps.name == "BuiChan") buiGl = ps;
         float rBui = buiChan != null ? buiChan.shape.radius : -1f, rBuiGl = buiGl != null ? buiGl.shape.radius : -1f;
+        // Ban kinh THAT (the gioi) cua vong bui Gio loc = so trong he x ti le goc hinh (x0,318)
+        float rBuiGlThat = buiGl != null ? buiGl.shape.radius * buiGl.transform.lossyScale.x : -1f;
         Object.Destroy(gioLoc);
-        Ghi(string.Format("B3. vong bui chan Loc xoay that {0:F2} m (cu 2,00 -> x{1:F2}); doi chung vong bui Gio loc {2:F2} m (giu 1,00)", rBui, rBui / 2f, rBuiGl));
+        Ghi(string.Format("B3. vong bui chan Loc xoay that {0:F2} m (cu 2,00 -> x{1:F2}); doi chung vong BuiChan Gio loc (don vi Loc xoay) {2:F2}, that {3:F3} m (mong 4 x {4:F3} = {5:F3})", rBui, rBui / 2f, rBuiGl, rBuiGlThat, VfxFactory.HeSoHinhGioLoc, 4f * VfxFactory.HeSoHinhGioLoc));
         Kiem(Mathf.Abs(rBui - 4f) < 0.02f, "vong bui chan Loc xoay khong rong theo chan moi (2,0 -> 4,0) - prefab con so cu?");
         // 29/09/2026: vong phun phai NAM PHANG tren dat (Circle mac dinh dung trong mat XY - nua so hat tung sinh duoi dat)
         float xoayX = buiChan != null ? buiChan.shape.rotation.x : 0f;
@@ -464,7 +468,8 @@ public static class ThuThanLocXoay
             Kiem(Mathf.Abs(vo0.r - 0.688f) < 0.01f && Mathf.Abs(vo0.b - 0.736f) < 0.01f && Mathf.Abs(vanh.r - 0.8f) < 0.01f, "vo Loc xoay chua toi 20% (vat lieu prefab?)");
             Kiem(Mathf.Abs(bui0.r - 0.64f) < 0.01f, "bui chan Loc xoay chua toi 20%");
         }
-        Kiem(Mathf.Abs(rBuiGl - 1f) < 0.02f, "vong bui Gio loc bi doi theo (chi Loc xoay doi)");
+        // Truoc 01/10/2026 Gio loc la hinh RIENG (vong 1,0 m) nen kiem "khong doi theo"; nay Gio loc = Loc xoay thu nho -> vong phai DI THEO x0,318
+        Kiem(Mathf.Abs(rBuiGlThat - 4f * VfxFactory.HeSoHinhGioLoc) < 0.02f, "vong bui Gio loc khong bang vong Loc xoay thu x0,318");
 
         // B4 (29/09/2026, nguoi dung: bui cuon len "day dac hon nua len tan dinh"): lop BuiCuonLen tren con loc THAT tu prefab (gan luc
         // chay trong Tornado.Start). Do vi tri tung hat; DOI CHUNG la bui chan BuiChan (cu) - phai van thap.

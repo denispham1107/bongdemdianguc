@@ -19,6 +19,7 @@ using UnityEngine;
 ///      Tung THAT (CastAt 0): moi qua Qua cau lua cua nguoi choi mang soLanNay Fireball.SoLanNayNguoiChoi (6, tu 05/10/2026), Qua cau bang 1.
 ///   A2. NAY 6 LAN (05/10/2026): 8 bia thang hang cach 3,9 m, ban qua soLanNay 6 vao bia dau -> 7 bia dau moi bia mat dung 85 MOT lan
 ///      (6 lan nay, moi lan nguyen sat thuong), bia thu 8 khong mat (het luot nay); DOI CHUNG soLanNay 1 -> chi 2 bia dau mat.
+///   A3. Lua dia nguc (05/10/2026): tung THAT vao chuoi 8 bia - 5 qua mang soLanNay 6, co qua nay (ten LuaDiaNguc, nguyen sat thuong).
 ///   B. Qua cau bang: y het A.
 ///   C. Gio loc tung THAT: cap 1 ra 3 loc, huong lech -15 / 0 / +15 do so voi huong ngam, cung moc lucTung, dung MOT loc giua
 ///      (0 do); ton 20 nang luong. Cap 5: 5 loc -30..+30, ton 25.
@@ -293,6 +294,42 @@ public static class ThuNayQuatLoc
                 ky == 0 ? Fireball.SoLanNayNguoiChoi : 1, mang1));
             Kiem(so >= 3 && mang1 == so, "qua tung that cua nguoi choi khong duoc nay");
             yield return new WaitForSeconds(1.5f);
+        }
+
+        // ================= A3. LUA DIA NGUC NAY 6 LAN (05/10/2026) =================
+        // Tung THAT vao chuoi 8 bia (cach 3,9 m): moi qua mang soLanNay 6; co qua NAY (khongCham != null) mang ten "LuaDiaNguc", nguyen sat thuong.
+        {
+            Ghi("");
+            int KD = CapDo.KyLuaDiaNguc;
+            CapDo.MoCaDuongChoPhepThu(KD);
+            var bia = new List<TheoDoi>();
+            for (int i = 0; i < 8; i++) bia.Add(new TheoDoi(TaoBia("TAM_LDN_" + i, goc + huong * (6f + i * 3.9f))));
+            yield return new WaitForFixedUpdate();
+            foreach (var t in bia) t.truoc = t.d.health;
+            var cu = new HashSet<Fireball>(Object.FindObjectsByType<Fireball>(FindObjectsInactive.Exclude));
+            yield return new WaitForSeconds(0.6f);
+            toi.mana = toi.maxMana;
+            toi.transform.rotation = Quaternion.LookRotation(huong);
+            toi.CastAt(KD, goc + huong * 12f);
+            int qua = 0, mang6 = 0, nay = 0, nayDungTen = 0; float satGoc = -1f; bool nayNguyen = true;
+            for (float h = Time.time + 6f; Time.time < h; )
+            {
+                foreach (var t in bia) t.Doc();
+                foreach (var f in Object.FindObjectsByType<Fireball>(FindObjectsInactive.Exclude))
+                {
+                    if (!cu.Add(f) || f.boQua != mauToi) continue;
+                    if (f.khongCham == null) { qua++; if (f.soLanNay == Fireball.SoLanNayNguoiChoi) mang6++; satGoc = f.impactDamage; }
+                    else { nay++; if (f.name == "LuaDiaNguc") nayDungTen++; if (satGoc > 0f && Mathf.Abs(f.impactDamage - satGoc) > 0.01f) nayNguyen = false; }
+                }
+                yield return null;
+            }
+            int biaTrung = 0; foreach (var t in bia) if (t.soLan > 0) biaTrung++;
+            Ghi(string.Format("A3. Lua dia nguc tung THAT vao chuoi 8 bia: {0} qua, mang soLanNay {1}: {2}; qua NAY {3} (ten LuaDiaNguc {4}), sat thuong qua nay = qua goc {5:F1}: {6}; bia mat mau {7}/8",
+                qua, Fireball.SoLanNayNguoiChoi, mang6, nay, nayDungTen, satGoc, nayNguyen, biaTrung));
+            Kiem(qua == 5 && mang6 == 5, "Lua dia nguc: qua tung that khong mang soLanNay 6");
+            Kiem(nay >= 1 && nayDungTen == nay && nayNguyen, "Lua dia nguc: khong nay / qua nay sai ten hoac sat thuong");
+            foreach (var t in bia) if (t.d != null) Object.Destroy(t.d.gameObject);
+            yield return new WaitForSeconds(1f);
         }
 
         // ================= C. GIO LOC HINH QUAT =================

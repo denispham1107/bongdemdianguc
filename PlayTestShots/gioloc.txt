@@ -3,48 +3,48 @@
 A. nhan vat: nang luong 20, hoi chieu 0.4 s, niem 0.38 s; Sach phep doc 20/0.4/0.38; sat thuong 75, hat tung 80 % x 0.7 s cao 3 m, vung trung 2.42 m, song 4.5 s, cao hinh 5 m
 A. toc do loc 9.5 m/s, toc do mot Qua cau bang that 17 m/s; HUD 22 icon, icon so 10 co; icon file 256x256; ten "GIÓ LỐC", tom tat "Ba cơn lốc hình quạt, 80% hất tung", mo ta 854 ky tu
 
-B. khoa -> tu choi True; mo khoa -> tung True, 2 loc bay, ton 20 nang luong; hoi chieu ngay sau khi tung 0.40 s; bam lai moi khung -> duoc nhan sau 0.413 s (thay nhac hoi chieu: True); bia truoc mat mat 150 mau, ke danh cuoi la nguoi tung True
+B. khoa -> tu choi True; mo khoa -> tung True, 2 loc bay, ton 20 nang luong; hoi chieu ngay sau khi tung 0.40 s; bam lai moi khung -> duoc nhan sau 0.425 s (thay nhac hoi chieu: False); bia truoc mat mat 150 mau, ke danh cuoi la nguoi tung True
 
 C2. cau truc: Loc xoay that 14 thanh phan, Gio loc da bo 9/9 (sang, 2 lop cuon len, 4 vo + vanh), khop (mau x0,7) 5 (thieu: | lech: | thua: ); ti le hinh 0.318 (mong 0.318); cao Gio loc 5.10 m / Loc xoay 15.72 m = x0.325; he hat cuc bo + Hierarchy 5/5; den 0 (Loc xoay that 1)
 C2. than dai gio xoan: DaiTrong: mau (0.48 0.49 0.52) quay -304 do/s truot -1.25 DaiGiua: mau (0.52 0.53 0.54) quay -236 do/s truot -1.05 DaiNgoai: mau (0.54 0.55 0.56) quay -189 do/s truot -0.90 (vo Loc xoay that quay -210 do/s)
 C2. luoi dai xoan (do ngoai Play): 18 dai, cao toi 5.10 m; kin vong (phu >= 95% mot lat 0,25 m) 0, phu vong lon nhat 42 % - DOI CHUNG vo pheu Loc xoay Vo1 100 %; xoan NGUOC chieu quay (leo len khi quay) 18/18, v tang theo cao 18/18, mo hai dau 18/18; DaiGiua:-2.33rad/m,phu42 % DaiGiua:-1.91rad/m,phu39 % DaiGiua:-2.30rad/m,phu36 % DaiGiua:-2.06rad/m,phu36 % DaiGiua:-2.10rad/m,phu36 % DaiGiua:-1.83rad/m,phu33 % DaiNgoai:-1.80rad/m,phu36 % DaiNgoai:-2.20rad/m,phu36 % DaiNgoai:-2.08rad/m,phu39 % DaiNgoai:-2.32rad/m,phu39 % DaiNgoai:-2.00rad/m,phu36 % DaiNgoai:-2.06rad/m,phu42 % DaiNgoai:-1.94rad/m,phu36 % DaiTrong:-2.12rad/m,phu39 % DaiTrong:-1.79rad/m,phu33 % DaiTrong:-1.75rad/m,phu36 % DaiTrong:-1.91rad/m,phu36 % DaiTrong:-2.19rad/m,phu36 %
 C2. vet gio xoan len: cuc bo True, duoi True (VetGio), che do ve None, lap+prewarm True
 C2. lop bui: 1 (prewarm 1); vet sau lung: bui xam 6 hat/m, khoi den xam 4 hat/m (khong gian the gioi, theo quang duong); do sang mau khoi 0.28 / bui chan 0.45
-C3. BuiChan: Loc xoay that 186 hat, cao 50% 2.08 / 90% 4.40 m, ban kinh trung vi 3.81 m | Gio loc (don vi Loc xoay) 180 hat, 1.87 / 4.07 m, 3.72 m -> khop
-C3. hat bui tren 40% than (6 m don vi Loc xoay): Gio loc 5, DOI CHUNG Loc xoay that 365; hat vet sau lung khi Gio loc DUNG YEN 4 s: 0
-C4. anh (chup theo chieu cao moi con, 4 lan): Loc xoay that phu 20 % khung; Gio loc moi trung hinh IoU 0.74, do sang trong hinh x0.78; DOI CHUNG Gio loc cu IoU 0.48, x0.54
-C6. phu than dai gio (truc giao, trong vien than): chan 90 %, giua 100 %, tren 93 % | DOI CHUNG chi nhom ngoai: 63 % / 97 % / 74 % (Blender cung cach do: ban 12 dai 61-63% / 85-94% / 77%)
+C3. BuiChan: Loc xoay that 194 hat, cao 50% 2.02 / 90% 4.74 m, ban kinh trung vi 3.62 m | Gio loc (don vi Loc xoay) 179 hat, 1.90 / 4.24 m, 3.55 m -> khop
+C3. hat bui tren 40% than (6 m don vi Loc xoay): Gio loc 1, DOI CHUNG Loc xoay that 362; hat vet sau lung khi Gio loc DUNG YEN 4 s: 0
+C4. anh (chup theo chieu cao moi con, 4 lan): Loc xoay that phu 20 % khung; Gio loc moi trung hinh IoU 0.74, do sang trong hinh x0.79; DOI CHUNG Gio loc nam ngang IoU 0.45, x0.80
+C6. phu than dai gio (truc giao, trong vien than): chan 90 %, giua 100 %, tren 93 % | DOI CHUNG chi nhom ngoai: 63 % / 97 % / 73 % (Blender cung cach do: ban 12 dai 61-63% / 85-94% / 77%)
 C5. Gio loc bay: cao hinh 5.10 m, den 0, tong hat 701; quay that sau 0,1 s: goc tang 3 lop / giam 0; truot anh len 3 / sai 0
-C5. bui chan: 177 hat so sanh duoc - bay len 177 / xuong 0, quay cung chieu 177 / nguoc 0; vong phun bui chan (200 hat thu) lech doc 0.000, ban kinh toi da 3.99 (don vi he hat; Loc xoay that 4.00)
-C5. tia set (trung binh, chia chieu cao than): Loc xoay that 18 tia - dau cao 0.877 xa truc 0.286, duoi cao -0.013 xa truc 0.153, nhanh 2-3, day 0.220 | Gio loc 12 tia trong 6 khung (6 khung dung 2), nhip +6 - dau 0.844 / 0.288, duoi 0.002 / 0.143, nhanh trong khoang 12/12, day 0.070 = x0.318 (ti le cao x0.325)
-C5. tia bam theo loc (162 lan do): troi lon nhat 0.000 m (o tuoi 0.025 s, 12 tia); DOI CHUNG tia khong bam theo bi bo lai 2.48 m
+C5. bui chan: 179 hat so sanh duoc - bay len 179 / xuong 0, quay cung chieu 179 / nguoc 0; vong phun bui chan (200 hat thu) lech doc 0.000, ban kinh toi da 3.99 (don vi he hat; Loc xoay that 4.00)
+C5. tia set (trung binh, chia chieu cao than): Loc xoay that 18 tia - dau cao 0.887 xa truc 0.319, duoi cao -0.010 xa truc 0.144, nhanh 2-3, day 0.220 | Gio loc 10 tia trong 5 khung (5 khung dung 2), nhip +5 - dau 0.865 / 0.265, duoi -0.001 / 0.149, nhanh trong khoang 10/10, day 0.070 = x0.318 (ti le cao x0.325)
+C5. tia bam theo loc (158 lan do): troi lon nhat 0.000 m (o tuoi 0.020 s, 12 tia); DOI CHUNG tia khong bam theo bi bo lai 2.90 m
 C5. loe cham dat: Loc xoay that 20 loe do duoc trong 4,5 s (doi chung), Gio loc bay 0 loe (mong 0 - nguoi dung bo hieu ung sang)
-C5. vet sau lung (giay 2,6 sau khi tung): bui xam 109 hat, khoi den xam 68 hat; sau lung loc tu -0.37 den 19.49 m (trung vi 8.78), lech ngang toi da 1.70 m, cao toi da 2.00 m, tuoi lon nhat 2.05 s
+C5. vet sau lung (giay 2,6 sau khi tung): bui xam 107 hat, khoi den xam 76 hat; sau lung loc tu -0.64 den 21.06 m (trung vi 8.99), lech ngang toi da 1.93 m, cao toi da 2.55 m, tuoi lon nhat 2.13 s
 D. toc do do 9.50 m/s; ngung di sau 4.51 s
 
-E. bia TS_cross_304 nam giua duong (tia doi chung cham vat can: True); loc di duoc 17.7 m doc huong trong 1,9 s (bia o 6 m)
+E. bia TS_shoulder_74 nam giua duong (tia doi chung cham vat can: True); loc di duoc 17.9 m doc huong trong 1,9 s (bia o 6 m)
 
-K. nha MAUS_A_001_682: doi chung - tia cu cham mai cao nhat 4.57 m tren dat; Gio loc di 97 khung (22 khung trong nha): lech khoi mat dat toi da 0.000 m
+K. nha MAUS_A_001_682: doi chung - tia cu cham mai cao nhat 4.57 m tren dat; Gio loc di 101 khung (26 khung trong nha): lech khoi mat dat toi da 0.000 m
 K. (chi bao) Loc xoay lon cung duong trong 2,5 s: cao hon mat dat toi da 0.00 m
 
 L. 5 bia tren duong: tia set moi 14, khong phai tia than loc 0; tia tu than loc sang bia 0; cho chay sem moi 0; chop sang Sam set moi 0; bia mat dung 75 5/5
 
-F. mot loc qua bia dung yen mat 75; bia lech 2,72 m mat 75; bia lech 2,92 m mat 0; loc di tiep sau khi trung toi 36.0 m; ba loc cung qua mot bia mat 225
+F. mot loc qua bia dung yen mat 75; bia lech 2,72 m mat 75; bia lech 2,92 m mat 0; loc di tiep sau khi trung toi 36.1 m; ba loc cung qua mot bia mat 225
 
-G. 190 lan loc trung bia; dem doc lap 159 lan bia co BiHatTung (83.7 %), bo dem trong code 159; do cao hinh lon nhat 3.00 m; bay trung binh 0.72 s (159 lan do)
-G. tu the tren khong: nga lon nhat 75 do; 2736 mau nga > 30 do, trong do dau nga ve SAU 2736; roi xuong dung thang lai 159/159
+G. 190 lan loc trung bia; dem doc lap 150 lan bia co BiHatTung (78.9 %), bo dem trong code 150; do cao hinh lon nhat 3.00 m; bay trung binh 0.71 s (150 lan do)
+G. tu the tren khong: nga lon nhat 75 do; 3297 mau nga > 30 do, trong do dau nga ve SAU 3297; roi xuong dung thang lai 150/150
 G. bia co khieng, 20 loc (ti le hat 100%): hat tung 0 lan, mau mat 0
 
 H1. dang niem Qua cau lua bi hat tung: 3/3 lan khong qua nao bay ra (bo dem ngat 3); doi chung khong hat: 3/3 lan ra du 3 qua (so qua cung luc: 3 3 3 )
 H2. loc that trung nguoi dang niem: bi hat True, qua cau lua bay ra 0; bam ky nang luc dang bay -> "BẠN ĐANG BỊ HẤT TUNG!"
 H3. bo xuong dang vung tay bi hat tung: 0/5 don van trung (bo dem ngat 5); doi chung khong hat: 5/5 don trung
 
-J. loc luot qua lo LoLua_07: lua tat True; lo doi chung LoLua_13 van chay True
+J. loc luot qua lo LoLua_07: lua tat True; lo doi chung LoLua_10 van chay True
 
 I1. goi ky nang so 10 tu nguoi kia -> may minh phat lai 2 loc (mong 2); minh tung -> goi mang kyNang = 10: True
 I1b. goi ky nang cap 5 tu nguoi kia -> may minh phat lai 3 loc (mong 3; goi cap 1 o tren ra 2)
 I2. minh bi hat -> goi trang thai gui di co bit hat tung: True; mat na: goi nguoi choi 0x1F -> 0x1F, goi quai 0x1F -> 0x1F (co chet quai False)
-I3. ban sao nhan bit hat tung: bay len True, cao nhat 2.99 m; goi 'dang bay' den tre ngay sau khi roi xuong -> hat lai lan hai: False
+I3. ban sao nhan bit hat tung: bay len True, cao nhat 3.00 m; goi 'dang bay' den tre ngay sau khi roi xuong -> hat lai lan hai: False
 I4. ban sao dang niem Qua cau lua nhan bit hat tung: 3/3 lan khong qua nao; doi chung khong bit: 3/3 lan ra du 3 qua
 J. lo LoLua_07: 25 giay sau van tat True; 31 giay sau chay lai True
 

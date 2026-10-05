@@ -570,7 +570,9 @@ public static class ThuGioLoc
         // ================= C + D. HINH = LOC XOAY THU NHO, TOC DO, THOI GIAN SONG =================
         // 01/10/2026 (nguoi dung: "Gio loc co hieu ung giong hoan toan Loc xoay, chi co kich thuoc bang Gio loc hien gio"; chon thu
         // deu x0,318, bo mau + may giong, giu 240 hat/giay). MOI so sanh la voi mot LOC XOAY THAT (prefab qua Tornado.Spawn +
-        // Tornado.Start, dung yen) - khong voi hang so trong code. DOI CHUNG: hinh Gio loc CU (BuildGioLocCu).
+        // Tornado.Start, dung yen) - khong voi hang so trong code. DOI CHUNG: Gio loc moi NAM NGANG (05/10/2026 hinh Gio loc cu
+        // da xoa theo nguoi dung - cung lop, cung mau nhung nam ngang thi bong phai lech han cot Loc xoay that, chung to phep so anh
+        // phan biet duoc hinh dang; ban LAT NGUOC thu truoc ra IoU 0,70 ~ 0,73 vi bong la dai gio + bui, it phu thuoc chieu pheu).
         Ghi("");
         {
             float k = VfxFactory.HeSoHinhGioLoc;
@@ -605,8 +607,9 @@ public static class ThuGioLoc
             glDo.transform.position = pGl;
             Vector3 pCu = goc + huong * 40f - phai * 14f;
             pCu.y = GioLoc.MatDatY(pCu, pCu.y);
-            var glCu = VfxFactory.BuildGioLocCu();
-            glCu.name = "TAM_GioLocCu";
+            var glCu = VfxFactory.BuildGioLoc();
+            glCu.name = "TAM_GioLocNamNgang";
+            glCu.transform.rotation = Quaternion.AngleAxis(90f, huong);
             glCu.transform.position = pCu;
             yield return null; yield return null;
             var hinhGl = glDo.transform.Find("LocXoayHinh");
@@ -778,8 +781,10 @@ public static class ThuGioLoc
             locXoay.enabled = false;              // dung Update (bam dat / di / phong set) - hinh van chay
             Vector3 bauTroi = goc + Vector3.up * 250f;
             Vector3 qL = bauTroi + phai * 70f, qG = bauTroi, qC = bauTroi - phai * 70f;
-            locXoay.transform.position = qL; glDo.transform.position = qG; glCu.transform.position = qC;
-            float caoCu = CaoHinh(glCu);
+            float caoCu = caoNhoDung;   // doi chung nam ngang: cung co voi Gio loc moi; dat giua than vao TAM khung chup (q + 0,5 cao)
+            Vector3 trucNam = glCu.transform.rotation * Vector3.up;
+            locXoay.transform.position = qL; glDo.transform.position = qG;
+            glCu.transform.position = qC + Vector3.up * (0.5f * caoCu) - trucNam * (0.5f * caoCu);
             yield return new WaitForSeconds(3.2f);   // bui chan the gioi cua Loc xoay sinh lai quanh cho moi
             RenderSettings.fog = false;
             var cam = Camera.main;
@@ -792,7 +797,7 @@ public static class ThuGioLoc
                 float sL, sG, sC; bool[] mL, mG, mC;
                 ChupMatNa(cam, locXoay.gameObject, qL, huong, caoLon, W, H, out mL, out sL, luu ? "gioloc_6a_locxoay_that" : null);
                 ChupMatNa(cam, glDo, qG, huong, caoNhoDung, W, H, out mG, out sG, luu ? "gioloc_6b_gioloc_moi" : null);
-                ChupMatNa(cam, glCu, qC, huong, caoCu, W, H, out mC, out sC, luu ? "gioloc_6c_gioloc_cu" : null);
+                ChupMatNa(cam, glCu, qC, huong, caoCu, W, H, out mC, out sC, luu ? "gioloc_6c_gioloc_nam_ngang" : null);
                 iouG += IoU(mL, mG); iouC += IoU(mL, mC);
                 sangG += sG / Mathf.Max(1e-4f, sL); sangC += sC / Mathf.Max(1e-4f, sL);
                 int phu = 0; foreach (var b in mL) if (b) phu++; phuL += (float)phu / mL.Length;
@@ -800,13 +805,13 @@ public static class ThuGioLoc
             }
             RenderSettings.fog = suongCu;
             iouG /= SoLan; iouC /= SoLan; sangG /= SoLan; sangC /= SoLan; phuL /= SoLan;
-            Ghi(string.Format("C4. anh (chup theo chieu cao moi con, {0} lan): Loc xoay that phu {1:P0} khung; Gio loc moi trung hinh IoU {2:F2}, do sang trong hinh x{3:F2}; DOI CHUNG Gio loc cu IoU {4:F2}, x{5:F2}",
+            Ghi(string.Format("C4. anh (chup theo chieu cao moi con, {0} lan): Loc xoay that phu {1:P0} khung; Gio loc moi trung hinh IoU {2:F2}, do sang trong hinh x{3:F2}; DOI CHUNG Gio loc nam ngang IoU {4:F2}, x{5:F2}",
                 SoLan, phuL, iouG, sangG, iouC, sangC));
             Kiem(phuL > 0.05f, "doi chung: Loc xoay that khong hien trong anh - phep chup vo nghia");
             // 01/10/2026 lan ba: Gio loc toi 30% + bo quang sang mieng -> do sang trong hinh phai THAP hon ro (hinh van la Loc xoay thu nho)
             // 03/10/2026 than la dai xoan ho (khong con vo kin) -> chi doi hinh van chiem dang loc (IoU > 0,5) va toi hon
             Kiem(iouG > 0.5f && sangG < 0.85f && sangG > 0.3f, "anh Gio loc khong con dang loc / khong toi hon Loc xoay");
-            Kiem(iouC < iouG - 0.1f, "DOI CHUNG: anh Gio loc cu cung 'giong' Loc xoay - phep so anh khong phan biet duoc");
+            Kiem(iouC < iouG - 0.1f, "DOI CHUNG: Gio loc nam ngang cung 'giong' Loc xoay - phep so anh khong phan biet duoc hinh dang");
             // ---- C6 (03/10/2026, nguoi dung khoanh KHOANG TRONG o than / chan / tren): DO PHU cua than dai gio - chi ve 3 nhom dai (lop 31)
             // tren nen DEN, may quay TRUC GIAO nhin ngang (1 px = 1 cm); trong vien than |x| <= 0,95 x vo chinh, chia chan / giua / tren:
             // "phu" = ti le diem anh sang > 0,05. DOI CHUNG: chi bat NHOM NGOAI -> phai thua ro hon (phep do phan biet duoc).

@@ -47,13 +47,13 @@ public class Fireball : MonoBehaviour
     /// <summary>
     /// QUA NAY (nguoi dung 26/09/2026, Qua cau lua + Qua cau bang): no ma TRUNG it nhat mot ke dich thi bat MOT qua moi bay sang
     /// ke dich GAN NHAT chua bi vu no ay trung, trong TamNay m quanh cho no - 100% sat thuong va hieu ung (chon: 1 lan, 100%, 6 m).
-    /// Chi qua cua NGUOI CHOI (Qua cau lua: soLanNay = 1 o PlayerController); quai va Lua dia nguc = 0.
+    /// Chi qua cua NGUOI CHOI (Qua cau lua va Lua dia nguc: soLanNay = SoLanNayNguoiChoi 6 tu 05/10/2026); quai = 0.
     /// </summary>
     public int soLanNay;
     public const float TamNay = 6f;
     /// <summary>So lan nay cua Qua cau lua NGUOI CHOI: 6 (nguoi dung 05/10/2026: "nay qua nay lai 6 lan khi co doi thu khac o gan"; chon
     /// giu nguyen sat thuong moi lan, chi sang doi thu MOI - het ke moi trong TamNay thi dung som). Truoc 1 (26/09/2026).
-    /// Qua cau bang van 1 (QuaCauBang.soLanNay).</summary>
+    /// Lua dia nguc cung 6 (nguoi dung 05/10/2026, LuaDiaNguc.SpawnChum). Qua cau bang van 1 (QuaCauBang.soLanNay).</summary>
     public const int SoLanNayNguoiChoi = 6;
     /// <summary>Qua NAY: cac ke da bi vu no truoc trung - khong cham / khong nhan lai (con khong thi qua no ngay tren ke cu).</summary>
     public HashSet<Damageable> khongCham;
@@ -405,6 +405,7 @@ public class Fireball : MonoBehaviour
                 q.impactDamage = impactDamage; q.blastRadius = blastRadius; q.burnSeconds = burnSeconds;
                 q.boQua = boQua; q.ngaXacSuat = ngaXacSuat; q.ngaGiay = ngaGiay; q.xuyenVatNho = xuyenVatNho;
                 q.speed = speed; q.lifetime = 1.5f;
+                q.diaNguc = diaNguc; q.name = name;   // qua nay cua Lua dia nguc van la "LuaDiaNguc"
                 // Dui theo ke dich (no chay thi van trung) - dung lai co che tu di cua Lua dia nguc
                 q.mucTieu = ke; q.tocQueo = 540f; q.giayBatDauDi = 0f; q.tamTim = TamNay;
                 q.soLanNay = soLanNay - 1;

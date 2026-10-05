@@ -76,7 +76,7 @@ public class QuaCauBang : MonoBehaviour
     /// <summary>
     /// QUA NAY (nguoi dung 26/09/2026, Qua cau lua + Qua cau bang): no ma TRUNG it nhat mot ke dich thi bat MOT qua moi bay sang
     /// ke dich GAN NHAT chua bi vu no ay trung, trong TamNay m quanh cho no - 100% sat thuong va hieu ung (chon: 1 lan, 100%, 6 m).
-    /// Chi qua cua NGUOI CHOI (Qua cau lua: soLanNay = 1 o PlayerController); quai va Lua dia nguc = 0.
+    /// Qua cau bang cua nguoi choi nay 1 lan (Qua cau lua + Lua dia nguc nay 6 - Fireball.SoLanNayNguoiChoi).
     /// </summary>
     public int soLanNay = 1;
     /// <summary>Qua NAY: bo qua ke da bi vu no truoc trung (xem Fireball.khongCham).</summary>

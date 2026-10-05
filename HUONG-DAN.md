@@ -9118,6 +9118,25 @@ còn bật; mỗi chỗ đúng 9 tia con (171 / 234); một chỗ chạm riêng:
 đen 0,42, sau 6 s vết biến mất. **Đối chứng:** `LoeSetChamDat` gọi thẳng (đường Lốc xoáy) vẫn còn 2 lớp vệt gạch. Menu 58 (Sấm sét) và 83 (Mây
 giông) chạy lại 0 lỗi. Ảnh `PlayTestShots/setchamdat_samset_0/1.png`, `setchamdat_maygiong_0/1.png`.
 
+### Xoá hình Gió lốc cũ · hạt cát quay · Lửa địa ngục nảy 6 lần (05/10/2026)
+
+**Người dùng:** "xoá hình Gió lốc cũ", "hạt cát của Gió lốc không quay", "quả cầu lửa của Lửa địa ngục cũng cho nảy giống Quả cầu lửa".
+
+- **Xoá hình Gió lốc cũ:** hình cũ (17–30/09: lưới `LocNho.fbx`, ảnh `GioDai.png` / `GioSoi.png`, màu mây giông, mây trong thân) chỉ còn dùng làm
+  đối chứng. Đã xoá hàm `BuildGioLocCu` cùng mọi thứ chỉ nó dùng, ba file ảnh / lưới, và hai phép thử chỉ dành cho hình cũ (menu 71c, 94). Giữ
+  `BuiDenCuon.png` vì hạt bụi đen cuốn lên đang dùng. `VfxGioLoc.cs` 566 → 344 dòng. Hai phép thử còn lấy hình cũ làm đối chứng được đổi:
+  menu 71 C4 dùng **Gió lốc mới nằm ngang** (bản lật ngược thử trước ra IoU 0,70, gần bằng 0,73 của Gió lốc thật — bóng lốc chủ yếu là dải gió và
+  bụi nên không phân biệt được chiều phễu; nằm ngang ra 0,45 so với 0,74); menu 82 B3 kiểm vòng bụi chân Gió lốc = vòng Lốc xoáy × 0,318 = 1,272 m
+  (kiểm cũ "Gió lốc giữ 1,0 m" lỗi thời từ khi Gió lốc thành Lốc xoáy thu nhỏ).
+- **Hạt cát không quay:** lớp `Grit` chỉ còn trong hình Gió lốc cũ (vừa xoá) và Lốc xoáy dựng bằng code (dự phòng khi thiếu FBX) — Gió lốc và Lốc xoáy
+  đang chơi không có lớp này. Gốc lỗi ở `BuildDebrisSwarm`: trục Y đặt hai hằng số còn X/Z, quỹ đạo X/Z để mặc định một hằng số → Unity báo "Particle
+  Velocity curves must all be in the same mode" và bỏ cả mô-đun. Nay mọi trục cùng kiểu. Đo trong cảnh tạm (không đụng cảnh đang mở): hạt quay
+  **53,4° mỗi 0,1 s**, bay lên **0,70 m**, không còn báo lỗi; đối chứng đúng bản lỗi cũ: **0°**, 0,23 m, Unity báo lỗi liên tục.
+- **Lửa địa ngục nảy 6 lần:** mỗi quả của chùm 5 quả mang `soLanNay` 6 như Quả cầu lửa (nguyên sát thương, chỉ sang đối thủ mới); quả nảy giữ tên
+  `LuaDiaNguc`. Menu 84 mục A3 mới (tung thật vào chuỗi 8 bia): 5/5 quả mang 6, đếm được **30 quả nảy** (5 × 6), quả nào cũng nguyên **176,3**.
+
+**Phép thử:** menu 84, 71, 82, 72 đều 0 lỗi.
+
 ### Quả cầu lửa: ánh sáng khi bay và khi nổ dịu lại (05/10/2026)
 
 **Người dùng:** "cho ánh sáng từ các quả cầu lửa dịu lại và ánh sáng khi va chạm nổ cũng dịu lại, bây giờ quá sáng làm khi chơi bị chói và khó chịu

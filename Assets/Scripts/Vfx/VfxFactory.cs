@@ -2222,7 +2222,7 @@ public static partial class VfxFactory
     }
 
     /// <summary>Hinh Loc xoay CU dung bang code - chi con dung khi thieu Resources/KyNang/LocXoay/LocXoay.fbx.</summary>
-    static GameObject BuildTornadoCu(float scale)
+    public static GameObject BuildTornadoCu(float scale)
     {
         var root = new GameObject("Tornado");
 
@@ -2341,9 +2341,7 @@ public static partial class VfxFactory
         // phan "loc boc thu gi len" duoc the hien bang khoi bui phia sau.
         BuildDebrisSwarm(root.transform, scale * NoThanDuoi, "Grit", 0.05f, 0.20f, 160f, 340,
                          2.4f * LocNoNgang, 6.5f * LocNoNgang);
-        // Dat dau cung chieu cho dong bo - NHUNG hien mo-dun van toc cua Grit bi Unity bo qua han ("Particle Velocity curves
-        // must all be in the same mode": BuildDebrisSwarm de truc X/Z mot hang so, Y hai hang so) nen hat cat KHONG quay,
-        // chi vang ra theo startSpeed - o ca Loc xoay lan Gio loc (menu 82 do 25/09/2026, chua sua: doi ca hinh Gio loc)
+        // Dat dau cung chieu cho dong bo (05/10/2026 BuildDebrisSwarm da dat moi truc cung kieu - hat cat Grit quay that)
         var gritLoc = root.transform.Find("Grit").GetComponent<ParticleSystem>().velocityOverLifetime;
         gritLoc.orbitalY = new ParticleSystem.MinMaxCurve(ChieuQuyDaoGioLoc * 7f, ChieuQuyDaoGioLoc * 12f);
 
@@ -2517,8 +2515,14 @@ public static partial class VfxFactory
         var vel = ps.velocityOverLifetime;
         vel.enabled = true;
         vel.space = ParticleSystemSimulationSpace.Local;
-        vel.orbitalY = new ParticleSystem.MinMaxCurve(7f, 12f);
+        // MOI truc CUNG kieu TwoConstants (05/10/2026): truoc X/Z de mac dinh Constant, Y hai hang so -> Unity bo qua CA mo-dun
+        // ("Particle Velocity curves must all be in the same mode") nen hat cat Grit khong quay, khong bay len
+        vel.x = new ParticleSystem.MinMaxCurve(0f, 0f);
         vel.y = new ParticleSystem.MinMaxCurve(riseMin, riseMax);
+        vel.z = new ParticleSystem.MinMaxCurve(0f, 0f);
+        vel.orbitalX = new ParticleSystem.MinMaxCurve(0f, 0f);
+        vel.orbitalY = new ParticleSystem.MinMaxCurve(7f, 12f);
+        vel.orbitalZ = new ParticleSystem.MinMaxCurve(0f, 0f);
         vel.radial = new ParticleSystem.MinMaxCurve(-1.2f, -0.2f);
 
         // Manh to xoay lat nhieu hon manh nho

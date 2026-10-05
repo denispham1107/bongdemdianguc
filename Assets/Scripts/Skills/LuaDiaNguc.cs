@@ -83,6 +83,7 @@ public static class LuaDiaNguc
             qua.giayBatDauDi = GiayToaTruocKhiDi;
             qua.diaNguc = true;
             qua.xuyenVatNho = true;      // bia / mo / da khong chan duong (nguoi dung 19/09/2026)
+            qua.soLanNay = Fireball.SoLanNayNguoiChoi;   // NAY 6 lan sang ke MOI nhu Qua cau lua (nguoi dung 05/10/2026)
             if (mucTieu.Count > 0) qua.mucTieu = i < mucTieu.Count ? mucTieu[i] : mucTieu[0];
             // 17/09/2026 nguoi dung: mau va vu no GIONG HET Qua cau lua - bo lop nhuom do sam lam hom truoc.
         }
