@@ -29,6 +29,8 @@ using UnityEngine;
 ///   K. XUYEN VAT CAN NHO (nguoi dung 19/09/2026): bay xuyen bia / mo / da, KHONG xuyen duoc cay coi va nha.
 ///      K1 phan loai TUNG vat can that trong Act2 (755 cai) theo nhom cha; K2/K3 ban qua that xuyen vat thu
 ///      tren troi; K4 ban qua that vao BIA THAT va CAY THAT trong nghia dia; K5 duong tung that co bat co xuyen.
+///      K4 cham XUYEN bang quang bay vuot mat sau bia >= 1 m (05/10/2026 - truoc la "con song het gio": qua xuyen bia roi no
+///      o vat xa hon thi bi bao loi oan). C: anh chup chay song song, vong theo doi ghi vi tri MOI khung.
 ///
 /// Ket qua: PlayTestShots/luadianguc.txt, anh luadianguc_*.png.
 /// </summary>
@@ -187,12 +189,15 @@ public static class ThuLuaDiaNguc
     }
 
     /// <summary>Qua vua bien mat (da no): tinh trung bia gan cho cuoi cung cua no nhat (mep than bia &lt; 1,6 m).</summary>
-    static void DemTrung(List<Fireball> conLai, Dictionary<Fireball, Vector3> cuoi, List<Damageable> bia, int[] trung)
+    static void DemTrung(List<Fireball> conLai, Dictionary<Fireball, Vector3> cuoi, List<Damageable> bia, int[] trung,
+                         Dictionary<Fireball, float> lucGhi = null)
     {
         for (int i = conLai.Count - 1; i >= 0; i--)
         {
             if (conLai[i] != null) continue;
             Vector3 p = cuoi[conLai[i]];
+            // vi tri ghi cach luc phat hien qua mat bao lau (> 1 khung la vi tri CU - loi cua phep do, khong phai cua qua)
+            float cu = lucGhi != null && lucGhi.TryGetValue(conLai[i], out float lg) ? Time.time - lg : -1f;
             int tot = -1; float g = 1.6f;
             for (int b = 0; b < bia.Count; b++)
             {
@@ -210,8 +215,8 @@ public static class ThuLuaDiaNguc
                     if (!ten.Contains(c.name + "@" + LayerMask.LayerToName(c.gameObject.layer))) ten.Add(c.name + "@" + LayerMask.LayerToName(c.gameObject.layer));
                 string gan = "";
                 for (int b = 0; b < bia.Count; b++) if (bia[b] != null) gan += string.Format(" bia{0}:{1:F1}m", b, new Vector2(p.x - bia[b].transform.position.x, p.z - bia[b].transform.position.z).magnitude);
-                ChanDoan.Add(string.Format("no o ({0:F1},{1:F1},{2:F1}) cao tren dat {3:F2} m;{4}; va cham trong 1 m: {5}",
-                    p.x, p.y, p.z, p.y - VfxFactory.GroundY(p), gan, ten.Count == 0 ? "khong" : string.Join(", ", ten.ToArray())));
+                ChanDoan.Add(string.Format("no o ({0:F1},{1:F1},{2:F1}) cao tren dat {3:F2} m;{4}; va cham trong 1 m: {5}; vi tri ghi truoc khi mat {6:F3} s",
+                    p.x, p.y, p.z, p.y - VfxFactory.GroundY(p), gan, ten.Count == 0 ? "khong" : string.Join(", ", ten.ToArray()), cu));
             }
             conLai.RemoveAt(i);
         }
@@ -714,15 +719,24 @@ public static class ThuLuaDiaNguc
         if (biaThat == null) Ghi("K4. (khong tim duoc bia that nao co duong ban trong - bo qua)");
         else
         {
+            // Mat truoc / mat sau cua bia tinh theo huong ban (khung bao chieu len huong). XUYEN = qua bay VUOT mat sau them
+            // DuQuaBia; "con song het gio" KHONG dung lam tieu chi: bia that chon theo thu tu trong canh, qua xuyen bia roi
+            // van co the no o vat khac xa hon (menu 72 05/10/2026: di xa 15,6 m qua bia o 9 m, doi chung 8,2 m, ma bi bao loi).
+            float matTruoc, matSau;
+            MatTruocSau(biaThat.bounds, tuBia, hBia, out matTruoc, out matSau);
             yield return BanThu(tuBia, hBia, toi.MatNaVatCan, true, 1.0f);
             bool songK4 = kConSong; float xaK4 = kXaNhat;
             yield return BanThu(tuBia, hBia, toi.MatNaVatCan, false, 1.0f);
             bool songK4b = kConSong; float xaK4b = kXaNhat;
             Ghi("K4. BIA THAT [" + biaThat.name + "] cao " + biaThat.bounds.size.y.ToString("F2")
-                + " m: qua Lua dia nguc con song " + songK4 + " di xa " + xaK4.ToString("F1")
-                + " m; DOI CHUNG qua thuong con song " + songK4b + " di xa " + xaK4b.ToString("F1") + " m");
-            Kiem(songK4 && xaK4 > 12f, "khong xuyen qua duoc cai bia THAT trong nghia dia");
-            Kiem(!songK4b && xaK4b < 10f, "doi chung sai: qua cau lua thuong cung qua duoc cai bia that");
+                + " m, mat truoc / sau cach cho ban " + matTruoc.ToString("F2") + " / " + matSau.ToString("F2")
+                + " m: qua Lua dia nguc di xa " + xaK4.ToString("F1") + " m (con song " + songK4
+                + "); DOI CHUNG qua thuong di xa " + xaK4b.ToString("F1") + " m (con song " + songK4b + ")");
+            Kiem(xaK4 > matSau + DuQuaBia, "khong xuyen qua duoc cai bia THAT trong nghia dia (di xa " + xaK4.ToString("F1")
+                 + " m, mat sau bia " + matSau.ToString("F1") + " m)");
+            // Doi chung: no TRUOC mat sau (mat luoi that nam giua mat truoc khung bao va tam - khung bao xoay rong hon luoi)
+            Kiem(!songK4b && xaK4b > matTruoc - 2f && xaK4b < matSau, "doi chung sai: qua cau lua thuong khong no O BIA that (di xa "
+                 + xaK4b.ToString("F1") + " m, bia tu " + matTruoc.ToString("F1") + " toi " + matSau.ToString("F1") + " m)");
         }
 
         Vector3 tuCay, hCay;
@@ -773,23 +787,50 @@ public static class ThuLuaDiaNguc
     static IEnumerator TheoDoiVaChup(List<Fireball> qua, List<Damageable> bia, int[] trung, Dictionary<Fireball, Damageable> gan)
     {
         var cuoi = new Dictionary<Fireball, Vector3>();
-        foreach (var q in qua) { cuoi[q] = q.transform.position; gan[q] = q.mucTieu; }
+        var lucGhi = new Dictionary<Fireball, float>();
+        foreach (var q in qua) { cuoi[q] = q.transform.position; lucGhi[q] = Time.time; gan[q] = q.mucTieu; }
         var conLai = new List<Fireball>(qua);
         float batDau = Time.time, han = Time.time + 4.5f;
-        bool chup1 = false;
+        bool chup1 = false, dangChup = false;
+        // Anh chup CHAY SONG SONG, vong theo doi KHONG duoc dung lai cho anh: ban cu "yield return Chup(...)" cho vai khung
+        // (doi file anh ghi xong) ma khong ghi vi tri - qua no trong luc ay bi tinh o cho cu cach bia 3,8 m, "khong gan bia nao,
+        // khong va cham gi trong 1 m" (menu 72 05/10/2026: qua trung 1,0,1,1,1 du ca 5 bia deu mat mau).
+        var chay = Object.FindAnyObjectByType<ChayThuMang>();
         while (Time.time < han && conLai.Count > 0)
         {
-            foreach (var q in conLai) if (q != null) cuoi[q] = q.transform.position;
-            if (!chup1 && Time.time - batDau > 0.25f) { chup1 = true; yield return Chup("luadianguc_1_uon_cong"); foreach (var q in conLai) if (q != null) cuoi[q] = q.transform.position; }
-            else yield return null;
-            DemTrung(conLai, cuoi, bia, trung);
+            foreach (var q in conLai) if (q != null) { cuoi[q] = q.transform.position; lucGhi[q] = Time.time; }
+            if (!chup1 && Time.time - batDau > 0.25f && chay != null)
+            {
+                chup1 = true; dangChup = true;
+                chay.StartCoroutine(ChupRoiBao("luadianguc_1_uon_cong", () => dangChup = false));
+            }
+            yield return null;
+            DemTrung(conLai, cuoi, bia, trung, lucGhi);
         }
+        for (int i = 0; i < 120 && dangChup; i++) yield return null;    // TRAN: khong cho anh mai
         yield return Chup("luadianguc_2_no");
+    }
+
+    static IEnumerator ChupRoiBao(string ten, System.Action xong)
+    {
+        yield return Chup(ten);
+        xong();
     }
 
     // ---- Do cho muc K: ban MOT qua roi xem no di duoc bao xa truoc khi no ----
     static bool kConSong;
     static float kXaNhat;
+
+    /// <summary>Qua phai bay vuot mat sau cua vat bao nhieu met moi tinh la XUYEN (ban kinh qua 0,3 + mot buoc bay luc Editor tut khung).</summary>
+    const float DuQuaBia = 1.0f;
+
+    /// <summary>Khoang cach tu <paramref name="tu"/> toi mat truoc / mat sau cua khung bao, do theo huong <paramref name="h"/>.</summary>
+    static void MatTruocSau(Bounds b, Vector3 tu, Vector3 h, out float truoc, out float sau)
+    {
+        float tam = Vector3.Dot(b.center - tu, h);
+        float nua = Mathf.Abs(b.extents.x * h.x) + Mathf.Abs(b.extents.y * h.y) + Mathf.Abs(b.extents.z * h.z);
+        truoc = tam - nua; sau = tam + nua;
+    }
 
     /// <summary>
     /// Ban mot qua cau tu <paramref name="tu"/> theo huong <paramref name="h"/>, theo no toi khi no no hoac het gio.
@@ -839,10 +880,15 @@ public static class ThuLuaDiaNguc
                 Vector3 batDau = tam - h * 9f;
                 float daiDo = doiDuongSauTrong ? 15f : 9f;        // bia: doi trong CA phia sau; cay: chi can phia truoc
                 bool sach = true, chamChinhNo = false;
-                foreach (var hit in Physics.SphereCastAll(batDau, 0.3f, h, daiDo, lopVatCan, QueryTriggerInteraction.Ignore))
+                var trung = Physics.SphereCastAll(batDau, 0.3f, h, daiDo, lopVatCan, QueryTriggerInteraction.Ignore);
+                float denNo = float.MaxValue;
+                foreach (var hit in trung) if (hit.collider == c) { chamChinhNo = true; denNo = hit.distance; }
+                foreach (var hit in trung)
                 {
-                    if (hit.collider == c) { chamChinhNo = true; continue; }
-                    if (!Fireball.LaVatNho(hit.collider)) { sach = false; break; }
+                    if (hit.collider == c) continue;
+                    // TRUOC vat thu: khong duoc co vat nao, ke ca vat nho - qua DOI CHUNG (khong xuyen) se no o vat nho ay
+                    // (menu 72 05/10/2026: doi chung no o 3,3 m, bia that o 8,7 m). SAU vat thu: chi vat nho.
+                    if (hit.distance <= denNo || !Fireball.LaVatNho(hit.collider)) { sach = false; break; }
                 }
                 if (!sach || !chamChinhNo) continue;
                 tu = batDau; huong = h; return c;
