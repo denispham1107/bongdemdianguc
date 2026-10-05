@@ -51,6 +51,10 @@ public class Fireball : MonoBehaviour
     /// </summary>
     public int soLanNay;
     public const float TamNay = 6f;
+    /// <summary>So lan nay cua Qua cau lua NGUOI CHOI: 6 (nguoi dung 05/10/2026: "nay qua nay lai 6 lan khi co doi thu khac o gan"; chon
+    /// giu nguyen sat thuong moi lan, chi sang doi thu MOI - het ke moi trong TamNay thi dung som). Truoc 1 (26/09/2026).
+    /// Qua cau bang van 1 (QuaCauBang.soLanNay).</summary>
+    public const int SoLanNayNguoiChoi = 6;
     /// <summary>Qua NAY: cac ke da bi vu no truoc trung - khong cham / khong nhan lai (con khong thi qua no ngay tren ke cu).</summary>
     public HashSet<Damageable> khongCham;
     /// <summary>Dem cho phep thu: so qua nay da bat ra.</summary>

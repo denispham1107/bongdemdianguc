@@ -9118,6 +9118,22 @@ còn bật; mỗi chỗ đúng 9 tia con (171 / 234); một chỗ chạm riêng:
 đen 0,42, sau 6 s vết biến mất. **Đối chứng:** `LoeSetChamDat` gọi thẳng (đường Lốc xoáy) vẫn còn 2 lớp vệt gạch. Menu 58 (Sấm sét) và 83 (Mây
 giông) chạy lại 0 lỗi. Ảnh `PlayTestShots/setchamdat_samset_0/1.png`, `setchamdat_maygiong_0/1.png`.
 
+### Quả cầu lửa: nảy tới 6 lần (05/10/2026)
+
+**Người dùng:** "các quả cầu lửa khi đánh trúng đối thủ có thể nảy qua nảy lại 6 lần khi có các đối thủ khác ở gần phạm vi nảy". Hỏi lại; người dùng
+chọn **giữ nguyên sát thương mọi lần** và **chỉ nảy sang đối thủ mới** (không quay lại con đã trúng).
+
+- Cơ chế nảy (26/09) vốn đã cho nảy nhiều lần: mỗi quả nảy mang `soLanNay` trừ 1 và danh sách kẻ đã trúng cộng dồn. Chỉ cần nâng số lần của Quả
+  cầu lửa người chơi từ 1 lên **6** (`Fireball.SoLanNayNguoiChoi`). Hết đối thủ mới trong 6 m quanh chỗ nổ thì dừng sớm. Quả cầu băng vẫn nảy 1 lần;
+  quả cầu của quái và Lửa địa ngục vẫn không nảy.
+- Mỗi quả trong chùm 3 (cấp 5 cũng vậy) nảy riêng, nên giữa đám quái đông một lần bấm có thể gây tới 3 × 7 lần sát thương — người dùng đã được báo
+  và chọn giữ nguyên.
+
+**Đo — menu 84 mục A2 mới** (8 bia thẳng hàng cách 3,9 m, mỗi bia nằm ngoài vụ nổ trước nhưng trong tầm nảy 6 m): **6 lần nảy**, sát thương ghi trên
+từng quả nảy **85 85 85 85 85 85**, 7 bia đầu mỗi bia mất máu đúng **một lần**, bia thứ 8 không mất (hết lượt nảy). Đối chứng `soLanNay` 1: chỉ 2 bia
+đầu. Tung thật: 3/3 quả mang `soLanNay` 6. (Lần đầu phép thử so máu bia mất với 85 → báo lỗi giả: sát thương vùng giảm từ tâm nổ ra rìa nên bia
+mất 50–73; nay đọc số ghi trên từng quả.) Menu 84: 0 lỗi.
+
 ### Giựt sét + Quả cầu điện: quầng xanh bọc tia rộng hơn 20% (05/10/2026)
 
 **Người dùng** (gửi ảnh mẫu một tia sét bọc quầng xanh dày): "cho ánh sáng xanh dương bao phủ dầy hơn 20%". Hỏi lại; người dùng chọn **rộng hơn 20%**

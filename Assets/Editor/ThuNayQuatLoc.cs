@@ -16,7 +16,9 @@ using UnityEngine;
 ///   A. Qua cau lua: qua that ban vao bia A, bia B SAU A 3,9 m (NGOAI vung no dau nhung A TRONG vung no cua qua nay -> bia A
 ///      phai KHONG an lai), bia C phia kia cach A 7 m (ngoai 6 m) -> dung 1 qua nay; B mat = A mat (100%); C 0; A chi mat mot lan.
 ///      DOI CHUNG: bia dung mot minh -> 0 qua nay; qua soLanNay 0 (quai / Lua dia nguc) -> 0 qua nay, B 0.
-///      Tung THAT (CastAt 0): moi qua cua nguoi choi mang soLanNay 1.
+///      Tung THAT (CastAt 0): moi qua Qua cau lua cua nguoi choi mang soLanNay Fireball.SoLanNayNguoiChoi (6, tu 05/10/2026), Qua cau bang 1.
+///   A2. NAY 6 LAN (05/10/2026): 8 bia thang hang cach 3,9 m, ban qua soLanNay 6 vao bia dau -> 7 bia dau moi bia mat dung 85 MOT lan
+///      (6 lan nay, moi lan nguyen sat thuong), bia thu 8 khong mat (het luot nay); DOI CHUNG soLanNay 1 -> chi 2 bia dau mat.
 ///   B. Qua cau bang: y het A.
 ///   C. Gio loc tung THAT: cap 1 ra 3 loc, huong lech -15 / 0 / +15 do so voi huong ngam, cung moc lucTung, dung MOT loc giua
 ///      (0 do); ton 20 nang luong. Cap 5: 5 loc -30..+30, ton 25.
@@ -173,6 +175,49 @@ public static class ThuNayQuatLoc
         yield return new WaitForSeconds(0.4f);
     }
 
+    /// <summary>A2. Chuoi 8 bia cach 3,9 m: qua mang soLanNay ban vao bia dau, dem bia nao mat mau bao nhieu lan.</summary>
+    static IEnumerator NaySauLan(Vector3 goc, Vector3 huong, PlayerController toi, int maskEnemy, int soLanNay)
+    {
+        const int SoBia = 8; const float Cach = 3.9f;
+        var bia = new List<TheoDoi>();
+        for (int i = 0; i < SoBia; i++) bia.Add(new TheoDoi(TaoBia("TAM_Nay6_" + i, goc + huong * (6f + i * Cach))));
+        yield return new WaitForFixedUpdate();
+        foreach (var t in bia) t.truoc = t.d.health;
+        int nay0 = Fireball.SoLanNay;
+        Vector3 tu = goc + huong * 1.5f + Vector3.up * 1.2f;
+        Vector3 den = bia[0].d.transform.position + Vector3.up * 1.2f;
+        var f = Fireball.Spawn(tu, (den - tu).normalized, toi.MatNaVatCan, maskEnemy);
+        f.impactDamage = 85f; f.burnSeconds = 0f; f.soLanNay = soLanNay; f.xuyenVatNho = true;
+        // Sat thuong GHI TREN TUNG QUA NAY (mau bia mat giam theo khoang cach tu tam no - khong dung de so "nguyen sat thuong")
+        var daThay = new HashSet<Fireball>(); var satThuongNay = new List<float>();
+        for (float h = Time.time + 6f; Time.time < h; )
+        {
+            foreach (var t in bia) t.Doc();
+            foreach (var q in Object.FindObjectsByType<Fireball>(FindObjectsInactive.Exclude))
+                if (q.khongCham != null && daThay.Add(q)) satThuongNay.Add(q.impactDamage);
+            yield return null;
+        }
+        int nay = Fireball.SoLanNay - nay0;
+        var sb = new StringBuilder(); int trungMotLan = 0, trungNhieu = 0, sauTrung = -1; bool dungSatThuong = true;
+        for (int i = 0; i < SoBia; i++)
+        {
+            var t = bia[i];
+            sb.AppendFormat("{0}:{1:F0}x{2} ", i, Mathf.Max(0f, t.lanDau), t.soLan);
+            if (t.soLan == 1) trungMotLan++;
+            if (t.soLan > 1) trungNhieu++;
+            if (t.soLan > 0) sauTrung = i;
+        }
+        foreach (float x in satThuongNay) if (Mathf.Abs(x - 85f) > 0.01f) dungSatThuong = false;
+        Ghi(string.Format("A2. chuoi {0} bia cach {1} m, soLanNay {2}: qua nay {3}; sat thuong ghi tren tung qua nay [{4}]; bia (mat x so lan) {5}",
+            SoBia, Cach, soLanNay, nay, string.Join(" ", satThuongNay.ConvertAll(x => x.ToString("F0")).ToArray()), sb));
+        int mong = Mathf.Min(SoBia, soLanNay + 1);
+        Kiem(nay == Mathf.Min(soLanNay, SoBia - 1), "A2 soLanNay " + soLanNay + ": so lan nay sai");
+        Kiem(trungMotLan == mong && trungNhieu == 0 && sauTrung == mong - 1, "A2 soLanNay " + soLanNay + ": bia trung sai (mong " + mong + " bia dau, moi bia mot lan)");
+        Kiem(dungSatThuong && satThuongNay.Count == nay, "A2 soLanNay " + soLanNay + ": co qua nay khong mang nguyen 85");
+        foreach (var t in bia) if (t.d != null) Object.Destroy(t.d.gameObject);
+        yield return new WaitForSeconds(0.5f);
+    }
+
     static IEnumerator ThuMotLoai(bool laLua, Vector3 goc, Vector3 huong, PlayerController toi, int maskEnemy)
     {
         string ten = laLua ? "Qua cau lua" : "Qua cau bang";
@@ -219,6 +264,9 @@ public static class ThuNayQuatLoc
         Ghi("");
         yield return ThuMotLoai(true, goc, huong, toi, maskEnemy);
         Ghi("");
+        yield return NaySauLan(goc, huong, toi, maskEnemy, Fireball.SoLanNayNguoiChoi);
+        yield return NaySauLan(goc, huong, toi, maskEnemy, 1);
+        Ghi("");
         yield return ThuMotLoai(false, goc, huong, toi, maskEnemy);
 
         // Tung THAT: qua cua nguoi choi mang soLanNay 1
@@ -236,12 +284,13 @@ public static class ThuNayQuatLoc
             for (float h = Time.time + 1.2f; Time.time < h; )
             {
                 foreach (var f in Object.FindObjectsByType<Fireball>(FindObjectsInactive.Exclude))
-                    if (cu.Add(f) && f.boQua == mauToi) { so++; if (f.soLanNay == 1) mang1++; }
+                    if (cu.Add(f) && f.boQua == mauToi) { so++; if (f.soLanNay == Fireball.SoLanNayNguoiChoi) mang1++; }
                 foreach (var q in Object.FindObjectsByType<QuaCauBang>(FindObjectsInactive.Exclude))
                     if (cu.Add(q) && q.boQua == mauToi) { so++; if (q.soLanNay == 1) mang1++; }
                 yield return null;
             }
-            Ghi(string.Format("{0}. tung THAT {1}: {2} qua cua nguoi choi, mang soLanNay 1: {3}", ky == 0 ? "A" : "B", ky == 0 ? "Qua cau lua" : "Qua cau bang", so, mang1));
+            Ghi(string.Format("{0}. tung THAT {1}: {2} qua cua nguoi choi, mang soLanNay {3}: {4}", ky == 0 ? "A" : "B", ky == 0 ? "Qua cau lua" : "Qua cau bang", so,
+                ky == 0 ? Fireball.SoLanNayNguoiChoi : 1, mang1));
             Kiem(so >= 3 && mang1 == so, "qua tung that cua nguoi choi khong duoc nay");
             yield return new WaitForSeconds(1.5f);
         }

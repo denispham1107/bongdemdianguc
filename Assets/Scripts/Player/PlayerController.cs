@@ -1381,7 +1381,7 @@ public class PlayerController : MonoBehaviour
             Fireball.SpawnChum(origin, dir.normalized, obstacleMask, enemyMask, health,
                                3, 11f, manhHon, themGiay,
                                capPhep >= Fireball.CapDanhNga ? Fireball.NgaXacSuatCap5 : 0f,
-                               ThienThach.NgaGiayNguoiChoi, true, 1);      // soLanNay 1: vu no trung ke dich thi nay sang ke ke ben (26/09/2026)
+                               ThienThach.NgaGiayNguoiChoi, true, Fireball.SoLanNayNguoiChoi);   // nay toi 6 lan sang ke MOI gan ben (05/10/2026; truoc 1)
             CameraShake.Shake(0.12f, 0.05f);
         }
         else if (castingSkill == CapDo.KyTangHinh)

@@ -626,6 +626,10 @@ hơn ×1,5 và mở xuống 1,8–4,3 m** (người dùng chọn sau menu 94 ch�
   (`SpawnChum(..., soLanNay: 1)`, Quả cầu băng mặc định 1), 0 cho quả của quái và Lửa địa ngục. ⚠️ Mặt nạ vật cản của người chơi
   CÓ lớp Enemy → quả nảy sinh sát kẻ vừa trúng đâm ngay vào thân nó: `Fireball.VatCanChan(..., boRa)` bỏ qua các kẻ trong
   `khongCham`, và quả nảy xuất phát lệch 0,5 m về phía kẻ mới. Menu 84 kiểm (B/A 1,02–1,03, đối chứng bia một mình · soLanNay 0).
+  ⚠️ **05/10/2026: QUẢ CẦU LỬA NẢY TỚI 6 LẦN** (người dùng: "nảy qua nảy lại 6 lần khi có đối thủ khác ở gần"; chọn giữ nguyên sát thương mỗi
+  lần · chỉ sang đối thủ MỚI): `Fireball.SoLanNayNguoiChoi` 6 (`PlayerController` truyền vào `SpawnChum`); mỗi lần nảy trừ 1 và mang theo
+  `khongCham` cộng dồn nên không quay lại kẻ đã trúng, hết kẻ mới trong 6 m thì dừng sớm. Quả cầu băng vẫn 1. Menu 84 A2 (chuỗi 8 bia cách 3,9 m):
+  6 lần nảy, mỗi quả nảy mang đúng 85, 7 bia đầu mỗi bia trúng 1 lần, bia 8 không; đối chứng soLanNay 1 → 2 bia. 0 lỗi.
 - **Quả cầu lửa** sát thương **85** (16/09/2026) — ⚠️ số nằm trong **prefab `Skill_QuaCauLua`** (đè code).
   ⚠️ **CẤP 5: 30% ĐÁNH NGÃ** 1,5 giây (người dùng 19/09/2026, `Fireball.NgaXacSuatCap5` / `CapDanhNga`): dùng lại
   `ThienThach.GieoDanhNga` nên tự bỏ qua người tung, kẻ đã chết và kẻ đang có khiên; **mỗi quả trong chùm gieo riêng**
