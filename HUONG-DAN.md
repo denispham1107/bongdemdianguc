@@ -9313,6 +9313,20 @@ sáng 1,35 + ô lặp 22 m → tấm thảm sáng sát chân rào, không thấy
 dừng ở z −65,7, không rơi; nhân vật ngoài mép chết 4,87 s. Ảnh `PlayTestShots/dianguc_25d.png` (góc 2.5D), `dianguc_3d.png`, `dianguc_ngoai.png` (từ dưới
 vực), `dianguc_canh.png`. Menu 56 (đợt quái): 0 lỗi.
 
+#### Bỏ 14 cột đá, tàn lửa và khói bay lên nhiều hơn (05/10/2026)
+
+**Người dùng** (gửi 4 ảnh rơi xuống đáy vực): hỏi "các cây trụ là gì" — đó là 14 cột đá `CotDa` tôi tự thêm (nón cụt 9 cạnh, cao 8–24 m), nhìn từ
+đáy vực ra ống trơn láng, máy quay còn chui giữa đám cột. Người dùng chọn: **xoá hẳn — vực chỉ còn vách, dung nham và khói**, và **cho dung nham và khói
+bay lên nhiều một chút**.
+
+- Xoá `CotDa` trong `dia_nguc.blend` (Blender đã mở lại: nạp lại hai cảnh `DiaNguc` + `DN_NuongAnh` bằng `libraries.load`, kiểm hướng mặt vách vẫn
+  đúng, xuất lại `DiaNguc.fbx`; lưu bản sao phải gỡ bản ghi thư viện trước — không thì "Cannot overwrite used library").
+- `DiaNguc.TanLuaMoiGiay` 32 → **48**, `KhoiMoiGiay` 4,5 → **7** mỗi cạnh (×1,5), bay lên nhanh hơn chút `TocLenTanLua` 2–4,5 m/s (trước 1,6–3,6),
+  `TocLenKhoi` 1,2–2,4 (trước 0,9–1,8) để lên gần miệng vực; trần hạt 420 / 100.
+
+**Đo — menu 110** (0 lỗi): 0 cột đá trong hình; tàn lửa đang sống **1 265** (mức cũ tính từ tốc sinh × đời hạt ~832 → **×1,52**), bay lên TB 3,23 m/s;
+khói **288** (cũ ~180, **×1,60**), 1,77 m/s. E / F / A như trước (qua khe rơi, rào nguyên chặn, chết 4,79 s).
+
 ### Bị cháy: lửa mỏng bớt — mật độ 0,4 (05/10/2026)
 
 **Người dùng:** "Hiệu ứng thiêu đốt trên các nhân vật người chơi và trên quái vật: cho giảm bớt mật độ lửa phủ trên người, hiện đang nhiều quá

@@ -155,6 +155,30 @@ public static class ThuDiaNguc
                 var hinh = GameObject.Find("HinhDiaNguc");
                 sb.AppendLine("Hinh dia nguc: " + (hinh != null) + (hinh != null ? ", " + hinh.GetComponentsInChildren<MeshRenderer>().Length + " luoi" : "") + "; dung nham " + (GameObject.Find("BienDungNham") != null));
                 kiem(hinh != null && GameObject.Find("BienDungNham") != null, "thieu hinh dia nguc (vach / dung nham)");
+                // 05/10/2026: bo 14 cot da (nguoi dung: "vuc chi con vach, dung nham va khoi")
+                bool coCot = false;
+                if (hinh != null) foreach (var r in hinh.GetComponentsInChildren<Renderer>(true)) if (r.name.Contains("CotDa")) coCot = true;
+                sb.AppendLine("Cot da trong vuc: " + (coCot ? "CON" : "khong con"));
+                kiem(!coCot, "van con cot da trong vuc");
+                // Tan lua / khoi boc len NHIEU HON (x1,5): dem hat dang song o 4 canh, toc bay len doc tu tung hat.
+                // Doi chung = muc cu tinh tu toc sinh x doi hat trung binh (tan lua 32/s x 6,5 s, khoi 4,5/s x 10 s moi canh)
+                int nTan = 0, nKhoi = 0; float tocTan = 0f, tocKhoi = 0f; int dTan = 0, dKhoi = 0;
+                foreach (var ps in Object.FindObjectsByType<ParticleSystem>(FindObjectsSortMode.None))
+                {
+                    bool laTan = ps.name == "TanLuaVuc", laKhoi = ps.name == "KhoiVuc";
+                    if (!laTan && !laKhoi) continue;
+                    var arr = new ParticleSystem.Particle[ps.particleCount]; int n = ps.GetParticles(arr);
+                    for (int i = 0; i < n; i++)
+                    {
+                        if (laTan) { nTan++; tocTan += arr[i].totalVelocity.y; dTan++; } else { nKhoi++; tocKhoi += arr[i].totalVelocity.y; dKhoi++; }
+                    }
+                }
+                float cuTan = 4 * 32f * 6.5f, cuKhoi = 4 * 4.5f * 10f;
+                sb.AppendLine(string.Format("Tan lua dang song {0} (muc cu ~{1:F0}, x{2:F2}), bay len TB {3:F2} m/s | Khoi dang song {4} (muc cu ~{5:F0}, x{6:F2}), bay len TB {7:F2} m/s",
+                    nTan, cuTan, nTan / cuTan, dTan > 0 ? tocTan / dTan : 0f, nKhoi, cuKhoi, nKhoi / cuKhoi, dKhoi > 0 ? tocKhoi / dKhoi : 0f));
+                kiem(nTan >= cuTan * 1.3f, "tan lua khong nhieu hon muc cu");
+                kiem(nKhoi >= cuKhoi * 1.3f, "khoi khong nhieu hon muc cu");
+                kiem(dTan > 0 && tocTan / dTan > 2.0f, "tan lua bay len cham hon / khong bay len");
             }
 
             // ---- E. di ra qua KHE RAO SAP (canh nam) / F. doi chung: di ra cho rao con nguyen ----

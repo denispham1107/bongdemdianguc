@@ -57,7 +57,7 @@ public class DiaNguc : MonoBehaviour
 
     /// <summary>
     /// HINH dia nguc (Blender MCP, CongCu/Blender/dia_nguc.blend -> Resources/DiaNguc): vach vuc quanh mep dat (mep tren khop do cao dat Act2),
-    /// vach ngoai quay vao trong cach mep ~45 m, cot da trong dung nham, rao sap (lan can do + da vun) o 4 khe rao; bien dung nham + tan lua,
+    /// vach ngoai quay vao trong cach mep ~45 m, rao sap (lan can do + da vun) o 4 khe rao; bien dung nham + tan lua,
     /// khoi do sam boc len doc 4 canh. Nap luc chay - KHONG sua scene. Luoi FBX xuat cung cach voi hang_rao_rong (goc xoay 270 / ti le 100),
     /// nen dat o goc toa do la khop dung cho.
     /// </summary>
@@ -149,6 +149,13 @@ public class DiaNguc : MonoBehaviour
     /// <summary>Nua canh dat Act2 (m) - vach vuc bat dau tu day.</summary>
     public const float MepDat = 67.31f;
 
+    /// <summary>
+    /// Tan lua / khoi boc len tu dung nham MOI CANH (nguoi dung 05/10/2026: "cho dung nham va khoi hieu ung bay len nhieu 1 chut" - x1,5 so
+    /// voi ban dau 32 / 4,5, bay nhanh hon chut de len gan mieng vuc). Toc len (m/s) lay ngau nhien trong khoang.
+    /// </summary>
+    public const float TanLuaMoiGiay = 48f, KhoiMoiGiay = 7f;
+    public static readonly Vector2 TocLenTanLua = new Vector2(2.0f, 4.5f), TocLenKhoi = new Vector2(1.2f, 2.4f);
+
     static void TaoTanLua(Transform cha, Vector3 tam, float goc)
     {
         var go = new GameObject("TanLuaVuc");
@@ -163,11 +170,11 @@ public class DiaNguc : MonoBehaviour
         m.startSize = new ParticleSystem.MinMaxCurve(0.12f, 0.32f);
         m.startColor = new ParticleSystem.MinMaxGradient(new Color(1f, 0.55f, 0.12f, 1f), new Color(1f, 0.85f, 0.4f, 1f));
         m.simulationSpace = ParticleSystemSimulationSpace.World;
-        m.maxParticles = 260;
-        var e = ps.emission; e.rateOverTime = 32f;
+        m.maxParticles = 420;
+        var e = ps.emission; e.rateOverTime = TanLuaMoiGiay;
         var sh = ps.shape; sh.shapeType = ParticleSystemShapeType.Box; sh.scale = new Vector3(150f, 1f, 22f);
         var v = ps.velocityOverLifetime; v.enabled = true; v.space = ParticleSystemSimulationSpace.World;
-        v.x = new ParticleSystem.MinMaxCurve(-0.4f, 0.4f); v.y = new ParticleSystem.MinMaxCurve(1.6f, 3.6f); v.z = new ParticleSystem.MinMaxCurve(-0.4f, 0.4f);
+        v.x = new ParticleSystem.MinMaxCurve(-0.4f, 0.4f); v.y = new ParticleSystem.MinMaxCurve(TocLenTanLua.x, TocLenTanLua.y); v.z = new ParticleSystem.MinMaxCurve(-0.4f, 0.4f);
         var nz = ps.noise; nz.enabled = true; nz.strength = 0.8f; nz.frequency = 0.35f;
         var col = ps.colorOverLifetime; col.enabled = true;
         var g = new Gradient();
@@ -198,11 +205,11 @@ public class DiaNguc : MonoBehaviour
         // khoi xam den duoc dung nham ben duoi hat do len
         m.startColor = new ParticleSystem.MinMaxGradient(new Color(0.30f, 0.07f, 0.03f, 0.30f), new Color(0.16f, 0.05f, 0.04f, 0.42f));
         m.simulationSpace = ParticleSystemSimulationSpace.World;
-        m.maxParticles = 60;
-        var e = ps.emission; e.rateOverTime = 4.5f;
+        m.maxParticles = 100;
+        var e = ps.emission; e.rateOverTime = KhoiMoiGiay;
         var sh = ps.shape; sh.shapeType = ParticleSystemShapeType.Box; sh.scale = new Vector3(150f, 1f, 22f);
         var v = ps.velocityOverLifetime; v.enabled = true; v.space = ParticleSystemSimulationSpace.World;
-        v.x = new ParticleSystem.MinMaxCurve(-0.3f, 0.3f); v.y = new ParticleSystem.MinMaxCurve(0.9f, 1.8f); v.z = new ParticleSystem.MinMaxCurve(-0.3f, 0.3f);
+        v.x = new ParticleSystem.MinMaxCurve(-0.3f, 0.3f); v.y = new ParticleSystem.MinMaxCurve(TocLenKhoi.x, TocLenKhoi.y); v.z = new ParticleSystem.MinMaxCurve(-0.3f, 0.3f);
         var sol = ps.sizeOverLifetime; sol.enabled = true;
         sol.size = new ParticleSystem.MinMaxCurve(1f, new AnimationCurve(new Keyframe(0f, 0.5f), new Keyframe(1f, 1.8f)));
         var col = ps.colorOverLifetime; col.enabled = true;

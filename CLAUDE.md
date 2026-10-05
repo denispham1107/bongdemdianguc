@@ -154,13 +154,16 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
   bệ đá gãy lởm chởm sát cột — trong lưới rào nên có va chạm; khe đi được ~3 m) ở Unity nam (22,9; −66,4) · bắc (−28; 66,4) · tây (−66,4; −12,7) · đông
   (66,4; 33,1), tránh cổng — `hang_rao_rong.fbx` xuất lại (xuất thử bản chưa sửa khớp FBX cũ: 89 960 đỉnh, cùng khung bao); ⚠️ lưới rào KHÔNG có UV (đá
   triplanar) — đừng thêm. `Resources/DiaNguc/DiaNguc.fbx`: `VachVuc` (vách vực quanh mép đất, mép trên = độ cao đất từng 1 m đọc từ Unity, đá lởm chởm,
-  chân loe dốc đá vụn, 11 880 đỉnh), `VachNgoai` (vòng vách quay VÀO trong ở ±112 m, −27,5 → +12 m), `CotDa` (14 cột trong dung nham), `RaoSap` (mảng song
+  chân loe dốc đá vụn, 11 880 đỉnh), `VachNgoai` (vòng vách quay VÀO trong ở ±112 m, −27,5 → +12 m), `RaoSap` (mảng song
   đổ ra mép vực thiếu ~30% song, đá vụn, song rơi — KHÔNG va chạm); màu đỉnh R ánh dung nham / G vết nứt / B tối. Ảnh nướng lặp liền mạch (nhiễu 4D trên
   hình xuyến): `DungNham.png`, `DaBazan.png` (đá phân tầng), `KhoiVuc.png`. Shader `S_VachDiaNguc` (triplanar + phát sáng theo màu đỉnh), `S_DungNham`
   (2 lớp trôi + loang cỡ lớn, sương mù chỉ ÁP MỘT PHẦN), `S_SuongVuc` (2 lớp khói đỏ sẫm ở −12 / −19 m — thiếu nó dung nham sáng đều như tấm thảm sát
   chân rào, không thấy sâu). `DiaNguc.DungHinh` nạp lúc chạy (không sửa scene) + tàn lửa / khói dọc 4 cạnh. ⚠️ Bẫy đã vấp: kiểm hướng mặt bằng MỘT mặt
   (rơi vào hàng mép giấu gần nằm ngang) → cả vách quay vào trong; vòng vách ngoài quên gán z → nằm bẹp ở 0 (vệt đen trên dung nham). Menu 110 (0 lỗi):
   E đi qua khe rào sập rơi xuống vực, F đối chứng rào nguyên bị chặn z −65,7; ảnh `PlayTestShots/dianguc_25d|3d|ngoai|canh.png`. Menu 56: 0 lỗi.
+  ⚠️ **Cùng ngày: BỎ 14 CỘT ĐÁ** `CotDa` (tôi tự thêm — người dùng hỏi "cây trụ là gì", ở đáy vực trông như ống trơn; chọn "vực chỉ còn vách, dung
+  nham và khói"; xoá trong Blender, xuất lại `DiaNguc.fbx`) + **tàn lửa / khói bay lên NHIỀU HƠN ×1,5** (`DiaNguc.TanLuaMoiGiay` 32 → 48, `KhoiMoiGiay`
+  4,5 → 7 mỗi cạnh, bay lên 2–4,5 / 1,2–2,4 m/s). Menu 110 (0 lỗi): 0 cột; tàn lửa sống 1 265 (mức cũ ~832, ×1,52) lên TB 3,23 m/s; khói 288 (×1,60).
 - **LUẬT ĐỢT QUÁI** (luật duy nhất của `GameDirector` từ khi xoá Act1): mỗi đợt sinh quanh **từng**
   người chơi bốn con (bộ xương · phù thủy · quỷ cây · quỷ dữ), giết hết → 30 giây → đợt sau cộng dồn thêm quái bất kì
   (+1, +3, +6…) và mạnh thêm 5% máu · sát thương mỗi đợt. ⚠️ **Sát thương quái Act2 = 0,65 × 1,05^(đợt−1)** (27/09/2026 người dùng: đợt đầu −35%, máu giữ
