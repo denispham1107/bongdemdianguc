@@ -1,10 +1,10 @@
 # ANH DUNG NHAM DUOI VUC + ANH HUONG GAN (05/10/2026). Chay TRONG Blender qua MCP (numpy cua Blender), dang bpy.app.timers vi tinh
 # khoang cach Voronoi mat ~3,5 phut (lenh MCP truc tiep het gio):
 #   exec(open(r"<du an>\CongCu\Blender\dung_nham_gan.py", encoding="utf-8").read())
-# Ra: Assets/Resources/DiaNguc/DungNham.png (1024, mau theo do nong) + HuongGan.png (512: RG huong tiep tuyen gan goc kep, B nhieu).
+# Ra: Assets/Resources/DiaNguc/DungNham.png (1024, mau theo do nong + bong vo; ALPHA = anh lua mep vo) + HuongGan.png (512: RG huong tiep tuyen gan goc kep, B nhieu).
 # Moi thu LAP LIEN MACH: diem Voronoi cuon vong (anh nho nhat), nhieu dai tan bang FFT (tu tuan hoan).
 # Nguoi dung: "cac duong dung nham con thang va tron qua" -> chon (1) gan lom chom / do rong doi / nhanh phu / vung nong chay,
-# (2) mau theo do nong, (4) bo lop gan thu hai (shader).
+# (2) mau theo do nong, (4) bo lop gan thu hai (shader). 06/10/2026 them (3) vo san + anh lua mep vo (alpha); (5) uon gan o shader.
 import bpy, numpy as np, time, os
 
 DU_AN = r"C:\Users\HP\Documents\GameUnity\Diablo25D"
@@ -75,13 +75,38 @@ def viec():
     # BANG MAU THEO DO NONG: vo nau den -> do sam -> cam -> vang -> trang vang
     moc = np.array([0.0, 0.10, 0.30, 0.55, 0.80, 1.0])
     mau = np.array([[0.035, 0.018, 0.015], [0.16, 0.030, 0.012], [0.55, 0.07, 0.010], [0.95, 0.33, 0.03], [1.0, 0.66, 0.16], [1.0, 0.93, 0.68]])
-    C = np.stack([np.interp(H, moc, mau[:, k]) for k in range(3)], -1).astype(np.float32)
-    luu(np.concatenate([C, np.ones((R, R, 1), np.float32)], -1), os.path.join(RA, "DungNham.png"))
+    C0 = np.stack([np.interp(H, moc, mau[:, k]) for k in range(3)], -1).astype(np.float32)   # mau khong co bong vo: de tinh huong gan
 
-    # ANH HUONG GAN: tensor cau truc cua do sang -> huong TIEP TUYEN dang goc kep x do ket hop (RG), nhieu dai tan (B)
-    L = C[..., 0] * 0.3 + C[..., 1] * 0.5 + C[..., 2] * 0.2
+    # (3, 06/10/2026) VO SAN: ban do do cao -> do bong noi khoi nuong vao mau vo; alpha = anh lua hat len mat doc nhin ve khe.
+    # Co LON (nep ~0,55 m, go mep ~0,25 m): ban dau nep 19 cm / go 13 cm nho hon 1 diem anh o cu ly choi, mip gop mat.
     def mo(a, s):
-        return np.real(np.fft.ifft2(np.fft.fft2(a) * np.exp(-2 * (np.pi ** 2) * (s ** 2) * ((fx / R) ** 2 + (fy / R) ** 2))))
+        return np.real(np.fft.ifft2(np.fft.fft2(a) * np.exp(-2 * (np.pi ** 2) * (s ** 2) * ((fx / R) ** 2 + (fy / R) ** 2)))).astype(np.float32)
+    khoiKhe = ss(0.0, 0.02, dChinh)
+    go = 0.5 * np.exp(-((dChinh - 0.011) / 0.0055) ** 2)
+    day = 0.30 * np.sin(2 * np.pi * dChinh / 0.012 + 2.5 * nhieu(6, 3, 41)) * ss(0.008, 0.03, dChinh) * ss(-0.6, 0.6, nhieu(5, 2, 42))
+    nghieng = 0.9 * nhieu(12, 5, 45)
+    san = 0.10 * nhieu(40, 16, 43) + 0.05 * nhieu(120, 50, 44)
+    ranh = -0.35 * np.exp(-(dVun / 0.0016) ** 2) - 0.25 * np.exp(-(dNhanh / 0.002) ** 2) * mNhanh
+    h = (khoiKhe + go + day + nghieng + san + ranh) * (1 - ss(0.25, 0.6, H))
+    hm = mo(h, 1.0)
+    gx = (np.roll(hm, -1, 1) - np.roll(hm, 1, 1)) * 0.5; gy = (np.roll(hm, -1, 0) - np.roll(hm, 1, 0)) * 0.5
+    n = np.stack([-12.0 * gx, -12.0 * gy, np.ones_like(gx)], -1); n /= np.linalg.norm(n, axis=-1, keepdims=True)
+    Ld = np.array([-0.45, 0.35, 0.82]); Ld /= np.linalg.norm(Ld)
+    toi = np.clip(n @ Ld, 0, 1)
+    gdx = (np.roll(dChinh, -1, 1) - np.roll(dChinh, 1, 1)) * 0.5; gdy = (np.roll(dChinh, -1, 0) - np.roll(dChinh, 1, 0)) * 0.5
+    gl = np.sqrt(gdx ** 2 + gdy ** 2) + 1e-9
+    nhinKhe = np.clip((n[..., 0] * (-gdx / gl) + n[..., 1] * (-gdy / gl)) * 3.0, 0, 1)
+    nongGan = np.clip(mo(loi, 6) * 2.2, 0, 1)
+    vien = np.clip(nhinKhe * np.exp(-dChinh / 0.014) * nongGan + 0.25 * np.exp(-dChinh / 0.006) * nongGan, 0, 1) * (1 - ss(0.3, 0.6, H))
+    mau2 = mau.copy(); mau2[0] = [0.085, 0.062, 0.056]          # nen vo xam hon chut de con thay bong qua khoi vuc
+    C = np.stack([np.interp(H, moc, mau2[:, k]) for k in range(3)], -1)
+    matVo = 1 - ss(0.12, 0.3, H)
+    C = C * (1 + matVo[..., None] * ((0.3 + 1.7 * toi)[..., None] - 1))
+    C = np.clip(C + (0.35 * vien)[..., None] * np.array([0.9, 0.25, 0.04]), 0, 1).astype(np.float32)
+    luu(np.concatenate([C, vien[..., None].astype(np.float32)], -1), os.path.join(RA, "DungNham.png"))
+
+    # ANH HUONG GAN: tensor cau truc cua do sang (mau KHONG bong vo) -> huong TIEP TUYEN dang goc kep x do ket hop (RG), nhieu dai tan (B)
+    L = C0[..., 0] * 0.3 + C0[..., 1] * 0.5 + C0[..., 2] * 0.2
     Lm = mo(L, 1.5)
     gx = (np.roll(Lm, -1, 1) - np.roll(Lm, 1, 1)) * 0.5; gy = (np.roll(Lm, -1, 0) - np.roll(Lm, 1, 0)) * 0.5
     Jxx = mo(gx * gx, 6); Jyy = mo(gy * gy, 6); Jxy = mo(gx * gy, 6)

@@ -2,7 +2,8 @@
 // long cam vang - lap lien mach) to theo toa do the gioi XZ, lop gan + lop loang mo troi cham khac huong + nhip sang toi; khong nhan sang (tu phat).
 // Anh VE LAI cung ngay (nguoi dung: "duong dung nham con thang va tron qua"): gan Voronoi be meo nhieu tang (lom chom), do rong doi
 // theo cho (phinh / that / doan nguoi), nhanh nut phu, vung nong chay, MAU THEO DO NONG (trang vang -> cam -> do sam loang vao mep vo)
-// - xem CongCu/Blender/dung_nham_gan.py.
+// - xem CongCu/Blender/dung_nham_gan.py. Lan ba (nguoi dung chon muc 3 + 5): VO SAN (ban do do cao: tang nho khoi khe, go mep, nep day
+// thung, ranh vun -> do bong noi khoi nuong vao mau) + alpha = anh lua hat len mep vo (dap theo dot sang), va GAN UON LUON cham.
 // Suong mu: chi ap MOT PHAN (_SuongMu) - suong dem phu kin thi dung nham o xa chim vao mau xanh dem, mat cam giac dia nguc.
 //
 // DUNG NHAM CHAY THEO CAC DUONG GAN (05/10/2026, nguoi dung: "cho thay ro cac dong dung nham dang chuyen dong va chay"; chon "chay
@@ -27,6 +28,10 @@ Shader "Diablo25D/DungNham"
         _TocChay ("Toc do chay theo gan (m/s) - nguoi dung chon 0,8 qua anh dong menu 111b", Float) = 0.8
         _QuangChuKy ("Quang troi moi chu ky flow map (m)", Float) = 2.0
         _DoChay ("Do ro cua dot sang chay (0 = hinh cu)", Range(0,1)) = 1
+        _AnhVien ("Anh lua hat len mep vo (alpha anh)", Float) = 0.6
+        _MauVien ("Mau anh lua tren mep vo", Color) = (1, 0.38, 0.06, 1)
+        _UonGan ("Do uon gan (m, do lech chuan)", Float) = 0.25
+        _TocUon ("Toc troi nhieu uon gan (m/s)", Float) = 0.4
     }
     SubShader
     {
@@ -40,7 +45,8 @@ Shader "Diablo25D/DungNham"
             #pragma target 3.0
             #include "UnityCG.cginc"
             sampler2D _MainTex, _HuongGan;
-            float _TiLe, _Sang, _SuongMu, _TocChay, _QuangChuKy, _DoChay;
+            float _TiLe, _Sang, _SuongMu, _TocChay, _QuangChuKy, _DoChay, _AnhVien, _UonGan, _TocUon;
+            fixed4 _MauVien;
             float4 _TroiA, _TroiB;
             float _DN_ThoiGian;
             struct v2f { float4 pos : SV_POSITION; float3 w : TEXCOORD0; UNITY_FOG_COORDS(1) };
@@ -56,7 +62,8 @@ Shader "Diablo25D/DungNham"
             // Mot lop dung nham: anh + dot sang chay doc gan. uv = toa do o anh, uvMoiMet = so o anh moi met cua lop nay.
             fixed3 LopChay(float2 uv, float uvMoiMet, float2 D, float t)
             {
-                fixed3 c = tex2D(_MainTex, uv).rgb;
+                fixed4 c4 = tex2D(_MainTex, uv);
+                fixed3 c = c4.rgb;
                 float3 h = tex2D(_HuongGan, uv).rgb;
                 float2 v2 = h.rg * 2.0 - 1.0;
                 float ketHop = saturate(length(v2));
@@ -85,6 +92,9 @@ Shader "Diablo25D/DungNham"
                 float dot_ = smoothstep(0.38, 0.82, n);
                 c *= lerp(1.0, 0.30 + 1.55 * dot_, matNa);
                 c += matNa * dot_ * dot_ * fixed3(0.60, 0.42, 0.18);
+                // ANH LUA HAT LEN MEP VO (alpha anh = mat doc nhin ve khe nong, nuong san tu ban do do cao vo): dap theo dot sang
+                // dang chay qua khe ben canh (nhieu cung cho, co ~2,4 m nen gan khe = dot sang cua khe ay)
+                c += c4.a * _MauVien.rgb * _AnhVien * lerp(0.7, 0.25 + 1.2 * dot_, _DoChay);
                 return c;
             }
 
@@ -98,7 +108,13 @@ Shader "Diablo25D/DungNham"
                 float cs = cos(lech), sn = sin(lech);
                 D = float2(D.x * cs - D.y * sn, D.x * sn + D.y * cs);
 
-                fixed3 a = LopChay((q + _TroiA.xy * t) * _TiLe, _TiLe, D, t);
+                // GAN UON LUON CHAM (06/10/2026, nguoi dung chon): be cong toa do bang nhieu co ~7 m troi cham hai huong khac nhau ->
+                // gan lac nhe, "tho"; anh dung nham VA anh huong gan cung doc toa do da be nen dong chay van khop gan
+                float2 qu = q * 0.35;
+                float ux = tex2D(_HuongGan, (qu + float2(0.8, 0.6) * _TocUon * t) * _TiLe).b - 0.5;
+                float uy = tex2D(_HuongGan, (qu + float2(31.7, 12.3) + float2(-0.6, 0.8) * _TocUon * t) * _TiLe).b - 0.5;
+                float2 uvA = (q + _TroiA.xy * t + float2(ux, uy) * (_UonGan / 0.22)) * _TiLe;   // nhieu B lech chuan 0,22
+                fixed3 a = LopChay(uvA, _TiLe, D, t);
                 // LOP DUOI chi con la VET LOANG DO MO (05/10/2026, nguoi dung chon): truoc la lop gan thu hai dan cheo lop tren -> nhin
                 // nhu tam luoi. Nay doc mip rat mo (~1,4 m) cua chinh anh: chi con quang do am o duoi vo, khong con duong gan nao.
                 fixed3 b = tex2Dlod(_MainTex, float4((q * 0.73 + float2(17.3, 5.1) + _TroiB.xy * t) * _TiLe, 0, 5.0)).rgb;

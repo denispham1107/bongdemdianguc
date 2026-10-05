@@ -65,6 +65,80 @@ public static class ThuDungNhamChay
             }
             kiem(m25.TocTrungVi >= 2f * m08.TocTrungVi, "toc 2,5 khong nhanh hon ro so voi 0,8");
         }
+        // ---- C. ANH LUA HAT LEN MEP VO (muc 3, 06/10/2026): tach phan anh vien = chup _AnhVien that tru chup _AnhVien 0 CUNG khung;
+        // no phai dap theo thoi gian (theo dot sang chay qua khe) - doi chung _DoChay 0: anh vien dung yen ----
+        {
+            var tam = new Vector2(0f, -90f);
+            var ts = new float[12]; for (int k = 0; k < ts.Length; k++) ts[k] = 30f + k * 0.2f;
+            System.Func<float, float[][]> phanVien = doChay =>
+            {
+                var m1 = new Material(matGoc); var m0 = new Material(matGoc);
+                foreach (var m in new[] { m1, m0 }) { m.SetFloat("_DoChay", doChay); m.SetFloat("_SuongMu", 0f); m.SetVector("_TroiA", Vector4.zero); m.SetVector("_TroiB", Vector4.zero); m.SetFloat("_UonGan", 0f); }
+                m0.SetFloat("_AnhVien", 0f);
+                var a1 = ChupNhieu(m1, tam, ts); var a0 = ChupNhieu(m0, tam, ts);
+                Object.DestroyImmediate(m1); Object.DestroyImmediate(m0);
+                var r = new float[ts.Length][];
+                for (int k = 0; k < ts.Length; k++) { r[k] = new float[N * N]; for (int i = 0; i < N * N; i++) r[k][i] = a1[k][i] - a0[k][i]; }
+                return r;
+            };
+            System.Func<float[][], float[]> soVien = r =>
+            {
+                // diem anh co anh vien (TB theo thoi gian > 4/255): ti le phu, do sang them TB, dao dong theo thoi gian / TB
+                int n = 0; double tong = 0, daoDong = 0;
+                for (int i = 0; i < N * N; i++)
+                {
+                    double tb = 0; for (int k = 0; k < r.Length; k++) tb += r[k][i]; tb /= r.Length;
+                    if (tb < 4f / 255f) continue;
+                    double v = 0; for (int k = 0; k < r.Length; k++) v += (r[k][i] - tb) * (r[k][i] - tb);
+                    n++; tong += tb; daoDong += System.Math.Sqrt(v / r.Length);
+                }
+                return new[] { n / (float)(N * N), n > 0 ? (float)(tong / n) : 0f, n > 0 ? (float)(daoDong / tong) : 0f };
+            };
+            var vMoi = soVien(phanVien(1f)); var vCu = soVien(phanVien(0f));
+            sb.AppendLine(string.Format("C. Anh lua tren mep vo: phu {0:P1} dien tich, sang them TB {1:F3}; dao dong theo thoi gian / TB {2:F3} (doi chung khong chay {3:F3})", vMoi[0], vMoi[1], vMoi[2], vCu[2]));
+            kiem(vMoi[0] > 0.04f && vMoi[0] < 0.35f, "anh lua tren mep vo phu dien tich bat thuong");
+            kiem(vMoi[2] > 0.15f && vMoi[2] > 4f * vCu[2], "anh lua tren mep vo khong dap theo dot sang");
+        }
+        // ---- D. GAN UON LUON CHAM (muc 5): hai khung cach DUNG mot nhip sang toi (2 pi / 0,8 = 7,854 s: nhip giong het), tat chay /
+        // vo troi; doi chung _UonGan 0. Do: chenh lech tren gan / sang TB, va dich chuyen cua gan (khop tung o) ----
+        {
+            var tam = new Vector2(0f, -90f);
+            float chuKyNhip = 2f * Mathf.PI / 0.8f;
+            var ts = new[] { 40f, 40f + chuKyNhip };
+            System.Func<float, float[]> doUon = uon =>
+            {
+                var m = new Material(matGoc);
+                m.SetFloat("_DoChay", 0f); m.SetFloat("_SuongMu", 0f); m.SetVector("_TroiA", Vector4.zero); m.SetVector("_TroiB", Vector4.zero); m.SetFloat("_UonGan", uon);
+                var a = ChupNhieu(m, tam, ts); Object.DestroyImmediate(m);
+                var sx = (float[])a[0].Clone(); System.Array.Sort(sx); float nguong = sx[(int)(sx.Length * 0.8f)];
+                double chenh = 0, tb = 0; int n = 0;
+                for (int i = 0; i < N * N; i++) if (a[0][i] >= nguong) { n++; chenh += System.Math.Abs(a[1][i] - a[0][i]); tb += a[0][i]; }
+                // dich chuyen gan: moi o 32 px tren gan, tim (dx, dy) trong +-16 px khop nhat (tong sai lech tuyet doi nho nhat)
+                var dich = new List<float>(); int ban = 16, tamD = 16;
+                for (int cy = 40; cy < N - 40; cy += 24)
+                    for (int cx = 40; cx < N - 40; cx += 24)
+                    {
+                        if (a[0][cy * N + cx] < nguong) continue;
+                        double tot = double.MinValue; int bx = 0, by = 0;
+                        for (int sy = -tamD; sy <= tamD; sy++)
+                            for (int sx2 = -tamD; sx2 <= tamD; sx2++)
+                            {
+                                double s2 = 0;
+                                for (int y = cy - ban; y < cy + ban; y++) { int ha = y * N, hb = (y + sy) * N + sx2; for (int x = cx - ban; x < cx + ban; x++) s2 -= System.Math.Abs(a[0][ha + x] - a[1][hb + x]); }
+                                if (s2 > tot) { tot = s2; bx = sx2; by = sy; }
+                            }
+                        dich.Add(new Vector2(bx, by).magnitude / (N / CoVung));
+                    }
+                dich.Sort();
+                return new[] { (float)(chenh / System.Math.Max(tb, 1e-9)), dich.Count > 0 ? dich[dich.Count / 2] : 0f, dich.Count > 0 ? dich[(int)(dich.Count * 0.9f)] : 0f, dich.Count };
+            };
+            var uMoi = doUon(matGoc.GetFloat("_UonGan")); var uCu = doUon(0f);
+            sb.AppendLine(string.Format("D. Gan uon luon (_UonGan {0} m, troi {1} m/s), sau {2:F2} s: chenh lech tren gan / sang {3:F3} (doi chung {4:F3}); gan dich trung vi {5:F2} m, 90% {6:F2} m ({7} o; doi chung {8:F2} / {9:F2} m)",
+                matGoc.GetFloat("_UonGan"), matGoc.GetFloat("_TocUon"), chuKyNhip, uMoi[0], uCu[0], uMoi[1], uMoi[2], uMoi[3], uCu[1], uCu[2]));
+            kiem(uCu[0] < 0.02f && uCu[1] < 0.05f, "doi chung (khong uon) van thay doi - phep do khong sach");
+            kiem(uMoi[0] > 5f * uCu[0] + 0.05f, "gan khong uon luon theo thoi gian");
+            kiem(uMoi[1] >= 0.08f && uMoi[2] <= 1.2f, "do uon gan qua nho hoac qua lon");
+        }
         sb.AppendLine(loi == 0 ? "KET QUA: 0 loi" : "KET QUA: " + loi + " loi");
         File.WriteAllText(Ra, sb.ToString());
         Debug.Log(sb.ToString());
@@ -87,6 +161,53 @@ public static class ThuDungNhamChay
         }
     }
 
+    /// <summary>Chup do sang (truc giao nhin thang xuong vung 12 x 12 m) cua vat lieu o cac thoi diem shader cho truoc.</summary>
+    static float[][] ChupNhieu(Material mat, Vector2 tam, float[] ts)
+    {
+        var ps = EditorSceneManager.NewPreviewScene();
+        var rt = new RenderTexture(N, N, 24, RenderTextureFormat.ARGB32);
+        var tx = new Texture2D(N, N, TextureFormat.RGB24, false);
+        var ra = new float[ts.Length][];
+        try
+        {
+            var go = new GameObject("TAM_DungNham");
+            SceneManager.MoveGameObjectToScene(go, ps);
+            var me = new UnityEngine.Mesh();
+            float h = CoVung * 0.6f, y = DiaNguc.MucDungNham;
+            me.vertices = new[] { new Vector3(tam.x - h, y, tam.y - h), new Vector3(tam.x - h, y, tam.y + h), new Vector3(tam.x + h, y, tam.y + h), new Vector3(tam.x + h, y, tam.y - h) };
+            me.triangles = new[] { 0, 1, 2, 0, 2, 3 };
+            me.RecalculateBounds();
+            go.AddComponent<MeshFilter>().sharedMesh = me;
+            go.AddComponent<MeshRenderer>().sharedMaterial = mat;
+            go.layer = 31;
+            var goCam = new GameObject("TAM_CamDungNham");
+            SceneManager.MoveGameObjectToScene(goCam, ps);
+            var cam = goCam.AddComponent<Camera>();
+            cam.enabled = false; cam.scene = ps; cam.orthographic = true; cam.orthographicSize = CoVung * 0.5f;
+            cam.cullingMask = 1 << 31; cam.clearFlags = CameraClearFlags.SolidColor; cam.backgroundColor = Color.black;
+            cam.transform.position = new Vector3(tam.x, y + 20f, tam.y); cam.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
+            cam.nearClipPlane = 1f; cam.farClipPlane = 40f; cam.allowHDR = false; cam.allowMSAA = false;
+            cam.targetTexture = rt;
+            for (int k = 0; k < ts.Length; k++)
+            {
+                Shader.SetGlobalFloat("_DN_ThoiGian", ts[k]);
+                cam.Render();
+                RenderTexture.active = rt; tx.ReadPixels(new Rect(0, 0, N, N), 0, 0); tx.Apply(false); RenderTexture.active = null;
+                var px = tx.GetPixels32(); var l = new float[N * N];
+                for (int i = 0; i < l.Length; i++) l[i] = (px[i].r * 0.3f + px[i].g * 0.5f + px[i].b * 0.2f) / 255f;
+                ra[k] = l;
+            }
+            cam.targetTexture = null;
+        }
+        finally
+        {
+            EditorSceneManager.ClosePreviewScene(ps);
+            Object.DestroyImmediate(rt); Object.DestroyImmediate(tx);
+            Shader.SetGlobalFloat("_DN_ThoiGian", 0f);
+        }
+        return ra;
+    }
+
     static KetQua DoMotMuc(Material matGoc, Vector2 tam, float toc, float doChay)
     {
         var kq = new KetQua { toc = toc, doChay = doChay };
@@ -98,6 +219,7 @@ public static class ThuDungNhamChay
         // TAT vo troi cham (0,13 m/s) ca hai ban: anh ve lai co vo nhieu chi tiet -> tuong quan bam vao vo troi, do ra 0,18-0,2 m/s
         // (dung bang toc vo) thay vi dot sang chay theo gan. Phep do nay chi do phan CHAY THEO GAN.
         mat.SetVector("_TroiA", Vector4.zero); mat.SetVector("_TroiB", Vector4.zero);
+        mat.SetFloat("_UonGan", 0f);   // gan uon luon (muc 5) do rieng o phan D
         var rt = new RenderTexture(N, N, 24, RenderTextureFormat.ARGB32);
         var tx = new Texture2D(N, N, TextureFormat.RGB24, false);
         var khung = new float[SoKhung][];

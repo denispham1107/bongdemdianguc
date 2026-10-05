@@ -9391,6 +9391,27 @@ Nguyên nhân thẳng / trơn: ảnh cũ là cạnh Voronoi (đoạn thẳng), r
 1,08–1,14 / 1,78–2,02 m/s ở 0,8 / 1,5 / 2,5. Ảnh trong game ở cùng góc (`PlayTestShots/dungnham_gan_truoc_sau.png`, trên cũ / dưới mới; ảnh động
 `dungnham_gan_moi_0.8.gif`): độ sáng TB giữ (đỏ 51 → 51 / 46 → 44, điểm sáng > 150: 0,2 → 0,3% / 0,6 → 0,6%), ngả đỏ hơn.
 
+#### Vỏ dung nham sần + ánh lửa hắt lên mép vỏ, gân uốn lượn chậm (06/10/2026)
+
+**Người dùng:** "làm tiếp 3 và 5" (mục 3: vỏ sần sùi, mép tảng nhô, ánh lửa từ khe hắt lên; mục 5: gân uốn lượn chậm).
+
+- **(3) Vỏ sần** — `dung_nham_gan.py` thêm BẢN ĐỒ ĐỘ CAO vỏ: tảng nhô dần khỏi khe (0,9 m), gờ mép (~0,25 m), nếp dây thừng song song mép khe (bước
+  0,55 m, chỉ ở vài tảng), mỗi vùng tảng nghiêng một kiểu, mặt sần, rãnh vụn → pháp tuyến → đổ bóng nổi khối (đèn cố định từ trên chéo) NƯỚNG vào
+  màu vỏ (0,3 + 1,7 × lambert; nền vỏ xám hơn chút 0,085). **Kênh ALPHA** = ánh lửa: mặt dốc nhìn về khe nóng × gần khe × độ nóng khe bên cạnh;
+  0,35 phần nướng sẵn vào màu (đứng yên vẫn thấy), shader cộng thêm `_AnhVien` 0,6 × `_MauVien` × (0,25 + 1,2 × đợt sáng) → mép vỏ **đập theo đợt sáng
+  đang chảy qua khe** (nhiễu đợt sáng cỡ ~2,4 m nên cạnh khe = đợt sáng của khe ấy). Ảnh hướng gân giữ nguyên (tính từ màu KHÔNG bóng vỏ — sạch hơn).
+  ⚠️ Bản đầu chi tiết nhỏ (nếp 19 cm, gờ 13 cm): nhìn ảnh gốc rất đẹp nhưng trong game nhỏ hơn 1 điểm ảnh ở cự ly mép vực → mip gộp mất. Phải làm
+  khối LỚN.
+- **(5) Gân uốn lượn** — shader bẻ toạ độ lớp gân bằng nhiễu B cỡ ~7 m trôi `_TocUon` 0,4 m/s theo hai hướng khác nhau (x, y riêng), độ lệch chuẩn
+  `_UonGan` 0,25 m; ảnh dung nham VÀ ảnh hướng gân đọc cùng toạ độ đã bẻ nên dòng chảy vẫn khớp gân. +2 lần đọc ảnh (tổng ~7).
+
+**Đo — menu 111** (0 lỗi; phần A/B dòng chảy nay tắt cả uốn gân để đo riêng): **C** tách ánh lửa = chụp `_AnhVien` thật trừ `_AnhVien` 0 cùng khung:
+phủ 9,4% diện tích, sáng thêm TB 0,031, **dao động theo thời gian / TB 0,42** (đối chứng không chảy 0,08 — chỉ còn nhịp sáng tối chung). **D** hai khung
+cách đúng một nhịp sáng tối (7,854 s) để nhịp không lẫn vào: chênh trên gân / sáng 0,445 (đối chứng `_UonGan` 0: 0,000), gân dịch trung vị **0,36 m**,
+90% ≤ 0,55 m. Độ sần trong ảnh (lòng tảng vỏ, lệch so với mờ 2 px): 0,80 → 2,49 /255 (×3,1). **Trong game** (góc gần, lòng vỏ xa chỗ sáng ≥ 7 px): chi tiết
+2,96 → 3,66 /255 (+24%) — hai lớp khói đỏ `SuongVuc` (−12 / −19 m) phủ lên nén các mảng tối; muốn vỏ rõ hơn nữa phải mỏng khói (người dùng quyết).
+Ảnh `PlayTestShots/dungnham_vo_truoc_sau.png` (trên trước, dưới sau), động `dungnham_vo_uon_0.8.gif`.
+
 ### Bị cháy: lửa mỏng bớt — mật độ 0,4 (05/10/2026)
 
 **Người dùng:** "Hiệu ứng thiêu đốt trên các nhân vật người chơi và trên quái vật: cho giảm bớt mật độ lửa phủ trên người, hiện đang nhiều quá

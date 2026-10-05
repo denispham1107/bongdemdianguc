@@ -176,6 +176,10 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
   hai): `CongCu/Blender/dung_nham_gan.py` (Blender MCP numpy, chạy bằng timers ~3,5 phút) — cạnh Voronoi trên toạ độ bẻ méo 3 tầng, độ rộng đổi theo
   chỗ, nhánh nứt phụ, vũng nóng chảy, bảng màu theo độ nóng; `HuongGan.png` tính lại. Shader: lớp thứ hai = mip 5 mờ ×0,18 (quầng đỏ dưới vỏ), ~5 lần
   đọc ảnh mỗi điểm. Menu 111 TẮT vỏ trôi khi đo (vỏ mới nhiều chi tiết — tương quan bám vào vỏ trôi 0,13 m/s): 0 lỗi, ×18 đối chứng, xuôi dòng 69–86%.
+  ⚠️ **06/10/2026: VỎ SẦN + ÁNH LỬA MÉP VỎ + GÂN UỐN LƯỢN** (người dùng chọn mục 3 + 5): bản đồ độ cao vỏ (gờ mép, nếp dây thừng 0,55 m, tảng nghiêng —
+  phải khối LỚN, chi tiết 13–19 cm bị mip gộp mất ở cự ly chơi) nướng bóng vào màu; ALPHA `DungNham.png` = ánh lửa mặt dốc nhìn về khe, shader
+  `_AnhVien` cho đập theo đợt sáng; uốn gân `_UonGan` 0,25 m / `_TocUon` 0,4 m/s (bẻ toạ độ cả ảnh lẫn hướng gân). Menu 111 C: ánh mép dao động ×5 đối
+  chứng; D: gân dịch 0,36 m / 7,85 s (đối chứng 0). Trong game vỏ chỉ rõ hơn +24% vì khói `SuongVuc` nén mảng tối.
 - **LUẬT ĐỢT QUÁI** (luật duy nhất của `GameDirector` từ khi xoá Act1): mỗi đợt sinh quanh **từng**
   người chơi bốn con (bộ xương · phù thủy · quỷ cây · quỷ dữ), giết hết → 30 giây → đợt sau cộng dồn thêm quái bất kì
   (+1, +3, +6…) và mạnh thêm 5% máu · sát thương mỗi đợt. ⚠️ **Sát thương quái Act2 = 0,65 × 1,05^(đợt−1)** (27/09/2026 người dùng: đợt đầu −35%, máu giữ
