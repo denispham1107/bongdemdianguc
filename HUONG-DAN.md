@@ -9283,9 +9283,35 @@ trống không.
 - bản sao quái (`mauDoMayKhacQuyet`) ở y −12: máu 70 → 70;
 - nhân vật ra ngoài mép (x 68,6): qua ngưỡng 0,77 s, chạm đáy 1,50 s; máu 1000 / 800 / 600 / 400 / 200 mỗi giây, **chết 4,98 s**.
 
-**Chưa làm — phần hình** (vách vực đá quanh mép đất, biển dung nham + khói lửa + ánh đỏ hắt lên vách, các đoạn rào sập): theo quy tắc phải dựng
-bằng Blender MCP; phiên này Blender MCP mất kết nối (hết giờ chờ) — đã nhờ người dùng mở lại. Tới lúc ấy hàng rào vẫn kín: chỉ rơi được khi Tốc
-biến / bị đẩy ra ngoài rào.
+**Phần hình** (cùng ngày, sau khi người dùng kết nối lại Blender MCP — lần đầu `uvx` tải gói mới `mcp-for-blender` quá 30 s nên hết giờ; chạy
+thử một lần ngoài phiên cho bộ nhớ đệm nóng rồi kết nối lại được). File `CongCu/Blender/dia_nguc.blend` (scene `DiaNguc`: hình; `DN_NuongAnh`: nướng ảnh).
+
+- **4 đoạn rào sập.** Hàng rào là lưới `HangRaoRong` (chép bằng `bpy.data.libraries.load` từ `hang_rao_rong.blend`, không mở file): cột cách 5,08 m,
+  mỗi ô = bệ đá 4,57 × 0,38 × 1,1 m + gờ + 17 song + 2 thanh ngang + 17 mũi song, chân rào theo độ cao đất. Bỏ hẳn một ô mỗi cạnh (tránh cổng ở Unity
+  x +12,7), đắp hai mẩu bệ gãy sát cột (dài 0,55–0,9 m, càng xa cột càng thấp, mép gãy nhiễu) vào CHÍNH lưới rào → có va chạm; khe đi được ~3 m. Đối
+  tượng riêng `RaoSap` (không va chạm): mảng song lật ra ngoài ~80°, kênh một đầu, bỏ ~30% song / mũi, đá vụn, vài song rơi. Toạ độ Unity: nam (22,9;
+  −66,4), bắc (−28; 66,4), tây (−66,4; −12,7), đông (66,4; 33,1).
+  - Trước khi ghi đè `hang_rao_rong.fbx`: xuất thử bản CHƯA sửa → Unity: 89 960 đỉnh, cùng khung bao, cùng góc 270 / tỉ lệ 100 — cách xuất mặc định khớp.
+  - ⚠️ Lưới rào gốc KHÔNG có UV (đá dùng `DaMoTriplanar`); `uv.verify()` khi đắp mẩu gãy tạo luôn một lớp UV cho cả lưới — đã gỡ.
+- **Vách vực** `VachVuc`: độ cao mép đất đọc từ Unity (`SampleHeight` mỗi 0,5 m quanh 4 cạnh, đổi sang Blender x = −Unity x, y = −Unity z), mỗi 1 m một
+  cột, 20 hàng tới −27,5 m: mặt đá lởm chởm (nhiễu tăng theo độ sâu, gờ tầng), chân loe dốc đá vụn; hàng mép giấu dưới đất 0,6 m bịt khe. 11 880 đỉnh.
+- **Vách ngoài** `VachNgoai`: vòng vuông bo góc ở ±112 m quay vào trong, −27,5 → +6…+12 m (đỉnh nhấp nhô) — ở góc máy 3D tự do thành dãy núi đen.
+  `CotDa`: 14 cột đá trong dung nham.
+- Màu đỉnh (nướng): R ánh dung nham hắt lên (mạnh ở chân), G vết nứt dung nham, B tối ở hốc.
+- **Ảnh lặp liền mạch** (render mặt phẳng trực giao, nhiễu / Voronoi 4D trên hình xuyến: (cos 2πu, sin 2πu, cos 2πv) + W = sin 2πv): `DungNham.png`
+  (vỏ nguội chia mảng, khe nứt mảnh, vũng lỏng cam vàng — bản đầu mảng nhỏ đều như da hươu cao cổ), `DaBazan.png` (đá phân tầng — bản đầu như nền
+  đá cuội), `KhoiVuc.png`.
+- Unity (`DiaNguc.DungHinh`, nạp từ `Resources/DiaNguc` lúc vào trận, không sửa scene): `S_VachDiaNguc` (triplanar + phát sáng theo màu đỉnh, vết nứt
+  thở nhẹ), mặt dung nham 480 m `S_DungNham` (2 lớp trôi + loang cỡ ~110 m phá thế lặp, sương mù chỉ áp 45%), **hai lớp khói** `S_SuongVuc` ở −12 / −19 m,
+  tàn lửa + khói đỏ sẫm dọc 4 cạnh. Vách / dung nham tắt đổ bóng.
+
+**Bẫy đã vấp:** (1) kiểm hướng mặt bằng MỘT mặt (lại đúng hàng mép giấu gần nằm ngang) → cả vòng vách quay vào trong, từ dưới vực nhìn xuyên thấy mặt
+dưới bản đồ — nay cộng hướng mọi mặt theo diện tích; (2) vòng vách ngoài quên gán độ cao → nằm bẹp ở 0 (vệt đen vắt trên dung nham); (3) dung nham
+sáng 1,35 + ô lặp 22 m → tấm thảm sáng sát chân rào, không thấy sâu → tối 0,85, ô 45 m, loang lớn, thêm khói giữa vực.
+
+**Đo — menu 110** (0 lỗi): ngoài các mục trên — **E** đi bộ ra qua khe rào sập phía nam: tới z −70,6 rồi rơi (y −7,4); **F** đối chứng ra chỗ rào nguyên:
+dừng ở z −65,7, không rơi; nhân vật ngoài mép chết 4,87 s. Ảnh `PlayTestShots/dianguc_25d.png` (góc 2.5D), `dianguc_3d.png`, `dianguc_ngoai.png` (từ dưới
+vực), `dianguc_canh.png`. Menu 56 (đợt quái): 0 lỗi.
 
 ### Bị cháy: lửa mỏng bớt — mật độ 0,4 (05/10/2026)
 

@@ -1,7 +1,11 @@
 DiaNguc trong canh: True; muc dung nham -26 m, nguong roi -6 m, 20 % mau toi da / giay
 B. doi chung dung TRONG ban do (x 60) 3 s: mau 1000 -> 1000, y 1.86
-C. Bo xuong (do don 45 %) dat ngoai mep z 69,5: qua nguong sau 0.82 s, thap nhat y -26.42, chet True, song 4.84 s sau khi qua nguong, ke ha NGUOI CHOI
+C. Bo xuong (do don 45 %) dat ngoai mep z 69,5: qua nguong sau 0.83 s, thap nhat y -26.42, chet True, song 4.98 s sau khi qua nguong, ke ha NGUOI CHOI
 D. ban sao quai o y -12.0: mau 70 -> 70
-A. nhan vat (mau 1000) dat ngoai mep x 68,6: qua nguong sau 0.77 s, cham day dung nham sau 1.50 s, thap nhat y -26.42; chet True sau 4.98 s tu luc qua nguong; mau: 0.0s:1000 1.0s:800 2.0s:600 3.0s:400 4.0s:200
+Chup: PlayTestShots/dianguc_25d / 3d / ngoai / canh .png
+Hinh dia nguc: True, 4 luoi; dung nham True
+F. doi chung qua rao NGUYEN: di ra phia nam 3 s tu z -63,5 (x 2.545): z xa nhat -65.71, y thap nhat 2.42
+E. QUA KHE RAO SAP: di ra phia nam 3 s tu z -63,5 (x 22.885): z xa nhat -70.58, y thap nhat -7.44
+A. nhan vat (mau 1000) dat ngoai mep x 68,6: qua nguong sau 0.75 s, cham day dung nham sau 1.49 s, thap nhat y -26.42; chet True sau 4.87 s tu luc qua nguong; mau: 0.0s:1000 1.0s:800 2.0s:600 3.0s:400 4.0s:200
 So lan roi DiaNguc dem: 3
 so loi ghi nhan = 0

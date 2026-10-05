@@ -129,6 +129,59 @@ public static class ThuDiaNguc
                 Object.Destroy(g);
             }
 
+            // ---- CHUP HINH dia nguc (may quay chinh, co bloom) ----
+            {
+                var cam = Camera.main;
+                var rig = cam.GetComponent<CameraRig>(); if (rig != null) rig.enabled = false;
+                Vector3 khe = new Vector3(22.885f, 0f, -66.41f); khe.y = DatY(khe);
+                DatCho(toi, new Vector3(22.885f, DatY(new Vector3(22.885f, 0, -61f)) + 0.1f, -61f));
+                toi.transform.rotation = Quaternion.Euler(0f, 180f, 0f);
+                yield return new WaitForSeconds(0.5f);
+                var goc = new[] {
+                    new { ten = "25d", pos = toi.transform.position + new Vector3(0f, 10.6f, 9.5f), nhin = toi.transform.position + new Vector3(0f, -1.5f, -3f) },
+                    new { ten = "3d", pos = toi.transform.position + new Vector3(0f, 3.9f, 7.5f), nhin = toi.transform.position + new Vector3(0f, 0.5f, -12f) },
+                    new { ten = "ngoai", pos = new Vector3(22.885f, -12f, -105f), nhin = new Vector3(22.885f, -6f, -66f) },
+                    new { ten = "canh", pos = new Vector3(-10f, 22f, -42f), nhin = new Vector3(10f, -14f, -82f) },
+                };
+                foreach (var g in goc)
+                {
+                    cam.transform.position = g.pos; cam.transform.LookAt(g.nhin);
+                    yield return new WaitForEndOfFrame();
+                    Chup(cam, "PlayTestShots/dianguc_" + g.ten + ".png");
+                    yield return null;
+                }
+                if (rig != null) rig.enabled = true;
+                sb.AppendLine("Chup: PlayTestShots/dianguc_25d / 3d / ngoai / canh .png");
+                var hinh = GameObject.Find("HinhDiaNguc");
+                sb.AppendLine("Hinh dia nguc: " + (hinh != null) + (hinh != null ? ", " + hinh.GetComponentsInChildren<MeshRenderer>().Length + " luoi" : "") + "; dung nham " + (GameObject.Find("BienDungNham") != null));
+                kiem(hinh != null && GameObject.Find("BienDungNham") != null, "thieu hinh dia nguc (vach / dung nham)");
+            }
+
+            // ---- E. di ra qua KHE RAO SAP (canh nam) / F. doi chung: di ra cho rao con nguyen ----
+            foreach (bool quaKhe in new[] { false, true })
+            {
+                float x = quaKhe ? 22.885f : 2.545f;
+                Vector3 p = new Vector3(x, 0f, -63.5f); p.y = DatY(p) + 0.1f;
+                DatCho(toi, p);
+                var cc = toi.GetComponent<CharacterController>();
+                yield return new WaitForSeconds(0.3f);
+                float zMin = 99f, yMin = 99f, t0 = Time.time, hp0 = mau.health;
+                while (Time.time - t0 < 3f && !mau.IsDead)
+                {
+                    if (cc.enabled) cc.Move(new Vector3(0f, 0f, -4f) * Time.deltaTime);
+                    zMin = Mathf.Min(zMin, toi.transform.position.z); yMin = Mathf.Min(yMin, toi.transform.position.y);
+                    if (quaKhe && yMin < DiaNguc.NguongRoi) break;
+                    yield return null;
+                }
+                sb.AppendLine(string.Format("{0}: di ra phia nam 3 s tu z -63,5 (x {1}): z xa nhat {2:F2}, y thap nhat {3:F2}", quaKhe ? "E. QUA KHE RAO SAP" : "F. doi chung qua rao NGUYEN", x, zMin, yMin));
+                if (quaKhe) kiem(yMin < DiaNguc.NguongRoi, "di qua khe rao sap ma khong roi xuong vuc");
+                else kiem(zMin > -66.6f && yMin > -1.5f, "rao con nguyen ma van di lot ra ngoai");
+                // keo nguoi choi ve trong, hoi mau (de muc A do lai tu dau)
+                DatCho(toi, new Vector3(60f, DatY(new Vector3(60f, 0f, 0f)) + 0.2f, 0f));
+                yield return new WaitForSeconds(DiaNguc.Nhip * 2f);
+                mau.health = mau.maxHealth;
+            }
+
             // ---- A. nhan vat ra ngoai mep ban do ----
             {
                 Vector3 p = new Vector3(68.6f, 0f, 0f); p.y = DatY(new Vector3(66f, 0f, 0f)) + 0.3f;
@@ -163,6 +216,17 @@ public static class ThuDiaNguc
         EditorSettings.enterPlayModeOptionsEnabled = truocBat; EditorSettings.enterPlayModeOptions = truocOpt;
         EditorApplication.isPlaying = false;
         EditorApplication.update += TraLaiCanh;
+    }
+
+    static void Chup(Camera cam, string duong)
+    {
+        var rt = RenderTexture.GetTemporary(1280, 720, 24, RenderTextureFormat.ARGB32);
+        var cu = cam.targetTexture; cam.targetTexture = rt; cam.Render(); cam.targetTexture = cu;
+        var a = RenderTexture.active; RenderTexture.active = rt;
+        var tx = new Texture2D(1280, 720, TextureFormat.RGB24, false); tx.ReadPixels(new Rect(0, 0, 1280, 720), 0, 0); tx.Apply();
+        RenderTexture.active = a; RenderTexture.ReleaseTemporary(rt);
+        File.WriteAllBytes(duong, tx.EncodeToPNG());
+        Object.Destroy(tx);
     }
 
     static void TraLaiCanh()
