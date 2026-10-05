@@ -99,6 +99,68 @@ public class NguoiChoiHoatHinh : MonoBehaviour
     /// <summary>Tay day ra truoc bao nhieu (0..1) o khung vua roi - cho phep thu doc.</summary>
     public float MucDayTay { get; private set; }
 
+    // ================================================================
+    //  CHAN CHAM DAT (nguoi dung 05/10/2026: "rat nhieu cho 2 chan nhan vat dung van con nhu bay lo lung tren mat dat")
+    // ================================================================
+    //
+    // Menu 109 do 40 cho trong Act2 (ban cu): goc nhan vat LUON cao hon dat 0,08 m (skinWidth cua CharacterController - day con nhong
+    // dat dung o goc), tu the dung yen la khung BUOC DO cua clip di (mot chan nhac ~5 cm), dat doc thi mot chan ho toi 0,155 m.
+    // Sua o day (dung chung cho nhan vat cua minh, ban sao nguoi choi khac va nhan vat trung bay o man chinh), moi khung, SAU moi tu the:
+    //   1. DUNG YEN (tron theo 1 - mucDi): chan ve tu the dung cua model (bind pose, ghi cung GocChanBind) khep bot chu A - hai chan THANG,
+    //      bang nhau, ban chan phang (giong man chinh). ⚠️ Khong ngam rieng dui / cang chan thang xuong: xuong goi Meshy o bind pose da gap
+    //      48,6 do trong khi luoi chan thang, be xuong thang thi LUOI chan cong.
+    //   2. De giay moi ben = min(co chan - DeDuoiCoChan, mui chan - DeDuoiMuiChan) (do bang BakeMesh o bind pose), so voi mat dat ngay duoi
+    //      (tia, cung cac lop CharacterController va cham). HA THAN qua xuong HONG: dung yen -> ben ho NHIEU nhat cham dat, dang di -> ben
+    //      ho IT nhat cham dat (chan dang tru). Clip di ghi vi tri hong moi khung, dung yen thi TraVeTuTheChuan dat lai -> khong cong don.
+    //   3. Ben kia (dung tren dat cao hon) NHAC LEN bang IK hai doan (dui + cang chan), ban chan giu goc cu.
+
+    [Header("Chan cham dat")]
+    [Tooltip("Tat thi bo qua (vd. phep thu can tu the goc)")]
+    public bool chamDat = true;
+    [Tooltip("Dat doc: nhac chan ben dat cao (IK) + nghieng ban chan theo mat dat. Tat (man chinh) thi hai chan luon thang, bang nhau - ben dat cao lun vai cm")]
+    public bool thichNghiDoc = true;
+
+    /// <summary>Thu hep chan chu A cua bind pose ve phia thang dung (0 = nguyen bind, co chan cach 0,40 m; 1 = thang dung, 0,23 m).
+    /// 0,4 -> ~0,33 m, bang tu the cu ma nguoi dung muon giu o man chinh (0,34 m).</summary>
+    public const float HeSoKhepChan = 0.4f;
+
+    /// <summary>Xuong co chan (Foot) / mui chan (ToeBase) cao hon de giay bao nhieu khi ban chan dat phang (bind pose, BakeMesh 05/10/2026:
+    /// trai 0,1363 / 0,0348, phai 0,1328 / 0,0367).</summary>
+    public const float DeDuoiCoChan = 0.135f, DeDuoiMuiChan = 0.036f;
+
+    /// <summary>Gioi han: ha than toi da / nang than toi da / nhac mot chan toi da (m). Khe lon hon HaThanToiDa = dang o tren khong, bo qua.</summary>
+    public const float HaThanToiDa = 0.5f, NangThanToiDa = 0.15f, NhacChanToiDa = 0.3f;
+
+    /// <summary>
+    /// Goc xoay xuong chan o TU THE DUNG CUA MODEL (bind pose - luoi chan thang, ban chan phang), so voi transform cua SkinnedMeshRenderer;
+    /// [ben, khop]: ben 0 trai / 1 phai, khop UpLeg / Leg / Foot / ToeBase. Doc tu Mesh.bindposes cua Player_Sorceress trong Editor
+    /// 05/10/2026 roi GHI CUNG: luoi Meshy Read/Write TAT, ban build co the khong doc duoc bindposes (ngoai le tren WebGL = dung hinh).
+    /// </summary>
+    public static readonly Quaternion[,] GocChanBind =
+    {
+        { new Quaternion(0.99241f, 0.08686f, -0.08686f, 0.00484f), new Quaternion(0.87738f, -0.33069f, 0.33069f, -0.10719f),
+          new Quaternion(0.89397f, -0.09097f, 0.09097f, 0.42926f), new Quaternion(0.69862f, -0.10925f, 0.10925f, 0.69862f) },
+        { new Quaternion(0.99428f, -0.07553f, 0.07553f, 0.00201f), new Quaternion(0.88677f, 0.31438f, -0.31438f, -0.12634f),
+          new Quaternion(0.88656f, 0.08998f, -0.08998f, 0.44476f), new Quaternion(0.69913f, 0.10594f, -0.10594f, 0.69913f) },
+    };
+
+    readonly Transform[] duiTren = new Transform[2], cangChan = new Transform[2], banChan = new Transform[2], muiChan = new Transform[2];
+    bool coChan, daCoHaThan;
+    Transform gocLuoi;          // transform cua SkinnedMeshRenderer - he quy chieu cua GocChanBind
+    float haThan;
+    Vector3 haHongCucBo;        // do dich hong (toa do cha cua hong) da cong o khung vua roi - BatDauHoaVe tru ra
+    readonly float[] kheChan = new float[2];
+    int matNaDat;               // cac lop CharacterController va cham (tru Player, Enemy, Ignore Raycast) - tinh mot lan
+    readonly Vector3[] phapDat = { Vector3.up, Vector3.up };
+
+    /// <summary>Ban chan nghieng theo mat dat toi da (do) khi dung yen.</summary>
+    public const float GocNghiengBanChan = 30f;
+
+    /// <summary>Phep thu doc: than da ha bao nhieu (m), khe de giay - dat moi ben TRUOC khi sua (trai, phai), chan nao da nhac bao nhieu.</summary>
+    public float DoHaThan { get { return haThan; } }
+    public Vector2 KheTruocKhiSua { get; private set; }
+    public Vector2 NhacChan { get; private set; }
+
     void Awake()
     {
         if (vaCham == null) vaCham = GetComponent<CharacterController>();
@@ -112,6 +174,28 @@ public class NguoiChoiHoatHinh : MonoBehaviour
         d.transform.localPosition = new Vector3(0f, 1.25f, 0.45f);
         DiemGiatSet = d.transform;
         LuuTuTheChuan();
+        ChuanBiChan();
+    }
+
+    void ChuanBiChan()
+    {
+        var smr = GetComponentInChildren<SkinnedMeshRenderer>(true);
+        if (smr == null || hips == null) return;
+        gocLuoi = smr.transform;
+        string[] ben = { "Left", "Right" };
+        var moi = hips.GetComponentsInChildren<Transform>(true);
+        for (int i = 0; i < 2; i++)
+        {
+            foreach (var t in moi)
+            {
+                if (t.name == ben[i] + "UpLeg") duiTren[i] = t;
+                else if (t.name == ben[i] + "Leg") cangChan[i] = t;
+                else if (t.name == ben[i] + "Foot") banChan[i] = t;
+                else if (t.name == ben[i] + "ToeBase") muiChan[i] = t;
+            }
+            if (duiTren[i] == null || cangChan[i] == null || banChan[i] == null || muiChan[i] == null) return;
+        }
+        coChan = true;
     }
 
     static Transform TimBanTay(Transform cangTay)
@@ -158,6 +242,8 @@ public class NguoiChoiHoatHinh : MonoBehaviour
         {
             qRoiKhoi[i] = moiKhop[i].localRotation;
             pRoiKhoi[i] = moiKhop[i].localPosition;
+            // do ha than cua khung truoc khong tinh la "tu the luc roi khoi" - khong thi luc hoa ve than bi ha HAI lan
+            if (moiKhop[i] == hips) pRoiKhoi[i] -= haHongCucBo;
         }
         veChuanTimer = 0f;
     }
@@ -318,7 +404,120 @@ public class NguoiChoiHoatHinh : MonoBehaviour
         }
 
         HoaVe();
+        ChanChamDat(Time.deltaTime);
         CapNhatDiemGiatSet();
+    }
+
+    /// <summary>Xem phan "CHAN CHAM DAT" o dau lop.</summary>
+    void ChanChamDat(float dt)
+    {
+        haHongCucBo = Vector3.zero;
+        if (!chamDat || !coChan) return;
+        // Bi danh nga / hat tung: model con dang bi lat - de nguyen
+        var nga = GetComponent<BiDanhNga>(); var hat = GetComponent<BiHatTung>();
+        if ((nga != null && nga.DangNga) || (hat != null && hat.DangBay)) { daCoHaThan = false; return; }
+
+        float w = 1f - Mathf.Clamp01(mucDi);
+        if (w > 0.001f) DungChan(w);
+
+        // Khe de giay - mat dat moi ben. Dung yen thi ban chan NGHIENG THEO MAT DAT (toi da GocNghiengBanChan) - dat doc 17 do ma ban chan
+        // phang thi got / mui ho 4,8 cm (menu 109); de giay nghieng goc t thi co chan cao hon mat dat DeDuoiCoChan / cos t.
+        // Dang di (w = 0): ban chan theo clip, de giay = diem thap nhat cua co chan / mui chan.
+        int coDat = 0; float thap = 1e6f, cao = -1e6f;
+        for (int i = 0; i < 2; i++)
+        {
+            float dat; Vector3 phap;
+            if (MatDatDuoi(banChan[i].position, out dat, out phap))
+            {
+                Vector3 nw = thichNghiDoc ? Vector3.RotateTowards(Vector3.up, phap, GocNghiengBanChan * Mathf.Deg2Rad * w, 0f) : Vector3.up;
+                phapDat[i] = nw;
+                float deDi = Mathf.Min(banChan[i].position.y - DeDuoiCoChan, muiChan[i].position.y - DeDuoiMuiChan);
+                float deDung = banChan[i].position.y - DeDuoiCoChan / Mathf.Max(0.5f, nw.y);
+                kheChan[i] = Mathf.Lerp(deDi, deDung, w) - dat;
+                coDat++; thap = Mathf.Min(thap, kheChan[i]); cao = Mathf.Max(cao, kheChan[i]);
+            }
+            else { kheChan[i] = float.NaN; phapDat[i] = Vector3.up; }
+        }
+        KheTruocKhiSua = new Vector2(kheChan[0], kheChan[1]);
+        if (coDat == 0 || thap > HaThanToiDa) { daCoHaThan = false; NhacChan = Vector2.zero; return; }
+        if (coDat == 1) cao = thap;
+
+        float muon = Mathf.Clamp(Mathf.Lerp(thap, cao, w), -NangThanToiDa, HaThanToiDa);
+        haThan = daCoHaThan ? Mathf.Lerp(haThan, muon, 1f - Mathf.Exp(-25f * dt)) : muon;
+        daCoHaThan = true;
+        Vector3 xuong = Vector3.down * haThan;
+        hips.position += xuong;
+        haHongCucBo = hips.parent != null ? hips.parent.InverseTransformVector(xuong) : xuong;
+
+        // Ben dung tren dat cao hon: nhac len cho cham dat (dang di thi than ha theo ben thap -> khong ben nao can nhac)
+        var nhac = Vector2.zero;
+        for (int i = 0; i < 2; i++)
+        {
+            if (float.IsNaN(kheChan[i]) || !thichNghiDoc) continue;
+            float n = Mathf.Min(haThan - kheChan[i], NhacChanToiDa);
+            if (n > 0.002f) { NhacChanIK(i, n); nhac[i] = n; }
+            // ban chan nghieng theo mat dat (xoay quanh co chan - co chan khong dich; mui chan la con nen di theo)
+            if (phapDat[i] != Vector3.up) banChan[i].rotation = Quaternion.FromToRotation(Vector3.up, phapDat[i]) * banChan[i].rotation;
+        }
+        NhacChan = nhac;
+    }
+
+    /// <summary>Tu the dung: chan ve bind pose, khep bot chu A, ban chan phang - tron voi tu the dang co theo w.</summary>
+    void DungChan(float w)
+    {
+        Quaternion q = gocLuoi.rotation;
+        for (int i = 0; i < 2; i++)
+        {
+            Quaternion r0 = duiTren[i].rotation, r1 = cangChan[i].rotation, r2 = banChan[i].rotation, r3 = muiChan[i].rotation;
+            duiTren[i].rotation = q * GocChanBind[i, 0];
+            cangChan[i].rotation = q * GocChanBind[i, 1];
+            Vector3 chan = (banChan[i].position - duiTren[i].position).normalized;
+            duiTren[i].rotation = Quaternion.FromToRotation(chan, Vector3.Slerp(chan, Vector3.down, HeSoKhepChan)) * duiTren[i].rotation;
+            if (w < 0.999f)
+            {
+                Quaternion t0 = duiTren[i].rotation, t1 = cangChan[i].rotation;
+                duiTren[i].rotation = Quaternion.Slerp(r0, t0, w);
+                cangChan[i].rotation = Quaternion.Slerp(r1, t1, w);
+            }
+            banChan[i].rotation = Quaternion.Slerp(r2, q * GocChanBind[i, 2], w);
+            muiChan[i].rotation = Quaternion.Slerp(r3, q * GocChanBind[i, 3], w);
+        }
+    }
+
+    /// <summary>IK hai doan: dua co chan ben i len cao them <paramref name="nhac"/> m (gap goi trong mat phang chan dang co), ban chan giu goc.</summary>
+    void NhacChanIK(int i, float nhac)
+    {
+        Transform a = duiTren[i], b = cangChan[i], c = banChan[i];
+        Quaternion qBan = c.rotation, qMui = muiChan[i].rotation;
+        Vector3 pa = a.position, pb = b.position, pc = c.position;
+        Vector3 dich = pc + Vector3.up * nhac;
+        float la = (pb - pa).magnitude, lb = (pc - pb).magnitude;
+        if (la < 1e-4f || lb < 1e-4f) return;
+        float lc = Mathf.Clamp((dich - pa).magnitude, Mathf.Abs(la - lb) + 1e-3f, la + lb - 1e-3f);
+        float k0 = Vector3.Angle(pa - pb, pc - pb);
+        float k1 = Mathf.Acos(Mathf.Clamp((la * la + lb * lb - lc * lc) / (2f * la * lb), -1f, 1f)) * Mathf.Rad2Deg;
+        Vector3 n = Vector3.Cross(pb - pa, pc - pb);
+        if (n.sqrMagnitude < 1e-8f) n = -transform.right;
+        b.rotation = Quaternion.AngleAxis(k0 - k1, n.normalized) * b.rotation;
+        a.rotation = Quaternion.FromToRotation(c.position - pa, dich - pa) * a.rotation;
+        c.rotation = qBan; muiChan[i].rotation = qMui;
+    }
+
+    /// <summary>Mat dat ngay duoi diem p (tia tu tren goc nhan vat xuong, cac lop ma CharacterController va cham, tru nguoi choi / quai).</summary>
+    bool MatDatDuoi(Vector3 p, out float y, out Vector3 phap)
+    {
+        phap = Vector3.up;
+        if (matNaDat == 0)
+        {
+            int lp = LayerMask.NameToLayer("Player"), le = LayerMask.NameToLayer("Enemy");
+            for (int i = 0; i < 32; i++)
+                if (!Physics.GetIgnoreLayerCollision(gameObject.layer, i) && i != lp && i != le && i != 2) matNaDat |= 1 << i;
+        }
+        int lop = matNaDat;
+        RaycastHit h;
+        if (Physics.Raycast(new Vector3(p.x, transform.position.y + 0.8f, p.z), Vector3.down, out h, 2.5f, lop, QueryTriggerInteraction.Ignore))
+        { y = h.point.y; phap = h.normal; return true; }
+        y = 0f; return false;
     }
 
     /// <summary>Dat DiemGiatSet vao giua hai ban tay, nho ra truoc 0,18 m (tay co thi lay, khong thi giu cho cu).</summary>

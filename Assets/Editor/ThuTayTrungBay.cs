@@ -256,8 +256,9 @@ public static class ThuTayTrungBay
                 sb.AppendLine("DOI CHUNG (tu the cu trong scene, truoc Play): " + (doiChung101c ?? "KHONG DO DUOC"));
                 sb.AppendLine("MOI (Play 1,5 s): " + MoTa(moi));
                 sb.AppendLine("MOI (them 2 s):  " + MoTa(sau) + string.Format("; quay them {0:F2} do, goc dich {1:F3} m", quayThem, nv.position.y - y0));
-                var tt2 = nv.GetComponent<TuTheTrungBay>();
-                sb.AppendLine(string.Format("TuTheTrungBay: da dich goc {0:F3} m, khe de giay theo code trai {1:F3} / phai {2:F3}", tt2.DaDichGoc, tt2.KheDeGiay.x, tt2.KheDeGiay.y));
+                var hh2 = nv.GetComponentInChildren<NguoiChoiHoatHinh>();
+                sb.AppendLine(string.Format("NguoiChoiHoatHinh (chan cham dat): ha than {0:F3} m, khe de giay truoc khi sua trai {1:F3} / phai {2:F3}, nhac chan {3:F3} / {4:F3}",
+                    hh2.DoHaThan, hh2.KheTruocKhiSua.x, hh2.KheTruocKhiSua.y, hh2.NhacChan.x, hh2.NhacChan.y));
                 kiem(doiChung101c != null && soCu101c.lechMayQuay > 5f && Mathf.Max(soCu101c.kheTrai, soCu101c.khePhai) > 0.05f && soCu101c.lechCoChan > 0.05f
                     && Mathf.Min(soCu101c.deTrai, soCu101c.dePhai) < 0.2f,
                     "doi chung (tu the cu) khong lo loi -> phep do khong phan biet duoc");

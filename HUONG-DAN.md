@@ -9394,6 +9394,44 @@ BakeMesh từng tư thế ra lưới tĩnh rồi mới vẽ — `PlayTestShots/m
 cong ra 0° sẽ bị bắt), độ rộng chân 0,28–0,40 m: lệch máy quay 0,0°; hở đất 0,000 / −0,028 m (đất dốc, chân rộng hơn nên bên phải lún sâu hơn
 lần trước); cổ chân lệch cao 0,006 m; gối 48,6 / 46,1° = bind; cổ chân cách 0,33 m; đế giày chạm đất dài 0,33 / 0,33 m; quay thêm 0,00°. 0 lỗi.
 
+### Trong trận: chân nhân vật lơ lửng trên mặt đất (05/10/2026)
+
+**Người dùng** (kèm ảnh trong trận): "Trong game, rất nhiều chỗ 2 chân nhân vật đứng vẫn còn như bay lơ lửng trên mặt đất, hãy sửa lại lỗi này".
+
+**Đo trước khi sửa — menu 109 mới** (Play Act2 thật, tắt GameDirector; đưa nhân vật tới 40 chỗ đất trống ngẫu nhiên — hạt giống cố định — để
+CharacterController tự rơi 0,6 s; đế giày = đỉnh thấp nhất mỗi bên (BakeMesh) so với `Terrain.SampleHeight` ngay dưới đỉnh ấy):
+- gốc nhân vật cao hơn đất **0,080–0,094 m ở cả 40 chỗ** = `skinWidth` 0,08 của CharacterController (đáy con nhộng đặt đúng ở gốc nên con nhộng
+  "nổi" một lớp đệm);
+- tư thế đứng yên là **khung bước dở** của clip đi bộ (chân trái nhấc): chân thấp TB 0,019 m, chân hở TB **0,072 m**, hở > 2 cm ở **40/40 chỗ**;
+- đất dốc 17° thì một chân lún 4 cm, chân kia hở **0,155 m**.
+
+**Sửa** — trong `NguoiChoiHoatHinh` (dùng chung: nhân vật của mình, bản sao người chơi khác, nhân vật trưng bày màn chính), mỗi khung SAU mọi tư thế:
+1. **Đứng yên** (trộn theo `1 − mucDi`): chân về bind pose khép bớt chữ A — y cách đã làm ở màn chính (giữ góc gối của model, xem mục "hai chân
+   quá cong"); hằng `GocChanBind` / `HeSoKhepChan` chuyển từ `TuTheTrungBay` sang đây.
+2. **Hạ thân qua xương hông**: đế giày mỗi bên = min(cổ chân − 0,135, mũi chân − 0,036) (đo bằng BakeMesh ở bind pose), mặt đất bằng tia xuống
+   (các lớp CharacterController va chạm, trừ Player / Enemy). Đứng yên: bên hở nhiều nhất chạm đất; đang đi: bên hở ít nhất (chân trụ) chạm đất.
+   Không dời khối hình (con của gốc) vì `BiDanhNga` / `BiHatTung` / `XacNam` tự lưu rồi trả vị trí của nó. Clip đi bộ ghi vị trí hông mỗi khung,
+   đứng yên thì `TraVeTuTheChuan` đặt lại → không cộng dồn; `BatDauHoaVe` trừ phần đã hạ khi ghi "tư thế lúc rời khỏi".
+3. **Đất dốc**: bên đất cao **IK hai đoạn** (đùi + cẳng chân, luật cosin, gập trong mặt phẳng chân đang có) nhấc lên đúng bằng chênh lệch; bàn
+   chân **nghiêng theo mặt đất** tối đa 30° (cổ chân cao hơn mặt đất 0,135 / cos góc). Lần thử đầu bàn chân phẳng: dốc 17° gót / mũi vẫn hở 4,8 cm.
+- Bỏ qua khi bị đánh ngã, hất tung, đã chết. Màn chính đặt `thichNghiDoc = false`: hai chân thẳng, bằng nhau như người dùng đã duyệt (bên đất cao
+  lún 3,1 cm) — bật lên thì gối phải gập thêm 9° để chạm đất.
+- `TuTheTrungBay` bỏ hẳn phần chân riêng (hạ gốc một lần bằng BakeMesh).
+
+**Đo — menu 109** (mỗi chỗ đo hai lần: bật, rồi **đối chứng tắt `chamDat` ở cùng chỗ**):
+
+| | mới | cũ (đối chứng) |
+|---|---|---|
+| đứng yên, chân thấp hơn — đất (TB · thấp nhất) | −0,001 · −0,004 m | 0,019 · −0,044 m |
+| đứng yên, chân hở hơn — đất (TB · lớn nhất) | **0,003 · 0,012 m** | 0,072 · 0,155 m |
+| số chỗ hở > 2 cm / lún > 3 cm | **0 / 0** (40 chỗ) | 40 / 2 |
+| dốc 17° (chỗ 14) | 0,001 / 0,002 m (nhấc 0,096 m) | −0,041 / 0,155 m |
+| đang đi tại chỗ: chân trụ — đất TB (khoảng) | **−0,008** (−0,031 … 0,006) | 0,043 (0,024 … 0,079) |
+
+Ảnh nhìn ngang: `PlayTestShots/chan_cham_dat_cu_1..3.png` / `chan_cham_dat_moi_1..3.png`. Menu 101c (màn chính), 69 (Giựt sét — tia mọc giữa hai
+bàn tay, thân đã hạ): 0 lỗi. ⚠️ Menu 85 mục B (Bộ xương chết lúc đang ngã: đỉnh hình 1,00 m, ngưỡng < 1,0; bản lưu 04/10 là 0,83) hỏng **cả khi tắt
+`chamDat`** — Bộ xương không dùng `NguoiChoiHoatHinh`; lỗi có từ một thay đổi khác sau 04/10, để riêng.
+
 ### Gió lốc 2 lốc (cấp 5: 3 lốc) cách xa hơn · Mây giông cao 8 m, mưa dày hơn (04/10/2026, lần năm)
 
 **Người dùng:** Gió lốc "cấp đầu tiên chỉ cho đánh ra 2 lốc, mỗi lốc cách xa nhau ra 1 chút; cấp 5 đánh ra 3 lốc"; Mây giông "đám mây bay cao

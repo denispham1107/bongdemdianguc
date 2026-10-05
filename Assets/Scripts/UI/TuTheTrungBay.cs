@@ -16,8 +16,8 @@ using UnityEngine;
 /// DUNG HAI CHAN BANG NHAU, CHAM DAT, NHIN THANG MAY QUAY (nguoi dung 05/10/2026: "dung 2 chan bang nhau, khong lo lung tren khong trung,
 /// nhin thang chinh dien ve phia nguoi choi; khong can tu quay"). Truoc do: menu 51 dat goc nhan vat CAO 0,2 m tren dat va quay lech may quay
 /// 20 do, tu the goc cua prefab la buoc do (chan trai nhac cao hon chan phai 0,10 m) -> de giay ho dat 0,15 m. Nay: Start quay mat thang vao
-/// may quay; moi khung xuong chan ve goc BIND POSE cua model (GocChanBind), ca chan khep bot chu A (HeSoKhepChan), ban chan dat phang theo
-/// bind pose; khung dau tien BakeMesh mot lan, ha / nang goc cho de giay cham mat dat (Ground), khong ben nao ho.
+/// may quay. Hai chan thang bang nhau + cham dat: NguoiChoiHoatHinh lam (phan "CHAN CHAM DAT" - dung chung voi nhan vat trong tran,
+/// nguoi dung 05/10/2026 bao trong game chan cung lo lung); ban dau o day co rieng mot ban (ha goc mot lan bang BakeMesh) - da gop vao do.
 /// </summary>
 [DefaultExecutionOrder(10020)]
 public class TuTheTrungBay : MonoBehaviour
@@ -97,34 +97,6 @@ public class TuTheTrungBay : MonoBehaviour
     Transform cauLua, cauBang;
     float batDau;
 
-    // ---- Chan: 0 = trai, 1 = phai ----
-    readonly Transform[] duiTren = new Transform[2], cangChan = new Transform[2], banChan = new Transform[2], muiChan = new Transform[2];
-    bool coChan, daHaDat;
-
-    /// <summary>
-    /// Goc xoay xuong chan o TU THE DUNG CUA MODEL (bind pose - ban chan dat PHANG, co giay thang dung), so voi goc nhan vat; [ben, khop]
-    /// ben 0 trai / 1 phai, khop UpLeg / Leg / Foot / ToeBase. Doc tu Mesh.bindposes cua Player_Sorceress trong Editor 05/10/2026 roi GHI
-    /// CUNG: luoi Meshy Read/Write TAT, ban build co the khong doc duoc bindposes. Lan dau lay do doc ban chan tu tu the goc (buoc do)
-    /// thi ban chan kieng mui, co giay nghieng (anh menu 101c).
-    /// </summary>
-    static readonly Quaternion[,] GocChanBind =
-    {
-        { new Quaternion(0.99241f, 0.08686f, -0.08686f, 0.00484f), new Quaternion(0.87738f, -0.33069f, 0.33069f, -0.10719f),
-          new Quaternion(0.89397f, -0.09097f, 0.09097f, 0.42926f), new Quaternion(0.69862f, -0.10925f, 0.10925f, 0.69862f) },
-        { new Quaternion(0.99428f, -0.07553f, 0.07553f, 0.00201f), new Quaternion(0.88677f, 0.31438f, -0.31438f, -0.12634f),
-          new Quaternion(0.88656f, 0.08998f, -0.08998f, 0.44476f), new Quaternion(0.69913f, 0.10594f, -0.10594f, 0.69913f) },
-    };
-
-    /// <summary>Phep thu (menu 101c) doc: goc da dich len / xuong bao nhieu de cham dat, va khe de giay - dat moi ben sau khi dich.</summary>
-    public float DaDichGoc { get; private set; }
-    public Vector2 KheDeGiay { get; private set; }
-
-    static Transform TimKhop(Transform goc, string ten)
-    {
-        foreach (var t in goc.GetComponentsInChildren<Transform>(true)) if (t.name == ten) return t;
-        return null;
-    }
-
     /// <summary>Quay mat thang vao may quay chinh (chi quanh truc dung).</summary>
     void QuayMatVeMayQuay()
     {
@@ -132,86 +104,6 @@ public class TuTheTrungBay : MonoBehaviour
         if (cam == null) return;
         Vector3 v = cam.transform.position - transform.position; v.y = 0f;
         if (v.sqrMagnitude > 1e-4f) transform.rotation = Quaternion.LookRotation(v.normalized, Vector3.up);
-    }
-
-    /// <summary>Tim xuong chan (UpLeg / Leg / Foot / ToeBase moi ben).</summary>
-    void ChuanBiChan()
-    {
-        string[] ben = { "Left", "Right" };
-        for (int i = 0; i < 2; i++)
-        {
-            duiTren[i] = TimKhop(transform, ben[i] + "UpLeg");
-            cangChan[i] = TimKhop(transform, ben[i] + "Leg");
-            banChan[i] = TimKhop(transform, ben[i] + "Foot");
-            muiChan[i] = TimKhop(transform, ben[i] + "ToeBase");
-            if (duiTren[i] == null || cangChan[i] == null || banChan[i] == null || muiChan[i] == null) return;
-        }
-        coChan = true;
-    }
-
-    /// <summary>Thu hep chan chu A cua bind pose ve phia thang dung bao nhieu (0 = nguyen bind, co chan cach 0,40 m; 1 = thang dung, 0,23 m).
-    /// 0,4 -> cach ~0,33 m, bang tu the cu nguoi dung muon giu (0,34 m).</summary>
-    public const float HeSoKhepChan = 0.4f;
-
-    /// <summary>
-    /// Hai chan bang nhau, THANG: moi xuong chan ve goc bind pose (luoi chan thang nhu model dung), roi xoay CA CHAN quanh hong (giu nguyen goc
-    /// goi cua bind) khep bot chu A theo HeSoKhepChan, cuoi cung ban chan + mui chan ve dung goc bind (dat phang).
-    /// ⚠️ KHONG ngam rieng dui + cang chan thang xuong: xuong Meshy o bind pose da GAP GOI 48,6 do trong khi luoi chan thang - be thang xuong
-    /// thi LUOI chan cong ra hai ben (nguoi dung 05/10/2026: "2 chan nhan vat qua cong").
-    /// </summary>
-    void DungThangChan()
-    {
-        Quaternion q = transform.rotation;
-        for (int i = 0; i < 2; i++)
-        {
-            for (int k = 0; k < 4; k++)
-                (k == 0 ? duiTren[i] : k == 1 ? cangChan[i] : k == 2 ? banChan[i] : muiChan[i]).rotation = q * GocChanBind[i, k];
-            Vector3 chan = (banChan[i].position - duiTren[i].position).normalized;
-            Vector3 muon = Vector3.Slerp(chan, Vector3.down, HeSoKhepChan);
-            duiTren[i].rotation = Quaternion.FromToRotation(chan, muon) * duiTren[i].rotation;
-            banChan[i].rotation = q * GocChanBind[i, 2];
-            muiChan[i].rotation = q * GocChanBind[i, 3];
-        }
-    }
-
-    /// <summary>Mot lan: BakeMesh lay dinh thap nhat moi ben (de giay), so voi mat dat ngay duoi, dich goc cho ben ho nhieu nhat vua cham dat.</summary>
-    void HaChanXuongDat()
-    {
-        var thap = new[] { Vector3.up * 1e6f, Vector3.up * 1e6f };
-        var luoi = new Mesh();
-        var dinh = new System.Collections.Generic.List<Vector3>();
-        Vector3 goc = transform.position, phai = transform.right;
-        foreach (var smr in GetComponentsInChildren<SkinnedMeshRenderer>())
-        {
-            smr.BakeMesh(luoi, true);
-            luoi.GetVertices(dinh);
-            var m = Matrix4x4.TRS(smr.transform.position, smr.transform.rotation, Vector3.one);
-            foreach (var v in dinh)
-            {
-                Vector3 p = m.MultiplyPoint3x4(v);
-                int i = Vector3.Dot(p - goc, phai) >= 0f ? 1 : 0;
-                if (p.y < thap[i].y) thap[i] = p;
-            }
-        }
-        Destroy(luoi);
-        if (thap[0].y > 1e5f || thap[1].y > 1e5f) return;
-        float kheTrai = thap[0].y - MatDat(thap[0]), khePhai = thap[1].y - MatDat(thap[1]);
-        // KHONG chan nao ho dat (nguoi dung: "khong cho lo lung"): dat doc nhe nen hai ban chan bang nhau thi ben dat cao hon lun vao dat
-        // vai cm (cho dung man chinh: dat duoi hai chan chenh 3,4 cm). Lay trung binh thi ben dat thap ho 1,7 cm - da thu, bo.
-        float dich = -Mathf.Max(kheTrai, khePhai);
-        transform.position += Vector3.up * dich;
-        DaDichGoc = dich;
-        KheDeGiay = new Vector2(kheTrai + dich, khePhai + dich);
-    }
-
-    /// <summary>Do cao mat dat (lop Ground) ngay duoi diem p; khong trung thi lay Terrain.</summary>
-    static float MatDat(Vector3 p)
-    {
-        int lop = LayerMask.NameToLayer("Ground");
-        RaycastHit h;
-        if (lop >= 0 && Physics.Raycast(p + Vector3.up * 3f, Vector3.down, out h, 10f, 1 << lop, QueryTriggerInteraction.Ignore)) return h.point.y;
-        var t = Terrain.activeTerrain;
-        return t != null ? t.SampleHeight(p) + t.transform.position.y : p.y;
     }
 
     /// <summary>Phep thu (menu 101c) doc: tay nao cam lua.</summary>
@@ -229,7 +121,8 @@ public class TuTheTrungBay : MonoBehaviour
         { enabled = false; return; }
         batDau = Time.time;
         QuayMatVeMayQuay();
-        ChuanBiChan();
+        // Man chinh: hai chan THANG, BANG NHAU (nguoi dung da duyet) - khong co goi / nghieng ban chan theo doc nhu trong tran
+        hh.thichNghiDoc = false;
 
         // Lua ben PHAI man hinh: nhan vat nhin thang vao may quay (dung yen, khong con tu xoay) thi tay TRAI cua no nam ben phai man hinh
         BanTayLua = banTayTrai; BanTayBang = banTayPhai;
@@ -292,12 +185,6 @@ public class TuTheTrungBay : MonoBehaviour
 
     void LateUpdate()
     {
-        // Chan dung ngay tu khung dau (khong hoa dan) roi moi ha xuong dat mot lan - chan khong bao gio ho dat
-        if (coChan)
-        {
-            DungThangChan();
-            if (!daHaDat) { HaChanXuongDat(); daHaDat = true; }
-        }
         float w = Mathf.SmoothStep(0f, 1f, (Time.time - batDau) / GiayVaoTuThe);
         Transform goc = hh.transform;
         Vector3 f = goc.forward, r = goc.right, u = Vector3.up;
