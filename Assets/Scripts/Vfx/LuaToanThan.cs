@@ -60,8 +60,17 @@ public class LuaToanThan : MonoBehaviour
     const string DuongVatLieuPhu = "KyNang/Chay/LuaPhuThan";
     /// <summary>Thong so dong cua lop phu (lan 4). Lan 3: 0,9 / 0 / 0 - phep thu dung lam doi chung.</summary>
     public const float TocDoLua = 1.5f, XoanLua = 0.35f, NhapNhayLua = 0.45f;
-    /// <summary>Luoi lua liem len moi giay / khoi moi giay (than 1,7 m).</summary>
+    /// <summary>Luoi lua liem len moi giay / khoi moi giay (than 1,7 m) - o mat do 1.</summary>
     const float LuoiMoiGiay = 46f, KhoiMoiGiay2 = 14f;
+
+    /// <summary>
+    /// MAT DO LUA tren than (05/10/2026, nguoi dung: "giam bot mat do lua phu tren nguoi, hien dang nhieu qua, cho mong bot lai"):
+    /// 1 = day nhu ban 28/09-04/10. Nang nguong nhiet cua lop phu (shader _MatDo: chi con mang / soc lua nong nhat, vet nut mo theo)
+    /// va nhan so luoi lua moi giay. Khoi xam den, tan lua, den giu nguyen. Doc moi khung (phep thu chup cac muc doi luc chay).
+    /// </summary>
+    /// Nguoi dung chon MUC 4 = 0,4 (menu 90b chup 1 / 0,75 / 0,55 / 0,4: than phu lua ~98 / 90 / 75 / 56%).
+    public const float MatDoChon = 0.4f;
+    public static float HeSoMatDo = MatDoChon;
 
     struct DiemLuoi { public Transform x; public float w, r; }
     readonly List<DiemLuoi> diemLuoi = new List<DiemLuoi>(), diemKhoi = new List<DiemLuoi>();
@@ -345,6 +354,7 @@ public class LuaToanThan : MonoBehaviour
             lopPhu.SetVector("_Goc", new Vector4(tam.x, day, tam.z, 0f));
             lopPhu.SetFloat("_CaoThan", cao);
             lopPhu.SetFloat("_ThoiGian", Time.time);
+            lopPhu.SetFloat("_MatDo", HeSoMatDo);
         }
 
         var cam = Camera.main;
@@ -467,7 +477,7 @@ public class LuaToanThan : MonoBehaviour
         float s = Mathf.Clamp(cao / 1.7f, 0.5f, 2.5f);
         float dt = Time.deltaTime;
         var ep = new ParticleSystem.EmitParams();
-        tichLuoi += LuoiMoiGiay * s * s * dt;
+        tichLuoi += LuoiMoiGiay * HeSoMatDo * s * s * dt;
         int n = Mathf.Min(Mathf.FloorToInt(tichLuoi), 10);
         tichLuoi -= Mathf.FloorToInt(tichLuoi);
         for (int i = 0; i < n && diemLuoi.Count > 0; i++)

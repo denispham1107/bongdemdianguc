@@ -1,0 +1,4 @@
+MAT DO 1.00: Player: than co lua 99 %, luoi lua dang song 16 | TAM_Quai_Skeleton: than co lua 98 %, luoi lua dang song 20 | TAM_Quai_QuyCay: than co lua 97 %, luoi lua dang song 20
+MAT DO 0.75: Player: than co lua 89 %, luoi lua dang song 11 | TAM_Quai_Skeleton: than co lua 91 %, luoi lua dang song 14 | TAM_Quai_QuyCay: than co lua 92 %, luoi lua dang song 20
+MAT DO 0.55: Player: than co lua 69 %, luoi lua dang song 9 | TAM_Quai_Skeleton: than co lua 78 %, luoi lua dang song 10 | TAM_Quai_QuyCay: than co lua 79 %, luoi lua dang song 15
+MAT DO 0.40: Player: than co lua 47 %, luoi lua dang song 6 | TAM_Quai_Skeleton: than co lua 60 %, luoi lua dang song 8 | TAM_Quai_QuyCay: than co lua 60 %, luoi lua dang song 12

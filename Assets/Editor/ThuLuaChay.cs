@@ -49,6 +49,62 @@ public static class ThuLuaChay
         EditorApplication.EnterPlaymode();
     }
 
+    // ================= MENU 90b: CHUP CAC MUC MAT DO LUA (05/10/2026, nguoi dung: "mong bot lai") =================
+    /// <summary>Cac muc LuaToanThan.HeSoMatDo de chup cho nguoi dung chon. 1 = hien tai.</summary>
+    public static readonly float[] CacMucMatDo = { 1f, 0.75f, 0.55f, 0.4f };
+    static bool cheDoMatDo, cheDoMatDoGhi;
+
+    [MenuItem("Diablo 2.5D/90b. Chup cac muc MAT DO lua chay (de chon)", false, 180)]
+    public static void ChupMatDo()
+    {
+        cheDoMatDo = true; cheDoMatDoGhi = true;
+        Chay();
+    }
+
+    static IEnumerator KichBanMatDo(PlayerController pc, Damageable mauPc, List<Damageable> quai, Camera cam, Vector3 p)
+    {
+        var tatCa = new List<Damageable> { mauPc }; tatCa.AddRange(quai);
+        foreach (var d in tatCa) BurningEffect.Apply(d, 0.01f, 60f, null);
+        yield return new WaitForSeconds(1.2f);
+        for (int m = 0; m < CacMucMatDo.Length; m++)
+        {
+            float k = CacMucMatDo[m];
+            LuaToanThan.HeSoMatDo = k;
+            yield return new WaitForSeconds(1.0f);   // luoi lua cu (doi <= 0,45 s) tan het, luoi moi theo mat do moi
+            string ten = "PlayTestShots/lua_matdo_" + (int)Mathf.Round(k * 100f);
+            cam.transform.position = p + new Vector3(0f, 4.2f, -6.2f);
+            cam.transform.LookAt(p + new Vector3(0f, 1.0f, 0f));
+            yield return new WaitForEndOfFrame();
+            Chup(cam, ten + "_gan.png");
+            cam.transform.position = p + new Vector3(0f, 13f, -11.5f);
+            cam.transform.LookAt(p);
+            yield return new WaitForEndOfFrame();
+            Chup(cam, ten + "_goc_choi.png");
+            // DIEN TICH than co lua (lop phu, khong hat / bloom / den) - trung binh 4 thoi diem lua khac nhau
+            var dong = new List<string>();
+            foreach (var d in tatCa)
+            {
+                var l = d.GetComponentInChildren<LuaToanThan>();
+                if (l == null) { dong.Add(d.name + " -"); continue; }
+                var c = d.transform.position;
+                cam.transform.position = c + new Vector3(0f, 2.6f, -3.6f);
+                cam.transform.LookAt(c + Vector3.up * 0.9f);
+                yield return new WaitForEndOfFrame();
+                float tong = 0f; float T0 = Time.time;
+                for (int j = 0; j < 4; j++)
+                {
+                    l.LopPhu.SetFloat("_ThoiGian", T0 + j * 0.53f);
+                    float tv, phu; DoAnh(cam, d, l, out tv, out phu, null);
+                    tong += phu;
+                }
+                int luoi = l.LuoiLua != null ? l.LuoiLua.particleCount : -1;
+                dong.Add(string.Format("{0}: than co lua {1:P0}, luoi lua dang song {2}", d.name, tong / 4f, luoi));
+            }
+            Ghi(string.Format("MAT DO {0:F2}: {1}", k, string.Join(" | ", dong.ToArray())));
+        }
+        LuaToanThan.HeSoMatDo = LuaToanThan.MatDoChon;
+    }
+
     static void Nhip()
     {
         if (!EditorApplication.isPlaying || daBatDau) return;
@@ -118,6 +174,14 @@ public static class ThuLuaChay
         }
         yield return new WaitForSeconds(0.6f);
 
+        if (cheDoMatDo)
+        {
+            cheDoMatDo = false;
+            yield return KichBanMatDo(pc, mauPc, quai, cam, p);
+            Ket();
+            yield break;
+        }
+
         // ================= A. LUA NAM TRONG VIEN THAN + PHU THAN =================
         var tatCa = new List<Damageable> { mauPc }; tatCa.AddRange(quai);
         foreach (var d in tatCa) BurningEffect.Apply(d, 0.01f, 3.5f, null);
@@ -149,7 +213,14 @@ public static class ThuLuaChay
             Kiem(l.SoRendererDaPhu >= 1, d.name + ": khong phu duoc lop lua len renderer nao");
             Kiem(Mathf.Abs(l.ChieuCaoThan / (hi - lo) - 1f) < 0.15f, d.name + ": chieu cao theo xuong lech hinh that qua 15%");
             Kiem(trongVien >= 0.90f, d.name + ": lua tran ra ngoai vien than");
-            Kiem(phu >= 0.80f, d.name + ": lua chua lan khap than");
+            // 05/10/2026 MAT DO 0,4 (nguoi dung chon "mong nhieu"): lua thanh mang, KHONG con phu kin than. Doi chung cung khung: mat do 1
+            float phuDay, tv1;
+            l.LopPhu.SetFloat("_MatDo", 1f);
+            DoAnh(cam, d, l, out tv1, out phuDay, null);
+            l.LopPhu.SetFloat("_MatDo", LuaToanThan.HeSoMatDo);
+            Ghi(string.Format("A. {0}: mat do {1:F2} -> than co lua {2:P0}; doi chung mat do 1 cung khung {3:P0}", d.name, LuaToanThan.HeSoMatDo, phu, phuDay));
+            Kiem(phu >= 0.35f && phu <= 0.75f, d.name + ": lua khong mong dung muc da chon (than co lua ngoai 35-75%)");
+            Kiem(phuDay >= 0.90f && phu < phuDay * 0.8f, d.name + ": doi chung mat do 1 khong phu kin / khong khac -> phep do khong phan biet");
         }
 
         // ================= F. BOC CHAY: LUOI LUA LIEM LEN + KHOI + LUA TREN THAN DONG =================
@@ -216,7 +287,8 @@ public static class ThuLuaChay
                 yKhoi = nk > 0 ? yKhoi / nk : -9f;
                 Ghi(string.Format("F. luoi lua dang song {0} (khung cuoi), {1} luot luoi liem cao qua dinh dau (cao nhat vuot {2:F2} m); khoi {3} lan, trung binh cao hon dinh dau {4:F2} m",
                     k, trenDau, vuot, nk, yKhoi));
-                Kiem(k >= 8, "qua it luoi lua boc len");
+                // 8 o mat do 1 (~16-20 luoi song); 05/10/2026 so luoi nhan mat do (0,4 -> >= 4)
+                Kiem(k >= Mathf.CeilToInt(8f * LuaToanThan.HeSoMatDo), "qua it luoi lua boc len");
                 // 04/10/2026: luoi lua van liem len tren dau (ngon lua o dau) nhung KHONG vot cao lo lung (lan truoc 0,72 m)
                 Kiem(trenDau >= 1 && vuot > 0.05f && vuot < 0.45f, "luoi lua tren dau khong liem len / vot cao lo lung tren khong");
                 Kiem(xaXuongMax < 0.30f && tocMax < 0.1f, "luoi lua tach khoi than, bay lo lung");
@@ -578,7 +650,9 @@ public static class ThuLuaChay
     {
         LuaToanThan.DoiChungTheGioi = false;
         LuaToanThan.DoiChungKhoiLua = false;
-        File.WriteAllText("PlayTestShots/lua_chay.txt", bao.ToString());
+        LuaToanThan.HeSoMatDo = LuaToanThan.MatDoChon;
+        File.WriteAllText(cheDoMatDoGhi ? "PlayTestShots/lua_matdo.txt" : "PlayTestShots/lua_chay.txt", bao.ToString());
+        cheDoMatDoGhi = false;
         foreach (var go in Object.FindObjectsByType<Transform>())
             if (go != null && go.parent == null && go.name.StartsWith("TAM_")) Object.Destroy(go.gameObject);
         EditorApplication.update -= Nhip;

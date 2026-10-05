@@ -9259,6 +9259,29 @@ chính trở về 700HP mỗi khi vào game".
 - Phát hiện kèm: các lần sửa file bằng Python trong mấy ngày nay đổi cả file sang xuống dòng CRLF (dự án dùng LF) — 28 file `.cs` + `CLAUDE.md` +
   `HUONG-DAN.md`, git hiện mỗi commit như "sửa cả file". Đã đưa cả 30 file về LF (nội dung không đổi).
 
+### Bị cháy: lửa mỏng bớt — mật độ 0,4 (05/10/2026)
+
+**Người dùng:** "Hiệu ứng thiêu đốt trên các nhân vật người chơi và trên quái vật: cho giảm bớt mật độ lửa phủ trên người, hiện đang nhiều quá
+cho mỏng bớt lại". Mức độ chưa nói → **menu 90b** (mới) đốt người chơi + Bộ xương + Quỷ cây cạnh nhau, chụp 4 mức mật độ (ảnh ghép
+`PlayTestShots/lua_matdo_so_sanh.png`, từng ảnh `lua_matdo_<mức>_gan|goc_choi.png`) kèm đo diện tích thân có lửa (lớp phủ, tắt hạt / bloom / đèn,
+trung bình 4 thời điểm lửa):
+
+| mật độ | người chơi | Bộ xương | Quỷ cây | lưỡi lửa đang sống |
+|---|---|---|---|---|
+| 1 (cũ) | 99% | 98% | 97% | 16–20 |
+| 0,75 | 89% | 91% | 92% | 11–20 |
+| 0,55 | 69% | 78% | 79% | 9–15 |
+| **0,4 (chọn)** | **47%** | **60%** | **60%** | 6–12 |
+
+Người dùng chọn **mức 4 – mỏng nhiều (0,4)**.
+
+**Sửa:** `S_LuaPhuThan.shader` thêm `_MatDo`: ngưỡng nhiệt nâng thêm (1 − mật độ) × 0,45 ở cả hai lượt (lửa trên da, vỏ lửa viền) → chỉ còn các
+mảng / sọc lửa nóng nhất, giữa chúng lộ thân; vết nứt than hồng × mật độ. `LuaToanThan.HeSoMatDo` (= `MatDoChon` 0,4) đặt vào vật liệu mỗi khung
+và nhân số lưỡi lửa / giây (46 → 18,4). Khói xám đen, tàn lửa, đèn lửa giữ nguyên. Áp cho mọi kẻ bị cháy (người chơi, bản sao, mọi quái).
+
+**Đo — menu 90** (0 lỗi): A — thân có lửa 59–60% ở mật độ 0,4, **đối chứng mật độ 1 đo CÙNG khung** 97–98% (phép kiểm cũ "phủ ≥ 80%" đổi thành
+35–75% + đối chứng ≥ 90%); lửa vẫn 100% trong viền thân; F — lưỡi lửa vẫn sát xương (≤ 0,11 m), số lưỡi sống ≥ 8 × mật độ; hết cháy tắt ngay.
+
 ### Bốc cháy: lưỡi lửa bao quanh toàn thân, không bay lơ lửng (04/10/2026)
 
 **Người dùng:** "Trong game khi các nhân vật và tất cả quái vật bị hiệu ứng bốc cháy, các vết lửa cũng phải bao quanh lấy toàn thân, không được

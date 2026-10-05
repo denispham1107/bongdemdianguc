@@ -24,6 +24,7 @@ Shader "Diablo25D/LuaPhuThan"
         _Xoan ("Do uon luon cua luoi lua", Float) = 0
         _NhapNhay ("Do nhap nhay sang toi", Float) = 0
         _ThoiGian ("Dong ho lua (LuaToanThan dat = Time.time moi khung)", Float) = 0
+        _MatDo ("Mat do lua phu than (1 = day nhu ban 28/09)", Range(0,1)) = 1
     }
     SubShader
     {
@@ -33,6 +34,10 @@ Shader "Diablo25D/LuaPhuThan"
         #include "UnityCG.cginc"
         sampler2D _MainTex;
         float _Do, _SangLua, _CaoThan, _DoPhong, _TocDo, _Xoan, _NhapNhay;
+        // MAT DO (05/10/2026, nguoi dung: "giam bot mat do lua phu tren nguoi, dang nhieu qua, cho mong bot lai"): nang nguong nhiet
+        // -> chi con cac mang / soc lua nong nhat chay, giua chung lo than; vet nut than hong cung mo theo
+        float _MatDo;
+        #define NGUONG_MAT_DO ((1.0 - _MatDo) * 0.45)
         // Dong ho RIENG thay _Time.y: phep thu (menu 90) ve hai thoi diem chinh xac trong CUNG mot khung
         float _ThoiGian;
         float4 _Goc;
@@ -114,10 +119,10 @@ Shader "Diablo25D/LuaPhuThan"
                 float h = Nhiet(i.tq, t);
                 h += (1.0 - saturate(i.v01)) * 0.22;          // chan lua nong hon
                 h += rim * 0.30;                              // mep than lua day hon (lua om quanh than)
-                h = saturate(h * 1.6);
+                h = saturate((h - NGUONG_MAT_DO) * 1.6);
                 // Vet nut than hong ben duoi lop lua
                 float nut = tex2D(_MainTex, i.tq * float2(2.2, 2.2) + float2(0.13, -t * 0.08)).b;
-                fixed3 c = MauLua(h) * h + fixed3(1.0, 0.30, 0.04) * nut * 0.35;
+                fixed3 c = MauLua(h) * h + fixed3(1.0, 0.30, 0.04) * nut * 0.35 * _MatDo;
                 return fixed4(c * _SangLua * _Do, 1);
             }
             ENDCG
@@ -163,7 +168,7 @@ Shader "Diablo25D/LuaPhuThan"
                 float3 vd = normalize(_WorldSpaceCameraPos - i.wpos);
                 float rim = pow(1.0 - saturate(dot(n, vd)), 1.6);
                 float h = Nhiet(i.tq + float2(0.21, 0.0), t) + 0.18;
-                float m = saturate(h * 2.2) * rim;
+                float m = saturate((h - NGUONG_MAT_DO) * 2.2) * rim;
                 m *= 1.0 - smoothstep(0.85, 1.25, i.v01) * 0.6;
                 fixed3 c = MauLua(saturate(m * 1.3)) * m;
                 return fixed4(c * _SangLua * 0.9 * _Do, 1);
