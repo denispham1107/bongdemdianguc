@@ -276,7 +276,7 @@ public static partial class VfxFactory
         arc.coreColor = Color.white;
         arc.glowColor = GiatSet.MauQuangNguoiChoi;
         // 1,15 = be day tia dau tien cua Giut set
-        GiatSet.KieuTia(arc, 1.15f, bamDau, bamCuoi);
+        GiatSet.KieuTia(arc, 1.15f, bamDau, bamCuoi, true);   // quang xanh day +20% nhu Giut set (05/10/2026)
         return arc;
     }
 

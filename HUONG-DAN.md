@@ -9118,6 +9118,20 @@ còn bật; mỗi chỗ đúng 9 tia con (171 / 234); một chỗ chạm riêng:
 đen 0,42, sau 6 s vết biến mất. **Đối chứng:** `LoeSetChamDat` gọi thẳng (đường Lốc xoáy) vẫn còn 2 lớp vệt gạch. Menu 58 (Sấm sét) và 83 (Mây
 giông) chạy lại 0 lỗi. Ảnh `PlayTestShots/setchamdat_samset_0/1.png`, `setchamdat_maygiong_0/1.png`.
 
+### Giựt sét + Quả cầu điện: quầng xanh bọc tia rộng hơn 20% (05/10/2026)
+
+**Người dùng** (gửi ảnh mẫu một tia sét bọc quầng xanh dày): "cho ánh sáng xanh dương bao phủ dầy hơn 20%". Hỏi lại; người dùng chọn **rộng hơn 20%**
+(độ sáng giữ nguyên, lõi trắng không đổi) và áp cho **Giựt sét + Quả cầu điện** — tia xanh lá của Quỷ cây giữ nguyên.
+
+- Tia kiểu Giựt sét có hai lớp xanh quanh lõi trắng: **viền xanh** (lưới ảnh `GiatSetQuang`, rộng `heSoVien` 1,10 lần lõi) và **hào quang mềm**
+  (`heSoHaoQuang` 0,605 bề ngang). `GiatSet.KieuTia` nay nhân cả hai với `HeSoQuangDay` 1,2 (viền 1,32, hào quang 0,726) cho tia của người chơi;
+  tia của quái đánh dấu `cuaQuai` nên không nhân. Cụm sét bùng ở hai đầu cũng theo viền rộng ra.
+
+**Đo — menu 107** (tung Giựt sét thật, vẽ riêng tia lên nền đen bằng máy quay phụ đặt đúng chỗ máy quay game, cắt ngang tia ở 6 chỗ dọc thân,
+10 lần tung mỗi kiểu, đối chứng hệ số 1 chạy cùng lượt): vùng xanh nhìn thấy rộng **44,3 / 36,0 điểm ảnh = ×1,23**, vùng xanh sáng **×1,24**. Quả cầu
+điện thật ra tia `heSoVien` 1,32; tia Quỷ cây vẫn 1,10 / 0,605. Lần đo đầu chỉ 4 lần × 3 lát ra ×1,12 — tia gấp khúc ngẫu nhiên nên phải lấy nhiều
+lần mới ổn định. Menu 69 và 74 chạy lại 0 lỗi. Ảnh so sánh `PlayTestShots/giatset_quang_so_cu_moi.png` (trái cũ, phải mới).
+
 ### Lốc xoáy: cùng mẫu chỗ sét chạm đất (05/10/2026)
 
 **Người dùng:** "Chọn mẫu A + vết nứt của B. Áp dụng thêm cho Lốc xoáy".

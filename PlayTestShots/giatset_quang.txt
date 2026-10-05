@@ -1,0 +1,5 @@
+Giut set: heSoVien MOI 1.320 / CU 1.100, heSoHaoQuang MOI 0.726 / CU 0.605
+Giut set cat ngang (trung binh 10 lan x 6 lat): vung xanh rong MOI 44.3 / CU 36.0 diem anh = x1.23; vung xanh sang MOI 34.7 / CU 27.9 = x1.24
+Qua cau dien: tia heSoVien 1.320 (mong 1.320)
+Quy cay (doi chung): tia heSoVien 1.100 heSoHaoQuang 0.605 (mong 1.100 / 0,605)
+so loi ghi nhan = 0

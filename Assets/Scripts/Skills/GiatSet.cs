@@ -100,6 +100,8 @@ public class GiatSet : MonoBehaviour
 
     /// <summary>Ke BI UOT (mua May giong) an them 50% - chi Giut set cua NGUOI CHOI; PhongCuaQuai tat.</summary>
     public bool tangKhiUot = true;
+    /// <summary>Tia cua QUAI (PhongCuaQuai) - giu quang xanh nhu cu, khong day them (HeSoQuangDay chi cho nguoi choi).</summary>
+    public bool cuaQuai;
 
     [Header("Mau tia")]
     [Tooltip("Loi tia - sang gan nhu trang")]
@@ -161,6 +163,7 @@ public class GiatSet : MonoBehaviour
         gs.xacSuatChoang = xacSuatChoang;
         gs.giayChoang = giayChoang;
         gs.tangKhiUot = false;
+        gs.cuaQuai = true;
         return gs;
     }
 
@@ -293,7 +296,7 @@ public class GiatSet : MonoBehaviour
         var arc = LightningArc.Create(tu, den, day, GiayTiaHien);
         arc.coreColor = mauLoi;
         arc.glowColor = mauQuang;
-        KieuTia(arc, day, bamDau, bamCuoi);
+        KieuTia(arc, day, bamDau, bamCuoi, !cuaQuai);
     }
 
     /// <summary>
@@ -302,8 +305,15 @@ public class GiatSet : MonoBehaviour
     /// tu dat. Qua cau dien cung goi ham nay (nguoi dung 25/09/2026: "tia dien danh ra cung co hieu ung nhu tia set
     /// cua Giut set") - sua kieu tia o DAY la ca hai ky nang cung doi.
     /// </summary>
-    public static void KieuTia(LightningArc arc, float day, Transform bamDau, Transform bamCuoi)
+    public static void KieuTia(LightningArc arc, float day, Transform bamDau, Transform bamCuoi, bool dayQuang = false)
     {
+        // Nguoi dung 05/10/2026 (anh mau tia set xanh day): "anh sang xanh duong bao phu day hon 20%" - chon RONG hon 20%, do sang giu,
+        // chi Giut set + Qua cau dien cua nguoi choi (Quy cay giu nguyen): vien xanh (heSoVien) + hao quang mem (heSoHaoQuang) x HeSoQuangDay
+        if (dayQuang)
+        {
+            arc.heSoVien = LightningArc.HeSoVienXanh * HeSoQuangDay;
+            arc.heSoHaoQuang *= HeSoQuangDay;
+        }
         // ANH VE TU BLENDER (nguoi dung 24/09/2026): loi, quang va soi re nhanh nam san trong anh nen duong
         // di chi can gap khuc LON, khuc nho da co trong anh. Thieu anh thi LightningArc tu quay ve cach cu.
         arc.anhBlender = true;
@@ -330,6 +340,11 @@ public class GiatSet : MonoBehaviour
         // so theo do dai tia: SoNhanhNhoMoiMet x met
         arc.nhanhNho = Mathf.RoundToInt(SoNhanhNhoMoiMet * dai);
     }
+
+    /// <summary>Quang xanh (vien + hao quang) cua tia NGUOI CHOI rong them bao nhieu (nguoi dung 05/10/2026: 20%). Bien tinh de phep thu
+    /// menu 107 dat 1 lam doi chung.</summary>
+    public const float HeSoQuangDayChon = 1.2f;
+    public static float HeSoQuangDay = HeSoQuangDayChon;
 
     /// <summary>So nhanh nho phu moi met tia: 1 (nguoi dung chon 05/10/2026 sau anh menu 105b 0 / 0,5 / 1 / 1,5; ap cho CA BA tia dung
     /// KieuTia - Giut set nguoi choi, Qua cau dien, Quy cay). Bien tinh de menu 105b dat tam cac muc.</summary>
