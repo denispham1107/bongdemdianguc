@@ -7499,6 +7499,23 @@ chữ. Đo trên ảnh ghép: chữ / nền sau chữ 40,4 / 12,6 (×3,2; bản 
 0 lỗi) mở bằng máy chủ ở máy: nền + chữ hiện đúng ở màn ngang và màn dọc 375×812, không tràn ngang (scrollWidth 375). `sinh_tieu_de.py`
 cũ nay **tự chặn** trừ khi có `--cu`. Ảnh chọn: `PlayTestShots/tieude_moi2/banB3d_*.png`.
 
+#### Mặt chữ tiêu đề đổi sang đá bia mộ (06/10/2026)
+
+**Người dùng:** "ở trang loading cho màu 4 chữ giống màu các bia mộ trong game, sần sùi, nhiều vết nứt và nhiều vết máu (giọt máu, giọt
+rơi, cụm máu giữ nguyên)" → "sáng hơn một chút, còn tối quá" → "thiết kế giống vậy luôn cho màn hình trong game".
+
+- Lưới chữ + giọt đã gộp (`TD2B_Chu`) chép sang `TD2C_Chu`; mỗi đỉnh gắn thuộc tính `LaDa` = 1 nếu gần lưới chữ gốc (< 6 mm, tan dần tới
+  16 mm), 0 nếu là giọt máu (93,8% đỉnh là đá). Vật liệu trộn đá / máu theo `LaDa`.
+- Đá: lấy đúng ảnh của vật liệu bia mộ trong game (`BlenderMaps/GraveyardAct2/CayDaChua/DaMo_Mau|Gan|MatNa.png`, shader game
+  `DaMoTriplanar`), chiếu hộp tỉ lệ 0,75 (lần đầu 2,6: vân nhỏ ra họa tiết rằn ri). Rêu ×0,1, mốc ×0,12 (đậm thì loang lổ xanh), vết nứt
+  Voronoi đen (bẻ méo, chỉ ở vài vùng, khắc lõm qua bump), máu khô (0,12 0,006 0,005): mảng kênh B mặt nạ (chỉ phần đậm 0,5–0,85) + vệt chảy
+  dọc từ đỉnh + máu đọng trong vài vết nứt. Bump sần (nhiễu 60) + ảnh gân của bia.
+- Đèn đỏ làm máu thành màu cam hồng → hạ viền 700 → 260, đỏ dưới 120 → 50. "Sáng hơn": sắc đá 0,52 → 0,86, đèn chính 650 → 1350
+  (đèn chính diện thêm vào làm hạt máu bắn lóe trắng — bỏ). Đo độ sáng TB phần chữ (alpha > 250): 63,1 → 82,2.
+- Cùng một ảnh cho `Resources/GiaoDien/TieuDe.png` và `TemplateData/tieude.png` (1620×443, `?v=acd0991194`). Menu 28: màn đăng nhập thật
+  hiện chữ đá (`PlayTestShots/mang_man_1_dangnhap.png`). ⚠️ Lần chạy menu 28 đầu ra ẢNH SẢNH thay vì màn đăng nhập: biến tĩnh đăng nhập
+  của lần chạy trước còn (Domain Reload tắt) — `EditorUtility.RequestScriptReload()` rồi chạy lại.
+
 ### Tên game mới "ÁC QUỶ TRỞ LẠI", trang Loading đủ dấu, bỏ lớp phủ mờ
 
 Anh xin, ở **màn Loading**: font hiện đúng tiếng Việt có dấu; đổi "DIABLO 2.5D" thành **"ÁC QUỶ TRỞ LẠI"** kiểu chữ

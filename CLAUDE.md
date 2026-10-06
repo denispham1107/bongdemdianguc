@@ -909,7 +909,13 @@ hơn ×1,5 và mở xuống 1,8–4,3 m** (người dùng chọn sau menu 94 ch�
   0,08 m. Bản cũ Grenze Gotisch `CongCu/TieuDe/sinh_tieu_de.py` **tự chặn** (chỉ chạy với `--cu`) vì chạy là đè ảnh mới. Gắn `?v=<md5>`
   vào trang bằng tay khi đổi ảnh. **Trang Loading có nền địa ngục**: `TemplateData/nen_dianguc.jpg` = ảnh chụp vực dung nham Act2 trong
   game (máy quay (−25, −8, −88) nhìn (30, −24, −86)); CSS phủ kín + tối vừa ở giữa; **quầng tối sau chữ là NỀN của thẻ `#ten-game`**
-  (đi theo chữ ở mọi cỡ màn — đặt theo % trang thì màn dọc điện thoại lệch khỏi chữ). Chữ trên trang Loading dùng Inter nhúng kèm (`TemplateData/Inter-Regular.ttf`).
+  (đi theo chữ ở mọi cỡ màn — đặt theo % trang thì màn dọc điện thoại lệch khỏi chữ).
+  ⚠️ **Cùng ngày (sau): MẶT CHỮ = ĐÁ BIA MỘ** cho CẢ trang Loading lẫn màn trong game (người dùng: "màu giống bia mộ trong game, sần sùi,
+  nhiều vết nứt, nhiều vết máu; giọt máu / giọt rơi / cụm máu giữ nguyên"; rồi "sáng hơn một chút"; rồi "giống vậy cho màn trong game"):
+  vật liệu `TD2C_DaMo` (`CongCu/Blender/tieu_de_vat_lieu_bia.py`) dùng CHÍNH ảnh `DaMo_Mau/Gan/MatNa.png` của vật liệu `Act2_DaBia`
+  (chiếu hộp, sắc ×0,86), rêu / mốc nhẹ, vết nứt Voronoi đen, vết máu khô (kênh B mặt nạ + vệt chảy từ đỉnh + máu đọng trong vết nứt);
+  thuộc tính đỉnh `LaDa` (khoảng cách tới lưới chữ gốc < 6–16 mm) tách đá / giọt máu → giọt vẫn là máu bóng. Đèn đỏ hạ (viền 260, đỏ
+  50), đèn chính 1350; ⚠️ thêm đèn chính diện làm hạt máu bắn lóe trắng như kim tuyến — bỏ. Độ sáng TB phần chữ 63 → 82. Chữ trên trang Loading dùng Inter nhúng kèm (`TemplateData/Inter-Regular.ttf`).
   **Không đổi `productName`** trong Unity (vẫn "Diablo 2.5D"): cache dữ liệu và chỗ lưu của người chơi tính theo nó.
 - **Màn chính (MainMenu.unity) dựng từ cảnh Act2** bằng menu 51 — đừng sửa tay trong scene, chạy lại menu.
   ⚠️ **04/10/2026: PHÙ THUỶ TRƯNG BÀY NGỬA HAI TAY NÂNG QUẢ CẦU LỬA + QUẢ CẦU BĂNG** (người dùng; chọn lửa bên PHẢI màn hình lúc quay mặt về
