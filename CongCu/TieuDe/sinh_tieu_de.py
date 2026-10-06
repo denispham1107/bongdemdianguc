@@ -10,7 +10,13 @@ Chay: python CongCu/TieuDe/sinh_tieu_de.py   (can Pillow, KHONG can numpy)
 Ra:   Assets/Resources/GiaoDien/TieuDe.png
       Assets/WebGLTemplates/Diablo25D/TemplateData/tieude.png
 """
-import io, os, random
+import io, os, random, sys
+
+# BAN CU (Grenze Gotisch). 06/10/2026 tieu de doi sang chu MAU DAC 3D dung bang Blender MCP
+# (CongCu/Blender/tieu_de_2_ban.blend, scene TieuDe2B; ham dung chung CongCu/Blender/tieu_de_mau_chung.py).
+# Chay script nay se DE MAT anh moi (ca TieuDe.png lan tieude.png), nen no tu chan tru khi co --cu.
+if "--cu" not in sys.argv:
+    sys.exit("sinh_tieu_de.py la ban CU - them --cu neu that su muon de anh tieu de moi (Blender).")
 from PIL import Image, ImageDraw, ImageFont, ImageFilter, ImageChops
 
 GOC = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))

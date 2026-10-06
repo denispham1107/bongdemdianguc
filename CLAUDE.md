@@ -900,8 +900,16 @@ hơn ×1,5 và mở xuống 1,8–4,3 m** (người dùng chọn sau menu 94 ch�
   đẩy khung lên, ưu tiên giữ ô nhập trên mép bàn phím. Menu 57 kiểm. Vật thể **phải tên "BanPhimAo"** (SendMessage tìm theo tên).
 - **Tên game hiển thị: "ÁC QUỶ TRỞ LẠI"** (tác giả: Phạm Minh Quân). Tiêu đề là **một ảnh** dùng chung cho trang
   Loading (`WebGLTemplates/Diablo25D/TemplateData/tieude.png`) và màn đăng nhập (`Resources/GiaoDien/TieuDe.png`),
-  dựng bằng `python CongCu/TieuDe/sinh_tieu_de.py` từ font Grenze Gotisch (`CongCu/Fonts`, OFL) — script tự gắn
-  `?v=<mã>` vào trang. Chữ trên trang Loading dùng Inter nhúng kèm (`TemplateData/Inter-Regular.ttf`).
+  ⚠️ **06/10/2026: CHỮ MÁU ĐẶC 3D** (người dùng duyệt sau 7 bản: "mềm mại, ghê rợn, máu me hơn", "3D thêm", giọt máu ngắn đều cả 4
+  chữ + giọt rơi lơ lửng, máu bắn trên QUỶ và TRỞ) — dựng bằng **Blender MCP** `CongCu/Blender/tieu_de_2_ban.blend` (scene `TieuDe2B`,
+  bộ sưu tập `TD2_B`; hàm chung `CongCu/Blender/tieu_de_mau_chung.py`), font **Playfair Display SC Black** (`CongCu/Fonts`, OFL): chữ
+  dày 0,13 m + giọt máu NURBS gộp bằng voxel remesh + smooth, vật liệu máu bóng có cục đông, máy quay phối cảnh nghiêng xuống 10,4°
+  (thấy mặt trên khối chữ), compositor: quầng đỏ + **bóng tối ôm sát viền chữ** (KHÔNG mảng khói phía sau — người dùng: che nền trong
+  game). Ảnh cắt sát nội dung 1620×443. ⚠️ Nhìn chếch xuống làm dấu chấm dưới Ạ dính chân chữ A ("LAI") → đã dời 3 mảnh dấu xuống
+  0,08 m. Bản cũ Grenze Gotisch `CongCu/TieuDe/sinh_tieu_de.py` **tự chặn** (chỉ chạy với `--cu`) vì chạy là đè ảnh mới. Gắn `?v=<md5>`
+  vào trang bằng tay khi đổi ảnh. **Trang Loading có nền địa ngục**: `TemplateData/nen_dianguc.jpg` = ảnh chụp vực dung nham Act2 trong
+  game (máy quay (−25, −8, −88) nhìn (30, −24, −86)); CSS phủ kín + tối vừa ở giữa; **quầng tối sau chữ là NỀN của thẻ `#ten-game`**
+  (đi theo chữ ở mọi cỡ màn — đặt theo % trang thì màn dọc điện thoại lệch khỏi chữ). Chữ trên trang Loading dùng Inter nhúng kèm (`TemplateData/Inter-Regular.ttf`).
   **Không đổi `productName`** trong Unity (vẫn "Diablo 2.5D"): cache dữ liệu và chỗ lưu của người chơi tính theo nó.
 - **Màn chính (MainMenu.unity) dựng từ cảnh Act2** bằng menu 51 — đừng sửa tay trong scene, chạy lại menu.
   ⚠️ **04/10/2026: PHÙ THUỶ TRƯNG BÀY NGỬA HAI TAY NÂNG QUẢ CẦU LỬA + QUẢ CẦU BĂNG** (người dùng; chọn lửa bên PHẢI màn hình lúc quay mặt về

@@ -470,8 +470,9 @@ public static class GiaoDien
     static bool daNapTieuDe;
 
     /// <summary>
-    /// ANH TIEU DE dung san (Resources/GiaoDien/TieuDe.png, sinh bang
-    /// CongCu/TieuDe/sinh_tieu_de.py tu font Grenze Gotisch). CUNG MOT FILE voi
+    /// ANH TIEU DE dung san (Resources/GiaoDien/TieuDe.png) - 06/10/2026 chu MAU DAC 3D dung bang
+    /// Blender MCP (CongCu/Blender/tieu_de_2_ban.blend, scene TieuDe2B, font Playfair Display SC Black;
+    /// ban cu Grenze Gotisch / CongCu/TieuDe/sinh_tieu_de.py da bo). CUNG MOT FILE voi
     /// man Loading tren web (TemplateData/tieude.png) - nen hai noi giong het
     /// nhau, va dau tieng Viet nam san trong anh: khong con phu thuoc font
     /// cua may nao.

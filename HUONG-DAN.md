@@ -7466,6 +7466,39 @@ trong Editor: **252 cách gõ** của 134 chữ (tách hết, dấu sai thứ t�
 
 Menu 52: **0 lỗi**. Bản web build 5,4 phút, 0 lỗi, trình duyệt đã từng vào trang tải đúng bản mới, console 0 lỗi.
 
+### Thiết kế lại chữ "ÁC QUỶ TRỞ LẠI": chữ máu đặc 3D + nền địa ngục cho trang Loading (06/10/2026)
+
+**Người dùng:** chữ cũ (Grenze Gotisch, ảnh vẽ bằng Pillow) "còn hơi thô và cứng" — muốn "mềm mại thật hơn, ghê rợn âm u, máu me
+nhiều hơn", giữ đúng dấu. Quá trình chọn (mọi bản dựng bằng **Blender MCP**, ghép thử lên ảnh chụp hai màn để xem):
+
+1. 5 bản (Texturina máu chảy · Mea Culpa thư pháp · Splash vết cào · Grenze than hồng · Water Brush hồn ma — `tieu_de_5_ban.blend`):
+   người dùng: "vẫn còn quá xấu", không dùng font trong ảnh (Mea Culpa, Water Brush), muốn kiểu Diablo 4 có quỷ phía trên.
+2. Bản Diablo 4 với **Quỷ dữ** của game (Abyssal Horned Demon, dang tay) + chữ Cormorant SC bạc + vòng gai: đang làm thì Blender hỏng
+   (render và cả khung nhìn trắng trơn, kể cả solid) — ⚠️ nghi do ảnh 8192² của mô hình Meshy làm đầy bộ nhớ GPU; thu nhỏ ảnh / xoá
+   cảnh không cứu được, người dùng phải **khởi động lại Blender**. Người dùng đổi yêu cầu: **bỏ hình quỷ**, 2 bản chỉ chữ, nền
+   Loading = **cảnh vực trong game**.
+3. 2 bản (`tieu_de_2_ban.blend`): **A** chữ khắc Cormorant SC bạc nhuốm máu · **B** chữ Playfair Display SC Black đúc bằng máu đặc →
+   người dùng chọn **B** rồi chỉnh: 3D hơn · chữ nổi hơn trên nền Loading · bỏ mảng khói đen phía sau (che nền game) · bớt máu dưới
+   "ÁC" → giọt **ngắn đều cả 4 chữ** (5/7/6/5 giọt, 8,5–14,5 cm) · thêm **giọt rơi lơ lửng** (2/3/2/2, hình giọt nước mắt) · thêm
+   **máu bắn trên QUỶ** giống TRỞ (sát đỉnh chữ, hạt lan vào khe giữa các chữ cái + vài hạt trên mặt chữ).
+
+**Kỹ thuật bản cuối:** chữ (Blender text → lưới, dày 0,13 m, vát 0,025) + giọt máu NURBS (bán kính đổi theo dáng: chân loe, thân thắt,
+đầu tròn) gộp một khối bằng **voxel remesh 0,0055 + Smooth** (giọt liền vào thân chữ như chất lỏng) + Displace gợn nhẹ; vật liệu máu
+(nhiễu → vùng đông đặc sẫm, phủ bóng coat, subsurface); máy quay **phối cảnh 85 mm nghiêng xuống 10,4°** (thấy mặt trên khối chữ — bản
+trực giao trông 2D); đèn trước-trên + đèn mặt trên + viền đỏ sau. Compositor: Fog Glow đỏ + **bóng tối ôm viền** (làm mờ alpha 16 px,
+đặt dưới chữ) + alpha = max(alpha, độ sáng quầng). ⚠️ Bẫy: `to_track_quat('-Z','Y')` cho máy quay nhìn gần thẳng xuống ra ảnh **lộn
+180°** — đặt thẳng góc Euler X. ⚠️ Nhìn chếch xuống làm **dấu chấm dưới Ạ dính chân chữ A** (đọc thành "LAI"; đỉnh dấu −0,128 cao hơn
+chân chữ −0,146) → dời 3 mảnh của dấu (vỏ vát + hai mặt) xuống 0,08 m. Ảnh cắt sát nội dung (alpha > 6, lề 14 px): **1620×443**.
+
+**Trang Loading:** `TemplateData/nen_dianguc.jpg` (139 KB) chụp trong Play Act2: máy quay (−25, −8, −88) nhìn (30, −24, −86) — sông dung
+nham giữa hai vách, khói, tàn lửa. CSS: ảnh phủ kín (`cover`) + tối 25% + tối vừa ở giữa; **quầng tối ngay sau chữ là nền của chính thẻ
+`<img id="ten-game">`** (lộ qua phần trong suốt) — bản đầu đặt quầng theo % trang: màn dọc điện thoại chữ nằm thấp hơn → quầng lệch khỏi
+chữ. Đo trên ảnh ghép: chữ / nền sau chữ 40,4 / 12,6 (×3,2; bản trước ×1,8); trong game khoảng nền giữa các chữ 70 (bản có khói 45).
+
+**Kiểm:** menu 28 chụp màn đăng nhập thật (`PlayTestShots/mang_man_1_dangnhap.png`): chữ mới, không mảng tối, đủ dấu. Build WebGL (menu 29,
+0 lỗi) mở bằng máy chủ ở máy: nền + chữ hiện đúng ở màn ngang và màn dọc 375×812, không tràn ngang (scrollWidth 375). `sinh_tieu_de.py`
+cũ nay **tự chặn** trừ khi có `--cu`. Ảnh chọn: `PlayTestShots/tieude_moi2/banB3d_*.png`.
+
 ### Tên game mới "ÁC QUỶ TRỞ LẠI", trang Loading đủ dấu, bỏ lớp phủ mờ
 
 Anh xin, ở **màn Loading**: font hiện đúng tiếng Việt có dấu; đổi "DIABLO 2.5D" thành **"ÁC QUỶ TRỞ LẠI"** kiểu chữ

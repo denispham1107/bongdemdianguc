@@ -36,7 +36,8 @@
 
   <!-- Nap truoc font va anh tieu de: man cho la thu dau tien nguoi choi thay -->
   <link rel="preload" href="TemplateData/Inter-Regular.ttf?v=1" as="font" type="font/ttf" crossorigin>
-  <link rel="preload" href="TemplateData/tieude.png?v=46475ea594" as="image">
+  <link rel="preload" href="TemplateData/tieude.png?v=9521454fdd" as="image">
+  <link rel="preload" href="TemplateData/nen_dianguc.jpg?v=f5b1b56c41" as="image">
   <style>
     /* FONT CO DU DAU TIENG VIET, di kem trang (khong dua vao font cua may):
        Inter (SIL OFL, TemplateData/Inter-LICENSE.txt) - da doc cmap, du 134 chu
@@ -70,23 +71,34 @@
 
     /* Man cho trong luc tai. Ban WebGL nang nen nguoi choi phai doi that -
        khong co gi te hon mot man hinh den khong noi gi. */
+    /* NEN DIA NGUC (06/10/2026, nguoi dung: "rieng man loading cho phong nen dia nguc" - chon "lay chinh canh vuc trong game"):
+       anh chup vuc dung nham ngoai ban do Act2 trong game (TemplateData/nen_dianguc.jpg). Phia SAU CHU toi han (nguoi dung: chu
+       "hoi bi khuat vao nen") + vung giua toi vua cho thanh tai / chu doc ro; ria man giu sac dung nham. */
     #man-tai {
       position: fixed; inset: 0;
       display: flex; flex-direction: column;
       align-items: center; justify-content: center;
-      background: #07070a;
+      background:
+        radial-gradient(ellipse 50% 45% at 50% 48%, rgba(6,3,4,.72) 0%, rgba(6,3,4,0) 100%),
+        linear-gradient(rgba(6,3,4,.25), rgba(6,3,4,.25)),
+        url("TemplateData/nen_dianguc.jpg?v=f5b1b56c41") center / cover no-repeat,
+        #07070a;
       color: #b9b9c0;
       font: 15px/1.6 "InterViet", system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
       z-index: 10;
     }
-    /* TEN GAME = ANH dung san (CongCu/TieuDe/sinh_tieu_de.py, font Grenze
-       Gotisch) - CUNG FILE voi man trong game (Resources/GiaoDien/TieuDe.png),
-       nen hai noi giong het, dau nam san trong anh. Chap chon do sang 0,85-1,0
+    /* TEN GAME = ANH dung san - chu MAU DAC 3D (06/10/2026, Blender MCP CongCu/Blender/tieu_de_2_ban.blend, font Playfair
+       Display SC Black; ban cu Grenze Gotisch / sinh_tieu_de.py da bo) - CUNG FILE voi man trong game
+       (Resources/GiaoDien/TieuDe.png), nen hai noi giong het, dau nam san trong anh. Chap chon do sang 0,85-1,0
        nhu GiaoDien.TieuDeGame. */
+    /* Quang TOI ngay sau chu = nen cua chinh the anh (lo ra qua phan trong suot) - di theo chu o MOI co man (man doc
+       dien thoai chu nam thap hon man ngang; quang dat co dinh theo % trang thi lech khoi chu). */
     #ten-game {
       display: block;
       width: min(88vw, 640px); height: auto;
-      margin-bottom: 14px;
+      padding: 4vmin 5vmin; box-sizing: content-box;
+      background: radial-gradient(ellipse 50% 50% at 50% 50%, rgba(6,3,4,.93) 0%, rgba(6,3,4,.8) 40%, rgba(6,3,4,0) 100%);
+      margin-bottom: 4px;
       animation: chap-chon 2.7s infinite;
     }
     /* 0,85-1,0 (truoc 0,62-1,0: nguoi dung thay chu "hoi bi toi") */
@@ -232,7 +244,7 @@
 </div>
 
 <div id="man-tai">
-  <img id="ten-game" src="TemplateData/tieude.png?v=46475ea594" alt="Ác Quỷ Trở Lại">
+  <img id="ten-game" src="TemplateData/tieude.png?v=9521454fdd" alt="Ác Quỷ Trở Lại">
   <div id="vach">
     <div id="vach-long"><div id="vach-day"></div></div>
     <div id="tim"></div>
