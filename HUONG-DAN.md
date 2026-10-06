@@ -7471,7 +7471,7 @@ Menu 52: **0 lỗi**. Bản web build 5,4 phút, 0 lỗi, trình duyệt đã t�
 **Người dùng:** chữ cũ (Grenze Gotisch, ảnh vẽ bằng Pillow) "còn hơi thô và cứng" — muốn "mềm mại thật hơn, ghê rợn âm u, máu me
 nhiều hơn", giữ đúng dấu. Quá trình chọn (mọi bản dựng bằng **Blender MCP**, ghép thử lên ảnh chụp hai màn để xem):
 
-1. 5 bản (Texturina máu chảy · Mea Culpa thư pháp · Splash vết cào · Grenze than hồng · Water Brush hồn ma — `tieu_de_5_ban.blend`):
+1. 5 bản (Texturina máu chảy · Mea Culpa thư pháp · Splash vết cào · Grenze than hồng · Water Brush hồn ma — `tieu_de_5_ban.blend`, 106 MB, đã xoá cùng 7 font và ảnh của các bản loại theo yêu cầu người dùng):
    người dùng: "vẫn còn quá xấu", không dùng font trong ảnh (Mea Culpa, Water Brush), muốn kiểu Diablo 4 có quỷ phía trên.
 2. Bản Diablo 4 với **Quỷ dữ** của game (Abyssal Horned Demon, dang tay) + chữ Cormorant SC bạc + vòng gai: đang làm thì Blender hỏng
    (render và cả khung nhìn trắng trơn, kể cả solid) — ⚠️ nghi do ảnh 8192² của mô hình Meshy làm đầy bộ nhớ GPU; thu nhỏ ảnh / xoá

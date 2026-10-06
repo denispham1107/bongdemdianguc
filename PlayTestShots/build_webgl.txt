@@ -1,8 +1,8 @@
 [ban 4] xuat ban WebGL (khong nen san, ten file = ma bam)
 ket qua: Succeeded
-thoi gian: 1.5 phut
+thoi gian: 0.1 phut
 tong dung luong: 210.2 MB
-so loi: 0 | so canh bao: 369
+so loi: 0 | so canh bao: 1
 thu muc ra: C:\Users\HP\Documents\GameUnity\Diablo25D\Build\WebGL
 --- file trong Build/ ---
   13a4f75d752a61c5e706d2c81887f5fb.data  192.6 MB
