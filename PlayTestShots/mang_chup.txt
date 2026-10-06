@@ -1,7 +1,7 @@
 [ban 3] chup man hinh phan mang
-1. man dang nhap: 812 KB
+1. man dang nhap: 811 KB
    dang nhap: OK, ten = ChienBinhB
-2. sanh phong: 779 KB
-   tao phong: OK - -P3DortByDhxtqriMwM7
-3. trong phong: 778 KB
+2. sanh phong: 777 KB
+   tao phong: OK - -P3EJNxE5piO3rqg3NqU
+3. trong phong: 784 KB
    don phong chup hinh: xong

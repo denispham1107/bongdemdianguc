@@ -7515,6 +7515,14 @@ rơi, cụm máu giữ nguyên)" → "sáng hơn một chút, còn tối quá" �
 - Cùng một ảnh cho `Resources/GiaoDien/TieuDe.png` và `TemplateData/tieude.png` (1620×443, `?v=acd0991194`). Menu 28: màn đăng nhập thật
   hiện chữ đá (`PlayTestShots/mang_man_1_dangnhap.png`). ⚠️ Lần chạy menu 28 đầu ra ẢNH SẢNH thay vì màn đăng nhập: biến tĩnh đăng nhập
   của lần chạy trước còn (Domain Reload tắt) — `EditorUtility.RequestScriptReload()` rồi chạy lại.
+- **Mảng trắng loang lổ trên chữ** (người dùng khoanh 6 chỗ ở C, U, R, L, A: "còn màu trắng nguyên, không phải màu bia mộ"). Đo "điểm trắng"
+  (alpha chữ đặc, min RGB > 150, gần xám): **2,89%**. Ba giả thuyết sai, mỗi cái thử một lần với số đo: chặn trần độ sáng vân đá + bỏ mốc → 2,95%;
+  máu nhám (ánh phản chiếu) → 2,01% nhưng máu thành hồng nhạt, mảng trắng vẫn nguyên chỗ; phân loại đá / máu lại theo khoảng cách tới GIỌT →
+  0 điểm đổi loại. Ảnh chẩn đoán (phát sáng thẳng thuộc tính `LaDa`, rồi thẳng màu nền) cho thấy phân loại đúng và màu trắng nằm ngay trong
+  MÀU NỀN — thủ phạm: **`DaMo_Mau.png` có alpha 0 ở 92% điểm ảnh** (kênh dữ liệu riêng của shader `DaMoTriplanar`), Blender đọc như độ trong suốt
+  và làm hỏng màu ở đó. Sửa: `alpha_mode = 'CHANNEL_PACKED'` (`tieu_de_vat_lieu_bia.py`). Màu đọc đúng thì đá bia thật SÁNG (màu xám xanh trước là
+  màu hỏng) → sắc 0,27, chặn trần 0,66 (DARKEN), rêu 0,18, mốc 0, máu mảng B 0,38–0,7. Kết quả: điểm trắng **1,55%** (phần còn lại là ánh trên cạnh
+  vát khối chữ), sáng TB 97. Menu 28 chụp màn đăng nhập thật; build WebGL 0 lỗi; web thật tải xong, console 0 lỗi (`tieude.png?v=245b16bc35`).
 
 ### Tên game mới "ÁC QUỶ TRỞ LẠI", trang Loading đủ dấu, bỏ lớp phủ mờ
 

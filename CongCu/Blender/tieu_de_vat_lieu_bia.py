@@ -1,13 +1,16 @@
 # Vat lieu DA BIA MO cho chu tieu de trang Loading (chay trong Blender qua MCP). Anh da / gan / mat na lay tu
 # chinh vat lieu Act2_DaBia cua game (Diablo25D/DaMoTriplanar). Mau = thuoc tinh "LaDa" (1 = da, 0 = giot mau).
 import bpy
-P = dict(ti_le=0.75, sac=(0.52, 0.52, 0.50), reu=0.10, moc=0.12, nut_co=9.0, nut_day=0.022, nut_vung=(0.42, 0.55),
-         mau_B=(0.5, 0.85), chay_nguong=0.92, mau_nut=(0.5, 0.6), gan=1.2, san=0.45)
+P = dict(ti_le=0.75, sac=(0.27, 0.27, 0.26), reu=0.18, moc=0.0, nut_co=9.0, nut_day=0.022, nut_vung=(0.42, 0.55),
+         mau_B=(0.38, 0.7), chay_nguong=0.92, mau_nut=(0.5, 0.6), gan=1.2, san=0.45)
 P.update(globals().get("THAM_SO", {}))
 D = r"C:\Users\HP\Documents\GameUnity\Diablo25D\Assets\BlenderMaps\GraveyardAct2\CayDaChua" + "\\"
 def anh(ten, khong_mau):
     im = bpy.data.images.load(D + ten, check_existing=True)
     if khong_mau: im.colorspace_settings.name = 'Non-Color'
+    # ALPHA cua anh da bia = du lieu rieng cua shader game (92% diem anh alpha 0) - Blender coi la do trong suot va lam HONG
+    # mau o do (thanh mang trang loang lo tren chu, nguoi dung khoanh 06/10/2026). Doc mau tach rieng khoi alpha.
+    im.alpha_mode = 'CHANNEL_PACKED'
     return im
 m = bpy.data.materials.get("TD2C_DaMo") or bpy.data.materials.new("TD2C_DaMo"); m.use_nodes = True
 nt = m.node_tree; [nt.nodes.remove(n) for n in list(nt.nodes)]
@@ -31,8 +34,10 @@ def tron(c_in, mau, fac):
     return mi.outputs[2]
 def nhieu(co, chi=4):
     n = N('ShaderNodeTexNoise'); n.inputs["Scale"].default_value = co; n.inputs["Detail"].default_value = chi; L(tc.outputs["Object"], n.inputs["Vector"]); return n
+dk = N('ShaderNodeMix'); dk.data_type = 'RGBA'; dk.blend_type = 'DARKEN'; dk.inputs["Factor"].default_value = 1.0
+dk.inputs[7].default_value = (0.66, 0.66, 0.63, 1); L(tMau.outputs["Color"], dk.inputs[6])     # chan tran mang sang nhat cua van da
 sac = N('ShaderNodeMix'); sac.data_type = 'RGBA'; sac.blend_type = 'MULTIPLY'; sac.inputs["Factor"].default_value = 1.0
-sac.inputs[7].default_value = P["sac"] + (1,); L(tMau.outputs["Color"], sac.inputs[6])
+sac.inputs[7].default_value = P["sac"] + (1,); L(dk.outputs[2], sac.inputs[6])
 sep = N('ShaderNodeSeparateColor'); L(tMn.outputs["Color"], sep.inputs["Color"])
 c = tron(sac.outputs[2], (0.16, 0.26, 0.11), nhan(sep.outputs["Red"], P["reu"], True))
 c = tron(c, (0.60, 0.62, 0.55), nhan(sep.outputs["Green"], P["moc"], True))

@@ -915,7 +915,11 @@ hơn ×1,5 và mở xuống 1,8–4,3 m** (người dùng chọn sau menu 94 ch�
   vật liệu `TD2C_DaMo` (`CongCu/Blender/tieu_de_vat_lieu_bia.py`) dùng CHÍNH ảnh `DaMo_Mau/Gan/MatNa.png` của vật liệu `Act2_DaBia`
   (chiếu hộp, sắc ×0,86), rêu / mốc nhẹ, vết nứt Voronoi đen, vết máu khô (kênh B mặt nạ + vệt chảy từ đỉnh + máu đọng trong vết nứt);
   thuộc tính đỉnh `LaDa` (khoảng cách tới lưới chữ gốc < 6–16 mm) tách đá / giọt máu → giọt vẫn là máu bóng. Đèn đỏ hạ (viền 260, đỏ
-  50), đèn chính 1350; ⚠️ thêm đèn chính diện làm hạt máu bắn lóe trắng như kim tuyến — bỏ. Độ sáng TB phần chữ 63 → 82. Chữ trên trang Loading dùng Inter nhúng kèm (`TemplateData/Inter-Regular.ttf`).
+  50), đèn chính 1350; ⚠️ thêm đèn chính diện làm hạt máu bắn lóe trắng như kim tuyến — bỏ. Độ sáng TB phần chữ 63 → 82. ⚠️ **Mảng TRẮNG loang lổ** trên chữ
+  (người dùng khoanh): KHÔNG phải do sáng / bóng / phân loại đá-máu (đã thử cả ba, số điểm trắng không đổi) mà do **ALPHA của `DaMo_Mau.png`**
+  — 92% điểm ảnh alpha 0 (dữ liệu riêng của shader game), Blender coi là trong suốt và làm hỏng màu ở đó → ảnh phải `alpha_mode =
+  'CHANNEL_PACKED'`. Đọc đúng thì đá bia thật SÁNG (màu xám xanh trước đó là màu hỏng) → sắc 0,27 + chặn trần 0,66, rêu 0,18, mốc 0. Điểm
+  trắng 2,9% → 1,6% (còn lại là ánh trên cạnh vát), sáng TB 97. Chữ trên trang Loading dùng Inter nhúng kèm (`TemplateData/Inter-Regular.ttf`).
   **Không đổi `productName`** trong Unity (vẫn "Diablo 2.5D"): cache dữ liệu và chỗ lưu của người chơi tính theo nó.
 - **Màn chính (MainMenu.unity) dựng từ cảnh Act2** bằng menu 51 — đừng sửa tay trong scene, chạy lại menu.
   ⚠️ **04/10/2026: PHÙ THUỶ TRƯNG BÀY NGỬA HAI TAY NÂNG QUẢ CẦU LỬA + QUẢ CẦU BĂNG** (người dùng; chọn lửa bên PHẢI màn hình lúc quay mặt về
