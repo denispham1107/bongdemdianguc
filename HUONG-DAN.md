@@ -7471,7 +7471,8 @@ Menu 52: **0 lỗi**. Bản web build 5,4 phút, 0 lỗi, trình duyệt đã t�
 Người dùng gửi 5 ảnh chụp có đánh dấu:
 
 1. **Tên game** ở màn đăng nhập kéo lên chỗ khung xanh lá (trên mái nhà mồ). `ManDangNhap.TinhBoCuc` đặt tâm ảnh tên ở
-   `TamTieuDe` **0,11** chiều cao màn hình, khung đăng nhập **giữ nguyên chỗ cũ**; chỉ kéo LÊN, không bao giờ thấp hơn chỗ cũ
+   `TamTieuDe` 0,11 chiều cao màn hình → cùng ngày người dùng thấy "hơi cao quá, xuống 1 chút", chọn hạ ~25 điểm (màn 580) →
+   **0,153**; khung đăng nhập **giữ nguyên chỗ cũ**; chỉ kéo LÊN, không bao giờ thấp hơn chỗ cũ
    (màn dọc hẹp chỗ cũ đã sát mép trên). Bàn phím ảo lên thì vẫn bỏ ảnh tên như trước.
 2. **Khung xanh dương trong hơn 40%** ("giảm độ đục để thấy rõ phù thủy phía sau"): lòng khung đăng nhập / tạo phòng / danh sách
    phòng / người chơi 0,55 → **0,33** (`GiaoDien.DoDucKhungSanh`), lòng hàng phòng · hàng ghế 0,45 → **0,27** (`DoDucHangSanh`), ghế
@@ -7486,8 +7487,8 @@ Người dùng gửi 5 ảnh chụp có đánh dấu:
 **Số đo** (menu 50, màn Game 1619×580, đo TRÊN ẢNH — chụp có giao diện rồi tắt component vẽ chụp lại cùng khung, trung vị tỉ số
 độ sáng trong lòng khung = phần cảnh lọt qua):
 - Khung đăng nhập lọt qua **0,66–0,71**, khung danh sách phòng **0,68–0,69** (dự kiến 0,67; bản cũ đục 0,55 ra ~0,45).
-- Ảnh tên game (các hàng đổi màu phía trên khung, chỉ trong bề ngang ảnh, ≥ 10% điểm đổi): y **43–97 / 580**, tâm **0,121** —
-  khung xanh lá của người dùng 47–95. ⚠️ Lần đo đầu ra 40–204 (tâm 0,21): quả cầu lửa trên tay phù thủy lập loè giữa hai lần chụp,
+- Ảnh tên game (các hàng đổi màu phía trên khung, chỉ trong bề ngang ảnh, ≥ 10% điểm đổi): ở 0,11 y 43–97 / 580, tâm 0,121 —
+  khung xanh lá của người dùng 47–95; hạ xuống 0,153: y **68–122**, tâm **0,164** (xuống đúng 25 điểm). ⚠️ Lần đo đầu ra 40–204 (tâm 0,21): quả cầu lửa trên tay phù thủy lập loè giữa hai lần chụp,
   lọt vào vùng đếm; siết ngưỡng theo tỉ lệ bề ngang mới sạch.
 - Vòng đếm ngược trên ảnh: rộng **107** điểm ở hàng y 118 (cỡ mới 112–120 lúc đập nhịp; bản cũ 215 ở giữa màn). Mép dưới lúc đập
   to nhất y **178**, chóp mũ phù thuỷ (xương `head_end` + 0,03 m, như `BangTen`) y **186**; đối chứng bản cũ giữa màn: đáy y 405.

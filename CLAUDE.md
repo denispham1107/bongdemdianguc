@@ -921,10 +921,10 @@ hơn ×1,5 và mở xuống 1,8–4,3 m** (người dùng chọn sau menu 94 ch�
   'CHANNEL_PACKED'`. Đọc đúng thì đá bia thật SÁNG (màu xám xanh trước đó là màu hỏng) → sắc 0,27 + chặn trần 0,66, rêu 0,18, mốc 0. Điểm
   trắng 2,9% → 1,6% (còn lại là ánh trên cạnh vát), sáng TB 97. Chữ trên trang Loading dùng Inter nhúng kèm (`TemplateData/Inter-Regular.ttf`).
   **Không đổi `productName`** trong Unity (vẫn "Diablo 2.5D"): cache dữ liệu và chỗ lưu của người chơi tính theo nó.
-- ⚠️ **08/10/2026 MÀN ĐĂNG NHẬP / SẢNH / PHÒNG** (người dùng, ảnh đánh dấu): ảnh tên game lên sát mép trên (`ManDangNhap.TamTieuDe`
-  0,11, khung đăng nhập giữ chỗ); lòng khung + hàng + ghế trống + nền ô nhập **đục bớt 40%** (`GiaoDien.DoDucKhungSanh` 0,33 /
+- ⚠️ **08/10/2026 MÀN ĐĂNG NHẬP / SẢNH / PHÒNG** (người dùng, ảnh đánh dấu): ảnh tên game lên gần mép trên (`ManDangNhap.TamTieuDe`
+  0,153 — 0,11 người dùng thấy "hơi cao quá", khung đăng nhập giữ chỗ); lòng khung + hàng + ghế trống + nền ô nhập **đục bớt 40%** (`GiaoDien.DoDucKhungSanh` 0,33 /
   `DoDucHangSanh` 0,27 — chỉ ba màn này, Sách phép / Cài đặt / HUD giữ hằng cũ); đếm ngược 5 giây, vòng + số **×0,52** ở 0,204 chiều
-  cao (`ManSanh.TamDemNguoc`, trên chóp mũ phù thuỷ). Menu 50 đo trên ảnh: cảnh lọt qua 0,66–0,71 (cũ ~0,45), tên game tâm 0,121.
+  cao (`ManSanh.TamDemNguoc`, trên chóp mũ phù thuỷ). Menu 50 đo trên ảnh: cảnh lọt qua 0,66–0,72 (cũ ~0,45), tên game tâm 0,164.
 - **Màn chính (MainMenu.unity) dựng từ cảnh Act2** bằng menu 51 — đừng sửa tay trong scene, chạy lại menu.
   ⚠️ **04/10/2026: PHÙ THUỶ TRƯNG BÀY NGỬA HAI TAY NÂNG QUẢ CẦU LỬA + QUẢ CẦU BĂNG** (người dùng; chọn lửa bên PHẢI màn hình lúc quay mặt về
   máy quay, quả cầu y trong trận thu nhỏ, bàn tay ngang bụng chìa sang hai bên): `UI/TuTheTrungBay.cs` gắn LÚC CHẠY từ `MainMenuUI.Start`

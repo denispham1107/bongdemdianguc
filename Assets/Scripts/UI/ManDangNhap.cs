@@ -82,9 +82,9 @@ public class ManDangNhap : MonoBehaviour
     /// dung bang hang tab, tuc cung lam la mat hai tab, khong bao gio mat o nhap.</summary>
     public static float TranLenToiDa(float s) { return 122f * s; }
 
-    /// <summary>Tam anh ten game theo chieu cao man hinh (0 = mep tren). 0,11: cho nguoi dung danh dau tren anh
-    /// chup 08/10/2026 (khung xanh la, tam o 12% man hinh; anh co vien quang trong suot phia tren).</summary>
-    public const float TamTieuDe = 0.11f;
+    /// <summary>Tam anh ten game theo chieu cao man hinh (0 = mep tren). 08/10/2026: 0,11 theo khung xanh la nguoi dung
+    /// danh dau (chu do tren anh tam 0,121) -> cung ngay "hoi cao qua, xuong 1 chut": +25 diem tren man 580 = 0,153.</summary>
+    public const float TamTieuDe = 0.153f;
 
     /// <summary>
     /// XEP MAN DANG NHAP, CO TINH DEN BAN PHIM AO.

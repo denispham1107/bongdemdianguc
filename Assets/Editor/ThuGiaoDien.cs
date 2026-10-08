@@ -169,10 +169,11 @@ public static class ThuGiaoDien
             }
             float tam = dinh >= 0 ? (dinh + day) * 0.5f / H : -1f;
             float tamCu = (vung.y - 22f * GiaoDien.TiLe - 0.5f * Mathf.Min(Screen.width - 40f * GiaoDien.TiLe, 760f * GiaoDien.TiLe) / GiaoDien.TiLeTieuDe) / H;
-            Ghi("   anh ten game tren anh: y " + dinh + "-" + day + " / " + H + ", tam " + tam.ToString("F3") + " chieu cao (cho danh dau ~0,12;"
+            Ghi("   anh ten game tren anh: y " + dinh + "-" + day + " / " + H + ", tam " + tam.ToString("F3") + " chieu cao (TamTieuDe " + ManDangNhap.TamTieuDe.ToString("F3") + " + ~0,011;"
                 + " cho cu sat tren khung: tam ~" + tamCu.ToString("F3") + ")");
             Kiem(dinh >= 0, "khong thay anh ten game phia tren khung dang nhap");
-            Kiem(tam > 0.06f && tam < 0.17f, "anh ten game chua len dung cho danh dau");
+            // Tam chu tren anh lech ~+0,011 so voi TamTieuDe (vien quang trong suot phia tren anh)
+            Kiem(Mathf.Abs(tam - (ManDangNhap.TamTieuDe + 0.011f)) < 0.02f, "anh ten game khong o dung cho da chon");
         }
         Object.Destroy(co); Object.Destroy(khong);
     }
