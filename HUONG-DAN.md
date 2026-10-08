@@ -7466,6 +7466,42 @@ trong Editor: **252 cách gõ** của 134 chữ (tách hết, dấu sai thứ t�
 
 Menu 52: **0 lỗi**. Bản web build 5,4 phút, 0 lỗi, trình duyệt đã từng vào trang tải đúng bản mới, console 0 lỗi.
 
+#### Kiểu "Lửa địa ngục" (09/10/2026)
+
+Anh chơi thử với máy BOT: tên "ChienBinhB", "BOT 1" chữ Inter phẳng — "quá đơn điệu và thô", xin thiết kế lại cho hợp
+phong cách kinh dị mà vẫn đủ dấu, không lỗi font. Tôi dựng ảnh xem trước 3 kiểu trên nền ảnh anh gửi
+(`PlayTestShots/bangten_mau.png`: khắc bia mộ · gothic máu · lửa địa ngục); anh chọn **Lửa địa ngục** và **giữ tên "BOT 1,
+BOT 2"** (không đổi tên BOT, không thêm dòng độ khó).
+
+- **Font Playfair Display SC Black** (`Resources/Fonts`, giấy phép OFL kèm theo; `GiaoDien.ChuTen`, thiếu file thì lùi về
+  Inter đậm) — cùng họ chữ với tên game ở màn đăng nhập. cmap: **đủ 200/200** chữ cần có (134 chữ có dấu). Cỡ 22 ở 1080
+  (Playfair chữ hoa nhỏ nhỏ mặt hơn Inter — 22 ≈ Inter 19).
+- **Quầng lửa** mềm phía sau chữ: ảnh **Blender MCP** `Resources/GiaoDien/QuangTen.png` (512 × 128, bầu dục mềm, viền méo theo
+  nhiễu + vệt than hồng lấp ló; mép = 0), vẽ hai lớp: cam (1; 0,42; 0,08) đục 0,8 rộng 1,45 × chữ, rồi lòng trong nhuộm màu
+  đội / màu tên đục 0,4.
+- **Viền tối 8 hướng** (bốn hướng thì nét chéo của chữ có chân Playfair hở viền), chữ màu đội **sáng lên 40% về trắng** (màu đội
+  đậm chìm vào quầng cam); trận Đơn giữ vàng (mình) / trắng ngà (người khác).
+- **Gạch than hồng** dưới chữ: ảnh Blender MCP `GachLua.png` (512 × 32, lõi vàng trắng → cam → đỏ sẫm theo độ nóng, vuốt nhọn
+  hai đầu, lấp lóa theo nhiễu), rộng 1,04 × chữ.
+- Hai ảnh nhập với **alpha từ độ xám** (nền đen → trong suốt), không mipmap, kẹp mép. File gốc
+  `CongCu/Blender/bang_ten.blend` (scene `BangTenAnh`).
+
+**Phép thử menu 52 sửa ba chỗ**: kiểm font Playfair + đọc cmap của chính file ấy; kiểm hai ảnh có trong Resources; và **mẫu đối
+chứng nền đen** — bản cũ ngưỡng tuyệt đối 0,90, nay tên "Người chơi 4" đứng ngay trước lò lửa nên nền đen đối chứng vẫn ra 1,15
+(trước lò lửa sáng) → đổi sang so **tương đối với chính bảng tên ấy lúc không có nền** (đối chứng phải kéo tỉ số xuống ≥ 10%),
+và vẽ đối chứng ở độ sâu 5 (trên bảng tên — thứ tự OnGUI giữa các component là ngẫu nhiên, quầng lửa từng đè lên nền đối chứng).
+
+```
+font PlayfairDisplaySC-Black, cmap 657 ký tự, thiếu 0 / 200; ghép dấu rời 252 cách gõ, sai 0
+4 bảng tên đều vẽ, khe đáy chữ → chóp mũ 8–11 px (0,30 m = 17–21 px), 0 cặp đè nhau
+dải sát mép / nền xa: 1,10 · 1,54 · 1,05 · 1,06 (quầng lửa sáng hơn nền, không có nền đen)
+đối chứng nền đen: 0,69/1,10 · 1,10/1,54 · 0,65/1,05 · 0,67/1,06 → bắt được 4/4
+người gục: độ đục 0,45 — số lỗi = 0
+```
+
+Menu 92 (Đơn / Đôi): **0 lỗi** — tên màu đội + dòng "ĐỘI A/B" phía trên. Ảnh trong game phóng to:
+`PlayTestShots/bangten_lua_dia_nguc.png`.
+
 ### Máy BOT — bước 4: đánh — kỹ năng theo hệ, chiêu liên hoàn, bình, cộng điểm, độ khó (09/10/2026)
 
 **Cộng điểm** (`MayBot.TieuDiem`, gọi mỗi khi BOT có điểm): mỗi hệ một kế hoạch theo đúng đường mở khoá theo bậc — chiêu cơ bản
@@ -13490,7 +13526,7 @@ Lần chạy đầu phép thử báo cả 10 con "lơ lửng": tia chiếu từ 
 | **54c. Chay thu LOC XOAY cuon lo lua** | Vào Play Act2, thả một cơn lốc đi thẳng vào lò: đo mốc thời gian lửa tắt / lò nhấc lên / lò biến mất / lò mọc lại, kiểm than trong chậu tắt bằng độ sáng trên ảnh, và kiểm vật có hệ hạt khác vẫn không bị cuốn. Ảnh `locxoay_*.png`, số đo `locxoay_lolua.txt`. |
 | **54b. Chay thu lo lua Act2** | Kiểm 10 lò (14 lò sau menu 86; lò vành mới phải cách mép rào vuông ≥ 2 m) bằng cách khác lúc đặt (va chạm tạm cho lưới nước, tia chiếu lên tìm mái nhà, hộp bao bia, độ cao địa hình quanh chân); trong Play: lửa + đèn bật, nhân vật đi thẳng vào lò bị chặn; chụp `lolua_*.png` + bản đồ. Số đo `lolua_act2.txt`. |
 | **53. Chay thu HUD KINH DI (mau, mana, thong bao)** | Ngoài Play: chạy hàm bố cục HUD với chữ dài nhất ở 11 cỡ màn hình × PC/cảm ứng — khung chữ không ra ngoài, không đè nhau hay đè nút; số máu/mana lọt thanh. Quét chuỗi 4 file HUD: đủ ký tự trong cmap Inter, không còn chữ không dấu cũ. Trong Play (Act2): bật cùng lúc mọi thông báo + máu thấp, đọc bố cục thật, chụp `hud_*.png`. Số đo `hudkinhdi.txt`. |
-| **52. Chay thu TEN TREN DAU nhan vat** | Vào Play ở Act2, gắn tên cho nhân vật của mình, sinh ba bản sao tên có dấu quanh mình; đo từng bảng tên: có vẽ, trong màn hình, ngay trên chóp mũ (đo độc lập bằng lưới bake) không quá 0,30 m, đúng màu, font Inter đủ 134 chữ có dấu (đọc cmap), ghép dấu rời đúng (252 cách gõ), nền trong suốt (đo trên ảnh chụp, có mẫu đối chứng nền đen), không đè nhau, người gục thì tên mờ. Gọi `GiaoDien.ChuanBi` như màn sảnh. Ảnh `bangten_*.png`, số đo `bangten.txt`. |
+| **52. Chay thu TEN TREN DAU nhan vat** | Vào Play ở Act2, gắn tên cho nhân vật của mình, sinh ba bản sao tên có dấu quanh mình; đo từng bảng tên: có vẽ, trong màn hình, ngay trên chóp mũ (đo độc lập bằng lưới bake) không quá 0,30 m, đúng màu, font Playfair Display SC (kiểu "Lửa địa ngục") đủ 134 chữ có dấu (đọc cmap), có ảnh quầng lửa + gạch than hồng, ghép dấu rời đúng (252 cách gõ), nền trong suốt (đo trên ảnh chụp, có mẫu đối chứng nền đen so tương đối), không đè nhau, người gục thì tên mờ. Gọi `GiaoDien.ChuanBi` như màn sảnh. Ảnh `bangten_*.png`, số đo `bangten.txt`. |
 | **51c. Chup nen man chinh (lo da, ngon lua)** | Vào Play, tắt giao diện, chụp toàn cảnh (thêm một ảnh `Camera.main` đúng 1920 × 1080), cận lò đá, cận ngọn lửa; đo từng tấm flipbook (khói đen, hai tấm lửa: số hạt, vật liệu, texture), tam giác, vật đổ bóng. Ảnh `nen_*.png`, số đo `nenmanchinh.txt`. |
 
 > ⚠️ Mục **1** sẽ **xóa và tạo lại** các thư mục Textures / Materials / Models / Prefabs.

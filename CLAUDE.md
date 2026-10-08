@@ -24,7 +24,7 @@ mọi quyết định về hiệu năng đều lấy nó làm chuẩn.
   Tên biến, tên hàm, tên file cũng vậy: `banKinhLua`, `CayChay`, `VatTheBiCuon`.
 - `HUONG-DAN.md` thì viết tiếng Việt **có dấu**.
 - ⚠️ **Mọi chữ HIỂN THỊ cho người chơi phải là tiếng Việt CÓ DẤU, và font phải hiển thị đủ — không mất chữ, mất
-  dấu, lỗi font** (người dùng yêu cầu nhiều lần). Mọi nơi: HUD, sảnh, cài đặt, tên trên đầu, trang Loading, trang
+  dấu, lỗi font** (người dùng yêu cầu nhiều lần). Mọi nơi: HUD, sảnh, cài đặt, tên trên đầu (09/10/2026 kiểu "Lửa địa ngục": Playfair Display SC Black qua `GiaoDien.ChuTen` — đủ 134 chữ, quầng lửa + gạch than hồng ảnh Blender MCP; menu 52), trang Loading, trang
   quản trị, ảnh chữ. Unity: font Inter qua `GiaoDien.ChuThuong/ChuDam` (GUIStyle từ `GUI.skin` phải gán `.font`);
   web: nhúng Inter kèm trang; font trang trí: đọc cmap (`BangKyTuFont.Doc`) đủ 134 chữ có dấu trước khi dùng;
   tên người chơi gõ: `GhepDauTiengViet.Ghep`. ⚠️ **`GiaoDien.VuaO` (co / cắt chữ cho vừa nút) từng trừ phần đệm HAI LẦN** (nơi gọi trừ khỏi

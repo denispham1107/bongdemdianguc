@@ -1,4 +1,4 @@
-[ban 1] che do Don / Doi, toi da 6 nguoi - 28/09/2026 13:00
+[ban 1] che do Don / Doi, toi da 6 nguoi - 09/10/2026 01:18
 
 A. ham thuan (khong can Play)
 A1. vao phong Doi: rong -> 0, A1 -> 1, A1 B1 -> 0, A3 B1 -> 1 (phai 0,1,0,1)
@@ -10,23 +10,23 @@ A5. doc JSON: phong moi cheDo=doi LaDoi=True, doi k=1, vaoLuc k=200 | phong cu c
 A6. goi ket tran 15 byte, doi B thang doc lai: True | KetQua mac dinh: doiThang=0 = tran Don? True | hai doi chet het -> ma 3, DoiTuMa -1
 
 B. ky nang that khong dinh dong doi (moi ky nang: muc tieu CUNG doi, roi DOI CHUNG muc tieu doi kia)
-B1. Qua cau lua   dong doi: mat     0.0 mau, hieu ung [] | doi chung doi kia: mat    97.1 mau, hieu ung [chay]
-B1. Mua bang      dong doi: mat     0.0 mau, hieu ung [] | doi chung doi kia: mat   809.2 mau, hieu ung [cham dong-bang]
-B1. Sam set       dong doi: mat     0.0 mau, hieu ung [] | doi chung doi kia: mat   299.2 mau, hieu ung [choang]
-B1. Loc xoay      dong doi: mat     0.0 mau, hieu ung [] | doi chung doi kia: mat   133.3 mau, hieu ung [cuon]
-B1. Thien thach   dong doi: mat     0.0 mau, hieu ung [] | doi chung doi kia: mat   382.3 mau, hieu ung [chay nga]
-B1. Giut set      dong doi: mat     0.0 mau, hieu ung [] | doi chung doi kia: mat    90.0 mau, hieu ung [choang]
-B1. Qua cau bang  dong doi: mat     0.0 mau, hieu ung [] | doi chung doi kia: mat    67.5 mau, hieu ung [dong-bang cham]
-B1. Gio loc       dong doi: mat     0.0 mau, hieu ung [] | doi chung doi kia: mat   270.0 mau, hieu ung [hat-tung]
-B1. Lua dia nguc  dong doi: mat     0.0 mau, hieu ung [] | doi chung doi kia: mat   830.6 mau, hieu ung [chay]
+B1. Qua cau lua   dong doi: mat     0.0 mau, hieu ung [] | doi chung doi kia: mat    97.0 mau, hieu ung [chay]
+B1. Mua bang      dong doi: mat     0.0 mau, hieu ung [] | doi chung doi kia: mat   840.1 mau, hieu ung [cham dong-bang]
+B1. Sam set       dong doi: mat     0.0 mau, hieu ung [] | doi chung doi kia: mat   352.9 mau, hieu ung [choang]
+B1. Loc xoay      dong doi: mat     0.0 mau, hieu ung [] | doi chung doi kia: mat   158.0 mau, hieu ung [cuon]
+B1. Thien thach   dong doi: mat     0.0 mau, hieu ung [] | doi chung doi kia: mat   368.4 mau, hieu ung [chay nga]
+B1. Giut set      dong doi: mat     0.0 mau, hieu ung [] | doi chung doi kia: mat    90.0 mau, hieu ung []
+B1. Qua cau bang  dong doi: mat     0.0 mau, hieu ung [] | doi chung doi kia: mat    67.6 mau, hieu ung [cham]
+B1. Gio loc       dong doi: mat     0.0 mau, hieu ung [] | doi chung doi kia: mat   180.0 mau, hieu ung [hat-tung]
+B1. Lua dia nguc  dong doi: mat     0.0 mau, hieu ung [] | doi chung doi kia: mat   831.1 mau, hieu ung [chay]
 B1. Qua cau dien  dong doi: mat     0.0 mau, hieu ung [] | doi chung doi kia: mat  1088.7 mau, hieu ung [choang]
 B1. 10/10 ky nang dat
 
 B2. duong mang that: goi phep QUA CAU LUA cua nguoi ghe 1 den may minh, minh la nan nhan
-B2. nguoi ghe 1 CUNG doi ban minh: mat 0.0 | DOI CHUNG nguoi ghe 1 doi kia: mat 97.7
+B2. nguoi ghe 1 CUNG doi ban minh: mat 0.0 | DOI CHUNG nguoi ghe 1 doi kia: mat 98.0
 
 B3. ky nang tu nham: dong doi dung GAN (4 m), doi thu dung XA (9 m)
-B3. Lua dia nguc: gan la DONG DOI -> gan mat 0.0, xa mat 816.7 | DOI CHUNG gan la doi thu -> gan mat 819.2
+B3. Lua dia nguc: gan la DONG DOI -> gan mat 0.0, xa mat 818.8 | DOI CHUNG gan la doi thu -> gan mat 821.9
 B3. Qua cau dien: gan la DONG DOI -> gan mat 0.0, xa mat 1088.7 | DOI CHUNG gan la doi thu -> gan mat 1088.7
 
 C. cho xuat phat tran Doi tren Act2 (6 ghe: A A B B A B)

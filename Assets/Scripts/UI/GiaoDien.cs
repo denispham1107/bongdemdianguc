@@ -30,6 +30,20 @@ public static class GiaoDien
     public static Font ChuThuong { get { NapFont(); return chuThuong; } }
     public static Font ChuDam { get { NapFont(); return chuDam; } }
 
+    static Font chuTen;
+    /// <summary>
+    /// Font TEN TREN DAU nhan vat (09/10/2026, nguoi dung chon kieu "Lua dia nguc"): Playfair Display SC Black - cung ho chu
+    /// voi ten game o man dang nhap. Du 134 chu co dau (doc cmap). Thieu file thi lui ve Inter dam.
+    /// </summary>
+    public static Font ChuTen
+    {
+        get
+        {
+            if (chuTen == null) chuTen = Resources.Load<Font>("Fonts/PlayfairDisplaySC-Black");
+            return chuTen != null ? chuTen : ChuDam;
+        }
+    }
+
     static void NapFont()
     {
         if (chuThuong != null) return;

@@ -17,7 +17,7 @@ using UnityEngine;
 ///      tu the dang dien - doc lap voi xuong head_end ma BangTen dung) va cach
 ///      no khong qua 0,30 m.
 ///   3. DUNG MAU: cua minh vang, nguoi khac trang nga.
-///   4. DUNG FONT Inter - font mac dinh thieu chu co dau.
+///   4. DUNG FONT Playfair Display SC (kieu "Lua dia nguc" 09/10/2026) - font mac dinh thieu chu co dau.
 ///   5. BON BANG TEN KHONG DE LEN NHAU khi dung cach nhau ~2 m.
 ///   6. Nguoi da guc thi ten MO DI.
 ///   7. NEN TRONG SUOT - do tren anh chup, co mau doi chung o den de chung minh
@@ -186,18 +186,23 @@ public static class ThuBangTen
         // ---- 4. Font ----
         var f = BangTen.FontDangDung;
         Ghi("4. font bang ten: " + (f != null ? f.name : "(chua ve lan nao)"));
-        if (f == null || !f.name.Contains("Inter")) Loi("bang ten khong dung font Inter");
+        if (f == null || !f.name.Contains("Playfair")) Loi("bang ten khong dung font Playfair Display SC (kieu Lua dia nguc)");
+        var aQuang = Resources.Load<Texture2D>("GiaoDien/QuangTen");
+        var aGach = Resources.Load<Texture2D>("GiaoDien/GachLua");
+        Ghi("4c. anh quang lua " + (aQuang != null ? aQuang.width + "x" + aQuang.height : "THIEU")
+            + ", gach than hong " + (aGach != null ? aGach.width + "x" + aGach.height : "THIEU"));
+        if (aQuang == null || aGach == null) Loi("thieu anh QuangTen / GachLua trong Resources/GiaoDien");
 
         // Doc THANG bang ky tu cua file font (HasCharacter trong Editor noi doi -
         // Windows ve bu chu thieu)
-        var cmap = BangKyTuFont.Doc("Assets/Resources/Fonts/Inter-SemiBold.ttf");
-        if (cmap == null) Loi("khong doc duoc cmap cua Inter-SemiBold.ttf");
+        var cmap = BangKyTuFont.Doc("Assets/Resources/Fonts/PlayfairDisplaySC-Black.ttf");
+        if (cmap == null) Loi("khong doc duoc cmap cua PlayfairDisplaySC-Black.ttf");
         else
         {
             var thieu = new StringBuilder();
             string can = BangKyTuFont.ChuVietCoDau + "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 _-.";
             foreach (char ch in can) if (!cmap.Contains(ch)) thieu.Append(ch);
-            Ghi(string.Format("   cmap Inter-SemiBold: {0} ky tu; thieu trong {1} chu can co: \"{2}\"",
+            Ghi(string.Format("   cmap PlayfairDisplaySC-Black: {0} ky tu; thieu trong {1} chu can co: \"{2}\"",
                               cmap.Count, can.Length, thieu));
             if (thieu.Length > 0) Loi("font thieu chu: " + thieu);
         }
@@ -286,9 +291,11 @@ public static class ThuBangTen
         // thu tren anh cu, ti so van >= 1.)
         var anh = new Texture2D(2, 2);
         anh.LoadImage(File.ReadAllBytes("PlayTestShots/bangten_1.png"));
+        var tiSoThat = new List<float>();
         foreach (var b in tatCa)
         {
             float tiSo = TiSoSatMep(anh, b.oCuoi, s);
+            tiSoThat.Add(tiSo);
             Ghi(string.Format("7. \"{0}\": do sang dai sat mep o ten / nen xa hon = {1:F2} (nen den cu thi < 0,90)", b.ten, tiSo));
             if (tiSo < NguongNen) Loi(b.ten + ": sat mep o ten toi hon nen - con nen den phia sau");
         }
@@ -303,7 +310,9 @@ public static class ThuBangTen
         veThu.ve = () =>
         {
             if (Event.current.type != EventType.Repaint) return;
-            GUI.depth = 10;
+            // Ve TREN bang ten (do sau 5 < 10): bang ten nay co quang lua phia sau - ve duoi thi quang de len nen den doi chung
+            // va thu tu OnGUI giua cac component la ngau nhien (09/10/2026: bat duoc 3/4)
+            GUI.depth = 5;
             foreach (var o in oCu)
                 GiaoDien.To(new Rect(o.x - leCu, o.y + o.height * 0.08f, o.width + leCu * 2f, o.height * 0.86f),
                             new Color(0f, 0f, 0f, 0.38f));
@@ -315,13 +324,15 @@ public static class ThuBangTen
         anh2.LoadImage(File.ReadAllBytes("PlayTestShots/bangten_doichung.png"));
         int batDuoc = 0;
         var sbMau = new StringBuilder();
-        foreach (var o in oCu)
+        // So TUONG DOI voi chinh bang ten ay luc khong co nen: nen den phai keo ti so xuong >= 10%. Nguong tuyet doi 0,90 sai khi
+        // sau ten la lo lua sang (09/10/2026: "Nguoi choi 4" truoc lo lua, nen den doi chung van ra 1,15 - khong nen 1,49)
+        for (int i = 0; i < oCu.Count; i++)
         {
-            float t = TiSoSatMep(anh2, o, s);
-            sbMau.AppendFormat(" {0:F2}", t);
-            if (t < NguongNen) batDuoc++;
+            float t = TiSoSatMep(anh2, oCu[i], s);
+            sbMau.AppendFormat(" {0:F2}/{1:F2}", t, tiSoThat[i]);
+            if (t < tiSoThat[i] * 0.9f) batDuoc++;
         }
-        Ghi("   doi chung (ve lai nen den cu quanh " + oCu.Count + " bang ten): ti so" + sbMau
+        Ghi("   doi chung (ve lai nen den cu quanh " + oCu.Count + " bang ten): ti so (doi chung/that)" + sbMau
             + " -> bat duoc " + batDuoc + "/" + oCu.Count);
         if (batDuoc < oCu.Count) Loi("phep do nen khong bat duoc nen den doi chung - so do muc 7 vo nghia");
         Object.DestroyImmediate(anh2);

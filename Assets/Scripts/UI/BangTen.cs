@@ -24,6 +24,12 @@ using UnityEngine;
 /// nhung khung bao SkinnedMesh len toi 1,88 m (khung "rong rai" de cat hinh,
 /// khong phai dinh dau), con con nhong va cham cao 2,06 m. Chi nhan vat dung
 /// bang code (khong co xuong) moi con dung khung bao.
+///
+/// KIEU "LUA DIA NGUC" (09/10/2026, nguoi dung: "ten con qua don dieu va tho, thiet ke lai cho hop phong cach kinh di";
+/// chon kieu 3 trong anh xem truoc PlayTestShots/bangten_mau.png): font Playfair Display SC Black (GiaoDien.ChuTen - cung
+/// ho chu voi ten game, du 134 chu co dau), QUANG LUA mem phia sau chu (anh Blender MCP Resources/GiaoDien/QuangTen.png,
+/// nhuom cam + mau doi), vien toi tam huong, chu sang mau doi, GACH THAN HONG duoi chu (GachLua.png, vuot nhon hai dau).
+/// Anh dung bang Blender MCP CongCu/Blender/bang_ten.blend (scene BangTenAnh), nhap voi alpha tu do xam.
 /// </summary>
 public class BangTen : MonoBehaviour
 {
@@ -40,15 +46,21 @@ public class BangTen : MonoBehaviour
     /// <summary>O chu "ĐỘI A/B" vua ve (phep thu doc lai).</summary>
     public Rect oDoiCuoi;
 
-    /// <summary>Co chu o man hinh cao 1080 - cung thuoc do voi GameHUD.</summary>
-    public const float CoChu = 19f;
+    /// <summary>Co chu o man hinh cao 1080 - cung thuoc do voi GameHUD (Playfair SC nho mat hon Inter: 22 ~ Inter 19).</summary>
+    public const float CoChu = 22f;
+    /// <summary>Chu sang len bao nhieu phan tram ve phia trang so voi mau doi (de doc tren quang lua).</summary>
+    public const float ChuSangHon = 0.4f;
     /// <summary>Khoang ho giua dinh dau va day bang ten (m).</summary>
     public const float KheTrenDau = 0.12f;
 
     static readonly Color MauToi = new Color(1.00f, 0.84f, 0.42f);
     static readonly Color MauNguoiKhac = new Color(0.95f, 0.92f, 0.86f);
 
+    static readonly Color MauQuangLua = new Color(1.00f, 0.42f, 0.08f);
+    static readonly Color MauVien = new Color(0.12f, 0.03f, 0.00f);
+
     static GUIStyle kieu;
+    static Texture2D anhQuang, anhGach;
     Damageable mau;
     float caoDinh = -1f;
 
@@ -141,54 +153,75 @@ public class BangTen : MonoBehaviour
         if (kieu == null)
         {
             kieu = new GUIStyle(GUI.skin.label);
-            kieu.font = GiaoDien.ChuDam;
             kieu.alignment = TextAnchor.MiddleCenter;
             kieu.wordWrap = false;
             kieu.clipping = TextClipping.Overflow;
             kieu.padding = new RectOffset(0, 0, 0, 0);
         }
-        kieu.fontSize = Mathf.Max(12, Mathf.RoundToInt(CoChu * s));
+        // Gan lai moi lan: font nap tu Resources, vao lai Play thi doi tuong cu co the da bi huy
+        kieu.font = GiaoDien.ChuTen;
+        if (anhQuang == null) anhQuang = Resources.Load<Texture2D>("GiaoDien/QuangTen");
+        if (anhGach == null) anhGach = Resources.Load<Texture2D>("GiaoDien/GachLua");
+        kieu.fontSize = Mathf.Max(13, Mathf.RoundToInt(CoChu * s));
 
         var nd = new GUIContent(ten);
         Vector2 kt = kieu.CalcSize(nd);
 
-        // Day bang ten nam ngay tren dinh dau; OnGUI dem y tu tren xuong
+        // Day bang ten (gach than hong) nam ngay tren dinh dau; OnGUI dem y tu tren xuong.
+        // O chu nam tren gach; day o chu co khoang chan chu (descent) nen gach de len phan duoi o mot chut.
         float yDay = Screen.height - man.y;
-        var o = new Rect(man.x - kt.x * 0.5f, yDay - kt.y, kt.x, kt.y);
+        float caoGach = Mathf.Max(4f, 9f * s);
+        var o = new Rect(man.x - kt.x * 0.5f, yDay - caoGach * 0.5f - kt.y * 0.88f, kt.x, kt.y);
 
         bool daGuc = mau != null && mau.IsDead;
         Color c = doi >= 0 ? CheDoTran.MauDoi(doi) : laToi ? MauToi : MauNguoiKhac;
         float doDuc = daGuc ? 0.45f : 1f;
         c.a = doDuc;
+        // Chu tran Doi sang len ve phia trang (mau doi dam qua thi chim vao quang lua)
+        Color mauChu = doi >= 0 ? Color.Lerp(c, Color.white, ChuSangHon) : c;
+        mauChu.a = doDuc;
 
         // Nam duoi HUD (do sau 0), cung lop voi so sat thuong
         GUI.depth = 10;
+        Color mauCu = GUI.color;
 
-        // KHONG co nen phia sau (nguoi dung muon trong suot) - chi vien toi
-        // mong bon phia de chu van doc duoc tren nen lua sang
-        float v = Mathf.Max(1f, 1.5f * s);
-        kieu.normal.textColor = new Color(0f, 0f, 0f, 0.85f * doDuc);
-        GUI.Label(new Rect(o.x - v, o.y, o.width, o.height), nd, kieu);
-        GUI.Label(new Rect(o.x + v, o.y, o.width, o.height), nd, kieu);
-        GUI.Label(new Rect(o.x, o.y - v, o.width, o.height), nd, kieu);
-        GUI.Label(new Rect(o.x, o.y + v, o.width, o.height), nd, kieu);
+        // 1. Quang lua mem phia sau (cam), long trong nhuom mau doi / mau ten
+        if (anhQuang != null)
+        {
+            var cq = o.center;
+            float rq = kt.x * 1.45f + 24f * s, hq = kt.y * 1.7f;
+            GUI.color = new Color(MauQuangLua.r, MauQuangLua.g, MauQuangLua.b, 0.8f * doDuc);
+            GUI.DrawTexture(new Rect(cq.x - rq * 0.5f, cq.y - hq * 0.5f, rq, hq), anhQuang);
+            float rq2 = kt.x * 1.12f, hq2 = kt.y * 1.15f;
+            GUI.color = new Color(c.r, c.g, c.b, 0.4f * doDuc);
+            GUI.DrawTexture(new Rect(cq.x - rq2 * 0.5f, cq.y - hq2 * 0.5f, rq2, hq2), anhQuang);
+        }
 
-        kieu.normal.textColor = c;
+        // 2. Vien toi tam huong + chu
+        float v = Mathf.Max(1f, 1.6f * s);
+        VeVien(o, nd, v, doDuc);
+        GUI.color = Color.white;
+        kieu.normal.textColor = mauChu;
         GUI.Label(o, nd, kieu);
 
-        // Tran Doi: dong nho "ĐỘI A/B" ngay tren ten, cung mau
+        // 3. Gach than hong duoi chu
+        if (anhGach != null)
+        {
+            float rg = kt.x * 1.04f;
+            GUI.color = new Color(1f, 1f, 1f, doDuc);
+            GUI.DrawTexture(new Rect(man.x - rg * 0.5f, yDay - caoGach, rg, caoGach), anhGach);
+        }
+        GUI.color = mauCu;
+
+        // Tran Doi: dong nho "ĐỘI A/B" ngay tren ten, mau doi
         if (doi >= 0)
         {
             int coTen = kieu.fontSize;
             kieu.fontSize = Mathf.Max(10, Mathf.RoundToInt(coTen * HeSoChuDoi));
             var ndDoi = new GUIContent(CheDoTran.TenDoi(doi));
             Vector2 ktDoi = kieu.CalcSize(ndDoi);
-            var oDoi = new Rect(man.x - ktDoi.x * 0.5f, o.y - ktDoi.y + 2f * s, ktDoi.x, ktDoi.y);
-            kieu.normal.textColor = new Color(0f, 0f, 0f, 0.85f * doDuc);
-            GUI.Label(new Rect(oDoi.x - v, oDoi.y, oDoi.width, oDoi.height), ndDoi, kieu);
-            GUI.Label(new Rect(oDoi.x + v, oDoi.y, oDoi.width, oDoi.height), ndDoi, kieu);
-            GUI.Label(new Rect(oDoi.x, oDoi.y - v, oDoi.width, oDoi.height), ndDoi, kieu);
-            GUI.Label(new Rect(oDoi.x, oDoi.y + v, oDoi.width, oDoi.height), ndDoi, kieu);
+            var oDoi = new Rect(man.x - ktDoi.x * 0.5f, o.y - ktDoi.y + 4f * s, ktDoi.x, ktDoi.y);
+            VeVien(oDoi, ndDoi, v, doDuc);
             kieu.normal.textColor = c;
             GUI.Label(oDoi, ndDoi, kieu);
             kieu.fontSize = coTen;
@@ -196,5 +229,20 @@ public class BangTen : MonoBehaviour
         }
 
         oCuoi = o; khungVeCuoi = Time.frameCount; mauCuoi = c;
+    }
+
+    /// <summary>Vien toi TAM huong quanh chu (bon huong thi net cheo cua chu khac Playfair ho vien).</summary>
+    static void VeVien(Rect o, GUIContent nd, float v, float doDuc)
+    {
+        kieu.normal.textColor = new Color(MauVien.r, MauVien.g, MauVien.b, 0.9f * doDuc);
+        float d = v * 0.7071f;
+        GUI.Label(new Rect(o.x - v, o.y, o.width, o.height), nd, kieu);
+        GUI.Label(new Rect(o.x + v, o.y, o.width, o.height), nd, kieu);
+        GUI.Label(new Rect(o.x, o.y - v, o.width, o.height), nd, kieu);
+        GUI.Label(new Rect(o.x, o.y + v, o.width, o.height), nd, kieu);
+        GUI.Label(new Rect(o.x - d, o.y - d, o.width, o.height), nd, kieu);
+        GUI.Label(new Rect(o.x + d, o.y - d, o.width, o.height), nd, kieu);
+        GUI.Label(new Rect(o.x - d, o.y + d, o.width, o.height), nd, kieu);
+        GUI.Label(new Rect(o.x + d, o.y + d, o.width, o.height), nd, kieu);
     }
 }
