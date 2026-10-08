@@ -185,7 +185,7 @@ public class KhoiDongTranMang : MonoBehaviour
         // Ten cua minh tren dau nhan vat cua minh (mau vang) - ban sao cua nguoi
         // khac tu gan ten luc sinh (NguoiChoiKhac.Sinh)
         var bangTenToi = BangTen.Gan(toi.gameObject, TenCuaGhe(gheToi.ghe), true);
-        GanDoi(toi, bangTenToi, gheToi.doi);
+        GanDoi(toi, bangTenToi, gheToi.doi, gheToi.ghe);
 
         // ---- 3. Dung bo dong bo TRUOC khi bat tay ----
         // Goi tin cua nguoi ta co the den ngay khi kenh vua mo - bo dong bo
@@ -427,6 +427,15 @@ public class KhoiDongTranMang : MonoBehaviour
     }
 
     /// <summary>
+    /// Nhu tren + MAU AO theo ghe (Don) / doi (Doi) - 09/10/2026, xem <see cref="MauAoNhanVat"/>. Moi may tinh ra cung mau.
+    /// </summary>
+    public static void GanDoi(PlayerController nv, BangTen bt, sbyte doi, byte ghe)
+    {
+        GanDoi(nv, bt, doi);
+        if (nv != null) MauAoNhanVat.Dat(nv.gameObject, MauAoNhanVat.MauCua(ghe, doi));
+    }
+
+    /// <summary>
     /// MOI NGUOI HIEN RA O MOT CHO NGAU NHIEN TREN BAN DO, khong ai gan ai.
     ///
     /// Truoc day ca phong sinh ra o MOT diem trong scene, xep bon goc mot o
@@ -512,7 +521,7 @@ public class KhoiDongTranMang : MonoBehaviour
         nao.doKho = Mathf.Max(0, MayBot.DoKhoCua(g.uid));
         nao.he = MayBot.HeCua(g.uid, TranHienTai.MaPhong);
 
-        GanDoi(nv, nv.GetComponent<BangTen>(), DoiCuaGhe(g.ghe));
+        GanDoi(nv, nv.GetComponent<BangTen>(), DoiCuaGhe(g.ghe), g.ghe);
         if (nv.GetComponent<LichSuViTri>() == null) nv.gameObject.AddComponent<LichSuViTri>();
         if (dongBo != null) dongBo.ThemBotCucBo(g.ghe, nv);
         BotDaDung.Add(nv);
@@ -540,7 +549,7 @@ public class KhoiDongTranMang : MonoBehaviour
 
         var nv = NguoiChoiKhac.Sinh(g.uid, TenCuaGhe(ghe), viTri);
         if (nv == null) return null;
-        GanDoi(nv, nv.GetComponent<BangTen>(), DoiCuaGhe(ghe));
+        GanDoi(nv, nv.GetComponent<BangTen>(), DoiCuaGhe(ghe), ghe);
 
         // Ban sao cung ghi lai duong di - de phep cua CHINH HO khong bi lui
         // (BuTre.Mo bo qua nguoi tung), va de lui ho khi phep nguoi khac trung.

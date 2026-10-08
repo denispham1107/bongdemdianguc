@@ -1,0 +1,14 @@
+[ban 1] mau ao nguoi choi (Don / Doi)
+D. Player_PhuThuy.mat: shader Diablo25D/PhuThuyDoiMau, _MauAo.a = 0.00 (mong 0 - giu ao tim)
+   mau ao nhan vat cua minh (chua vao tran mang): a = 0.00
+A. Don: 6/6 ghe dung mau bang; 15/15 cap khac sac do >= 25 do (gan nhat 29 do)
+C. do tren anh chup rieng tung nhan vat, ban ngay (doi chung a = 0 -> doi mau):
+   ghe 0 (sac do 0): diem anh doi mau 17 %; diem mau dich 9 % -> 27 %; ao moi V 0.31 S 0.54 (16491 diem)
+   ghe 1 (sac do 141): diem anh doi mau 16 %; diem mau dich 0 % -> 17 %; ao moi V 0.29 S 0.56 (16613 diem)
+   ghe 2 (sac do 221): diem anh doi mau 18 %; diem mau dich 0 % -> 19 %; ao moi V 0.41 S 0.64 (16639 diem)
+   ghe 3 (sac do 29): diem anh doi mau 18 %; diem mau dich 8 % -> 26 %; ao moi V 0.35 S 0.58 (16638 diem)
+   ghe 4 (sac do 276): diem anh doi mau 17 %; diem mau dich 8 % -> 19 %; ao moi V 0.40 S 0.57 (16451 diem)
+   ghe 5 (sac do 182): diem anh doi mau 18 %; diem mau dich 0 % -> 18 %; ao moi V 0.34 S 0.65 (16506 diem)
+B. Doi: doi A cung mau True, doi B cung mau True, hai doi lech sac do 141 do
+   do tren anh: doi A: diem mau doi 19 %, V 0.41 S 0.64; doi B: diem mau doi 28 %, V 0.31 S 0.55;
+so loi ghi nhan = 0

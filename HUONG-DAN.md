@@ -7502,6 +7502,33 @@ người gục: độ đục 0,45 — số lỗi = 0
 Menu 92 (Đơn / Đôi): **0 lỗi** — tên màu đội + dòng "ĐỘI A/B" phía trên. Ảnh trong game phóng to:
 `PlayTestShots/bangten_lua_dia_nguc.png`.
 
+### Màu áo từng người chơi: Đơn mỗi ghế một màu, Đôi theo đội (09/10/2026)
+
+Anh xin: vào trận thì quần áo mỗi người chơi một màu (không quá tối, không quá nhạt) ở chế độ Đơn; chế độ Đôi cùng đội cùng màu,
+đội khác màu khác. Cả phòng dùng chung MỘT prefab phù thuỷ, MỘT ảnh màu (Meshy 8192², áo choàng tím).
+
+**Tách vùng áo bằng màu, không cần mặt nạ vẽ tay.** Đo histogram sắc độ ảnh gốc (thu 1024²): áo choàng tím nằm gọn ở **277–324°**
+(18% ảnh, độ bão hoà trung vị 0,43, độ sáng TB 0,171); da hồng, viền vàng, giáp nâu, dải đỏ đều ở 0–40° và 330–360°, râu tóc xám
+bão hoà < 0,15 — không chồng lên nhau. Shader mới `Diablo25D/PhuThuyDoiMau` (`S_PhuThuyDoiMau.shader`, surface Standard cùng ảnh màu /
+normal / metallic-smoothness như Standard cũ) thay `Player_PhuThuy.mat`: điểm ảnh trong dải tím (mép mềm 0,03, bão hoà ≥ 0,2) thay
+bằng `_MauAo` **giữ sáng tối và vân vải** (nhân theo độ sáng từng điểm / 0,171 × `_DoSangAo`). `_MauAo.a = 0` (mặc định trong vật
+liệu) → ảnh gốc y cũ: màn chính, chơi một mình không đổi.
+
+**Màu đặt qua MaterialPropertyBlock** (`Player/MauAoNhanVat.cs`) — không tạo vật liệu, không đụng vật liệu dùng chung; Tàng hình thay
+vật liệu rồi trả lại vẫn giữ màu. Gắn ở `KhoiDongTranMang.GanDoi(nv, bảng tên, đội, ghế)` — một chỗ cho nhân vật mình, bản sao người
+khác và máy BOT. Màu chọn **theo ghế (Đơn) / theo đội (Đôi)** nên mọi máy tính ra cùng màu, **0 byte gói tin**:
+Đơn ghế 1–6 = đỏ thẫm · lục bảo · lam · cam hổ phách · tím · lam ngọc; Đôi: Đội A áo lam, Đội B áo đỏ (cùng tông màu tên đội).
+Anh xem ảnh chụp trong game (`PlayTestShots/mauao_xem.png`) rồi chọn **sáng hơn ~20%** → `_DoSangAo` 0,6 → **0,72**.
+
+**Số đo — menu 116** (6 bản sao phù thuỷ ở Act2, gắn màu qua đúng `GanDoi`; chụp RIÊNG từng nhân vật lớp 31 nền đen, ban ngày, so với
+chính nó lúc `_MauAo.a = 0` cùng khung): mỗi ghế đúng màu bảng, 15/15 cặp lệch sắc độ ≥ 25° (gần nhất 29°); **điểm ảnh đổi màu
+16–18% thân** (chỉ phần áo — da, râu, giáp, dải đỏ giữ nguyên), điểm ảnh mang sắc độ màu đích 0–9% → 17–27%; áo mới độ sáng trung vị
+**V 0,29–0,41**, bão hoà **0,54–0,65** (bản 0,6: V 0,26–0,36 — tăng 11–14% vì ánh sáng cảnh không cộng thẳng). Đôi: cùng đội cùng màu,
+hai đội lệch 141°. ⚠️ Đếm "điểm tím" trên ảnh làm đối chứng KHÔNG dùng được: dưới ánh sáng game áo gốc chỉ 1% rơi vào dải tím — đổi
+sang so điểm ảnh khác nhau giữa hai ảnh cùng khung. Ảnh cận cảnh `mauao_can_canh.png` (ngày), `mauao_can_canh_dem.png` (đêm).
+**0 lỗi.** Menu 113: 0 lỗi. Menu 73 (Tàng hình) chạy sạch sau khi nạp lại code: Quả cầu băng ×2,00, vòng phép nổ — chạy hai lần
+liền nhau thì lần sau báo 4 lỗi (K2 tung thường ra 0 quả, V không nổ vòng) — lỗi của phép thử dính trạng thái, không phải màu áo.
+
 ### Máy BOT — bước 4: đánh — kỹ năng theo hệ, chiêu liên hoàn, bình, cộng điểm, độ khó (09/10/2026)
 
 **Cộng điểm** (`MayBot.TieuDiem`, gọi mỗi khi BOT có điểm): mỗi hệ một kế hoạch theo đúng đường mở khoá theo bậc — chiêu cơ bản
@@ -13479,6 +13506,7 @@ Lần chạy đầu phép thử báo cả 10 con "lơ lửng": tia chiếu từ 
 | **46. Chay thu HIEU UNG qua mang** | Mười hai chiều: bản sao không tự gieo đóng băng/choáng (và nhân vật thật vẫn gieo được), cờ và máu khiên đọc đúng rồi đi qua gói tin không to thêm, bản sao vẽ lại theo lời kể, khiên bản sao không bị trừ cục bộ, mất gói thì hiệu ứng tự tan, và quái bên khách choáng theo chủ phòng. Kết quả ra `PlayTestShots/hieuung_mang.txt`. |
 | **48. Chay thu CAI DAT do hoa** | Ngoài Play: font đủ chữ có dấu, vị trí nút ở nhiều cỡ màn hình, `index.html` không hạ `devicePixelRatio`, chuyển khoá cũ 3 mức sang khoá mới 4 mức. Trong Play: đăng nhập thật, bấm OK lần lượt 4 mức, đọc lại từ kho lưu, kiểu bóng / chi tiết xa, vào Act2 đếm vật đổ bóng, đo ảnh đệm cảnh 3D (kích thước, có phóng lên màn hình, gỡ ra ngoài lúc vẽ, đứng sau bloom), độ sáng ảnh chụp. Trả lại mức cũ, phiên đăng nhập và mức chất lượng của Editor. Kết quả ra `PlayTestShots/caidat.txt`. |
 | **49. Chay thu CAU LUA trung nguoi va khieng** | Tự chọn hướng bắn trống, rồi đo hai chiều mạng: người khác bắn mình / mình bắn người khác, có và không có khiên, và khiên của chính người bắn. Ghi từng cú mất máu (cú nổ hay cú cháy), chỗ quả cầu nổ so với mặt vòm, máu khiên; chụp màn hình lúc nổ để xem con số sát thương có đọc được không. Kết quả ra `PlayTestShots/cauluapvp.txt`, ảnh `caulua_no_*.png`. |
+| **116. Chay thu MAU AO nguoi choi (Don - Doi)** | 6 bản sao phù thuỷ gắn màu qua `GanDoi`: Đơn mỗi ghế một màu (lệch sắc độ ≥ 25°), Đôi cùng đội cùng màu; chụp riêng từng nhân vật so với chính nó khi tắt đổi màu (tỉ lệ điểm ảnh đổi màu, độ sáng / bão hoà áo); vật liệu gốc giữ áo tím. Kết quả `PlayTestShots/mauao.txt`, ảnh `mauao_*.png`. |
 | **115. Chay thu MAY BOT danh (buoc 4)** | Cộng điểm theo hệ (4 hệ, cấp 1 → 20), đánh bia theo hệ (số chiêu, loại chiêu, sát thương), Dễ / Khó (sai số ngắm, nhịp), uống bình máu / mana, nhặt bình rơi, bật Khiên, trận thật 90 s có quái. Kết quả `PlayTestShots/maybot_danh.txt`. |
 | **114. Chay thu MAY BOT di lai (buoc 3)** | Lưới đi lại (vực ở 4 khe rào sập, bia mộ bị chặn), vòng qua 3 nhà mồ (đối chứng lái thẳng: kẹt), đích giữa vực (không rơi; chỉ lớp dò vực cũng giữ được; đối chứng tắt cả hai: rơi), chọn mục tiêu (đối thủ gần / săn xa / bỏ đồng đội), trận thật 60 s có quái. Kết quả `PlayTestShots/maybot_dilai.txt`. |
 | **113. Chay thu MAY BOT trong tran (buoc 2)** | Phòng thật + 2 BOT, vào Act2 bằng đường của game: BOT dựng đúng kiểu (trọng tài là máy này, bảng cấp riêng), chỗ xuất phát theo luật ≥ 22 m, chạm đất; lên cấp riêng; đợt quái quanh mỗi BOT; kinh nghiệm hạ quái / hạ người vào đúng bảng; gói trạng thái / phép / chết của BOT qua kênh giả lập; kết trận Đơn (BOT thắng) và Đôi. Kết quả `PlayTestShots/maybot_tran.txt`, ảnh `maybot_tran_*.png`. |
