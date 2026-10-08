@@ -301,6 +301,9 @@ public class PlayerController : MonoBehaviour
     float binhMauTimer, binhManaTimer;
     Khieng khiengHienTai;
     int castingSkill = -1;
+
+    /// <summary>Dang niem ky nang nao (-1 = khong) - may BOT doc de khong tinh "dung im luc niem" la bi ket.</summary>
+    public int DangNiem { get { return castingSkill; } }
     Vector3 castAim;
     bool castReleased;
     GameObject chargeVfx;

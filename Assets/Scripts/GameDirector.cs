@@ -93,6 +93,9 @@ public class GameDirector : MonoBehaviour
 
     readonly List<Damageable> alive = new List<Damageable>();
 
+    /// <summary>Quai dang song (chi may trong tai quai co day du) - may BOT doc de chon muc tieu.</summary>
+    public IReadOnlyList<Damageable> QuaiConSong { get { return alive; } }
+
     Transform enemyRoot;
     Damageable playerHealth;
     float waveTimer;

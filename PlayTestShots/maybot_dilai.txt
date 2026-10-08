@@ -1,0 +1,31 @@
+[ban 1] may BOT di lai (buoc 3) - 08/10/2026 21:05
+A1. luoi 175x175 o 0.8 m, dung 0.29 s: di duoc 24439, vat can 3432, vuc + sat vuc 2754
+A2. 4 khe rao sap: diem 8 m NGOAI la vuc 4/4, co o di duoc trong 7 m (+-2,5) 4/4
+A3. bia mo to (cao > 0,8 m, ngang > 0,5 m): 434/434 o tam bia KHONG di duoc
+B0. vong nha mo (5.6x4.6 m): toi True sau 2.7 s, di 13.5 m (duong chim bay 12.8), ket 0, vong 0
+   anh maybot_dilai_nhamo.png
+   doi chung lai thang cung cho: toi False trong 10 s
+B1. vong nha mo (5.1x6.2 m): toi True sau 3.3 s, di 13.9 m (duong chim bay 13.6), ket 0, vong 0
+   doi chung lai thang cung cho: toi False trong 10 s
+B2. vong nha mo (4.1x5.0 m): toi True sau 2.4 s, di 12.2 m (duong chim bay 12.0), ket 0, vong 0
+   doi chung lai thang cung cho: toi False trong 10 s
+C0. khe 0: dich giua vuc, 8 s -> y thap nhat 2.63, dung vuc 0 lan, dung cach khe 6.4 m
+   chi chong vuc (lai thang ra mep): y thap nhat 2.53
+C1. khe 1: dich giua vuc, 8 s -> y thap nhat 1.12, dung vuc 0 lan, dung cach khe 7.2 m
+   chi chong vuc (lai thang ra mep): y thap nhat 1.12
+C2. khe 2: dich giua vuc, 8 s -> y thap nhat 1.68, dung vuc 0 lan, dung cach khe 7.2 m
+   chi chong vuc (lai thang ra mep): y thap nhat 1.68
+C3. khe 3: dich giua vuc, 8 s -> y thap nhat 2.15, dung vuc 0 lan, dung cach khe 7.2 m
+   chi chong vuc (lai thang ra mep): y thap nhat 2.12
+C4. doi chung tat tim duong + tat chong vuc, lai thang ra khe 0: y thap nhat -26.42 (nguong dia nguc -6)
+D1. doi thu cach 24.0 m: muc tieu la doi thu True, toi gan 8.9 m sau 2.9 s, 1,5 s sau van 7.2 m (dung lai, TamGiu 9)
+D2. doi thu cach 44.7 m (ngoai tam phat hien 30): 6 s sau con 13.4 m
+D3. cung doi voi moi nguoi: muc tieu khong ai (di tuan)
+E0. Bot_1_BOT 1: di 37 m, ket 0, vong 0, dung vuc 0, y thap nhat -0.40, dung im lau nhat khi muon di 0 s, mau 0/1000 (DA CHET)
+E1. Bot_2_BOT 2: di 75 m, ket 0, vong 0, dung vuc 0, y thap nhat -0.99, dung im lau nhat khi muon di 0 s, mau 0/1000 (DA CHET)
+E2. Bot_3_BOT 3: di 0 m, ket 0, vong 0, dung vuc 0, y thap nhat 0.00, dung im lau nhat khi muon di 0 s, mau 0/1000 (DA CHET)
+E. 3 dot quai trong 60 s; BOT roi xuong vuc: 0 (phai 0)
+   anh maybot_dilai_tran.png
+don phong -P3QpMIkB9K2cjIzw3lC: sach
+
+so loi ghi nhan = 0

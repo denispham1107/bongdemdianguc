@@ -7466,6 +7466,38 @@ trong Editor: **252 cách gõ** của 134 chữ (tách hết, dấu sai thứ t�
 
 Menu 52: **0 lỗi**. Bản web build 5,4 phút, 0 lỗi, trình duyệt đã từng vào trang tải đúng bản mới, console 0 lỗi.
 
+### Máy BOT — bước 3: đi lại — tìm mục tiêu, vòng vật cản, tránh vực địa ngục (08/10/2026)
+
+Dự án **không có NavMesh**; quái chỉ lái thẳng rồi vòng khi kẹt (`EnemyAI`). Với BOT làm chắc hơn:
+
+**Lưới đi lại** (`Mang/BanDoBot.cs`, máy chủ phòng dựng MỘT lần lúc vào trận, dùng chung cho mọi BOT, rải qua nhiều khung —
+2 500 ô / khung): ô **0,8 m** phủ 140 × 140 m quanh tâm bản đồ (175 × 175 ô). Ô đi được khi: tia xuống lớp **Ground** chạm đất **không
+thấp hơn −4 m** (đáy vực địa ngục cũng là lớp Ground, ở −26,5), dốc ≤ 50°, và con nhộng nhân vật (bán kính 0,42 m, từ 0,6 m — cao hơn
+`stepOffset` 0,55 — tới 1,95 m) **không chạm vật cản lớp Default** (bia, cây, nhà mồ, rào, lò). Thêm một vành **1,6 m sát vực** cũng cấm —
+đứng cách mép, không đứng sát mép. Tìm đường **A\*** 8 hướng (không cắt góc vật cản), đích không đi được thì lấy ô đi được gần nhất trong
+6 m, rồi **làm thẳng** (nhảy tới mốc xa nhất còn thấy thẳng). Cảnh vật đổi giữa trận (bia cháy rụi rồi mọc lại, Lốc xoáy cuốn đồ vật)
+→ BOT tự **cấm tạm** ô khi kẹt / thấy vực phía trước, ô tự mở lại sau vài giây.
+
+**Bộ não** (`BotDieuKhien`): **mục tiêu** = quái / đối thủ gần nhất trong **30 m** (bỏ đồng đội, người đang Tàng hình, kẻ chết, kẻ dưới
+vực); không ai trong tầm thì **săn** đối thủ gần nhất cả bản đồ, rồi tới quái, không còn gì thì **đi tuần**. Chọn lại theo nhịp phản xạ của
+độ khó (Dễ 1,2 s · Thường 0,7 s · Khó 0,35 s). Đi theo đường A\* (tính lại mỗi 1,2 s hoặc khi đích dời > 2,5 m), tới gần mục tiêu **9 m**
+thì dừng (có trễ: vào 7,2 m mới dừng, ra quá 9 m mới đi — không giật cục; bước 4 tung phép từ đây). **Chống vực**: mỗi khung dò đất
+PHÍA TRƯỚC 0,9 / 1,7 m (lưới + tia xuống Ground) — hụt chân thì DỪNG, cấm tạm chỗ ấy, tìm đường khác. **Chống kẹt**: cứ 0,8 s mà muốn đi
+nhưng dịch chưa tới 0,35 m (không tính lúc niệm / bị khoá) → cấm tạm chỗ chắn, tìm lại; kẹt 3 lần liền → vòng ra một điểm ngẫu nhiên.
+
+⚠️ `BanDoBot` là tĩnh và dự án TẮT Domain Reload: lần dựng dở (đổi scene giữa chừng) từng có thể kẹt cờ "đang dựng" sang lần Play sau —
+nay đặt lại lúc vào Play và theo `Scene` đang mở (Unity 6.5: `Scene.handle` là kiểu `SceneHandle`, so bằng `Scene ==`).
+
+**Số đo — menu 114** (phòng thật + 3 BOT, Act2, đường của game; tắt đợt quái ở A–D): lưới **175 × 175** dựng **0,29 s** — đi được 24 439
+ô, vật cản 3 432, vực + sát vực 2 754; cả **4 khe rào sập**: điểm 8 m ngoài là vực 4/4, có ô đi được 7 m bên trong 4/4; **434/434** bia mộ
+lớn (cao > 0,8, ngang > 0,5 m) bị chặn. **Vòng nhà mồ** (3 nhà, từ trước ra sau): tới cả 3 sau **2,4–3,3 s**, quãng đi 12,2–13,9 m so với
+đường chim bay 12,0–13,6 (dài hơn 2–5%), 0 lần kẹt; **đối chứng lái thẳng cùng chỗ: kẹt cả 3** (không tới trong 10 s). **Vực** (đích giữa vực
+ngoài từng khe): y thấp nhất **+1,1…+2,6 m** (không bao giờ xuống dưới đất), dừng cách khe 6–7 m; chỉ giữ lớp dò vực (tắt tìm đường, lái
+thẳng ra mép): vẫn không rơi cả 4 khe; **đối chứng tắt cả hai: rơi xuống −26,4 m**. **Mục tiêu**: đối thủ cách 24 m → tới 8,9 m sau 2,9 s rồi
+dừng ở 7,2 m; đối thủ cách 44,7 m (ngoài 30) → 6 s sau còn 13,4 m (đi săn); cả phòng cùng đội → không nhắm ai (đi tuần). **Trận thật 60 s**,
+3 đợt quái: BOT đi 37–75 m, 0 kẹt, 0 rơi vực (BOT chưa biết đánh nên đều bị quái hạ — bước 4). **0 lỗi.** Menu 113 (bước 2, nay đặt BOT
+`dungYen` để đo) chạy lại: 0 lỗi.
+
 ### Máy BOT — bước 2: BOT có mặt trong trận (08/10/2026)
 
 Người dùng chọn thêm: **quái tính BOT như người** (đợt quái sinh 4 con quanh mỗi BOT, vòng ngoài +10 con mỗi BOT, quái đuổi đánh BOT).
@@ -13380,6 +13412,7 @@ Lần chạy đầu phép thử báo cả 10 con "lơ lửng": tia chiếu từ 
 | **46. Chay thu HIEU UNG qua mang** | Mười hai chiều: bản sao không tự gieo đóng băng/choáng (và nhân vật thật vẫn gieo được), cờ và máu khiên đọc đúng rồi đi qua gói tin không to thêm, bản sao vẽ lại theo lời kể, khiên bản sao không bị trừ cục bộ, mất gói thì hiệu ứng tự tan, và quái bên khách choáng theo chủ phòng. Kết quả ra `PlayTestShots/hieuung_mang.txt`. |
 | **48. Chay thu CAI DAT do hoa** | Ngoài Play: font đủ chữ có dấu, vị trí nút ở nhiều cỡ màn hình, `index.html` không hạ `devicePixelRatio`, chuyển khoá cũ 3 mức sang khoá mới 4 mức. Trong Play: đăng nhập thật, bấm OK lần lượt 4 mức, đọc lại từ kho lưu, kiểu bóng / chi tiết xa, vào Act2 đếm vật đổ bóng, đo ảnh đệm cảnh 3D (kích thước, có phóng lên màn hình, gỡ ra ngoài lúc vẽ, đứng sau bloom), độ sáng ảnh chụp. Trả lại mức cũ, phiên đăng nhập và mức chất lượng của Editor. Kết quả ra `PlayTestShots/caidat.txt`. |
 | **49. Chay thu CAU LUA trung nguoi va khieng** | Tự chọn hướng bắn trống, rồi đo hai chiều mạng: người khác bắn mình / mình bắn người khác, có và không có khiên, và khiên của chính người bắn. Ghi từng cú mất máu (cú nổ hay cú cháy), chỗ quả cầu nổ so với mặt vòm, máu khiên; chụp màn hình lúc nổ để xem con số sát thương có đọc được không. Kết quả ra `PlayTestShots/cauluapvp.txt`, ảnh `caulua_no_*.png`. |
+| **114. Chay thu MAY BOT di lai (buoc 3)** | Lưới đi lại (vực ở 4 khe rào sập, bia mộ bị chặn), vòng qua 3 nhà mồ (đối chứng lái thẳng: kẹt), đích giữa vực (không rơi; chỉ lớp dò vực cũng giữ được; đối chứng tắt cả hai: rơi), chọn mục tiêu (đối thủ gần / săn xa / bỏ đồng đội), trận thật 60 s có quái. Kết quả `PlayTestShots/maybot_dilai.txt`. |
 | **113. Chay thu MAY BOT trong tran (buoc 2)** | Phòng thật + 2 BOT, vào Act2 bằng đường của game: BOT dựng đúng kiểu (trọng tài là máy này, bảng cấp riêng), chỗ xuất phát theo luật ≥ 22 m, chạm đất; lên cấp riêng; đợt quái quanh mỗi BOT; kinh nghiệm hạ quái / hạ người vào đúng bảng; gói trạng thái / phép / chết của BOT qua kênh giả lập; kết trận Đơn (BOT thắng) và Đôi. Kết quả `PlayTestShots/maybot_tran.txt`, ảnh `maybot_tran_*.png`. |
 | **112. Chay thu MAY BOT o ghe trong (sanh - Firebase that)** | Bước 1 của máy BOT: thêm BOT ba độ khó qua bảng chọn (gọi đúng hàm của nút), ghế / tên / sẵn sàng / `soNguoi` trên Firebase thật, phòng đầy từ chối, đuổi BOT, khách không thêm được (cả ghi thẳng Firebase), phòng Đôi vào đúng đội, `XepGhe` không bắt tay ghế BOT. Ảnh `maybot_*.png`, kết quả `PlayTestShots/maybot_sanh.txt`. |
 | **50. Chay thu GIAO DIEN dang nhap - sanh - phong** | Đi hết các màn (đăng nhập, tạo tài khoản, sảnh trống, sảnh có phòng, Cài đặt, trong phòng, phòng đủ 4 người, đếm ngược); ở mỗi màn đếm số lượt vẽ, số chữ bị cắt, số chữ phải thu nhỏ — đếm ngay trong hàm vẽ nên không sót nhãn nào. Kiểm font đang dùng là Inter, và quay về MainMenu khi đã đăng nhập thì vào thẳng sảnh. Đo trên ảnh (08/10/2026): cảnh lọt qua lòng khung đăng nhập / danh sách phòng, chỗ ảnh tên game, cỡ + chỗ vòng đếm ngược (dưới gạch đỏ, trên chóp mũ phù thuỷ). Ảnh `gd_*.png`, kết quả `PlayTestShots/giaodien.txt`. |

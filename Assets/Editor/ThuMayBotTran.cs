@@ -102,6 +102,9 @@ public static class ThuMayBotTran
         float han = Time.realtimeSinceStartup + 40f;
         while (Time.realtimeSinceStartup < han && KhoiDongTranMang.BotDaDung.Count < doiBot.Length) yield return null;
         for (int i = 0; i < 10; i++) yield return null;
+        // Phep thu buoc 2 do BOT DUNG YEN (tu buoc 3 BOT tu di lai - di thi lam nhieu so do vi tri / ket tran)
+        foreach (var bot in KhoiDongTranMang.BotDaDung)
+        { var nao = bot != null ? bot.GetComponent<BotDieuKhien>() : null; if (nao != null) nao.dungYen = true; }
         xong(KhoiDongTranMang.BotDaDung.Count);
     }
 

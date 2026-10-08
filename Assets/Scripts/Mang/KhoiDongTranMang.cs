@@ -225,6 +225,12 @@ public class KhoiDongTranMang : MonoBehaviour
             toi.gameObject.AddComponent<LichSuViTri>();
 
         // ---- 3b. May BOT (chu phong) ----
+        if (chayBot && !BanDoBot.HopLeChoCanh)
+        {
+            // Luoi di lai cho BOT (buoc 3): dung rai qua nhieu khung - BOT dung yen toi khi xong (~1 s)
+            var dirBot = GameDirector.Instance;
+            StartCoroutine(BanDoBot.Dung(dirBot != null ? dirBot.arenaCenter : Vector3.zero, 70f));
+        }
         if (chayBot)
             foreach (var g in bangGhe)
                 if (MayBot.LaBot(g.uid)) SinhBot(g);
