@@ -68,6 +68,13 @@ public static class GiaoDien
     /// long bang qua nhieu thi chu hai lop chong len nhau, kho doc.</summary>
     public const float DoDucBangNoi = 0.66f;
 
+    /// <summary>Man dang nhap / sanh / phong cho DUC BOT 40% (nguoi dung 08/10/2026: "giam do duc de thay ro
+    /// nhan vat phu thuy phia sau"): nhan vao long khung, long hang, ghe trong va nen o nhap. Chu, nut, vien
+    /// giu nguyen. Sach phep va HUD trong tran khong doi.</summary>
+    public const float HeSoDucSanh = 0.6f;
+    public const float DoDucKhungSanh = DoDucKhung * HeSoDucSanh;   // 0,33
+    public const float DoDucHangSanh = DoDucHang * HeSoDucSanh;     // 0,27
+
     /// <summary>Ti le cho mot man hinh W x H bat ky - phep thu dung de xep thu nhieu co man hinh.</summary>
     public static float TinhTiLe(float W, float H)
     {
@@ -454,10 +461,10 @@ public static class GiaoDien
     }
 
     /// <summary>Mot hang trong danh sach: long hoi sang hon khung, vach do ben trai.</summary>
-    public static void Hang(Rect r, float s, Color vach)
+    public static void Hang(Rect r, float s, Color vach, float doDuc = -1f)
     {
         var mauLong = GUI.color;
-        GUI.color = new Color(1f, 1f, 1f, DoDucHang);
+        GUI.color = new Color(1f, 1f, 1f, doDuc < 0f ? DoDucHang : doDuc);
         GUI.DrawTexture(r, nenHang, ScaleMode.StretchToFill, true);
         GUI.color = mauLong;
         To(new Rect(r.x, r.y, Mathf.Max(2f, 4f * s), r.height), vach);
@@ -654,8 +661,13 @@ public static class GiaoDien
     public static string ONhap(Rect r, string ten, string giaTri, int toiDa, string goiY, bool matKhau = false)
     {
         GUI.SetNextControlName(ten);
+        // O nhap chi co o man dang nhap / sanh -> nen o trong 40% (HeSoDucSanh). backgroundColor chi
+        // nhuom NEN cua kieu, chu go vao van dac.
+        var nenCu = GUI.backgroundColor;
+        GUI.backgroundColor = new Color(nenCu.r, nenCu.g, nenCu.b, nenCu.a * HeSoDucSanh);
         string ra = matKhau ? GUI.PasswordField(r, giaTri, '•', toiDa, KieuO)
                             : GUI.TextField(r, giaTri, toiDa, KieuO);
+        GUI.backgroundColor = nenCu;
 
         if (string.IsNullOrEmpty(ra) && GUI.GetNameOfFocusedControl() != ten && !string.IsNullOrEmpty(goiY))
         {

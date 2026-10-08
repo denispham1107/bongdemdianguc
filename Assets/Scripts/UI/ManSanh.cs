@@ -328,7 +328,7 @@ public class ManSanh : MonoBehaviour
 
         // ---- Tao phong ----
         var kt = b.khungTao;
-        GiaoDien.Khung(kt, s);
+        GiaoDien.Khung(kt, s, false, GiaoDien.DoDucKhungSanh);
         float le = 30f * s;
         float xx = kt.x + le, rr = kt.width - 2f * le;
 
@@ -357,7 +357,7 @@ public class ManSanh : MonoBehaviour
 
         // ---- Danh sach phong ----
         var kd = b.khungDanhSach;
-        GiaoDien.Khung(kd, s);
+        GiaoDien.Khung(kd, s, false, GiaoDien.DoDucKhungSanh);
         GiaoDien.Chu(b.tieuDePhongCho, "PHÒNG ĐANG CHỜ", GiaoDien.KieuTieuDeNho);
 
         // Nut KY NANG nam ngay ben trai VAO PHONG NHANH, cung hang (cho cu cua CAI DAT)
@@ -417,7 +417,7 @@ public class ManSanh : MonoBehaviour
     void VeHangPhong(Rect r, PhongMang.Phong p, float s, bool khoa)
     {
         int toiDa = p.toiDa <= 0 ? PhongMang.SoNguoiToiDa : p.toiDa;
-        GiaoDien.Hang(r, s, p.ConCho ? GiaoDien.MauMau : new Color(0.3f, 0.25f, 0.25f));
+        GiaoDien.Hang(r, s, p.ConCho ? GiaoDien.MauMau : new Color(0.3f, 0.25f, 0.25f), GiaoDien.DoDucHangSanh);
 
         float rongNut = 150f * s;
         float rongCho = 150f * s;
@@ -504,7 +504,7 @@ public class ManSanh : MonoBehaviour
             ? 96f + 2f * (CaoTieuDeDoi + KheHangGhe + CheDoTran.SoNguoiMoiDoi * CaoHangGhe + (CheDoTran.SoNguoiMoiDoi - 1) * KheHangGhe) + KheDoi + 24f
             : 96f + toiDa * CaoHangGhe + (toiDa - 1) * KheHangGhe + 24f;
         var kg = new Rect(x, y, rong, caoKhungGhe * s);
-        GiaoDien.Khung(kg, s, true);
+        GiaoDien.Khung(kg, s, true, GiaoDien.DoDucKhungSanh);
         GiaoDien.Chu(new Rect(kg.x + le, kg.y + 44f * s, rong - 2f * le, 34f * s),
                      "NGƯỜI CHƠI  " + p.nguoiChoi.Count + "/" + toiDa, GiaoDien.KieuTieuDeNho);
 
@@ -671,7 +671,7 @@ public class ManSanh : MonoBehaviour
 
         if (n == null)
         {
-            GiaoDien.To(o, new Color(0.03f, 0.025f, 0.025f, 0.35f));
+            GiaoDien.To(o, new Color(0.03f, 0.025f, 0.025f, 0.35f * GiaoDien.HeSoDucSanh));
             GiaoDien.To(new Rect(o.x, o.yMax - 1f, o.width, 1f), new Color(0.3f, 0.15f, 0.12f, 0.6f));
             GiaoDien.Chu(new Rect(o.x, o.y, rongSo, o.height), (thuTu + 1).ToString(), kso);
             kso.alignment = cSo; kso.normal.textColor = mSo;
@@ -686,7 +686,7 @@ public class ManSanh : MonoBehaviour
 
         bool laChu = n.uid == p.hostUid;
         bool laToi = n.uid == FirebaseMang.Uid;
-        GiaoDien.Hang(o, s, n.sanSang ? GiaoDien.MauXanh : (laChu ? GiaoDien.MauVang : GiaoDien.MauMau));
+        GiaoDien.Hang(o, s, n.sanSang ? GiaoDien.MauXanh : (laChu ? GiaoDien.MauVang : GiaoDien.MauMau), GiaoDien.DoDucHangSanh);
         GiaoDien.Chu(new Rect(o.x, o.y, rongSo, o.height), (thuTu + 1).ToString(), kso);
         kso.alignment = cSo; kso.normal.textColor = mSo;
 
@@ -779,10 +779,30 @@ public class ManSanh : MonoBehaviour
 
     /// <summary>Chieu cao anh chu so luc dung yen (chua dap nhip). 306 = 360 x 0,85: nguoi dung xin
     /// con so va vong phu chu nho bot 15% (13/09/2026).</summary>
-    public const float CaoSoDemNguoc = 306f;
+    public const float CaoSoDemNguoc = 306f * HeSoThuDemNguoc;
 
     /// <summary>Canh vong phu chu luc dung yen. 400 = 470 x 0,85.</summary>
-    public const float CoVongDemNguoc = 400f;
+    public const float CoVongDemNguoc = 400f * HeSoThuDemNguoc;
+
+    /// <summary>Nguoi dung 08/10/2026: ca vong phu chu lan con so THU NHO va dua LEN tren dau nhan vat
+    /// (cho danh dau tren anh chup: cua nha mo phia sau, ~20% chieu cao man hinh) de khong che mat phu thuy.
+    /// 0,52: vong 195 -> ~110 diem anh tren anh chup cua nguoi dung (khung xanh cao 115); 0,6 thi luc dap to nhat
+    /// vong cham chop mu (menu 50 muc 7d).</summary>
+    public const float HeSoThuDemNguoc = 0.52f;
+    /// <summary>Tam vong dem nguoc theo chieu cao man hinh (0 = mep tren).</summary>
+    public const float TamDemNguocTheoCao = 0.204f;
+    /// <summary>Vong to them toi da 7%, con so 25% khi dap nhip.</summary>
+    public const float DapVongToiDa = 1.07f, DapSoToiDa = 1.25f;
+
+    /// <summary>Tam vong + con so dem nguoc: TamDemNguocTheoCao, nhung khong de len gach do duoi dong
+    /// chu "TRAN DAU BAT DAU SAU" (man thap thi day xuong cho vong dap to nhat van nam duoi gach).</summary>
+    public static Vector2 TamDemNguoc(float s)
+    {
+        float y = Screen.height * TamDemNguocTheoCao;
+        float nuaCao = Mathf.Max(CoVongDemNguoc * DapVongToiDa, CaoSoDemNguoc * DapSoToiDa) * s * 0.5f;
+        y = Mathf.Max(y, KhungGachDemNguoc(s).yMax + 6f * s + nuaCao);
+        return new Vector2(Screen.width * 0.5f, y);
+    }
 
     void VeDemNguoc(float s)
     {
@@ -810,13 +830,13 @@ public class ManSanh : MonoBehaviour
         k.alignment = canh;
         GiaoDien.DuongKe(KhungGachDemNguoc(s), new Color(0.8f, 0.1f, 0.06f, 0.9f));
 
-        var tam = new Vector2(Screen.width * 0.5f, Screen.height * 0.5f);
+        var tam = TamDemNguoc(s);
         Matrix4x4 cu = GUI.matrix;
 
         // ---- 3. Vong phu chu xoay cham phia sau con so ----
         if (anhVongPhuChu != null)
         {
-            float coVong = CoVongDemNguoc * s * (1f + 0.07f * nhip);
+            float coVong = CoVongDemNguoc * s * (1f + (DapVongToiDa - 1f) * nhip);
             GUIUtility.RotateAroundPivot(Time.unscaledTime * 14f, tam);
             GUI.color = new Color(1f, 1f, 1f, 0.45f + 0.40f * nhip);
             GUI.DrawTexture(new Rect(tam.x - coVong * 0.5f, tam.y - coVong * 0.5f, coVong, coVong),
@@ -829,11 +849,11 @@ public class ManSanh : MonoBehaviour
         var anh0 = anhSo[0];
         if (anh0 != null)
         {
-            float cao = CaoSoDemNguoc * s * (1f + 0.25f * nhip);
+            float cao = CaoSoDemNguoc * s * (1f + (DapSoToiDa - 1f) * nhip);
             float rongMot = cao * anh0.width / (float)anh0.height;
             float buoc = rongMot * 0.58f;                         // chu so ghep sat nhau ("10")
             float tong = rongMot + buoc * (chu.Length - 1);
-            float rung = 7f * s * nhip;
+            float rung = 7f * HeSoThuDemNguoc * s * nhip;
             float lx = Mathf.Sin(Time.unscaledTime * 71f) * rung, ly = Mathf.Cos(Time.unscaledTime * 53f) * rung;
             float x = tam.x - tong * 0.5f + lx;
             float y = tam.y - cao * 0.5f + ly;
@@ -848,7 +868,7 @@ public class ManSanh : MonoBehaviour
         {
             // Khong nap duoc anh thi van phai co con so - ve bang chu nhu ban cu
             var ks = GiaoDien.KieuSoLon;
-            GUI.Label(new Rect(0, tam.y - 140f * s, Screen.width, 280f * s), chu, ks);
+            GUI.Label(new Rect(0, tam.y - 140f * HeSoThuDemNguoc * s, Screen.width, 280f * HeSoThuDemNguoc * s), chu, ks);
         }
         GUI.color = mauCu;
     }

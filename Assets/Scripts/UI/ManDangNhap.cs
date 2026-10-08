@@ -82,6 +82,10 @@ public class ManDangNhap : MonoBehaviour
     /// dung bang hang tab, tuc cung lam la mat hai tab, khong bao gio mat o nhap.</summary>
     public static float TranLenToiDa(float s) { return 122f * s; }
 
+    /// <summary>Tam anh ten game theo chieu cao man hinh (0 = mep tren). 0,11: cho nguoi dung danh dau tren anh
+    /// chup 08/10/2026 (khung xanh la, tam o 12% man hinh; anh co vien quang trong suot phia tren).</summary>
+    public const float TamTieuDe = 0.11f;
+
     /// <summary>
     /// XEP MAN DANG NHAP, CO TINH DEN BAN PHIM AO.
     ///
@@ -130,8 +134,12 @@ public class ManDangNhap : MonoBehaviour
         }
         float x = (W - rong) * 0.5f;
 
+        // Nguoi dung 08/10/2026: anh ten game KEO LEN sat mep tren (tren mai nha mo phia sau), khung dang
+        // nhap giu nguyen cho cu. Tam anh o TamTieuDe x chieu cao; chi keo LEN, khong bao gio thap hon cho
+        // cu (man doc hep: cho cu da sat mep tren roi).
+        float yTieuDe = Mathf.Min(y, Mathf.Max(4f * s, H * TamTieuDe - caoAnh * 0.5f));
         b.tieuDe = coBanPhim ? new Rect(0f, 0f, 0f, 0f)
-                             : new Rect((W - rongTieuDe) * 0.5f, y, rongTieuDe, caoAnh);
+                             : new Rect((W - rongTieuDe) * 0.5f, yTieuDe, rongTieuDe, caoAnh);
         if (!coBanPhim) y += caoAnh + 22f * s;
         b.khung = new Rect(x, y, rong, caoKhung);
         b.oNhapCuoi = new Rect(x + 36f * s, y + DayONhapCuoi(trangDangKy, s) - 52f * s,
@@ -156,7 +164,7 @@ public class ManDangNhap : MonoBehaviour
         // ---- Khung ----
         var khung = bc.khung;
         float x = khung.x, rong = khung.width, y = khung.y;
-        GiaoDien.Khung(khung, s, true);
+        GiaoDien.Khung(khung, s, true, GiaoDien.DoDucKhungSanh);
 
         float le = 36f * s;
         float xx = x + le, rr = rong - 2f * le;

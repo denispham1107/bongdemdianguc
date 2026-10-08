@@ -7466,6 +7466,33 @@ trong Editor: **252 cách gõ** của 134 chữ (tách hết, dấu sai thứ t�
 
 Menu 52: **0 lỗi**. Bản web build 5,4 phút, 0 lỗi, trình duyệt đã từng vào trang tải đúng bản mới, console 0 lỗi.
 
+### Màn đăng nhập · sảnh · phòng: tên game lên sát mép trên, khung trong hơn 40%, đếm ngược 5 giây nhỏ lại (08/10/2026)
+
+Người dùng gửi 5 ảnh chụp có đánh dấu:
+
+1. **Tên game** ở màn đăng nhập kéo lên chỗ khung xanh lá (trên mái nhà mồ). `ManDangNhap.TinhBoCuc` đặt tâm ảnh tên ở
+   `TamTieuDe` **0,11** chiều cao màn hình, khung đăng nhập **giữ nguyên chỗ cũ**; chỉ kéo LÊN, không bao giờ thấp hơn chỗ cũ
+   (màn dọc hẹp chỗ cũ đã sát mép trên). Bàn phím ảo lên thì vẫn bỏ ảnh tên như trước.
+2. **Khung xanh dương trong hơn 40%** ("giảm độ đục để thấy rõ phù thủy phía sau"): lòng khung đăng nhập / tạo phòng / danh sách
+   phòng / người chơi 0,55 → **0,33** (`GiaoDien.DoDucKhungSanh`), lòng hàng phòng · hàng ghế 0,45 → **0,27** (`DoDucHangSanh`), ghế
+   trống 0,35 → 0,21, nền ô nhập chữ ×0,6 (qua `GUI.backgroundColor` — chữ gõ vào vẫn đặc). Chữ, nút, viền giữ nguyên để đọc và bấm
+   rõ. Sách phép, bảng Cài đặt, HUD trong trận **không đổi** (hằng số cũ vẫn dùng ở đó).
+3. **Đếm ngược 5 giây** (`PhongMang.GiayDemNguoc` 10 → 5) và **cả vòng phù chú lẫn con số thu nhỏ ×0,52** (`ManSanh.HeSoThuDemNguoc`;
+   vòng 400 → 208, số 306 → 159 đơn vị), tâm dời từ giữa màn hình lên **0,204 chiều cao** (`TamDemNguocTheoCao` — chỗ khoanh tròn,
+   cửa nhà mồ phía sau), không bao giờ đè lên gạch đỏ dưới dòng "TRẬN ĐẤU BẮT ĐẦU SAU" (`TamDemNguoc` tự đẩy xuống ở màn thấp).
+   Lần đầu thử ×0,6: lúc đập nhịp to nhất (vòng ×1,07, số ×1,25) mép dưới chạm chóp mũ phù thuỷ → hạ còn ×0,52, khớp cỡ vòng
+   người dùng khoanh (~115 điểm ảnh trên ảnh của họ).
+
+**Số đo** (menu 50, màn Game 1619×580, đo TRÊN ẢNH — chụp có giao diện rồi tắt component vẽ chụp lại cùng khung, trung vị tỉ số
+độ sáng trong lòng khung = phần cảnh lọt qua):
+- Khung đăng nhập lọt qua **0,66–0,71**, khung danh sách phòng **0,68–0,69** (dự kiến 0,67; bản cũ đục 0,55 ra ~0,45).
+- Ảnh tên game (các hàng đổi màu phía trên khung, chỉ trong bề ngang ảnh, ≥ 10% điểm đổi): y **43–97 / 580**, tâm **0,121** —
+  khung xanh lá của người dùng 47–95. ⚠️ Lần đo đầu ra 40–204 (tâm 0,21): quả cầu lửa trên tay phù thủy lập loè giữa hai lần chụp,
+  lọt vào vùng đếm; siết ngưỡng theo tỉ lệ bề ngang mới sạch.
+- Vòng đếm ngược trên ảnh: rộng **107** điểm ở hàng y 118 (cỡ mới 112–120 lúc đập nhịp; bản cũ 215 ở giữa màn). Mép dưới lúc đập
+  to nhất y **178**, chóp mũ phù thuỷ (xương `head_end` + 0,03 m, như `BangTen`) y **186**; đối chứng bản cũ giữa màn: đáy y 405.
+- Menu 50: **0 lỗi**, 0 chữ bị cắt ở mọi màn; menu 57 (bàn phím ảo, 8 cỡ màn × 3 mức che × 2 trang): **0 lỗi**.
+
 ### Thiết kế lại chữ "ÁC QUỶ TRỞ LẠI": chữ máu đặc 3D + nền địa ngục cho trang Loading (06/10/2026)
 
 **Người dùng:** chữ cũ (Grenze Gotisch, ảnh vẽ bằng Pillow) "còn hơi thô và cứng" — muốn "mềm mại thật hơn, ghê rợn âm u, máu me
@@ -13289,7 +13316,7 @@ Lần chạy đầu phép thử báo cả 10 con "lơ lửng": tia chiếu từ 
 | **46. Chay thu HIEU UNG qua mang** | Mười hai chiều: bản sao không tự gieo đóng băng/choáng (và nhân vật thật vẫn gieo được), cờ và máu khiên đọc đúng rồi đi qua gói tin không to thêm, bản sao vẽ lại theo lời kể, khiên bản sao không bị trừ cục bộ, mất gói thì hiệu ứng tự tan, và quái bên khách choáng theo chủ phòng. Kết quả ra `PlayTestShots/hieuung_mang.txt`. |
 | **48. Chay thu CAI DAT do hoa** | Ngoài Play: font đủ chữ có dấu, vị trí nút ở nhiều cỡ màn hình, `index.html` không hạ `devicePixelRatio`, chuyển khoá cũ 3 mức sang khoá mới 4 mức. Trong Play: đăng nhập thật, bấm OK lần lượt 4 mức, đọc lại từ kho lưu, kiểu bóng / chi tiết xa, vào Act2 đếm vật đổ bóng, đo ảnh đệm cảnh 3D (kích thước, có phóng lên màn hình, gỡ ra ngoài lúc vẽ, đứng sau bloom), độ sáng ảnh chụp. Trả lại mức cũ, phiên đăng nhập và mức chất lượng của Editor. Kết quả ra `PlayTestShots/caidat.txt`. |
 | **49. Chay thu CAU LUA trung nguoi va khieng** | Tự chọn hướng bắn trống, rồi đo hai chiều mạng: người khác bắn mình / mình bắn người khác, có và không có khiên, và khiên của chính người bắn. Ghi từng cú mất máu (cú nổ hay cú cháy), chỗ quả cầu nổ so với mặt vòm, máu khiên; chụp màn hình lúc nổ để xem con số sát thương có đọc được không. Kết quả ra `PlayTestShots/cauluapvp.txt`, ảnh `caulua_no_*.png`. |
-| **50. Chay thu GIAO DIEN dang nhap - sanh - phong** | Đi hết các màn (đăng nhập, tạo tài khoản, sảnh trống, sảnh có phòng, Cài đặt, trong phòng, phòng đủ 4 người, đếm ngược); ở mỗi màn đếm số lượt vẽ, số chữ bị cắt, số chữ phải thu nhỏ — đếm ngay trong hàm vẽ nên không sót nhãn nào. Kiểm font đang dùng là Inter, và quay về MainMenu khi đã đăng nhập thì vào thẳng sảnh. Ảnh `gd_*.png`, kết quả `PlayTestShots/giaodien.txt`. |
+| **50. Chay thu GIAO DIEN dang nhap - sanh - phong** | Đi hết các màn (đăng nhập, tạo tài khoản, sảnh trống, sảnh có phòng, Cài đặt, trong phòng, phòng đủ 4 người, đếm ngược); ở mỗi màn đếm số lượt vẽ, số chữ bị cắt, số chữ phải thu nhỏ — đếm ngay trong hàm vẽ nên không sót nhãn nào. Kiểm font đang dùng là Inter, và quay về MainMenu khi đã đăng nhập thì vào thẳng sảnh. Đo trên ảnh (08/10/2026): cảnh lọt qua lòng khung đăng nhập / danh sách phòng, chỗ ảnh tên game, cỡ + chỗ vòng đếm ngược (dưới gạch đỏ, trên chóp mũ phù thuỷ). Ảnh `gd_*.png`, kết quả `PlayTestShots/giaodien.txt`. |
 | **51. Dung man chinh tu canh Act2** | Chép phần cảnh Act2 quanh chỗ đứng (45 m, phía trước camera) sang MainMenu.unity cùng ánh sáng / sương / bầu trời; đặt phù thuỷ, camera, hai lò đá; dọn vật vướng. Tạo luôn prefab lò đá từ FBX + texture Blender. Báo cáo `PlayTestShots/dungmanchinh.txt`. |
 | **51b. Chup thu goc nhin man chinh (Act2)** | Đặt nhân vật trước từng nhà mồ theo bốn hướng, bỏ chỗ vướng vật / giữa nước, chụp bằng khung camera màn chính — để chọn chỗ đứng. Ảnh `PlayTestShots/goc/`. |
 | **54. Dat 10 lo lua vao Act2** | Đặt 10 lò đá (prefab `Assets/Models/LoLuaDa`) vào Act2: lò giữa = chỗ đất khô gần tâm bản đồ nhất, 9 lò rải đều; không dưới nước, trong nhà mồ, trên/sát bia, chỉ trên mặt đất. Xoá lò cũ trước, chạy lại ra y hệt. Lưu Act2. Số đo `lolua_act2_dat.txt`. |

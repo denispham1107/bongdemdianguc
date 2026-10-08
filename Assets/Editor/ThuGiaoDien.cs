@@ -116,6 +116,67 @@ public static class ThuGiaoDien
         if (f != null) f.SetValue(sanh, Time.unscaledTime + 30f);
     }
 
+    /// <summary>
+    /// Nguoi dung 08/10/2026: khung dang nhap / sanh / phong DUC BOT 40% de thay phu thuy phia sau. DO TREN ANH,
+    /// khong doc hang so: chup man CO giao dien va KHONG giao dien (tat component ve), trong <paramref name="vung"/>
+    /// lay trung vi ti so do sang (co / khong) - phan canh lot qua long khung. Ban cu (duc 0,55) ~0,45 + mau long
+    /// khung; ban moi phai ~0,67. Neu <paramref name="tieuDe"/> thi do luon cho ANH TEN GAME: cac diem doi mau
+    /// phia TREN khung la anh ten game, lay tam cua chung theo chieu cao man hinh.
+    /// </summary>
+    static IEnumerator DoXuyenThau(string ten, MonoBehaviour ui, Rect vung, float duKien, bool tieuDe)
+    {
+        yield return new WaitForEndOfFrame();
+        var co = ScreenCapture.CaptureScreenshotAsTexture();
+        ui.enabled = false;
+        yield return null; yield return null;
+        yield return new WaitForEndOfFrame();
+        var khong = ScreenCapture.CaptureScreenshotAsTexture();
+        ui.enabled = true;
+        int H = co.height;
+        var tiSo = new System.Collections.Generic.List<float>();
+        int x0 = Mathf.Max(0, Mathf.RoundToInt(vung.x)), x1 = Mathf.Min(co.width, Mathf.RoundToInt(vung.xMax));
+        int y0 = Mathf.Max(0, Mathf.RoundToInt(vung.y)), y1 = Mathf.Min(H, Mathf.RoundToInt(vung.yMax));
+        for (int y = y0; y < y1; y += 2)
+            for (int x = x0; x < x1; x += 2)
+            {
+                float a = co.GetPixel(x, H - 1 - y).grayscale, b = khong.GetPixel(x, H - 1 - y).grayscale;
+                if (b > 0.05f) tiSo.Add(a / b);
+            }
+        tiSo.Sort();
+        float trungVi = tiSo.Count > 0 ? tiSo[tiSo.Count / 2] : -1f;
+        Ghi(ten + ": canh lot qua long khung (trung vi sang co/khong giao dien, " + tiSo.Count + " diem) = " + trungVi.ToString("F2")
+            + "; du kien ~" + duKien.ToString("F2") + " (ban cu duc 0,55 -> ~0,45)");
+        Kiem(trungVi > 0.58f && trungVi < 0.85f, ten + ": long khung khong trong hon 40% nhu yeu cau");
+
+        if (tieuDe)
+        {
+            int dinh = -1, day = -1;
+            int ySat = Mathf.RoundToInt(vung.y - 6f * GiaoDien.TiLe);
+            // Chi trong be ngang anh ten game, va hang phai doi >= 10% so diem: qua cau lua tren tay phu thuy
+            // (lap loe giua hai lan chup) lot qua duoi chan anh tung lam tam lech xuong 0,21.
+            float rongTd = Mathf.Min(co.width - 40f * GiaoDien.TiLe, 760f * GiaoDien.TiLe);
+            int xa = Mathf.Max(0, Mathf.RoundToInt((co.width - rongTd) * 0.5f)), xb = Mathf.Min(co.width, Mathf.RoundToInt((co.width + rongTd) * 0.5f));
+            int nguong = Mathf.Max(6, (xb - xa) / 2 / 10);
+            for (int y = 0; y < ySat; y++)
+            {
+                int dem = 0;
+                for (int x = xa; x < xb; x += 2)
+                {
+                    var c1 = co.GetPixel(x, H - 1 - y); var c2 = khong.GetPixel(x, H - 1 - y);
+                    if (Mathf.Abs(c1.r - c2.r) + Mathf.Abs(c1.g - c2.g) + Mathf.Abs(c1.b - c2.b) > 0.25f) dem++;
+                }
+                if (dem >= nguong) { if (dinh < 0) dinh = y; day = y; }
+            }
+            float tam = dinh >= 0 ? (dinh + day) * 0.5f / H : -1f;
+            float tamCu = (vung.y - 22f * GiaoDien.TiLe - 0.5f * Mathf.Min(Screen.width - 40f * GiaoDien.TiLe, 760f * GiaoDien.TiLe) / GiaoDien.TiLeTieuDe) / H;
+            Ghi("   anh ten game tren anh: y " + dinh + "-" + day + " / " + H + ", tam " + tam.ToString("F3") + " chieu cao (cho danh dau ~0,12;"
+                + " cho cu sat tren khung: tam ~" + tamCu.ToString("F3") + ")");
+            Kiem(dinh >= 0, "khong thay anh ten game phia tren khung dang nhap");
+            Kiem(tam > 0.06f && tam < 0.17f, "anh ten game chua len dung cho danh dau");
+        }
+        Object.Destroy(co); Object.Destroy(khong);
+    }
+
     static IEnumerator ChayKichBan()
     {
         Ghi("man hinh Game: " + Screen.width + "x" + Screen.height + ", ti le giao dien " + GiaoDien.TiLe.ToString("F2"));
@@ -131,6 +192,12 @@ public static class ThuGiaoDien
         Kiem(fontChu == "Inter-Regular" && fontDam == "Inter-SemiBold", "giao dien khong dung font Inter");
 
         var dn = Object.FindAnyObjectByType<ManDangNhap>();
+        if (dn != null)
+        {
+            float sDn = GiaoDien.TiLe;
+            var bcDn = ManDangNhap.TinhBoCuc(Screen.width, Screen.height, sDn, false, 0f, GiaoDien.TiLeTieuDe);
+            yield return DoXuyenThau("1b. khung dang nhap", dn, bcDn.khung, 1f - GiaoDien.DoDucKhungSanh, true);
+        }
         var fTrang = typeof(ManDangNhap).GetField("trang", BindingFlags.NonPublic | BindingFlags.Instance);
         if (dn != null && fTrang != null)
         {
@@ -160,6 +227,10 @@ public static class ThuGiaoDien
 
         var sanh = Object.FindAnyObjectByType<ManSanh>();
         if (sanh == null) { Ghi("[LOI] khong co sanh"); loi++; Ket(); yield break; }
+        {
+            var bcS = ManSanh.TinhBoCucSanh(Screen.width, Screen.height, GiaoDien.TiLe);
+            yield return DoXuyenThau("3c. khung danh sach phong", sanh, bcS.khungDanhSach, 1f - GiaoDien.DoDucKhungSanh, false);
+        }
 
         // ---- 3b. Danh sach co phong - du lieu gia CHI trong may, sanh hoi lai
         // moi 2 giay se ghi de, nen chup ngay. Mot phong ten dai het co, mot
@@ -214,7 +285,7 @@ public static class ThuGiaoDien
             }
 
             // ---- 5. Dem nguoc - chi dat o ban sao trong may, KHONG ghi len
-            // Firebase: dem nguoc that thi 10 giay sau nap Act2 va danh dau
+            // Firebase: dem nguoc that thi PhongMang.GiayDemNguoc giay sau nap Act2 va danh dau
             // phong "dang choi".
             var p = PhongMang.PhongHienTai;
             string cu = p.trangThai; double cuLuc = p.batDauLuc;
@@ -254,18 +325,21 @@ public static class ThuGiaoDien
                 Kiem(gach.yMax < dinhNv, "dong chu / gach do dem nguoc van de len nhan vat");
             }
 
-            // 7c. Con so + vong phu chu nho bot 15% (nguoi dung 13/09/2026). Do be ngang VUNG DO RUC
-            // cua vong tren ANH CHUP (vong dap nhip to them toi da 7%): phai khop 400s, khong phai 470s cu.
+            // 7c. Con so + vong phu chu: 13/09/2026 nho bot 15%, 08/10/2026 thu tiep x0,6 va dua len tren dau
+            // nhan vat. Do be ngang VUNG DO RUC cua vong tren ANH CHUP (vong dap nhip to them toi da 7%) quanh
+            // DUONG NGANG QUA TAM VONG MOI: phai khop CoVongDemNguoc.
             {
                 float sGd = GiaoDien.TiLe;
                 yield return new WaitForEndOfFrame();
                 var tex = ScreenCapture.CaptureScreenshotAsTexture();
                 int trai = int.MaxValue, phai = -1;
-                int cx = tex.width / 2, nua = Mathf.RoundToInt(300f * sGd);
-                // Quet 5 hang quanh DUONG NGANG GIUA (vong tron doi xung, xoay khong doi be ngang):
+                var tamDn = ManSanh.TamDemNguoc(sGd);
+                int cx = tex.width / 2, nua = Mathf.RoundToInt(ManSanh.CoVongDemNguoc * 0.75f * sGd);
+                int cy = tex.height - Mathf.RoundToInt(tamDn.y);   // anh chup goc duoi-trai
+                // Quet 5 hang quanh DUONG NGANG QUA TAM (vong tron doi xung, xoay khong doi be ngang):
                 // diem "do troi" = do hon ca xanh la lan xanh lam 0,12. Lan dau dung nguong "do ruc"
                 // (r > 0,55) thi vong bi ve mo theo nhip khong qua duoc - chi do trung con so (72 diem).
-                for (int y = tex.height / 2 - 2; y <= tex.height / 2 + 2; y++)
+                for (int y = cy - 2; y <= cy + 2; y++)
                     for (int x = Mathf.Max(0, cx - nua); x < Mathf.Min(tex.width, cx + nua); x++)
                     {
                         var c = tex.GetPixel(x, y);
@@ -273,13 +347,43 @@ public static class ThuGiaoDien
                     }
                 Object.Destroy(tex);
                 float rongVong = phai >= 0 ? phai - trai + 1 : 0f;
-                float moi = ManSanh.CoVongDemNguoc * sGd, cuVong = 470f * sGd;
-                Ghi("7c. vong phu chu tren anh: rong " + rongVong.ToString("F0") + " diem; co moi " + moi.ToString("F0")
-                    + "-" + (moi * 1.07f).ToString("F0") + " (dap nhip), co cu 470s = " + cuVong.ToString("F0")
-                    + "; chu so cao " + (ManSanh.CaoSoDemNguoc * sGd).ToString("F0") + " (cu " + (360f * sGd).ToString("F0") + ")");
+                float moi = ManSanh.CoVongDemNguoc * sGd, cuVong = 400f * sGd;
+                Ghi("7c. vong phu chu tren anh (hang y " + tamDn.y.ToString("F0") + "): rong " + rongVong.ToString("F0") + " diem; co moi "
+                    + moi.ToString("F0") + "-" + (moi * 1.07f).ToString("F0") + " (dap nhip), co cu 400s = " + cuVong.ToString("F0")
+                    + "; chu so cao " + (ManSanh.CaoSoDemNguoc * sGd).ToString("F0") + " (cu " + (306f * sGd).ToString("F0") + ")");
                 // Phan co hinh cua anh vong chiem 94% canh anh, dap nhip to them toi da 7% -> 0,94-1,0 lan
-                // co moi; co cu (470s) se ra 1,11-1,19 lan co moi
-                Kiem(rongVong >= moi * 0.85f && rongVong <= moi * 1.04f, "vong phu chu khong nho bot 15%");
+                // co moi; co cu (400s, tam giua man) thi hang quet cat vong o day cung ngan hon / khong trung vong
+                Kiem(rongVong >= moi * 0.85f && rongVong <= moi * 1.04f, "vong phu chu khong o dung co / dung cho moi");
+
+                // 7d. Ca vong lan con so (luc DAP TO NHAT) phai nam TREN dinh mu phu thuy (xuong head_end - khung bao
+                // SkinnedMesh cao hon mu that). Doi chung: vong + so co cu o giua man hinh thi de len.
+                float dinhMu = float.MaxValue; string tenXuong = "?";
+                var camD = Camera.main;
+                if (camD != null)
+                    foreach (var tf in Object.FindObjectsByType<Transform>(FindObjectsSortMode.None))
+                    {
+                        string tn = tf.name.ToLowerInvariant();
+                        if (!tn.EndsWith("head_end") && tn != "head") continue;
+                        if (tf.GetComponentInParent<PlayerController>(true) == null) continue;   // phu thuy trung bay
+                        var mh = camD.WorldToScreenPoint(tf.position);
+                        if (mh.z <= 0f) continue;
+                        // Cung cach BangTen: head_end + 0,03 m la chop mu; chi co Head thi + 0,25 m. Co head_end thi uu tien.
+                        bool laEnd = tn.EndsWith("head_end");
+                        if (!laEnd && tenXuong.ToLowerInvariant().EndsWith("head_end")) continue;
+                        float yMh = Screen.height - camD.WorldToScreenPoint(tf.position + Vector3.up * (laEnd ? 0.03f : 0.25f)).y;
+                        if (laEnd && !tenXuong.ToLowerInvariant().EndsWith("head_end")) dinhMu = float.MaxValue;
+                        if (yMh < dinhMu) { dinhMu = yMh; tenXuong = tf.name; }
+                    }
+                float nuaCaoDap = Mathf.Max(ManSanh.CoVongDemNguoc * ManSanh.DapVongToiDa, ManSanh.CaoSoDemNguoc * ManSanh.DapSoToiDa) * sGd * 0.5f;
+                float dayDn = tamDn.y + nuaCaoDap;
+                float dayCu = Screen.height * 0.5f + 400f * 1.07f * sGd * 0.5f;
+                Ghi("7d. day vong/so dem nguoc (dap to nhat) y " + dayDn.ToString("F0") + "; dinh mu phu thuy (" + tenXuong + ") y "
+                    + (dinhMu < float.MaxValue ? dinhMu.ToString("F0") : "?") + "; doi chung ban cu giua man: tam y "
+                    + (Screen.height * 0.5f).ToString("F0") + " day " + dayCu.ToString("F0"));
+                Kiem(dinhMu < float.MaxValue, "khong tim thay xuong dau phu thuy de do");
+                Kiem(dayDn < dinhMu, "vong / con so dem nguoc van de len dau phu thuy");
+                Kiem(dayCu > dinhMu, "doi chung hong: ban cu giua man cung khong de len dau - phep do khong phan biet duoc");
+                Kiem(tamDn.y - nuaCaoDap > ManSanh.KhungGachDemNguoc(sGd).yMax, "vong dem nguoc de len gach do / dong chu");
             }
             p.trangThai = cu; p.batDauLuc = cuLuc;
 

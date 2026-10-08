@@ -18,7 +18,8 @@ public static class PhongMang
 {
     /// <summary>Toi da 6 nguoi (nguoi dung 28/09/2026, truoc la 4). Che do Doi: 3 moi doi (<see cref="CheDoTran.SoNguoiMoiDoi"/>).</summary>
     public const int SoNguoiToiDa = 6;
-    public const int GiayDemNguoc = 10;
+    /// <summary>Dem nguoc truoc khi vao tran. Nguoi dung 08/10/2026: 5 giay (truoc 10).</summary>
+    public const int GiayDemNguoc = 5;
 
     /// <summary>Bao lau hoi lai danh sach phong mot lan, tinh bang giay.</summary>
     public const float NhipHoiSanh = 2.0f;
