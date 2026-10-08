@@ -787,8 +787,8 @@ public class ManSanh : MonoBehaviour
     /// <summary>Nguoi dung 08/10/2026: ca vong phu chu lan con so THU NHO va dua LEN tren dau nhan vat
     /// (cho danh dau tren anh chup: cua nha mo phia sau, ~20% chieu cao man hinh) de khong che mat phu thuy.
     /// 0,52: vong 195 -> ~110 diem anh tren anh chup cua nguoi dung (khung xanh cao 115); 0,6 thi luc dap to nhat
-    /// vong cham chop mu (menu 50 muc 7d).</summary>
-    public const float HeSoThuDemNguoc = 0.52f;
+    /// vong cham chop mu (menu 50 muc 7d). Cung ngay nguoi dung xin "to ra them 10%" -> 0,52 x 1,1 = 0,572.</summary>
+    public const float HeSoThuDemNguoc = 0.572f;
     /// <summary>Tam vong dem nguoc theo chieu cao man hinh (0 = mep tren).</summary>
     public const float TamDemNguocTheoCao = 0.204f;
     /// <summary>Vong to them toi da 7%, con so 25% khi dap nhip.</summary>

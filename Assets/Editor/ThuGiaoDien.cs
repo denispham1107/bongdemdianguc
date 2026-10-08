@@ -358,7 +358,7 @@ public static class ThuGiaoDien
 
                 // 7d. Ca vong lan con so (luc DAP TO NHAT) phai nam TREN dinh mu phu thuy (xuong head_end - khung bao
                 // SkinnedMesh cao hon mu that). Doi chung: vong + so co cu o giua man hinh thi de len.
-                float dinhMu = float.MaxValue; string tenXuong = "?";
+                float dinhMu = float.MaxValue, tran = float.MaxValue; string tenXuong = "?";
                 var camD = Camera.main;
                 if (camD != null)
                     foreach (var tf in Object.FindObjectsByType<Transform>(FindObjectsSortMode.None))
@@ -373,16 +373,26 @@ public static class ThuGiaoDien
                         if (!laEnd && tenXuong.ToLowerInvariant().EndsWith("head_end")) continue;
                         float yMh = Screen.height - camD.WorldToScreenPoint(tf.position + Vector3.up * (laEnd ? 0.03f : 0.25f)).y;
                         if (laEnd && !tenXuong.ToLowerInvariant().EndsWith("head_end")) dinhMu = float.MaxValue;
-                        if (yMh < dinhMu) { dinhMu = yMh; tenXuong = tf.name; }
+                        if (yMh < dinhMu)
+                        {
+                            dinhMu = yMh; tenXuong = tf.name;
+                            // Tran ~0,15 m duoi dinh dau (head_end) / ~0,10 m tren xuong Head: day mat bat dau tu day
+                            tran = Screen.height - camD.WorldToScreenPoint(tf.position + Vector3.up * (laEnd ? -0.15f : 0.10f)).y;
+                        }
                     }
                 float nuaCaoDap = Mathf.Max(ManSanh.CoVongDemNguoc * ManSanh.DapVongToiDa, ManSanh.CaoSoDemNguoc * ManSanh.DapSoToiDa) * sGd * 0.5f;
                 float dayDn = tamDn.y + nuaCaoDap;
+                float dayYen = tamDn.y + Mathf.Max(ManSanh.CoVongDemNguoc, ManSanh.CaoSoDemNguoc) * sGd * 0.5f;
                 float dayCu = Screen.height * 0.5f + 400f * 1.07f * sGd * 0.5f;
-                Ghi("7d. day vong/so dem nguoc (dap to nhat) y " + dayDn.ToString("F0") + "; dinh mu phu thuy (" + tenXuong + ") y "
-                    + (dinhMu < float.MaxValue ? dinhMu.ToString("F0") : "?") + "; doi chung ban cu giua man: tam y "
+                Ghi("7d. day vong/so dem nguoc: dung yen y " + dayYen.ToString("F0") + ", dap to nhat y " + dayDn.ToString("F0")
+                    + "; chop mu phu thuy (" + tenXuong + ") y " + (dinhMu < float.MaxValue ? dinhMu.ToString("F0") : "?")
+                    + ", tran y " + (tran < float.MaxValue ? tran.ToString("F0") : "?") + "; doi chung ban cu giua man: tam y "
                     + (Screen.height * 0.5f).ToString("F0") + " day " + dayCu.ToString("F0"));
                 Kiem(dinhMu < float.MaxValue, "khong tim thay xuong dau phu thuy de do");
-                Kiem(dayDn < dinhMu, "vong / con so dem nguoc van de len dau phu thuy");
+                // 08/10/2026 nguoi dung xin to them 10% (x0,572): luc dap nhip to nhat (thoang qua moi giay) mep vong cham chop mu
+                // 2 diem - chap nhan; luc DUNG YEN phai tren chop mu, luc dap to nhat phai tren TRAN (khong che mat).
+                Kiem(dayYen < dinhMu, "vong / con so dem nguoc (dung yen) de len chop mu phu thuy");
+                Kiem(dayDn < tran, "vong / con so dem nguoc (dap to nhat) che mat phu thuy");
                 Kiem(dayCu > dinhMu, "doi chung hong: ban cu giua man cung khong de len dau - phep do khong phan biet duoc");
                 Kiem(tamDn.y - nuaCaoDap > ManSanh.KhungGachDemNguoc(sGd).yMax, "vong dem nguoc de len gach do / dong chu");
             }

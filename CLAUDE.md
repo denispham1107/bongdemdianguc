@@ -923,8 +923,8 @@ hơn ×1,5 và mở xuống 1,8–4,3 m** (người dùng chọn sau menu 94 ch�
   **Không đổi `productName`** trong Unity (vẫn "Diablo 2.5D"): cache dữ liệu và chỗ lưu của người chơi tính theo nó.
 - ⚠️ **08/10/2026 MÀN ĐĂNG NHẬP / SẢNH / PHÒNG** (người dùng, ảnh đánh dấu): ảnh tên game lên gần mép trên (`ManDangNhap.TamTieuDe`
   0,153 — 0,11 người dùng thấy "hơi cao quá", khung đăng nhập giữ chỗ); lòng khung + hàng + ghế trống + nền ô nhập **đục bớt 40%** (`GiaoDien.DoDucKhungSanh` 0,33 /
-  `DoDucHangSanh` 0,27 — chỉ ba màn này, Sách phép / Cài đặt / HUD giữ hằng cũ); đếm ngược 5 giây, vòng + số **×0,52** ở 0,204 chiều
-  cao (`ManSanh.TamDemNguoc`, trên chóp mũ phù thuỷ). Menu 50 đo trên ảnh: cảnh lọt qua 0,66–0,72 (cũ ~0,45), tên game tâm 0,164.
+  `DoDucHangSanh` 0,27 — chỉ ba màn này, Sách phép / Cài đặt / HUD giữ hằng cũ); đếm ngược 5 giây, vòng + số **×0,572** (0,52 rồi người dùng
+  xin to thêm 10%) ở 0,204 chiều cao (`ManSanh.TamDemNguoc`; đứng yên trên chóp mũ phù thuỷ, đập nhịp to nhất trên trán). Menu 50 đo trên ảnh: cảnh lọt qua 0,66–0,72 (cũ ~0,45), tên game tâm 0,164.
 - **Màn chính (MainMenu.unity) dựng từ cảnh Act2** bằng menu 51 — đừng sửa tay trong scene, chạy lại menu.
   ⚠️ **04/10/2026: PHÙ THUỶ TRƯNG BÀY NGỬA HAI TAY NÂNG QUẢ CẦU LỬA + QUẢ CẦU BĂNG** (người dùng; chọn lửa bên PHẢI màn hình lúc quay mặt về
   máy quay, quả cầu y trong trận thu nhỏ, bàn tay ngang bụng chìa sang hai bên): `UI/TuTheTrungBay.cs` gắn LÚC CHẠY từ `MainMenuUI.Start`

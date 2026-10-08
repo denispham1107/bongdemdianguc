@@ -7482,7 +7482,9 @@ Người dùng gửi 5 ảnh chụp có đánh dấu:
    vòng 400 → 208, số 306 → 159 đơn vị), tâm dời từ giữa màn hình lên **0,204 chiều cao** (`TamDemNguocTheoCao` — chỗ khoanh tròn,
    cửa nhà mồ phía sau), không bao giờ đè lên gạch đỏ dưới dòng "TRẬN ĐẤU BẮT ĐẦU SAU" (`TamDemNguoc` tự đẩy xuống ở màn thấp).
    Lần đầu thử ×0,6: lúc đập nhịp to nhất (vòng ×1,07, số ×1,25) mép dưới chạm chóp mũ phù thuỷ → hạ còn ×0,52, khớp cỡ vòng
-   người dùng khoanh (~115 điểm ảnh trên ảnh của họ).
+   người dùng khoanh (~115 điểm ảnh trên ảnh của họ). Cùng ngày người dùng xin **to thêm 10%** → **×0,572**: lúc đứng yên mép
+   dưới y 183 (chóp mũ 186), lúc đập to nhất y 188 — thoáng qua mỗi giây chạm chóp mũ 2 điểm, vẫn trên trán (y 221); phép đo 7d
+   nay kiểm hai mức (đứng yên trên chóp mũ, đập to nhất trên trán).
 
 **Số đo** (menu 50, màn Game 1619×580, đo TRÊN ẢNH — chụp có giao diện rồi tắt component vẽ chụp lại cùng khung, trung vị tỉ số
 độ sáng trong lòng khung = phần cảnh lọt qua):
@@ -7490,7 +7492,7 @@ Người dùng gửi 5 ảnh chụp có đánh dấu:
 - Ảnh tên game (các hàng đổi màu phía trên khung, chỉ trong bề ngang ảnh, ≥ 10% điểm đổi): ở 0,11 y 43–97 / 580, tâm 0,121 —
   khung xanh lá của người dùng 47–95; hạ xuống 0,153: y **68–122**, tâm **0,164** (xuống đúng 25 điểm). ⚠️ Lần đo đầu ra 40–204 (tâm 0,21): quả cầu lửa trên tay phù thủy lập loè giữa hai lần chụp,
   lọt vào vùng đếm; siết ngưỡng theo tỉ lệ bề ngang mới sạch.
-- Vòng đếm ngược trên ảnh: rộng **107** điểm ở hàng y 118 (cỡ mới 112–120 lúc đập nhịp; bản cũ 215 ở giữa màn). Mép dưới lúc đập
+- Vòng đếm ngược trên ảnh: ×0,52 rộng 107 điểm ở hàng y 118; ×0,572 rộng **117** ở hàng y 122 (bản cũ 215 ở giữa màn). Mép dưới lúc đập
   to nhất y **178**, chóp mũ phù thuỷ (xương `head_end` + 0,03 m, như `BangTen`) y **186**; đối chứng bản cũ giữa màn: đáy y 405.
 - Menu 50: **0 lỗi**, 0 chữ bị cắt ở mọi màn; menu 57 (bàn phím ảo, 8 cỡ màn × 3 mức che × 2 trang): **0 lỗi**.
 
