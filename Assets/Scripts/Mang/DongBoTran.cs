@@ -323,10 +323,16 @@ public class DongBoTran : MonoBehaviour
     public int SoPhepDaNhan { get; private set; }
     public int SoPhepBoVITrung { get; private set; }
 
+    /// <summary>Bo dong bo dang chay (mot tran mot cai) - may BOT / binh roi doc nhanh, khong Find moi khung.</summary>
+    public static DongBoTran Hien { get; private set; }
+
     void Awake()
     {
         batDauLuc = Time.unscaledTime;
+        Hien = this;
     }
+
+    void OnDestroy() { if (Hien == this) Hien = null; }
 
     void OnEnable()  { GanTaiNghe(); }
     void OnDisable() { if (toi != null) toi.DaTungPhep -= KhiToiTungPhep; }

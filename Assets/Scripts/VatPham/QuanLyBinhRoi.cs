@@ -162,6 +162,33 @@ public static class QuanLyBinhRoi
         m.GuiNhieuLan(GoiTin.VietXinBinh(b.SoHieu, m.chiSoCuaToi), SoLanGui);
     }
 
+    /// <summary>
+    /// MAY BOT tren may nay (chu phong) nhat binh (08/10/2026, buoc 4): BOT nao con song trong <see cref="BanKinhHut"/> thi
+    /// chu phong giao luon cho BOT ay - chu phong la nguoi quyet dinh, khong can xin. Khong di qua <see cref="Mang"/> (Mang
+    /// rong khi chua mo kenh nao - phong chi co chu phong + BOT - va GiaoCho khi ay giao nham cho nhan vat cua may).
+    /// Tra ve true neu da giao.
+    /// </summary>
+    public static bool XetBotNhat(BinhRoi b)
+    {
+        if (b == null || b.DaCoChu || !GameDirector.LaTrongTaiCuaQuai) return false;
+        var db = DongBoTran.Hien;
+        if (db == null) return false;
+        foreach (var cap in db.BotCucBo)
+        {
+            var nv = cap.Value;
+            if (nv == null) continue;
+            var mau = nv.GetComponent<Damageable>();
+            if (mau == null || mau.IsDead) continue;
+            Vector3 d = nv.transform.position - b.transform.position; d.y = 0f;
+            if (d.sqrMagnitude > BanKinhHut * BanKinhHut) continue;
+            b.BayVao(nv.transform, cap.Key, false);
+            var m = Mang;
+            if (m != null) m.GuiNhieuLan(GoiTin.VietBinhThuoc(b.SoHieu, cap.Key), SoLanGui);
+            return true;
+        }
+        return false;
+    }
+
     /// <summary>Chu phong giao binh cho nguoi xin DAU TIEN.</summary>
     static void QuyetDinh(int id, byte ghe)
     {
@@ -198,6 +225,16 @@ public static class QuanLyBinhRoi
     {
         if (b == null) return;
         if (b.LaCuaToi) CapDo.ThemBinh(b.Ky);
+        else
+        {
+            // Binh bay vao may BOT tren may nay -> vao bang cap cua BOT
+            var db = DongBoTran.Hien;
+            if (db != null && db.LaBotCucBo(b.GheChu))
+            {
+                var nv = db.NhanVatCuaGhe(b.GheChu);
+                if (nv != null) nv.Cap.ThemBinh(b.Ky);
+            }
+        }
         binh.Remove(b.SoHieu);
         daXong.Add(b.SoHieu);
     }

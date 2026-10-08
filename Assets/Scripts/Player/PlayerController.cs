@@ -191,6 +191,35 @@ public class PlayerController : MonoBehaviour
         return 0f;
     }
 
+    /// <summary>
+    /// Nang luong can de tung <paramref name="skill"/> o cap HIEN TAI cua nhan vat nay (cung cong thuc CastAt) - may BOT doc
+    /// de biet khi nao phai uong binh mana (08/10/2026, buoc 4).
+    /// </summary>
+    public float NangLuongCan(int skill)
+    {
+        int cap = Cap.CapCuaKyNang(skill);
+        float t = CapDo.ManaTheoCap(cap);
+        switch (skill)
+        {
+            case 0: return fireballCost * t;
+            case 1: return iceCost * t;
+            case 2: return boltCost * t;
+            case 3: return tornadoCost * t;
+            case 4: return meteorCost * t;
+            case 5: return khiengCost * t;
+            case 6: return giatSetCost * t;
+            case CapDo.KyQuaCauBang: return quaCauBangCost * t;
+            case CapDo.KyGioLoc: return GioLoc.NangLuongCan(cap, gioLocCost, t);
+            case CapDo.KyLuaDiaNguc: return luaDiaNgucCost * t;
+            case CapDo.KyTangHinh: return tangHinhCost * t;
+            case CapDo.KyCauDien: return cauDienCost * t;
+            case CapDo.KyHoaLocXoay: return hoaLocXoayCost * t;
+            case CapDo.KyTocBien: return tocBienCost * t;
+            case CapDo.KyMayGiong: return mayGiongCost * t;
+        }
+        return 0f;
+    }
+
     public float BinhMauCooldown01 { get { return Mathf.Clamp01(binhMauTimer / HoiChieuBinh); } }
     public float BinhManaCooldown01 { get { return Mathf.Clamp01(binhManaTimer / HoiChieuBinh); } }
 

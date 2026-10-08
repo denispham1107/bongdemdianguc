@@ -138,7 +138,8 @@ public static class ThuMayBotDiLai
         dToi.maxHealth = dToi.health = 1e7f;
         var bots = KhoiDongTranMang.BotDaDung;
         var nao = new BotDieuKhien[3];
-        for (int i = 0; i < 3; i++) { nao[i] = bots[i].GetComponent<BotDieuKhien>(); nao[i].dungYen = true; bots[i].GetComponent<Damageable>().tiLeDoDon = 0f; }
+        for (int i = 0; i < 3; i++) { nao[i] = bots[i].GetComponent<BotDieuKhien>(); nao[i].dungYen = true; nao[i].dungDanh = false; bots[i].GetComponent<Damageable>().tiLeDoDon = 0f; }
+        // Menu nay do DI LAI (buoc 3): tat danh (buoc 4, menu 115) - BOT tung phep giua tran 60 s + dot quai tung lam GPU qua tai, Unity tat han (09/10/2026)
         // Hai BOT phu dung yen o goc xa - khong vuong cac muc do
         DatCho(bots[1], dir.arenaCenter + new Vector3(-45f, 0f, -45f));
         DatCho(bots[2], dir.arenaCenter + new Vector3(-45f, 0f, -40f));

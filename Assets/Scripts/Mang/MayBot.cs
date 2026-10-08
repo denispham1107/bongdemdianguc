@@ -89,6 +89,65 @@ public static class MayBot
         return (int)(h % SoHe);
     }
 
+    /// <summary>
+    /// KE HOACH CONG DIEM theo he chinh: moi phan tu la "mot diem vao ky nang nay" (mo khoa neu dang khoa, khong thi nang
+    /// cap). Theo dung duong mo khoa theo bac cua CapDo (cap 2 mo ky thu hai, cap 5 mo ky thu ba), chen Khien som de song
+    /// sot. Het ke hoach thi <see cref="DiemDuPhong"/>.
+    /// </summary>
+    public static int[] KeHoachDiem(int he)
+    {
+        switch (he)
+        {
+            case HeLua:  return new[] { 0, 0, 4, 5, 4, 4, 4, 4, CapDo.KyLuaDiaNguc, 0, 0, 0, CapDo.KyLuaDiaNguc, CapDo.KyLuaDiaNguc, CapDo.KyLuaDiaNguc, CapDo.KyLuaDiaNguc };
+            case HeBang: return new[] { CapDo.KyQuaCauBang, CapDo.KyQuaCauBang, 1, 5, 1, 1, 1, 1, CapDo.KyTangHinh, CapDo.KyQuaCauBang, CapDo.KyQuaCauBang, CapDo.KyQuaCauBang, CapDo.KyTangHinh, CapDo.KyTangHinh, CapDo.KyTangHinh, CapDo.KyTangHinh };
+            case HeSet:  return new[] { 6, 6, 2, 5, 2, 2, 2, 2, CapDo.KyCauDien, 6, 6, 6, CapDo.KyCauDien, CapDo.KyCauDien, CapDo.KyCauDien, CapDo.KyCauDien };
+            default:     return new[] { CapDo.KyGioLoc, CapDo.KyGioLoc, 3, 5, 3, 3, 3, 3, CapDo.KyMayGiong, CapDo.KyHoaLocXoay, CapDo.KyGioLoc, CapDo.KyGioLoc, CapDo.KyGioLoc, CapDo.KyMayGiong, CapDo.KyMayGiong, CapDo.KyMayGiong, CapDo.KyMayGiong };
+        }
+    }
+
+    /// <summary>Het ke hoach he thi cong vao day (binh, Khien, bi dong) theo thu tu.</summary>
+    public static readonly int[] DiemDuPhong =
+    {
+        CapDo.KyBinhMau, CapDo.KyBinhMana, CapDo.KyBinhMau, CapDo.KyBinhMana, 5, 5, CapDo.KyTocDo,
+        CapDo.KyKhangLua, CapDo.KyKhangBang, CapDo.KyKhangSet, CapDo.KyKhangPhong, 5, 5, CapDo.KyTocDo, CapDo.KyTocDo
+    };
+
+    /// <summary>Ky nang "danh thuong" cua he (re, hoi chieu ngan) - BOT De chu yeu chi dung cai nay.</summary>
+    public static int KyCoBan(int he)
+    {
+        return he == HeLua ? 0 : he == HeBang ? CapDo.KyQuaCauBang : he == HeSet ? 6 : CapDo.KyGioLoc;
+    }
+
+    /// <summary>
+    /// Tieu het diem ky nang cua <paramref name="bang"/> theo ke hoach he. Ham THUAN tren bang cap (khong can nhan vat) -
+    /// phep thu goi thang. Tra ve so diem da tieu.
+    /// </summary>
+    public static int TieuDiem(BangCap bang, int he)
+    {
+        int daTieu = 0;
+        var kh = KeHoachDiem(he);
+        for (int vong = 0; vong < 64 && bang.DiemKyNang > 0; vong++)
+        {
+            bool tieuDuoc = false;
+            var dem = new int[CapDo.SoKyNang];
+            for (int i = 0; i < kh.Length && !tieuDuoc; i++)
+            {
+                int ky = kh[i];
+                dem[ky]++;
+                if (bang.CapCuaKyNang(ky) >= dem[ky]) continue;      // phan nay cua ke hoach da xong
+                if (bang.DaMo(ky) ? bang.NangCap(ky) : bang.MoKhoa(ky)) tieuDuoc = true;
+            }
+            for (int i = 0; i < DiemDuPhong.Length && !tieuDuoc; i++)
+            {
+                int ky = DiemDuPhong[i];
+                if (bang.DaMo(ky) ? bang.NangCap(ky) : bang.MoKhoa(ky)) tieuDuoc = true;
+            }
+            if (!tieuDuoc) break;
+            daTieu++;
+        }
+        return daTieu;
+    }
+
     /// <summary>So nguoi THAT (khong tinh BOT) trong mot danh sach ghe.</summary>
     public static int DemNguoiThat(List<PhongMang.NguoiTrongPhong> ds)
     {

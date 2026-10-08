@@ -7466,6 +7466,37 @@ trong Editor: **252 cách gõ** của 134 chữ (tách hết, dấu sai thứ t�
 
 Menu 52: **0 lỗi**. Bản web build 5,4 phút, 0 lỗi, trình duyệt đã từng vào trang tải đúng bản mới, console 0 lỗi.
 
+### Máy BOT — bước 4: đánh — kỹ năng theo hệ, chiêu liên hoàn, bình, cộng điểm, độ khó (09/10/2026)
+
+**Cộng điểm** (`MayBot.TieuDiem`, gọi mỗi khi BOT có điểm): mỗi hệ một kế hoạch theo đúng đường mở khoá theo bậc — chiêu cơ bản
+(Cầu lửa / Quả cầu băng / Giựt sét / Gió lốc) cấp 2 → mở chiêu thứ hai (Thiên thạch / Mưa băng / Sấm sét / Lốc xoáy), Khiên sớm, chiêu
+thứ hai lên 5 → mở chiêu thứ ba (Lửa địa ngục / Tàng hình / Quả cầu điện / Mây giông + Hoá lốc xoáy), rồi nâng tiếp; hết kế hoạch thì
+bình máu / mana, Khiên, Tốc độ, bốn Kháng. Hàm thuần trên `BangCap` nên phép thử gọi thẳng.
+
+**Ra chiêu** (`BotDieuKhien.ChonKyNang`): máu < 60% mà kẻ thù trong 8 m → **Khiên**. Còn lại gieo **liên hoàn** (Dễ 30% · Thường 75% ·
+Khó 100%): Lửa — Thiên thạch nếu mục tiêu chưa ngã, Lửa địa ngục khi đánh người hoặc ≥ 2 kẻ quanh mình; Băng — Tàng hình khi máu < 40%,
+Mưa băng nếu mục tiêu chưa đóng băng; Sét — Quả cầu điện (người hoặc ≥ 2 kẻ trong 9 m), Sấm sét; Phong — Mây giông, Hoá lốc xoáy khi có
+Gió lốc đang bay, Lốc xoáy. Không thì chiêu cơ bản (chiêu bay thẳng cần **thấy** mục tiêu — tia Linecast mỗi 0,3 s; bị che thì đi vòng
+chứ không đứng bắn vào bia). Ngắm theo độ khó: nhịp ra chiêu 1,0 / 0,45 / 0,15 s, **sai số ngắm** 2,5 / 1,0 / 0,3 m, **đón đầu** theo vận
+tốc mục tiêu × thời gian phép bay tới (0 / 50 / 100%). ⚠️ Vận tốc mục tiêu > 15 m/s (Tốc biến, bị kéo về chỗ) thì bỏ — lần đầu đo BOT
+Khó lệch 28 m vì đón đầu theo một cú dịch chuyển.
+
+**Bình**: máu dưới 25 / 35 / 45% (Dễ / Thường / Khó) uống bình máu, thiếu năng lượng cho chiêu định tung thì uống bình mana
+(`PlayerController.NangLuongCan` — cùng công thức `CastAt`). Bình rơi trong 14 m mà đang thiếu thì đi nhặt; **BOT nhặt bình như người**
+(`QuanLyBinhRoi.XetBotNhat`: chủ phòng giao thẳng cho BOT trong bán kính hút, gói "bình thuộc về" gửi như thường, bình vào `BangCap`
+của BOT). Mục tiêu áp sát dưới 4 m thì **lùi** (thả diều) trong khi chờ hồi chiêu.
+
+**Số đo — menu 115** (phòng thật + 3 BOT, Act2): **A** cộng điểm cả 4 hệ đúng đường mở khoá, cấp 20 thừa 0 điểm (Lửa: Cầu lửa 5 ·
+Thiên thạch 5 · Lửa địa ngục 5 · Khiên 1 · hai bình 3). **B** BOT Khó cấp 12 đánh bia trong 20 s: Lửa 22 chiêu / 3 loại / 11 491 sát
+thương · Băng 16 / 5 809 · Sét 18 / 3 loại / 7 011 · Phong 15 / 4 loại / 1 036. **C** cùng Cầu lửa cấp 1, bia đi lại 10 s: Dễ 10 chiêu,
+lệch TB **1,49 m**, 1 020 · Khó 17 chiêu, lệch **0,22 m**, 1 331. **D** máu 20% + 2 bình → uống cả 2 (264 → 664); năng lượng 0 + 1 bình
+mana → uống. **E** bình máu rơi cách 6,2 m → vào bình của BOT sau 1,2 s (máy chủ phòng 0). **F** máu 50%, đối thủ 6 m → bật Khiên sau
+0,1 s. **G** trận thật 90 s, 4 đợt quái: 3/3 BOT có kinh nghiệm hạ quái (lên cấp 10–11, +4 410…6 106), 69–88 chiêu mỗi BOT, uống 2–8 bình
+mana, cả 3 còn sống. **0 lỗi.** Chạy lại: menu 113, 114, 65 — 0 lỗi.
+
+⚠️ **Unity tắt hẳn (GPU timeout)** lúc chạy lại menu 114 sau khi BOT biết đánh: trận 60 s ở mục E nay có 3 BOT tung phép liên tục + đợt quái.
+Menu 114 đo ĐI LẠI nên nay tắt đánh (`BotDieuKhien.dungDanh = false`); đánh đo ở menu 115.
+
 ### Máy BOT — bước 3: đi lại — tìm mục tiêu, vòng vật cản, tránh vực địa ngục (08/10/2026)
 
 Dự án **không có NavMesh**; quái chỉ lái thẳng rồi vòng khi kẹt (`EnemyAI`). Với BOT làm chắc hơn:
@@ -13412,6 +13443,7 @@ Lần chạy đầu phép thử báo cả 10 con "lơ lửng": tia chiếu từ 
 | **46. Chay thu HIEU UNG qua mang** | Mười hai chiều: bản sao không tự gieo đóng băng/choáng (và nhân vật thật vẫn gieo được), cờ và máu khiên đọc đúng rồi đi qua gói tin không to thêm, bản sao vẽ lại theo lời kể, khiên bản sao không bị trừ cục bộ, mất gói thì hiệu ứng tự tan, và quái bên khách choáng theo chủ phòng. Kết quả ra `PlayTestShots/hieuung_mang.txt`. |
 | **48. Chay thu CAI DAT do hoa** | Ngoài Play: font đủ chữ có dấu, vị trí nút ở nhiều cỡ màn hình, `index.html` không hạ `devicePixelRatio`, chuyển khoá cũ 3 mức sang khoá mới 4 mức. Trong Play: đăng nhập thật, bấm OK lần lượt 4 mức, đọc lại từ kho lưu, kiểu bóng / chi tiết xa, vào Act2 đếm vật đổ bóng, đo ảnh đệm cảnh 3D (kích thước, có phóng lên màn hình, gỡ ra ngoài lúc vẽ, đứng sau bloom), độ sáng ảnh chụp. Trả lại mức cũ, phiên đăng nhập và mức chất lượng của Editor. Kết quả ra `PlayTestShots/caidat.txt`. |
 | **49. Chay thu CAU LUA trung nguoi va khieng** | Tự chọn hướng bắn trống, rồi đo hai chiều mạng: người khác bắn mình / mình bắn người khác, có và không có khiên, và khiên của chính người bắn. Ghi từng cú mất máu (cú nổ hay cú cháy), chỗ quả cầu nổ so với mặt vòm, máu khiên; chụp màn hình lúc nổ để xem con số sát thương có đọc được không. Kết quả ra `PlayTestShots/cauluapvp.txt`, ảnh `caulua_no_*.png`. |
+| **115. Chay thu MAY BOT danh (buoc 4)** | Cộng điểm theo hệ (4 hệ, cấp 1 → 20), đánh bia theo hệ (số chiêu, loại chiêu, sát thương), Dễ / Khó (sai số ngắm, nhịp), uống bình máu / mana, nhặt bình rơi, bật Khiên, trận thật 90 s có quái. Kết quả `PlayTestShots/maybot_danh.txt`. |
 | **114. Chay thu MAY BOT di lai (buoc 3)** | Lưới đi lại (vực ở 4 khe rào sập, bia mộ bị chặn), vòng qua 3 nhà mồ (đối chứng lái thẳng: kẹt), đích giữa vực (không rơi; chỉ lớp dò vực cũng giữ được; đối chứng tắt cả hai: rơi), chọn mục tiêu (đối thủ gần / săn xa / bỏ đồng đội), trận thật 60 s có quái. Kết quả `PlayTestShots/maybot_dilai.txt`. |
 | **113. Chay thu MAY BOT trong tran (buoc 2)** | Phòng thật + 2 BOT, vào Act2 bằng đường của game: BOT dựng đúng kiểu (trọng tài là máy này, bảng cấp riêng), chỗ xuất phát theo luật ≥ 22 m, chạm đất; lên cấp riêng; đợt quái quanh mỗi BOT; kinh nghiệm hạ quái / hạ người vào đúng bảng; gói trạng thái / phép / chết của BOT qua kênh giả lập; kết trận Đơn (BOT thắng) và Đôi. Kết quả `PlayTestShots/maybot_tran.txt`, ảnh `maybot_tran_*.png`. |
 | **112. Chay thu MAY BOT o ghe trong (sanh - Firebase that)** | Bước 1 của máy BOT: thêm BOT ba độ khó qua bảng chọn (gọi đúng hàm của nút), ghế / tên / sẵn sàng / `soNguoi` trên Firebase thật, phòng đầy từ chối, đuổi BOT, khách không thêm được (cả ghi thẳng Firebase), phòng Đôi vào đúng đội, `XepGhe` không bắt tay ghế BOT. Ảnh `maybot_*.png`, kết quả `PlayTestShots/maybot_sanh.txt`. |

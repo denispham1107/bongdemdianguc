@@ -19,7 +19,18 @@ using UnityEngine;
 ///     tim duong khac.
 ///   - CHONG KET: cu 0,8 s ma muon di nhung dich chua toi 0,35 m -> cam tam cho chan truoc mat, tim lai; ket 3 lan lien -> di
 ///     vong ra mot diem ngau nhien gan do.
-/// BUOC 4: ky nang theo he chinh, chieu lien hoan, binh mau / mana, cong diem ky nang khi len cap.
+/// BUOC 4 (08/10/2026) - DANH. Nguoi dung: "biet su dung skill, combo skill cua cac he, dung hoi mau hoi mana".
+///   - CONG DIEM khi co diem ky nang: MayBot.TieuDiem theo ke hoach he chinh (dung duong mo khoa theo bac).
+///   - CHIEU: moi lan ra chieu (nhip theo do kho <see cref="NhipRaChieu"/>) chon theo uu tien cua he - Khien khi mau < 60%
+///     va bi ap sat; roi chieu LIEN HOAN cua he (Lua: Thien thach danh nga -> Qua cau lua, nhom thi Lua dia nguc; Bang: Mua
+///     bang dong bang -> Qua cau bang, mau thap thi Tang hinh; Set: Sam set choang -> Giut set, nhom thi Qua cau dien; Phong:
+///     May giong, Loc xoay, Hoa loc xoay khi co Gio loc dang bay) voi xac suat <see cref="TiLeLienHoan"/>; khong thi chieu co
+///     ban cua he. Phep bay thang (Qua cau lua / bang, Lua dia nguc) can THAY THANG muc tieu.
+///   - NGAM: dich + van toc x thoi gian bay x muc don dau, cong sai so ngau nhien theo do kho (<see cref="SaiSoNgam"/>).
+///   - BINH: mau < <see cref="NguongUongMau"/> thi uong binh mau; nang luong khong du chieu co ban thi uong binh mana. Can
+///     binh ma co binh roi trong 14 m (va khong ke thu nao sat) thi di nhat - chu phong giao binh cho BOT
+///     (QuanLyBinhRoi.XetBotNhat).
+///   - LUI: Thuong / Kho bi ap sat duoi 4 m (khong dang niem) thi lui ra (o lui phai di duoc).
 /// </summary>
 [DefaultExecutionOrder(-40)]
 public class BotDieuKhien : MonoBehaviour
@@ -72,6 +83,249 @@ public class BotDieuKhien : MonoBehaviour
     float vongDen; Vector3 diemVong;
     float thoiGianMuonDi;
 
+    // ================================================================
+    //  BUOC 4 - DANH
+    // ================================================================
+
+    /// <summary>Giay toi thieu giua hai lan ra chieu (cong voi hoi chieu tung ky nang).</summary>
+    public static float NhipRaChieu(int doKho) { return doKho == MayBot.De ? 1.0f : doKho == MayBot.Kho ? 0.15f : 0.45f; }
+    /// <summary>Xac suat dung chieu LIEN HOAN cua he moi lan ra chieu (con lai: chieu co ban).</summary>
+    public static float TiLeLienHoan(int doKho) { return doKho == MayBot.De ? 0.3f : doKho == MayBot.Kho ? 1f : 0.75f; }
+    /// <summary>Ban kinh sai so ngam (m) - diem ngam lech ngau nhien trong vong nay.</summary>
+    public static float SaiSoNgam(int doKho) { return doKho == MayBot.De ? 2.5f : doKho == MayBot.Kho ? 0.3f : 1.0f; }
+    /// <summary>Don dau: nhan van toc muc tieu x thoi gian bay voi he so nay (0 = ngam cho dang dung).</summary>
+    public static float HeSoDonDau(int doKho) { return doKho == MayBot.De ? 0f : doKho == MayBot.Kho ? 1f : 0.5f; }
+    /// <summary>Mau duoi ti le nay thi uong binh mau.</summary>
+    public static float NguongUongMau(int doKho) { return doKho == MayBot.De ? 0.25f : doKho == MayBot.Kho ? 0.45f : 0.35f; }
+    public const float TamNhatBinh = 14f;
+    /// <summary>Van toc muc tieu lon hon chung nay (m/s) la dich chuyen tuc thoi, khong phai chay.</summary>
+    public const float TocToiDaHopLe = 15f;
+    public const float GanLui = 4f;
+
+    /// <summary>Tat = khong danh, khong uong binh, khong cong diem (phep thu buoc 3).</summary>
+    [System.NonSerialized] public bool dungDanh = true;
+
+    // So dem chan doan
+    [System.NonSerialized] public int soPhepDaTung, soBinhMauDaUong, soBinhManaDaUong, soLanLui, soBinhDaNhatXin;
+    [System.NonSerialized] public readonly int[] demTheoKy = new int[CapDo.SoKyNang];
+    [System.NonSerialized] public float tongSaiSoNgam; [System.NonSerialized] public int soLanDoNgam;
+
+    float lucDanhSau, lucChiDiem, lucXetThay;
+    bool thayMucTieu = true;
+    Vector3 viTriMucTieuTruoc, vanTocMucTieu;
+    Damageable mucTieuTruoc;
+    BinhRoi binhDangNham;
+
+    /// <summary>Phep bay thang can thay thang muc tieu (bia / cay chan thi bay vao do).</summary>
+    static bool CanThayThang(int ky) { return ky == 0 || ky == CapDo.KyQuaCauBang || ky == CapDo.KyLuaDiaNguc; }
+
+    bool DuocDung(int ky)
+    {
+        return pc.Cap.DaMo(ky) && pc.HoiChieuGiay(ky) <= 0f && pc.mana >= pc.NangLuongCan(ky);
+    }
+
+    bool TrongTam(int ky, float kc) { return kc <= pc.TamNgam(ky) * 0.95f; }
+
+    void CapNhatMucTieu(float dt)
+    {
+        if (MucTieu == null) { mucTieuTruoc = null; return; }
+        Vector3 p = MucTieu.transform.position;
+        if (MucTieu != mucTieuTruoc) { mucTieuTruoc = MucTieu; viTriMucTieuTruoc = p; vanTocMucTieu = Vector3.zero; }
+        if (dt > 0.0001f)
+        {
+            Vector3 v = (p - viTriMucTieuTruoc) / dt; v.y = 0f;
+            // Nhanh hon moi kieu chay (~10 m/s o cap 20) la DICH CHUYEN TUC THOI (Toc bien, bi dat cho) - tinh lai tu dau.
+            // Khong loc thi van toc vot hang tram m/s va BOT don dau lech hang chuc met (menu 115 tung do ra TB 28 m).
+            if (v.magnitude > TocToiDaHopLe) vanTocMucTieu = Vector3.zero;
+            else vanTocMucTieu = Vector3.Lerp(vanTocMucTieu, v, 0.2f);
+        }
+        viTriMucTieuTruoc = p;
+
+        if (Time.time >= lucXetThay)
+        {
+            lucXetThay = Time.time + 0.3f;
+            thayMucTieu = !Physics.Linecast(transform.position + Vector3.up * 1.2f, p + Vector3.up * 1.0f,
+                                            BanDoBot.MatNaVatCan, QueryTriggerInteraction.Ignore);
+        }
+    }
+
+    /// <summary>So ke thu (quai + doi thu) trong ban kinh r quanh diem c.</summary>
+    int SoKeThuQuanh(Vector3 c, float r)
+    {
+        var dir = GameDirector.Instance;
+        if (dir == null) return 0;
+        int n = 0; float r2 = r * r;
+        var quai = dir.QuaiConSong;
+        for (int i = 0; i < quai.Count; i++) if (HopLe(quai[i]) && (quai[i].transform.position - c).sqrMagnitude <= r2) n++;
+        foreach (var t in dir.moiNguoi)
+        {
+            if (t == null || t == transform) continue;
+            var d = t.GetComponent<Damageable>();
+            if (!HopLe(d) || CheDoTran.LaDongDoi(mau, d)) continue;
+            if ((t.position - c).sqrMagnitude <= r2) n++;
+        }
+        return n;
+    }
+
+    /// <summary>Ke thu gan nhat (quai / doi thu) - de lui va dung Khien.</summary>
+    Damageable KeThuGanNhat(out float kc)
+    {
+        kc = float.MaxValue; Damageable gan = null;
+        var dir = GameDirector.Instance;
+        if (dir == null) return null;
+        Vector3 p = transform.position;
+        var quai = dir.QuaiConSong;
+        for (int i = 0; i < quai.Count; i++)
+        {
+            if (!HopLe(quai[i])) continue;
+            float d = KhoangNgang(p, quai[i].transform.position);
+            if (d < kc) { kc = d; gan = quai[i]; }
+        }
+        foreach (var t in dir.moiNguoi)
+        {
+            if (t == null || t == transform) continue;
+            var dd = t.GetComponent<Damageable>();
+            if (!HopLe(dd) || CheDoTran.LaDongDoi(mau, dd)) continue;
+            float d = KhoangNgang(p, t.position);
+            if (d < kc) { kc = d; gan = dd; }
+        }
+        return gan;
+    }
+
+    void ChiDiemNeuCo()
+    {
+        if (Time.time < lucChiDiem) return;
+        lucChiDiem = Time.time + 0.5f;
+        if (pc.Cap.DiemKyNang > 0) MayBot.TieuDiem(pc.Cap, he);
+    }
+
+    void UongBinhNeuCan()
+    {
+        if (mau == null || mau.maxHealth <= 0f) return;
+        if (mau.health / mau.maxHealth < NguongUongMau(doKho) && pc.Cap.SoBinh(CapDo.KyBinhMau) > 0 && pc.HoiChieuGiay(CapDo.KyBinhMau) <= 0f)
+        {
+            int truoc = pc.Cap.SoBinh(CapDo.KyBinhMau);
+            pc.CastAt(CapDo.KyBinhMau, transform.position);
+            if (pc.Cap.SoBinh(CapDo.KyBinhMau) < truoc) soBinhMauDaUong++;
+        }
+        int coBan = MayBot.KyCoBan(he);
+        float can = pc.Cap.DaMo(coBan) ? pc.NangLuongCan(coBan) : 15f;
+        if (pc.mana < can + 2f && pc.Cap.SoBinh(CapDo.KyBinhMana) > 0 && pc.HoiChieuGiay(CapDo.KyBinhMana) <= 0f)
+        {
+            int truoc = pc.Cap.SoBinh(CapDo.KyBinhMana);
+            pc.CastAt(CapDo.KyBinhMana, transform.position);
+            if (pc.Cap.SoBinh(CapDo.KyBinhMana) < truoc) soBinhManaDaUong++;
+        }
+    }
+
+    /// <summary>Chon ky nang cho lan ra chieu nay. -1 = khong co gi tung duoc.</summary>
+    int ChonKyNang(float kc)
+    {
+        float keGan;
+        KeThuGanNhat(out keGan);
+        float mau01 = mau != null && mau.maxHealth > 0f ? mau.health / mau.maxHealth : 1f;
+
+        // Khien: mau duoi 60% va bi ap sat
+        if (mau01 < 0.6f && keGan < 8f && DuocDung(5)) return 5;
+
+        bool lienHoan = Random.value < TiLeLienHoan(doKho);
+        var mt = MucTieu;
+        if (lienHoan)
+        {
+            switch (he)
+            {
+                case MayBot.HeLua:
+                    if (DuocDung(4) && TrongTam(4, kc) && mt.GetComponent<BiDanhNga>() == null) return 4;
+                    if (DuocDung(CapDo.KyLuaDiaNguc) && thayMucTieu && kc <= pc.TamNgam(CapDo.KyLuaDiaNguc)
+                        && (mt.isPlayer || SoKeThuQuanh(transform.position, LuaDiaNguc.TamTim) >= 2)) return CapDo.KyLuaDiaNguc;
+                    break;
+                case MayBot.HeBang:
+                    if (DuocDung(CapDo.KyTangHinh) && mau01 < 0.4f && !TangHinh.Dang(this)) return CapDo.KyTangHinh;
+                    if (DuocDung(1) && TrongTam(1, kc) && mt.GetComponent<FrozenEffect>() == null) return 1;
+                    break;
+                case MayBot.HeSet:
+                    if (DuocDung(CapDo.KyCauDien) && TrongTam(CapDo.KyCauDien, kc)
+                        && (mt.isPlayer || SoKeThuQuanh(mt.transform.position, 9f) >= 2)) return CapDo.KyCauDien;
+                    if (DuocDung(2) && TrongTam(2, kc)) return 2;
+                    break;
+                default:
+                    if (DuocDung(CapDo.KyMayGiong) && TrongTam(CapDo.KyMayGiong, kc)) return CapDo.KyMayGiong;
+                    if (DuocDung(CapDo.KyHoaLocXoay) && HoaLocXoay.CoLocDeHoa(mau)) return CapDo.KyHoaLocXoay;
+                    if (DuocDung(3) && TrongTam(3, kc)) return 3;
+                    break;
+            }
+        }
+        int coBan = MayBot.KyCoBan(he);
+        if (DuocDung(coBan) && TrongTam(coBan, kc) && (!CanThayThang(coBan) || thayMucTieu)) return coBan;
+        return -1;
+    }
+
+    /// <summary>Thoi gian tu luc tung toi luc phep cham muc tieu (de don dau).</summary>
+    float ThoiGianToi(int ky, float kc)
+    {
+        switch (ky)
+        {
+            case 0: case CapDo.KyQuaCauBang: case CapDo.KyGioLoc: return kc / 15f + 0.2f;
+            case 4: return 1.0f;
+            case 1: return 0.8f;
+            case 2: case 6: case CapDo.KyMayGiong: return 0.4f;
+            default: return 0.3f;
+        }
+    }
+
+    Vector3 NgamToi(int ky, float kc)
+    {
+        if (ky == 5 || ky == CapDo.KyTangHinh) return transform.position;
+        Vector3 dich = MucTieu.transform.position + vanTocMucTieu * (ThoiGianToi(ky, kc) * HeSoDonDau(doKho));
+        Vector2 lech = Random.insideUnitCircle * SaiSoNgam(doKho);
+        return dich + new Vector3(lech.x, 0f, lech.y);
+    }
+
+    void DanhNeuDuoc()
+    {
+        if (MucTieu == null || MucTieu.IsDead || Time.time < lucDanhSau) return;
+        if (pc.DangNiemChu || pc.DangBiKhoaCung) return;
+        float kc = KhoangNgang(transform.position, MucTieu.transform.position);
+        int ky = ChonKyNang(kc);
+        if (ky < 0) { lucDanhSau = Time.time + 0.2f; return; }
+
+        Vector3 ngam = NgamToi(ky, kc);
+        float manaTruoc = pc.mana;
+        pc.CastAt(ky, ngam);
+        bool daTung = pc.DangNiemChu || pc.mana < manaTruoc - 0.01f || pc.HoiChieuGiay(ky) > 0.01f;
+        if (daTung)
+        {
+            soPhepDaTung++;
+            demTheoKy[ky]++;
+            if (ky != 5 && ky != CapDo.KyTangHinh)
+            {
+                tongSaiSoNgam += KhoangNgang(ngam, MucTieu.transform.position);
+                soLanDoNgam++;
+            }
+            lucDanhSau = Time.time + NhipRaChieu(doKho);
+        }
+        else lucDanhSau = Time.time + 0.25f;
+    }
+
+    /// <summary>Binh roi gan nhat chua co chu trong TamNhatBinh m (null neu khong co).</summary>
+    BinhRoi BinhGanNhat()
+    {
+        BinhRoi gan = null; float kc = TamNhatBinh;
+        foreach (var b in QuanLyBinhRoi.TatCa)
+        {
+            if (b == null || b.DaCoChu) continue;
+            float d = KhoangNgang(transform.position, b.transform.position);
+            if (d < kc && BanDoBot.DiDuoc(b.transform.position)) { kc = d; gan = b; }
+        }
+        return gan;
+    }
+
+    bool CanBinh()
+    {
+        float mau01 = mau != null && mau.maxHealth > 0f ? mau.health / mau.maxHealth : 1f;
+        return pc.Cap.SoBinh(CapDo.KyBinhMau) < 3 || pc.Cap.SoBinh(CapDo.KyBinhMana) < 2 || mau01 < 0.7f;
+    }
+
     void Awake()
     {
         pc = GetComponent<PlayerController>();
@@ -99,6 +353,8 @@ public class BotDieuKhien : MonoBehaviour
             MucTieu = ChonMucTieu();
             lucChonLai = Time.time + NhipPhanXa(doKho);
         }
+        CapNhatMucTieu(dt);
+        if (dungDanh) { ChiDiemNeuCo(); UongBinhNeuCan(); }
 
         Vector3 huong = Vector3.zero;
         Vector3 dich;
@@ -113,10 +369,27 @@ public class BotDieuKhien : MonoBehaviour
             huong = Vector3.zero;
         }
 
+        // LUI khi bi ap sat (Thuong / Kho): o lui phai di duoc - khong lui xuong vuc
+        if (dungDanh && doKho >= MayBot.Thuong && !coDiemEp && !pc.DangNiemChu)
+        {
+            float keGan;
+            var ke = KeThuGanNhat(out keGan);
+            if (ke != null && keGan < GanLui)
+            {
+                Vector3 lui = HuongNgang(ke.transform.position, transform.position);
+                Vector3 benCanh = new Vector3(-lui.z, 0f, lui.x);
+                Vector3[] thu = { lui, (lui + benCanh).normalized, (lui - benCanh).normalized, benCanh, -benCanh };
+                foreach (var h in thu)
+                    if (BanDoBot.DiDuoc(p + h * 1.5f) && BanDoBot.DiDuoc(p + h * 3f)) { huong = h; soLanLui++; break; }
+            }
+        }
+
         KiemKet(huong, dt);
 
         g.huongDi = huong;
         pc.input = g;
+
+        if (dungDanh) DanhNeuDuoc();
     }
 
     // ================================================================
@@ -167,10 +440,30 @@ public class BotDieuKhien : MonoBehaviour
         if (coDiemEp) { dich = diemEp; return true; }
         if (Time.time < vongDen) { dich = diemVong; return true; }
 
+        // Can binh va co binh roi gan, khong ke thu nao sat -> di nhat
+        if (dungDanh && CanBinh())
+        {
+            if (binhDangNham == null || binhDangNham.DaCoChu) binhDangNham = BinhGanNhat();
+            float keGan;
+            KeThuGanNhat(out keGan);
+            if (binhDangNham != null && keGan > 6f)
+            {
+                dich = binhDangNham.transform.position; dungKhi = 0.4f;
+                return true;
+            }
+        }
+
         if (MucTieu != null && !MucTieu.IsDead)
         {
             coDiemTuan = false;
             float kc = KhoangNgang(transform.position, MucTieu.transform.position);
+            // Bi bia / cay che mat ma chieu co ban la phep bay thang: KHONG dung giu, tien len cho toi khi thay
+            if (dungDanh && !thayMucTieu && CanThayThang(MayBot.KyCoBan(he)) && kc > 3f)
+            {
+                dangGiu = false;
+                dich = MucTieu.transform.position; dungKhi = 3f;
+                return true;
+            }
             // Tre: vao gan TamGiu x 0,8 moi dung, ra xa qua TamGiu moi di lai - khong giat cuc buoc mot
             if (dangGiu && kc <= TamGiu) return false;
             dangGiu = kc <= TamGiu * 0.8f;

@@ -153,6 +153,8 @@ public class BinhRoi : MonoBehaviour
 
     void KiemNhanVatToiGan()
     {
+        // May BOT tren may nay (chu phong) cung nhat duoc - xem QuanLyBinhRoi.XetBotNhat
+        if (QuanLyBinhRoi.XetBotNhat(this)) return;
         var dir = GameDirector.Instance;
         var nv = dir != null ? dir.player : null;
         if (nv == null) return;
