@@ -185,6 +185,16 @@ public static class ThuTangHinh
         float han0 = Time.time + 30f;
         while (dir == null && Time.time < han0) { dir = GameDirector.Instance; yield return null; }
         yield return new WaitForSeconds(1.5f);
+        // ⚠️ TAT GameDirector SUOT PHEP THU (09/10/2026, nhu menu 74). De no chay thi DOT DAU ra o giay 30 (GiayChoDotDau) -
+        // roi dung giua muc K (K don quai o ~giay 24, truoc dot dau): Quy cay 15% CHOANG nguoi tung -> CastAt tu choi trong
+        // im lang -> K2 "binh thuong 0 qua" (va V, cap 5 khong tung duoc); quai con song toi muc I thi danh / xo ban sao, "dung yen"
+        // khong con dung yen. Hong hay dat tuy phep thu vao Play som / muon vai giay - TUONG la bien tinh sot giua hai lan Play.
+        // Muc D can quai that thi tu goi SinhDotQuanhNguoi.
+        if (dir != null) dir.enabled = false;
+        int quaiDauTran = 0;
+        foreach (var q0 in Object.FindObjectsByType<EnemyAI>(FindObjectsInactive.Exclude))
+            if (q0 != null) { Object.Destroy(q0.gameObject); quaiDauTran++; }
+        Ghi("(tat GameDirector suot phep thu, don " + quaiDauTran + " quai co san)");
         var toi = TimToi();
         if (toi == null) { Ghi("[LOI] khong tim thay nhan vat"); loi++; Ket(); yield break; }
         var mauToi = toi.GetComponent<Damageable>();
@@ -372,6 +382,9 @@ public static class ThuTangHinh
             Kiem(quai.Count >= 3 && nhamTruoc > 0 && ganTruoc != null, "doi chung: quai khong nham minh ngay ca khi chua tang hinh - phep do vo nghia");
             Kiem(nhamSau == 0 && ganSau == null, "quai van thay nguoi dang tang hinh");
             yield return Chup("tanghinh_2_quai_mat_dau");
+            // Don quai cua muc D ngay: de song thi Quy cay / Quy du choang / danh nga nguoi tung o cac muc sau
+            foreach (var q in quai) if (q != null) Object.Destroy(q.gameObject);
+            yield return null;
         }
 
         // ================= G. DON DAU GAP DOI =================
@@ -537,6 +550,7 @@ public static class ThuTangHinh
             //  ngau nhien, nen hai con bao khong bao gio cong bang tuyet doi (do duoc 1,88 va 2,01 hai lan chay).
             //  Thuoc do CHINH la sat thuong CUA TUNG VET roi xuong: doc tren tung FallingShard sinh ra trong ca con bao -
             //  vet CUOI CUNG roi sau khi tang hinh da tan tu lau van phai mang so x2 (do la dieu nguoi dung xin).
+            bool daBaoChoang = false;
             var tongMua = new float[2]; var vetMua = new int[2];
             var vetMin = new float[2]; var vetMax = new float[2]; var soVetDoc = new int[2];
             for (int lan = 0; lan < 2; lan++)
@@ -554,6 +568,16 @@ public static class ThuTangHinh
                 while (Time.time < han)
                 {
                     if (bia.health < truoc - 0.01f) { demTut++; truoc = bia.health; }
+                    if (toi.GetComponent<StunnedEffect>() != null && !daBaoChoang)
+                    {
+                        daBaoChoang = true;
+                        var sbC = new StringBuilder();
+                        foreach (var q in Object.FindObjectsByType<EnemyAI>(FindObjectsInactive.Exclude))
+                            sbC.Append(q.name + "@" + Vector3.Distance(q.transform.position, toi.transform.position).ToString("F1") + " ");
+                        foreach (var pcX in Object.FindObjectsByType<PlayerController>(FindObjectsInactive.Exclude))
+                            if (pcX != toi) sbC.Append("PC:" + pcX.name + "@" + Vector3.Distance(pcX.transform.position, toi.transform.position).ToString("F1") + " ");
+                        Ghi(string.Format("K1. [chan doan] lan {0} nguoi tung BI CHOANG luc {1:F2}; quai / nguoi quanh: {2}", lan, Time.time, sbC));
+                    }
                     foreach (var fs in Object.FindObjectsByType<FallingShard>(FindObjectsInactive.Exclude))
                     {
                         if (fs == null || !daDoc.Add(fs)) continue;
@@ -597,7 +621,12 @@ public static class ThuTangHinh
                 yield return new WaitForFixedUpdate();
                 float m0 = bia.health;
                 toi.mana = toi.maxMana;
+                float lucBamK2 = Time.time;
                 toi.CastAt(CapDo.KyQuaCauBang, bia.transform.position);
+                // CastAt tu choi trong IM LANG (chi dat LastMessage) - in ra ly do de lan sau khong phai doan
+                if (Mathf.Approximately(toi.LastMessageTime, lucBamK2))
+                    Ghi(string.Format("K2. [chan doan] lan {0}: CastAt TU CHOI \"{1}\" (cap {2}, hoi chieu {3:F2}, mana {4:F0})",
+                        lan, toi.LastMessage, CapDo.CapCuaKyNang(CapDo.KyQuaCauBang), toi.HoiChieuGiay(CapDo.KyQuaCauBang), toi.mana));
 
                 // Doc ngay khi chum vua bay ra, truoc khi qua nao kip no
                 minQua[lan] = float.MaxValue; maxQua[lan] = 0f;
@@ -768,7 +797,10 @@ public static class ThuTangHinh
             yield return new WaitForSeconds(0.6f);
             int vongD0 = TangHinh.SoLanNoVong;
             toi.mana = toi.maxMana;
+            float lucBamV = Time.time;
             toi.CastAt(0, toi.transform.position + huong * 8f);
+            if (Mathf.Approximately(toi.LastMessageTime, lucBamV))
+                Ghi(string.Format("V. [chan doan] Qua cau lua: CastAt TU CHOI \"{0}\"", toi.LastMessage));
             for (float h = Time.time + 2f; Time.time < h && toi.GetComponent<TangHinh>() != null; ) yield return null;
             yield return new WaitForSeconds(0.2f);
             Ghi(string.Format("V. tan do don dau (Qua cau lua): con tang hinh {0}, vong no them {1}", toi.GetComponent<TangHinh>() != null, TangHinh.SoLanNoVong - vongD0));
@@ -823,8 +855,9 @@ public static class ThuTangHinh
             Vector3 cho = kia.transform.position;
             for (int i = 0; i < 12; i++) { nhet(HieuUngQuaMang.CoTangHinh, cho); yield return new WaitForSeconds(0.05f); }
             bool banSaoCo = kia.GetComponent<TangHinh>() != null;
-            // dung yen 0,8 giay -> renderer tat
-            float hanD = Time.time + 0.9f;
+            // dung yen -> renderer tat sau GiayMoHan 0,4 s. Cho 1,5 s (truoc 0,9): khung dau sau khi dung con troi theo noi suy,
+            // Editor tut khung thi 0,9 s sat nut (09/10/2026 hong mot lan "hien khi DUNG YEN 1")
+            float hanD = Time.time + 1.5f;
             while (Time.time < hanD) { nhet(HieuUngQuaMang.CoTangHinh, cho); yield return null; }
             int hienKhiDung = 0;
             foreach (var r in kia.GetComponentsInChildren<Renderer>(true)) if (r.enabled && (r is SkinnedMeshRenderer || r is MeshRenderer)) hienKhiDung++;
