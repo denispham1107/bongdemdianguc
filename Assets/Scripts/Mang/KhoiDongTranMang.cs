@@ -96,6 +96,7 @@ public class KhoiDongTranMang : MonoBehaviour
     void Start()
     {
         TrangThai = ""; DaNoi = false; LoiCuoi = null; NhanDang = "";
+        BotDaDung.Clear();
         ThongBaoKetNoi = ""; thongBaoLaLoi = false; CanNutVeSanh = false;
 
         // Choi mot minh thi khong lam gi ca - va phai tu bo di, khong nam lai
@@ -140,20 +141,13 @@ public class KhoiDongTranMang : MonoBehaviour
 
         if (toi == null) { Hong("khong dung duoc nhan vat cua minh"); yield break; }
 
-        if (KenhTrucTiep.LaGiaLap)
-        {
-            // Noi thang ra chu khong de nguoi ta doi mai: ban Editor khong co
-            // WebRTC, va mot cai vong xoay bat tan thi nhin nhu treo may.
-            TrangThai = "Bản này chạy trong Unity Editor nên chưa nối mạng thật "
-                      + "được (WebRTC chỉ có trên bản web). Hãy mở "
-                      + "diablo25d-game.web.app trên hai máy.";
-            yield break;
-        }
-
         // ---- 1. Doc lai phong ----
+        // Doc TRUOC khi xet WebRTC: may BOT (08/10/2026) chay tren may chu phong, khong can noi mang - ban Editor va
+        // phong chi co chu phong + BOT van phai dung BOT.
         bool ok = false;
         yield return PhongMang.TaiLaiPhong(TranHienTai.MaPhong, (o, e) => { ok = o; });
         var phong = PhongMang.PhongHienTai;
+        if ((!ok || phong == null) && KenhTrucTiep.LaGiaLap) { BaoBanEditor(); yield break; }
         if (!ok || phong == null) { Hong("khong doc duoc phong"); yield break; }
 
         // ---- 2. Xep ghe ----
@@ -168,13 +162,19 @@ public class KhoiDongTranMang : MonoBehaviour
         MotGhe gheToi = TimGhe(bangGhe, FirebaseMang.Uid);
         if (gheToi.uid == null) { Hong("khong thay minh trong danh sach phong"); yield break; }
 
+        // May BOT: chi CHU PHONG dung va dieu khien (no la trong tai cua BOT). May khach thay BOT qua goi trang thai.
+        int soNguoiThat = 0, soBot = 0;
+        foreach (var g in bangGhe) { if (MayBot.LaBot(g.uid)) soBot++; else soNguoiThat++; }
+        bool chayBot = TranHienTai.LaHost && soBot > 0;
+        bool canNoiMang = soNguoiThat >= 2 && !KenhTrucTiep.LaGiaLap;
+
+        if (KenhTrucTiep.LaGiaLap && !chayBot) { BaoBanEditor(); yield break; }
+
         NhanDang += string.Format(" · ghế {0} · {1} người", gheToi.ghe, bangGhe.Count)
                   + (phong.LaDoi ? " · " + CheDoTran.TenDoi(gheToi.doi) : "");
 
         // Ghe MAY BOT (MayBot, 08/10/2026) khong co may nao de noi - chi dem nguoi THAT
-        int soNguoiThat = 0;
-        foreach (var g in bangGhe) if (!MayBot.LaBot(g.uid)) soNguoiThat++;
-        if (soNguoiThat < 2)
+        if (soNguoiThat < 2 && !chayBot)
         {
             TrangThai = "Chơi một mình trong phòng - không có ai để nối.";
             yield break;
@@ -215,15 +215,28 @@ public class KhoiDongTranMang : MonoBehaviour
         ketTran.TenCuaGhe = TenCuaGhe;
         ketTran.DoiCuaGhe = DoiCuaGhe;
         ketTran.GheCoTrongPhong = new List<byte>();
-        // BUOC 1 cua may BOT: BOT chua co mat trong tran (buoc 2 se chay BOT tren may chu phong) - chua tinh ghe BOT,
-        // khong thi ket tran doi mot nguoi khong bao gio vao
-        foreach (var g in bangGhe) if (!MayBot.LaBot(g.uid)) ketTran.GheCoTrongPhong.Add(g.ghe);
+        // Ke ca ghe MAY BOT: BOT co mat trong tran (chu phong dung - buoc 2, 08/10/2026), bi ha moi la ra khoi tran
+        foreach (var g in bangGhe) ketTran.GheCoTrongPhong.Add(g.ghe);
         ketTran.Gan(dongBo, toi, gheToi.ghe);
 
         // Nhan vat cua minh ghi lai duong di: bu tre can biet "mot khoang truoc
         // day minh dung o dau" de lui ve do tinh trung.
         if (toi.GetComponent<LichSuViTri>() == null)
             toi.gameObject.AddComponent<LichSuViTri>();
+
+        // ---- 3b. May BOT (chu phong) ----
+        if (chayBot)
+            foreach (var g in bangGhe)
+                if (MayBot.LaBot(g.uid)) SinhBot(g);
+
+        if (!canNoiMang)
+        {
+            // Khong co nguoi that nao khac (hoac ban Editor khong co WebRTC): choi voi BOT, khong bat tay ai
+            TrangThai = soBot > 0 ? string.Format("Chơi cùng {0} máy BOT.", soBot) : "";
+            yield return new WaitForSecondsRealtime(3f);
+            TrangThai = "";
+            yield break;
+        }
 
         // ---- 4. Bat tay - SONG SONG voi moi nguoi can noi ----
         //
@@ -421,18 +434,8 @@ public class KhoiDongTranMang : MonoBehaviour
     void DatChoDungTheoGhe(byte ghe)
     {
         if (toi == null) return;
-
-        var dir = GameDirector.Instance;
-        Vector3 tam = dir != null ? dir.arenaCenter : Vector3.zero;
-        float banKinh = dir != null ? dir.arenaRadius : 34f;
-
-        // Tran Doi: dong doi dung gan nhau, hai doi hai phia ban do (nguoi dung chon 28/09/2026)
-        var cho = CheDoTran.LaTranDoi
-            ? ChoXuatPhat.ChoChoDoi(ChoXuatPhat.HatTuMaPhong(TranHienTai.MaPhong), DoiTheoGhe(), tam, banKinh)
-            : ChoXuatPhat.ChoChoCaPhong(ChoXuatPhat.HatTuMaPhong(TranHienTai.MaPhong),
-                                        KenhTrucTiep.SoKenhToiDa, tam, banKinh);
-        if (ghe >= cho.Count) return;
-        Vector3 moi = cho[ghe];
+        Vector3 moi;
+        if (!ViTriXuatPhat(ghe, out moi)) return;
 
         var cc = toi.GetComponent<CharacterController>();
         bool batLai = cc != null && cc.enabled;
@@ -441,6 +444,82 @@ public class KhoiDongTranMang : MonoBehaviour
         if (batLai) cc.enabled = true;
 
         Debug.Log("[TranMang] ghe " + ghe + " xuat phat o " + moi.ToString("F1"));
+    }
+
+    /// <summary>Cho xuat phat cua ghe <paramref name="ghe"/> - tinh tu ma phong, moi may ra cung mot dap an.</summary>
+    bool ViTriXuatPhat(byte ghe, out Vector3 moi)
+    {
+        moi = Vector3.zero;
+
+        // TINH MOT LAN roi dung chung cho minh va moi BOT (08/10/2026): ChoXuatPhat kiem VUONG VAT CAN bang vat ly, nen
+        // tinh lai sau khi nhan vat cua minh da dung vao cho ghe 0 thi ghe 0 "bi vuong" va ca danh sach truot di - BOT 1
+        // tung dung cach chu phong 14 m (luat >= 22 m), menu 113.
+        if (choXuatPhatDaTinh == null)
+        {
+            var dir = GameDirector.Instance;
+            Vector3 tam = dir != null ? dir.arenaCenter : Vector3.zero;
+            float banKinh = dir != null ? dir.arenaRadius : 34f;
+
+            // Tran Doi: dong doi dung gan nhau, hai doi hai phia ban do (nguoi dung chon 28/09/2026)
+            choXuatPhatDaTinh = CheDoTran.LaTranDoi
+                ? ChoXuatPhat.ChoChoDoi(ChoXuatPhat.HatTuMaPhong(TranHienTai.MaPhong), DoiTheoGhe(), tam, banKinh)
+                : ChoXuatPhat.ChoChoCaPhong(ChoXuatPhat.HatTuMaPhong(TranHienTai.MaPhong),
+                                            KenhTrucTiep.SoKenhToiDa, tam, banKinh);
+        }
+        if (ghe >= choXuatPhatDaTinh.Count) return false;
+        moi = choXuatPhatDaTinh[ghe];
+        return true;
+    }
+
+    List<Vector3> choXuatPhatDaTinh;
+
+    // ================================================================
+    //  MAY BOT (08/10/2026, buoc 2)
+    // ================================================================
+
+    /// <summary>Cac may BOT may nay da dung (chu phong) - phep thu doc.</summary>
+    public static readonly List<PlayerController> BotDaDung = new List<PlayerController>();
+
+    /// <summary>
+    /// DUNG MOT MAY BOT tren may chu phong: cung prefab nguoi choi (NguoiChoiKhac.Sinh), roi doi tu "ban sao nguoi khac"
+    /// thanh nhan vat MAY NAY LA TRONG TAI: mau do may nay quyet, bang cap rieng, bo nao BotDieuKhien. Dang ky vao
+    /// DongBoTran (gui trang thai + phep cua no theo ghe) va GameDirector (quai sinh quanh no, danh no - nguoi dung chon
+    /// "tinh nhu nguoi").
+    /// </summary>
+    void SinhBot(MotGhe g)
+    {
+        Vector3 cho;
+        if (!ViTriXuatPhat(g.ghe, out cho)) cho = toi.transform.position + new Vector3(3f, 0f, 3f);
+        var nv = NguoiChoiKhac.Sinh(g.uid, TenCuaGhe(g.ghe), cho);
+        if (nv == null) { Debug.LogWarning("[TranMang] khong dung duoc BOT ghe " + g.ghe); return; }
+        nv.gameObject.name = "Bot_" + g.ghe + "_" + TenCuaGhe(g.ghe);
+
+        var mau = nv.GetComponent<Damageable>();
+        if (mau != null) mau.mauDoMayKhacQuyet = false;      // may nay quyet mau cua BOT
+        var bang = new BangCap();
+        bang.BatDauTranMoi();
+        nv.DatLaBot(bang);
+
+        var nao = nv.gameObject.AddComponent<BotDieuKhien>();
+        nao.ghe = g.ghe;
+        nao.uid = g.uid;
+        nao.doKho = Mathf.Max(0, MayBot.DoKhoCua(g.uid));
+        nao.he = MayBot.HeCua(g.uid, TranHienTai.MaPhong);
+
+        GanDoi(nv, nv.GetComponent<BangTen>(), DoiCuaGhe(g.ghe));
+        if (nv.GetComponent<LichSuViTri>() == null) nv.gameObject.AddComponent<LichSuViTri>();
+        if (dongBo != null) dongBo.ThemBotCucBo(g.ghe, nv);
+        BotDaDung.Add(nv);
+        Debug.Log("[TranMang] BOT ghe " + g.ghe + " (" + MayBot.TenDoKho(nao.doKho) + ", he " + MayBot.TenHe(nao.he) + ") o " + cho.ToString("F1"));
+    }
+
+    void BaoBanEditor()
+    {
+        // Noi thang ra chu khong de nguoi ta doi mai: ban Editor khong co
+        // WebRTC, va mot cai vong xoay bat tan thi nhin nhu treo may.
+        TrangThai = "Bản này chạy trong Unity Editor nên chưa nối mạng thật "
+                  + "được (WebRTC chỉ có trên bản web). Hãy mở "
+                  + "diablo25d-game.web.app trên hai máy.";
     }
 
     /// <summary>

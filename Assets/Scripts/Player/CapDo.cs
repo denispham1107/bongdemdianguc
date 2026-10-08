@@ -118,68 +118,38 @@ public static class CapDo
     public const int KnGietNguoi = 250;
 
     // ================================================================
-    //  TRANG THAI
+    //  BANG CAP CUA NHAN VAT TREN MAY NAY
     // ================================================================
+    //
+    // 08/10/2026 (may BOT, buoc 2): trang thai cap / kinh nghiem / ky nang / binh chuyen vao lop BangCap -
+    // moi BOT chay tren may chu phong can MOT BANG RIENG (truoc day chi co mot bang tinh cho nhan vat cua may).
+    // Cac ham tinh duoi day giu NGUYEN cach goi cu va doc / ghi bang cua nhan vat may nay (CuaMay): HUD, Sach phep,
+    // phep thu khong phai sua. Cho nao co the la BOT (PlayerController, KhangHe, TocBien, chia kinh nghiem) thi doc
+    // PlayerController.Cap thay vi cac ham tinh nay.
 
-    public static int Cap { get; private set; }
-    public static int KinhNghiem { get; private set; }        // tich luy trong CAP hien tai
-    public static int DiemKyNang { get; private set; }
+    /// <summary>Bang cap cua nhan vat NGUOI CHOI tren may nay.</summary>
+    public static readonly BangCap CuaMay = new BangCap();
+
+    public static int Cap { get { return CuaMay.Cap; } }
+    public static int KinhNghiem { get { return CuaMay.KinhNghiem; } }        // tich luy trong CAP hien tai
+    public static int DiemKyNang { get { return CuaMay.DiemKyNang; } }
 
     /// <summary>So binh mau / binh mana dang mang - nhat duoc khi giet quai, tinh theo tran.</summary>
-    public static int SoBinhMau { get; private set; }
-    public static int SoBinhMana { get; private set; }
+    public static int SoBinhMau { get { return CuaMay.SoBinhMau; } }
+    public static int SoBinhMana { get { return CuaMay.SoBinhMana; } }
 
-    public static int SoBinh(int ky) { return ky == KyBinhMau ? SoBinhMau : ky == KyBinhMana ? SoBinhMana : 0; }
-
-    /// <summary>Cong mot binh vua nhat duoc.</summary>
-    public static void ThemBinh(int ky)
-    {
-        BaoDamCoSan();
-        if (ky == KyBinhMau) SoBinhMau++;
-        else if (ky == KyBinhMana) SoBinhMana++;
-        else return;
-        if (KhiDoi != null) KhiDoi();
-    }
-
-    /// <summary>Bot mot binh. Tra false neu het binh.</summary>
-    public static bool BotBinh(int ky)
-    {
-        BaoDamCoSan();
-        if (ky == KyBinhMau && SoBinhMau > 0) SoBinhMau--;
-        else if (ky == KyBinhMana && SoBinhMana > 0) SoBinhMana--;
-        else return false;
-        if (KhiDoi != null) KhiDoi();
-        return true;
-    }
-
-    /// <summary>Cap cua tung ky nang, 0 = con khoa.</summary>
-    static readonly int[] capKyNang = new int[SoKyNang];
+    public static int SoBinh(int ky) { return CuaMay.SoBinh(ky); }
+    public static void ThemBinh(int ky) { CuaMay.ThemBinh(ky); }
+    public static bool BotBinh(int ky) { return CuaMay.BotBinh(ky); }
 
     /// <summary>Bao ra moi khi cap / kinh nghiem / diem ky nang doi - de HUD ve lai.</summary>
-    public static event System.Action KhiDoi;
+    public static event System.Action KhiDoi { add { CuaMay.KhiDoi += value; } remove { CuaMay.KhiDoi -= value; } }
 
     /// <summary>Bao ra khi vua len cap (tham so la cap moi) - de nhan vat cong mau.</summary>
-    public static event System.Action<int> KhiLenCap;
-
-    static bool daDung;
-
-    static void BaoDamCoSan() { if (!daDung) BatDauTranMoi(); }
+    public static event System.Action<int> KhiLenCap { add { CuaMay.KhiLenCap += value; } remove { CuaMay.KhiLenCap -= value; } }
 
     /// <summary>Xoa sach, bat dau mot van moi: cap 1, khong kinh nghiem, mot diem ky nang.</summary>
-    public static void BatDauTranMoi()
-    {
-        daDung = true;
-        Cap = 1;
-        KinhNghiem = 0;
-        DiemKyNang = 1;
-        SoBinhMau = 0;
-        SoBinhMana = 0;
-        for (int i = 0; i < SoKyNang; i++) capKyNang[i] = 0;
-        // Binh mau / binh mana CO SAN cap 1 (nguoi dung 25/09/2026) - khong ton diem ky nang
-        capKyNang[KyBinhMau] = 1;
-        capKyNang[KyBinhMana] = 1;
-        if (KhiDoi != null) KhiDoi();
-    }
+    public static void BatDauTranMoi() { CuaMay.BatDauTranMoi(); }
 
     // ================================================================
     //  BANG KINH NGHIEM
@@ -207,15 +177,7 @@ public static class CapDo
     }
 
     /// <summary>Phan tram da di duoc trong cap hien tai, 0..1.</summary>
-    public static float TienDo01
-    {
-        get
-        {
-            BaoDamCoSan();
-            int can = CanDeLenCap(Cap);
-            return can <= 0 ? 1f : Mathf.Clamp01((float)KinhNghiem / can);
-        }
-    }
+    public static float TienDo01 { get { return CuaMay.TienDo01; } }
 
     /// <summary>Kinh nghiem giet QUAI nhan them - giet nguoi choi khong doi. Nguoi dung 26/09/2026: "tang them 35%", roi cung ngay
     /// "tang them 20%" TREN MUC HIEN TAI (chon) -> 1,35 x 1,20 = 1,62; 28/09/2026 "tang them 30%" TREN MUC HIEN TAI (chon)
@@ -247,30 +209,8 @@ public static class CapDo
         }
     }
 
-    /// <summary>
-    /// Cong kinh nghiem. Len duoc bao nhieu cap thi len bay nhieu (giet mot
-    /// con to luc sap len cap co the nhay hai bac).
-    /// </summary>
-    public static void Them(int kn)
-    {
-        BaoDamCoSan();
-        if (kn <= 0 || Cap >= CapToiDa) return;
-
-        KinhNghiem += kn;
-        while (Cap < CapToiDa)
-        {
-            int can = CanDeLenCap(Cap);
-            if (can <= 0 || KinhNghiem < can) break;
-            KinhNghiem -= can;
-            Cap++;
-            DiemKyNang++;
-            if (KhiLenCap != null) KhiLenCap(Cap);
-        }
-
-        // Da toi da thi khong giu kinh nghiem thua lam gi
-        if (Cap >= CapToiDa) KinhNghiem = 0;
-        if (KhiDoi != null) KhiDoi();
-    }
+    /// <summary>Cong kinh nghiem cho nhan vat may nay (xem BangCap.Them).</summary>
+    public static void Them(int kn) { CuaMay.Them(kn); }
 
     // ================================================================
     //  CHI SO NHAN VAT THEO CAP
@@ -285,22 +225,18 @@ public static class CapDo
     public static float HeSoManaTheoCap(int cap) { return Mathf.Pow(1.10f, Mathf.Max(0, cap - 1)); }
     public static float HeSoTocTheoCap(int cap) { return Mathf.Pow(1.035f, Mathf.Clamp(cap - 1, 0, CapTangTocToiDa - 1)); }
 
-    public static float HeSoMau { get { BaoDamCoSan(); return HeSoMauTheoCap(Cap); } }
-    public static float HeSoMana { get { BaoDamCoSan(); return HeSoManaTheoCap(Cap); } }
-    public static float HeSoToc { get { BaoDamCoSan(); return HeSoTocTheoCap(Cap); } }
+    public static float HeSoMau { get { return HeSoMauTheoCap(CuaMay.Cap); } }
+    public static float HeSoMana { get { return HeSoManaTheoCap(CuaMay.Cap); } }
+    public static float HeSoToc { get { return HeSoTocTheoCap(CuaMay.Cap); } }
 
     // ================================================================
     //  KY NANG: KHOA - MO - NANG CAP
     // ================================================================
 
     /// <summary>Cap cua mot ky nang, 0 = con khoa.</summary>
-    public static int CapCuaKyNang(int ky)
-    {
-        BaoDamCoSan();
-        return (ky >= 0 && ky < SoKyNang) ? capKyNang[ky] : 0;
-    }
+    public static int CapCuaKyNang(int ky) { return CuaMay.CapCuaKyNang(ky); }
 
-    public static bool DaMo(int ky) { return CapCuaKyNang(ky) > 0; }
+    public static bool DaMo(int ky) { return CuaMay.DaMo(ky); }
 
     // ================================================================
     //  DIEU KIEN MO KHOA THEO BAC (nguoi dung xin 19/09/2026)
@@ -345,32 +281,12 @@ public static class CapDo
     }
 
     /// <summary>Da du dieu kien BAC de mo ky nang nay chua (khong xet diem ky nang).</summary>
-    public static bool DuBacDeMo(int ky)
-    {
-        int can = KyCanTruoc(ky);
-        return can < 0 || CapCuaKyNang(can) >= CapCanTruoc(ky);
-    }
-
-    public static bool MoKhoaDuoc(int ky)
-    {
-        return ky >= 0 && ky < SoKyNang && !DaMo(ky) && DiemKyNang > 0 && DuBacDeMo(ky);
-    }
-
-    public static bool NangCapDuoc(int ky)
-    {
-        return ky >= 0 && ky < SoKyNang && DaMo(ky)
-               && capKyNang[ky] < CapToiDaCua(ky) && DiemKyNang > 0;
-    }
+    public static bool DuBacDeMo(int ky) { return CuaMay.DuBacDeMo(ky); }
+    public static bool MoKhoaDuoc(int ky) { return CuaMay.MoKhoaDuoc(ky); }
+    public static bool NangCapDuoc(int ky) { return CuaMay.NangCapDuoc(ky); }
 
     /// <summary>Mo khoa mot ky nang (thanh cap 1). Tra ve false neu khong du dieu kien.</summary>
-    public static bool MoKhoa(int ky)
-    {
-        if (!MoKhoaDuoc(ky)) return false;
-        capKyNang[ky] = 1;
-        DiemKyNang--;
-        if (KhiDoi != null) KhiDoi();
-        return true;
-    }
+    public static bool MoKhoa(int ky) { return CuaMay.MoKhoa(ky); }
 
     /// <summary>
     /// Mo khoa ky nang nay CUNG CA DUONG dan toi no: nang cac ky nang phai co truoc len du cap,
@@ -380,24 +296,7 @@ public static class CapDo
     /// (nguoi dung xin 19/09/2026) chinh la thu bat ho di. Cac kich ban chay thu thi chi muon
     /// "cho toi dung thu ky nang X" nen goi ham nay thay cho MoKhoa.
     /// </summary>
-    public static void MoCaDuongChoPhepThu(int ky)
-    {
-        int can = KyCanTruoc(ky);
-        if (can >= 0)
-        {
-            MoCaDuongChoPhepThu(can);
-            int capCan = CapCanTruoc(ky);
-            for (int i = 0; i < 40 && CapCuaKyNang(can) < capCan; i++)
-            {
-                if (DiemKyNang <= 0) ThemDiemChoPhepThu(1);
-                if (!DaMo(can)) { if (!MoKhoa(can)) break; }
-                else if (!NangCap(can)) break;
-            }
-        }
-        if (DaMo(ky)) return;
-        if (DiemKyNang <= 0) ThemDiemChoPhepThu(1);
-        MoKhoa(ky);
-    }
+    public static void MoCaDuongChoPhepThu(int ky) { CuaMay.MoCaDuongChoPhepThu(ky); }
 
     /// <summary>
     /// Cho them diem ky nang MA KHONG cho kinh nghiem.
@@ -407,24 +306,10 @@ public static class CapDo
     /// len CAP 20 - va o cap toi da thi giet quai khong con duoc kinh nghiem nua, menu 61 do ra
     /// "+0 kinh nghiem" o moi ky nang (19/09/2026).
     /// </summary>
-    public static void ThemDiemChoPhepThu(int n)
-    {
-        BaoDamCoSan();
-        if (n <= 0) return;
-        DiemKyNang += n;
-        if (KhiDoi != null) KhiDoi();
-    }
+    public static void ThemDiemChoPhepThu(int n) { CuaMay.ThemDiemChoPhepThu(n); }
 
     /// <summary>Nang mot ky nang da mo len mot cap.</summary>
-    public static bool NangCap(int ky)
-    {
-        if (!NangCapDuoc(ky)) return false;
-        capKyNang[ky]++;
-        DiemKyNang--;
-        if (KhiDoi != null) KhiDoi();
-        return true;
-    }
-
+    public static bool NangCap(int ky) { return CuaMay.NangCap(ky); }
     // ================================================================
     //  SUC MANH KY NANG THEO CAP
     // ================================================================
@@ -440,4 +325,192 @@ public static class CapDo
 
     /// <summary>Hieu ung (dong bang, choang, chay...) keo dai them bao nhieu giay.</summary>
     public static float ThemGiayHieuUngTheoCap(int capKy) { return 0.15f * Mathf.Max(0, capKy - 1); }
+}
+
+/// <summary>
+/// BANG CAP CUA MOT NHAN VAT: cap, kinh nghiem, diem ky nang, cap tung ky nang, so binh dang mang.
+///
+/// Truoc 08/10/2026 day la trang thai TINH trong CapDo (mot bang duy nhat cho nhan vat cua may). May BOT (buoc 2) chay
+/// tren may chu phong, moi BOT mot nhan vat that su len cap rieng - nen tach thanh lop. Nhan vat cua may dung
+/// <see cref="CapDo.CuaMay"/>; BOT co bang rieng (PlayerController.bangCap). Luat (bang kinh nghiem, dieu kien mo theo bac,
+/// cap toi da) van la cua CapDo.
+/// </summary>
+public class BangCap
+{
+    public int Cap { get { BaoDamCoSan(); return cap; } }
+    public int KinhNghiem { get { BaoDamCoSan(); return kinhNghiem; } }
+    public int DiemKyNang { get { BaoDamCoSan(); return diemKyNang; } }
+    public int SoBinhMau { get { BaoDamCoSan(); return soBinhMau; } }
+    public int SoBinhMana { get { BaoDamCoSan(); return soBinhMana; } }
+
+    int cap, kinhNghiem, diemKyNang, soBinhMau, soBinhMana;
+
+    /// <summary>Cap cua tung ky nang, 0 = con khoa.</summary>
+    readonly int[] capKyNang = new int[CapDo.SoKyNang];
+
+    /// <summary>Bao ra moi khi cap / kinh nghiem / diem ky nang doi.</summary>
+    public event System.Action KhiDoi;
+
+    /// <summary>Bao ra khi vua len cap (tham so la cap moi) - de nhan vat cong mau.</summary>
+    public event System.Action<int> KhiLenCap;
+
+    bool daDung;
+
+    void BaoDamCoSan() { if (!daDung) BatDauTranMoi(); }
+
+    void BaoDoi() { if (KhiDoi != null) KhiDoi(); }
+
+    /// <summary>Xoa sach, bat dau mot van moi: cap 1, khong kinh nghiem, mot diem ky nang.</summary>
+    public void BatDauTranMoi()
+    {
+        daDung = true;
+        cap = 1;
+        kinhNghiem = 0;
+        diemKyNang = 1;
+        soBinhMau = 0;
+        soBinhMana = 0;
+        for (int i = 0; i < capKyNang.Length; i++) capKyNang[i] = 0;
+        // Binh mau / binh mana CO SAN cap 1 (nguoi dung 25/09/2026) - khong ton diem ky nang
+        capKyNang[CapDo.KyBinhMau] = 1;
+        capKyNang[CapDo.KyBinhMana] = 1;
+        BaoDoi();
+    }
+
+    public int SoBinh(int ky) { BaoDamCoSan(); return ky == CapDo.KyBinhMau ? soBinhMau : ky == CapDo.KyBinhMana ? soBinhMana : 0; }
+
+    /// <summary>Cong mot binh vua nhat duoc.</summary>
+    public void ThemBinh(int ky)
+    {
+        BaoDamCoSan();
+        if (ky == CapDo.KyBinhMau) soBinhMau++;
+        else if (ky == CapDo.KyBinhMana) soBinhMana++;
+        else return;
+        BaoDoi();
+    }
+
+    /// <summary>Bot mot binh. Tra false neu het binh.</summary>
+    public bool BotBinh(int ky)
+    {
+        BaoDamCoSan();
+        if (ky == CapDo.KyBinhMau && soBinhMau > 0) soBinhMau--;
+        else if (ky == CapDo.KyBinhMana && soBinhMana > 0) soBinhMana--;
+        else return false;
+        BaoDoi();
+        return true;
+    }
+
+    /// <summary>Phan tram da di duoc trong cap hien tai, 0..1.</summary>
+    public float TienDo01
+    {
+        get
+        {
+            BaoDamCoSan();
+            int can = CapDo.CanDeLenCap(cap);
+            return can <= 0 ? 1f : Mathf.Clamp01((float)kinhNghiem / can);
+        }
+    }
+
+    /// <summary>
+    /// Cong kinh nghiem. Len duoc bao nhieu cap thi len bay nhieu (giet mot
+    /// con to luc sap len cap co the nhay hai bac).
+    /// </summary>
+    public void Them(int kn)
+    {
+        BaoDamCoSan();
+        if (kn <= 0 || cap >= CapDo.CapToiDa) return;
+
+        kinhNghiem += kn;
+        while (cap < CapDo.CapToiDa)
+        {
+            int can = CapDo.CanDeLenCap(cap);
+            if (can <= 0 || kinhNghiem < can) break;
+            kinhNghiem -= can;
+            cap++;
+            diemKyNang++;
+            if (KhiLenCap != null) KhiLenCap(cap);
+        }
+
+        // Da toi da thi khong giu kinh nghiem thua lam gi
+        if (cap >= CapDo.CapToiDa) kinhNghiem = 0;
+        BaoDoi();
+    }
+
+    /// <summary>Phan toc do goc cong them (bi dong Toc do).</summary>
+    public float TocThemBiDong { get { return CapDo.TocThemTheoCap(CapCuaKyNang(CapDo.KyTocDo)); } }
+
+    /// <summary>Cap cua mot ky nang, 0 = con khoa.</summary>
+    public int CapCuaKyNang(int ky)
+    {
+        BaoDamCoSan();
+        return (ky >= 0 && ky < capKyNang.Length) ? capKyNang[ky] : 0;
+    }
+
+    public bool DaMo(int ky) { return CapCuaKyNang(ky) > 0; }
+
+    /// <summary>Da du dieu kien BAC de mo ky nang nay chua (khong xet diem ky nang).</summary>
+    public bool DuBacDeMo(int ky)
+    {
+        int can = CapDo.KyCanTruoc(ky);
+        return can < 0 || CapCuaKyNang(can) >= CapDo.CapCanTruoc(ky);
+    }
+
+    public bool MoKhoaDuoc(int ky)
+    {
+        return ky >= 0 && ky < capKyNang.Length && !DaMo(ky) && DiemKyNang > 0 && DuBacDeMo(ky);
+    }
+
+    public bool NangCapDuoc(int ky)
+    {
+        return ky >= 0 && ky < capKyNang.Length && DaMo(ky)
+               && capKyNang[ky] < CapDo.CapToiDaCua(ky) && DiemKyNang > 0;
+    }
+
+    /// <summary>Mo khoa mot ky nang (thanh cap 1). Tra ve false neu khong du dieu kien.</summary>
+    public bool MoKhoa(int ky)
+    {
+        if (!MoKhoaDuoc(ky)) return false;
+        capKyNang[ky] = 1;
+        diemKyNang--;
+        BaoDoi();
+        return true;
+    }
+
+    /// <summary>Nang mot ky nang da mo len mot cap.</summary>
+    public bool NangCap(int ky)
+    {
+        if (!NangCapDuoc(ky)) return false;
+        capKyNang[ky]++;
+        diemKyNang--;
+        BaoDoi();
+        return true;
+    }
+
+    /// <summary>⚠️ CHI DANH CHO PHEP THU - xem CapDo.MoCaDuongChoPhepThu.</summary>
+    public void MoCaDuongChoPhepThu(int ky)
+    {
+        int can = CapDo.KyCanTruoc(ky);
+        if (can >= 0)
+        {
+            MoCaDuongChoPhepThu(can);
+            int capCan = CapDo.CapCanTruoc(ky);
+            for (int i = 0; i < 40 && CapCuaKyNang(can) < capCan; i++)
+            {
+                if (DiemKyNang <= 0) ThemDiemChoPhepThu(1);
+                if (!DaMo(can)) { if (!MoKhoa(can)) break; }
+                else if (!NangCap(can)) break;
+            }
+        }
+        if (DaMo(ky)) return;
+        if (DiemKyNang <= 0) ThemDiemChoPhepThu(1);
+        MoKhoa(ky);
+    }
+
+    /// <summary>⚠️ CHI DANH CHO PHEP THU - xem CapDo.ThemDiemChoPhepThu.</summary>
+    public void ThemDiemChoPhepThu(int n)
+    {
+        BaoDamCoSan();
+        if (n <= 0) return;
+        diemKyNang += n;
+        BaoDoi();
+    }
 }

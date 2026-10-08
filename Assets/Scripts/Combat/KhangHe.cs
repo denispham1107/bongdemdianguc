@@ -70,11 +70,14 @@ public static class KhangHe
     }
 
     /// <summary>Ti le giam HIEN TAI cua nhan vat may nay voi he do.</summary>
-    public static float TiLeGiam(HeSat he)
+    public static float TiLeGiam(HeSat he) { return TiLeGiam(he, CapDo.CuaMay); }
+
+    /// <summary>Ti le giam cua nhan vat co bang cap <paramref name="bang"/> (may BOT co bang rieng - 08/10/2026).</summary>
+    public static float TiLeGiam(HeSat he, BangCap bang)
     {
         int ky = KyCua(he);
         if (ky < 0) return 0f;
-        return GiamOCap(CapDo.CapCuaKyNang(ky));
+        return GiamOCap((bang ?? CapDo.CuaMay).CapCuaKyNang(ky));
     }
 
     /// <summary>Mo ta ngan cho Sach phep: "giam 25%" ...</summary>

@@ -1,0 +1,23 @@
+[ban 1] may BOT trong tran (buoc 2) - 08/10/2026 20:45
+A0. vao Act2: 2 BOT dung, nhan vat cua may True, DongBoTran True, KetTran True, trang thai "Chơi cùng 2 máy BOT."
+A1a. cap gan nhat trong (may, BOT 1, BOT 2) cach nhau 46.7 m (luat >= 22 m)
+A1. Bot_1_BOT 1: ghe 1, laBot True, mau do may khac quyet False, bang cap rieng True, do kho KHÓ (uid bot_k_), he SÉT, ten tren dau "BOT 1", cach dat 0.08 m, cach may 55.9 m, mau 1000/1000
+A1. Bot_2_BOT 2: ghe 2, laBot True, mau do may khac quyet False, bang cap rieng True, do kho THƯỜNG (uid bot_t_), he LỬA, ten tren dau "BOT 2", cach dat 0.08 m, cach may 46.7 m, mau 1000/1000
+   anh maybot_tran_bot1.png
+B. BOT 1 len cap: cap 2, mau toi da 1000 -> 1150 (x1.150) | nhan vat may: cap 1 -> 1, mau toi da 1000 -> 1000 | BOT 2 cap 1, mau 1000
+C1. sinh mot dot: 52 con quai, gan may 20 / BOT 1 16 / BOT 2 16 (moi nguoi phai >= 4)
+C2. BOT 2 ha quai (84 kn): BOT 2 +84; doi chung may ha quai (84 kn): may +84; BOT 1 +0 (phai 0)
+D1. 9 goi trang thai trong 0,3 s; goi cuoi co 3 nguoi, ghe [ 0 1 2 ], lech vi tri lon nhat 0.006 m
+D2. BOT 1 (ghe 1, Qua cau lua cap 3) tung phep: 3 goi phep (gui lap 3 lan), goi dau: ghe 1, ky nang 0, cap 3 | cap Qua cau lua cua nhan vat may: 0
+D3. goi trang thai cua minh doi lai qua kenh: ban sao nguoi khac 0 -> 0, SoNguoiKhac 0 (phai 0 / 0)
+E1. may ha BOT 1: BOT 1 chet True, goi chet (ghe 1, ke ha 0) x2, may +250 kinh nghiem (phai 250), ket tran xong False (phai False - con 2 nguoi)
+E2. BOT 2 ha may: BOT 2 +250 kinh nghiem; ket tran True, ghe thang 2 (BOT 2 ghe 2), ten "BOT 2", toi thang False, BOT 2 con dieu khien False/False, goi ket tran 1
+   anh maybot_tran_ketdon.png
+F1. tran Doi: 2 BOT, doi may 0, BOT doi A True, BOT doi B True, ten tren dau doi 0/1
+F2. may danh dong doi BOT doi A 300: mau 1000 -> 1000 (phai khong doi)
+F3. ha BOT doi B: ket tran True, doi thang 0 (ĐỘI A), toi thang True
+   anh maybot_tran_ketdoi.png
+don phong -P3Qkn9tTJL8STSima-5: sach
+don phong -P3QkovrSpRXLaOftTxh: sach
+
+so loi ghi nhan = 0

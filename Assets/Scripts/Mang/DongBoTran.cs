@@ -267,7 +267,45 @@ public class DongBoTran : MonoBehaviour
     }
 
     readonly Dictionary<byte, MotNguoiKhac> nguoiKhac = new Dictionary<byte, MotNguoiKhac>();
-    readonly GoiTin.MotNguoi[] demGui = new GoiTin.MotNguoi[1];
+    readonly GoiTin.MotNguoi[] demGui = new GoiTin.MotNguoi[KenhTrucTiep.SoKenhToiDa];
+
+    // ================================================================
+    //  MAY BOT CHAY TREN MAY NAY (chu phong, 08/10/2026 buoc 2)
+    // ================================================================
+    //
+    // BOT la nhan vat THAT tren may chu phong (chu phong la trong tai cua no nhu cua nhan vat minh). Voi may khach,
+    // BOT chi la mot ghe nua: chu phong gui trang thai cua BOT CHUNG GOI voi trang thai cua minh (goi trang thai von
+    // chua duoc nhieu nguoi), va gui phep cua BOT voi chiSo = ghe cua BOT. May khach sinh ban sao bang dung duong
+    // TaoNguoiKhiCan nhu voi nguoi that - khong biet, khong can biet do la BOT.
+
+    readonly Dictionary<byte, PlayerController> botCucBo = new Dictionary<byte, PlayerController>();
+    readonly Dictionary<byte, System.Action<int, Vector3, bool>> nghePhepBot = new Dictionary<byte, System.Action<int, Vector3, bool>>();
+
+    /// <summary>Them mot may BOT chay tren may nay vao ghe <paramref name="ghe"/>.</summary>
+    public void ThemBotCucBo(byte ghe, PlayerController nv)
+    {
+        if (nv == null) return;
+        BoBotCucBo(ghe);
+        botCucBo[ghe] = nv;
+        System.Action<int, Vector3, bool> nghe = (ky, ngam, donTH) => GuiPhep(ghe, nv.Cap, ky, ngam, donTH);
+        nghePhepBot[ghe] = nghe;
+        nv.DaTungPhep += nghe;
+    }
+
+    void BoBotCucBo(byte ghe)
+    {
+        PlayerController cu;
+        System.Action<int, Vector3, bool> nghe;
+        if (botCucBo.TryGetValue(ghe, out cu) && cu != null && nghePhepBot.TryGetValue(ghe, out nghe)) cu.DaTungPhep -= nghe;
+        botCucBo.Remove(ghe);
+        nghePhepBot.Remove(ghe);
+    }
+
+    /// <summary>Ghe nay la may BOT chay tren may nay.</summary>
+    public bool LaBotCucBo(byte ghe) { return botCucBo.ContainsKey(ghe); }
+
+    /// <summary>Cac may BOT chay tren may nay (ghe -> nhan vat).</summary>
+    public IEnumerable<KeyValuePair<byte, PlayerController>> BotCucBo { get { return botCucBo; } }
     readonly GoiTin.MotNguoi[] demNhan = new GoiTin.MotNguoi[8];
     readonly List<PhepChoGui> phepChoGui = new List<PhepChoGui>();
 
@@ -304,18 +342,32 @@ public class DongBoTran : MonoBehaviour
 
     void KhiToiTungPhep(int kyNang, Vector3 diemNgam, bool donTangHinh)
     {
+        GuiPhep(chiSoCuaToi, CapDo.CuaMay, kyNang, diemNgam, donTangHinh);
+    }
+
+    /// <summary>So thu tu phep RIENG tung ghe (minh + tung BOT): ben nhan bo ban lap theo so nay, moi ghe mot dong dem.</summary>
+    readonly Dictionary<byte, int> soPhepTheoGhe = new Dictionary<byte, int>();
+
+    /// <summary>Gui mot lan tung phep cua ghe <paramref name="ghe"/> (minh hoac may BOT) - cap theo <paramref name="bang"/>.</summary>
+    void GuiPhep(byte ghe, BangCap bang, int kyNang, Vector3 diemNgam, bool donTangHinh)
+    {
         if (!CoKenhNaoMo) return;
+
+        int so;
+        soPhepTheoGhe.TryGetValue(ghe, out so);
+        soPhepTheoGhe[ghe] = ++so;
+        soPhepDaTung++;
 
         var goi = GoiTin.VietKyNang(new GoiTin.MotPhep
         {
-            chiSo = chiSoCuaToi,
+            chiSo = ghe,
             kyNang = (byte)kyNang,
 
-            // Cap ky nang CUA MINH: ben kia phat lai phep nay de tinh trung, va
+            // Cap ky nang CUA NGUOI TUNG: ben kia phat lai phep nay de tinh trung, va
             // no phai manh dung nhu tren may minh.
-            capKyNang = (byte)Mathf.Clamp(CapDo.CapCuaKyNang(kyNang), 1, CapDo.CapKyNangToiDa),
+            capKyNang = (byte)Mathf.Clamp((bang ?? CapDo.CuaMay).CapCuaKyNang(kyNang), 1, CapDo.CapKyNangToiDa),
 
-            soThuTu = ++soPhepDaTung,
+            soThuTu = so,
             diemNgam = diemNgam,
 
             // Don dau tien trong Tang hinh: bao sang de ben kia phat lai phep cung x2 (18/09/2026).
@@ -410,6 +462,8 @@ public class DongBoTran : MonoBehaviour
     {
         if (t == null) return 255;
         if (toi != null && t == toi.transform) return chiSoCuaToi;
+        foreach (var cap in botCucBo)
+            if (cap.Value != null && cap.Value.transform == t) return cap.Key;
 
         foreach (var cap in nguoiKhac)
             if (cap.Value.nhanVat != null && cap.Value.nhanVat.transform == t)
@@ -485,6 +539,8 @@ public class DongBoTran : MonoBehaviour
     public PlayerController NhanVatCuaGhe(byte ghe)
     {
         if (ghe == chiSoCuaToi) return toi;
+        PlayerController bot;
+        if (botCucBo.TryGetValue(ghe, out bot)) return bot;
         MotNguoiKhac n;
         return nguoiKhac.TryGetValue(ghe, out n) ? n.nhanVat : null;
     }
@@ -543,24 +599,32 @@ public class DongBoTran : MonoBehaviour
     {
         if (toi == null || !CoKenhNaoMo) return;
 
-        var mau = toi.GetComponent<Damageable>();
+        int n = 0;
+        demGui[n++] = TrangThaiCua(chiSoCuaToi, toi);
+        // May BOT di CHUNG GOI (chu phong la trong tai cua chung) - xem BotCucBo
+        foreach (var cap in botCucBo)
+            if (cap.Value != null && n < demGui.Length) demGui[n++] = TrangThaiCua(cap.Key, cap.Value);
 
-        demGui[0] = new GoiTin.MotNguoi
+        GuiMotGoi(GoiTin.VietTrangThai(GioTran(), demGui, n));
+    }
+
+    static GoiTin.MotNguoi TrangThaiCua(byte ghe, PlayerController nv)
+    {
+        var mau = nv.GetComponent<Damageable>();
+        return new GoiTin.MotNguoi
         {
-            chiSo = chiSoCuaToi,
-            viTri = toi.transform.position,
-            gocY = toi.transform.eulerAngles.y,
+            chiSo = ghe,
+            viTri = nv.transform.position,
+            gocY = nv.transform.eulerAngles.y,
             mau01 = mau != null && mau.maxHealth > 0f ? mau.health / mau.maxHealth : 1f,
-            dangChay = toi.input.huongDi.sqrMagnitude > 0.01f || toi.DangCoDiemDen,
+            dangChay = nv.input.huongDi.sqrMagnitude > 0.01f || nv.DangCoDiemDen,
             daChet = mau != null && mau.IsDead,
 
             // May nay la trong tai cua chinh nhan vat minh - ke luon ca hieu
             // ung va khieng, de may khac ve lai dung, khong tu gieo Random.
-            coHieuUng = HieuUngQuaMang.DocCo(toi.gameObject),
-            khieng01 = HieuUngQuaMang.DocKhieng(toi.gameObject)
+            coHieuUng = HieuUngQuaMang.DocCo(nv.gameObject),
+            khieng01 = HieuUngQuaMang.DocKhieng(nv.gameObject)
         };
-
-        GuiMotGoi(GoiTin.VietTrangThai(GioTran(), demGui, 1));
     }
 
     // ---- So dem chuyen tiep, de chan doan ----
@@ -703,7 +767,7 @@ public class DongBoTran : MonoBehaviour
             for (int i = 0; i < soNguoi; i++)
             {
                 var p = demNhan[i];
-                if (p.chiSo == chiSoCuaToi) continue;   // trang thai cua chinh minh
+                if (p.chiSo == chiSoCuaToi || botCucBo.ContainsKey(p.chiSo)) continue;   // trang thai cua chinh minh / BOT cua minh
 
                 MotNguoiKhac n;
                 if (!nguoiKhac.TryGetValue(p.chiSo, out n))
@@ -740,7 +804,7 @@ public class DongBoTran : MonoBehaviour
         if (!GoiTin.DocKyNang(b, out p)) { SoGoiHong++; return; }
 
         SoGoiDaNhan++;
-        if (p.chiSo == chiSoCuaToi) return;
+        if (p.chiSo == chiSoCuaToi || botCucBo.ContainsKey(p.chiSo)) return;
 
         MotNguoiKhac n;
         if (!nguoiKhac.TryGetValue(p.chiSo, out n) || n.nhanVat == null) return;

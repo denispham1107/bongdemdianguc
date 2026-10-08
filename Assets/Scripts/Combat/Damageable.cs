@@ -181,7 +181,8 @@ public class Damageable : MonoBehaviour
             if (nguoiGay != null && nguoiGay.isPlayer && isPlayer && !mauDoMayKhacQuyet)
             {
                 if (heDon == HeSat.Khac) heDon = KhangHe.HeCua(type);
-                float giam = KhangHe.TiLeGiam(heDon);
+                var pcBiDanh = GetComponent<PlayerController>();
+                float giam = KhangHe.TiLeGiam(heDon, pcBiDanh != null ? pcBiDanh.Cap : CapDo.CuaMay);
                 if (giam > 0f)
                 {
                     KhangHe.SoDonBiChan++;

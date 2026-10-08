@@ -156,7 +156,7 @@ public class PlayerController : MonoBehaviour
     public float TocBienCooldown01 { get { return Mathf.Clamp01(tocBienTimer / HoiChieuTocBien); } }
 
     /// <summary>Hoi chieu Toc bien o CAP HIEN TAI - giam 0,25 giay moi cap.</summary>
-    public float HoiChieuTocBien { get { return TocBien.HoiChieuTheoCap(Mathf.Max(1, CapDo.CapCuaKyNang(CapDo.KyTocBien))); } }
+    public float HoiChieuTocBien { get { return TocBien.HoiChieuTheoCap(Mathf.Max(1, Cap.CapCuaKyNang(CapDo.KyTocBien))); } }
 
     /// <summary>
     /// Con bao nhieu GIAY nua thi dung duoc ky nang <paramref name="skill"/>.
@@ -223,6 +223,30 @@ public class PlayerController : MonoBehaviour
     /// hieu chinh - luc do ban phim cua may nay khong duoc dinh vao.
     /// </summary>
     public bool tuDocInput = true;
+
+    // ---- MAY BOT (08/10/2026, buoc 2) ----
+    BangCap bangCapRieng;
+
+    /// <summary>
+    /// Bang cap / ky nang / binh cua NHAN VAT NAY. Nhan vat cua may (va ban sao nguoi khac - may nay khong theo doi cap cua
+    /// ho, cap di kem tung goi phep) dung <see cref="CapDo.CuaMay"/>; may BOT co bang rieng.
+    /// </summary>
+    public BangCap Cap { get { return bangCapRieng ?? CapDo.CuaMay; } }
+
+    /// <summary>Nhan vat nay la may BOT do MAY NAY dieu khien (chu phong) - trong tai cua chinh no nhu nhan vat cua minh.</summary>
+    public bool laBot { get; private set; }
+
+    /// <summary>Bien nhan vat nay thanh may BOT voi bang cap rieng (QuanLyBot goi ngay sau khi sinh).</summary>
+    public void DatLaBot(BangCap bang)
+    {
+        if (isActiveAndEnabled) Cap.KhiLenCap -= LenCap;
+        bangCapRieng = bang;
+        laBot = bang != null;
+        if (isActiveAndEnabled) Cap.KhiLenCap += LenCap;
+    }
+
+    /// <summary>Nhan vat do MAY NAY dieu khien that su (nhan vat cua nguoi ngoi truoc may, hoac may BOT).</summary>
+    public bool DieuKhienTaiMayNay { get { return tuDocInput || laBot; } }
 
     DocInput boDoc;
 
@@ -331,8 +355,8 @@ public class PlayerController : MonoBehaviour
     //  LEN CAP
     // ================================================================
 
-    void OnEnable() { CapDo.KhiLenCap += LenCap; }
-    void OnDisable() { CapDo.KhiLenCap -= LenCap; }
+    void OnEnable() { Cap.KhiLenCap += LenCap; }
+    void OnDisable() { Cap.KhiLenCap -= LenCap; }
 
     /// <summary>
     /// Vua len mot cap: mau +15%, nang luong +10%, toc do +3,5% (toc do CHI toi
@@ -348,7 +372,7 @@ public class PlayerController : MonoBehaviour
     void LenCap(int capMoi)
     {
         if (health != null && health.mauDoMayKhacQuyet) return;
-        if (!tuDocInput) return;
+        if (!tuDocInput && !laBot) return;
 
         if (health != null)
         {
@@ -363,7 +387,7 @@ public class PlayerController : MonoBehaviour
 
         if (capMoi <= CapDo.CapTangTocToiDa) moveSpeed *= 1.035f;
 
-        Say("LÊN CẤP " + capMoi + "! Bạn có 1 điểm kỹ năng — mở SÁCH PHÉP");
+        if (!laBot) Say("LÊN CẤP " + capMoi + "! Bạn có 1 điểm kỹ năng — mở SÁCH PHÉP");
     }
 
     void Update()
@@ -899,15 +923,15 @@ public class PlayerController : MonoBehaviour
 
         // KY NANG CHUA MO THI KHONG TUNG DUOC. Vao tran ai cung cap 1 va moi
         // ky nang deu khoa; mo bang diem ky nang trong Sach phep.
-        if (!CapDo.DaMo(skill))
+        if (!Cap.DaMo(skill))
         {
             Say(SachPhep.Ten(skill) + " chưa mở khoá — vào SÁCH PHÉP để mở");
             return;
         }
 
         // Ky nang cang cao cap cang ton nang luong (+10% moi cap)
-        float tonThem = CapDo.ManaTheoCap(CapDo.CapCuaKyNang(skill));
-        capPhepDangTung = CapDo.CapCuaKyNang(skill);
+        float tonThem = CapDo.ManaTheoCap(Cap.CapCuaKyNang(skill));
+        capPhepDangTung = Cap.CapCuaKyNang(skill);
 
         aim = KepVaoTam(aim, TamCuaKyNang(skill));
 
@@ -986,7 +1010,7 @@ public class PlayerController : MonoBehaviour
         else if (skill == CapDo.KyGioLoc)
         {
             // Cap duoi 5: ton gap doi theo so loc; CAP 5 ton dung 25 (nguoi dung 18/09/2026, truoc do 58,6)
-            float tonGioLoc = GioLoc.NangLuongCan(CapDo.CapCuaKyNang(skill), gioLocCost, tonThem);
+            float tonGioLoc = GioLoc.NangLuongCan(Cap.CapCuaKyNang(skill), gioLocCost, tonThem);
             if (gioLocTimer > 0f) { Say("GIÓ LỐC đang hồi chiêu"); return; }
             if (mana < tonGioLoc) { Say("Không đủ năng lượng!"); return; }
 
@@ -1085,8 +1109,8 @@ public class PlayerController : MonoBehaviour
         string ten = SachPhep.Ten(ky);
         string caidangkhoa = LyDoKhongTungDuoc();
         if (caidangkhoa != null) { Say(caidangkhoa); return 0f; }
-        if (!CapDo.DaMo(ky)) { Say(ten + " chưa mở khoá — vào SÁCH PHÉP để mở"); return 0f; }
-        if (CapDo.SoBinh(ky) <= 0)
+        if (!Cap.DaMo(ky)) { Say(ten + " chưa mở khoá — vào SÁCH PHÉP để mở"); return 0f; }
+        if (Cap.SoBinh(ky) <= 0)
         {
             Say("Hết " + (ky == CapDo.KyBinhMau ? "bình máu" : "bình mana") + " — giết quái để nhặt thêm");
             return 0f;
@@ -1101,9 +1125,9 @@ public class PlayerController : MonoBehaviour
         if (laMau && health != null && health.IsDead) return 0f;
         if (thieu <= 0.5f) { Say(laMau ? "Máu đang đầy" : "Năng lượng đang đầy"); return 0f; }
 
-        int capBinh = CapDo.CapCuaKyNang(ky);
+        int capBinh = Cap.CapCuaKyNang(ky);
         float hoi = Mathf.Min(laMau ? MauBinhTheoCap(capBinh) : ManaBinhTheoCap(capBinh), thieu);
-        if (!CapDo.BotBinh(ky)) return 0f;
+        if (!Cap.BotBinh(ky)) return 0f;
         if (laMau) { health.Heal(hoi); binhMauTimer = HoiChieuBinh; }
         else { mana = Mathf.Min(maxMana, mana + hoi); binhManaTimer = HoiChieuBinh; }
 
@@ -1394,7 +1418,7 @@ public class PlayerController : MonoBehaviour
         {
             // BAN SAO cua nguoi choi khac chi chay HIEU UNG: vi tri cua ho do goi trang thai quyet dinh,
             // tu keo o day thi khung sau goi tin lai kco ve - nhan vat giat qua giat lai.
-            if (tuDocInput) TocBien.Nhay(this, choTocBien);
+            if (DieuKhienTaiMayNay) TocBien.Nhay(this, choTocBien);
             else
             {
                 VfxFactory.TocBienBienMat(transform.position);
@@ -1405,8 +1429,8 @@ public class PlayerController : MonoBehaviour
         {
             // Doi con Gio loc cua LAN TUNG GAN NHAT thanh Loc xoay. Sat thuong tong = cap hien tai
             // cua Gio loc (don cham) + cap hien tai cua Loc xoay (moi giay + tia set) - nguoi dung chot.
-            float capGioLoc = CapDo.SatThuongTheoCap(Mathf.Max(1, CapDo.CapCuaKyNang(CapDo.KyGioLoc)));
-            float capLocXoay = CapDo.SatThuongTheoCap(Mathf.Max(1, CapDo.CapCuaKyNang(3)));
+            float capGioLoc = CapDo.SatThuongTheoCap(Mathf.Max(1, Cap.CapCuaKyNang(CapDo.KyGioLoc)));
+            float capLocXoay = CapDo.SatThuongTheoCap(Mathf.Max(1, Cap.CapCuaKyNang(3)));
             HoaLocXoay.Hoa(health, enemyMask, capGioLoc, capLocXoay, castAim);   // 2 loc: hoa con gan cho ngam (04/10/2026)
         }
         else if (castingSkill == CapDo.KyMayGiong)
@@ -1633,7 +1657,7 @@ public class PlayerController : MonoBehaviour
         // cap ky nang nam trong CapDo cua may nay; ban sao nguoi khac (mau do may khac quyet) di theo goi tin.
         // KHONG xet tuDocInput: phep thu bom input tat co ay, xet no la do mot nhan vat khong bao gio duoc cong.
         bool cuaMayNay = health == null || !health.mauDoMayKhacQuyet;
-        float tocThem = cuaMayNay ? TocGoc * CapDo.TocThemBiDong : 0f;
+        float tocThem = cuaMayNay ? TocGoc * Cap.TocThemBiDong : 0f;
         float speed = (moveSpeed + tocThem) * (loiNuoc != null ? loiNuoc.HeSoToc : 1f);
         if (castTimer > 0f) { wish = Vector3.zero; speed = 0f; }
 

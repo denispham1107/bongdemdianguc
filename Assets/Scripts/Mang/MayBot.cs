@@ -69,6 +69,26 @@ public static class MayBot
         return "BOT";
     }
 
+    // ---- HE CHINH (nguoi dung chon 08/10/2026: moi BOT mot he chinh ngau nhien) ----
+    public const int HeLua = 0, HeBang = 1, HeSet = 2, HePhong = 3, SoHe = 4;
+
+    public static string TenHe(int he)
+    {
+        return he == HeLua ? "LỬA" : he == HeBang ? "BĂNG" : he == HeSet ? "SÉT" : "PHONG";
+    }
+
+    /// <summary>
+    /// He chinh cua BOT: ngau nhien nhung CO DINH theo uid + ma phong (bam FNV - khong dung string.GetHashCode, ket qua
+    /// doi theo ban .NET). Chi may chu phong can biet (no dieu khien BOT) nhung tinh duoc thi phep thu kiem duoc.
+    /// </summary>
+    public static int HeCua(string uid, string maPhong)
+    {
+        uint h = 2166136261u;
+        string s = (uid ?? "") + "|" + (maPhong ?? "");
+        for (int i = 0; i < s.Length; i++) { h ^= s[i]; h *= 16777619u; }
+        return (int)(h % SoHe);
+    }
+
     /// <summary>So nguoi THAT (khong tinh BOT) trong mot danh sach ghe.</summary>
     public static int DemNguoiThat(List<PhongMang.NguoiTrongPhong> ds)
     {

@@ -7466,6 +7466,40 @@ trong Editor: **252 cách gõ** của 134 chữ (tách hết, dấu sai thứ t�
 
 Menu 52: **0 lỗi**. Bản web build 5,4 phút, 0 lỗi, trình duyệt đã từng vào trang tải đúng bản mới, console 0 lỗi.
 
+### Máy BOT — bước 2: BOT có mặt trong trận (08/10/2026)
+
+Người dùng chọn thêm: **quái tính BOT như người** (đợt quái sinh 4 con quanh mỗi BOT, vòng ngoài +10 con mỗi BOT, quái đuổi đánh BOT).
+Ở bước này BOT **đứng yên** (bộ não `Mang/BotDieuKhien.cs` gửi gói ý muốn rỗng) — đi lại là bước 3, kỹ năng / bình là bước 4.
+
+**BOT chạy trên máy CHỦ PHÒNG.** Chủ phòng vốn là trạm trung chuyển mọi gói tin (nối hình sao) nên BOT là nhân vật THẬT trên máy
+chủ phòng — cùng prefab người chơi (`NguoiChoiKhac.Sinh`), rồi đổi thành "máy này là trọng tài": `mauDoMayKhacQuyet = false`, bảng cấp
+riêng, bộ não `BotDieuKhien` đặt `PlayerController.input` mỗi khung TRƯỚC khi `PlayerController.Update` thi hành (cùng đường bàn phím
+đi). `KhoiDongTranMang.SinhBot` dựng mỗi ghế BOT ở chỗ xuất phát của ghế ấy, đăng ký vào `GameDirector` và `DongBoTran`. Máy khách không
+biết đó là BOT: chủ phòng gửi trạng thái BOT **chung gói** trạng thái của mình (gói vốn chứa nhiều người), phép BOT gửi với `chiSo` = ghế
+BOT, chết thì chủ phòng gửi gói chết thay BOT — máy khách sinh bản sao bằng đúng đường của người thật.
+
+**Tách `CapDo`.** Cấp / kinh nghiệm / điểm / cấp từng kỹ năng / số bình trước là TĨNH (một bảng cho nhân vật của máy). Nay ở lớp
+**`BangCap`** (cùng file `Player/CapDo.cs`); `CapDo.CuaMay` là bảng của nhân vật máy này và mọi hàm tĩnh cũ của `CapDo` vẫn gọi được
+(HUD, Sách phép, phép thử không đổi). Chỗ nào có thể là BOT thì đọc **`PlayerController.Cap`**: tung phép (`CastAt`, cấp gửi qua mạng),
+uống bình, tốc độ bị động, kháng hệ (`KhangHe.TiLeGiam(he, bang)`), Tốc biến gỡ trói, Gió lốc hồi mana (`DieuKhienTaiMayNay`), lên cấp
+(+15% máu…, BOT không hiện chữ "LÊN CẤP"), chia kinh nghiệm hạ quái (`GameDirector.ChiaKinhNghiem`) và hạ người (`KetTran.CongGietNguoi`).
+`DongBoTran` đánh số gói phép RIÊNG từng ghế (bên nhận bỏ bản lặp theo ghế).
+
+⚠️ **Bẫy đã vấp — chỗ xuất phát.** `ChoXuatPhat.ChoChoCaPhong` kiểm "vướng vật cản" bằng vật lý. Tính lại danh sách SAU khi nhân vật chủ
+phòng đã đứng vào ghế 0 thì ghế 0 "bị vướng" và cả danh sách trượt đi: BOT 1 đứng cách chủ phòng **14 m** (luật ≥ 22 m). Nay
+`KhoiDongTranMang.ViTriXuatPhat` tính **một lần** rồi dùng chung cho mình và mọi BOT; phép thử đo theo LUẬT (mọi cặp ≥ 22 m) chứ không
+tính lại danh sách.
+
+**Số đo — menu 113** (phòng thật trên Firebase, vào Act2 bằng đúng đường của game; bản Editor không có WebRTC nên đây đúng là ca "chủ phòng
++ BOT"; kênh mạng GIẢ LẬP để bắt gói chủ phòng gửi): 2 BOT dựng, đúng độ khó theo uid, hệ ngẫu nhiên cố định theo uid + mã phòng, tên "BOT 1/2"
+trên đầu, chạm đất (0,08 m — `skinWidth`), cặp gần nhất **46,7 m** (≥ 22); BOT 1 lên cấp → máu tối đa ×1,150, nhân vật của máy và BOT 2
+không đổi; một đợt quái **52 con**, gần máy 20 / BOT 1 16 / BOT 2 16; BOT 2 hạ quái → +84 vào bảng BOT 2, đối chứng máy hạ quái → +84 vào bảng
+máy, BOT 1 +0; gói trạng thái chủ phòng có ghế [0 1 2], lệch vị trí 0,006 m; BOT 1 tung Quả cầu lửa cấp 3 → 3 gói phép ghế 1 cấp 3 (cấp của
+nhân vật máy là 0); gói của chính mình dội lại không sinh bản sao BOT; máy hạ BOT 1 → gói chết (ghế 1, kẻ hạ 0), máy +250; BOT 2 hạ máy → BOT 2
++250, **kết trận: "BOT 2 ĐÃ THẮNG"**, BOT 2 thôi điều khiển; trận Đôi: BOT đúng đội, đánh đồng đội BOT không mất máu, hạ BOT Đội B → Đội A
+thắng. **0 lỗi.** Thành tích không ghi (đăng xuất trước khi kết trận; `GhiThanhTich` chỉ ghi cho uid của máy — BOT không bao giờ được ghi).
+Phép thử cũ chạy lại sau khi tách `CapDo` / đổi số gói phép: menu 60, 55, 77, 76, 37, 45 — **0 lỗi**.
+
 ### Máy BOT — bước 1: chủ phòng thêm BOT vào ghế trống (08/10/2026)
 
 Người dùng: *"Trong phòng Đơn và Đôi, khi chủ phòng nhấn vào ghế trống, có thể thêm máy BOT AI vào cùng chơi"* — BOT biết dùng
@@ -13346,6 +13380,7 @@ Lần chạy đầu phép thử báo cả 10 con "lơ lửng": tia chiếu từ 
 | **46. Chay thu HIEU UNG qua mang** | Mười hai chiều: bản sao không tự gieo đóng băng/choáng (và nhân vật thật vẫn gieo được), cờ và máu khiên đọc đúng rồi đi qua gói tin không to thêm, bản sao vẽ lại theo lời kể, khiên bản sao không bị trừ cục bộ, mất gói thì hiệu ứng tự tan, và quái bên khách choáng theo chủ phòng. Kết quả ra `PlayTestShots/hieuung_mang.txt`. |
 | **48. Chay thu CAI DAT do hoa** | Ngoài Play: font đủ chữ có dấu, vị trí nút ở nhiều cỡ màn hình, `index.html` không hạ `devicePixelRatio`, chuyển khoá cũ 3 mức sang khoá mới 4 mức. Trong Play: đăng nhập thật, bấm OK lần lượt 4 mức, đọc lại từ kho lưu, kiểu bóng / chi tiết xa, vào Act2 đếm vật đổ bóng, đo ảnh đệm cảnh 3D (kích thước, có phóng lên màn hình, gỡ ra ngoài lúc vẽ, đứng sau bloom), độ sáng ảnh chụp. Trả lại mức cũ, phiên đăng nhập và mức chất lượng của Editor. Kết quả ra `PlayTestShots/caidat.txt`. |
 | **49. Chay thu CAU LUA trung nguoi va khieng** | Tự chọn hướng bắn trống, rồi đo hai chiều mạng: người khác bắn mình / mình bắn người khác, có và không có khiên, và khiên của chính người bắn. Ghi từng cú mất máu (cú nổ hay cú cháy), chỗ quả cầu nổ so với mặt vòm, máu khiên; chụp màn hình lúc nổ để xem con số sát thương có đọc được không. Kết quả ra `PlayTestShots/cauluapvp.txt`, ảnh `caulua_no_*.png`. |
+| **113. Chay thu MAY BOT trong tran (buoc 2)** | Phòng thật + 2 BOT, vào Act2 bằng đường của game: BOT dựng đúng kiểu (trọng tài là máy này, bảng cấp riêng), chỗ xuất phát theo luật ≥ 22 m, chạm đất; lên cấp riêng; đợt quái quanh mỗi BOT; kinh nghiệm hạ quái / hạ người vào đúng bảng; gói trạng thái / phép / chết của BOT qua kênh giả lập; kết trận Đơn (BOT thắng) và Đôi. Kết quả `PlayTestShots/maybot_tran.txt`, ảnh `maybot_tran_*.png`. |
 | **112. Chay thu MAY BOT o ghe trong (sanh - Firebase that)** | Bước 1 của máy BOT: thêm BOT ba độ khó qua bảng chọn (gọi đúng hàm của nút), ghế / tên / sẵn sàng / `soNguoi` trên Firebase thật, phòng đầy từ chối, đuổi BOT, khách không thêm được (cả ghi thẳng Firebase), phòng Đôi vào đúng đội, `XepGhe` không bắt tay ghế BOT. Ảnh `maybot_*.png`, kết quả `PlayTestShots/maybot_sanh.txt`. |
 | **50. Chay thu GIAO DIEN dang nhap - sanh - phong** | Đi hết các màn (đăng nhập, tạo tài khoản, sảnh trống, sảnh có phòng, Cài đặt, trong phòng, phòng đủ 4 người, đếm ngược); ở mỗi màn đếm số lượt vẽ, số chữ bị cắt, số chữ phải thu nhỏ — đếm ngay trong hàm vẽ nên không sót nhãn nào. Kiểm font đang dùng là Inter, và quay về MainMenu khi đã đăng nhập thì vào thẳng sảnh. Đo trên ảnh (08/10/2026): cảnh lọt qua lòng khung đăng nhập / danh sách phòng, chỗ ảnh tên game, cỡ + chỗ vòng đếm ngược (dưới gạch đỏ, trên chóp mũ phù thuỷ). Ảnh `gd_*.png`, kết quả `PlayTestShots/giaodien.txt`. |
 | **51. Dung man chinh tu canh Act2** | Chép phần cảnh Act2 quanh chỗ đứng (45 m, phía trước camera) sang MainMenu.unity cùng ánh sáng / sương / bầu trời; đặt phù thuỷ, camera, hai lò đá; dọn vật vướng. Tạo luôn prefab lò đá từ FBX + texture Blender. Báo cáo `PlayTestShots/dungmanchinh.txt`. |

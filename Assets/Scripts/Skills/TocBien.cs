@@ -65,7 +65,8 @@ public static class TocBien
     public static bool CapNamGoTroiDuoc(Component nguoi)
     {
         if (nguoi == null) return false;
-        if (CapDo.CapCuaKyNang(CapDo.KyTocBien) < CapGoTroiBuoc) return false;
+        var pcNhay = nguoi.GetComponent<PlayerController>();
+        if ((pcNhay != null ? pcNhay.Cap : CapDo.CuaMay).CapCuaKyNang(CapDo.KyTocBien) < CapGoTroiBuoc) return false;
         return !DangBiCuonLoc(nguoi);
     }
 
@@ -153,7 +154,7 @@ public static class TocBien
         VfxFactory.TocBienHienRa(choDen);
 
         // CAP 5: nhay xong thi sach moi trang thai bat loi
-        if (CapDo.CapCuaKyNang(CapDo.KyTocBien) >= CapGoTroiBuoc) GoSachTrangThai(pc.gameObject);
+        if (pc.Cap.CapCuaKyNang(CapDo.KyTocBien) >= CapGoTroiBuoc) GoSachTrangThai(pc.gameObject);
 
         SoLanNhay++;
         QuangDuongCuoi = Vector3.Distance(new Vector3(choCu.x, 0f, choCu.z), new Vector3(choDen.x, 0f, choDen.z));

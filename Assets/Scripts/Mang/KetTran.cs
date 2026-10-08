@@ -199,8 +199,22 @@ public class KetTran : MonoBehaviour
         // HA MOT NGUOI CHOI thi duoc kinh nghiem. Goi chet do chinh may NAN
         // NHAN gui (no la trong tai cai chet cua minh) va duoc gui lai vai lan,
         // nen chi cong o lan dau nghe.
-        if (moi && gheKeHa == gheToi && gheKeHa != ghe)
-            CapDo.Them(CapDo.KnGietNguoi);
+        if (moi) CongGietNguoi(ghe, gheKeHa);
+    }
+
+    /// <summary>
+    /// Cong kinh nghiem ha nguoi cho ke ha - NEU ke ha do may nay dieu khien: nhan vat cua minh, hoac mot may BOT chay tren
+    /// may nay (chu phong). Ke ha o may khac thi may ay tu cong khi nghe goi chet.
+    /// </summary>
+    void CongGietNguoi(byte gheChet, byte gheKeHa)
+    {
+        if (gheKeHa == 255 || gheKeHa == gheChet) return;
+        if (gheKeHa == gheToi) { CapDo.Them(CapDo.KnGietNguoi); return; }
+        if (dongBo != null && dongBo.LaBotCucBo(gheKeHa))
+        {
+            var bot = dongBo.NhanVatCuaGhe(gheKeHa);
+            if (bot != null) bot.Cap.Them(CapDo.KnGietNguoi);
+        }
     }
 
     /// <summary>Chu phong bao: ghe nay vua ha mot con quai, duoc bay nhieu diem.</summary>
@@ -240,6 +254,7 @@ public class KetTran : MonoBehaviour
         if (!TranHienTai.DangChoiMang || DaXong) return;
 
         BaoToiChetNeuCan();
+        BaoBotChetNeuCan();
 
         XemTiepNeuDaChet();
 
@@ -267,8 +282,32 @@ public class KetTran : MonoBehaviour
         daBaoToiChet = true;
         byte keHa = GheCuaDamageable(mau.keDanhCuoi);
         ThemChet(gheToi, keHa);
+        CongGietNguoi(gheToi, keHa);       // bi may BOT cua chinh may nay ha thi BOT duoc cong
 
         if (dongBo != null) StartCoroutine(GuiLai(GoiTin.VietChet(gheToi, keHa)));
+    }
+
+    /// <summary>Ghe BOT da bao chet roi (moi BOT chi bao mot lan).</summary>
+    readonly HashSet<byte> botDaBaoChet = new HashSet<byte>();
+
+    /// <summary>
+    /// MAY BOT CHAY TREN MAY NAY vua chet: may nay la trong tai cua no (nhu cua nhan vat minh) nen bao ca phong y het
+    /// <see cref="BaoToiChetNeuCan"/> - goi chet mang ghe cua BOT.
+    /// </summary>
+    void BaoBotChetNeuCan()
+    {
+        if (dongBo == null) return;
+        foreach (var cap in dongBo.BotCucBo)
+        {
+            if (cap.Value == null || botDaBaoChet.Contains(cap.Key)) continue;
+            var mau = cap.Value.GetComponent<Damageable>();
+            if (mau == null || !mau.IsDead) continue;
+            botDaBaoChet.Add(cap.Key);
+            byte keHa = GheCuaDamageable(mau.keDanhCuoi);
+            ThemChet(cap.Key, keHa);
+            CongGietNguoi(cap.Key, keHa);
+            StartCoroutine(GuiLai(GoiTin.VietChet(cap.Key, keHa)));
+        }
     }
 
     /// <summary>
@@ -460,8 +499,16 @@ public class KetTran : MonoBehaviour
             DoiTheoGhe[g] = CheDoTran.LaTranDoi ? DoiCua(g) : CheDoTran.KhongDoi;
         }
 
-        // Nhan vat khong con dieu khien duoc nua - van dau xong roi
+        // Nhan vat khong con dieu khien duoc nua - van dau xong roi (ca may BOT tren may nay)
         if (toi != null) toi.enabled = false;
+        if (dongBo != null)
+            foreach (var cap in dongBo.BotCucBo)
+                if (cap.Value != null)
+                {
+                    cap.Value.enabled = false;
+                    var ai = cap.Value.GetComponent<BotDieuKhien>();
+                    if (ai != null) ai.enabled = false;
+                }
 
         GhiThanhTich(kq);
         Debug.Log("[KetTran] xong - ghe thang " + kq.gheThang + ", toi ghe " + gheToi);

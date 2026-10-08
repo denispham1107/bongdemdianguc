@@ -2,12 +2,12 @@
 da don 0 con quai de mau chi doi vi ky nang
 1. lop cua nhan vat minh: Player (can la Player, so hieu 9)
 2. goi ky nang 17 byte, doc lai: kyNang=4 chiSo=1 soThuTu=77 lech diem ngam=0.0000 m (duoi 0,02 m)
-   qua cau bay gan minh nhat: 1.22 m (tai (1.1, 1.2, -10.9)), minh o (0.0, 0.2, -10.5)
-   nguoi tung o (4.7, 0.0, -12.2), qua cau dung cach ho 3.96 m
+   qua cau bay gan minh nhat: 1.11 m (tai (1.0, 1.2, -10.9)), minh o (0.0, 0.2, -10.5)
+   nguoi tung o (4.7, 0.0, -12.2), qua cau dung cach ho 4.05 m
    so Damageable la dung gan duong bay: 0
    mat na vat can cua ban sao co lop Player = False | collider tren nhan vat minh: 1 roi + CharacterController=True
    chan doan: goi phep nhan duoc = 1 | ban sao co vao the niem chu = True | so qua cau lua thay tren canh = 3 | mask cua ban sao co lop Player = True
-3. nguoi kia tung cau lua vao cho minh -> minh mat 74 mau (600 -> 526), phai lon hon 0
+3. nguoi kia tung cau lua vao cho minh -> minh mat 74 mau (1000 -> 926), phai lon hon 0
 3b. no thang mot cu ngay tren dau minh voi mask cua nguoi kia -> minh mat 186 mau (neu > 0 thi sat thuong an duoc, loi nam o duong bay cua qua cau)
 3c. nguoi kia tung THIEN THACH vao cho minh -> minh mat 8 mau
 4. nguoi tung phep mat 0 mau (phai la 0)

@@ -653,8 +653,14 @@ public class GameDirector : MonoBehaviour
         int kn = CapDo.KnCuaQuai(nhanDang != null ? nhanDang.loai : MonsterType.Skeleton);
         if (kn <= 0) return;
 
-        // Nhan vat cua may nay: mau KHONG do may khac quyet
-        if (!keDanh.mauDoMayKhacQuyet) { CapDo.Them(kn); return; }
+        // Nhan vat cua may nay (hoac may BOT chu phong dieu khien): mau KHONG do may khac quyet - cong vao bang cap
+        // CUA CHINH NO (BOT co bang rieng, 08/10/2026)
+        if (!keDanh.mauDoMayKhacQuyet)
+        {
+            var pcKe = keDanh.GetComponent<PlayerController>();
+            (pcKe != null ? pcKe.Cap : CapDo.CuaMay).Them(kn);
+            return;
+        }
 
         // Nguoi choi khac: gui sang may ho
         if (KetTran.Hien == null) return;

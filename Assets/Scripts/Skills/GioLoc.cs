@@ -238,7 +238,7 @@ public class GioLoc : MonoBehaviour
     {
         if (boQua == null) return;
         var pc = boQua.GetComponent<PlayerController>();
-        if (pc == null || !pc.tuDocInput) return;
+        if (pc == null || !pc.DieuKhienTaiMayNay) return;
         float truoc = pc.mana;
         pc.mana = Mathf.Min(pc.maxMana, pc.mana + ManaHoiMoiLanTrung);
         ManaDaHoi += pc.mana - truoc;
