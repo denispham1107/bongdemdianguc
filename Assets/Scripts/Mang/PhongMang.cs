@@ -495,6 +495,45 @@ public static class PhongMang
         if (xong != null) xong();
     }
 
+    /// <summary>
+    /// CHU PHONG THEM MAY BOT vao mot ghe trong (nguoi dung 08/10/2026, xem <see cref="MayBot"/>). Doc lai phong TRUOC khi
+    /// ghi - danh sach tren man hinh co the cu 1 giay va nguoi that vua vao chiem cho. Phong Doi: BOT vao dung doi cua ghe
+    /// duoc bam (<paramref name="doi"/>), doi ay da du 3 thi tu choi. BOT luon "san sang".
+    /// </summary>
+    public static IEnumerator ThemBot(int doKho, int doi, Action<bool, string> xong)
+    {
+        if (PhongHienTai == null || !LaHost) { if (xong != null) xong(false, "Chỉ chủ phòng mới thêm được máy BOT."); yield break; }
+        string ma = PhongHienTai.ma;
+        bool doc = false;
+        yield return TaiLaiPhong(ma, (o, e) => doc = o);
+        var p = PhongHienTai;
+        if (!doc || p == null) { if (xong != null) xong(false, "Phòng đã đóng."); yield break; }
+        if (!p.DangCho) { if (xong != null) xong(false, "Trận đã bắt đầu."); yield break; }
+        if (!p.ConCho) { if (xong != null) xong(false, "Phòng đã đủ " + SoNguoiToiDa + " người."); yield break; }
+        if (p.LaDoi)
+        {
+            if (doi != CheDoTran.DoiA && doi != CheDoTran.DoiB) doi = CheDoTran.DoiKhiVao(p.nguoiChoi, null);
+            if (CheDoTran.DemDoi(p.nguoiChoi, doi) >= CheDoTran.SoNguoiMoiDoi)
+            { if (xong != null) xong(false, CheDoTran.TenDoi(doi) + " đã đủ " + CheDoTran.SoNguoiMoiDoi + " người."); yield break; }
+        }
+
+        var daDung = new HashSet<int>();
+        foreach (var n in p.nguoiChoi) daDung.Add(n.cho);
+        int cho = 0;
+        while (daDung.Contains(cho) && cho < SoNguoiToiDa - 1) cho++;
+
+        string uid = MayBot.TaoUid(doKho);
+        string than = "{\"ten\":\"" + FirebaseMang.Thoat(MayBot.TenMoi(p.nguoiChoi)) + "\","
+                    + "\"sanSang\":true,\"cho\":" + cho + ","
+                    + (p.LaDoi ? "\"doi\":" + doi + "," : "")
+                    + "\"vaoLuc\":" + (long)GioMay() + "}";
+        bool ok = false; string loi = null;
+        yield return FirebaseMang.Ghi("phong/" + ma + "/nguoiChoi/" + uid, than, (o, e) => { ok = o; loi = e; });
+        if (ok) yield return FirebaseMang.Ghi("phong/" + ma + "/soNguoi", (p.soNguoi + 1).ToString(), (o, e) => { });
+        yield return TaiLaiPhong(ma, (o, e) => { });
+        if (xong != null) xong(ok, ok ? null : (loi ?? "Không thêm được máy BOT."));
+    }
+
     // ================================================================
     //  DOC
     // ================================================================

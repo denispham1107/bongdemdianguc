@@ -7,7 +7,7 @@ using UnityEngine.SceneManagement;
 /// SANH PHONG NGAY TRONG GAME - ve bang OnGUI.
 ///
 /// Nguoi choi tao phong, xem danh sach phong nguoi khac tao, vao phong, bam
-/// san sang. Host bam bat dau thi ca phong dem nguoc 10 giay roi cung nap man
+/// san sang. Host bam bat dau thi ca phong dem nguoc 5 giay roi cung nap man
 /// choi. Host duoc bat dau KE CA khi chi co mot minh.
 ///
 /// HOI LAI THEO NHIP chu khong co luong day ve: REST API khong co streaming.
@@ -31,6 +31,11 @@ public class ManSanh : MonoBehaviour
     string baoTrongPhong = "";
     float baoTrongPhongLuc;
     bool dangDoiDoi;
+
+    // ---- THEM MAY BOT (nguoi dung 08/10/2026): chu phong bam ghe trong -> bang chon do kho ----
+    bool moChonBot;
+    int doiChonBot = CheDoTran.KhongDoi;
+    bool dangThemBot;
     string bao = "";
     bool dangCho;
     bool daVaoTran;
@@ -173,7 +178,17 @@ public class ManSanh : MonoBehaviour
 
         // Khong con phu toi bon goc + suong do: canh nghia dia phia sau de nguyen
         if (dangO == Cho.Sanh) VeSanh(s);
-        else VeTrongPhong(s);
+        else
+        {
+            // Bang chon BOT nam TREN phong: khoa phong phia duoi (IMGUI trao cu bam cho nut ve TRUOC - khong khoa thi bam
+            // vao bang lai trung hang ghe nam ngay ben duoi)
+            var p0 = PhongMang.PhongHienTai;
+            if (moChonBot && (p0 == null || !PhongMang.LaHost || !p0.DangCho)) moChonBot = false;
+            if (moChonBot) GUI.enabled = false;
+            VeTrongPhong(s);
+            GUI.enabled = true;
+            if (moChonBot) VeChonBot(s);
+        }
 
         // Bang cai dat ve SAU cung de nam tren. Sanh phia duoi da bi khoa
         // (GUI.enabled) trong luc bang mo - IMGUI trao cu bam cho nut nao ve
@@ -520,7 +535,7 @@ public class ManSanh : MonoBehaviour
                 for (int i = 0; i < CheDoTran.SoNguoiMoiDoi; i++)
                 {
                     var o = new Rect(kg.x + le, yHang, rong - 2f * le, CaoHangGhe * s);
-                    VeGhe(o, i, i < ds.Count ? ds[i] : null, p, s);
+                    VeGhe(o, i, i < ds.Count ? ds[i] : null, p, s, d);
                     yHang += (CaoHangGhe + KheHangGhe) * s;
                 }
                 yHang += (KheDoi - KheHangGhe) * s;
@@ -531,7 +546,7 @@ public class ManSanh : MonoBehaviour
             for (int i = 0; i < toiDa; i++)
             {
                 var o = new Rect(kg.x + le, yHang, rong - 2f * le, CaoHangGhe * s);
-                VeGhe(o, i, i < p.nguoiChoi.Count ? p.nguoiChoi[i] : null, p, s);
+                VeGhe(o, i, i < p.nguoiChoi.Count ? p.nguoiChoi[i] : null, p, s, CheDoTran.KhongDoi);
                 yHang += (CaoHangGhe + KheHangGhe) * s;
             }
         }
@@ -649,9 +664,9 @@ public class ManSanh : MonoBehaviour
     /// Mot hang ghe trong phong: so ghe, ten (lon) va vai tro (nho) ben trai,
     /// trang thai san sang o giua phai, nut DUOI sat le phai (chi chu phong
     /// thay, va khong co o hang cua chinh minh). <paramref name="n"/> null la
-    /// ghe trong.
+    /// ghe trong - chu phong bam vao ghe trong thi mo bang THEM MAY BOT (vao doi <paramref name="doiGhe"/> neu phong Doi).
     /// </summary>
-    void VeGhe(Rect o, int thuTu, PhongMang.NguoiTrongPhong n, PhongMang.Phong p, float s)
+    void VeGhe(Rect o, int thuTu, PhongMang.NguoiTrongPhong n, PhongMang.Phong p, float s, int doiGhe)
     {
         float rongSo = 56f * s;
         float rongDuoi = 140f * s;
@@ -681,6 +696,20 @@ public class ManSanh : MonoBehaviour
             kt.normal.textColor = GiaoDien.MauToi;
             GiaoDien.Chu(new Rect(xTen, o.y, rongTen, o.height), "Ghế trống", kt);
             kt.normal.textColor = m0;
+
+            // Chu phong: ca hang ghe trong la mot nut "+ THEM MAY BOT"
+            if (PhongMang.LaHost && p.DangCho)
+            {
+                var kb = GiaoDien.KieuChuNho;
+                var cb = kb.alignment; var mb = kb.normal.textColor;
+                kb.alignment = TextAnchor.MiddleRight;
+                bool tro = GUI.enabled && o.Contains(Event.current.mousePosition);
+                kb.normal.textColor = tro ? GiaoDien.MauMauSang : GiaoDien.MauMo;
+                GiaoDien.Chu(new Rect(o.x, o.y, o.width - 20f * s, o.height), "+  THÊM MÁY BOT", kb);
+                kb.alignment = cb; kb.normal.textColor = mb;
+                if (GUI.Button(o, GUIContent.none, GUIStyle.none) && !dangThemBot)
+                    MoChonBot(doiGhe);
+            }
             return;
         }
 
@@ -693,10 +722,11 @@ public class ManSanh : MonoBehaviour
         // Ten (dong tren) va vai tro (dong duoi)
         GiaoDien.Chu(new Rect(xTen, o.y + 6f * s, rongTen, 32f * s), n.ten, GiaoDien.KieuTieuDeNho);
 
-        string vaiTro = laChu ? "CHỦ PHÒNG" : "NGƯỜI CHƠI";
+        int doKhoBot = MayBot.DoKhoCua(n.uid);
+        string vaiTro = laChu ? "CHỦ PHÒNG" : doKhoBot >= 0 ? "MÁY BOT  ·  " + MayBot.TenDoKho(doKhoBot) : "NGƯỜI CHƠI";
         var kn = GiaoDien.KieuChuNho;
         var mc = kn.normal.textColor;
-        kn.normal.textColor = laChu ? GiaoDien.MauVang : GiaoDien.MauMo;
+        kn.normal.textColor = laChu ? GiaoDien.MauVang : doKhoBot >= 0 ? MayBot.MauDoKho(doKhoBot) : GiaoDien.MauMo;
         GiaoDien.Chu(new Rect(xTen, o.y + 38f * s, rongTen, 22f * s), vaiTro + (laToi ? "  ·  BẠN" : ""), kn);
         kn.normal.textColor = mc;
 
@@ -725,6 +755,103 @@ public class ManSanh : MonoBehaviour
                 StartCoroutine(ChayDoiDoi(n.uid, kia));
             GUI.enabled = bat;
         }
+    }
+
+    // ---------------- THEM MAY BOT ----------------
+
+    /// <summary>Mo bang chon do kho BOT cho mot ghe trong (doi cua ghe ay neu phong Doi). Phep thu (menu 112) cung goi.</summary>
+    public void MoChonBot(int doiGhe)
+    {
+        moChonBot = true;
+        doiChonBot = doiGhe;
+        GUIUtility.keyboardControl = 0;
+    }
+
+    public bool DangMoChonBot { get { return moChonBot; } }
+    public bool DangThemBot { get { return dangThemBot; } }
+
+    /// <summary>Them BOT do kho <paramref name="doKho"/> vao doi dang chon - nut trong bang goi, phep thu cung goi.</summary>
+    public void ChonDoKhoBot(int doKho)
+    {
+        moChonBot = false;
+        StartCoroutine(ChayThemBot(doKho, doiChonBot));
+    }
+
+    IEnumerator ChayThemBot(int doKho, int doi)
+    {
+        dangThemBot = true;
+        bool ok = false; string loi = null;
+        yield return PhongMang.ThemBot(doKho, doi, (o, e) => { ok = o; loi = e; });
+        dangThemBot = false;
+        if (!ok) { baoTrongPhong = loi ?? "Không thêm được máy BOT."; baoTrongPhongLuc = Time.unscaledTime; }
+    }
+
+    /// <summary>Khung bang chon do kho (toa do OnGUI) - phep thu doc de bam dung nut.</summary>
+    public static Rect KhungChonBot(float s)
+    {
+        float rong = 640f * s, cao = 480f * s;
+        return new Rect((Screen.width - rong) * 0.5f, (Screen.height - cao) * 0.5f, rong, cao);
+    }
+
+    /// <summary>Hang chon do kho thu <paramref name="doKho"/> (0 DE, 1 THUONG, 2 KHO) trong bang: nut ben trai + mo ta.</summary>
+    public static Rect HangDoKhoBot(float s, int doKho)
+    {
+        var k = KhungChonBot(s);
+        float le = 36f * s;
+        return new Rect(k.x + le, k.y + 132f * s + doKho * 88f * s, k.width - 2f * le, 70f * s);
+    }
+
+    /// <summary>Nut chon do kho trong hang.</summary>
+    public static Rect NutDoKhoBot(float s, int doKho)
+    {
+        var h = HangDoKhoBot(s, doKho);
+        return new Rect(h.x, h.y, 180f * s, h.height);
+    }
+
+    static readonly string[] MoTaDoKhoBot =
+    {
+        "Phản xạ chậm, ngắm hay trượt, ít dùng chiêu liên hoàn.",
+        "Phản xạ vừa, ngắm khá chuẩn, biết dùng chiêu liên hoàn.",
+        "Phản xạ nhanh, ngắm chuẩn, chiêu liên hoàn dồn dập.",
+    };
+
+    static GUIStyle kieuMoTaBot;
+
+    void VeChonBot(float s)
+    {
+        var k = KhungChonBot(s);
+        // Lam toi ca man phia sau de bang noi ro
+        GiaoDien.To(new Rect(0f, 0f, Screen.width, Screen.height), new Color(0f, 0f, 0f, 0.45f));
+        GiaoDien.Khung(k, s, true, GiaoDien.DoDucBangNoi);
+        float le = 36f * s;
+
+        var kt = GiaoDien.KieuTieuDeNho;
+        var ct = kt.alignment; kt.alignment = TextAnchor.MiddleCenter;
+        string tieuDe = "THÊM MÁY BOT" + (doiChonBot == CheDoTran.DoiA || doiChonBot == CheDoTran.DoiB
+                                          ? "  ·  " + CheDoTran.TenDoi(doiChonBot) : "");
+        GiaoDien.Chu(new Rect(k.x + le, k.y + 46f * s, k.width - 2f * le, 36f * s), tieuDe, kt);
+        kt.alignment = ct;
+        var km = GiaoDien.KieuChuMo;
+        var cm = km.alignment; km.alignment = TextAnchor.MiddleCenter;
+        GiaoDien.Chu(new Rect(k.x + le, k.y + 86f * s, k.width - 2f * le, 30f * s), "Chọn độ khó — máy tự chọn một hệ phép ngẫu nhiên.", km);
+        km.alignment = cm;
+
+        for (int d = MayBot.De; d <= MayBot.Kho; d++)
+        {
+            var hang = HangDoKhoBot(s, d);
+            var nut = NutDoKhoBot(s, d);
+            if (GiaoDien.Nut(nut, MayBot.TenDoKho(d), d == MayBot.Kho ? GiaoDien.KieuNutMau : GiaoDien.KieuNutDa))
+                ChonDoKhoBot(d);
+            // Mo ta xuong dong, co 20 (KieuChuNho 17 mot dong thi o man 580 cao chi ~9 diem anh - doc khong ra)
+            if (kieuMoTaBot == null) { kieuMoTaBot = new GUIStyle(GiaoDien.KieuChuMo); kieuMoTaBot.wordWrap = true; }
+            kieuMoTaBot.fontSize = GiaoDien.KieuChuMo.fontSize;
+            kieuMoTaBot.normal.textColor = MayBot.MauDoKho(d);
+            GUI.Label(new Rect(nut.xMax + 18f * s, hang.y, hang.xMax - nut.xMax - 18f * s, hang.height), MoTaDoKhoBot[d], kieuMoTaBot);
+        }
+
+        if (GiaoDien.Nut(new Rect(k.center.x - 110f * s, k.yMax - 80f * s, 220f * s, 52f * s), "HỦY", GiaoDien.KieuNutDa)
+            || (Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Escape))
+            moChonBot = false;
     }
 
     // ---------------- DEM NGUOC ----------------

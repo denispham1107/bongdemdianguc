@@ -7466,6 +7466,33 @@ trong Editor: **252 cách gõ** của 134 chữ (tách hết, dấu sai thứ t�
 
 Menu 52: **0 lỗi**. Bản web build 5,4 phút, 0 lỗi, trình duyệt đã từng vào trang tải đúng bản mới, console 0 lỗi.
 
+### Máy BOT — bước 1: chủ phòng thêm BOT vào ghế trống (08/10/2026)
+
+Người dùng: *"Trong phòng Đơn và Đôi, khi chủ phòng nhấn vào ghế trống, có thể thêm máy BOT AI vào cùng chơi"* — BOT biết dùng
+kỹ năng, chiêu liên hoàn theo hệ, uống bình máu / mana, tự tìm quái và đối thủ, đi vòng vật cản, tránh rơi xuống địa ngục.
+Người dùng chọn: **chọn độ khó khi thêm** (Dễ / Thường / Khó, vẫn lên cấp như người) · **mỗi BOT một hệ chính ngẫu nhiên** ·
+**BOT tính như người khi kết trận nhưng không lưu thành tích** · **làm từng bước, báo sau mỗi bước**:
+1. thêm / xoá BOT ở ghế trống (bước này); 2. BOT có mặt trong trận, chạy trên máy chủ phòng, đồng bộ qua mạng, tính kết trận;
+3. đi lại (tìm mục tiêu, vòng vật cản, tránh vực); 4. kỹ năng, chiêu liên hoàn, bình.
+
+**Cách làm.** BOT là MỘT GHẾ như người thật: `phong/{mã}/nguoiChoi/{uid}` với uid **`bot_d_…` / `bot_t_…` / `bot_k_…`**
+(`Mang/MayBot.cs`). Luật Firebase đã cho chủ phòng ghi mọi ô `nguoiChoi/*` (để đuổi người / chuyển đội) nên **không đổi luật,
+không deploy**; luật chỉ cho 5 trường (`$khac` bị chặn) nên **độ khó nằm trong uid**. Uid thật của Firebase Auth là 28 ký tự chữ
++ số, không có "_", nên tiền tố `bot_` không trùng ai. `PhongMang.ThemBot` đọc lại phòng TRƯỚC khi ghi (danh sách trên màn hình
+có thể cũ 1 giây), chọn ô `cho` còn trống, phòng Đôi vào đúng đội của ghế được bấm (đội đủ 3 thì từ chối), tên "BOT 1/2/…", luôn
+sẵn sàng, `soNguoi` +1. Sảnh: chủ phòng thấy "+ THÊM MÁY BOT" trên mọi ghế trống, bấm thì hiện bảng **THÊM MÁY BOT** (DỄ / THƯỜNG /
+KHÓ + mô tả, HỦY / ESC) — bảng nằm trên, phòng phía dưới bị khoá như bảng Cài đặt (IMGUI trao cú bấm cho nút vẽ trước). Hàng
+BOT ghi **"MÁY BOT · KHÓ"** theo màu độ khó; nút ĐUỔI / CHUYỂN ĐỘI có sẵn dùng luôn cho BOT. Khi vào trận (tạm cho bước 1):
+`KhoiDongTranMang` **bỏ ghế BOT khỏi danh sách bắt tay** và khỏi kết trận, đếm người THẬT — không thì trận treo chờ một máy
+không tồn tại. ⚠️ Mô tả trong bảng lúc đầu dùng `KieuChuNho` một dòng → ~9 điểm ảnh ở màn 580 cao, đọc không ra; nay cỡ 20, xuống dòng.
+
+**Số đo — menu 112** (Firebase thật, tài khoản thử B chủ phòng + A khách, gọi CHÍNH hàm mà nút gọi): uid ba độ khó nhận đúng,
+uid thật 28 ký tự không bị nhận là BOT; thêm KHÓ / DỄ / THƯỜNG → 3 BOT `bot_k_/d_/t_`, sẵn sàng, ô `cho` không trùng, `soNguoi` 4;
+phòng đủ 6 → thêm nữa bị từ chối ("Phòng đã đủ 6 người."), `soNguoi` giữ 6; ĐUỔI BOT → mất ghế, `soNguoi` 5; `XepGhe` 5 ghế (4 BOT)
+→ chủ phòng cần bắt tay **0** máy; khách vào thấy 4 BOT, khách gọi `ThemBot` bị từ chối, khách ghi THẲNG lên Firebase một ghế BOT
+→ **luật từ chối**; phòng Đôi: 3 BOT vào Đội B → 3/3, BOT thứ tư vào B bị từ chối, vào A được. Ảnh `maybot_*.png`, 0 chữ bị cắt.
+**0 lỗi.** Phòng thử đã xoá sạch.
+
 ### Màn đăng nhập · sảnh · phòng: tên game lên sát mép trên, khung trong hơn 40%, đếm ngược 5 giây nhỏ lại (08/10/2026)
 
 Người dùng gửi 5 ảnh chụp có đánh dấu:
@@ -13319,6 +13346,7 @@ Lần chạy đầu phép thử báo cả 10 con "lơ lửng": tia chiếu từ 
 | **46. Chay thu HIEU UNG qua mang** | Mười hai chiều: bản sao không tự gieo đóng băng/choáng (và nhân vật thật vẫn gieo được), cờ và máu khiên đọc đúng rồi đi qua gói tin không to thêm, bản sao vẽ lại theo lời kể, khiên bản sao không bị trừ cục bộ, mất gói thì hiệu ứng tự tan, và quái bên khách choáng theo chủ phòng. Kết quả ra `PlayTestShots/hieuung_mang.txt`. |
 | **48. Chay thu CAI DAT do hoa** | Ngoài Play: font đủ chữ có dấu, vị trí nút ở nhiều cỡ màn hình, `index.html` không hạ `devicePixelRatio`, chuyển khoá cũ 3 mức sang khoá mới 4 mức. Trong Play: đăng nhập thật, bấm OK lần lượt 4 mức, đọc lại từ kho lưu, kiểu bóng / chi tiết xa, vào Act2 đếm vật đổ bóng, đo ảnh đệm cảnh 3D (kích thước, có phóng lên màn hình, gỡ ra ngoài lúc vẽ, đứng sau bloom), độ sáng ảnh chụp. Trả lại mức cũ, phiên đăng nhập và mức chất lượng của Editor. Kết quả ra `PlayTestShots/caidat.txt`. |
 | **49. Chay thu CAU LUA trung nguoi va khieng** | Tự chọn hướng bắn trống, rồi đo hai chiều mạng: người khác bắn mình / mình bắn người khác, có và không có khiên, và khiên của chính người bắn. Ghi từng cú mất máu (cú nổ hay cú cháy), chỗ quả cầu nổ so với mặt vòm, máu khiên; chụp màn hình lúc nổ để xem con số sát thương có đọc được không. Kết quả ra `PlayTestShots/cauluapvp.txt`, ảnh `caulua_no_*.png`. |
+| **112. Chay thu MAY BOT o ghe trong (sanh - Firebase that)** | Bước 1 của máy BOT: thêm BOT ba độ khó qua bảng chọn (gọi đúng hàm của nút), ghế / tên / sẵn sàng / `soNguoi` trên Firebase thật, phòng đầy từ chối, đuổi BOT, khách không thêm được (cả ghi thẳng Firebase), phòng Đôi vào đúng đội, `XepGhe` không bắt tay ghế BOT. Ảnh `maybot_*.png`, kết quả `PlayTestShots/maybot_sanh.txt`. |
 | **50. Chay thu GIAO DIEN dang nhap - sanh - phong** | Đi hết các màn (đăng nhập, tạo tài khoản, sảnh trống, sảnh có phòng, Cài đặt, trong phòng, phòng đủ 4 người, đếm ngược); ở mỗi màn đếm số lượt vẽ, số chữ bị cắt, số chữ phải thu nhỏ — đếm ngay trong hàm vẽ nên không sót nhãn nào. Kiểm font đang dùng là Inter, và quay về MainMenu khi đã đăng nhập thì vào thẳng sảnh. Đo trên ảnh (08/10/2026): cảnh lọt qua lòng khung đăng nhập / danh sách phòng, chỗ ảnh tên game, cỡ + chỗ vòng đếm ngược (dưới gạch đỏ, trên chóp mũ phù thuỷ). Ảnh `gd_*.png`, kết quả `PlayTestShots/giaodien.txt`. |
 | **51. Dung man chinh tu canh Act2** | Chép phần cảnh Act2 quanh chỗ đứng (45 m, phía trước camera) sang MainMenu.unity cùng ánh sáng / sương / bầu trời; đặt phù thuỷ, camera, hai lò đá; dọn vật vướng. Tạo luôn prefab lò đá từ FBX + texture Blender. Báo cáo `PlayTestShots/dungmanchinh.txt`. |
 | **51b. Chup thu goc nhin man chinh (Act2)** | Đặt nhân vật trước từng nhà mồ theo bốn hướng, bỏ chỗ vướng vật / giữa nước, chụp bằng khung camera màn chính — để chọn chỗ đứng. Ảnh `PlayTestShots/goc/`. |

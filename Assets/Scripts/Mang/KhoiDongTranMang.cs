@@ -171,7 +171,10 @@ public class KhoiDongTranMang : MonoBehaviour
         NhanDang += string.Format(" · ghế {0} · {1} người", gheToi.ghe, bangGhe.Count)
                   + (phong.LaDoi ? " · " + CheDoTran.TenDoi(gheToi.doi) : "");
 
-        if (bangGhe.Count < 2)
+        // Ghe MAY BOT (MayBot, 08/10/2026) khong co may nao de noi - chi dem nguoi THAT
+        int soNguoiThat = 0;
+        foreach (var g in bangGhe) if (!MayBot.LaBot(g.uid)) soNguoiThat++;
+        if (soNguoiThat < 2)
         {
             TrangThai = "Chơi một mình trong phòng - không có ai để nối.";
             yield break;
@@ -212,7 +215,9 @@ public class KhoiDongTranMang : MonoBehaviour
         ketTran.TenCuaGhe = TenCuaGhe;
         ketTran.DoiCuaGhe = DoiCuaGhe;
         ketTran.GheCoTrongPhong = new List<byte>();
-        foreach (var g in bangGhe) ketTran.GheCoTrongPhong.Add(g.ghe);
+        // BUOC 1 cua may BOT: BOT chua co mat trong tran (buoc 2 se chay BOT tren may chu phong) - chua tinh ghe BOT,
+        // khong thi ket tran doi mot nguoi khong bao gio vao
+        foreach (var g in bangGhe) if (!MayBot.LaBot(g.uid)) ketTran.GheCoTrongPhong.Add(g.ghe);
         ketTran.Gan(dongBo, toi, gheToi.ghe);
 
         // Nhan vat cua minh ghi lai duong di: bu tre can biet "mot khoang truoc
@@ -232,6 +237,7 @@ public class KhoiDongTranMang : MonoBehaviour
         foreach (var g in bangGhe)
         {
             if (g.ghe == gheToi.ghe) continue;
+            if (MayBot.LaBot(g.uid)) continue;      // BOT chay tren may chu phong, khong bat tay
             if (TranHienTai.LaHost || g.laChuPhong) canNoi.Add(g);
         }
 

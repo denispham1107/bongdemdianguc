@@ -1,0 +1,23 @@
+[ban 1] may BOT o ghe trong - sanh / phong tren Firebase that - 08/10/2026 20:25
+A. uid: bot_d_ckjtbi9z / bot_t_g9x4ny2s / bot_k_cgn45pjd -> LaBot TrueTrueTrue, do kho 012 | 'bot_x_ab' False, 'botk1234' False
+   dang nhap B (chu phong): OK
+   uid that cua B (28 ky tu) LaBot = False
+B0. phong Don chi co chu phong (ghe trong hien '+ THEM MAY BOT'): 6 luot ve, chu bi cat 0 lan - anh maybot_phong_trong.png
+B1. bang chon do kho: 5 luot ve, chu bi cat 0 lan - anh maybot_bang_chon.png
+B2. sau khi them KHO, DE, THUONG: soNguoi 4, ChienBinhB[nguoi cho 0 san] BOT 2[bot_d_ cho 2 san] BOT 1[bot_k_ cho 1 san] BOT 3[bot_t_ cho 3 san] 
+B3. phong Don: chu phong + 3 BOT: 6 luot ve, chu bi cat 0 lan - anh maybot_phong_don.png
+C1. phong 6 nguoi (5 BOT), them nua -> False ("Phòng đã đủ 6 người."), soNguoi 6, 6 ghe
+C2. duoi BOT 2 -> con 4 BOT, soNguoi 5, con BOT 2: False
+F. XepGhe: 5 ghe (4 BOT, 1 nguoi that) -> chu phong can bat tay 0 (phai 0: BOT khong bat tay)
+   dang nhap A (khach): OK
+D1. A vao phong: OK, A thay 4 BOT, soNguoi 6
+D2. khach goi ThemBot -> False ("Chỉ chủ phòng mới thêm được máy BOT.")
+D3. khach ghi THANG len Firebase mot ghe BOT -> False (phai False - luat chi cho chu phong)
+   dang nhap B (chu phong): OK
+E0. bang chon BOT cho DOI A: 6 luot ve, chu bi cat 0 lan - anh maybot_bang_chon_doi.png
+E1. phong Doi: 3 BOT vao Doi B -> A 2, B 3; BOT thu tu vao B -> False ("ĐỘI B đã đủ 3 người."); ChienBinhB[nguoi cho 0 san doi 0] BOT 1[bot_d_ cho 1 san doi 1] BOT 4[bot_k_ cho 4 san doi 0] BOT 3[bot_k_ cho 3 san doi 1] BOT 2[bot_t_ cho 2 san doi 1] 
+E2. phong Doi co BOT: 6 luot ve, chu bi cat 0 lan - anh maybot_phong_doi.png
+don phong -P3Qg5zRdhvQW6ezlS2v: sach
+don phong -P3Qg8GMDTgWd028Uvkx: sach
+
+so loi ghi nhan = 0
