@@ -6,9 +6,9 @@ A2. tong de tu cap 1 len cap 20: 29465 kinh nghiem
 A3. thieu 1 diem -> cap 1; du 1 diem nua -> cap 2, kinh nghiem du lai 0
 A4. cong mot phat 500 -> cap 4, con du 85 (100+135+180 = 415 cho cap 4, du 85)
 A5. cong 999999 -> cap 20, diem ky nang 20
-A6. quai: bo xuong 38, phu thuy 67, quy cay 63, quy du 84, quy khong lo 147 | nguoi choi 250
-A6b. kinh nghiem quai x2,106 (1,35 x 1,2 x 1,3): Skeleton 18->38; Ghoul 20->42; Fallen 22->46; QuyCay 30->63; Witch 32->67; QuyDu 40->84; Brute 70->147; tong 232 -> 487 (x2.099)
-    mot dot Act2 (4 con quanh minh) = 252 kinh nghiem -> du len cap 2 ngay dot dau: True
+A6. quai: bo xuong 76, phu thuy 135, quy cay 126, quy du 168, quy khong lo 295 | nguoi choi 250
+A6b. kinh nghiem quai x4,212 (1,35 x 1,2 x 1,3 x 2): Skeleton 18->76; Ghoul 20->84; Fallen 22->93; QuyCay 30->126; Witch 32->135; QuyDu 40->168; Brute 70->295; tong 232 -> 977 (x4.211)
+    mot dot Act2 (4 con quanh minh) = 505 kinh nghiem -> du len cap 2 ngay dot dau: True
 
 B. he so theo cap
 B1. nhan vat cap 10: mau x3.518, nang luong x2.358, toc do x1.363 | cap 20: mau x14.232, nang luong x6.116, toc do x1.363

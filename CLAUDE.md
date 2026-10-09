@@ -187,8 +187,11 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
   **Mỗi đợt thêm 20 con vòng ngoài + 10 con cho MỖI người chơi thêm** (26/09/2026, người dùng; trước cố định 20 cho cả phòng:
   1 người 20 · 2 người 30 · 3 người 40 · 4 người 50 — `GameDirector.SoQuaiXaCho(số người CÒN SỐNG)`, `SoQuaiXaThemMoiNguoi`),
   loại ngẫu nhiên, cách người chơi GẦN NHẤT **20–25 m** (13/09/2026 đổi từ 10 con ở 55–65 m); không đủ chỗ thì thả gần khoảng
-  nhất có thể và đếm vào `SoQuaiXaDungKhoang`. ⚠️ **Kinh nghiệm giết QUÁI ×2,106 so với gốc** (26/09/2026: +35% rồi +20%; 28/09/2026 +30% nữa, đều trên mức đang có — `CapDo.HeSoKnQuai` = 1,35 × 1,20 × 1,30 nhân `KnGocCuaQuai`; bộ xương 18 → 38 … quỷ khổng lồ 70 → 147; hạ người chơi vẫn 250) — chơi
-  một mình lên cấp 10 sau ~3 đợt, cấp 20 sau ~11 đợt
+  nhất có thể và đếm vào `SoQuaiXaDungKhoang`. ⚠️ **Kinh nghiệm giết QUÁI ×4,212 so với gốc** (26/09/2026: +35% rồi +20%; 28/09/2026 +30%; **09/10/2026 +100%**, đều trên mức đang có — `CapDo.HeSoKnQuai` = 1,35 × 1,20 × 1,30 × 2 nhân `KnGocCuaQuai`; bộ xương 18 → 76 … quỷ khổng lồ 70 → 295; hạ người chơi vẫn 250) — chơi
+  một mình lên cấp 10 sau ~3 đợt, cấp 20 sau ~8 đợt.
+  ⚠️ **09/10/2026: ĐỢT 1–3 CHỈ MỘT NỬA SỐ QUÁI** (người dùng; chọn chỉ 3 đợt đầu): quanh mỗi người **2 loại ngẫu nhiên khác nhau**, cộng dồn
+  và vòng ngoài chia đôi làm tròn lên (`GameDirector.SoDotGiamQuai` 3, `SoQuanhMoiNguoi` / `SoCongDonChoDot` / `SoQuaiXaChoDot` / `TongQuaiDot`)
+  — một mình 12 / 13 / 14 con, 2 người 19 / 20 / 21, từ đợt 4 như cũ. Menu 56 (số viết tay), 60, 64: 0 lỗi
   (`kinhnghiem.md`). Menu 60, 56 (2 người → 30 con), 64 kiểm.
   **Sau 60 giây con vòng ngoài nào còn sống tự truy lùng người gần nhất** (`EnemyAI.HenTruyLung`, bỏ giới hạn
   `aggroRange` 14 m); đang truy lùng mà kẹt thì vòng vật cản, kẹt mãi thì đổi chỗ sang 10–14 m cạnh người chơi,

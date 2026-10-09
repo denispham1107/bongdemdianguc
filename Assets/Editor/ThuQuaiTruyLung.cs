@@ -157,7 +157,7 @@ public static class ThuQuaiTruyLung
         }
         Ghi("dot " + dir.Wave + " ra o giay " + Time.timeSinceLevelLoad.ToString("F1") + ": " + vongNgoai.Count
             + " con vong ngoai, giet " + daGiet + " con quanh nguoi de do rieng");
-        int mongNgoai = GameDirector.SoQuaiXaCho(1);     // phep thu nay choi MOT nguoi
+        int mongNgoai = (20 + 1) / 2;     // phep thu nay choi MOT nguoi; dot dau chi mot nua vong ngoai (nguoi dung 09/10/2026)
         Kiem(vongNgoai.Count == mongNgoai, "dot dau khong du " + mongNgoai + " con vong ngoai");
 
         // ---- A. hen gio ----

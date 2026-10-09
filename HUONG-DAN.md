@@ -7502,6 +7502,23 @@ người gục: độ đục 0,45 — số lỗi = 0
 Menu 92 (Đơn / Đôi): **0 lỗi** — tên màu đội + dòng "ĐỘI A/B" phía trên. Ảnh trong game phóng to:
 `PlayTestShots/bangten_lua_dia_nguc.png`.
 
+### Kinh nghiệm quái ×2 và ba đợt đầu chỉ một nửa số quái (09/10/2026)
+
+Anh xin: tăng 100% kinh nghiệm giết quái; giảm 50% số quái ở đợt 1, 2, 3 (cả quanh người lẫn vòng ngoài). Tôi hỏi lại hai chỗ chưa rõ,
+anh chọn: **chỉ đợt 1–3** (từ đợt 4 như cũ) và quanh mỗi người **2 loại ngẫu nhiên khác nhau** (thay vì đủ bốn loại).
+
+- `CapDo.HeSoKnQuai` × 2 → gốc × **4,212**: bộ xương 76, phù thuỷ 135, quỷ cây 126, quỷ dữ 168, quỷ khổng lồ 295; hạ người chơi vẫn 250.
+- `GameDirector`: `SoDotGiamQuai` = 3; ba đợt đầu quanh mỗi người xáo bốn loại lấy 2; quái cộng dồn (1, 3) và vòng ngoài (20 + 10 mỗi
+  người thêm) chia đôi làm tròn lên. Một mình: **12 / 13 / 14** con (cũ 24 / 25 / 27); 2 người: 19 / 20 / 21 (cũ 38 / 39 / 41); đợt 4
+  đủ như cũ (một mình 30). Nửa số quái × gấp đôi kinh nghiệm → ba đợt đầu cho gần đúng bằng kinh nghiệm cũ; một mình cấp 20 sau ~8 đợt
+  (cũ ~11) — bảng ở `kinhnghiem.md`.
+
+**Số đo:** menu 60 — bảng kinh nghiệm so với bảng GỐC chép tay: ×4,211 (232 → 977), 0 lỗi. Menu 56 (2 người, số mong đợi viết tay
+trong phép thử, không đọc hàm của GameDirector): đợt 1 = **19** (mỗi người 2 con khác loại: Quỷ cây + Quỷ dữ / Quỷ dữ + Bộ xương; 15 con
+vòng ngoài 20,3–24,8 m), đợt 2 = 20, đợt 3 = 21, đợt 4 = **44** (30 vòng ngoài); độ mạnh đo bằng con bất kỳ so với con CÙNG LOẠI sinh mới
+từ kho quái (trước đo bằng bộ xương — ba đợt đầu có thể không có bộ xương): máu ×1,000 / 1,050 / 1,103 / 1,158, sát thương ×0,650 / 0,682 /
+0,717 / 0,752 — đúng. Menu 64 (một mình): đợt 1 có 10 con vòng ngoài, truy lùng sau 60 s như cũ. **0 lỗi** cả ba.
+
 ### Màu áo từng người chơi: Đơn mỗi ghế một màu, Đôi theo đội (09/10/2026)
 
 Anh xin: vào trận thì quần áo mỗi người chơi một màu (không quá tối, không quá nhạt) ở chế độ Đơn; chế độ Đôi cùng đội cùng màu,

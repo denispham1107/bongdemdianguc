@@ -167,8 +167,11 @@ public static class ThuDotQuaiAct2
             + " (code tu bao " + dir.SoQuaiXaDungKhoang + "), lo lung " + loLung + " (chenh voi dat lon nhat "
             + chenhMax.ToString("F2") + " m), duoi nuoc " + duoiNuoc);
         int soSong = 0; foreach (var t in dir.moiNguoi) { if (t == null) continue; var mm = t.GetComponent<Damageable>(); if (mm == null || !mm.IsDead) soSong++; }
-        int mongXa = GameDirector.SoQuaiXaCho(soSong);
-        Ghi(nhan + ". " + soSong + " nguoi con song -> mong " + mongXa + " con vong ngoai (20 + 10 moi nguoi them)");
+        // 20 + 10 moi nguoi them; ba dot dau chi mot nua, lam tron len (nguoi dung 09/10/2026)
+        int xaDu = 20 + 10 * Mathf.Max(0, soSong - 1);
+        int mongXa = dir.Wave <= 3 ? (xaDu + 1) / 2 : xaDu;
+        Ghi(nhan + ". " + soSong + " nguoi con song, dot " + dir.Wave + " -> mong " + mongXa + " con vong ngoai (20 + 10 moi nguoi them"
+            + (dir.Wave <= 3 ? ", ba dot dau chia doi)" : ")"));
         Kiem(so == mongXa, "moi dot phai co dung " + mongXa + " con quai vong ngoai (" + soSong + " nguoi), dang co " + so);
         Kiem(loLung == 0, "co quai xa khong dung tren mat dat");
         Kiem(duoiNuoc == 0, "co quai xa nam duoi nuoc");
@@ -204,6 +207,30 @@ public static class ThuDotQuaiAct2
             if (ai != null) sat = ai.attackDamage;
             return;
         }
+    }
+
+    /// <summary>
+    /// Do do manh cua dot bang MOT con quai dang song bat ky (09/10/2026: ba dot dau chi 2 loai ngau nhien moi nguoi - co the
+    /// khong co bo xuong): ti so mau / sat thuong so voi con CUNG LOAI sinh moi thang tu kho quai (EnemyFactory, khong qua
+    /// GameDirector) - doc lap voi he so trong GameDirector.
+    /// </summary>
+    static bool DoManhDot(out float tiMau, out float tiSat, out MonsterType loaiDo)
+    {
+        tiMau = 0f; tiSat = 0f; loaiDo = MonsterType.Skeleton;
+        foreach (var n in Object.FindObjectsByType<NhanDangQuai>(FindObjectsSortMode.None))
+        {
+            var m = n.GetComponent<Damageable>();
+            var ai = n.GetComponent<EnemyAI>();
+            if (m == null || m.IsDead || ai == null) continue;
+            var goc = EnemyFactory.Spawn(n.loai, new Vector3(0f, -400f, 0f), null, null);
+            var aiGoc = goc != null ? goc.GetComponent<EnemyAI>() : null;
+            var mGoc = goc != null ? goc.GetComponent<Damageable>() : null;
+            bool ok = aiGoc != null && mGoc != null && aiGoc.attackDamage > 0f && mGoc.maxHealth > 0f;
+            if (ok) { tiMau = m.maxHealth / mGoc.maxHealth; tiSat = ai.attackDamage / aiGoc.attackDamage; loaiDo = n.loai; }
+            if (goc != null) Object.DestroyImmediate(goc);
+            if (ok) return true;
+        }
+        return false;
     }
 
     /// <summary>Giet sach quai dang song - de xem dot sau.</summary>
@@ -316,13 +343,26 @@ public static class ThuDotQuaiAct2
         int tong1;
         DemTheoLoai(out tong1);
         var dem1 = DemQuanhNguoi(dir);
-        int mong1 = 8 + GameDirector.SoQuaiXaCho(2);     // 2 nguoi: 20 + 10 = 30 con vong ngoai
-        Ghi("B2. dot " + dir.Wave + ": tong " + tong1 + " con (phai " + mong1 + " = 2 nguoi x 4 loai + "
-            + GameDirector.SoQuaiXaCho(2) + " con vong ngoai)"
+        // Dot 1 (nguoi dung 09/10/2026 giam 50%): 2 nguoi x 2 loai ngau nhien khac nhau + (30 / 2 = 15) con vong ngoai = 19
+        int mong1 = 2 * 2 + 15;
+        Ghi("B2. dot " + dir.Wave + ": tong " + tong1 + " con (phai " + mong1 + " = 2 nguoi x 2 loai ngau nhien + 15 con vong ngoai)"
             + " | quanh nguoi: " + ViDem(dem1));
         Kiem(tong1 == mong1, "dot dau phai la " + mong1 + " con, dang co " + tong1);
-        foreach (var loai in new[] { MonsterType.Skeleton, MonsterType.Witch, MonsterType.QuyCay, MonsterType.QuyDu })
-            Kiem(dem1.TryGetValue(loai, out int c) && c == 2, "thieu " + loai + " - moi nguoi phai co mot con");
+        // Moi nguoi dung 2 con, 2 LOAI KHAC NHAU (dem quai gan tung nguoi - hai nguoi cach nhau 26 m)
+        foreach (var t in dir.moiNguoi)
+        {
+            if (t == null) continue;
+            var loaiGan = new List<MonsterType>();
+            foreach (var n in Object.FindObjectsByType<NhanDangQuai>(FindObjectsSortMode.None))
+            {
+                var m = n.GetComponent<Damageable>();
+                if (m == null || m.IsDead || LaQuaiXa(dir, n)) continue;
+                if (Vector3.Distance(n.transform.position, t.position) <= GameDirector.XaNhatQuanhNguoi + 3f) loaiGan.Add(n.loai);
+            }
+            bool khacLoai = loaiGan.Count == 2 && loaiGan[0] != loaiGan[1];
+            Ghi("   quanh " + t.name + ": " + string.Join(", ", loaiGan));
+            Kiem(khacLoai, t.name + ": dot dau phai co dung 2 con khac loai quanh nguoi, dang co " + loaiGan.Count);
+        }
 
         // Quai co dung quanh nguoi choi khong
         float xaNhat = 0f; int xaQua = 0;
@@ -341,12 +381,16 @@ public static class ThuDotQuaiAct2
 
         DoQuaiXa(dir, "B5");
 
-        float mauGoc, satGoc;
-        DoBoXuongDangSong(out mauGoc, out satGoc);
-        Ghi("B4. bo xuong dot 1: mau " + mauGoc.ToString("F1") + ", sat thuong " + satGoc.ToString("F1"));
+        {
+            float tm, ts; MonsterType ld;
+            bool co = DoManhDot(out tm, out ts, out ld);
+            Ghi("B4. dot 1 (do bang " + ld + "): mau x" + tm.ToString("F3") + ", sat thuong x" + ts.ToString("F3") + " so voi con goc");
+            Kiem(co, "dot 1 khong co con quai nao de do do manh");
+        }
 
         // B4b. Dot 1: SAT THUONG = 65% GOC, MAU = GOC (nguoi dung 27/09/2026). "Goc" lay DOC LAP: sinh mot con moi thang tu
         // kho quai (EnemyFactory, khong qua GameDirector) roi xoa ngay - khong chep tay con so nao, khong doc hang cua GameDirector.
+        int soLoaiDoB4b = 0;
         foreach (var loai in BonLoaiThu)
         {
             NhanDangQuai song = null;
@@ -358,9 +402,17 @@ public static class ThuDotQuaiAct2
             var goc = EnemyFactory.Spawn(loai, new Vector3(0f, -400f, 0f), null, null);
             var aiGoc = goc != null ? goc.GetComponent<EnemyAI>() : null;
             var mGoc = goc != null ? goc.GetComponent<Damageable>() : null;
-            if (song == null || aiGoc == null || mGoc == null)
+            if (song == null)
             {
-                Ghi("[LOI] B4b " + loai + ": khong co con dang song / khong sinh duoc con goc"); loi++;
+                // Ba dot dau moi nguoi chi 2 loai ngau nhien (09/10/2026) - loai nay co the khong co trong dot
+                Ghi("B4b " + loai + ": khong co trong dot nay - bo qua");
+                if (goc != null) Object.DestroyImmediate(goc);
+                continue;
+            }
+            soLoaiDoB4b++;
+            if (aiGoc == null || mGoc == null)
+            {
+                Ghi("[LOI] B4b " + loai + ": khong sinh duoc con goc"); loi++;
                 if (goc != null) Object.DestroyImmediate(goc);
                 continue;
             }
@@ -374,6 +426,8 @@ public static class ThuDotQuaiAct2
             Kiem(Mathf.Abs(rDanh - 0.65f) < 0.005f && Mathf.Abs(rCau - 0.65f) < 0.005f, loai + ": sat thuong dot 1 khong phai 65% goc");
             Kiem(Mathf.Abs(rMau - 1f) < 0.005f, loai + ": mau dot 1 bi doi (chi giam SAT THUONG)");
         }
+        Ghi("B4b. do duoc " + soLoaiDoB4b + "/4 loai (dot 1 co the thieu loai - 2 loai ngau nhien moi nguoi)");
+        Kiem(soLoaiDoB4b >= 2, "dot 1 do duoc it hon 2 loai quai");
 
         // ================================================================
         // C. DOT SAU: SO QUAI VA DO MANH
@@ -381,9 +435,8 @@ public static class ThuDotQuaiAct2
         Ghi("");
         Ghi("C. cac dot sau");
 
-        // 8 + 1, + 3, + 6 (cong don), cong SoQuaiXaMoiDot con vong ngoai moi dot
-        int xa2 = GameDirector.SoQuaiXaCho(2);
-        int[] mongDoi = { 9 + xa2, 11 + xa2, 14 + xa2 };
+        // 2 nguoi. Dot 2: 2x2 + ceil(1/2)=1 + 15 = 20; dot 3: 2x2 + ceil(3/2)=2 + 15 = 21; dot 4 (het giam): 2x4 + 6 + 30 = 44
+        int[] mongDoi = { 20, 21, 44 };
         for (int dot = 2; dot <= 4; dot++)
         {
             GietSach();
@@ -393,19 +446,20 @@ public static class ThuDotQuaiAct2
 
             int tong;
             var dem = DemTheoLoai(out tong);
-            float mau, sat;
-            DoBoXuongDangSong(out mau, out sat);
+            float tiMau, tiSat; MonsterType loaiDo;
+            bool coDo = DoManhDot(out tiMau, out tiSat, out loaiDo);
 
+            // So voi con goc: mau x1,05^(dot-1), sat thuong x0,65 x 1,05^(dot-1)
             float heSoMongDoi = Mathf.Pow(1.05f, dir.Wave - 1);
             Ghi("C" + dot + ". dot " + dir.Wave + ": tong " + tong + " con (mong doi " + mongDoi[dot - 2] + ") - "
                 + ViDem(dem));
-            Ghi("     bo xuong: mau " + mau.ToString("F1") + " (x" + (mauGoc > 0f ? mau / mauGoc : 0f).ToString("F3")
-                + "), sat thuong " + sat.ToString("F1") + " (x" + (satGoc > 0f ? sat / satGoc : 0f).ToString("F3")
-                + "), mong doi x" + heSoMongDoi.ToString("F3"));
+            Ghi("     do bang " + loaiDo + ": mau x" + tiMau.ToString("F3") + " (mong x" + heSoMongDoi.ToString("F3")
+                + "), sat thuong x" + tiSat.ToString("F3") + " (mong x" + (0.65f * heSoMongDoi).ToString("F3") + ")");
             Kiem(tong == mongDoi[dot - 2], "so quai dot " + dir.Wave + " khong dung");
             DoQuaiXa(dir, "     C" + dot + "x");
-            if (mauGoc > 0f) Kiem(Mathf.Abs(mau / mauGoc - heSoMongDoi) < 0.01f, "mau khong tang 5% moi dot");
-            if (satGoc > 0f) Kiem(Mathf.Abs(sat / satGoc - heSoMongDoi) < 0.01f, "sat thuong khong tang 5% moi dot");
+            Kiem(coDo, "dot " + dir.Wave + " khong co con quai nao de do do manh");
+            if (coDo) Kiem(Mathf.Abs(tiMau - heSoMongDoi) < 0.01f, "mau khong tang 5% moi dot");
+            if (coDo) Kiem(Mathf.Abs(tiSat - 0.65f * heSoMongDoi) < 0.01f, "sat thuong khong tang 5% moi dot");
         }
 
         Ghi("");

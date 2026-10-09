@@ -57,21 +57,42 @@ Giết một con quái to đúng lúc sắp lên cấp thì **nhảy được ha
 
 | Đối tượng | Kinh nghiệm | Vì sao |
 |---|---:|---|
-| Bộ xương | 38 (gốc 18) | quái thường, đông nhất |
-| Xác sống | 42 (gốc 20) | |
-| Quỷ lùn | 46 (gốc 22) | |
-| Quỷ cây | 63 (gốc 30) | chạy rất nhanh, bắn tia sét |
-| Mụ phù thủy | 67 (gốc 32) | đánh từ xa, khó tới gần |
-| Quỷ dữ | 84 (gốc 40) | gọi thiên thạch từ trên trời |
-| Quỷ khổng lồ | 147 (gốc 70) | to và khoẻ nhất |
+| Bộ xương | 76 (gốc 18) | quái thường, đông nhất |
+| Xác sống | 84 (gốc 20) | |
+| Quỷ lùn | 93 (gốc 22) | |
+| Quỷ cây | 126 (gốc 30) | chạy rất nhanh, bắn tia sét |
+| Mụ phù thủy | 135 (gốc 32) | đánh từ xa, khó tới gần |
+| Quỷ dữ | 168 (gốc 40) | gọi thiên thạch từ trên trời |
+| Quỷ khổng lồ | 295 (gốc 70) | to và khoẻ nhất |
 | **Người chơi khác** | **250** | một mạng người đáng giá hơn cả một đợt quái |
 
 **26/09/2026: kinh nghiệm giết QUÁI +35%, rồi cùng ngày +20% nữa TRÊN MỨC ĐÓ** (anh chọn) → gốc × 1,62.
 **28/09/2026: +30% nữa TRÊN MỨC ĐANG CÓ** (anh chọn) → gốc × **2,106** (`CapDo.HeSoKnQuai` = 1,35 × 1,20 × 1,30).
-Mức gốc giữ trong `CapDo.KnGocCuaQuai`, làm tròn nửa lên — cả bảng ×2,099 (232 → 487).
+**09/10/2026: +100% (gấp đôi) TRÊN MỨC ĐANG CÓ** (anh yêu cầu) → gốc × **4,212** (`HeSoKnQuai` = 1,35 × 1,20 × 1,30 × 2).
+Mức gốc giữ trong `CapDo.KnGocCuaQuai`, làm tròn nửa lên — cả bảng ×4,211 (232 → 977). Menu 60 kiểm.
 Hạ người chơi khác **không đổi** (250).
 
 ### Nhịp lên cấp trong thực tế (Act2)
+
+⚠️ **09/10/2026: BA ĐỢT ĐẦU CHỈ MỘT NỬA SỐ QUÁI** (anh yêu cầu, chọn chỉ đợt 1–3): quanh mỗi người **2 loại ngẫu nhiên khác nhau**
+(thay vì đủ 4), quái cộng dồn và vòng ngoài chia đôi làm tròn lên — một mình: đợt 1/2/3 = **12 / 13 / 14 con** (cũ 24 / 25 / 27);
+từ đợt 4 như cũ (30, 34, 39…). Cùng ngày kinh nghiệm quái ×2 nên **3 đợt đầu cho gần đúng bằng kinh nghiệm cũ** với nửa số quái.
+Bảng dưới (mục cũ ×2,106) là LỊCH SỬ; bảng mới (×4,212, TB 126 kinh nghiệm một con quái của bốn loại Act2):
+
+| Sau đợt | Số quái (một mình) | Kinh nghiệm đợt ấy | Cộng dồn | Cấp đạt |
+|---|---:|---:|---:|---|
+| 1 | 12 | 1 515 | 1 515 | 7 |
+| 2 | 13 | 1 641 | 3 156 | 9 |
+| 3 | 14 | 1 768 | 4 924 | **10** |
+| 4 | 30 | 3 788 | 8 712 | 13 |
+| 5 | 34 | 4 292 | 13 004 | 15 |
+| 6 | 39 | 4 924 | 17 928 | 17 |
+| 7 | 45 | 5 681 | 23 609 | 18 |
+| 8 | 52 | 6 565 | 30 174 | **20** |
+
+Một mình, giết hết: cấp 10 sau **3 đợt** (như cũ), cấp 20 sau **8 đợt** (cũ 11).
+
+Luật cũ (trước 09/10/2026):
 
 Mỗi đợt ở Act2 gồm (luật 13/09/2026, số quái vòng ngoài đổi 26/09/2026):
 

@@ -223,6 +223,33 @@ public class GameDirector : MonoBehaviour
     /// </summary>
     public const int SoQuaiXaThemMoiNguoi = 10;
     public static int SoQuaiXaCho(int soNguoi) { return SoQuaiXaMoiDot + SoQuaiXaThemMoiNguoi * Mathf.Max(0, soNguoi - 1); }
+
+    /// <summary>
+    /// BA DOT DAU CHI MOT NUA SO QUAI (nguoi dung 09/10/2026: "giam 50% so luong quai o dot 1, dot 2, dot 3 - giam quanh nguoi va
+    /// ca vong ngoai"; chon chi dot 1-3, tu dot 4 nhu cu; quanh moi nguoi 2 LOAI NGAU NHIEN khac nhau thay vi du 4 loai).
+    /// Quai cong don va vong ngoai chia doi, lam tron LEN.
+    /// </summary>
+    public const int SoDotGiamQuai = 3;
+    public static bool LaDotGiam(int dot) { return dot >= 1 && dot <= SoDotGiamQuai; }
+    /// <summary>So con quanh MOI nguoi trong dot nay (4, ba dot dau 2).</summary>
+    public static int SoQuanhMoiNguoi(int dot) { return LaDotGiam(dot) ? 2 : 4; }
+    /// <summary>So con vong ngoai cua dot (ba dot dau chia doi, lam tron len).</summary>
+    public static int SoQuaiXaChoDot(int soNguoi, int dot)
+    {
+        int n = SoQuaiXaCho(soNguoi);
+        return LaDotGiam(dot) ? (n + 1) / 2 : n;
+    }
+    /// <summary>So con cong don cua dot (1, 3, 6... - ba dot dau chia doi, lam tron len).</summary>
+    public static int SoCongDonChoDot(int dot)
+    {
+        int n = dot >= 2 ? dot * (dot - 1) / 2 : 0;       // 0, 1, 3, 6, 10...
+        return LaDotGiam(dot) ? (n + 1) / 2 : n;
+    }
+    /// <summary>TONG so quai cua dot voi <paramref name="soNguoi"/> nguoi con song.</summary>
+    public static int TongQuaiDot(int soNguoi, int dot)
+    {
+        return soNguoi * SoQuanhMoiNguoi(dot) + SoCongDonChoDot(dot) + SoQuaiXaChoDot(soNguoi, dot);
+    }
     public const float QuaiXaGanNhat = 20f;
     public const float QuaiXaXaNhat = 25f;
 
@@ -303,6 +330,8 @@ public class GameDirector : MonoBehaviour
     {
         Wave++;
         if (Wave >= 2) soThemCongDon += Wave - 1;    // cong don: 1, rồi 3, rồi 6...
+        int soCongDon = SoCongDonChoDot(Wave);        // ba dot dau chia doi
+        int soQuanh = SoQuanhMoiNguoi(Wave);
 
         float heSo = HeSoManhDot;
         int soNguoi = 0;
@@ -312,12 +341,26 @@ public class GameDirector : MonoBehaviour
             var t = moiNguoi[i];
             if (t == null) continue;
             soNguoi++;
-            for (int k = 0; k < BonLoaiMoiNguoi.Length; k++)
-                SinhQuanhNguoi(BonLoaiMoiNguoi[k], t, heSo);
+            if (soQuanh >= BonLoaiMoiNguoi.Length)
+            {
+                for (int k = 0; k < BonLoaiMoiNguoi.Length; k++)
+                    SinhQuanhNguoi(BonLoaiMoiNguoi[k], t, heSo);
+            }
+            else
+            {
+                // Ba dot dau: soQuanh LOAI NGAU NHIEN KHAC NHAU (xao tron bon loai, lay dau danh sach)
+                var loai = (MonsterType[])BonLoaiMoiNguoi.Clone();
+                for (int k = loai.Length - 1; k > 0; k--)
+                {
+                    int j = Random.Range(0, k + 1);
+                    var tg = loai[k]; loai[k] = loai[j]; loai[j] = tg;
+                }
+                for (int k = 0; k < soQuanh; k++) SinhQuanhNguoi(loai[k], t, heSo);
+            }
         }
 
         // Quai cong them: loai bat ki, quanh mot nguoi bat ki
-        for (int i = 0; i < soThemCongDon; i++)
+        for (int i = 0; i < soCongDon; i++)
         {
             var t = NguoiBatKy();
             if (t == null) break;
@@ -327,8 +370,8 @@ public class GameDirector : MonoBehaviour
         // SoQuaiXaCho(so nguoi con song) con o vong ngoai, loai ngau nhien
         SinhQuaiXa(heSo);
 
-        Debug.Log("[GameDirector] Dot " + Wave + ": " + soNguoi + " nguoi x 4 con + "
-                  + soThemCongDon + " con bat ki + " + QuaiXaDotNay.Count + " con xa ("
+        Debug.Log("[GameDirector] Dot " + Wave + ": " + soNguoi + " nguoi x " + soQuanh + " con + "
+                  + soCongDon + " con bat ki + " + QuaiXaDotNay.Count + " con xa ("
                   + SoQuaiXaDungKhoang + " dung " + QuaiXaGanNhat + "-" + QuaiXaXaNhat + " m), manh x" + heSo.ToString("F2"));
     }
 
@@ -385,7 +428,7 @@ public class GameDirector : MonoBehaviour
         var ban = BanDo();
         int lopCan = LayerMask.GetMask("Default", "Enemy");
 
-        int soQuaiXa = SoQuaiXaCho(nguoi.Count);
+        int soQuaiXa = SoQuaiXaChoDot(nguoi.Count, Wave);
         for (int k = 0; k < soQuaiXa; k++)
         {
             Vector3 chon = Vector3.zero;
