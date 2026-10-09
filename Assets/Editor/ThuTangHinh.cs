@@ -214,7 +214,7 @@ public static class ThuTangHinh
             SachPhep.Ten(K), SachPhep.TomTat(K), SachPhep.MoTa(K).Length, bo != null ? bo.Length : -1,
             bo != null && bo.Length > K && bo[K] != null ? "co" : "KHONG", tIcon != null ? tIcon.width + "x" + tIcon.height : "KHONG"));
         Kiem(K == 12 && CapDo.SoKyNang == SachPhep.SoKyNangCoTen(), "so hieu sai, hoac co ky nang khong co ten");
-        Kiem(Mathf.Approximately(toi.tangHinhCost, 30f) && Mathf.Approximately(nl, 30f), "nang luong khong phai 30");
+        Kiem(Mathf.Approximately(toi.tangHinhCost, 40f) && Mathf.Approximately(nl, 40f), "nang luong khong phai 40");   // 09/10/2026 (truoc 30)
         Kiem(Mathf.Approximately(toi.tangHinhCooldown, 10f) && Mathf.Approximately(hc, 10f), "hoi chieu khong phai 10 giay");
         Kiem(Mathf.Approximately(TangHinh.ThoiGian, 90f) && Mathf.Approximately(TangHinh.HeSoToc, 1.2f) && Mathf.Approximately(TangHinh.NhanDonDau, 2f),
              "hang so tang hinh sai (90 s / 1,2 / x2)");
@@ -269,7 +269,7 @@ public static class ThuTangHinh
         Ghi(string.Format("C. renderer dung shader tang hinh: truoc khi bat {0}, sau khi bat {1}", shaderTruoc, shaderSau));
         Kiem(tuChoiKhoa, "ky nang khoa ma van tung duoc");
         Kiem(tg != null && conLaiNgay > 88f, "tung xong khong vao trang thai tang hinh 90 giay");
-        Kiem(Mathf.Abs(manaTon - 30f) < 0.01f, "khong ton dung 30 nang luong");
+        Kiem(Mathf.Abs(manaTon - 40f) < 0.01f, "khong ton dung 40 nang luong");   // 09/10/2026 (truoc 30)
         Kiem(shaderTruoc == 0 && shaderSau > 0, "than nguoi khong doi sang shader tang hinh");
 
         // ================= E. MIEN HIEU UNG (dang tang hinh) =================

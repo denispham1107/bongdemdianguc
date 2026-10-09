@@ -36208,7 +36208,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GameBootstrap
   arenaRadius: 62
   playerMaxHealth: 1000
-  playerMaxMana: 250
+  playerMaxMana: 180
   useBloom: 1
   bloomIntensity: 0.9
 --- !u!4 &629984496
@@ -115601,24 +115601,24 @@ MonoBehaviour:
   loiNuoc: {fileID: 0}
   turnSpeed: 12
   stopDistance: 0.25
-  maxMana: 250
-  mana: 250
+  maxMana: 180
+  mana: 180
   manaRegen: 9
-  fireballCost: 10
-  fireballCooldown: 0.55
+  fireballCost: 25
+  fireballCooldown: 0.9
   fireballCastTime: 0.38
   iceRange: 12
-  iceCost: 34
+  iceCost: 45
   iceCooldown: 6
   iceCastTime: 0.75
   boltRange: 12
-  boltCost: 42
+  boltCost: 45
   boltCooldown: 4
   boltCastTime: 0.62
-  tornadoCost: 55
+  tornadoCost: 65
   tornadoCooldown: 2
   tornadoCastTime: 0.72
-  meteorCost: 60
+  meteorCost: 45
   meteorCooldown: 2
   meteorCastTime: 0.85
   khiengCost: 45
@@ -115626,19 +115626,19 @@ MonoBehaviour:
   khiengCastTime: 0.55
   khiengMau: 150
   khiengBanKinh: 3.036
-  giatSetCost: 14
-  giatSetCooldown: 0.4
+  giatSetCost: 25
+  giatSetCooldown: 0.9
   giatSetCastTime: 0.34
-  quaCauBangCost: 12
-  quaCauBangCooldown: 0.55
+  quaCauBangCost: 25
+  quaCauBangCooldown: 0.9
   quaCauBangCastTime: 0.38
-  gioLocCost: 20
-  gioLocCooldown: 0.4
+  gioLocCost: 40
+  gioLocCooldown: 0.9
   gioLocCastTime: 0.38
-  luaDiaNgucCost: 31
+  luaDiaNgucCost: 40
   luaDiaNgucCooldown: 0.5
   luaDiaNgucCastTime: 0.38
-  tangHinhCost: 30
+  tangHinhCost: 40
   tangHinhCastTime: 0.38
   cauDienCost: 55
   cauDienCooldown: 5
@@ -115900,6 +115900,8 @@ MonoBehaviour:
   thoiGianVeChuan: 0.26
   mocPhepBayRa: 0.41
   tocDoEp: -1
+  chamDat: 1
+  thichNghiDoc: 1
 --- !u!4 &2166699264183952897
 Transform:
   m_ObjectHideFlags: 0

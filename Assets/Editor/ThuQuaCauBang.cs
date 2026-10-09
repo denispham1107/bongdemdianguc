@@ -261,7 +261,7 @@ public static class ThuQuaCauBang
         Ghi(string.Format("B. tren nhan vat: nang luong {0}, hoi chieu {1} giay, niem {2}; Sach phep doc ra {3}/{4}/{5}; sat thuong goc {6}, cham {7:P0} x{8} trong {9} giay, ban kinh no {10} m",
             toi.quaCauBangCost, toi.quaCauBangCooldown, toi.quaCauBangCastTime, nl, hc, nc,
             QuaCauBang.SatThuongGoc, QuaCauBang.XacSuatCham, QuaCauBang.TiLeCham, QuaCauBang.GiayCham, QuaCauBang.BanKinhNo));
-        Kiem(Mathf.Approximately(toi.quaCauBangCooldown, 0.55f) && Mathf.Approximately(hc, 0.55f), "hoi chieu khong phai 0,55 giay");
+        Kiem(Mathf.Approximately(toi.quaCauBangCooldown, 0.9f) && Mathf.Approximately(hc, 0.9f), "hoi chieu khong phai 0,9 giay");   // 09/10/2026 (truoc 0,55)
         Kiem(Mathf.Approximately(QuaCauBang.SatThuongGoc, 65f), "sat thuong goc khong phai 65");
 
         // ================= C. TUNG THAT =================

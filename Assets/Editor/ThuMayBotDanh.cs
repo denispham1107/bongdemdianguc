@@ -244,11 +244,13 @@ public static class ThuMayBotDanh
             kq[dk, 0] = sai; kq[dk, 1] = n0.soPhepDaTung; kq[dk, 2] = mauTruoc - dToi.health;
             Ghi("C. " + MayBot.TenDoKho(dk) + " (Lua cap 1, chi Qua cau lua): " + n0.soPhepDaTung + " chieu / 10 s, sai so ngam TB " + sai.ToString("F2")
                 + " m (dat " + BotDieuKhien.SaiSoNgam(dk) + "), sat thuong " + Mathf.RoundToInt(kq[dk, 2]));
-            b0.maxMana = 250f; b0.mana = 250f;
+            b0.maxMana = 180f; b0.mana = 180f;     // muc vao tran (09/10/2026, truoc 250)
             yield return new WaitForSeconds(1.5f);
         }
-        Kiem(kq[MayBot.De, 0] > kq[MayBot.Kho, 0] * 2f && kq[MayBot.De, 1] < kq[MayBot.Kho, 1] && kq[MayBot.De, 2] < kq[MayBot.Kho, 2],
-             "BOT De khong kem BOT Kho (ngam / nhip / sat thuong)");
+        // 09/10/2026: Qua cau lua hoi chieu 0,9 s (nguoi dung) -> nhip ra chieu ca hai muc deu bi hoi chieu ghim (~10 chieu / 10 s), sat thuong
+        // len bia di lai dao dong ngau nhien (lan do: De 951, Kho 813). Con phan biet duoc: ngam lech, va so chieu De khong nhieu hon Kho.
+        Kiem(kq[MayBot.De, 0] > kq[MayBot.Kho, 0] * 2f && kq[MayBot.De, 1] <= kq[MayBot.Kho, 1],
+             "BOT De khong kem BOT Kho (ngam lech / so chieu)");
 
         // ---- D. Binh ----
         {

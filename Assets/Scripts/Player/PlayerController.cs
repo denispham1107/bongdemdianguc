@@ -24,36 +24,36 @@ public class PlayerController : MonoBehaviour
     public float stopDistance = 0.25f;
 
     [Header("Nang luong")]
-    public float maxMana = 250f;
-    public float mana = 250f;
+    public float maxMana = 180f;     // 09/10/2026 nguoi dung: "moi vao game mana tong 180" (truoc 250) - ca BOT; con o GameBootstrap.playerMaxMana, prefab, Act2
+    public float mana = 180f;
     public float manaRegen = 9f;
 
     [Header("Ky nang 1 - Qua cau lua")]
-    public float fireballCost = 10f;
-    public float fireballCooldown = 0.55f;
+    public float fireballCost = 25f;  // 09/10/2026 nguoi dung (so con nam trong prefab Player_Sorceress + nhan vat trong Act2)
+    public float fireballCooldown = 0.9f;   // 09/10/2026 nguoi dung: "delay skill 0,9 giay" = hoi chieu (truoc 0.55)
     public float fireballCastTime = 0.38f;
 
     [Header("Ky nang 2 - Mua bang")]
     [Tooltip("Tam tha xa nhat, met. Ngam xa hon thi phep roi o MEP tam.")]
     public float iceRange = 12f;
-    public float iceCost = 34f;
+    public float iceCost = 45f;  // 09/10/2026 nguoi dung (so con nam trong prefab Player_Sorceress + nhan vat trong Act2)
     public float iceCooldown = 6f;
     public float iceCastTime = 0.75f;
 
     [Header("Ky nang 3 - Sam set")]
     [Tooltip("Tam tha xa nhat, met. Ngam xa hon thi phep roi o MEP tam.")]
     public float boltRange = 12f;
-    public float boltCost = 42f;
+    public float boltCost = 45f;  // 09/10/2026 nguoi dung (so con nam trong prefab Player_Sorceress + nhan vat trong Act2)
     public float boltCooldown = 4f;   // 28/09/2026 nguoi dung: 8 -> 4 giay (so nay CON nam trong prefab Player_Sorceress + nhan vat trong Act2)
     public float boltCastTime = 0.62f;
 
     [Header("Ky nang 4 - Loc xoay")]
-    public float tornadoCost = 55f;
+    public float tornadoCost = 65f;  // 09/10/2026 nguoi dung (so con nam trong prefab Player_Sorceress + nhan vat trong Act2)
     public float tornadoCooldown = 2f;
     public float tornadoCastTime = 0.72f;
 
     [Header("Ky nang 5 - Thien thach")]
-    public float meteorCost = 60f;
+    public float meteorCost = 45f;  // 09/10/2026 nguoi dung (so con nam trong prefab Player_Sorceress + nhan vat trong Act2)
     public float meteorCooldown = 2f;
     public float meteorCastTime = 0.85f;
 
@@ -74,33 +74,33 @@ public class PlayerController : MonoBehaviour
     // ⚠️ Sua o day CHUA AN: prefab Player_Sorceress luu san mot ban va gia tri
     // trong prefab THANG gia tri mac dinh trong code. Da vap dung loi nay khi
     // ha hoi chieu tu 4 xuong 0,55 - code bao 0,55 ma trong game van 4 giay.
-    public float giatSetCost = 14f;
+    public float giatSetCost = 25f;  // 09/10/2026 nguoi dung (so con nam trong prefab Player_Sorceress + nhan vat trong Act2)
     // 0,55 giay - bang Qua cau lua. Gia 28 nang luong moi lan ban van la thu
     // ghim toc do lai: hoi day 130 nang luong voi manaRegen 9/giay thi ban lien
     // tuc duoc chung nam lan roi phai cho hoi.
-    public float giatSetCooldown = 0.4f;
+    public float giatSetCooldown = 0.9f;   // 09/10/2026 nguoi dung: "delay skill 0,9 giay" = hoi chieu (truoc 0.4)
     public float giatSetCastTime = 0.34f;
 
     [Header("Ky nang 10 - Qua cau bang (so hieu 9)")]
     // Nguoi dung 16/09/2026: "Skill delay 0.55 giay" = hoi chieu bang Qua cau lua.
     // Truong MOI nen prefab chua luu - gia tri o day co hieu luc (khong bi prefab de).
-    public float quaCauBangCost = 12f;
-    public float quaCauBangCooldown = 0.55f;
+    public float quaCauBangCost = 25f;  // 09/10/2026 nguoi dung (so con nam trong prefab Player_Sorceress + nhan vat trong Act2)
+    public float quaCauBangCooldown = 0.9f;   // 09/10/2026 nguoi dung: "delay skill 0,9 giay" = hoi chieu (truoc 0.55)
     public float quaCauBangCastTime = 0.38f;
 
     [Header("Ky nang 11 - Gio loc (so hieu 10)")]
     // Nguoi dung 16/09/2026: "Skill delay 0.4 giay" = hoi chieu; chon 20 nang luong, niem 0,38 s nhu Qua cau bang.
-    public float gioLocCost = 20f;
-    public float gioLocCooldown = 0.4f;
+    public float gioLocCost = 40f;  // 09/10/2026 nguoi dung (so con nam trong prefab Player_Sorceress + nhan vat trong Act2)
+    public float gioLocCooldown = 0.9f;   // 09/10/2026 nguoi dung: "delay skill 0,9 giay" = hoi chieu (truoc 0.4)
     public float gioLocCastTime = 0.38f;
 
     [Header("Lua dia nguc (ky nang 11) - 4 qua cau lua tu di muc tieu")]
-    public float luaDiaNgucCost = 31f;      // 5 qua (nguoi dung 17/09/2026; 25 x 5/4)
+    public float luaDiaNgucCost = 40f;      // 09/10/2026 nguoi dung (truoc 31: 5 qua, 25 x 5/4)
     public float luaDiaNgucCooldown = 0.5f;
     public float luaDiaNgucCastTime = 0.38f;
 
     [Header("Tang hinh (ky nang 12)")]
-    public float tangHinhCost = 30f;
+    public float tangHinhCost = 40f;  // 09/10/2026 nguoi dung (so con nam trong prefab Player_Sorceress + nhan vat trong Act2)
     // Doc THANG hang (thuoc tinh, khong luu duoc): doi 30 -> 10 ma de truong public thi prefab trong bo nho giu 30 (bay May giong)
     public float tangHinhCooldown { get { return TangHinh.HoiChieu; } }   // 10 giay, dem tu luc HIEN HINH
     public float tangHinhCastTime = 0.38f;

@@ -179,7 +179,8 @@ public static class ThuHoaLocXoay
             float ton5 = GioLoc.NangLuongCan(5, toi.gioLocCost, CapDo.ManaTheoCap(5));
             float cu5 = toi.gioLocCost * CapDo.ManaTheoCap(5) * 2f;   // ban truoc 18/09/2026: hai loc ton gap doi
             Ghi("C. nang luong Gio loc: " + sb.ToString().Trim() + string.Format("  (cap 5 ban cu la {0:F1})", cu5));
-            Kiem(Mathf.Abs(ton5 - 25f) < 0.01f, "cap 5 khong ton dung 25 nang luong");
+            // 09/10/2026 nguoi dung bo ngoai le "cap 5 chi 25": 40 x 1,1^4 = 58,56
+            Kiem(Mathf.Abs(ton5 - 40f * Mathf.Pow(1.1f, 4)) < 0.01f, "cap 5 khong ton dung 40 x 1,1^4 nang luong");
         }
 
         // ================= B. GIO LOC HOI MANA KHI TRUNG =================

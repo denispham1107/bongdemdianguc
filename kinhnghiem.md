@@ -77,6 +77,7 @@ Hạ người chơi khác **không đổi** (250).
 ⚠️ **09/10/2026: BA ĐỢT ĐẦU CHỈ MỘT NỬA SỐ QUÁI** (anh yêu cầu, chọn chỉ đợt 1–3): quanh mỗi người **2 loại ngẫu nhiên khác nhau**
 (thay vì đủ 4), quái cộng dồn và vòng ngoài chia đôi làm tròn lên — một mình: đợt 1/2/3 = **12 / 13 / 14 con** (cũ 24 / 25 / 27);
 từ đợt 4 như cũ (30, 34, 39…). Cùng ngày kinh nghiệm quái ×2 nên **3 đợt đầu cho gần đúng bằng kinh nghiệm cũ** với nửa số quái.
+**Cùng ngày (lần hai): đợt 4 cũng chỉ một nửa** (anh: "giảm 50% ở đợt 4 luôn") → đợt 1–4 giảm, từ đợt 5 như cũ.
 Bảng dưới (mục cũ ×2,106) là LỊCH SỬ; bảng mới (×4,212, TB 126 kinh nghiệm một con quái của bốn loại Act2):
 
 | Sau đợt | Số quái (một mình) | Kinh nghiệm đợt ấy | Cộng dồn | Cấp đạt |
@@ -84,13 +85,14 @@ Bảng dưới (mục cũ ×2,106) là LỊCH SỬ; bảng mới (×4,212, TB 12
 | 1 | 12 | 1 515 | 1 515 | 7 |
 | 2 | 13 | 1 641 | 3 156 | 9 |
 | 3 | 14 | 1 768 | 4 924 | **10** |
-| 4 | 30 | 3 788 | 8 712 | 13 |
-| 5 | 34 | 4 292 | 13 004 | 15 |
-| 6 | 39 | 4 924 | 17 928 | 17 |
-| 7 | 45 | 5 681 | 23 609 | 18 |
-| 8 | 52 | 6 565 | 30 174 | **20** |
+| 4 | 15 | 1 894 | 6 818 | 12 |
+| 5 | 34 | 4 292 | 11 110 | 14 |
+| 6 | 39 | 4 924 | 16 034 | 16 |
+| 7 | 45 | 5 681 | 21 715 | 18 |
+| 8 | 52 | 6 565 | 28 280 | 19 |
+| 9 | 60 | 7 575 | 35 855 | **20** |
 
-Một mình, giết hết: cấp 10 sau **3 đợt** (như cũ), cấp 20 sau **8 đợt** (cũ 11).
+Một mình, giết hết: cấp 10 sau **3 đợt** (như cũ), cấp 20 sau **9 đợt** (cũ 11).
 
 Luật cũ (trước 09/10/2026):
 

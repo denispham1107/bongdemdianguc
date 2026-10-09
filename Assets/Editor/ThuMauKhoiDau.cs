@@ -25,6 +25,8 @@ using UnityEngine;
 public static class ThuMauKhoiDau
 {
     /// <summary>Muc mau dang mong doi. Doi o day khi doi muc mau chay thu.</summary>
+    /// <summary>Mana khoi dau (09/10/2026 nguoi dung: "moi vao game mana tong cua nguoi choi that va ca BOT la 180", truoc 250).</summary>
+    public const float ManaMongDoi = 180f;
     public const float MauMongDoi = 1000f;  // 05/10/2026 nguoi dung chot 1000 (cung ngay truoc do 700; 27/09 chay thu 10 000; 12/09 muc that 600)
 
     static readonly StringBuilder bao = new StringBuilder();
@@ -108,6 +110,9 @@ public static class ThuMauKhoiDau
         { Ghi("[LOI] mau toi da khong dung - xem lai scene " + man); loi++; }
         if (Mathf.Abs(mau.health - MauMongDoi) > 0.5f)
         { Ghi("[LOI] vao man ma khong day mau"); loi++; }
+        Ghi("1b. mana nhan vat cua minh: " + toi.mana.ToString("F0") + " / " + toi.maxMana.ToString("F0") + " (mong " + ManaMongDoi.ToString("F0") + ")");
+        if (Mathf.Abs(toi.maxMana - ManaMongDoi) > 0.5f) { Ghi("[LOI] mana toi da khong dung - xem GameBootstrap.playerMaxMana trong scene " + man); loi++; }
+        if (toi.mana < ManaMongDoi - 0.5f) { Ghi("[LOI] vao man ma khong day mana"); loi++; }
 
         // ---- Ban sao cua nguoi choi khac ----
         // No KHONG di qua GameBootstrap, no lay mau thang tu prefab. Thieu
@@ -123,6 +128,10 @@ public static class ThuMauKhoiDau
                 + mauKia.maxHealth.ToString("F0") + " (lay thang tu prefab)");
             if (Mathf.Abs(mauKia.maxHealth - MauMongDoi) > 0.5f)
             { Ghi("[LOI] prefab nguoi choi con giu muc mau cu"); loi++; }
+            // May BOT cung sinh qua NguoiChoiKhac.Sinh (prefab) - mana cua ban sao la mana cua BOT luc vao tran
+            Ghi("2b. mana ban sao / BOT (prefab): " + kia.mana.ToString("F0") + " / " + kia.maxMana.ToString("F0") + " (mong " + ManaMongDoi.ToString("F0") + ")");
+            if (Mathf.Abs(kia.maxMana - ManaMongDoi) > 0.5f || Mathf.Abs(kia.mana - ManaMongDoi) > 0.5f)
+            { Ghi("[LOI] prefab nguoi choi con giu muc mana cu"); loi++; }
             NguoiChoiKhac.Bo(kia);
         }
         TranHienTai.Xoa();

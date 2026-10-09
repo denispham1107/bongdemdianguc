@@ -263,7 +263,7 @@ public static class ThuLuaDiaNguc
         int soCoTen = SachPhep.SoKyNangCoTen();
         Kiem(K == 11 && CapDo.SoKyNang == soCoTen, "so hieu sai, hoac co ky nang khong co ten ("
              + CapDo.SoKyNang + " ky nang nhung " + soCoTen + " cai co ten)");
-        Kiem(Mathf.Approximately(toi.luaDiaNgucCost, 31f) && Mathf.Approximately(nl, 31f), "nang luong khong phai 31");
+        Kiem(Mathf.Approximately(toi.luaDiaNgucCost, 40f) && Mathf.Approximately(nl, 40f), "nang luong khong phai 40");   // 09/10/2026 (truoc 31)
         Kiem(Mathf.Approximately(toi.luaDiaNgucCooldown, 0.5f) && Mathf.Approximately(hc, 0.5f), "hoi chieu khong phai 0,5");
         Kiem(Mathf.Approximately(toi.luaDiaNgucCastTime, 0.38f), "niem khong phai 0,38");
         Kiem(impactPrefab > 0f && Mathf.Abs(LuaDiaNguc.SatThuongGoc - impactPrefab * Mathf.Pow(1.2f, 4)) < 0.01f, "sat thuong goc khong bang qua cau lua cap 5");
@@ -304,7 +304,7 @@ public static class ThuLuaDiaNguc
             tuChoiKhoa, daTung, soQuaBay, manaTon, lucNhan));
         Kiem(tuChoiKhoa, "ky nang khoa ma van tung duoc");
         Kiem(daTung && soQuaBay == LuaDiaNguc.SoQua && LuaDiaNguc.SoQua == 5, "tung khong ra dung 5 qua");
-        Kiem(Mathf.Abs(manaTon - 31f) < 0.01f, "khong ton dung 31 nang luong");
+        Kiem(Mathf.Abs(manaTon - 40f) < 0.01f, "khong ton dung 40 nang luong");   // 09/10/2026 (truoc 31)
         Kiem(lucNhan >= 0.5f - 0.001f && lucNhan < 0.6f, "hoi chieu 0,5 giay khong dung");
         XoaQua();
         yield return new WaitForSeconds(0.5f);

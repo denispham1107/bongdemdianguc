@@ -413,7 +413,7 @@ public static class SachPhep
                      + "Mỗi khối nổ ra một vùng lửa rộng, làm rung màn hình và để lại "
                      + "vũng lửa cháy trên mặt đất. Cây trúng thiên thạch sẽ cháy rụi "
                      + "rồi mọc lại sau 30 giây.\n\n"
-                     + "Đòn mạnh nhất, và cũng tốn năng lượng nhất.\n\n"
+                     + "Đòn mạnh nhất.\n\n"
                      + "Lên CẤP 5: rơi NĂM khối thay vì ba.";
             case 5:
                 return "Dựng một vòm chắn sáng quanh chính mình. Mọi đòn đánh trừ vào "

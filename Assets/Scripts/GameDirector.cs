@@ -227,9 +227,10 @@ public class GameDirector : MonoBehaviour
     /// <summary>
     /// BA DOT DAU CHI MOT NUA SO QUAI (nguoi dung 09/10/2026: "giam 50% so luong quai o dot 1, dot 2, dot 3 - giam quanh nguoi va
     /// ca vong ngoai"; chon chi dot 1-3, tu dot 4 nhu cu; quanh moi nguoi 2 LOAI NGAU NHIEN khac nhau thay vi du 4 loai).
+    /// Cung ngay nguoi dung: "giam 50% o dot 4 luon" -> dot 1-4; tu dot 5 nhu cu.
     /// Quai cong don va vong ngoai chia doi, lam tron LEN.
     /// </summary>
-    public const int SoDotGiamQuai = 3;
+    public const int SoDotGiamQuai = 4;
     public static bool LaDotGiam(int dot) { return dot >= 1 && dot <= SoDotGiamQuai; }
     /// <summary>So con quanh MOI nguoi trong dot nay (4, ba dot dau 2).</summary>
     public static int SoQuanhMoiNguoi(int dot) { return LaDotGiam(dot) ? 2 : 4; }

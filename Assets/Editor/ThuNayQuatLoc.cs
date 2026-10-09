@@ -365,7 +365,7 @@ public static class ThuNayQuatLoc
             // 04/10/2026 nguoi dung: cap 1-4 HAI loc +-15, cap 5 BA loc -30 / 0 / +30 - goc VIET TAY (khong doc GioLoc.GocQuat)
             int mong = cap >= 5 ? 3 : 2;
             float[] gocMong = cap >= 5 ? new[] { -30f, 0f, 30f } : new[] { -15f, 15f };
-            float mongTon = cap >= 5 ? GioLoc.NangLuongCap5 : toi.gioLocCost * CapDo.ManaTheoCap(cap);
+            float mongTon = toi.gioLocCost * CapDo.ManaTheoCap(cap);     // 09/10/2026: bo ngoai le cap 5
             Ghi(string.Format("C. cap {0}: {1} loc (mong {2}); goc so voi huong ngam: {3}; cung moc {4}; loc giua {5} (goc {6:F1}); ton {7:F2} nang luong (mong {8:F2})",
                 cap, moi.Count, mong, sb, cungMoc, giua, gocGiua, ton, mongTon));
             bool gocDung = goc2.Count == mong;

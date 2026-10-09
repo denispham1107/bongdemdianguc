@@ -132,6 +132,12 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
   để chạy thử, 12/09 mức thật 600) — sửa đủ cả ba chỗ và `ThuMauKhoiDau.MauMongDoi`; menu 40: mình 1000/1000, bản sao người chơi khác 1000/1000. Con số nằm ở ba chỗ —
   `GameBootstrap.playerMaxHealth`, scene Act2, `Player_Sorceress.prefab` — và menu 40 kiểm cả ba (kể cả bản sao
   người chơi khác, vì nó lấy máu thẳng từ prefab).
+- ⚠️ **MANA KHỞI ĐẦU 180 — CẢ NGƯỜI CHƠI LẪN BOT** (09/10/2026 người dùng; trước 250): số nằm ở BA chỗ như máu — `GameBootstrap.playerMaxMana`
+  (code + scene Act2), `Player_Sorceress.prefab` (bản sao người khác + máy BOT lấy thẳng từ đây), nhân vật đặt sẵn trong Act2. Menu 40 kiểm cả
+  mình lẫn bản sao. **Mana cấp 1 mới** (cùng ngày, code + prefab + Act2): Cầu lửa 25 · Thiên thạch 45 · Lửa địa ngục 40 · Cầu băng 25 · Mưa băng 45 ·
+  Tàng hình 40 · Giựt sét 25 · Sấm sét 45 · Cầu điện 55 · Gió lốc 40 · Lốc xoáy 65 · Hoá lốc xoáy 45 · Mây giông 50 · Khiên 45 · Tốc biến 40; mỗi cấp +10%
+  nhân dồn — ⚠️ **BỎ ngoại lệ "Gió lốc cấp 5 chỉ 25"** (người dùng chọn; cấp 5 = 58,56; `GioLoc.NangLuongCap5` đã xoá). **Hồi chiêu 0,9 s** cho
+  Cầu lửa · Cầu băng · Giựt sét · Gió lốc (người dùng "delay skill 0,9 giây", chọn = hồi chiêu; trước 0,55 / 0,55 / 0,4 / 0,4).
 - ⚠️ **CHÂN NGƯỜI CHƠI CHẠM ĐẤT** (05/10/2026, người dùng: "trong game rất nhiều chỗ 2 chân nhân vật đứng vẫn như bay lơ lửng"; `NguoiChoiHoatHinh`,
   phần "CHAN CHAM DAT" — nhân vật mình, bản sao người chơi khác, nhân vật màn chính dùng chung). Nguyên nhân (menu 109, 40 chỗ Act2): gốc LUÔN cao hơn
   đất **0,08 m** (`skinWidth` CharacterController, đáy con nhộng đặt đúng ở gốc), tư thế đứng yên là khung BƯỚC DỞ của clip đi (một chân nhấc ~5 cm),
@@ -191,7 +197,8 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
   một mình lên cấp 10 sau ~3 đợt, cấp 20 sau ~8 đợt.
   ⚠️ **09/10/2026: ĐỢT 1–3 CHỈ MỘT NỬA SỐ QUÁI** (người dùng; chọn chỉ 3 đợt đầu): quanh mỗi người **2 loại ngẫu nhiên khác nhau**, cộng dồn
   và vòng ngoài chia đôi làm tròn lên (`GameDirector.SoDotGiamQuai` 3, `SoQuanhMoiNguoi` / `SoCongDonChoDot` / `SoQuaiXaChoDot` / `TongQuaiDot`)
-  — một mình 12 / 13 / 14 con, 2 người 19 / 20 / 21, từ đợt 4 như cũ. Menu 56 (số viết tay), 60, 64: 0 lỗi
+  — một mình 12 / 13 / 14 con, 2 người 19 / 20 / 21. ⚠️ Cùng ngày (lần hai) **đợt 4 cũng giảm** (`SoDotGiamQuai` 4: một mình 15, 2 người 22),
+  từ đợt 5 như cũ (2 người 48). Menu 56 (số viết tay), 60, 64: 0 lỗi
   (`kinhnghiem.md`). Menu 60, 56 (2 người → 30 con), 64 kiểm.
   **Sau 60 giây con vòng ngoài nào còn sống tự truy lùng người gần nhất** (`EnemyAI.HenTruyLung`, bỏ giới hạn
   `aggroRange` 14 m); đang truy lùng mà kẹt thì vòng vật cản, kẹt mãi thì đổi chỗ sang 10–14 m cạnh người chơi,

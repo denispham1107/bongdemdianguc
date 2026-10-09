@@ -24,7 +24,7 @@ public class GameBootstrap : MonoBehaviour
     // (muc that cu 600, chot 12/09/2026).
     // 05/10/2026 (lan hai) nguoi dung: "khi moi vao game cho mau nguoi choi la 1000"
     public float playerMaxHealth = 1000f;
-    public float playerMaxMana = 250f;
+    public float playerMaxMana = 180f;   // 09/10/2026 nguoi dung (truoc 250) - con nam trong scene Act2 + prefab Player_Sorceress
 
     [Header("Do hoa")]
     public bool useBloom = true;

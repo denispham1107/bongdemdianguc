@@ -35,7 +35,7 @@ public class GioLoc : MonoBehaviour
     /// <summary>Loc tu tan sau 4,5 giay (nguoi dung 17/09/2026, truoc do 3,5).</summary>
     public const float ThoiGianSong = 4.5f;
 
-    /// <summary>Cap ky nang tu do tung BA loc thay vi hai (04/10/2026; truoc: nam thay vi ba) va ton co dinh NangLuongCap5. Moi loc tinh rieng:
+    /// <summary>Cap ky nang tu do tung BA loc thay vi hai (04/10/2026; truoc: nam thay vi ba). Moi loc tinh rieng:
     /// dung o cho hai loc cung quet qua la trung hai lan.</summary>
     public const int CapHaiLoc = 5;
 
@@ -49,17 +49,13 @@ public class GioLoc : MonoBehaviour
     public const float GocQuat = 30f;   // 29/09/2026: 15 -> 20; 04/10/2026: 20 -> 30 (2 loc +-15, cap 5 toa +-30)
 
     /// <summary>Nhan them vao nang luong (sau he so cap chung). Nay = 1: nguoi dung giu nang luong NHU CU khi doi sang hinh quat
-    /// (truoc la nhan theo so loc - 3 loc la gap ba). Cap 5 van co dinh NangLuongCap5.</summary>
+    /// (truoc la nhan theo so loc - 3 loc la gap ba).</summary>
     public static float HeSoNangLuongTheoCap(int capKy) { return 1f; }
-
-    /// <summary>CAP 5 chi ton 25 nang luong - con so CO DINH, khong nhan he so cap va khong nhan so loc
-    /// (nguoi dung chot 18/09/2026). Truoc do cap 5 ton 20 x 1,4641 x 2 = 58,6.</summary>
-    public const float NangLuongCap5 = 25f;
 
     /// <summary>Nang luong THAT SU phai tra cho mot lan tung, da tinh het moi he so.</summary>
     public static float NangLuongCan(int capKy, float nangLuongGoc, float heSoCapChung)
     {
-        if (capKy >= CapHaiLoc) return NangLuongCap5;
+        // 09/10/2026 nguoi dung: BO ngoai le "cap 5 chi ton 25" (18/09/2026) khi nang luong goc len 40 - cap 5 tinh nhu ky nang khac
         return nangLuongGoc * heSoCapChung * HeSoNangLuongTheoCap(capKy);
     }
 

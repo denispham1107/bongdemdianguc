@@ -7502,6 +7502,33 @@ người gục: độ đục 0,45 — số lỗi = 0
 Menu 92 (Đơn / Đôi): **0 lỗi** — tên màu đội + dòng "ĐỘI A/B" phía trên. Ảnh trong game phóng to:
 `PlayTestShots/bangten_lua_dia_nguc.png`.
 
+### Mana 180, giá mana mới, hồi chiêu 0,9 s cho bốn chiêu cơ bản, đợt 4 cũng một nửa (09/10/2026)
+
+Anh xin: vào game mana tổng **180** cho người chơi thật và máy BOT (trước 250); giá mana cấp 1 mới cho 15 kỹ năng chủ động; "delay"
+**0,9 giây** cho Quả cầu lửa, Quả cầu băng, Giựt sét, Gió lốc; và giảm 50% quái ở đợt 4 luôn. Tôi hỏi lại hai chỗ, anh chọn: "delay" =
+**hồi chiêu**; Gió lốc cấp 5 **bỏ ngoại lệ 25 mana**, tính như kỹ năng khác (+10% mỗi cấp → cấp 5 = 58,56).
+
+| Kỹ năng | Mana cũ → mới | | Kỹ năng | Mana cũ → mới |
+|---|---|---|---|---|
+| Quả cầu lửa | 10 → **25** (hồi chiêu 0,55 → **0,9**) | | Sấm sét | 42 → **45** |
+| Thiên thạch | 60 → **45** | | Quả cầu điện | 55 (giữ) |
+| Lửa địa ngục | 31 → **40** | | Gió lốc | 20 → **40** (hồi chiêu 0,4 → **0,9**) |
+| Quả cầu băng | 12 → **25** (hồi chiêu 0,55 → **0,9**) | | Lốc xoáy | 55 → **65** |
+| Mưa băng | 34 → **45** | | Hoá lốc xoáy | 45 (giữ) |
+| Tàng hình | 30 → **40** | | Mây giông | 50 (giữ) |
+| Giựt sét | 14 → **25** (hồi chiêu 0,4 → **0,9**) | | Khiên 45 · Tốc biến 40 | giữ |
+
+⚠️ Các số này nằm ở **ba chỗ** (prefab đè code): mặc định trong `PlayerController`, `Player_Sorceress.prefab`, nhân vật đặt sẵn trong Act2 —
+đã sửa cả ba (qua API Unity, đọc lại từ đĩa: 15 dòng mỗi file). Mana 180 thêm `GameBootstrap.playerMaxMana` (code + Act2). Mô tả Thiên thạch
+trong Sách phép bỏ câu "tốn năng lượng nhất" (giờ Lốc xoáy 65 đắt nhất). Đợt 4: `SoDotGiamQuai` 3 → 4.
+
+**Số đo:** menu 40 — mana mình **180 / 180**, bản sao (= đường sinh máy BOT) **180 / 180** (thêm mục 1b / 2b). Menu 56 (2 người) đợt 1–4 =
+19 / 20 / 21 / **22**, đợt 5 = **48** (đủ). Menu 71 Gió lốc: tốn 40, hồi chiêu đo được 0,91 s; cấp 4 = 53,24, cấp 5 = **58,56**, 3 lốc; menu 75 bảng
+40 / 44 / 48,4 / 53,2 / 58,6. Menu 68 Quả cầu băng 25 / 0,9 s; menu 72 Lửa địa ngục 40; menu 73 Tàng hình 40; menu 69, 70, 84: 0 lỗi. Menu 115
+(BOT đánh): với hồi chiêu 0,9 s cả BOT Dễ lẫn Khó đều ra ~10 Quả cầu lửa / 10 s — tiêu chí "Dễ ra chiêu chậm hơn" không còn phân biệt được
+bằng chiêu cơ bản, đổi thành ngắm lệch (Dễ 1,40 m / Khó 0,18 m) + số chiêu Dễ không nhiều hơn; trận thật 90 s: 3/3 BOT hạ được quái. **0 lỗi
+cả 12 menu.** Phép thử đã sửa số cứng: 40, 56, 68, 71 (thêm chờ hết hồi chiêu 0,9 s trước lần tung cấp 5), 72, 73, 75, 84, 115.
+
 ### Kinh nghiệm quái ×2 và ba đợt đầu chỉ một nửa số quái (09/10/2026)
 
 Anh xin: tăng 100% kinh nghiệm giết quái; giảm 50% số quái ở đợt 1, 2, 3 (cả quanh người lẫn vòng ngoài). Tôi hỏi lại hai chỗ chưa rõ,

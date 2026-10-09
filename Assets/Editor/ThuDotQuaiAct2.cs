@@ -169,9 +169,9 @@ public static class ThuDotQuaiAct2
         int soSong = 0; foreach (var t in dir.moiNguoi) { if (t == null) continue; var mm = t.GetComponent<Damageable>(); if (mm == null || !mm.IsDead) soSong++; }
         // 20 + 10 moi nguoi them; ba dot dau chi mot nua, lam tron len (nguoi dung 09/10/2026)
         int xaDu = 20 + 10 * Mathf.Max(0, soSong - 1);
-        int mongXa = dir.Wave <= 3 ? (xaDu + 1) / 2 : xaDu;
+        int mongXa = dir.Wave <= 4 ? (xaDu + 1) / 2 : xaDu;     // dot 1-4 chia doi (09/10/2026)
         Ghi(nhan + ". " + soSong + " nguoi con song, dot " + dir.Wave + " -> mong " + mongXa + " con vong ngoai (20 + 10 moi nguoi them"
-            + (dir.Wave <= 3 ? ", ba dot dau chia doi)" : ")"));
+            + (dir.Wave <= 4 ? ", bon dot dau chia doi)" : ")"));
         Kiem(so == mongXa, "moi dot phai co dung " + mongXa + " con quai vong ngoai (" + soSong + " nguoi), dang co " + so);
         Kiem(loLung == 0, "co quai xa khong dung tren mat dat");
         Kiem(duoiNuoc == 0, "co quai xa nam duoi nuoc");
@@ -435,9 +435,10 @@ public static class ThuDotQuaiAct2
         Ghi("");
         Ghi("C. cac dot sau");
 
-        // 2 nguoi. Dot 2: 2x2 + ceil(1/2)=1 + 15 = 20; dot 3: 2x2 + ceil(3/2)=2 + 15 = 21; dot 4 (het giam): 2x4 + 6 + 30 = 44
-        int[] mongDoi = { 20, 21, 44 };
-        for (int dot = 2; dot <= 4; dot++)
+        // 2 nguoi. Dot 2: 2x2 + ceil(1/2)=1 + 15 = 20; dot 3: 2x2 + ceil(3/2)=2 + 15 = 21; dot 4: 2x2 + ceil(6/2)=3 + 15 = 22;
+        // dot 5 (het giam): 2x4 + 10 + 30 = 48
+        int[] mongDoi = { 20, 21, 22, 48 };
+        for (int dot = 2; dot <= 5; dot++)
         {
             GietSach();
             yield return new WaitForSeconds(0.4f);
