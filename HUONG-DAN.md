@@ -13616,6 +13616,36 @@ thế thật của hình): cao 3,00 m, bay 1,21 s, ngã lớn nhất 90°, lên 
 lúc hông xuống tới mức đứng 38/38, hông thấp nhất −0,68 m so với lúc đứng (lưng sát đất, không chui xuống), đứng thẳng lại 38/38. Mục I3 sửa cửa sổ đo
 (1,2 s cũ kết thúc đúng lúc còn bay). Menu 82, 84, 85, 115, 66: 0 lỗi.
 
+## Đổi địa chỉ web sang acquytrolai.web.app (10/10/2026)
+
+**Người dùng:** đổi https://diablo25d-game.web.app thành https://acquytrolai.web.app.
+
+**Vì sao không "đổi tên" được:** địa chỉ `<tên>.web.app` là tên của một **trang Hosting**; trang mặc định mang tên dự án Firebase
+(`diablo25d-game`) và tên dự án không đổi được. Nhưng một dự án có thể có nhiều trang. Đã tạo trang `acquytrolai` trong chính dự án
+`diablo25d-game` (`firebase hosting:sites:create acquytrolai`) — tài khoản, phòng chơi, thành tích (Auth + Realtime Database) dùng chung,
+không phải chuyển dữ liệu.
+
+**Cấu hình:** `firebase.json` mục `hosting` nay là MẢNG hai đích (`.firebaserc` → `targets`):
+
+| Đích | Trang | Thư mục | Việc |
+|---|---|---|---|
+| `game` | `acquytrolai` | `web/` | game + `/quantri/`, giữ nguyên mọi header cache (`Build/**` immutable, html no-cache…) |
+| `cu` | `diablo25d-game` | `web-chuyen-huong/` | chuyển hướng **301** mọi đường dẫn + tham số sang địa chỉ mới; `index.html` dự phòng (meta refresh + JS) |
+
+Luật chuyển hướng phải có riêng `"/"` — mẫu `/:duong*` không khớp trang gốc (đo: "/" trả 200 trang dự phòng thay vì 301).
+`firebase deploy --only hosting` đẩy cả hai; chỉ đẩy game: `--only hosting:game`. Lùi bản khẩn cấp: `firebase hosting:clone acquytrolai@<version> acquytrolai:live`.
+
+**Đo sau khi deploy:** trang mới `/`, `/quantri/`, `manifest`, `sw.js`, ảnh tiêu đề trả 200; 4 file `Build/` có đủ (dữ liệu 202 250 488 byte) với
+`Cache-Control: public, max-age=31536000, immutable`; mở bằng trình duyệt: tải xong 100%, vào màn đăng nhập, console 0 lỗi; lần vào sau `Build/`
+0 byte. Địa chỉ cũ: `/` → 301 `acquytrolai.web.app/`, `/?phong=AB12` → giữ tham số, `/quantri/` → `/quantri` → 200 `/quantri/`, file `Build/` → 301;
+trình duyệt mở địa chỉ cũ dừng ở `https://acquytrolai.web.app/`.
+
+**Cái giá (đã báo người dùng trước):** khác tên miền = khác origin, nên người chơi tải lại 172,5 MB một lần, đăng nhập lại một lần, mất cài đặt
+lưu trong trình duyệt (mức đồ hoạ, xếp ô kỹ năng); ứng dụng PWA đã cài trỏ địa chỉ cũ thì tự được chuyển sang địa chỉ mới, gọn nhất là gỡ và cài
+lại. Trang quản trị đăng nhập bằng email / mật khẩu nên không cần khai báo tên miền mới trong Firebase Auth.
+
+Chữ nhắc "Hãy mở … trên hai máy" trong bản Editor (`KhoiDongTranMang.BaoBanEditor`, phép thử `ThuHUDKinhDi`) đổi sang địa chỉ mới.
+
 ## Phần 4 — Menu công cụ "Diablo 2.5D"
 
 | Mục | Tác dụng |

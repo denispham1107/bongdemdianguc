@@ -39,7 +39,7 @@ public static class ThuHUDKinhDi
     const string Dong1 = "ĐỢT 99";
     const string Dong2 = "Quái còn lại: 128   ·   Đã diệt: 99999";
     const string Dong2Cho = "Đợt mới sau 30 giây…";
-    const string Mang = "Bản này chạy trong Unity Editor nên chưa nối mạng thật được (WebRTC chỉ có trên bản web). Hãy mở diablo25d-game.web.app trên hai máy.";
+    const string Mang = "Bản này chạy trong Unity Editor nên chưa nối mạng thật được (WebRTC chỉ có trên bản web). Hãy mở acquytrolai.web.app trên hai máy.";
     const string Mang2 = "Đã nối 1/3 người. Không nối được với: Ác Quỷ Bóng Đêm, Kẻ Săn Hồn";
     const string KetNoi = "Chủ phòng đã rời trận — trận đấu dừng tại đây.\nBấm TRỞ VỀ để về sảnh.";
     const string BaoGiua = "CẢM ỨNG: cần điều khiển + nút tròn";

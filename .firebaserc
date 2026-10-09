@@ -1,5 +1,18 @@
 {
   "projects": {
     "default": "diablo25d-game"
-  }
+  },
+  "targets": {
+    "diablo25d-game": {
+      "hosting": {
+        "game": [
+          "acquytrolai"
+        ],
+        "cu": [
+          "diablo25d-game"
+        ]
+      }
+    }
+  },
+  "etags": {}
 }

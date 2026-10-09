@@ -916,7 +916,7 @@ hơn ×1,5 và mở xuống 1,8–4,3 m** (người dùng chọn sau menu 94 ch�
   `productVersion` (menu 29 tự gắn, báo 4/4 file): Unity coi `.data` có `?v=` là `immutable` và tự xoá bản cũ.
   **Firebase không bao giờ trả 304 cho file `no-cache`** — đừng dựa vào hỏi lại. Kiểm sau khi deploy: trong
   trình duyệt ĐÃ TỪNG vào trang, lần sau `performance` báo `Build/` 0 byte, chỉ tải trang ~2,6 KB. Lùi bản khẩn cấp:
-  `firebase hosting:clone diablo25d-game@<version> diablo25d-game:live`.
+  `firebase hosting:clone acquytrolai@<version> acquytrolai:live` (trang game từ 10/10/2026; trước là `diablo25d-game`).
 - **Cài được như ứng dụng (PWA)**: `web/manifest.webmanifest` + `web/sw.js` (bộ chạy nền **không cache gì** — Unity đã tự
   quản lý cache bản build; giữ index.html cũ là ghép mã cũ với dữ liệu mới) + thẻ `apple-*` trong template. Nút "CÀI ĐẶT
   ỨNG DỤNG" và dòng nhắc iOS nằm **trong màn chờ tải**, không nổi trên khung game (cạnh phải/dưới là chỗ cần điều khiển).
@@ -1041,9 +1041,13 @@ hơn ×1,5 và mở xuống 1,8–4,3 m** (người dùng chọn sau menu 94 ch�
   nằm trong game Unity**, vẽ bằng OnGUI, gọi Firebase qua **REST** (Firebase Unity SDK không
   chạy trên WebGL). Trang web **chỉ để admin quản lý tài khoản**.
   Dự án Firebase `diablo25d-game` (asia-southeast1). Menu 26, 27, 28 chạy thật, **0 lỗi**.
-- **Chơi được trên trình duyệt**: https://diablo25d-game.web.app (bản WebGL, menu 29 —
+- **Chơi được trên trình duyệt**: ⚠️ **https://acquytrolai.web.app** (10/10/2026 người dùng đổi địa chỉ; trước https://diablo25d-game.web.app) (bản WebGL, menu 29 —
   build 3–11 phút, lần đầu người chơi tải **172,5 MB**, các lần sau 0 byte và vào game ~10 s, 0 lỗi console). Trang quản trị chuyển
-  sang https://diablo25d-game.web.app/quantri/ . Mã nguồn ở
+  sang https://acquytrolai.web.app/quantri/ . ⚠️ **HAI TRANG HOSTING trong cùng dự án `diablo25d-game`** (`firebase.json` là MẢNG, `.firebaserc`
+  targets): `game` = site `acquytrolai` (thư mục `web/`, mọi header cache cũ), `cu` = site `diablo25d-game` (thư mục `web-chuyen-huong/`) **chuyển
+  hướng 301 mọi đường dẫn + tham số** sang địa chỉ mới (luật riêng cho "/" — mẫu `/:duong*` không khớp gốc). `firebase deploy --only hosting`
+  đẩy CẢ HAI; chỉ game: `--only hosting:game`. Đổi tên miền = khác origin → người chơi tải lại 172,5 MB một lần, đăng nhập lại, mất cài đặt
+  localStorage (đồ hoạ, ô kỹ năng). Firebase Auth / Database dùng chung (cùng dự án). Mã nguồn ở
   https://github.com/denispham1107/bongdemdianguc .
   **Cần giảm dung lượng**: 155,7 MB nằm ở tài nguyên, và texture đang nén ASTC nên WebGL
   phải giải nén ra RAM mỗi lần nạp.

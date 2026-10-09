@@ -534,7 +534,7 @@ public class KhoiDongTranMang : MonoBehaviour
         // WebRTC, va mot cai vong xoay bat tan thi nhin nhu treo may.
         TrangThai = "Bản này chạy trong Unity Editor nên chưa nối mạng thật "
                   + "được (WebRTC chỉ có trên bản web). Hãy mở "
-                  + "diablo25d-game.web.app trên hai máy.";
+                  + "acquytrolai.web.app trên hai máy.";
     }
 
     /// <summary>
