@@ -927,6 +927,14 @@ hơn ×1,5 và mở xuống 1,8–4,3 m** (người dùng chọn sau menu 94 ch�
   (đi theo chữ ở mọi cỡ màn — đặt theo % trang thì màn dọc điện thoại lệch khỏi chữ). ⚠️ 09/10/2026 chữ trên trang Loading **lên 4vh**
   (`#ten-game { position: relative; top: -4vh }` — chỉ chữ dời, thanh tải giữ chỗ; người dùng "lên phía trên 1 chút", chọn ~4%): đo 1000×462 khung
   chữ y 54 → 36, thanh tải giữ y 284; 844×390 ảnh chữ từ y 21, 390×844 từ y 270 — không tràn mép trên.
+  ⚠️ **09/10/2026: THANH TẢI = "VÒNG TRIỆU HỒI"** (người dùng chê thanh cũ "quá cứng"; chọn qua 3 vòng ảnh xem trước trong `CongCu/MauThanhTai/`:
+  mẫu 4 vòng triệu hồi → biến thể **4A Cổ tự khắc đá** → chữ giữa **"Hồn ma thì thầm"** nhưng **màu đá bia mộ + vết máu**): SVG vẽ bằng JS trong
+  template (`#vong`, `veVong`, gọi từ `datTienDo`) — vòng máu cháy theo %, 24 rune khắc nét kép sáng dần + quay chậm, 72 vạch chia độ quay ngược,
+  ngôi sao sáng từng cạnh, 5 chấm phép; số % + "ĐANG TRIỆU HỒI" font **Cormorant SC Bold** (`TemplateData/CormorantSC-Bold.ttf`, đủ 134 chữ có dấu, OFL
+  kèm), mặt chữ màu đá lấy mẫu từ ảnh tên game (#6e695e / #85836f / #a09d86) + hạt sần + vết máu loang (feTurbulence cắt ngưỡng, #8d2825 / #670d11)
+  + 3 vệt máu chảy nhỏ giọt, hai bóng ma lệch rung, dòng chữ vặn như khói. ⚠️ Bộ lọc SVG phải `color-interpolation-filters="sRGB"` — mặc định
+  linearRGB đẩy đỏ máu thành HỒNG. Màn thấp (≤ 520) tên game co về 105vh rộng cho vòng vừa màn. Đo (máy chủ tĩnh `web/`): 1000×640 vòng y 273–555,
+  844×390 vòng 172 px y 162–333 + tác giả ≤ 360, 390×844 vòng 289 px — không tràn; console 0 lỗi; font nạp được.
   ⚠️ **Cùng ngày (sau): MẶT CHỮ = ĐÁ BIA MỘ** cho CẢ trang Loading lẫn màn trong game (người dùng: "màu giống bia mộ trong game, sần sùi,
   nhiều vết nứt, nhiều vết máu; giọt máu / giọt rơi / cụm máu giữ nguyên"; rồi "sáng hơn một chút"; rồi "giống vậy cho màn trong game"):
   vật liệu `TD2C_DaMo` (`CongCu/Blender/tieu_de_vat_lieu_bia.py`) dùng CHÍNH ảnh `DaMo_Mau/Gan/MatNa.png` của vật liệu `Act2_DaBia`

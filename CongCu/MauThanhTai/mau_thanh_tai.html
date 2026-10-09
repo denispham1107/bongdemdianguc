@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mẫu thanh tải</title>
+<!-- 4 MAU THANH TAI de nguoi dung chon (09/10/2026: "thanh loading con qua cung, thiet ke lai cho hop phong cach kinh di;
+     thiet ke 4 mau de toi xem, khi nao toi chon mau nao ban moi code lai"). Chi la ban xem truoc - KHONG dung trong game.
+     ?p=0.62 dung yen o 62% (de chup anh); khong co tham so thi chay vong 0 -> 100%. -->
+<style>
+  @font-face { font-family: "InterViet"; src: url("../../web/TemplateData/Inter-Regular.ttf"); }
+  :root { --nen: #07070a; }
+  html, body { margin: 0; background: var(--nen); color: #b9b9c0; font: 15px/1.6 "InterViet", system-ui, sans-serif; }
+  .o {
+    position: relative; height: 300px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    background:
+      radial-gradient(ellipse 55% 60% at 50% 55%, rgba(6,3,4,.72) 0%, rgba(6,3,4,0) 100%),
+      linear-gradient(rgba(6,3,4,.25), rgba(6,3,4,.25)),
+      url("../../web/TemplateData/nen_dianguc.jpg") center 70% / cover no-repeat;
+    border-bottom: 2px solid #000; overflow: hidden;
+  }
+  .nhan { position: absolute; left: 14px; top: 10px; color: #ffd9a8; font-size: 15px; letter-spacing: .04em;
+          text-shadow: 0 0 6px #000, 0 0 2px #000; }
+  .nhan b { color: #ff7a5a; }
+  .so { margin-top: 26px; font-variant-numeric: tabular-nums; color: #cdbdb8; text-shadow: 0 0 6px #000; }
+  .tg { margin-top: 4px; font-size: 13px; letter-spacing: .08em; color: #8a8490; }
+  svg { overflow: visible; display: block; }
+
+  /* ===== MAU 1: XICH SAT DAM MAU ===== */
+  .m1-giot { animation: m1-roi var(--t) ease-in infinite; animation-delay: var(--tre); transform-box: fill-box; opacity: 0; }
+  @keyframes m1-roi { 0%,45% { transform: translateY(0) scale(.3); opacity: 0; } 55% { transform: translateY(4px) scale(1); opacity: 1; }
+                      90% { transform: translateY(30px) scale(.8,1.3); opacity: .9; } 100% { transform: translateY(38px) scale(.5); opacity: 0; } }
+  .m1-rung { animation: m1-lac 3.2s ease-in-out infinite; transform-origin: 50% 0; }
+  @keyframes m1-lac { 0%,100% { transform: rotate(0deg); } 50% { transform: rotate(.35deg); } }
+
+  /* ===== MAU 2: VET NUT DUNG NHAM TREN DA ===== */
+  .m2-dau { animation: m2-dap .9s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+  @keyframes m2-dap { 0%,100% { transform: scale(.75); opacity: .75; } 40% { transform: scale(1.3); opacity: 1; } }
+  .m2-tan { animation: m2-bay var(--t) linear infinite; animation-delay: var(--tre); transform-box: fill-box; opacity: 0; }
+  @keyframes m2-bay { 0% { transform: translate(0,0); opacity: 0; } 10% { opacity: 1; } 100% { transform: translate(var(--dx), -34px); opacity: 0; } }
+  .m2-gan { animation: m2-chay 1.6s linear infinite; }
+  @keyframes m2-chay { to { stroke-dashoffset: -40; } }
+
+  /* ===== MAU 3: DAY DAU LAU ===== */
+  .m3-mat { transition: fill .4s, filter .4s; }
+  .m3-dang .m3-mat { animation: m3-chop .5s steps(2) infinite; }
+  @keyframes m3-chop { 0% { opacity: 1; } 50% { opacity: .35; } }
+  .m3-khoi { animation: m3-boc var(--t) ease-out infinite; animation-delay: var(--tre); transform-box: fill-box; opacity: 0; }
+  @keyframes m3-boc { 0% { transform: translateY(0) scale(.6); opacity: 0; } 20% { opacity: .5; } 100% { transform: translateY(-30px) scale(1.8); opacity: 0; } }
+
+  /* ===== MAU 4: VONG TRIEU HOI ===== */
+  .m4-xoay { animation: m4-quay 24s linear infinite; transform-origin: 0 0; }
+  @keyframes m4-quay { to { transform: rotate(360deg); } }
+  .m4-nhip { animation: m4-dap 1.1s ease-in-out infinite; }
+  @keyframes m4-dap { 0%,60%,100% { opacity: .55; } 15% { opacity: 1; } 40% { opacity: .8; } }
+</style>
+</head>
+<body>
+
+<!-- ================= MAU 1 ================= -->
+<div class="o">
+  <div class="nhan"><b>MẪU 1</b> — XÍCH SẮT ĐẪM MÁU: sợi xích rỉ sét căng ngang, máu thấm dần từng mắt xích, nhỏ giọt xuống</div>
+  <svg id="m1" width="560" height="70" viewBox="0 0 560 70"></svg>
+  <div class="so" data-so>Đang tải... 0%</div>
+  <div class="tg">Tác giả: PHẠM MINH QUÂN</div>
+</div>
+
+<!-- ================= MAU 2 ================= -->
+<div class="o">
+  <div class="nhan"><b>MẪU 2</b> — VẾT NỨT DUNG NHAM: phiến đá bia mộ nứt toác dần, dung nham rỉ sáng trong khe, tàn lửa bay lên</div>
+  <svg id="m2" width="560" height="64" viewBox="0 0 560 64"></svg>
+  <div class="so" data-so>Đang tải... 0%</div>
+  <div class="tg">Tác giả: PHẠM MINH QUÂN</div>
+</div>
+
+<!-- ================= MAU 3 ================= -->
+<div class="o">
+  <div class="nhan"><b>MẪU 3</b> — DÃY ĐẦU LÂU: 12 đầu lâu xâu trên sống xương, lần lượt bừng mắt đỏ, khói đen bốc lên</div>
+  <svg id="m3" width="580" height="74" viewBox="0 0 580 74"></svg>
+  <div class="so" data-so>Đang tải... 0%</div>
+  <div class="tg">Tác giả: PHẠM MINH QUÂN</div>
+</div>
+
+<!-- ================= MAU 4 ================= -->
+<div class="o" style="height:340px">
+  <div class="nhan"><b>MẪU 4</b> — VÒNG TRIỆU HỒI: vòng phép máu cháy dần quanh ngôi sao năm cánh, số % ở giữa</div>
+  <svg id="m4" width="210" height="210" viewBox="-105 -105 210 210"></svg>
+  <div class="tg" style="margin-top:10px">Tác giả: PHẠM MINH QUÂN</div>
+</div>
+
+<script>
+const NS = "http://www.w3.org/2000/svg";
+function el(tag, at, cha) { const e = document.createElementNS(NS, tag); for (const k in at) e.setAttribute(k, at[k]); if (cha) cha.appendChild(e); return e; }
+function rnd(s) { let x = Math.sin(s * 127.1) * 43758.5453; return x - Math.floor(x); }
+
+/* ---------- MAU 1: XICH ---------- */
+const m1 = document.getElementById("m1");
+(function () {
+  const d = el("defs", {}, m1);
+  d.innerHTML = `
+    <linearGradient id="m1-sat" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#6b6058"/><stop offset=".45" stop-color="#3a302b"/><stop offset="1" stop-color="#1a1412"/></linearGradient>
+    <linearGradient id="m1-mau" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#e2453a"/><stop offset=".22" stop-color="#9e0f0a"/><stop offset=".7" stop-color="#560504"/><stop offset="1" stop-color="#2a0202"/></linearGradient>
+    <filter id="m1-sang" x="-20%" y="-60%" width="140%" height="220%"><feGaussianBlur stdDeviation="1.6" result="b"/>
+      <feColorMatrix in="b" values="1 0 0 0 0  0 .2 0 0 0  0 0 .2 0 0  0 0 0 .55 0" result="b2"/>
+      <feMerge><feMergeNode in="b2"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <filter id="m1-ri"><feTurbulence type="fractalNoise" baseFrequency="1.4" numOctaves="2" seed="3"/>
+      <feColorMatrix values="0 0 0 0 .35  0 0 0 0 .14  0 0 0 0 .06  0 0 0 -1.6 1.1"/><feComposite in2="SourceGraphic" operator="in"/></filter>
+    <clipPath id="m1-cat"><rect id="m1-catr" x="0" y="-20" width="0" height="120"/></clipPath>`;
+  const ve = (g, net, mau) => {
+    for (let i = 0; i < 23; i++) {
+      const x = 14 + i * 23.5, ngang = i % 2 === 0;
+      if (ngang) el("ellipse", { cx: x, cy: 22, rx: 15, ry: 9, fill: "none", stroke: mau, "stroke-width": net }, g);
+      else el("rect", { x: x - 13, y: 19.5, width: 26, height: 5, rx: 2.5, fill: mau, stroke: "#0c0807", "stroke-width": .8 }, g);
+    }
+  };
+  const g = el("g", { class: "m1-rung" }, m1);
+  const nen = el("g", {}, g); ve(nen, 4.5, "url(#m1-sat)");
+  const ri = el("g", { filter: "url(#m1-ri)", opacity: .8 }, g); ve(ri, 4.5, "#000");
+  const mau = el("g", { "clip-path": "url(#m1-cat)", filter: "url(#m1-sang)" }, g); ve(mau, 4.6, "url(#m1-mau)");
+  const bong = el("g", { "clip-path": "url(#m1-cat)", opacity: .55 }, g);
+  for (let i = 0; i < 23; i += 2) el("path", { d: `M${14 + i * 23.5 - 9} 16 q9 -5 18 0`, fill: "none", stroke: "#ffb3a0", "stroke-width": 1, "stroke-linecap": "round" }, bong);
+  // vet mau chay xuong duoi moi mat xich da tham
+  m1.giot = [];
+  for (let i = 0; i < 12; i++) {
+    const x = 20 + i * 46 + rnd(i) * 10;
+    const gi = el("g", {}, g);
+    el("path", { d: `M${x - 1.6} 30 q1.6 ${6 + rnd(i + 9) * 6} 3.2 0 z`, fill: "#8a0805" }, gi);
+    el("ellipse", { cx: x, cy: 36, rx: 2.6, ry: 3.6, fill: "#c0150c", class: "m1-giot",
+                    style: `--t:${2 + rnd(i + 3) * 1.6}s;--tre:${rnd(i + 5) * 2}s` }, gi);
+    gi.style.opacity = 0; m1.giot.push({ x, gi });
+  }
+})();
+function veM1(p) {
+  const w = 560 * p; document.getElementById("m1-catr").setAttribute("width", w);
+  for (const o of m1.giot) o.gi.style.opacity = o.x < w - 6 ? 1 : 0;
+}
+
+/* ---------- MAU 2: VET NUT ---------- */
+const m2 = document.getElementById("m2");
+(function () {
+  const d = el("defs", {}, m2);
+  d.innerHTML = `
+    <filter id="m2-da" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency=".9 2.4" numOctaves="4" seed="7"/>
+      <feColorMatrix values="0 0 0 0 .20  0 0 0 0 .19  0 0 0 0 .21  0 0 0 0 1"/><feComposite in2="SourceGraphic" operator="in"/>
+      <feBlend in2="SourceGraphic" mode="multiply"/></filter>
+    <linearGradient id="m2-phien" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5d5a5e"/><stop offset=".55" stop-color="#2f2c30"/><stop offset="1" stop-color="#141215"/></linearGradient>
+    <linearGradient id="m2-lua" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#7a0b02"/><stop offset=".8" stop-color="#ff5a12"/><stop offset="1" stop-color="#ffe3a0"/></linearGradient>
+    <filter id="m2-sang" x="-10%" y="-200%" width="120%" height="500%"><feGaussianBlur stdDeviation="4" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <clipPath id="m2-cat"><rect id="m2-catr" x="0" y="-40" width="0" height="140"/></clipPath>`;
+  // phien da lom chom mep
+  let tren = "M0 14", duoi = "";
+  for (let x = 0; x <= 560; x += 14) tren += ` L${x} ${12 + rnd(x) * 5}`;
+  for (let x = 560; x >= 0; x -= 14) duoi += ` L${x} ${48 + rnd(x + 77) * 5}`;
+  el("path", { d: tren + duoi + " Z", fill: "url(#m2-phien)", stroke: "#0b0a0c", "stroke-width": 1.5 }, m2);
+  el("path", { d: tren + duoi + " Z", fill: "#000", filter: "url(#m2-da)", opacity: .55 }, m2);
+  // duong nut chinh + nhanh
+  let nut = "M2 31", pts = [];
+  for (let x = 2; x <= 558; x += 9) { const y = 31 + (rnd(x * 1.7) - .5) * 9; nut += ` L${x} ${y.toFixed(1)}`; pts.push([x, y]); }
+  el("path", { d: nut, fill: "none", stroke: "#060506", "stroke-width": 3.2, "stroke-linejoin": "bevel" }, m2);
+  const sang = el("g", { "clip-path": "url(#m2-cat)", filter: "url(#m2-sang)" }, m2);
+  el("path", { d: nut, fill: "none", stroke: "url(#m2-lua)", "stroke-width": 3.4, "stroke-linejoin": "bevel" }, sang);
+  el("path", { d: nut, fill: "none", stroke: "#fff1c8", "stroke-width": 1, "stroke-dasharray": "6 14", class: "m2-gan", opacity: .8 }, sang);
+  for (let i = 0; i < 16; i++) {
+    const [x, y] = pts[Math.floor(rnd(i + 40) * pts.length)], h = rnd(i) < .5 ? -1 : 1;
+    const nh = `M${x} ${y} l${4 + rnd(i) * 6} ${h * (5 + rnd(i + 2) * 7)} l${3 + rnd(i + 4) * 5} ${h * (2 + rnd(i + 6) * 4)}`;
+    el("path", { d: nh, fill: "none", stroke: "#060506", "stroke-width": 1.4 }, m2);
+    el("path", { d: nh, fill: "none", stroke: "#ff6a1e", "stroke-width": 1.2 }, sang);
+  }
+  m2.pts = pts;
+  m2.dau = el("circle", { r: 7, fill: "#ffd890", filter: "url(#m2-sang)", class: "m2-dau" }, m2);
+  m2.tan = [];
+  for (let i = 0; i < 10; i++) {
+    const t = el("circle", { r: 1.2 + rnd(i) * 1.3, fill: rnd(i + 3) < .5 ? "#ffb04a" : "#ff5a1a", class: "m2-tan",
+      style: `--t:${1 + rnd(i + 8) * 1.4}s;--tre:${rnd(i + 11) * 1.5}s;--dx:${(rnd(i + 13) - .5) * 30}px` }, m2);
+    m2.tan.push({ t, lech: (rnd(i + 20) - .7) * 60 });
+  }
+})();
+function veM2(p) {
+  const w = 4 + 552 * p; document.getElementById("m2-catr").setAttribute("width", w);
+  let y = 31; for (const [x, yy] of m2.pts) if (x <= w) y = yy;
+  m2.dau.setAttribute("cx", w); m2.dau.setAttribute("cy", y);
+  for (const o of m2.tan) { const x = Math.max(4, w + o.lech); o.t.setAttribute("cx", x); o.t.setAttribute("cy", 30); o.t.style.display = p > .02 ? "" : "none"; }
+}
+
+/* ---------- MAU 3: DAU LAU ---------- */
+const m3 = document.getElementById("m3");
+(function () {
+  const d = el("defs", {}, m3);
+  d.innerHTML = `
+    <radialGradient id="m3-xuong" cx=".45" cy=".35" r=".7"><stop offset="0" stop-color="#d9cfb8"/><stop offset=".6" stop-color="#8f8470"/><stop offset="1" stop-color="#3e362c"/></radialGradient>
+    <radialGradient id="m3-toi" cx=".45" cy=".35" r=".7"><stop offset="0" stop-color="#4a443d"/><stop offset="1" stop-color="#16130f"/></radialGradient>
+    <filter id="m3-do" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="2.4" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <filter id="m3-quang" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="7"/></filter>
+    <radialGradient id="m3-khoi"><stop offset="0" stop-color="#2a2426" stop-opacity=".8"/><stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient>`;
+  // song xuong noi cac dau lau
+  el("rect", { x: 6, y: 40, width: 568, height: 5, rx: 2.5, fill: "#3b3329", stroke: "#0d0b09" }, m3);
+  for (let x = 12; x < 570; x += 12) el("rect", { x, y: 38, width: 4, height: 9, rx: 1.5, fill: "#4c4337" }, m3);
+  m3.dau = [];
+  for (let i = 0; i < 12; i++) {
+    const cx = 24 + i * 48, g = el("g", { transform: `translate(${cx} 36) rotate(${(rnd(i) - .5) * 10})` }, m3);
+    const q = el("ellipse", { cx: 0, cy: 2, rx: 22, ry: 20, fill: "#b4140a", filter: "url(#m3-quang)", opacity: 0 }, g);
+    const khoi = el("circle", { cx: 0, cy: -16, r: 8, fill: "url(#m3-khoi)", class: "m3-khoi", style: `--t:${2 + rnd(i + 5)}s;--tre:${rnd(i + 7) * 2}s` }, g);
+    // so + ham
+    const so = el("path", { d: "M-15 2 C-17 -14 -8 -21 0 -21 C8 -21 17 -14 15 2 C14 7 11 9 9 10 L9 16 L-9 16 L-9 10 C-11 9 -14 7 -15 2 Z",
+      fill: "url(#m3-toi)", stroke: "#0b0907", "stroke-width": 1.2 }, g);
+    for (const x of [-6, -2, 2, 6]) el("rect", { x: x - 1.3, y: 11, width: 2.6, height: 5, fill: "#0b0907", opacity: .7 }, g);
+    const mt = el("path", { d: "M-11 -4 C-11 -9 -4 -9 -3 -4 C-3 0 -9 1 -11 -4 Z", fill: "#050404", class: "m3-mat" }, g);
+    const mp = el("path", { d: "M11 -4 C11 -9 4 -9 3 -4 C3 0 9 1 11 -4 Z", fill: "#050404", class: "m3-mat" }, g);
+    el("path", { d: "M0 2 L-2.5 7 L2.5 7 Z", fill: "#050404" }, g);
+    el("path", { d: `M${-6 + rnd(i) * 4} -19 l3 6 l-2 4`, fill: "none", stroke: "#0b0907", "stroke-width": .9 }, g);
+    m3.dau.push({ g, so, mt, mp, q, khoi });
+  }
+})();
+function veM3(p) {
+  const n = p * 12;
+  m3.dau.forEach((o, i) => {
+    const sang = i < Math.floor(n), dang = i === Math.floor(n) && n < 12;
+    o.so.setAttribute("fill", sang ? "url(#m3-xuong)" : "url(#m3-toi)");
+    for (const m of [o.mt, o.mp]) { m.setAttribute("fill", sang || dang ? "#ff2a12" : "#050404"); m.setAttribute("filter", sang || dang ? "url(#m3-do)" : ""); }
+    o.g.classList.toggle("m3-dang", dang);
+    o.q.setAttribute("opacity", sang ? .55 : dang ? .25 : 0);
+    o.khoi.style.display = sang ? "" : "none";
+  });
+}
+
+/* ---------- MAU 4: VONG TRIEU HOI ---------- */
+const m4 = document.getElementById("m4");
+(function () {
+  const d = el("defs", {}, m4);
+  d.innerHTML = `
+    <filter id="m4-sang" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="3" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <radialGradient id="m4-long"><stop offset="0" stop-color="#2a0503" stop-opacity=".95"/><stop offset=".7" stop-color="#120203" stop-opacity=".85"/><stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient>`;
+  el("circle", { r: 104, fill: "url(#m4-long)" }, m4);
+  const R = 86, chuVi = 2 * Math.PI * R;
+  // vong ngoai: nen toi + vong mau chay theo %
+  el("circle", { r: R, fill: "none", stroke: "#2a0d0a", "stroke-width": 7 }, m4);
+  m4.vong = el("circle", { r: R, fill: "none", stroke: "#d1170b", "stroke-width": 5, "stroke-linecap": "round",
+    "stroke-dasharray": `0 ${chuVi}`, transform: "rotate(-90)", filter: "url(#m4-sang)" }, m4);
+  m4.chuVi = chuVi;
+  // vanh ky tu phep (net ve tay, quay cham)
+  const xoay = el("g", { class: "m4-xoay" }, m4);
+  el("circle", { r: 72, fill: "none", stroke: "#5a1410", "stroke-width": 1 }, xoay);
+  el("circle", { r: 60, fill: "none", stroke: "#5a1410", "stroke-width": 1 }, xoay);
+  m4.kyTu = [];
+  for (let i = 0; i < 24; i++) {
+    const a = i / 24 * Math.PI * 2, x = Math.cos(a) * 66, y = Math.sin(a) * 66;
+    const k = rnd(i), dd = k < .25 ? "M0 -4 L0 4 M-3 -1 L3 -4" : k < .5 ? "M-3 -4 L0 4 L3 -4" : k < .75 ? "M-3 4 L-3 -4 L3 0 L-3 4" : "M0 -4 L0 4 M-3 2 L3 -2 M-3 -2 L3 2";
+    m4.kyTu.push(el("path", { d: dd, transform: `translate(${x} ${y}) rotate(${a * 180 / Math.PI + 90})`, fill: "none", stroke: "#4a1210", "stroke-width": 1.3, "stroke-linecap": "round" }, xoay));
+  }
+  // ngoi sao nam canh
+  const dinh = []; for (let i = 0; i < 5; i++) { const a = -Math.PI / 2 + i * Math.PI * 2 / 5; dinh.push([Math.cos(a) * 58, Math.sin(a) * 58]); }
+  m4.canh = [];
+  for (let i = 0; i < 5; i++) {
+    const [x1, y1] = dinh[i], [x2, y2] = dinh[(i + 2) % 5];
+    el("line", { x1, y1, x2, y2, stroke: "#2a0d0a", "stroke-width": 2 }, m4);
+    m4.canh.push(el("line", { x1, y1, x2, y2, stroke: "#ff3a1c", "stroke-width": 2, filter: "url(#m4-sang)", opacity: 0, class: "m4-nhip" }, m4));
+  }
+  m4.so = el("text", { y: 9, "text-anchor": "middle", fill: "#ffd2b8", "font-size": 26, "font-family": "InterViet",
+    style: "font-variant-numeric:tabular-nums;paint-order:stroke;stroke:#000;stroke-width:4px" }, m4);
+  m4.chu = el("text", { y: 28, "text-anchor": "middle", fill: "#b9a29a", "font-size": 10.5, "font-family": "InterViet", "letter-spacing": "1.5",
+    style: "paint-order:stroke;stroke:#000;stroke-width:3px" }, m4);
+  m4.chu.textContent = "ĐANG TRIỆU HỒI";
+})();
+function veM4(p) {
+  m4.vong.setAttribute("stroke-dasharray", `${m4.chuVi * p} ${m4.chuVi}`);
+  m4.canh.forEach((c, i) => c.setAttribute("opacity", p * 5 > i + .5 ? 1 : 0));
+  m4.kyTu.forEach((k, i) => k.setAttribute("stroke", p * 24 > i ? "#e0402a" : "#4a1210"));
+  m4.so.textContent = Math.round(p * 100) + "%";
+}
+
+/* ---------- dong ho chung ---------- */
+const thamSo = new URLSearchParams(location.search).get("p");
+function ve(p) {
+  veM1(p); veM2(p); veM3(p); veM4(p);
+  document.querySelectorAll("[data-so]").forEach(e => e.textContent = "Đang tải... " + Math.round(p * 100) + "%");
+}
+if (thamSo !== null) ve(Math.max(0, Math.min(1, parseFloat(thamSo))));
+else { const t0 = performance.now(); (function vong(t) { const p = ((t - t0) / 7000) % 1.15; ve(Math.min(1, p)); requestAnimationFrame(vong); })(t0); }
+</script>
+</body>
+</html>
