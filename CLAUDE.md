@@ -932,7 +932,7 @@ hơn ×1,5 và mở xuống 1,8–4,3 m** (người dùng chọn sau menu 94 ch�
   template (`#vong`, `veVong`, gọi từ `datTienDo`) — vòng máu cháy theo %, 24 rune khắc nét kép sáng dần + quay chậm, 72 vạch chia độ quay ngược,
   ngôi sao sáng từng cạnh, 5 chấm phép; số % + "ĐANG TRIỆU HỒI" font **Cormorant SC Bold** (`TemplateData/CormorantSC-Bold.ttf`, đủ 134 chữ có dấu, OFL
   kèm), mặt chữ màu đá lấy mẫu từ ảnh tên game (#6e695e / #85836f / #a09d86) + hạt sần (cùng ngày người dùng **bỏ vết máu loang trên chữ + số**,
-  đã xoá các lớp lọc ấy) + 3 vệt máu chảy nhỏ giọt dưới chân số, hai bóng ma lệch rung, dòng chữ vặn như khói. ⚠️ Bộ lọc SVG phải `color-interpolation-filters="sRGB"` — mặc định
+  đã xoá các lớp lọc ấy; sau đó bỏ luôn 3 vệt máu nhỏ giọt dưới chân số), hai bóng ma lệch rung, dòng chữ vặn như khói. ⚠️ Bộ lọc SVG phải `color-interpolation-filters="sRGB"` — mặc định
   linearRGB đẩy đỏ máu thành HỒNG. Màn thấp (≤ 520) tên game co về 105vh rộng cho vòng vừa màn. Đo (máy chủ tĩnh `web/`): 1000×640 vòng y 273–555,
   844×390 vòng 172 px y 162–333 + tác giả ≤ 360, 390×844 vòng 289 px — không tràn; console 0 lỗi; font nạp được.
   ⚠️ **Cùng ngày (sau): MẶT CHỮ = ĐÁ BIA MỘ** cho CẢ trang Loading lẫn màn trong game (người dùng: "màu giống bia mộ trong game, sần sùi,

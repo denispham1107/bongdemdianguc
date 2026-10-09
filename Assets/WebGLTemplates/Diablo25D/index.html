@@ -171,11 +171,6 @@
     #vong .ma2 { animation: vong-ma2 1.9s steps(1) infinite; }
     @keyframes vong-ma1 { 0% { transform: translate(-2px,0); } 20% { transform: translate(-3px,1px); } 41% { transform: translate(-1px,-1px); } 63% { transform: translate(-4px,0); } 80% { transform: translate(-2px,1px); } }
     @keyframes vong-ma2 { 0% { transform: translate(2px,0); } 25% { transform: translate(3px,-1px); } 50% { transform: translate(1px,1px); } 70% { transform: translate(4px,0); } 90% { transform: translate(2px,-1px); } }
-    /* Vet mau chay duoi chan so dai ra roi nho giot */
-    #vong .chay { animation: vong-chay var(--t) ease-in infinite; animation-delay: var(--tre); transform-box: fill-box; transform-origin: top; }
-    @keyframes vong-chay { 0% { transform: scaleY(.35); } 70% { transform: scaleY(1); } 100% { transform: scaleY(.35); } }
-    #vong .roi { animation: vong-roi var(--t) ease-in infinite; animation-delay: var(--tre); transform-box: fill-box; opacity: 0; }
-    @keyframes vong-roi { 0%,62% { transform: translateY(0); opacity: 0; } 68% { opacity: 1; } 100% { transform: translateY(22px); opacity: 0; } }
     /* Man thap (dien thoai nam ngang): ten game nho lai mot chut cho vong + tac gia van vua man */
     @media (max-height: 520px) { #ten-game { width: min(88vw, 640px, 105vh); } }
     #loi-nang { color: #ff6b60; max-width: 80vw; text-align: center; margin-top: 18px; }
@@ -209,10 +204,9 @@
     var NS = "http://www.w3.org/2000/svg";
     var svg = document.querySelector("#vong");
     function el(tag, at, cha) { var e = document.createElementNS(NS, tag); for (var k in at) e.setAttribute(k, at[k]); if (cha) cha.appendChild(e); return e; }
-    function rnd(s) { var x = Math.sin(s * 127.1 + 3.7) * 43758.5453; return x - Math.floor(x); }
     var TOI = "#3c0e0b", TOI2 = "#24080a", SANG = "#ff4a24";
-    // Mau DA BIA MO + MAU lay tu chinh anh ten game (chu da bia co vet mau): da toi / giua / sang, mau sam / giua / tuoi
-    var DA = ["#6e695e", "#85836f", "#a09d86"], MAU = ["#670d11", "#8d2825", "#bb524c"];
+    // Mau DA BIA MO lay tu chinh anh ten game (chu da bia): da toi / giua / sang. 09/10/2026 nguoi dung bo vet mau loang + vet mau chay
+    var DA = ["#6e695e", "#85836f", "#a09d86"];
     el("defs", {}, svg).innerHTML =
       '<filter id="vt-sang" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="1.6" result="b"/>' +
         '<feMerge><feMergeNode in="b"/><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>' +
@@ -318,13 +312,6 @@
     var soLam = chu({ y: 10, "font-family": F, "font-weight": 700, "font-size": 42, fill: "#6f8cff", opacity: .2, "class": "ma2" }, "0%");
     var so = chu({ y: 10, "font-family": F, "font-weight": 700, "font-size": 42, fill: "url(#vt-mat-da)", filter: "url(#vt-bia)",
       stroke: "#0d0a08", "stroke-width": 2.6, "paint-order": "stroke" }, "0%");
-    // vet mau chay xuong tu chan so (nhu vet mau chay tren bia)
-    [[-17, 5], [-3, 8], [13, 4]].forEach(function (v, k) {
-      var st = "--t:" + (2.4 + rnd(k) * 1.4) + "s;--tre:" + (rnd(k + 3) * 2) + "s";
-      el("path", { d: "M" + (v[0] - 1.8) + " 9 L" + (v[0] + 1.8) + " 9 L" + (v[0] + 1) + " " + (9 + v[1]) + " Q" + v[0] + " " + (11.5 + v[1]) + " " + (v[0] - 1) + " " + (9 + v[1]) + " Z",
-        fill: MAU[0], "class": "chay", style: st }, svg);
-      el("ellipse", { cx: v[0], cy: 12.5 + v[1], rx: 1.6, ry: 2.3, fill: MAU[1], "class": "roi", style: st }, svg);
-    });
     var nhan = chu({ y: 32, "font-family": F, "font-weight": 700, "font-size": 12.5, "letter-spacing": 2.4, fill: "url(#vt-mat-da)",
       stroke: "#0d0a08", "stroke-width": 2.4, "paint-order": "stroke" }, "ĐANG TRIỆU HỒI");
     // dong chu: da bia + vet mau, va vat veo nhu khoi (bo loc khoi boc ngoai bo loc da)
