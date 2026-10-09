@@ -321,7 +321,8 @@
       var f = Math.max(0, Math.min(1, p / 100)), txt = Math.round(p) + "%";
       vongMau.setAttribute("stroke-dasharray", C * f + " " + C);
       vienTrong.setAttribute("stroke-dasharray", C * f + " " + C);
-      canh.forEach(function (c, k) { c.setAttribute("opacity", f * 5 > k + .5 ? 1 : 0); });
+      // 5 net sao sang o 0 / 20 / 40 / 60 / 80% (09/10/2026 nguoi dung: net ngang - net cuoi - truoc chi sang khi qua 90%)
+      canh.forEach(function (c, k) { c.setAttribute("opacity", f * 5 >= k ? 1 : 0); });
       rune.forEach(function (r, k) { toRune(r, f * 24 > k); });
       cham.forEach(function (c, k) { var s = f * 5 > k + .5; c.p[0].setAttribute("stroke", s ? SANG : TOI); c.p[1].setAttribute("fill", s ? SANG : TOI); c.g.setAttribute("filter", s ? "url(#vt-sang)" : ""); });
       so.textContent = soMo.textContent = soDo.textContent = soLam.textContent = txt;
@@ -330,6 +331,24 @@
   })();
 
   function datTienDo(p) { veVong(p); }
+
+  // Canh VONG vao GIUA day chu ten game (anh, tru phan dem) va mep tren dong tac gia (09/10/2026 nguoi dung). Do lai khi
+  // anh / font nap xong va khi doi co / xoay man; dich bang transform nen dong tac gia giu nguyen cho.
+  function canhVong() {
+    var v = document.querySelector("#vong"), anh = document.querySelector("#ten-game"), tg = document.querySelector("#tac-gia");
+    if (!v || !anh || !tg) return;
+    v.style.transform = "";
+    var a = anh.getBoundingClientRect();
+    if (a.height < 2) return;                              // anh chua nap
+    var dayChu = a.bottom - parseFloat(getComputedStyle(anh).paddingBottom || "0");
+    var b = v.getBoundingClientRect(), giua = (dayChu + tg.getBoundingClientRect().top) / 2;
+    v.style.transform = "translateY(" + Math.round(giua - (b.top + b.bottom) / 2) + "px)";
+  }
+  canhVong();
+  window.addEventListener("resize", canhVong);
+  window.addEventListener("load", canhVong);
+  document.querySelector("#ten-game").addEventListener("load", canhVong);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(canhVong);
 
   // ================================================================
   //  CAI DAT NHU MOT UNG DUNG
