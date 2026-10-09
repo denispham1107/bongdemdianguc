@@ -7502,6 +7502,28 @@ người gục: độ đục 0,45 — số lỗi = 0
 Menu 92 (Đơn / Đôi): **0 lỗi** — tên màu đội + dòng "ĐỘI A/B" phía trên. Ảnh trong game phóng to:
 `PlayTestShots/bangten_lua_dia_nguc.png`.
 
+### Hiệu ứng mới: Quả cầu lửa đánh ngã 10%, Quả cầu băng / Giựt sét / Gió lốc 20% (09/10/2026)
+
+Anh đổi khả năng gây hiệu ứng (cấp 1). Tôi hỏi lại phần Quả cầu lửa (cấp 5 vốn đã có 30% đánh ngã 1,5 s): anh chọn **cấp 1–4: 10%,
+cấp 5 giữ 30%**, thời gian ngã của mức 10% là **1 giây**.
+
+| Kỹ năng | Hiệu ứng | Cũ | Mới |
+|---|---|---|---|
+| Quả cầu lửa | Đánh ngã (mỗi quả, cả quả nảy) | cấp 1–4: không · cấp 5: 30% / 1,5 s | cấp 1–4: **10% / 1 s** · cấp 5: 30% / 1,5 s |
+| Quả cầu băng | Đóng băng | 40% / 1,5 s | **20% / 1 s** |
+| | Làm chậm (mọi lần trúng) | 50% / 2 s | **80% / 3 s** |
+| Giựt sét | Choáng (mỗi cú trúng, cả tia lan) | 15% / 1,5 s | **20%** / 1,5 s |
+| Gió lốc | Hất tung (mỗi cơn lốc) | 80% / 0,7 s | **20% / 0,8 s** |
+
+Thời gian hiệu ứng vẫn +0,15 s mỗi cấp kỹ năng. Mô tả Sách phép sửa theo (tóm tắt Gió lốc cũ còn ghi "Ba cơn lốc" — nay "Hai cơn lốc").
+
+**Số đo** (đếm thật, không đọc hằng): menu 68 — 1 000 lần nổ: chậm 100% (0,8 × 3,00 s), đóng băng **21,4%**, 1,00 s; cấp 3 → chậm 3,30 s,
+đóng băng 1,30 s. Menu 69 — 160 lần phóng: choáng tia đầu **18,4%**, tia lan **20,6%**; cấp 3 choáng 1,80 s. Menu 70 — xác suất ngã mang trên quả cầu
+THẬT theo cấp 1..5 = 0,10 / 0,10 / 0,10 / 0,10 / 0,30; một quả cấp thường nổ giữa 400 bia: ngã **7,0%** (cấp 5: 26,0%; đối chứng xác suất 0: 0).
+Menu 71 — 190 lần lốc trúng: hất tung **38 (20,0%)**, bay TB **0,81 s**, cao 3,00 m, 38/38 ngã ngửa rồi đứng lại. Menu 82: 0 lỗi. **0 lỗi cả năm.**
+Phép thử sửa theo: số cứng mới; menu 68 lấy ĐÚNG quả vừa sinh (`FindAnyObjectByType` bắt nhầm quả còn sót của mục trước → "cấp 3 không kéo dài");
+menu 69 chờ hết hồi chiêu Giựt sét 0,9 s trước mỗi lần tung (lỗi từ hồi chiêu mới, không phải từ choáng).
+
 ### Mana 180, giá mana mới, hồi chiêu 0,9 s cho bốn chiêu cơ bản, đợt 4 cũng một nửa (09/10/2026)
 
 Anh xin: vào game mana tổng **180** cho người chơi thật và máy BOT (trước 250); giá mana cấp 1 mới cho 15 kỹ năng chủ động; "delay"

@@ -338,12 +338,12 @@ public static class SachPhep
             case 3: return "Cuốn mọi thứ lên trời";
             case 4: return "Ba khối đá lửa rơi xuống";
             case 5: return "Vòm chắn quanh mình";
-            case 6: return "4 tia sét lan, 15% choáng";
+            case 6: return "4 tia sét lan, 20% choáng";
             // NGAN: goc phai hang con ghi "Cap 1/3 - con N binh" (25/09/2026) - dai hon la chu de len nhau
             case CapDo.KyBinhMau: return "Hồi tối đa " + Mathf.RoundToInt(PlayerController.MauBinhTheoCap(CapHienThi(ky))) + " máu";
             case CapDo.KyBinhMana: return "Hồi tối đa " + Mathf.RoundToInt(PlayerController.ManaBinhTheoCap(CapHienThi(ky))) + " năng lượng";
-            case CapDo.KyQuaCauBang: return "Ba quả băng, 40% đóng băng";
-            case CapDo.KyGioLoc: return "Ba cơn lốc hình quạt, 80% hất tung";
+            case CapDo.KyQuaCauBang: return "Ba quả băng, chậm 80%, 20% đóng băng";
+            case CapDo.KyGioLoc: return "Hai cơn lốc hình quạt, 20% hất tung";
             case CapDo.KyLuaDiaNguc: return "Năm quả lửa tự đuổi kẻ địch";
             case CapDo.KyTangHinh: return "Trong suốt 90 giây, hiện hình nổ vòng phép";
             case CapDo.KyCauDien: return "Cầu điện bắn 10 lượt, mỗi lượt 5 tia";
@@ -373,10 +373,11 @@ public static class SachPhep
                      + "thứ quanh điểm nổ. Cây cối trúng lửa sẽ bắt cháy và cháy lan "
                      + "theo thân.\n\n"
                      + "Quả lửa bay XUYÊN QUA bia mộ và đá — chỉ nhà, cây cối và lò lửa mới chặn được.\n\n"
-                     + "Đây là đòn rẻ nhất và hồi nhanh nhất — thứ để dùng liên tục "
+                     + "Đây là đòn cơ bản, rẻ và hồi nhanh — thứ để dùng liên tục "
                      + "giữa hai lần tung phép lớn.\n\n"
-                     + "Lên CẤP 5: mỗi quả nổ có 30% khả năng ĐÁNH NGÃ kẻ trúng đòn 1,5 giây — "
-                     + "kẻ bị ngã không đi được, không đánh được, không tung phép được.\n\n"
+                     + "Mỗi quả nổ có 10% khả năng ĐÁNH NGÃ kẻ trúng đòn 1 giây — "
+                     + "kẻ bị ngã không đi được, không đánh được, không tung phép được. "
+                     + "Lên CẤP 5: 30% khả năng đánh ngã, ngã 1,5 giây.\n\n"
                      + "Quả nổ trúng kẻ địch thì NẢY sang kẻ địch gần nhất chưa trúng (trong 6 m) và nổ thêm một lần nữa, mạnh y như cũ.";
             case 1:
                 return "Gọi một cơn bão lạnh phủ xuống khu vực đã chọn: tuyết rơi, sương "
@@ -427,7 +428,7 @@ public static class SachPhep
                      + "tới 4 kẻ địch thì 4 tia cùng phóng ra một lúc, mỗi tia một kẻ. Chạm "
                      + "kẻ địch rồi mỗi tia lại NHẢY tiếp sang những kẻ đứng gần đó.\n\n"
                      + "Sát thương ban đầu 75, mỗi lần nhảy giảm bớt một ít. Mỗi cú đánh "
-                     + "trúng — kể cả tia nhảy — có 15% khả năng làm kẻ địch BỊ CHOÁNG.\n\n"
+                     + "trúng — kể cả tia nhảy — có 20% khả năng làm kẻ địch BỊ CHOÁNG.\n\n"
                      + "Đòn rẻ, hồi nhanh, hợp lúc bị vây.";
             case CapDo.KyBinhMau:
                 return "Uống cạn một bình máu đặc sánh, hồi ngay tối đa " + Mathf.RoundToInt(PlayerController.MauBinhTheoCap(CapHienThi(ky))) + " máu. Máu đang đầy "
@@ -460,8 +461,8 @@ public static class SachPhep
                      + "ban đầu 65 mỗi quả.\n\n"
                      + "Quả băng bay XUYÊN QUA bia mộ và đá — chỉ nhà, cây cối và lò lửa mới chặn được. "
                      + "Nổ trúng LÒ LỬA thì dập tắt lửa, 30 giây sau lò cháy lại.\n\n"
-                     + "Kẻ nào trúng đều bị LÀM CHẬM một nửa tốc độ trong 2 giây, và có 40% khả năng bị "
-                     + "ĐÓNG BĂNG 1,5 giây — đứng cứng tại chỗ, không đi và không dùng được kỹ năng nào.\n\n"
+                     + "Kẻ nào trúng đều bị LÀM CHẬM 80% tốc độ trong 3 giây, và có 20% khả năng bị "
+                     + "ĐÓNG BĂNG 1 giây — đứng cứng tại chỗ, không đi và không dùng được kỹ năng nào.\n\n"
                      + "CẤP 5: mỗi lần tung ra NĂM quả cầu băng thay vì ba, và tảng băng mọc lên "
                      + "sau vụ nổ đến lúc tan thì NỔ TUNG, giáng thêm 100 sát thương lên mọi kẻ "
                      + "ở gần trong 3,4 mét.\n\n"
@@ -476,7 +477,7 @@ public static class SachPhep
                      + "Trên thân lốc luôn lóe hai tia sét giăng từ miệng xuống (chỉ là hiệu ứng, không gây thêm sát thương).\n\n"
                      + "Mỗi cơn lốc lướt qua một kẻ địch thì gây 75 sát thương — mỗi cơn chỉ đánh mỗi kẻ một lần, "
                      + "kẻ bị nhiều cơn quét qua thì trúng nhiều lần.\n\n"
-                     + "Mỗi lần trúng có 80% khả năng HẤT TUNG kẻ địch lên cao 3 mét, ngã ngửa ra sau giữa không trung trong 0,7 giây: không "
+                     + "Mỗi lần trúng có 20% khả năng HẤT TUNG kẻ địch lên cao 3 mét, ngã ngửa ra sau giữa không trung trong 0,8 giây: không "
                      + "đi, không đánh được, và chiêu đang niệm dở bị NGẮT NGAY.\n\n"
                      + "Lốc lướt qua lò lửa thì dập tắt lửa, 30 giây sau lò cháy lại.\n\n"
                      + "CẤP 5: phóng cùng lúc BA cơn lốc hình quạt.";

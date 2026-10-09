@@ -397,22 +397,26 @@ public static class ThuQuaCauBang
         float tl = 100f * soCham / N;
         // cap 3: giay cham + 2 * 0,15
         float them = CapDo.ThemGiayHieuUngTheoCap(3);
+        // Lay DUNG qua vua sinh (FindAnyObjectByType tung bat nham qua con sot cua muc F - 09/10/2026)
+        var truocCap3 = new System.Collections.Generic.HashSet<QuaCauBang>(Object.FindObjectsByType<QuaCauBang>(FindObjectsSortMode.None));
         QuaCauBang.SpawnChum(tam + Vector3.up * 5f, Vector3.down, 0, maskEnemy, null, 1, 0f, 1f, them);
-        var quaCap3 = Object.FindAnyObjectByType<QuaCauBang>();
+        QuaCauBang quaCap3 = null;
+        foreach (var q in Object.FindObjectsByType<QuaCauBang>(FindObjectsSortMode.None)) if (!truocCap3.Contains(q)) { quaCap3 = q; break; }
         float giayCap3 = quaCap3 != null ? quaCap3.giayCham : -1f;
         float dongCap3 = quaCap3 != null ? quaCap3.giayDongBang : -1f;
         if (quaCap3 != null) Object.Destroy(quaCap3.gameObject);
         float tlDong = 100f * soDongCung / N;
-        Ghi(string.Format("F. {0} lan no: bi cham {1:F1}% (mong 100%), DONG BANG {2:F1}% (mong 40%); slow {3}..{4} (mong 0,5), thoi gian cham {5:F2}..{6:F2} giay (mong 2); dong cung {7:F2}..{8:F2} giay (mong 1,50); qua cau cap 3: cham {9:F2} giay (mong 2,30), dong bang {10:F2} giay (mong 1,80)",
+        Ghi(string.Format("F. {0} lan no: bi cham {1:F1}% (mong 100%), DONG BANG {2:F1}% (mong 20%); slow {3}..{4} (mong 0,8), thoi gian cham {5:F2}..{6:F2} giay (mong 3); dong cung {7:F2}..{8:F2} giay (mong 1,00); qua cau cap 3: cham {9:F2} giay (mong 3,30), dong bang {10:F2} giay (mong 1,30)",
             N, tl, tlDong, slowMin, slowMax, conMin, conMax, dongMin, dongMax, giayCap3, dongCap3));
         Kiem(Mathf.Abs(tl - 100f) < 0.01f, "trung ma khong chac chan bi lam cham");
-        Kiem(Mathf.Abs(tlDong - 40f) <= 5f, "ti le dong bang lech qua xa 40%");
-        Kiem(soDongCung > 0 && Mathf.Abs(dongMin - 1.5f) < 0.01f && Mathf.Abs(dongMax - 1.5f) < 0.01f, "dong bang khong phai 1,5 giay");
-        Kiem(Mathf.Abs(dongCap3 - 1.80f) < 0.01f, "cap ky nang khong keo dai dong bang");
-        Kiem(Mathf.Approximately(slowMin, 0.5f) && Mathf.Approximately(slowMax, 0.5f), "muc cham khong phai 50%");
-        Kiem(Mathf.Abs(conMin - 2f) < 0.01f && Mathf.Abs(conMax - 2f) < 0.01f, "lam cham khong keo dai 2 giay");
+        // 09/10/2026 nguoi dung: dong bang 20% / 1 giay, cham 80% / 3 giay (truoc 40% / 1,5 s, 50% / 2 s) - so viet tay
+        Kiem(Mathf.Abs(tlDong - 20f) <= 4f, "ti le dong bang lech qua xa 20%");
+        Kiem(soDongCung > 0 && Mathf.Abs(dongMin - 1f) < 0.01f && Mathf.Abs(dongMax - 1f) < 0.01f, "dong bang khong phai 1 giay");
+        Kiem(Mathf.Abs(dongCap3 - 1.30f) < 0.01f, "cap ky nang khong keo dai dong bang");
+        Kiem(Mathf.Approximately(slowMin, 0.8f) && Mathf.Approximately(slowMax, 0.8f), "muc cham khong phai 80%");
+        Kiem(Mathf.Abs(conMin - 3f) < 0.01f && Mathf.Abs(conMax - 3f) < 0.01f, "lam cham khong keo dai 3 giay");
         Kiem(SachPhep.MoTa(K).Contains("ĐÓNG BĂNG") && SachPhep.MoTa(K).Contains("NĂM quả"), "mo ta Sach phep chua noi dong bang / cap 5 nam qua");
-        Kiem(Mathf.Abs(giayCap3 - 2.30f) < 0.01f, "cap ky nang khong keo dai lop cham");
+        Kiem(Mathf.Abs(giayCap3 - 3.30f) < 0.01f, "cap ky nang khong keo dai lop cham");
         Object.Destroy(b0.gameObject);
 
         // ================= H. QUA MANG =================

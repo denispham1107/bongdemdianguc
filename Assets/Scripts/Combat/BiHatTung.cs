@@ -24,7 +24,7 @@ using UnityEngine;
 [DefaultExecutionOrder(10001)]
 public class BiHatTung : MonoBehaviour
 {
-    public const float GiayMacDinh = 0.7f;
+    public const float GiayMacDinh = 0.8f;     // nguoi dung 09/10/2026 (truoc 0,7) - chi Gio loc dung
     public const float CaoBay = 3f;
 
     /// <summary>Goc nga ngua toi da tren khong (do) va do cao diem xoay (hong) tren chan model (m).</summary>

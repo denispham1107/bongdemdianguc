@@ -69,6 +69,10 @@ public class Fireball : MonoBehaviour
     /// Thien thach (ThienThach.NgaGiayNguoiChoi) vi nguoi dung xin "hieu ung giong nhu cua Thien thach".</summary>
     public const int CapDanhNga = 5;
     public const float NgaXacSuatCap5 = 0.30f;
+    /// <summary>Cap 1-4: MOI QUA (ca qua nay) 10% danh nga 1 giay (nguoi dung 09/10/2026: "moi qua cau lua them 10% kha nang danh
+    /// nga quai va doi thu"; chon cap 5 giu 30% / 1,5 s, cap thuong nga 1 giay).</summary>
+    public const float NgaXacSuatThuong = 0.10f;
+    public const float NgaGiayThuong = 1f;
 
     /// <summary>
     /// Vat can nay co phai VAT NHO khong - do bang KICH THUOC collider, khong theo ten:

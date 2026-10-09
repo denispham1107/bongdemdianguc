@@ -22,20 +22,20 @@ public class QuaCauBang : MonoBehaviour
     /// <summary>17/09/2026 nguoi dung: TRUNG LA CHAM (khong con gieo 40%), va them 40% DONG CUNG.</summary>
     public const float XacSuatCham = 1f;
 
-    /// <summary>40% kha nang DONG BANG (khong di, khong tung phep) - nguoi dung 17/09/2026.</summary>
-    public const float XacSuatDongBang = 0.40f;
+    /// <summary>20% kha nang DONG BANG (khong di, khong tung phep) - nguoi dung 09/10/2026 (truoc 40%, 17/09/2026).</summary>
+    public const float XacSuatDongBang = 0.20f;
 
-    /// <summary>Dong bang 1,5 giay nhu Mua bang; cap ky nang cong them 0,15 giay moi cap (luat chung).</summary>
-    public const float GiayDongBang = 1.5f;
+    /// <summary>Dong bang 1 giay (nguoi dung 09/10/2026, truoc 1,5); cap ky nang cong them 0,15 giay moi cap (luat chung).</summary>
+    public const float GiayDongBang = 1f;
 
     /// <summary>Cap 5: mot lan tung ra 5 qua (nguoi dung 17/09/2026), duoi cap 5 la 3 qua.</summary>
     public const int CapNamQua = 5, SoQuaCap5 = 5, SoQuaThuong = 3;
 
     public static int SoQuaTheoCap(int capKy) { return capKy >= CapNamQua ? SoQuaCap5 : SoQuaThuong; }
-    /// <summary>Ti le giam toc do.</summary>
-    public const float TiLeCham = 0.50f;
-    /// <summary>Lam cham keo dai bao lau (cap ky nang cao cong them).</summary>
-    public const float GiayCham = 2f;
+    /// <summary>Ti le giam toc do: CHAM 80% (nguoi dung 09/10/2026, truoc 50%).</summary>
+    public const float TiLeCham = 0.80f;
+    /// <summary>Lam cham keo dai 3 giay (nguoi dung 09/10/2026, truoc 2; cap ky nang cao cong them).</summary>
+    public const float GiayCham = 3f;
     /// <summary>Ban kinh vu no - bang Qua cau lua (prefab Skill_QuaCauLua: 3,4 m).</summary>
     public const float BanKinhNo = 3.4f;
     /// <summary>Ban kinh HINH cum gai bang tu dat khi no (IceImpact) - chi la hinh, khong phai vung sat thuong.

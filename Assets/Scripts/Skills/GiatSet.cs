@@ -48,7 +48,7 @@ public class GiatSet : MonoBehaviour
     /// <summary>So tia phong cung luc toi da.</summary>
     public const int SoTiaNguoiChoi = 4;
     /// <summary>Xac suat choang moi cu trung (ca tia lan).</summary>
-    public const float XacSuatChoangNguoiChoi = 0.15f;
+    public const float XacSuatChoangNguoiChoi = 0.20f;     // nguoi dung 09/10/2026 (truoc 15%)
     /// <summary>Choang bao lau (cap ky nang cao cong them 0,15 giay moi cap).</summary>
     public const float GiayChoangNguoiChoi = 1.5f;
 

@@ -1321,8 +1321,9 @@ public static class ThuGioLoc
             Ghi(string.Format("G. tu the tren khong: nga lon nhat {0:F0} do; {1} mau nga > 30 do, trong do dau nga ve SAU {2}; roi xuong dung thang lai {3}/{4}",
                 ngaMax, mauNga, mauNguaSau, soDungLai, soDoGiay));
             Kiem(Mathf.Abs(caoMax - 3f) < 0.15f, "do cao hat tung khong phai 3 m (nguoi dung 04/10/2026)");
-            Kiem(soDoGiay > 50 && Mathf.Abs(tongGiay / soDoGiay - 0.7f) < 0.06f, "thoi gian bay khong phai 0,7 giay");
-            Kiem(ngaMax > 65f && mauNga > 100 && mauNguaSau == mauNga, "bi hat tung khong nga NGUA ra sau tren khong");
+            // 09/10/2026 nguoi dung: hat tung 20% (190 lan trung -> ~38 lan bay; truoc 80% ~150), bay 0,8 giay (truoc 0,7)
+            Kiem(soDoGiay > 20 && Mathf.Abs(tongGiay / soDoGiay - 0.8f) < 0.06f, "thoi gian bay khong phai 0,8 giay");
+            Kiem(ngaMax > 65f && mauNga > 40 && mauNguaSau == mauNga, "bi hat tung khong nga NGUA ra sau tren khong");
             Kiem(soDungLai == soDoGiay, "roi xuong khong dung thang lai");
             foreach (var d in hang) Object.Destroy(d.gameObject);
             yield return new WaitForSeconds(0.3f);

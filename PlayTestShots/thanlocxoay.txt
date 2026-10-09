@@ -1,4 +1,4 @@
-[ban 3] Loc xoay hinh Blender (dai khoi troi len) + Gio loc hat tung 80%
+[ban 3] Loc xoay hinh Blender (dai khoi troi len) + Gio loc hat tung 20%
 
 A. con dau 'LocXoayHinh' (15 con chau), 5 lop hinh (luoi tu FBX 5), quang sang True, bui chan True, den True; thu da bo con sot: khong
 B. cao 15.72 m (mong 15,4), mieng vo chinh 6.80 m (mong ~6,8), chan 2.60 m; ti le be ngang mieng / cao 0.87 - anh mau ~0,9
@@ -6,16 +6,16 @@ B2. vo chinh tu dinh luoi: chan 2.600 m (cu 1,300 -> x2.00), o 7,5 m 3.985 (cu 2
 B3. vong bui chan Loc xoay that 4.00 m (cu 2,00 -> x2.00); doi chung vong BuiChan Gio loc (don vi Loc xoay) 4.00, that 1.272 m (mong 4 x 0.318 = 1.272)
 B3b. vong phun bui chan xoay -90 do quanh X (mong -90: nam phang tren dat)
 B3c. mau vo Vo0 (0.688 0.704 0.736) mong (0,688 0,704 0,736); Vanh 0.800 mong 0,800; bui chan toi 0.640 mong 0,640
-B4. bui cuon len (than 15.0 m): 529 hat, cao 90% 13.33 m, cao nhat 17.15 m, lech ban kinh so voi vo chinh (trung vi) 5 %; DOI CHUNG bui chan: 180 hat, cao 90% 4.08 m, cao nhat 7.50 m; so hat/giay 160 + 80 = 240 (cu 40)
-B4. ti le hat tren 80% than: lop cuon len 20 %, bui chan 0 %
-B5. lop than duoi: 211 hat, cao 90% 6.56 m, cao nhat 8.37 m (nua than 7.5), lech ban kinh 5 %; so hat/giay chan 80 + cuon len 160 + than duoi 80 = 320
-B7. hat bui dang song o NUA THAN TREN (> 7.5 m): moi 268 / cau hinh hom qua cung luot 141 = x1.90; o 20% tren cung (> 12.0 m): 103 / 52 = x1.98
-B5. hat bui dang song o NUA THAN DUOI (0 - 7.5 m): moi 656 / cau hinh cu cung luot 359 = x1.83
-B6. loc that chay 10.28 m trong 3 s: vat the dau vet tren mat dat 0 (mong 0 - da go bo)
+B4. bui cuon len (than 15.0 m): 528 hat, cao 90% 13.58 m, cao nhat 16.79 m, lech ban kinh so voi vo chinh (trung vi) 5 %; DOI CHUNG bui chan: 180 hat, cao 90% 4.08 m, cao nhat 7.14 m; so hat/giay 160 + 80 = 240 (cu 40)
+B4. ti le hat tren 80% than: lop cuon len 19 %, bui chan 0 %
+B5. lop than duoi: 220 hat, cao 90% 7.02 m, cao nhat 8.43 m (nua than 7.5), lech ban kinh 5 %; so hat/giay chan 80 + cuon len 160 + than duoi 80 = 320
+B7. hat bui dang song o NUA THAN TREN (> 7.5 m): moi 271 / cau hinh hom qua cung luot 143 = x1.90; o 20% tren cung (> 12.0 m): 107 / 52 = x2.06
+B5. hat bui dang song o NUA THAN DUOI (0 - 7.5 m): moi 657 / cau hinh cu cung luot 361 = x1.82
+B6. loc that chay 10.32 m trong 3 s: vat the dau vet tren mat dat 0 (mong 0 - da go bo)
 F. catchRadius 5.184 (giu 5,184); quy dao ke bi cuon o 7 m 3.46 = 0,9 x vo chinh 3.84
 
-C1. bia bi cuon quay +62.2 do trong 12 khung -> chieu cuon: goc atan2(z,x) TANG
-C2. LOC XOAY: 6/6 muc cung chieu cuon; Vo0 +210 Vo1 +165 Vo2 +130 Vo3 +100 Vanh +120 BuiChan 100 % cung chieu (185 hat)
+C1. bia bi cuon quay +73.5 do trong 12 khung -> chieu cuon: goc atan2(z,x) TANG
+C2. LOC XOAY: 6/6 muc cung chieu cuon; Vo0 +210 Vo1 +165 Vo2 +130 Vo3 +100 Vanh +120 BuiChan 100 % cung chieu (172 hat)
 
 D0. (do o Editor) luoi Vo2: u tang -> goc TANG 2520 cap, GIAM 0 cap; anh GioVo2 1024x512: song dai manh nhat N = 8; di het mot vong u, pha dai doi +1.00 vong (mot vong lech dung mot dai = +-1)
 D1. tiling u -1; dai di len thi goc GIAM -> quay theo chieu cuon: dai CUON LEN
@@ -26,10 +26,10 @@ I1. toc do dai khoi di len (tu doi offset anh x chieu cao than 15 m): Vo0 +3.00 
 C3. DOI CHUNG (dao chieu Vo1): 5/6 muc cung chieu cuon; Vo0 +210 Vo1 -165 Vo2 +130 Vo3 +100 Vanh +120 BuiChan 100 % cung chieu (99 hat)
 I2. DOI CHUNG dao truot Vo2: Vo2 -1.95 m/s (phai AM = troi xuong), Vo1 +2.40
 
-E1. DOI CHUNG Sam set that: tia co (rong loi 0.220 / quang 1.050, 20 doan, 3 nhanh, song 0.30 s, anh Blender False), 1 loe cham dat
-E1. Loc xoay 1,2 giay: 7 tia moi; dung kieu Sam set 7; dau o mieng (> 12,2 m) 7; cham dat 6; loe cham dat moi di theo loc 6; so con cua loc 1 -> 1
+E1. DOI CHUNG Sam set that: tia co (rong loi 0.220 / quang 1.050, 20 doan, 2 nhanh, song 0.30 s, anh Blender False), 1 loe cham dat
+E1. Loc xoay 1,2 giay: 4 tia moi; dung kieu Sam set 4; dau o mieng (> 12,2 m) 4; cham dat 4; loe cham dat moi di theo loc 4; so con cua loc 1 -> 1
 E2. doi loc 2,00 m -> dau tia doi 2.00 m
 
-G. Gio loc: XacSuatHatTung 0.80; Sach phep tom tat "Ba cơn lốc hình quạt, 80% hất tung"; mo ta co "80%": True
+G. Gio loc: XacSuatHatTung 0.20; Sach phep tom tat "Hai cơn lốc hình quạt, 20% hất tung"; mo ta co "20%": True
 
 so loi ghi nhan = 0

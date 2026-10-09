@@ -1434,10 +1434,12 @@ public class PlayerController : MonoBehaviour
             // CAP 5 danh nga 30% trong 1,5 giay (nguoi dung 19/09/2026) - MOI QUA trong chum gieo rieng,
             // dung nhu loat ba qua Thien thach van lam.
             // Nguoi dung 25/09/2026: bay XUYEN vat nho (bia mo, da) nhu Lua dia nguc - nha, cay, lo lua van chan
+            // 09/10/2026 nguoi dung: cap 1-4 cung danh nga - 10% trong 1 giay (cap 5 giu 30% / 1,5 giay)
+            bool capNamNga = capPhep >= Fireball.CapDanhNga;
             Fireball.SpawnChum(origin, dir.normalized, obstacleMask, enemyMask, health,
                                3, 11f, manhHon, themGiay,
-                               capPhep >= Fireball.CapDanhNga ? Fireball.NgaXacSuatCap5 : 0f,
-                               ThienThach.NgaGiayNguoiChoi, true, Fireball.SoLanNayNguoiChoi);   // nay toi 6 lan sang ke MOI gan ben (05/10/2026; truoc 1)
+                               capNamNga ? Fireball.NgaXacSuatCap5 : Fireball.NgaXacSuatThuong,
+                               capNamNga ? ThienThach.NgaGiayNguoiChoi : Fireball.NgaGiayThuong, true, Fireball.SoLanNayNguoiChoi);   // nay toi 6 lan sang ke MOI gan ben (05/10/2026; truoc 1)
             CameraShake.Shake(0.12f, 0.05f);
         }
         else if (castingSkill == CapDo.KyTangHinh)

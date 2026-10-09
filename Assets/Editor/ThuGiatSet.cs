@@ -46,7 +46,7 @@ public static class ThuGiatSet
     static bool truocBat;
     static EnterPlayModeOptions truocOpt;
 
-    [MenuItem("Diablo 2.5D/69. Chay thu GIUT SET (12 m, 75, 4 tia, 15% choang)", false, 157)]
+    [MenuItem("Diablo 2.5D/69. Chay thu GIUT SET (12 m, 75, 4 tia, 20% choang)", false, 157)]
     public static void Chay()
     {
         if (EditorSceneManager.GetActiveScene().isDirty)
@@ -56,7 +56,7 @@ public static class ThuGiatSet
         }
         Directory.CreateDirectory("PlayTestShots");
         bao.Length = 0; loi = 0; daBatDau = false;
-        Ghi("[ban 2] Giut set: tam 12 (= Sam set), sat thuong 75, 4 tia, 15% choang; Quy cay tam +20%");
+        Ghi("[ban 2] Giut set: tam 12 (= Sam set), sat thuong 75, 4 tia, 20% choang (09/10/2026, truoc 15%); Quy cay tam +20%");
         canhCu = EditorSceneManager.GetActiveScene().path;
         if (canhCu != "Assets/Scenes/Act2.unity") EditorSceneManager.OpenScene("Assets/Scenes/Act2.unity");
         truocBat = EditorSettings.enterPlayModeOptionsEnabled; truocOpt = EditorSettings.enterPlayModeOptions;
@@ -152,7 +152,7 @@ public static class ThuGiatSet
              && Mathf.Approximately(GiatSet.TamNguoiChoi, 12f), "tam Giut set khong bang tam Sam set (12 m)");
         Kiem(Mathf.Approximately(mau.damage, 75f), "sat thuong ban dau khong phai 75");
         Kiem(mau.soTiaDau == 4, "khong phong 4 tia");
-        Kiem(Mathf.Approximately(mau.xacSuatChoang, 0.15f), "xac suat choang khong phai 15%");
+        Kiem(Mathf.Approximately(mau.xacSuatChoang, 0.20f), "xac suat choang khong phai 20%");
         Kiem(quai.xacSuatChoang == 0f, "Giut set cua quai cung choang");
         Object.Destroy(mau.gameObject); Object.Destroy(quai.gameObject);
         yield return null;
@@ -171,6 +171,8 @@ public static class ThuGiatSet
         yield return new WaitForFixedUpdate();
         var truoc = new float[5];
         for (int i = 0; i < 5; i++) truoc[i] = bia[i].health;
+        // Hoi chieu Giut set 0,9 s tu 09/10/2026 (truoc 0,4): cho het hoi chieu, khong thi CastAt tu choi im lang
+        { float hanHc = Time.time + 2f; while (toi.HoiChieuGiay(6) > 0f && Time.time < hanHc) yield return null; }
         toi.CastAt(6, bia[2].transform.position);
         // doi den khung dau tien co bia mat mau, roi dem trong CHINH khung ay
         int khungDau = -1; int soTrungKhungDau = 0;
@@ -269,12 +271,12 @@ public static class ThuGiatSet
                 if (lanPhong == 3) yield return Chup("giatset_2_tia_lan_choang");
             }
             float tlDau = 100f * choangDau / Mathf.Max(1, trungDau), tlLan = 100f * choangLan / Mathf.Max(1, trungLan);
-            Ghi(string.Format("E. {0} lan phong: tia dau trung {1}, choang {2} = {3:F1}%; tia lan trung {4}, choang {5} = {6:F1}% (mong 15%); bo dem trong GiatSet: dau {7}/{8}, lan {9}/{10}",
+            Ghi(string.Format("E. {0} lan phong: tia dau trung {1}, choang {2} = {3:F1}%; tia lan trung {4}, choang {5} = {6:F1}% (mong 20%); bo dem trong GiatSet: dau {7}/{8}, lan {9}/{10}",
                 N, trungDau, choangDau, tlDau, trungLan, choangLan, tlLan,
                 GiatSet.SoChoangDau - cd0, GiatSet.SoTrungDau - d0, GiatSet.SoChoangLan - cl0, GiatSet.SoTrungLan - l0));
             Kiem(trungDau == 4 * N && trungLan == 4 * N, "cach xep bia khong cho 4 tia dau + 4 tia lan moi lan - phep do hong");
-            Kiem(Mathf.Abs(tlDau - 15f) <= 4f, "ti le choang tia dau lech qua xa 15%");
-            Kiem(Mathf.Abs(tlLan - 15f) <= 4f, "ti le choang tia lan lech qua xa 15%");
+            Kiem(Mathf.Abs(tlDau - 20f) <= 4.5f, "ti le choang tia dau lech qua xa 20%");
+            Kiem(Mathf.Abs(tlLan - 20f) <= 4.5f, "ti le choang tia lan lech qua xa 20%");
             DonBia();
         }
 
@@ -285,6 +287,8 @@ public static class ThuGiatSet
             CapDo.MoCaDuongChoPhepThu(6); CapDo.NangCap(6); CapDo.NangCap(6);
             yield return new WaitForSeconds(0.7f);
             toi.mana = toi.maxMana;
+            // Hoi chieu Giut set 0,9 s tu 09/10/2026 (truoc 0,4): cho het hoi chieu, khong thi CastAt tu choi im lang
+            { float hanHc = Time.time + 2f; while (toi.HoiChieuGiay(6) > 0f && Time.time < hanHc) yield return null; }
             toi.CastAt(6, chanToi + huong * 10f);
             GiatSet vua = null;
             float hanF = Time.time + 1f;
@@ -519,6 +523,8 @@ public static class ThuGiatSet
                 if (k > 0) yield return new WaitForSeconds(0.9f);   // tia truoc tat han, het hoi chieu
                 toi.transform.rotation = Quaternion.LookRotation(huong);
                 toi.mana = toi.maxMana;
+                // Hoi chieu Giut set 0,9 s tu 09/10/2026 (truoc 0,4): cho het hoi chieu, khong thi CastAt tu choi im lang
+                { float hanHc = Time.time + 2f; while (toi.HoiChieuGiay(6) > 0f && Time.time < hanHc) yield return null; }
                 toi.CastAt(6, ds[0].transform.position);
                 float h = Time.time + 1.5f;
                 while (hh.MucDayTay < 0.99f && Time.time < h) yield return null;
@@ -574,6 +580,8 @@ public static class ThuGiatSet
 
         toi.mana = toi.maxMana;
         int ve0 = GiatSet.SoTiaDaVe;
+        // Hoi chieu Giut set 0,9 s tu 09/10/2026 (truoc 0,4): cho het hoi chieu, khong thi CastAt tu choi im lang
+        { float hanHc = Time.time + 2f; while (toi.HoiChieuGiay(6) > 0f && Time.time < hanHc) yield return null; }
         toi.CastAt(6, ds[1].transform.position);
 
         // Doi tia dau tien hien ra
@@ -717,6 +725,8 @@ public static class ThuGiatSet
                 cam.transform.position = nguc - huong * 0.9f + r * 3.4f + Vector3.up * 0.9f;
                 cam.transform.LookAt(nguc + huong * 0.9f);
             }
+            // Hoi chieu Giut set 0,9 s tu 09/10/2026 (truoc 0,4): cho het hoi chieu, khong thi CastAt tu choi im lang
+            { float hanHc = Time.time + 2f; while (toi.HoiChieuGiay(6) > 0f && Time.time < hanHc) yield return null; }
             toi.CastAt(6, ds[1].transform.position);
             float h5 = Time.time + 1f;
             while (hh.MucDayTay < 0.99f && Time.time < h5) yield return null;

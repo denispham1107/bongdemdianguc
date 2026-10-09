@@ -44,7 +44,7 @@ public static class ThuThanLocXoay
     static string ghiChuTroi = "";
     static float rChanLuoi, rGiuaLuoi, rMiengLuoi;   // vo chinh Vo2 do tu DINH LUOI FBX (Editor - trong Play luoi khong doc duoc)
 
-    [MenuItem("Diablo 2.5D/82. Chay thu LOC XOAY hinh Blender (mot chieu, cuon len) + Gio loc hat tung 80%", false, 171)]
+    [MenuItem("Diablo 2.5D/82. Chay thu LOC XOAY hinh Blender (mot chieu, cuon len) + Gio loc hat tung 20%", false, 171)]
     public static void Chay()
     {
         if (EditorSceneManager.GetActiveScene().isDirty)
@@ -54,7 +54,7 @@ public static class ThuThanLocXoay
         }
         Directory.CreateDirectory("PlayTestShots");
         bao.Length = 0; loi = 0; daBatDau = false; ghiChuEditor = ""; ghiChuTroi = "";
-        Ghi("[ban 3] Loc xoay hinh Blender (dai khoi troi len) + Gio loc hat tung 80%");
+        Ghi("[ban 3] Loc xoay hinh Blender (dai khoi troi len) + Gio loc hat tung 20%");
         DoTrongEditor();
         canhCu = EditorSceneManager.GetActiveScene().path;
         if (canhCu != "Assets/Scenes/Act2.unity") EditorSceneManager.OpenScene("Assets/Scenes/Act2.unity");
@@ -767,11 +767,12 @@ public static class ThuThanLocXoay
 
         // ================= G. GIO LOC HAT TUNG =================
         Ghi("");
-        Ghi(string.Format("G. Gio loc: XacSuatHatTung {0:F2}; Sach phep tom tat \"{1}\"; mo ta co \"80%\": {2}",
-            GioLoc.XacSuatHatTung, SachPhep.TomTat(CapDo.KyGioLoc), SachPhep.MoTa(CapDo.KyGioLoc).Contains("80%")));
-        Kiem(Mathf.Approximately(GioLoc.XacSuatHatTung, 0.80f), "Gio loc khong hat tung 80%");
-        Kiem(SachPhep.TomTat(CapDo.KyGioLoc).Contains("80%") && SachPhep.MoTa(CapDo.KyGioLoc).Contains("80%") && !SachPhep.MoTa(CapDo.KyGioLoc).Contains("55%"),
-            "chu Sach phep chua doi sang 80%");
+        Ghi(string.Format("G. Gio loc: XacSuatHatTung {0:F2}; Sach phep tom tat \"{1}\"; mo ta co \"20%\": {2}",
+            GioLoc.XacSuatHatTung, SachPhep.TomTat(CapDo.KyGioLoc), SachPhep.MoTa(CapDo.KyGioLoc).Contains("20%")));
+        // 09/10/2026 nguoi dung: 20% (truoc 80%, truoc nua 55%)
+        Kiem(Mathf.Approximately(GioLoc.XacSuatHatTung, 0.20f), "Gio loc khong hat tung 20%");
+        Kiem(SachPhep.TomTat(CapDo.KyGioLoc).Contains("20%") && SachPhep.MoTa(CapDo.KyGioLoc).Contains("20%") && !SachPhep.MoTa(CapDo.KyGioLoc).Contains("80%"),
+            "chu Sach phep chua doi sang 20%");
 
         Ghi("");
         Ket();
