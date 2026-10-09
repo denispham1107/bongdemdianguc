@@ -924,7 +924,9 @@ hơn ×1,5 và mở xuống 1,8–4,3 m** (người dùng chọn sau menu 94 ch�
   0,08 m. Bản cũ Grenze Gotisch `CongCu/TieuDe/sinh_tieu_de.py` **tự chặn** (chỉ chạy với `--cu`) vì chạy là đè ảnh mới. Gắn `?v=<md5>`
   vào trang bằng tay khi đổi ảnh. **Trang Loading có nền địa ngục**: `TemplateData/nen_dianguc.jpg` = ảnh chụp vực dung nham Act2 trong
   game (máy quay (−25, −8, −88) nhìn (30, −24, −86)); CSS phủ kín + tối vừa ở giữa; **quầng tối sau chữ là NỀN của thẻ `#ten-game`**
-  (đi theo chữ ở mọi cỡ màn — đặt theo % trang thì màn dọc điện thoại lệch khỏi chữ).
+  (đi theo chữ ở mọi cỡ màn — đặt theo % trang thì màn dọc điện thoại lệch khỏi chữ). ⚠️ 09/10/2026 chữ trên trang Loading **lên 4vh**
+  (`#ten-game { position: relative; top: -4vh }` — chỉ chữ dời, thanh tải giữ chỗ; người dùng "lên phía trên 1 chút", chọn ~4%): đo 1000×462 khung
+  chữ y 54 → 36, thanh tải giữ y 284; 844×390 ảnh chữ từ y 21, 390×844 từ y 270 — không tràn mép trên.
   ⚠️ **Cùng ngày (sau): MẶT CHỮ = ĐÁ BIA MỘ** cho CẢ trang Loading lẫn màn trong game (người dùng: "màu giống bia mộ trong game, sần sùi,
   nhiều vết nứt, nhiều vết máu; giọt máu / giọt rơi / cụm máu giữ nguyên"; rồi "sáng hơn một chút"; rồi "giống vậy cho màn trong game"):
   vật liệu `TD2C_DaMo` (`CongCu/Blender/tieu_de_vat_lieu_bia.py`) dùng CHÍNH ảnh `DaMo_Mau/Gan/MatNa.png` của vật liệu `Act2_DaBia`
