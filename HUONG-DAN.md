@@ -7511,7 +7511,7 @@ cấp 5 giữ 30%**, thời gian ngã của mức 10% là **1 giây**.
 |---|---|---|---|
 | Quả cầu lửa | Đánh ngã (mỗi quả, cả quả nảy) | cấp 1–4: không · cấp 5: 30% / 1,5 s | cấp 1–4: **10% / 1 s** · cấp 5: 30% / 1,5 s |
 | Quả cầu băng | Đóng băng | 40% / 1,5 s | **20% / 1 s** |
-| | Làm chậm (mọi lần trúng) | 50% / 2 s | **80% / 3 s** |
+| | Làm chậm (mọi lần trúng) | 50% / 2 s | ~~80% / 3 s~~ → cùng ngày anh đổi lại **50% / 2 s** (tôi hỏi "50% khả năng chậm 80%" hay "luôn chậm 50%" — anh chọn luôn chậm 50%) |
 | Giựt sét | Choáng (mỗi cú trúng, cả tia lan) | 15% / 1,5 s | **20%** / 1,5 s |
 | Gió lốc | Hất tung (mỗi cơn lốc) | 80% / 0,7 s | **20% / 0,8 s** |
 

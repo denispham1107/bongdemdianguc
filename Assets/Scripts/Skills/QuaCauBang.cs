@@ -32,10 +32,10 @@ public class QuaCauBang : MonoBehaviour
     public const int CapNamQua = 5, SoQuaCap5 = 5, SoQuaThuong = 3;
 
     public static int SoQuaTheoCap(int capKy) { return capKy >= CapNamQua ? SoQuaCap5 : SoQuaThuong; }
-    /// <summary>Ti le giam toc do: CHAM 80% (nguoi dung 09/10/2026, truoc 50%).</summary>
-    public const float TiLeCham = 0.80f;
-    /// <summary>Lam cham keo dai 3 giay (nguoi dung 09/10/2026, truoc 2; cap ky nang cao cong them).</summary>
-    public const float GiayCham = 3f;
+    /// <summary>Ti le giam toc do: CHAM 50% (09/10/2026 nguoi dung doi 80% roi cung ngay quay lai 50%).</summary>
+    public const float TiLeCham = 0.50f;
+    /// <summary>Lam cham keo dai 2 giay (09/10/2026: 3 roi cung ngay quay lai 2; cap ky nang cao cong them).</summary>
+    public const float GiayCham = 2f;
     /// <summary>Ban kinh vu no - bang Qua cau lua (prefab Skill_QuaCauLua: 3,4 m).</summary>
     public const float BanKinhNo = 3.4f;
     /// <summary>Ban kinh HINH cum gai bang tu dat khi no (IceImpact) - chi la hinh, khong phai vung sat thuong.

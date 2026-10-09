@@ -140,8 +140,8 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
   Cầu lửa · Cầu băng · Giựt sét · Gió lốc (người dùng "delay skill 0,9 giây", chọn = hồi chiêu; trước 0,55 / 0,55 / 0,4 / 0,4).
 - ⚠️ **HIỆU ỨNG KỸ NĂNG MỚI (09/10/2026, người dùng — mọi dòng cũ "40% đóng băng / 15% choáng / 80% hất tung / chậm 50% 2 s / hất 0,7 s" bên
   dưới là LỊCH SỬ)**: **Quả cầu lửa** cấp 1–4 mỗi quả (cả quả nảy) **10% đánh ngã 1 s** (`Fireball.NgaXacSuatThuong` / `NgaGiayThuong`; người dùng
-  chọn cấp 5 GIỮ 30% / 1,5 s); **Quả cầu băng** đóng băng **20% · 1 s**, chậm **80% · 3 s** mọi lần trúng (`QuaCauBang.XacSuatDongBang`, `GiayDongBang`,
-  `TiLeCham`, `GiayCham`); **Giựt sét** choáng **20%** · 1,5 s (`GiatSet.XacSuatChoangNguoiChoi`); **Gió lốc** hất tung **20% · 0,8 s** (`GioLoc.XacSuatHatTung`,
+  chọn cấp 5 GIỮ 30% / 1,5 s); **Quả cầu băng** đóng băng **20% · 1 s**, chậm ~~80% · 3 s~~ **50% · 2 s** mọi lần trúng (`QuaCauBang.XacSuatDongBang`, `GiayDongBang`,
+  `TiLeCham`, `GiayCham` — ⚠️ cùng ngày người dùng đổi lại phần chậm: **luôn chậm 50% · 2 s** như cũ); **Giựt sét** choáng **20%** · 1,5 s (`GiatSet.XacSuatChoangNguoiChoi`); **Gió lốc** hất tung **20% · 0,8 s** (`GioLoc.XacSuatHatTung`,
   `BiHatTung.GiayMacDinh` — chỉ Gió lốc dùng). Thời gian vẫn +0,15 s mỗi cấp. Menu 68, 69, 70, 71, 82: 0 lỗi.
 - ⚠️ **CHÂN NGƯỜI CHƠI CHẠM ĐẤT** (05/10/2026, người dùng: "trong game rất nhiều chỗ 2 chân nhân vật đứng vẫn như bay lơ lửng"; `NguoiChoiHoatHinh`,
   phần "CHAN CHAM DAT" — nhân vật mình, bản sao người chơi khác, nhân vật màn chính dùng chung). Nguyên nhân (menu 109, 40 chỗ Act2): gốc LUÔN cao hơn

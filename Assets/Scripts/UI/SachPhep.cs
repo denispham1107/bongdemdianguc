@@ -342,7 +342,7 @@ public static class SachPhep
             // NGAN: goc phai hang con ghi "Cap 1/3 - con N binh" (25/09/2026) - dai hon la chu de len nhau
             case CapDo.KyBinhMau: return "Hồi tối đa " + Mathf.RoundToInt(PlayerController.MauBinhTheoCap(CapHienThi(ky))) + " máu";
             case CapDo.KyBinhMana: return "Hồi tối đa " + Mathf.RoundToInt(PlayerController.ManaBinhTheoCap(CapHienThi(ky))) + " năng lượng";
-            case CapDo.KyQuaCauBang: return "Ba quả băng, chậm 80%, 20% đóng băng";
+            case CapDo.KyQuaCauBang: return "Ba quả băng, chậm 50%, 20% đóng băng";
             case CapDo.KyGioLoc: return "Hai cơn lốc hình quạt, 20% hất tung";
             case CapDo.KyLuaDiaNguc: return "Năm quả lửa tự đuổi kẻ địch";
             case CapDo.KyTangHinh: return "Trong suốt 90 giây, hiện hình nổ vòng phép";
@@ -461,7 +461,7 @@ public static class SachPhep
                      + "ban đầu 65 mỗi quả.\n\n"
                      + "Quả băng bay XUYÊN QUA bia mộ và đá — chỉ nhà, cây cối và lò lửa mới chặn được. "
                      + "Nổ trúng LÒ LỬA thì dập tắt lửa, 30 giây sau lò cháy lại.\n\n"
-                     + "Kẻ nào trúng đều bị LÀM CHẬM 80% tốc độ trong 3 giây, và có 20% khả năng bị "
+                     + "Kẻ nào trúng đều bị LÀM CHẬM một nửa tốc độ trong 2 giây, và có 20% khả năng bị "
                      + "ĐÓNG BĂNG 1 giây — đứng cứng tại chỗ, không đi và không dùng được kỹ năng nào.\n\n"
                      + "CẤP 5: mỗi lần tung ra NĂM quả cầu băng thay vì ba, và tảng băng mọc lên "
                      + "sau vụ nổ đến lúc tan thì NỔ TUNG, giáng thêm 100 sát thương lên mọi kẻ "
