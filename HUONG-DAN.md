@@ -13646,6 +13646,115 @@ lại. Trang quản trị đăng nhập bằng email / mật khẩu nên không 
 
 Chữ nhắc "Hãy mở … trên hai máy" trong bản Editor (`KhoiDongTranMang.BaoBanEditor`, phép thử `ThuHUDKinhDi`) đổi sang địa chỉ mới.
 
+### Cách làm lại — đổi sang một địa chỉ khác
+
+Làm theo đúng thứ tự này. Mọi lệnh chạy ở gốc dự án; gọi `<tên>` là tên mới (chỉ chữ thường, số và dấu `-`).
+
+**Bước 1 — Xem mình đang có những trang nào**
+
+```
+firebase login:list
+firebase hosting:sites:list
+```
+
+**Bước 2 — Tạo trang Hosting mới trong CHÍNH dự án đang dùng**
+
+```
+firebase hosting:sites:create <tên>
+```
+
+Tên bị trùng với ai đó trên thế giới thì lệnh báo lỗi, chọn tên khác. Tạo xong địa chỉ là `https://<tên>.web.app`,
+trang vẫn trống. **Không tạo dự án Firebase mới** — cùng dự án thì tài khoản người chơi, phòng chơi, thành tích
+dùng chung, không phải chuyển một byte dữ liệu nào.
+
+**Bước 3 — Đặt tên gọi tắt (target) cho hai trang**
+
+```
+firebase target:apply hosting game <tên>
+firebase target:apply hosting cu  diablo25d-game
+```
+
+Hai lệnh này ghi vào `.firebaserc` phần `targets`. `game` là trang chính, `cu` là trang cũ chỉ để chuyển hướng.
+
+**Bước 4 — Sửa `firebase.json`: `hosting` từ một đối tượng thành MẢNG hai phần tử**
+
+Phần tử thứ nhất là cấu hình cũ, thêm `"target": "game"` lên đầu và giữ nguyên mọi header cache. Phần tử thứ hai:
+
+```json
+{
+  "target": "cu",
+  "public": "web-chuyen-huong",
+  "ignore": ["firebase.json", "**/.*"],
+  "redirects": [
+    { "source": "/",         "destination": "https://<tên>.web.app/",         "type": 301 },
+    { "source": "/:duong*",  "destination": "https://<tên>.web.app/:duong*",  "type": 301 }
+  ],
+  "headers": [
+    { "source": "**", "headers": [{ "key": "Cache-Control", "value": "no-cache" }] }
+  ]
+}
+```
+
+⚠️ **Phải có luật riêng cho `"/"`.** Mẫu `/:duong*` không khớp trang gốc — thiếu dòng ấy thì vào địa chỉ cũ
+không có đường dẫn sẽ trả 200 trang dự phòng thay vì 301.
+
+**Bước 5 — Tạo `web-chuyen-huong/index.html`**
+
+Trang này chỉ hiện nếu chuyển hướng 301 không chạy, nên phải tự chuyển bằng hai cách nữa:
+
+```html
+<meta http-equiv="refresh" content="0; url=https://<tên>.web.app/">
+<script>location.replace("https://<tên>.web.app" + location.pathname + location.search + location.hash);</script>
+```
+
+Dòng JavaScript giữ nguyên đường dẫn và tham số (ví dụ `?phong=AB12`), `meta refresh` thì không — nên cần cả hai.
+
+**Bước 6 — Đổi địa chỉ trong code và tài liệu**
+
+Tìm hết chỗ ghi địa chỉ cũ: `grep -rn "diablo25d-game.web.app" Assets web CLAUDE.md HUONG-DAN.md`.
+Hiện có một chỗ trong code: câu nhắc "Hãy mở … trên hai máy" ở bản Editor (`KhoiDongTranMang.BaoBanEditor`).
+**Không đổi `productName`** trong Unity — cache dữ liệu và chỗ lưu của người chơi tính theo nó.
+
+**Bước 7 — Đẩy lên**
+
+```
+firebase deploy --only hosting
+```
+
+Lệnh này đẩy **cả hai** trang. Chỉ đẩy trang game: `firebase deploy --only hosting:game`.
+
+**Bước 8 — Kiểm, đừng tin là xong**
+
+```
+curl -I https://diablo25d-game.web.app/
+curl -I "https://diablo25d-game.web.app/?phong=AB12"
+curl -I https://<tên>.web.app/
+```
+
+Hai dòng đầu phải trả `301` kèm `location` trỏ sang địa chỉ mới và **giữ nguyên tham số**; dòng thứ ba trả `200`.
+Rồi mở bằng trình duyệt thật: tải xong 100%, vào được màn đăng nhập, console 0 lỗi; vào lần thứ hai thì
+`performance` báo `Build/` 0 byte.
+
+**Cái giá — nói trước cho người chơi biết**
+
+Khác tên miền là khác origin, nên trình duyệt coi đây là một trang hoàn toàn mới:
+
+| Thứ | Hậu quả |
+|---|---|
+| Bộ nhớ đệm bản build | tải lại **172,5 MB** một lần |
+| Phiên đăng nhập (`diablo25d_refresh`) | phải đăng nhập lại một lần |
+| Cài đặt trong `localStorage` | mất mức đồ hoạ và thứ tự ô kỹ năng |
+| Ứng dụng PWA đã cài | vẫn vào được (301), nhưng gọn nhất là gỡ rồi cài lại |
+
+Tài khoản, phòng chơi, thành tích thì **không mất gì** — chúng nằm trong Firebase Auth và Realtime Database của
+cùng dự án. Trang quản trị đăng nhập bằng email / mật khẩu nên cũng không cần khai báo tên miền mới trong Firebase Auth.
+
+**Lùi lại nếu hỏng**
+
+```
+firebase hosting:clone <tên>@<mã bản> <tên>:live
+```
+
 ## Phần 4 — Menu công cụ "Diablo 2.5D"
 
 | Mục | Tác dụng |
