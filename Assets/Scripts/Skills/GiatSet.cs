@@ -40,9 +40,9 @@ public class GiatSet : MonoBehaviour
     /// <summary>
     /// Tam cua Giut set nguoi choi, met. 25/09/2026 nguoi dung: "cho tam danh bang voi tam danh cua skill Sam set" -
     /// chon GIAM 20 -> 12 m (Sam set: PlayerController.boltRange 12, so nam trong prefab Player_Sorceress). Menu 69
-    /// so hai con so voi nhau.
+    /// so hai con so voi nhau. 09/10/2026 nguoi dung: "tang tam danh them 8m" -> 20 m (khong con bang Sam set).
     /// </summary>
-    public const float TamNguoiChoi = 12f;
+    public const float TamNguoiChoi = 20f;
     /// <summary>Sat thuong ban dau (cap 1, nhip dau) cua Giut set nguoi choi.</summary>
     public const float SatThuongNguoiChoi = 75f;
     /// <summary>So tia phong cung luc toi da.</summary>

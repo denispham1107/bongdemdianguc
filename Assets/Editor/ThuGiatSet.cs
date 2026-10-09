@@ -46,7 +46,7 @@ public static class ThuGiatSet
     static bool truocBat;
     static EnterPlayModeOptions truocOpt;
 
-    [MenuItem("Diablo 2.5D/69. Chay thu GIUT SET (12 m, 75, 4 tia, 20% choang)", false, 157)]
+    [MenuItem("Diablo 2.5D/69. Chay thu GIUT SET (20 m, 75, 4 tia, 20% choang)", false, 157)]
     public static void Chay()
     {
         if (EditorSceneManager.GetActiveScene().isDirty)
@@ -145,11 +145,12 @@ public static class ThuGiatSet
         var quai = GiatSet.PhongCuaQuai(Vector3.up * 520f, huong, 0, 20f, 14f, Color.white, Color.white);
         Ghi(string.Format("A. Giut set nguoi choi: tam {0}, sat thuong {1}, so tia {2}, choang {3:P0} trong {4} giay; vach ngam TamNgam(6) = {5}; Giut set cua quai: choang {6:P0}",
             mau.range, mau.damage, mau.soTiaDau, mau.xacSuatChoang, mau.giayChoang, toi.TamNgam(6), quai.xacSuatChoang));
-        // 25/09/2026: tam = tam SAM SET (nguoi dung chon giam 20 -> 12). So voi boltRange DOC TU NHAN VAT (prefab),
-        // khong chep tay 12 - doi mot ben ma quen ben kia la phep kiem bat ngay.
-        Ghi(string.Format("A2. tam Giut set {0} m, tam Sam set (boltRange cua nhan vat) {1} m", GiatSet.TamNguoiChoi, toi.boltRange));
-        Kiem(Mathf.Approximately(mau.range, toi.boltRange) && Mathf.Approximately(toi.TamNgam(6), toi.boltRange)
-             && Mathf.Approximately(GiatSet.TamNguoiChoi, 12f), "tam Giut set khong bang tam Sam set (12 m)");
+        // 25/09/2026: tam = tam SAM SET (12). 09/10/2026 nguoi dung "tang tam danh them 8m" -> 20 m; Sam set (boltRange cua nhan
+        // vat, prefab) GIU 12 - so ca hai, so mong doi viet tay.
+        Ghi(string.Format("A2. tam Giut set {0} m (vach ngam {1}), tam Sam set (boltRange cua nhan vat) {2} m", GiatSet.TamNguoiChoi, toi.TamNgam(6), toi.boltRange));
+        Kiem(Mathf.Approximately(mau.range, 20f) && Mathf.Approximately(toi.TamNgam(6), 20f) && Mathf.Approximately(GiatSet.TamNguoiChoi, 20f),
+             "tam Giut set khong phai 20 m (12 + 8)");
+        Kiem(Mathf.Approximately(toi.boltRange, 12f) && Mathf.Approximately(toi.TamNgam(2), 12f), "tam Sam set bi doi theo (phai giu 12 m)");
         Kiem(Mathf.Approximately(mau.damage, 75f), "sat thuong ban dau khong phai 75");
         Kiem(mau.soTiaDau == 4, "khong phong 4 tia");
         Kiem(Mathf.Approximately(mau.xacSuatChoang, 0.20f), "xac suat choang khong phai 20%");
@@ -218,7 +219,7 @@ public static class ThuGiatSet
             DonBia();
             yield return null;
         }
-        Ghi(string.Format("C. tam {2}: bia tam {3:F1} m (mat bia {4:F1} m) trung {0}; bia tam {5:F1} m (mat bia {6:F1} m) trung {1} (tam cu 20 thi ca hai deu trung)",
+        Ghi(string.Format("C. tam {2}: bia tam {3:F1} m (mat bia {4:F1} m) trung {0}; bia tam {5:F1} m (mat bia {6:F1} m) trung {1}",
             trungTam[0], trungTam[1], T, tam[0], tam[0] - 0.4f, tam[1], tam[1] - 0.4f));
         Kiem(trungTam[0] && !trungTam[1], "tam danh khong phai " + T + " m");
 

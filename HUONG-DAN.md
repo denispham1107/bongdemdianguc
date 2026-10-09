@@ -13528,6 +13528,55 @@ Lần chạy đầu phép thử báo cả 10 con "lơ lửng": tia chiếu từ 
 
 ---
 
+## Máy BOT: đầu trận đi giết quái, cấp 7 mới đi săn người · Giựt sét 20 m · kinh nghiệm quái +50% (09/10/2026)
+
+**Người dùng yêu cầu ba việc:**
+
+1. Máy BOT vào trận hạn chế tự kiếm nhau giao tranh, ưu tiên giết quái để lên cấp; đạt **cấp 7** mới ưu tiên đi tìm nhau đánh — trừ khi người chơi /
+   BOT khác ở **phạm vi gần** thì đánh luôn.
+2. Giựt sét tăng tầm thêm 8 m.
+3. Kinh nghiệm giết quái +50% ở mọi đợt.
+
+**Trước đó BOT làm gì:** nhắm kẻ gần nhất (quái hoặc người) trong 30 m; không ai trong 30 m thì đi săn **người** gần nhất cả bản đồ, rồi mới tới quái.
+Tức là đầu trận, lúc chưa có quái (30 giây chờ), BOT chạy thẳng đi tìm người — đúng cái người dùng không muốn.
+
+**Người dùng chọn bốn điểm mà yêu cầu chưa nói rõ:** phạm vi gần = **20 m**; dưới cấp 7 mà bị bắn từ xa thì **đánh trả kẻ vừa đánh mình**; từ cấp 7
+quái áp sát (trong 20 m) thì **giết quái trước** rồi đi tiếp; dưới cấp 7 lúc hết quái thì **đi tuần** chờ đợt mới.
+
+**Luật mới (`BotDieuKhien.ChonMucTieu`):**
+
+| Thứ tự | Dưới cấp 7 | Từ cấp 7 |
+|---|---|---|
+| 1 | đối thủ trong 20 m | đối thủ trong 20 m |
+| 2 | kẻ vừa đánh mình (≤ 5 giây trước), dù xa | quái trong 20 m |
+| 3 | quái gần nhất cả bản đồ | kẻ vừa đánh mình |
+| 4 | đi tuần | đối thủ gần nhất cả bản đồ, rồi quái |
+
+"Đối thủ" bỏ đồng đội, người đang Tàng hình, kẻ đã chết, kẻ dưới vực. Biết "ai vừa đánh mình" nhờ hai trường mới của `Damageable`
+(`nguoiChoiDanhCuoi`, `lucNguoiChoiDanh`) ghi trong `TakeDamage` khi đòn có `GhiKeDanh` của một nhân vật người chơi — không dùng `keDanhCuoi` vì trường
+ấy giữ tên người đánh trước kể cả khi đòn sau là của quái.
+
+**Số đo — menu 114 mục D (0 lỗi):**
+
+- D1: đối thủ cách 14,4 m, BOT cấp 1 → nhắm ngay, tới 8,9 m thì đứng (trong 20 m vẫn đánh nhau).
+- D2: đối thủ cách 44,7 m, không quái, không ai đánh → 6 giây không nhắm lần nào, vẫn cách 43,7 m (bản cũ đi săn tới gần).
+- D2b: đối thủ ở 44,9 m bắn trúng BOT → nhắm sau 0,27 s, 6 s sau còn 19,9 m.
+- D2c: BOT cấp 7, đối thủ 44,6 m → đi săn, 6 s sau còn 7,1 m.
+- D2d: BOT cấp 1, 28 quái ở 33 m, đối thủ ở 45 m → chọn quái.
+- D2e/f: BOT cấp 7, quái ở 10 m → chọn quái; quái dời ra 33 m → chọn người.
+- Lỗi giả đã gặp: lần chạy đầu D2 báo "có nhắm đối thủ" — `MucTieu` còn giữ đối thủ của D1 tới lần chọn lại đầu tiên (nhịp phản xạ 0,7 s), khoảng cách
+  vẫn 44,7 → 44,5 m. Phép thử nay chỉ đếm sau nhịp ấy.
+
+Menu 115 (BOT đánh, có trận thật 90 s): 0 lỗi.
+
+**Giựt sét 12 → 20 m** (`GiatSet.TamNguoiChoi`; vạch ngắm và BOT đọc qua `PlayerController.TamNgam(6)`). Từ 25/09/2026 Giựt sét bằng tầm Sấm sét;
+nay tách ra — Sấm sét / Mây giông giữ 12 m. Sách phép ghi "trong tầm 20 mét". Menu 69 (0 lỗi): bia cách mặt 19,9 m trúng, 20,4 m trượt; tia lan bia
+18 m / 22 m mất 75 / 64; phép kiểm A2 nay viết tay 20 m cho Giựt sét và 12 m cho Sấm sét.
+
+**Kinh nghiệm quái ×1,5 nữa** → gốc × 6,318 (`CapDo.HeSoKnQuai` = 1,35 × 1,20 × 1,30 × 2 × 1,5): bộ xương 114, phù thuỷ 202, quỷ cây 190, quỷ dữ 253,
+quỷ khổng lồ 442. Một mình giết hết: cấp 8 sau đợt 1, cấp 10 sau 2 đợt, cấp 20 sau 7 đợt (bảng ở `kinhnghiem.md`). Menu 60 (0 lỗi): cả bảng ×6,319
+so với bảng gốc chép tay.
+
 ## Phần 4 — Menu công cụ "Diablo 2.5D"
 
 | Mục | Tác dụng |

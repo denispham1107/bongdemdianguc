@@ -10,9 +10,12 @@ using UnityEngine;
 ///
 /// BUOC 3 (08/10/2026) - DI LAI. Nguoi dung: "biet tu kiem quai vat, doi thu nguoi choi khac, biet ne di vong cac chuong
 /// ngai vat de khong bi mac ket, biet dung truoc vuc doi duong khac de khong bi rot xuong dia nguc".
-///   - MUC TIEU: quai / doi thu gan nhat trong <see cref="TamPhatHien"/> m (bo dong doi, nguoi dang Tang hinh, ke da chet,
-///     ke duoi vuc); khong ai trong tam thi SAN doi thu gan nhat ca ban do, roi toi quai, khong con gi thi DI TUAN. Chon lai
-///     theo nhip phan xa cua do kho (<see cref="NhipPhanXa"/>).
+///   - MUC TIEU (09/10/2026 nguoi dung: "dau tran han che tu kiem nhau giao tranh, uu tien giet quai de len cap; dat cap 7
+///     moi uu tien kiem nhau giao tranh, tru khi co nguoi choi / BOT khac trong pham vi gan"): bo dong doi, nguoi dang Tang
+///     hinh, ke da chet, ke duoi vuc. Doi thu trong <see cref="TamGiaoTranh"/> m thi giao tranh ngay (moi cap). Duoi cap
+///     <see cref="CapSanNguoi"/>: DANH TRA nguoi vua danh minh trong <see cref="GiayDanhTra"/> s (du xa), khong thi di giet
+///     QUAI gan nhat ca ban do, het quai thi DI TUAN. Tu cap 7: quai ap sat trong 20 m thi giet truoc, roi SAN doi thu gan
+///     nhat ca ban do, khong con doi thu thi quai. Chon lai theo nhip phan xa cua do kho (<see cref="NhipPhanXa"/>).
 ///   - DUONG DI: A* tren luoi BanDoBot (dung mot lan luc vao tran), lam thang, tinh lai moi 1,2 s / khi dich doi cho. Toi gan
 ///     muc tieu <see cref="TamGiu"/> m thi dung (buoc 4: tung phep tu day).
 ///   - CHONG VUC: moi khung do dat PHIA TRUOC 0,9 / 1,7 m (tia xuong lop Ground + luoi). Hut chan -> DUNG, cam tam cho do,
@@ -44,8 +47,13 @@ public class BotDieuKhien : MonoBehaviour
     public string uid;
 
     // ---- Hang so di lai ----
-    /// <summary>Thay quai / doi thu trong ban kinh nay thi nham toi.</summary>
-    public const float TamPhatHien = 30f;
+    /// <summary>Doi thu (nguoi choi / BOT khac) trong ban kinh nay thi giao tranh ngay du cap nao; tu cap 7 quai trong ban
+    /// kinh nay cung danh truoc khi di san nguoi (nguoi dung chon 20 m, 09/10/2026).</summary>
+    public const float TamGiaoTranh = 20f;
+    /// <summary>Tu cap nhan vat nay BOT uu tien di tim doi thu (duoi cap nay uu tien giet quai) - nguoi dung 09/10/2026.</summary>
+    public const int CapSanNguoi = 7;
+    /// <summary>Bi nguoi choi / BOT danh trung trong ngan nay giay thi danh tra ke ay du o xa (nguoi dung chon).</summary>
+    public const float GiayDanhTra = 5f;
     /// <summary>Toi gan muc tieu chung nay thi dung (tam phep tam trung binh 12-18 m - buoc 4 tung phep tu day).</summary>
     public const float TamGiu = 9f;
     const float NhipTimLai = 1.2f;
@@ -401,9 +409,11 @@ public class BotDieuKhien : MonoBehaviour
         var dir = GameDirector.Instance;
         if (dir == null) return null;
         Vector3 p = transform.position;
+        float r2 = TamGiaoTranh * TamGiaoTranh;
 
-        Damageable gan = null; float dGan = TamPhatHien * TamPhatHien;
+        Damageable nguoiGan = null; float dNguoiGan = r2;
         Damageable nguoiXa = null; float dNguoiXa = float.MaxValue;
+        Damageable quaiGan = null; float dQuaiGan = r2;
         Damageable quaiXa = null; float dQuaiXa = float.MaxValue;
 
         var quai = dir.QuaiConSong;
@@ -412,20 +422,42 @@ public class BotDieuKhien : MonoBehaviour
             var q = quai[i];
             if (!HopLe(q)) continue;
             float d = (q.transform.position - p).sqrMagnitude;
-            if (d < dGan) { dGan = d; gan = q; }
+            if (d < dQuaiGan) { dQuaiGan = d; quaiGan = q; }
             if (d < dQuaiXa) { dQuaiXa = d; quaiXa = q; }
         }
         foreach (var t in dir.moiNguoi)
         {
             if (t == null || t == transform) continue;
             var d = t.GetComponent<Damageable>();
-            if (!HopLe(d) || CheDoTran.LaDongDoi(mau, d) || TangHinh.Dang(t)) continue;
+            if (!LaDoiThu(d)) continue;
             float kc = (t.position - p).sqrMagnitude;
-            if (kc < dGan) { dGan = kc; gan = d; }
+            if (kc < dNguoiGan) { dNguoiGan = kc; nguoiGan = d; }
             if (kc < dNguoiXa) { dNguoiXa = kc; nguoiXa = d; }
         }
-        if (gan != null) return gan;
-        return nguoiXa != null ? nguoiXa : quaiXa;
+
+        // Doi thu o gan: giao tranh ngay, cap nao cung vay
+        if (nguoiGan != null) return nguoiGan;
+
+        // Ke vua danh minh (du xa)
+        Damageable keDanh = null;
+        if (mau != null && Time.time - mau.lucNguoiChoiDanh <= GiayDanhTra && LaDoiThu(mau.nguoiChoiDanhCuoi))
+            keDanh = mau.nguoiChoiDanhCuoi;
+
+        if (pc.Cap.Cap >= CapSanNguoi)
+        {
+            if (quaiGan != null) return quaiGan;          // quai ap sat: giet truoc roi di tiep
+            if (keDanh != null) return keDanh;
+            return nguoiXa != null ? nguoiXa : quaiXa;
+        }
+        // Duoi cap 7: uu tien giet quai de len cap; het quai -> null = di tuan
+        if (keDanh != null) return keDanh;
+        return quaiXa;
+    }
+
+    /// <summary>Nguoi choi / BOT khac co the nham: con song, khong duoi vuc, khong cung doi, khong dang Tang hinh.</summary>
+    bool LaDoiThu(Damageable d)
+    {
+        return HopLe(d) && d != mau && !CheDoTran.LaDongDoi(mau, d) && !TangHinh.Dang(d.transform);
     }
 
     static bool HopLe(Damageable d)

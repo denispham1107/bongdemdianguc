@@ -424,7 +424,7 @@ public static class SachPhep
                      + "cháy thì nhìn như lửa đã lọt qua khiên.\n\n"
                      + "Khiên vỡ khi hết máu, và mờ dần theo lượng máu còn lại.";
             case 6:
-                return "Tia sét phóng thẳng từ tay tới kẻ địch phía trước trong tầm 12 mét (bằng Sấm sét). Có "
+                return "Tia sét phóng thẳng từ tay tới kẻ địch phía trước trong tầm 20 mét. Có "
                      + "tới 4 kẻ địch thì 4 tia cùng phóng ra một lúc, mỗi tia một kẻ. Chạm "
                      + "kẻ địch rồi mỗi tia lại NHẢY tiếp sang những kẻ đứng gần đó.\n\n"
                      + "Sát thương ban đầu 75, mỗi lần nhảy giảm bớt một ít. Mỗi cú đánh "

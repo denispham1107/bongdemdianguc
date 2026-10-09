@@ -90,6 +90,31 @@ public static class ThuMayBotDiLai
 
     static float Ngang(Vector3 a, Vector3 b) { a.y = 0f; b.y = 0f; return Vector3.Distance(a, b); }
 
+    const float TamGiaoTranhBot = BotDieuKhien.TamGiaoTranh;
+
+    /// <summary>Dat BOT len dung cap (bang cap MOI tu cap 1 - LenCap cong mau / nang luong nhu that; goi xong phai tra chi so goc).</summary>
+    static void LenCapBot(PlayerController bot, int cap)
+    {
+        var bang = new BangCap();
+        bang.BatDauTranMoi();
+        bot.DatLaBot(bang);
+        for (int c = 1; c < cap; c++) bang.Them(CapDo.CanDeLenCap(c));
+    }
+
+    /// <summary>Dich mot vat co CharacterController (quai) toi cho, bam dat.</summary>
+    static void DatChoVat(Transform t, Vector3 p)
+    {
+        var cc = t.GetComponent<CharacterController>();
+        bool bat = cc != null && cc.enabled;
+        if (bat) cc.enabled = false;
+        RaycastHit hit;
+        if (Physics.Raycast(new Vector3(p.x, 60f, p.z), Vector3.down, out hit, 120f, BanDoBot.MatNaDat, QueryTriggerInteraction.Ignore))
+            p.y = hit.point.y + 0.1f;
+        t.position = p;
+        if (bat) cc.enabled = true;
+        Physics.SyncTransforms();
+    }
+
     /// <summary>Cho BOT tu di toi dich (diemEp) toi da <paramref name="giay"/> giay; ghi y thap nhat.</summary>
     static IEnumerator ChoDiToi(BotDieuKhien nao, Vector3 dich, float giay, float toiKhi, System.Action<bool, float, float> xong)
     {
@@ -262,7 +287,8 @@ public static class ThuMayBotDiLai
             Vector3 tam = dir.arenaCenter; Vector3 choBot;
             BanDoBot.ODiDuocGanNhat(tam + new Vector3(10f, 0f, 0f), 6f, out choBot);
             Vector3 choToi;
-            BanDoBot.ODiDuocGanNhat(choBot + new Vector3(0f, 0f, 25f), 6f, out choToi);
+            // 09/10/2026: doi thu trong TamGiaoTranh (20 m) thi giao tranh ngay du cap 1 -> dat 15 m (truoc 25 m)
+            BanDoBot.ODiDuocGanNhat(choBot + new Vector3(0f, 0f, 15f), 4f, out choToi);
             DatCho(bot, choBot); DatCho(toi, choToi);
             DatCho(bots[1], tam + new Vector3(-55f, 0f, -55f)); DatCho(bots[2], tam + new Vector3(-55f, 0f, -50f));
             yield return null;
@@ -275,16 +301,87 @@ public static class ThuMayBotDiLai
                 + " m sau " + (Time.time - t0 - 1.5f).ToString("F1") + " s, 1,5 s sau van " + kcSau.ToString("F1") + " m (dung lai, TamGiu " + BotDieuKhien.TamGiu + ")");
             Kiem(n0.MucTieu == dToi && kc <= BotDieuKhien.TamGiu && kcSau >= BotDieuKhien.TamGiu * 0.6f && kcSau <= BotDieuKhien.TamGiu + 0.5f, "BOT khong toi gan doi thu roi dung");
 
-            // Ngoai tam phat hien: van di san
+            // ---- 09/10/2026 (nguoi dung): duoi cap 7 uu tien giet quai, chi giao tranh khi doi thu trong 20 m / vua danh minh;
+            //      tu cap 7 di san doi thu (quai ap sat trong 20 m thi giet truoc) ----
+            var dBot = bot.GetComponent<Damageable>();
+            var bangGoc = bot.Cap;
+            Vector3 chiSoGoc = new Vector3(dBot.maxHealth, bot.maxMana, bot.moveSpeed);
             Vector3 choXa;
-            BanDoBot.ODiDuocGanNhat(bot.transform.position + new Vector3(0f, 0f, -45f), 8f, out choXa);
-            if (Ngang(choXa, bot.transform.position) < 35f) BanDoBot.ODiDuocGanNhat(bot.transform.position + new Vector3(-45f, 0f, 0f), 8f, out choXa);
-            DatCho(toi, choXa); yield return null;
-            float kc0 = Ngang(bot.transform.position, toi.transform.position);
+            BanDoBot.ODiDuocGanNhat(choBot + new Vector3(0f, 0f, -45f), 8f, out choXa);
+            if (Ngang(choXa, choBot) < 35f) BanDoBot.ODiDuocGanNhat(choBot + new Vector3(-45f, 0f, 0f), 8f, out choXa);
+            Vector3 choQuaiXa, choQuaiGan;
+            BanDoBot.ODiDuocGanNhat(choBot + new Vector3(32f, 0f, 8f), 8f, out choQuaiXa);
+            if (Ngang(choQuaiXa, choBot) < TamGiaoTranhBot + 6f) BanDoBot.ODiDuocGanNhat(choBot + new Vector3(0f, 0f, 32f), 8f, out choQuaiXa);
+            BanDoBot.ODiDuocGanNhat(choBot + new Vector3(10f, 0f, 4f), 4f, out choQuaiGan);
+            float kc0, kc1; bool tungNham;
+
+            // D2. Cap 1, doi thu ngoai 20 m, khong quai, khong ai danh: KHONG di san (di tuan)
+            DatCho(bot, choBot); DatCho(toi, choXa); yield return null;
+            kc0 = Ngang(bot.transform.position, toi.transform.position);
+            tungNham = false;
+            // MucTieu con giu doi thu cua D1 toi lan chon lai dau tien (nhip phan xa) - chi dem tu sau do
+            yield return new WaitForSeconds(BotDieuKhien.NhipPhanXa(n0.doKho) + 0.2f);
+            for (float tD = Time.time; Time.time - tD < 6f; ) { if (n0.MucTieu == dToi) tungNham = true; yield return null; }
+            kc1 = Ngang(bot.transform.position, toi.transform.position);
+            Ghi("D2. cap " + bot.Cap.Cap + ", doi thu cach " + kc0.ToString("F1") + " m (ngoai " + TamGiaoTranhBot + " m), khong quai: 6 s nham doi thu " + tungNham
+                + ", con cach " + kc1.ToString("F1") + " m");
+            Kiem(kc0 > TamGiaoTranhBot + 10f && !tungNham, "BOT cap 1 van di san doi thu ngoai pham vi gan");
+
+            // D2b. Cap 1, doi thu o xa BAN TRUNG BOT: danh tra (nham + tien toi)
+            DatCho(bot, choBot); DatCho(toi, choXa); yield return null;
+            kc0 = Ngang(bot.transform.position, toi.transform.position);
+            dBot.GhiKeDanh(dToi); dBot.TakeDamage(1f, DamageType.Physical, Vector3.zero);
+            float tNham = -1f;
+            for (float tD = Time.time; Time.time - tD < 6f; ) { if (tNham < 0f && n0.MucTieu == dToi) tNham = Time.time - tD; yield return null; }
+            kc1 = Ngang(bot.transform.position, toi.transform.position);
+            Ghi("D2b. cap 1, doi thu cach " + kc0.ToString("F1") + " m ban trung BOT: nham sau " + tNham.ToString("F2") + " s, 6 s sau con " + kc1.ToString("F1") + " m");
+            Kiem(tNham >= 0f && tNham <= BotDieuKhien.NhipPhanXa(n0.doKho) + 0.3f && kc1 < kc0 - 15f, "BOT cap 1 khong danh tra nguoi vua danh minh tu xa");
+            dBot.lucNguoiChoiDanh = -100f;
+
+            // D2c. Cap 7, doi thu o xa: di san
+            LenCapBot(bot, BotDieuKhien.CapSanNguoi);
+            DatCho(bot, choBot); DatCho(toi, choXa); yield return null;
+            kc0 = Ngang(bot.transform.position, toi.transform.position);
             yield return new WaitForSeconds(6f);
-            float kc1 = Ngang(bot.transform.position, toi.transform.position);
-            Ghi("D2. doi thu cach " + kc0.ToString("F1") + " m (ngoai tam phat hien " + BotDieuKhien.TamPhatHien + "): 6 s sau con " + kc1.ToString("F1") + " m");
-            Kiem(kc0 > BotDieuKhien.TamPhatHien && kc1 < kc0 - 15f, "BOT khong di san doi thu ngoai tam");
+            kc1 = Ngang(bot.transform.position, toi.transform.position);
+            Ghi("D2c. cap " + bot.Cap.Cap + ", doi thu cach " + kc0.ToString("F1") + " m: muc tieu la doi thu " + (n0.MucTieu == dToi) + ", 6 s sau con " + kc1.ToString("F1") + " m");
+            Kiem(bot.Cap.Cap == BotDieuKhien.CapSanNguoi && kc0 > TamGiaoTranhBot + 10f && kc1 < kc0 - 15f, "BOT cap 7 khong di san doi thu ngoai tam");
+
+            // Quai thu: mot dot that, tat nao, gom ve mot cho
+            dir.SinhDotQuanhNguoi();
+            foreach (var ai in Object.FindObjectsByType<EnemyAI>(FindObjectsSortMode.None)) ai.enabled = false;
+            var quaiThu = new List<Damageable>(dir.QuaiConSong);
+            Kiem(quaiThu.Count > 0, "khong sinh duoc quai thu");
+
+            // D2d. Cap 1, quai o xa + doi thu o xa: chon QUAI
+            bot.DatLaBot(bangGoc); dBot.maxHealth = chiSoGoc.x; bot.maxMana = chiSoGoc.y; bot.moveSpeed = chiSoGoc.z;
+            DatCho(bot, choBot); DatCho(toi, choXa);
+            for (int i = 0; i < quaiThu.Count; i++) DatChoVat(quaiThu[i].transform, choQuaiXa + new Vector3((i % 4) * 1.5f, 0f, (i / 4) * 1.5f));
+            yield return new WaitForSeconds(BotDieuKhien.NhipPhanXa(n0.doKho) + 0.4f);
+            var mtD = n0.MucTieu;
+            Ghi("D2d. cap " + bot.Cap.Cap + ", " + quaiThu.Count + " quai cach " + Ngang(choBot, choQuaiXa).ToString("F1") + " m, doi thu cach " + Ngang(choBot, choXa).ToString("F1")
+                + " m: muc tieu " + (mtD == null ? "khong ai" : mtD.isPlayer ? "NGUOI CHOI" : "quai"));
+            Kiem(mtD != null && quaiThu.Contains(mtD), "BOT cap 1 khong uu tien giet quai");
+
+            // D2e. Cap 7, quai ap sat (10 m) + doi thu o xa: giet quai truoc; D2f. quai o xa: san doi thu
+            LenCapBot(bot, BotDieuKhien.CapSanNguoi);
+            DatCho(bot, choBot);
+            for (int i = 0; i < quaiThu.Count; i++) DatChoVat(quaiThu[i].transform, choQuaiGan + new Vector3((i % 4) * 1.5f, 0f, (i / 4) * 1.5f));
+            yield return new WaitForSeconds(BotDieuKhien.NhipPhanXa(n0.doKho) + 0.4f);
+            var mtE = n0.MucTieu;
+            DatCho(bot, choBot);
+            for (int i = 0; i < quaiThu.Count; i++) DatChoVat(quaiThu[i].transform, choQuaiXa + new Vector3((i % 4) * 1.5f, 0f, (i / 4) * 1.5f));
+            yield return new WaitForSeconds(BotDieuKhien.NhipPhanXa(n0.doKho) + 0.4f);
+            var mtF = n0.MucTieu;
+            Ghi("D2e. cap " + bot.Cap.Cap + ", quai cach ~10 m + doi thu xa: muc tieu " + (mtE == null ? "khong ai" : mtE.isPlayer ? "NGUOI CHOI" : "quai")
+                + "; D2f. quai cach ~" + Ngang(choBot, choQuaiXa).ToString("F0") + " m: muc tieu " + (mtF == null ? "khong ai" : mtF.isPlayer ? "nguoi choi" : "QUAI"));
+            Kiem(mtE != null && quaiThu.Contains(mtE), "BOT cap 7 khong giet quai ap sat truoc");
+            Kiem(mtF == dToi, "BOT cap 7 khong uu tien san doi thu khi quai o xa");
+
+            // Don: giet quai thu, tra BOT ve cap goc
+            foreach (var q in quaiThu) if (q != null && !q.IsDead) q.TakeDamage(1e9f, DamageType.Physical, Vector3.zero);
+            bot.DatLaBot(bangGoc); dBot.maxHealth = chiSoGoc.x; dBot.health = dBot.maxHealth; bot.maxMana = chiSoGoc.y; bot.moveSpeed = chiSoGoc.z;
+            yield return null;
 
             // Dong doi: khong nham
             sbyte doiCu = dToi.doi, doiBotCu = bot.GetComponent<Damageable>().doi;

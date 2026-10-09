@@ -69,7 +69,9 @@ Giết một con quái to đúng lúc sắp lên cấp thì **nhảy được ha
 **26/09/2026: kinh nghiệm giết QUÁI +35%, rồi cùng ngày +20% nữa TRÊN MỨC ĐÓ** (anh chọn) → gốc × 1,62.
 **28/09/2026: +30% nữa TRÊN MỨC ĐANG CÓ** (anh chọn) → gốc × **2,106** (`CapDo.HeSoKnQuai` = 1,35 × 1,20 × 1,30).
 **09/10/2026: +100% (gấp đôi) TRÊN MỨC ĐANG CÓ** (anh yêu cầu) → gốc × **4,212** (`HeSoKnQuai` = 1,35 × 1,20 × 1,30 × 2).
-Mức gốc giữ trong `CapDo.KnGocCuaQuai`, làm tròn nửa lên — cả bảng ×4,211 (232 → 977). Menu 60 kiểm.
+**09/10/2026 (lần hai): +50% nữa TRÊN MỨC ĐANG CÓ, mọi đợt** (anh yêu cầu) → gốc × **6,318** (`HeSoKnQuai` = 1,35 × 1,20 × 1,30 × 2 × 1,5):
+bộ xương 114 · quỷ đói 126 · Fallen 139 · quỷ cây 190 · phù thuỷ 202 · quỷ dữ 253 · quỷ khổng lồ 442.
+Mức gốc giữ trong `CapDo.KnGocCuaQuai`, làm tròn nửa lên — cả bảng ×6,319 (232 → 1 466). Menu 60 kiểm (0 lỗi).
 Hạ người chơi khác **không đổi** (250).
 
 ### Nhịp lên cấp trong thực tế (Act2)
@@ -78,7 +80,21 @@ Hạ người chơi khác **không đổi** (250).
 (thay vì đủ 4), quái cộng dồn và vòng ngoài chia đôi làm tròn lên — một mình: đợt 1/2/3 = **12 / 13 / 14 con** (cũ 24 / 25 / 27);
 từ đợt 4 như cũ (30, 34, 39…). Cùng ngày kinh nghiệm quái ×2 nên **3 đợt đầu cho gần đúng bằng kinh nghiệm cũ** với nửa số quái.
 **Cùng ngày (lần hai): đợt 4 cũng chỉ một nửa** (anh: "giảm 50% ở đợt 4 luôn") → đợt 1–4 giảm, từ đợt 5 như cũ.
-Bảng dưới (mục cũ ×2,106) là LỊCH SỬ; bảng mới (×4,212, TB 126 kinh nghiệm một con quái của bốn loại Act2):
+**Bảng hiện hành (×6,318, TB 189,75 kinh nghiệm một con quái của bốn loại Act2 — 09/10/2026 lần hai):**
+
+| Sau đợt | Số quái (một mình) | Kinh nghiệm đợt ấy | Cộng dồn | Cấp đạt |
+|---|---:|---:|---:|---|
+| 1 | 12 | 2 277 | 2 277 | 8 |
+| 2 | 13 | 2 467 | 4 744 | **10** |
+| 3 | 14 | 2 656 | 7 400 | 12 |
+| 4 | 15 | 2 846 | 10 246 | 14 |
+| 5 | 34 | 6 452 | 16 698 | 16 |
+| 6 | 39 | 7 400 | 24 098 | 18 |
+| 7 | 45 | 8 539 | 32 637 | **20** |
+
+Một mình, giết hết: cấp 7 ngay trong đợt 1 (máy BOT bắt đầu đi săn người từ cấp 7), cấp 10 sau **2 đợt**, cấp 20 sau **7 đợt**.
+
+Bảng dưới (×4,212) và mục cũ ×2,106 là LỊCH SỬ; bảng ×4,212 (TB 126 kinh nghiệm một con quái của bốn loại Act2):
 
 | Sau đợt | Số quái (một mình) | Kinh nghiệm đợt ấy | Cộng dồn | Cấp đạt |
 |---|---:|---:|---:|---|

@@ -6,9 +6,9 @@ A2. tong de tu cap 1 len cap 20: 29465 kinh nghiem
 A3. thieu 1 diem -> cap 1; du 1 diem nua -> cap 2, kinh nghiem du lai 0
 A4. cong mot phat 500 -> cap 4, con du 85 (100+135+180 = 415 cho cap 4, du 85)
 A5. cong 999999 -> cap 20, diem ky nang 20
-A6. quai: bo xuong 76, phu thuy 135, quy cay 126, quy du 168, quy khong lo 295 | nguoi choi 250
-A6b. kinh nghiem quai x4,212 (1,35 x 1,2 x 1,3 x 2): Skeleton 18->76; Ghoul 20->84; Fallen 22->93; QuyCay 30->126; Witch 32->135; QuyDu 40->168; Brute 70->295; tong 232 -> 977 (x4.211)
-    mot dot Act2 (4 con quanh minh) = 505 kinh nghiem -> du len cap 2 ngay dot dau: True
+A6. quai: bo xuong 114, phu thuy 202, quy cay 190, quy du 253, quy khong lo 442 | nguoi choi 250
+A6b. kinh nghiem quai x6,318 (1,35 x 1,2 x 1,3 x 2 x 1,5): Skeleton 18->114; Ghoul 20->126; Fallen 22->139; QuyCay 30->190; Witch 32->202; QuyDu 40->253; Brute 70->442; tong 232 -> 1466 (x6.319)
+    mot dot Act2 (4 con quanh minh) = 759 kinh nghiem -> du len cap 2 ngay dot dau: True
 
 B. he so theo cap
 B1. nhan vat cap 10: mau x3.518, nang luong x2.358, toc do x1.363 | cap 20: mau x14.232, nang luong x6.116, toc do x1.363
@@ -24,10 +24,10 @@ E1. goi ky nang 17 byte: cap 5 -> 5, ky nang 4, ghe 2, tre 120 ms
 E2. goi kinh nghiem 4 byte: ghe 3, diem 4096
 
 D. trong tran dau
-D1. vao tran: cap 1, mau toi da 1000, nang luong toi da 250, toc do 5.20, ky nang da mo (tru hai binh co san) 0
+D1. vao tran: cap 1, mau toi da 1000, nang luong toi da 180, toc do 5.20, ky nang da mo (tru hai binh co san) 0
 D2. bam Qua cau bang khi chua mo -> phep bay ra 0, loi nhac: QUẢ CẦU BĂNG chưa mở khoá — vào SÁCH PHÉP để mở
 D3. mo khoa Qua cau bang -> phep bay ra 1 (cap nhan vat van 1)
-D4. len cap 2: mau 1000 -> 1150 (x1.150), nang luong 250 -> 275 (x1.100), toc do 5.20 -> 5.38 (x1.035)
+D4. len cap 2: mau 1000 -> 1150 (x1.150), nang luong 180 -> 198 (x1.100), toc do 5.20 -> 5.38 (x1.035)
 D4b. len cap 20: toc do 5.20 -> 7.09 (x1.363, mong x1.363 = dung o cap 10), mau x14.23 (mong x14.23)
     (nhan vat con song: True)
 D5. Mua bang cap 5: sat thuong moi tang 29.04 -> 60.22 (x2.074, mong doi x2.074) | dong cung 1.50s -> 2.10s

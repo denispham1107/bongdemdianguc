@@ -69,6 +69,12 @@ public class Damageable : MonoBehaviour
     /// </summary>
     public Damageable keDanhCuoi;
 
+    /// <summary>NGUOI CHOI (nguoi / BOT) vua gay don len vat nay va luc nao (Time.time) - chi ghi khi don that su toi (khong phai
+    /// dong doi). May BOT doc de DANH TRA ke vua danh minh (BotDieuKhien.ChonMucTieu, 09/10/2026). Khac keDanhCuoi: chi tin
+    /// trong vai giay sau <see cref="lucNguoiChoiDanh"/>.</summary>
+    [System.NonSerialized] public Damageable nguoiChoiDanhCuoi;
+    [System.NonSerialized] public float lucNguoiChoiDanh = -100f;
+
     float flashTimer;
     Color flashColor = Color.white;
 
@@ -170,6 +176,7 @@ public class Damageable : MonoBehaviour
             // CHE DO DOI (28/09/2026): don cua DONG DOI khong gay sat thuong. Ky nang da bo qua dong doi luc chon muc tieu
             // (CheDoTran.BoQua); day la luoi an toan cho moi duong con lai co ghi ke danh (nhip chay, vung lua, cay chay...).
             if (nguoiGay != null && CheDoTran.LaDongDoi(nguoiGay, this)) return;
+            if (nguoiGay != null && nguoiGay.isPlayer) { nguoiChoiDanhCuoi = nguoiGay; lucNguoiChoiDanh = Time.time; }
 
             // BO XUONG DO DON (28/09/2026): don KY NANG cua nguoi choi (khong phai sat thuong ri) - 25% khong mat mau.
             // Hieu ung cua cung don nay do ChongDo.ChanHieuUng chan (cung ket qua gieo trong khung).
