@@ -39,6 +39,8 @@ public static class ThuNayQuatLoc
     [MenuItem("Diablo 2.5D/84. Chay thu QUA NAY + GIO LOC HINH QUAT", false, 173)]
     public static void Chay()
     {
+        // 09/10/2026 Hoa loc xoay bi AN trong game (CapDo.AnHoaLocXoay) - phep thu van thu co che
+        CapDo.ChoPhepKyAnChoPhepThu = true;
         if (EditorSceneManager.GetActiveScene().isDirty)
         {
             EditorUtility.DisplayDialog("Chay thu", "Scene dang mo co thay doi chua luu - luu hoac bo truoc da.", "OK");
@@ -411,6 +413,7 @@ public static class ThuNayQuatLoc
 
     static void Ket()
     {
+        CapDo.ChoPhepKyAnChoPhepThu = false;
         File.WriteAllText("PlayTestShots/nay_quat_loc.txt", bao.ToString());
         var rac = GameObject.Find("TAM_NayQuatLoc");
         if (rac != null) Object.DestroyImmediate(rac);

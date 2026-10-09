@@ -347,12 +347,12 @@ public static class ThuQuaCauBang
         Ghi(string.Format("C. con khoa: tu choi {0} (\"{1}\"); mo khoa roi tung: DaTungPhep {2}, so qua bay ra {3}, ton nang luong {4:F1}; bam lai sau 0,45 giay: tu choi {5} (\"{6}\"); sau 0,6+ giay: tung duoc {7}",
             tuChoiKhoa, nhacKhoa, daTung, soQuaBay, manaTon, tuChoiHoiChieu, nhacHoiChieu, tungLaiDuoc));
         Kiem(tuChoiKhoa, "ky nang con khoa ma van tung duoc");
-        Kiem(daTung && soQuaBay == 3, "tung Qua cau bang khong ra dung 3 qua");
+        Kiem(daTung && soQuaBay == 4, "tung Qua cau bang khong ra dung 4 qua (09/10/2026: them 1 qua tu cap 1)");
         Kiem(Mathf.Abs(manaTon - toi.quaCauBangCost) < 0.01f, "ton nang luong sai");
         Kiem(tuChoiHoiChieu, "chua het hoi chieu ma van tung duoc");
         Kiem(tungLaiDuoc, "het hoi chieu 0,55 giay ma khong tung duoc");
         Ghi(string.Format("D. bia tren duong bay (8 m) mat {0:F1} mau; bia lech 7 m khoi duong bay mat {1:F1}", matDuong, matLech));
-        Kiem(matDuong >= 65f * 0.55f - 0.5f && matDuong <= 3f * 65f + 0.5f, "bia tren duong bay khong mat mau dung khoang cua 1..3 qua");
+        Kiem(matDuong >= 65f * 0.55f - 0.5f && matDuong <= 4f * 65f + 0.5f, "bia tren duong bay khong mat mau dung khoang cua 1..4 qua");
         Kiem(matLech < 0.5f, "bia nam ngoai duong bay cung mat mau");
         Ghi(string.Format("G. luc bay: dung luoi khoi bang pha le {0}, {1} -> khoi gon (khong duoi gai) {2}; shader CauBangPhaLe {3}, loi sang {4}, quay lan {5}; luong khi lanh dang phat {6}, vet bang {7}, anh sang {8}; sau khi no: {9} luong khi lanh con o lai tan dan",
             dungLuoi, hinh, khoiGon, dungVatLieu, coLoiSang, coQuay, coSuong, coVet, coDen, suongConLai));
@@ -415,7 +415,7 @@ public static class ThuQuaCauBang
         Kiem(Mathf.Abs(dongCap3 - 1.30f) < 0.01f, "cap ky nang khong keo dai dong bang");
         Kiem(Mathf.Approximately(slowMin, 0.5f) && Mathf.Approximately(slowMax, 0.5f), "muc cham khong phai 50%");
         Kiem(Mathf.Abs(conMin - 2f) < 0.01f && Mathf.Abs(conMax - 2f) < 0.01f, "lam cham khong keo dai 2 giay");
-        Kiem(SachPhep.MoTa(K).Contains("ĐÓNG BĂNG") && SachPhep.MoTa(K).Contains("NĂM quả"), "mo ta Sach phep chua noi dong bang / cap 5 nam qua");
+        Kiem(SachPhep.MoTa(K).Contains("ĐÓNG BĂNG") && SachPhep.MoTa(K).Contains("SÁU quả") && SachPhep.MoTa(K).StartsWith("Bốn quả"), "mo ta Sach phep chua noi dong bang / bon qua / cap 5 sau qua");
         Kiem(Mathf.Abs(giayCap3 - 2.30f) < 0.01f, "cap ky nang khong keo dai lop cham");
         Object.Destroy(b0.gameObject);
 
@@ -457,8 +457,8 @@ public static class ThuQuaCauBang
                 GoiTin.MotPhep p;
                 if (b != null && GoiTin.LoaiCuaGoi(b) == GoiTin.LoaiKyNang && GoiTin.DocKyNang(b, out p) && p.kyNang == K) goiCo9 = true;
             }
-            Ghi("H. goi ky nang so 9 tu nguoi kia -> may minh phat lai " + maxQua + " qua (mong 3); minh tung -> goi gui di mang kyNang = 9: " + goiCo9);
-            Kiem(maxQua == 3, "may minh khong phat lai Qua cau bang cua nguoi kia");
+            Ghi("H. goi ky nang so 9 tu nguoi kia -> may minh phat lai " + maxQua + " qua (mong 4); minh tung -> goi gui di mang kyNang = 9: " + goiCo9);
+            Kiem(maxQua == 4, "may minh khong phat lai Qua cau bang cua nguoi kia");
             Kiem(goiCo9, "tung Qua cau bang ma goi ky nang khong mang so 9");
             KenhTrucTiep.guiSangBenKia = null;
             KenhTrucTiep.Dong();
@@ -954,9 +954,9 @@ public static class ThuQuaCauBang
             float hanM5 = Time.time + 0.8f;
             while (Time.time < hanM5) { soQua5 = Mathf.Max(soQua5, DemQua() - truoc5); yield return null; }
             foreach (var q0 in Object.FindObjectsByType<QuaCauBang>(FindObjectsInactive.Exclude)) Object.Destroy(q0.gameObject);
-            Ghi(string.Format("M. cap 4 (DOI CHUNG): {0} qua; cap {1}: {2} qua (mong 3 va 5)", soQua4, cap5, soQua5));
-            Kiem(soQua4 == 3, "doi chung cap 4 khong phai 3 qua");
-            Kiem(cap5 == 5 && soQua5 == 5, "cap 5 khong ra 5 qua");
+            Ghi(string.Format("M. cap 4 (DOI CHUNG): {0} qua; cap {1}: {2} qua (mong 4 va 6 - 09/10/2026, truoc 3 va 5)", soQua4, cap5, soQua5));
+            Kiem(soQua4 == 4, "doi chung cap 4 khong phai 4 qua");
+            Kiem(cap5 == 5 && soQua5 == 6, "cap 5 khong ra 6 qua");
 
             // NGUOI CHOI bi dong bang: khong di, khong tung phep
             yield return new WaitForSeconds(0.6f);

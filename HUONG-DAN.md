@@ -13577,6 +13577,45 @@ nay tách ra — Sấm sét / Mây giông giữ 12 m. Sách phép ghi "trong t�
 quỷ khổng lồ 442. Một mình giết hết: cấp 8 sau đợt 1, cấp 10 sau 2 đợt, cấp 20 sau 7 đợt (bảng ở `kinhnghiem.md`). Menu 60 (0 lỗi): cả bảng ×6,319
 so với bảng gốc chép tay.
 
+## Thiên thạch tự nhắm, Quả cầu băng thêm quả, ẩn Hoá lốc xoáy, Gió lốc hất tung nằm ngang (09/10/2026)
+
+**Người dùng yêu cầu bốn việc:** Thiên thạch tăng tầm thêm 5 m và ưu tiên rơi trúng người chơi khác / kẻ địch trong phạm vi thay vì rơi ngẫu nhiên;
+Quả cầu băng thêm 1 quả từ cấp 1; ẩn hoàn toàn Hoá lốc xoáy (khi nào cần sẽ bảo hiện lại); Gió lốc hất tung thì nâng từ từ kẻ địch đang đứng, trên cao
+chuyển sang nằm, giữ tư thế nằm rơi xuống đất.
+
+**Người dùng chọn:** phạm vi tự nhắm 5 m quanh chỗ ngắm; quả dư rơi lại vào các kẻ đã nhắm; Quả cầu băng cấp 5 cũng thêm 1 (6 quả); Lốc xoáy và Quả cầu
+điện giữ 18 m; hất tung kéo dài 1,2 giây, nằm ngửa ngang 90°, chạm đất là đứng dậy ngay.
+
+**Thiên thạch.** `ThienThach.Tam` = 23 m (trước 18 — vạch ngắm cảm ứng và BOT đọc qua `PlayerController.TamNgam(4)`). Mỗi quả, đúng lúc hết chờ
+lượt và bắt đầu rơi, tìm kẻ địch trong 5 m quanh chỗ ngắm (`NhamKeDich`): chọn kẻ bị nhắm ít quả nhất, bằng nhau thì kẻ gần chỗ ngắm nhất — nên 3 quả
+với 2 kẻ ra A, B, A. Chọn lúc RƠI chứ không lúc tung để kẻ đang chạy vẫn bị nhắm đúng chỗ đang đứng. Không ai thì rơi lệch ngẫu nhiên quanh chỗ ngắm
+như cũ. Bỏ người tung, đồng đội, người Tàng hình, kẻ đang rơi dưới vực. Chỉ Thiên thạch người chơi; Quỷ dữ giữ kiểu cũ. ⚠️ Bản máy tính tung theo
+chuột KHÔNG kẹp tầm Thiên thạch (từ trước tới nay `TamCuaKyNang(4)` = 0) — 23 m là tầm của vạch ngắm cảm ứng.
+
+Menu 62 mục H (0 lỗi, tung thật bằng `CastAt(4)` ở cấp 5): quái A cách chỗ ngắm 2 m nhận 3 quả, quái B (3,4 m) 2 quả, quái C (7 m) 0; điểm rơi lệch
+thân quái 0,00 m. Đối chứng không ai trong 5 m: 0 quả nhắm, rơi xa chỗ ngắm nhất 1,82 m. Lần chạy đầu báo lỗi vì phép thử để GameDirector chạy —
+giây 30 tự ra đợt quái thật, quái lạ đánh ngã nhân vật và đứng gần chỗ ngắm (tự nhắm trúng nó); nay phép thử tắt GameDirector và dời quái khác ra xa.
+
+**Quả cầu băng:** `SoQuaThuong` 3 → 4, `SoQuaCap5` 5 → 6. Menu 68 (0 lỗi): tung thật ra 4, cấp 5 ra 6, máy kia phát lại 4.
+
+**Ẩn Hoá lốc xoáy** (`CapDo.AnHoaLocXoay`, `CapDo.KyAn`): không còn trong cột Sách phép (cả trong trận lẫn xem trước ở sảnh); ô đã lưu chứa kỹ năng 14
+đọc ra ô trống; `CastAt` từ chối; BOT hệ Phong không cộng điểm, không dùng. Số hiệu 14, code, icon, gói tin giữ nguyên — hiện lại chỉ cần đặt
+`AnHoaLocXoay = false`, chèn lại vào nhóm PHONG của `SachPhep.KyNangTheoNhom` và kế hoạch điểm BOT. Menu 75 mục Z (0 lỗi): không có trong Sách phép,
+ô lưu "0,1,2,3,4,5,14" đọc ra "…,-1", BOT không có 14, `CastAt(14)` lúc đang có Gió lốc bay → 0 Lốc xoáy, mana không bị trừ.
+
+**Gió lốc hất tung** (`BiHatTung`): 1,2 giây (trước 0,8), chia ba chặng theo tỉ lệ thời gian:
+
+| Chặng | Tỉ lệ | Chuyển động |
+|---|---|---|
+| Lên | 0–55% | nâng 0 → 3 m êm (chậm lúc đầu, chậm lúc tới đỉnh); 45% đầu chặng đứng thẳng, sau đó ngã ra nằm ngửa ngang 90°, xong đúng lúc tới đỉnh |
+| Rơi | 55–85% | giữ nằm ngang, rơi nhanh dần; càng gần đất thân càng hạ để LƯNG chạm đất (trục thân 0,22 m như bị đánh ngã) |
+| Dậy | 85–100% | chống đứng dậy từ tư thế nằm |
+
+Xoay quanh điểm hông nên thân không văng xa cột va chạm. Cấp kỹ năng cộng +0,15 s mỗi cấp thì cả ba chặng dài theo. Menu 71 mục G (0 lỗi, đo trên tư
+thế thật của hình): cao 3,00 m, bay 1,21 s, ngã lớn nhất 90°, lên tới đỉnh 0,66 s, từ đỉnh tới đứng dậy xong 0,55 s, nằm ngang lúc tới đỉnh 38/38 lần và
+lúc hông xuống tới mức đứng 38/38, hông thấp nhất −0,68 m so với lúc đứng (lưng sát đất, không chui xuống), đứng thẳng lại 38/38. Mục I3 sửa cửa sổ đo
+(1,2 s cũ kết thúc đúng lúc còn bay). Menu 82, 84, 85, 115, 66: 0 lỗi.
+
 ## Phần 4 — Menu công cụ "Diablo 2.5D"
 
 | Mục | Tác dụng |

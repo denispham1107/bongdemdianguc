@@ -1,11 +1,12 @@
 [ban 1] Hoa loc xoay + Gio loc hoi mana
+Z. AN: trong Sach phep False; o luu "0,1,2,3,4,5,14" doc ra "0,1,2,3,4,5,-1" (con 14: False); ke hoach BOT Phong co 14: False; CastAt(14) khi co Gio loc dang bay (True): Loc xoay 0 -> 0, mana 141 -> 149
 
 A. so hieu 14, so ky nang 22; nang luong 45, hoi chieu 0.5 s, niem 0.38 s; Sach phep doc 45/0.5/0.38
 A. ten "HOÁ LỐC XOÁY", tom tat "Hoá Gió lốc đang bay thành Lốc xoáy", mo ta 687 ky tu; HUD 22 icon, icon so 14 co; icon file 256x256; Gio loc hoi 10 mana moi lan trung
 
 C. nang luong Gio loc: cap 1=40.0  cap 2=44.0  cap 3=48.4  cap 4=53.2  cap 5=58.6  (cap 5 ban cu la 117.1)
 
-B. (0 quai da don) chum 2 Gio loc (+-15 do) quet 3 bia xep doc duong loc giua: trung 6 lan (loc giua 3 + loc hai ben quet toi dau thi trung day) -> hoi 60 mana (mong 60); mana 108.9 -> 90.0 -> 161.6
+B. (0 quai da don) chum 2 Gio loc (+-15 do) quet 3 bia xep doc duong loc giua: trung 6 lan (loc giua 3 + loc hai ben quet toi dau thi trung day) -> hoi 60 mana (mong 60); mana 108.9 -> 90.2 -> 162.1
 B. DOI CHUNG ban vao cho trong (khong co ai): hoi 0 mana (phai la 0)
 
 F. khong co Gio loc nao dang bay -> tu choi True, mana 217.8 -> 217.8, hoi chieu 0.00 s (phai 0)
@@ -13,7 +14,7 @@ F. khong co Gio loc nao dang bay -> tu choi True, mana 217.8 -> 217.8, hoi chieu
 D. truoc khi hoa co 2 con Gio loc (con gan cho ngam lech PHAI 15 do nam ben phai True); sau khi hoa con 1 Gio loc (con gan cho ngam con False, con kia con True), 1 Loc xoay (lech cho so voi con gan cho ngam 0.00 m); co Loc xoay True; ton -24 mana
 D. Loc xoay hoa ra: toc do 9.5 m/s (Gio loc 9.5, Loc xoay goc 3,4), song 6.0 s, don cham mot lan 90.0 (mong 90.0), sat thuong moi giay 41.5
 D. TO DAN: ti le hinh ngay sau khi hoa 0.318 -> sau 0.55 giay 1.00; co khoi dau dat 0.318, co hinh Gio loc dang bay 0.318
-E. bia dung yen mat 651 mau (don cham 90 + sat thuong moi giay cua Loc xoay)
+E. bia dung yen mat 593 mau (don cham 90 + sat thuong moi giay cua Loc xoay)
 
 D2. ngam lech TRAI 15 do: con trai bi hoa True, con phai bay tiep True, Loc xoay 1
 

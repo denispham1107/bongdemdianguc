@@ -28,8 +28,9 @@ public class QuaCauBang : MonoBehaviour
     /// <summary>Dong bang 1 giay (nguoi dung 09/10/2026, truoc 1,5); cap ky nang cong them 0,15 giay moi cap (luat chung).</summary>
     public const float GiayDongBang = 1f;
 
-    /// <summary>Cap 5: mot lan tung ra 5 qua (nguoi dung 17/09/2026), duoi cap 5 la 3 qua.</summary>
-    public const int CapNamQua = 5, SoQuaCap5 = 5, SoQuaThuong = 3;
+    /// <summary>Cap 5: mot lan tung ra 5 qua (nguoi dung 17/09/2026), duoi cap 5 la 3 qua. 09/10/2026 nguoi dung "danh them 1 qua
+    /// tu cap 1" (chon cap 5 cung them 1): cap 1-4 ra 4 qua, cap 5 ra 6 qua.</summary>
+    public const int CapNamQua = 5, SoQuaCap5 = 6, SoQuaThuong = 4;
 
     public static int SoQuaTheoCap(int capKy) { return capKy >= CapNamQua ? SoQuaCap5 : SoQuaThuong; }
     /// <summary>Ti le giam toc do: CHAM 50% (09/10/2026 nguoi dung doi 80% roi cung ngay quay lai 50%).</summary>

@@ -57,7 +57,8 @@ public static class SachPhep
         new[] { 0, 4, CapDo.KyLuaDiaNguc },                       // Qua cau lua, Thien thach, Lua dia nguc
         new[] { CapDo.KyQuaCauBang, 1, CapDo.KyTangHinh },        // Qua cau bang, Mua bang, Tang hinh
         new[] { 6, 2, CapDo.KyCauDien },                          // Giut set, Sam set, Qua cau dien
-        new[] { CapDo.KyGioLoc, 3, CapDo.KyHoaLocXoay, CapDo.KyMayGiong },          // Gio loc, Loc xoay, Hoa loc xoay
+        // 09/10/2026 nguoi dung AN Hoa loc xoay (CapDo.AnHoaLocXoay) - hien lai thi chen CapDo.KyHoaLocXoay sau Loc xoay (3)
+        new[] { CapDo.KyGioLoc, 3, CapDo.KyMayGiong },                            // Gio loc, Loc xoay, May giong
         new[] { CapDo.KyBinhMau, CapDo.KyBinhMana, 5, CapDo.KyTocBien },   // Binh mau, Binh mana, Khien, Toc bien
         // NHOM BI DONG (nguoi dung 19/09/2026): khong bam duoc, khong keo vao o - mo khoa / nang cap
         // la cong vinh vien vao thuoc tinh nhan vat.
@@ -195,7 +196,7 @@ public static class SachPhep
         {
             int v;
             if (!int.TryParse(phan[i], out v)) return MacDinh(soO);
-            a[i] = (v >= 0 && v < SoKyNang) ? v : Trong;
+            a[i] = (v >= 0 && v < SoKyNang && !CapDo.KyAn(v)) ? v : Trong;     // ky nang bi an (Hoa loc xoay) roi khoi o
         }
 
         // KHONG cho mot ky nang nam o hai o: ban ghi hong (hoac nguoi choi sua
@@ -336,13 +337,13 @@ public static class SachPhep
             case 1: return "Bão băng, làm chậm và đóng băng";
             case 2: return "Giông sét, gây choáng";
             case 3: return "Cuốn mọi thứ lên trời";
-            case 4: return "Ba khối đá lửa rơi xuống";
+            case 4: return "Ba khối đá lửa tự tìm kẻ địch";
             case 5: return "Vòm chắn quanh mình";
             case 6: return "4 tia sét lan, 20% choáng";
             // NGAN: goc phai hang con ghi "Cap 1/3 - con N binh" (25/09/2026) - dai hon la chu de len nhau
             case CapDo.KyBinhMau: return "Hồi tối đa " + Mathf.RoundToInt(PlayerController.MauBinhTheoCap(CapHienThi(ky))) + " máu";
             case CapDo.KyBinhMana: return "Hồi tối đa " + Mathf.RoundToInt(PlayerController.ManaBinhTheoCap(CapHienThi(ky))) + " năng lượng";
-            case CapDo.KyQuaCauBang: return "Ba quả băng, chậm 50%, 20% đóng băng";
+            case CapDo.KyQuaCauBang: return "Bốn quả băng, chậm 50%, 20% đóng băng";
             case CapDo.KyGioLoc: return "Hai cơn lốc hình quạt, 20% hất tung";
             case CapDo.KyLuaDiaNguc: return "Năm quả lửa tự đuổi kẻ địch";
             case CapDo.KyTangHinh: return "Trong suốt 90 giây, hiện hình nổ vòng phép";
@@ -408,9 +409,10 @@ public static class SachPhep
                      + "trước, và 30 giây sau mới mọc lại rồi cháy tiếp.\n\n"
                      + "Cảnh vật bị cuốn sẽ tự trở về chỗ cũ sau 30 giây.";
             case 4:
-                return "Ba khối đá lửa nối đuôi nhau rơi từ trên trời xuống điểm ngắm, "
-                     + "cách nhau nửa giây; hai khối sau lệch ra chung quanh chứ không "
-                     + "rơi trùng một chỗ.\n\n"
+                return "Ba khối đá lửa nối đuôi nhau rơi từ trên trời xuống, tầm ngắm 23 mét. "
+                     + "Mỗi khối TỰ TÌM kẻ địch hay người chơi khác trong 5 mét quanh điểm ngắm "
+                     + "để giáng trúng — mỗi khối một kẻ, hết kẻ thì quay lại kẻ đầu. Không có ai "
+                     + "thì rơi xuống điểm ngắm và lệch ra chung quanh.\n\n"
                      + "Mỗi khối nổ ra một vùng lửa rộng, làm rung màn hình và để lại "
                      + "vũng lửa cháy trên mặt đất. Cây trúng thiên thạch sẽ cháy rụi "
                      + "rồi mọc lại sau 30 giây.\n\n"
@@ -453,7 +455,7 @@ public static class SachPhep
                      + "thêm 45 năng lượng, tối đa cấp 3: 75 → 120 → 165. Uống xong phải chờ 0,5 giây mới uống "
                      + "bình tiếp theo.";
             case CapDo.KyQuaCauBang:
-                return "Ba quả cầu băng pha lê cùng phóng ra, toè thành hình quạt về phía trước. "
+                return "Bốn quả cầu băng pha lê cùng phóng ra, toè thành hình quạt về phía trước. "
                      + "Phía sau mỗi quả kéo theo một luồng không khí lạnh buốt và một vệt băng "
                      + "lấp lánh rơi rớt dọc đường bay.\n\n"
                      + "Quả nào chạm vật cản hay kẻ địch thì vỡ tung thành một vụ nổ băng: mọi "
@@ -463,7 +465,7 @@ public static class SachPhep
                      + "Nổ trúng LÒ LỬA thì dập tắt lửa, 30 giây sau lò cháy lại.\n\n"
                      + "Kẻ nào trúng đều bị LÀM CHẬM một nửa tốc độ trong 2 giây, và có 20% khả năng bị "
                      + "ĐÓNG BĂNG 1 giây — đứng cứng tại chỗ, không đi và không dùng được kỹ năng nào.\n\n"
-                     + "CẤP 5: mỗi lần tung ra NĂM quả cầu băng thay vì ba, và tảng băng mọc lên "
+                     + "CẤP 5: mỗi lần tung ra SÁU quả cầu băng thay vì bốn, và tảng băng mọc lên "
                      + "sau vụ nổ đến lúc tan thì NỔ TUNG, giáng thêm 100 sát thương lên mọi kẻ "
                      + "ở gần trong 3,4 mét.\n\n"
                      + "Quả nổ trúng kẻ địch thì NẢY sang kẻ địch gần nhất chưa trúng (trong 6 m) và nổ thêm một lần nữa, mạnh y như cũ.\n\n"
@@ -477,7 +479,8 @@ public static class SachPhep
                      + "Trên thân lốc luôn lóe hai tia sét giăng từ miệng xuống (chỉ là hiệu ứng, không gây thêm sát thương).\n\n"
                      + "Mỗi cơn lốc lướt qua một kẻ địch thì gây 75 sát thương — mỗi cơn chỉ đánh mỗi kẻ một lần, "
                      + "kẻ bị nhiều cơn quét qua thì trúng nhiều lần.\n\n"
-                     + "Mỗi lần trúng có 20% khả năng HẤT TUNG kẻ địch lên cao 3 mét, ngã ngửa ra sau giữa không trung trong 0,8 giây: không "
+                     + "Mỗi lần trúng có 20% khả năng HẤT TUNG kẻ địch: từ từ nâng lên cao 3 mét, trên cao ngã ra NẰM NGỬA, "
+                     + "rồi giữ nguyên tư thế nằm mà rơi xuống đất, chạm đất mới đứng dậy — cả thảy 1,2 giây: không "
                      + "đi, không đánh được, và chiêu đang niệm dở bị NGẮT NGAY.\n\n"
                      + "Lốc lướt qua lò lửa thì dập tắt lửa, 30 giây sau lò cháy lại.\n\n"
                      + "CẤP 5: phóng cùng lúc BA cơn lốc hình quạt.";
@@ -540,7 +543,7 @@ public static class SachPhep
                      + "Chỉ chặn đòn của NGƯỜI CHƠI KHÁC. Đòn của quái vật không bị giảm.";
             case CapDo.KyKhangPhong:
                 return "Bạn đứng vững trước gió. Mọi sát thương từ kỹ năng hệ PHONG của người chơi khác — "
-                     + "Gió lốc, Lốc xoáy, Hoá lốc xoáy, kể cả tia sét đánh trong lòng cơn lốc và cú rơi khi bị cuốn lên — "
+                     + "Gió lốc, Lốc xoáy, kể cả tia sét đánh trong lòng cơn lốc và cú rơi khi bị cuốn lên — "
                      + "đều nhẹ bớt.\n\n"
                      + "BỊ ĐỘNG: không bấm, không đặt vào ô kỹ năng — mở khoá là có tác dụng ngay và giữ suốt trận.\n\n"
                      + "Mở khoá giảm 25%, mỗi cấp sau giảm thêm 5% — lên cấp 5 là giảm 45%.\n\n"

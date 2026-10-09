@@ -54,6 +54,36 @@ public class ThienThach : MonoBehaviour
     public const int SoQuaCap5 = 5;
     public const int CapNamQua = 5;
     public static int SoQuaTheoCap(int capKy) { return capKy >= CapNamQua ? SoQuaCap5 : SoQuaThuong; }
+
+    /// <summary>Tam ngam Thien thach cua nguoi choi (vach ngam cam ung, BOT) - nguoi dung 09/10/2026 "tang them 5m": 18 -> 23 m.
+    /// Loc xoay / Qua cau dien GIU 18 m (nguoi dung chon).</summary>
+    public const float Tam = 23f;
+
+    /// <summary>
+    /// TU NHAM KE DICH (nguoi dung 09/10/2026: "uu tien roi trung nguoi choi khac hoac ke dich trong pham vi thay vi rot ngau
+    /// nhien"; chon 5 m quanh CHO NGAM, qua du roi LAI vao cac ke ay). Moi qua, luc BAT DAU ROI (het treTruocKhiRoi), chon ke
+    /// dich trong ban kinh nay quanh cho ngam: it qua da nham nhat, bang nhau thi gan cho ngam nhat - nen moi qua mot ke khac,
+    /// het ke moi thi quay vong. Khong ai thi roi lech ngau nhien nhu cu. Chon luc roi chu khong luc tung de ke dang chay
+    /// van bi nham dung cho dang dung.
+    /// </summary>
+    public const float BanKinhTuNham = 5f;
+
+    /// <summary>Chung cho ca loat: cho ngam, ban kinh, nguoi tung, ke da bi nham may qua.</summary>
+    public class LoatNham
+    {
+        public Vector3 tam;
+        public float banKinh;
+        public Damageable boQua;
+        public LayerMask mask;
+        public readonly System.Collections.Generic.Dictionary<Damageable, int> soQua =
+            new System.Collections.Generic.Dictionary<Damageable, int>();
+    }
+
+    LoatNham loat;
+
+    /// <summary>Ke qua nay da nham (null = roi ngau nhien) - phep thu (menu 62) doc.</summary>
+    public Damageable MucTieuNham { get; private set; }
+
     public float blastRadius = 4.2f;
 
     [Header("Vung lua de lai")]
@@ -136,8 +166,10 @@ public class ThienThach : MonoBehaviour
                                  Damageable boQua = null,
                                  int soQua = 3, float cachNhau = GiayCachNhau, float tanRong = 2.8f,
                                  float heSoSatThuong = 1f, float themGiayChay = 0f,
-                                 float ngaXacSuat = 0f, float ngaGiay = 1.5f)
+                                 float ngaXacSuat = 0f, float ngaGiay = 1.5f, float banKinhNham = 0f)
     {
+        LoatNham chung = null;
+        if (banKinhNham > 0f) chung = new LoatNham { tam = diemNgam, banKinh = banKinhNham, boQua = boQua, mask = damageMask };
         for (int i = 0; i < soQua; i++)
         {
             Vector3 diem = diemNgam;
@@ -156,7 +188,40 @@ public class ThienThach : MonoBehaviour
             tt.chayThoiGian += themGiayChay;
             tt.ngaXacSuat = ngaXacSuat;
             tt.ngaGiay = ngaGiay;
+            tt.loat = chung;
         }
+    }
+
+    /// <summary>Luc bat dau roi: doi diem dich sang ke dich trong vung tu nham (xem <see cref="BanKinhTuNham"/>).</summary>
+    void NhamKeDich()
+    {
+        if (loat == null) return;
+        var cols = Physics.OverlapSphere(loat.tam, loat.banKinh, loat.mask, QueryTriggerInteraction.Collide);
+        var daXet = new System.Collections.Generic.HashSet<Damageable>();
+        Damageable chon = null; int itNhat = int.MaxValue; float gan = float.MaxValue;
+        for (int i = 0; i < cols.Length; i++)
+        {
+            var d = cols[i].GetComponentInParent<Damageable>();
+            if (d == null || d.IsDead || !daXet.Add(d)) continue;
+            if (CheDoTran.BoQua(loat.boQua, d)) continue;
+            if (TangHinh.Dang(d)) continue;                                // khong thay thi khong nham
+            if (d.transform.position.y < DiaNguc.NguongRoi) continue;       // dang roi duoi vuc
+            int n; loat.soQua.TryGetValue(d, out n);
+            Vector3 v = d.transform.position - loat.tam; v.y = 0f;
+            float kc = v.sqrMagnitude;
+            if (n < itNhat || (n == itNhat && kc < gan)) { chon = d; itNhat = n; gan = kc; }
+        }
+        if (chon == null) return;
+        loat.soQua[chon] = itNhat + 1;
+        MucTieuNham = chon;
+
+        Vector3 moi = chon.transform.position;
+        moi.y = VfxFactory.GroundY(moi);
+        Vector3 lech = transform.position - diemDich;     // giu duong roi xien nhu luc sinh
+        diemDich = moi;
+        transform.position = moi + lech;
+        dir = (moi - transform.position).normalized;
+        transform.rotation = Quaternion.LookRotation(dir);
     }
 
     void Update()
@@ -177,6 +242,7 @@ public class ThienThach : MonoBehaviour
         if (!daHienHinh)
         {
             daHienHinh = true;
+            NhamKeDich();
             VfxFactory.BuildThienThachVisual(transform, bodyRadius);
         }
 

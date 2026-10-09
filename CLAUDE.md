@@ -143,6 +143,19 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
   chọn cấp 5 GIỮ 30% / 1,5 s); **Quả cầu băng** đóng băng **20% · 1 s**, chậm ~~80% · 3 s~~ **50% · 2 s** mọi lần trúng (`QuaCauBang.XacSuatDongBang`, `GiayDongBang`,
   `TiLeCham`, `GiayCham` — ⚠️ cùng ngày người dùng đổi lại phần chậm: **luôn chậm 50% · 2 s** như cũ); **Giựt sét** choáng **20%** · 1,5 s (`GiatSet.XacSuatChoangNguoiChoi`); **Gió lốc** hất tung **20% · 0,8 s** (`GioLoc.XacSuatHatTung`,
   `BiHatTung.GiayMacDinh` — chỉ Gió lốc dùng). Thời gian vẫn +0,15 s mỗi cấp. Menu 68, 69, 70, 71, 82: 0 lỗi.
+- ⚠️ **09/10/2026 (lần ba, người dùng): THIÊN THẠCH TẦM 23 m + TỰ NHẮM · CẦU BĂNG 4/6 QUẢ · ẨN HOÁ LỐC XOÁY · HẤT TUNG KIỂU MỚI 1,2 s**:
+  **Thiên thạch** `ThienThach.Tam` 23 m (`TamNgam(4)`; Lốc xoáy / Quả cầu điện GIỮ 18 — người dùng chọn); mỗi quả lúc bắt đầu rơi chọn kẻ địch trong
+  `BanKinhTuNham` **5 m quanh chỗ ngắm** (bỏ người tung / đồng đội / Tàng hình / dưới vực): ít quả đã nhắm nhất, bằng thì gần chỗ ngắm nhất → mỗi quả
+  một kẻ, hết kẻ quay vòng; không ai thì rơi lệch ngẫu nhiên như cũ (`ThienThach.LoatNham`, `MucTieuNham`; chỉ người chơi — Quỷ dữ không). ⚠️ Trên
+  máy tính Thiên thạch vẫn KHÔNG kẹp tầm theo chuột (`TamCuaKyNang(4)` = 0 từ trước) — tầm 23 m là vạch ngắm cảm ứng + BOT. **Quả cầu băng**
+  `SoQuaThuong` 4, `SoQuaCap5` 6. **Hoá lốc xoáy ẨN HOÀN TOÀN** (`CapDo.AnHoaLocXoay` + `KyAn`): bỏ khỏi `SachPhep.KyNangTheoNhom`, ô đã lưu có 14 →
+  ô trống, `CastAt` từ chối, BOT không cộng điểm / không dùng; hiện lại: đặt false + chèn lại vào nhóm PHONG + kế hoạch BOT. Phép thử Hoá lốc xoáy bật
+  `CapDo.ChoPhepKyAnChoPhepThu` (menu 75, 84). **Gió lốc hất tung** (`BiHatTung`, `GiayMacDinh` **1,2 s**, `GocNgua` **90°**): LÊN 55% (nâng 3 m
+  SmoothStep, đứng thẳng 45% chặng rồi ngã nằm ngửa ngang xong đúng đỉnh) → RƠI 30% giữ nằm ngang (1 − t²), thân hạ dần cho LƯNG chạm đất (trục thân
+  0,22 m) → DẬY 15%. Menu 62 H (0 lỗi): 5 quả → quái A (2 m) 3, B (3,4 m) 2, quái ở 7 m 0, rơi đúng dưới chân; đối chứng không ai → lệch ≤ 1,82 m.
+  Menu 68: 4 / 6 quả, phát lại qua mạng 4. Menu 71 G: cao 3,00 m, bay 1,21 s, ngã 90°, lên 0,66 s / xuống + dậy 0,55 s, nằm ngang lúc tới đỉnh và lúc
+  chạm đất 38/38, hông thấp nhất −0,68 m (lưng sát đất). Menu 75 Z: ẩn đủ 4 chỗ, `CastAt(14)` khi có Gió lốc đang bay → 0 Lốc xoáy, không trừ mana.
+  Menu 82, 84, 85, 115, 66: 0 lỗi; 59 chập chờn F2 (quầng đập nhịp ×1,37 / 1,47 quanh ngưỡng 1,4 — có từ trước).
 - ⚠️ **CHÂN NGƯỜI CHƠI CHẠM ĐẤT** (05/10/2026, người dùng: "trong game rất nhiều chỗ 2 chân nhân vật đứng vẫn như bay lơ lửng"; `NguoiChoiHoatHinh`,
   phần "CHAN CHAM DAT" — nhân vật mình, bản sao người chơi khác, nhân vật màn chính dùng chung). Nguyên nhân (menu 109, 40 chỗ Act2): gốc LUÔN cao hơn
   đất **0,08 m** (`skinWidth` CharacterController, đáy con nhộng đặt đúng ở gốc), tư thế đứng yên là khung BƯỚC DỞ của clip đi (một chân nhấc ~5 cm),
@@ -343,7 +356,7 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
   hình Gió lốc cũ**, 20/giây mỗi lớp); trong = 0,55 vỏ chính, ngoài = 1,18. Tên KHÔNG bắt đầu bằng "Bui" (phép thử đếm bụi xám theo tiền tố
   ấy); Gió lốc prewarm cả `HatDen*` / `DenCuon*`. Menu 98 (0 lỗi): mỗi lớp có hạt ở cả 5 phần cao, trong 100% r < 0,8 vỏ / ngoài 100% r > 1,0,
   ≥ 95% bay lên + quay cùng chiều thân, độ sáng màu 0,11–0,20 (đối chứng bụi xám 0,76). +~376 hạt sống mỗi cơn.
-  ⚠️ **04/10/2026 (lần bốn): HẤT TUNG 3 m · 0,7 s · NGÃ NGỬA TRÊN KHÔNG** (người dùng: "bị hất tung cao hơn nữa" + "tư thế ngã ngửa ra sau
+  ⚠️ **04/10/2026 (lần bốn — nay LỊCH SỬ, xem "09/10/2026 (lần ba)" ở trên: 1,2 s, nằm ngang 90°): HẤT TUNG 3 m · 0,7 s · NGÃ NGỬA TRÊN KHÔNG** (người dùng: "bị hất tung cao hơn nữa" + "tư thế ngã ngửa ra sau
   trên không trung thay vì tư thế đứng"): `BiHatTung.CaoBay` 1,5 → **3**, `GiayMacDinh` 0,5 → **0,7**; hình lật ngửa tới `GocNgua` **75°**
   (cùng chiều lật của `BiDanhNga`: quanh trục X của GỐC, nhân bên trái `rotGoc`) quanh điểm hông `TamXoayNgua` 0,9 m — ngửa trong 30% đầu,
   giữ, 28% cuối dựng lại để chạm đất bằng chân; đang bị đánh ngã thì `BiDanhNga` giữ góc. `XacNam` lấy cả `RotGoc` của hất tung. Sách phép

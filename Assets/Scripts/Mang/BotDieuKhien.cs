@@ -258,7 +258,7 @@ public class BotDieuKhien : MonoBehaviour
                     break;
                 default:
                     if (DuocDung(CapDo.KyMayGiong) && TrongTam(CapDo.KyMayGiong, kc)) return CapDo.KyMayGiong;
-                    if (DuocDung(CapDo.KyHoaLocXoay) && HoaLocXoay.CoLocDeHoa(mau)) return CapDo.KyHoaLocXoay;
+                    if (!CapDo.KyAn(CapDo.KyHoaLocXoay) && DuocDung(CapDo.KyHoaLocXoay) && HoaLocXoay.CoLocDeHoa(mau)) return CapDo.KyHoaLocXoay;
                     if (DuocDung(3) && TrongTam(3, kc)) return 3;
                     break;
             }

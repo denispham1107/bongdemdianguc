@@ -101,7 +101,7 @@ public static class MayBot
             case HeLua:  return new[] { 0, 0, 4, 5, 4, 4, 4, 4, CapDo.KyLuaDiaNguc, 0, 0, 0, CapDo.KyLuaDiaNguc, CapDo.KyLuaDiaNguc, CapDo.KyLuaDiaNguc, CapDo.KyLuaDiaNguc };
             case HeBang: return new[] { CapDo.KyQuaCauBang, CapDo.KyQuaCauBang, 1, 5, 1, 1, 1, 1, CapDo.KyTangHinh, CapDo.KyQuaCauBang, CapDo.KyQuaCauBang, CapDo.KyQuaCauBang, CapDo.KyTangHinh, CapDo.KyTangHinh, CapDo.KyTangHinh, CapDo.KyTangHinh };
             case HeSet:  return new[] { 6, 6, 2, 5, 2, 2, 2, 2, CapDo.KyCauDien, 6, 6, 6, CapDo.KyCauDien, CapDo.KyCauDien, CapDo.KyCauDien, CapDo.KyCauDien };
-            default:     return new[] { CapDo.KyGioLoc, CapDo.KyGioLoc, 3, 5, 3, 3, 3, 3, CapDo.KyMayGiong, CapDo.KyHoaLocXoay, CapDo.KyGioLoc, CapDo.KyGioLoc, CapDo.KyGioLoc, CapDo.KyMayGiong, CapDo.KyMayGiong, CapDo.KyMayGiong, CapDo.KyMayGiong };
+            default:     return new[] { CapDo.KyGioLoc, CapDo.KyGioLoc, 3, 5, 3, 3, 3, 3, CapDo.KyMayGiong, CapDo.KyGioLoc, CapDo.KyGioLoc, CapDo.KyGioLoc, CapDo.KyMayGiong, CapDo.KyMayGiong, CapDo.KyMayGiong, CapDo.KyMayGiong };
         }
     }
 

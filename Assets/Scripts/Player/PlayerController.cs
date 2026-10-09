@@ -622,7 +622,7 @@ public class PlayerController : MonoBehaviour
             case 1: return iceRange;         // 12
             case 2: return boltRange;        // 12
             case 3: return Tornado.TamDanh;  // 18 m = Thien thach (nguoi dung 04/10/2026)
-            case 4: return 18f;              // thien thach roi tu tren troi
+            case 4: return ThienThach.Tam;   // 23 m (nguoi dung 09/10/2026, truoc 18)
             case CapDo.KyCauDien: return QuaCauDien.Tam;   // 18 m - nguoi dung chon "bang tam Thien thach"
             case CapDo.KyTocBien: return TocBien.Tam;      // 15 m
             case CapDo.KyMayGiong: return boltRange;       // bang tam Sam set (nguoi dung 25/09/2026)
@@ -936,6 +936,8 @@ public class PlayerController : MonoBehaviour
         // KY NANG BI DONG (Khang Lua/Bang/Set/Phong, 19/09/2026): khong tung duoc gi ca - mo khoa la
         // no tu cong vinh vien vao thuoc tinh. Chan o day de khong ai tru mana / vao hoi chieu oan.
         if (CapDo.LaKyBiDong(skill)) return;
+        // KY NANG BI AN (Hoa loc xoay, nguoi dung 09/10/2026 - CapDo.AnHoaLocXoay): khong tung duoc
+        if (CapDo.KyAn(skill)) return;
 
         // Bam hut thi phai bao cho nguoi choi biet vi sao, khong duoc im lang.
         if (castTimer > 0f) { Say("Đang niệm chú, chờ một chút!"); return; }
@@ -1570,7 +1572,8 @@ public class PlayerController : MonoBehaviour
             // CAP 5: 5 qua thay vi 3 (nguoi dung 19/09/2026 - ThienThach.SoQuaTheoCap)
             ThienThach.SpawnLoat(castAim, obstacleMask, enemyMask, health,
                                  ThienThach.SoQuaTheoCap(capPhep), ThienThach.GiayCachNhau, 2.8f, manhHon, themGiay,
-                                 ThienThach.NgaXacSuatNguoiChoi, ThienThach.NgaGiayNguoiChoi + themGiay);
+                                 ThienThach.NgaXacSuatNguoiChoi, ThienThach.NgaGiayNguoiChoi + themGiay,
+                                 ThienThach.BanKinhTuNham);   // tu nham ke dich trong 5 m quanh cho ngam (09/10/2026)
         }
         else if (castingSkill == 5)
         {

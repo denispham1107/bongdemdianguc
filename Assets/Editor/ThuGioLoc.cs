@@ -1273,6 +1273,12 @@ public static class ThuGioLoc
             // luc dung - doc tu tu the that cua hinh (TransformPoint), khong doc bien CaoHienTai; nga = goc giua truc len cua hinh va
             // cua goc, "ngua" = dau nga ve SAU (truc len cua hinh nghieng nguoc huong mat goc); roi xuong phai dung thang lai
             float ngaMax = 0f; int mauNga = 0, mauNguaSau = 0, soDungLai = 0;
+            // 09/10/2026 (nang tu tu -> nam ngang tren cao -> giu nam roi xuong, 1,2 s): moi lan bay ghi luc / do cao DINH, goc nga luc
+            // toi dinh, goc nga luc hong vua xuong toi muc dung (cham dat), hong thap nhat (lung sat dat chu khong chui xuong)
+            var tDinh = new Dictionary<Damageable, float>(); var caoDinh = new Dictionary<Damageable, float>();
+            var ngaDinh = new Dictionary<Damageable, float>(); var ngaChamDat = new Dictionary<Damageable, float>();
+            var hongThap = new Dictionary<Damageable, float>();
+            float tongLen = 0f, tongRoi = 0f; int soChang = 0, soNamKhiCham = 0, soNamTrenDinh = 0; float hongThapNhat = 9f;
             int hat0 = GioLoc.SoLanHat, trung0 = GioLoc.SoLanTrung;
             bool daChupHat = false;
             for (int lan = 0; lan < 10; lan++)
@@ -1294,6 +1300,13 @@ public static class ThuGioLoc
                             float nga = Vector3.Angle(hinh.up, d.transform.up);
                             ngaMax = Mathf.Max(ngaMax, nga);
                             if (nga > 30f) { mauNga++; if (Vector3.Dot(hinh.up, d.transform.forward) < 0f) mauNguaSau++; }
+                            if (batDau.ContainsKey(d))
+                            {
+                                float cd; caoDinh.TryGetValue(d, out cd);
+                                if (hong > cd + 0.001f) { caoDinh[d] = hong; tDinh[d] = Time.time; ngaDinh[d] = nga; }
+                                else if (hong < 0f && tDinh.ContainsKey(d) && !ngaChamDat.ContainsKey(d)) ngaChamDat[d] = nga;   // vua xuong toi muc dung
+                                float ht; hongThap[d] = hongThap.TryGetValue(d, out ht) ? Mathf.Min(ht, hong) : hong;
+                            }
                         }
                         if (h != null && !dangCo.Contains(d))
                         {
@@ -1303,6 +1316,16 @@ public static class ThuGioLoc
                         if (h == null && batDau.ContainsKey(d))
                         {
                             tongGiay += Time.time - batDau[d]; soDoGiay++;
+                            if (tDinh.ContainsKey(d) && ngaChamDat.ContainsKey(d))
+                            {
+                                tongLen += tDinh[d] - batDau[d];
+                                tongRoi += Time.time - tDinh[d];      // tu dinh toi khi dung day xong
+                                soChang++;
+                                if (ngaChamDat[d] > 80f) soNamKhiCham++;
+                                if (ngaDinh[d] > 80f) soNamTrenDinh++;
+                                hongThapNhat = Mathf.Min(hongThapNhat, hongThap[d]);
+                            }
+                            tDinh.Remove(d); caoDinh.Remove(d); ngaDinh.Remove(d); ngaChamDat.Remove(d); hongThap.Remove(d);
                             if (hinh != null && Vector3.Angle(hinh.up, d.transform.up) < 1f && Mathf.Abs(hinh.localPosition.y - 1f) < 0.01f) soDungLai++;
                             batDau.Remove(d);
                         }
@@ -1321,9 +1344,19 @@ public static class ThuGioLoc
             Ghi(string.Format("G. tu the tren khong: nga lon nhat {0:F0} do; {1} mau nga > 30 do, trong do dau nga ve SAU {2}; roi xuong dung thang lai {3}/{4}",
                 ngaMax, mauNga, mauNguaSau, soDungLai, soDoGiay));
             Kiem(Mathf.Abs(caoMax - 3f) < 0.15f, "do cao hat tung khong phai 3 m (nguoi dung 04/10/2026)");
-            // 09/10/2026 nguoi dung: hat tung 20% (190 lan trung -> ~38 lan bay; truoc 80% ~150), bay 0,8 giay (truoc 0,7)
-            Kiem(soDoGiay > 20 && Mathf.Abs(tongGiay / soDoGiay - 0.8f) < 0.06f, "thoi gian bay khong phai 0,8 giay");
-            Kiem(ngaMax > 65f && mauNga > 40 && mauNguaSau == mauNga, "bi hat tung khong nga NGUA ra sau tren khong");
+            // 09/10/2026 nguoi dung: hat tung 20% (190 lan trung -> ~38 lan bay; truoc 80% ~150), bay 1,2 giay (truoc 0,7 -> 0,8)
+            Kiem(soDoGiay > 20 && Mathf.Abs(tongGiay / soDoGiay - 1.2f) < 0.06f, "thoi gian bay khong phai 1,2 giay");
+            Kiem(ngaMax > 85f && mauNga > 40 && mauNguaSau == mauNga, "bi hat tung khong nam NGUA ngang (90 do) tren khong");
+            // Kieu moi: len CHAM (len lau hon roi + dung day), toi dinh da nam ngang, cham dat VAN NAM, lung khong chui xuong dat
+            // (nam ngang ma hong -0,68 m so voi luc dung = truc than 0,22 m - viet tay 0,9 - 0,22)
+            float tbLen = soChang > 0 ? tongLen / soChang : 0f, tbRoi = soChang > 0 ? tongRoi / soChang : 0f;
+            Ghi(string.Format("G. kieu moi: {0} lan do du; len toi dinh TB {1:F2} s, tu dinh toi dung day xong TB {2:F2} s; nam ngang (> 80 do) luc toi dinh {3}/{0}, "
+                + "luc hong xuong toi muc dung {4}/{0}; hong thap nhat {5:F2} m so voi luc dung (nam sat dat = -0,68)",
+                soChang, tbLen, tbRoi, soNamTrenDinh, soNamKhiCham, hongThapNhat));
+            Kiem(soChang > 20 && tbLen > 0.6f && tbLen > tbRoi * 1.1f, "khong nang len TU TU (len khong cham hon roi)");
+            Kiem(soNamTrenDinh == soChang, "toi dinh chua nam ngang");
+            Kiem(soNamKhiCham == soChang, "roi xuong khong giu tu the nam toi dat");
+            Kiem(hongThapNhat > -0.75f && hongThapNhat < -0.55f, "luc nam tren dat lung khong sat dat (chui xuong / lo lung)");
             Kiem(soDungLai == soDoGiay, "roi xuong khong dung thang lai");
             foreach (var d in hang) Object.Destroy(d.gameObject);
             yield return new WaitForSeconds(0.3f);
@@ -1584,7 +1617,7 @@ public static class ThuGioLoc
             nhetCo(HieuUngQuaMang.CoHatTung);
             bool coHtKia = false;
             float caoKia = 0f;
-            float hanI3 = Time.time + 1.2f;
+            float hanI3 = Time.time + BiHatTung.GiayMacDinh + 0.8f;   // bay 1,2 s (09/10/2026) - cua so cu 1,2 s ket thuc dung luc con dang bay
             float lucHet = -1f;
             while (Time.time < hanI3)
             {

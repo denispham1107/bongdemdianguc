@@ -52,6 +52,17 @@ public static class CapDo
     /// <summary>Hoa loc xoay (them 18/09/2026) - so 14, THEM O CUOI.</summary>
     public const int KyHoaLocXoay = 14;
 
+    /// <summary>
+    /// KY NANG BI AN HOAN TOAN (nguoi dung 09/10/2026: "an hoan toan skill Hoa loc trong game, khi nao dung lai toi se noi"):
+    /// khong co trong Sach phep (SachPhep.KyNangTheoNhom), o da luu bi xoa, CastAt tu choi, BOT khong cong diem / khong dung.
+    /// Hien lai: dat false VA them KyHoaLocXoay lai vao nhom PHONG cua SachPhep.KyNangTheoNhom, them lai vao ke hoach BOT
+    /// (MayBot.KeHoachDiem).
+    /// </summary>
+    public const bool AnHoaLocXoay = true;
+    /// <summary>Phep thu (menu 75, 84) bat de con thu duoc co che cu.</summary>
+    public static bool ChoPhepKyAnChoPhepThu;
+    public static bool KyAn(int ky) { return AnHoaLocXoay && ky == KyHoaLocXoay && !ChoPhepKyAnChoPhepThu; }
+
     /// <summary>Toc bien (them 18/09/2026) - so 15, THEM O CUOI.</summary>
     public const int KyTocBien = 15;
 

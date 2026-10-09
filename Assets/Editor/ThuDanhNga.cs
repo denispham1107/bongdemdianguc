@@ -113,7 +113,9 @@ public static class ThuDanhNga
         var toi = pc.GetComponent<Damageable>();
         toi.maxHealth = 10000000f; toi.health = 10000000f;
 
-        // Can quai that - dot dau Act2 doi 30 giay nen goi tay mot dot
+        // Can quai that - dot dau Act2 doi 30 giay nen goi tay mot dot. TAT GameDirector (09/10/2026): de no chay thi giay 30 no
+        // tu ra dot quai that (AI bat) - quai la danh nga nhan vat (G "dang bi hat nga") va dung gan diem ngam (H tu nham trung no)
+        dir.enabled = false;
         dir.SinhDotQuanhNguoi();
         yield return new WaitForSeconds(1f);
         var quai = new List<Damageable>();
@@ -482,9 +484,110 @@ public static class ThuDanhNga
             foreach (var v in Object.FindObjectsByType<VungLua>(FindObjectsSortMode.None)) Object.Destroy(v.gameObject);
         }
 
+        // ================================================================
+        // H. TU NHAM KE DICH + TAM 23 m (nguoi dung 09/10/2026: "tang tam them 5m, uu tien roi trung nguoi choi khac hoac ke dich
+        //    trong pham vi"; chon 5 m quanh cho ngam, qua du roi LAI vao cac ke ay). Tung THAT bang CastAt(4) (cap 5 = 5 qua):
+        //    hai quai trong 5 m quanh cho ngam + mot quai o 7 m; doc ke tung qua nham luc bat dau roi va cho no that.
+        // ================================================================
+        Ghi("");
+        {
+            Ghi(string.Format("H0. tam ngam Thien thach {0} m (mong 23, viet tay); keo het tam -> diem ngam cach {1:F1} m; Loc xoay {2} m, Qua cau dien {3} m (giu 18)",
+                pc.TamNgam(4), Vector3.Distance(Ngang(pc.transform.position), Ngang(pc.DiemNgam(4, pc.transform.forward, 1f))), pc.TamNgam(3), pc.TamNgam(CapDo.KyCauDien)));
+            Kiem(Mathf.Approximately(pc.TamNgam(4), 23f), "tam Thien thach khong phai 23 m");
+            Kiem(Mathf.Approximately(pc.TamNgam(3), 18f) && Mathf.Approximately(pc.TamNgam(CapDo.KyCauDien), 18f), "Loc xoay / Qua cau dien bi doi tam theo");
+
+            Vector3 P = pc.transform.position + pc.transform.forward * 12f;
+            P.y = VfxFactory.GroundY(P);
+            Vector3 phai = pc.transform.right;
+            var qA = quai[0]; var qB = quai[1]; var qC = quai[2];
+            // Moi quai khac (quai F dung cach nhan vat 8 m = cach diem ngam 4 m) ra xa truoc - khong thi no la "ke khac" trong 5 m
+            for (int k = 0; k < quai.Count; k++) if (quai[k] != null && !quai[k].IsDead) DatQuai(quai[k], pc.transform.position + new Vector3(80f + k * 3f, 0f, 80f));
+            foreach (var qH in new[] { qA, qB, qC }) { qH.maxHealth = qH.health = 1e7f; qH.tiLeDoDon = 0f; }
+            DatQuai(qA, P + phai * 2f);
+            DatQuai(qB, P - phai * 1.5f + pc.transform.forward * 3f);
+            DatQuai(qC, P + phai * 7f);
+            yield return new WaitForFixedUpdate();
+
+            for (int ca = 0; ca < 2; ca++)
+            {
+                if (ca == 1)   // DOI CHUNG: khong ai trong 5 m -> roi ngau nhien quanh cho ngam nhu cu
+                {
+                    DatQuai(qA, P + phai * 60f); DatQuai(qB, P + phai * 63f); DatQuai(qC, P + phai * 7f);
+                    yield return new WaitForFixedUpdate();
+                }
+                float nlH, hcH, ncH;
+                SachPhep.ThongSo(pc, 4, out nlH, out hcH, out ncH);
+                yield return new WaitForSeconds(hcH + 0.3f);
+                foreach (var tt in Object.FindObjectsByType<ThienThach>(FindObjectsSortMode.None)) Object.DestroyImmediate(tt.gameObject);
+                pc.mana = pc.maxMana;
+                pc.CastAt(4, P);
+                var nham = new Dictionary<ThienThach, Damageable>();
+                var lechDich = new Dictionary<ThienThach, float>();
+                var dichCuoi = new Dictionary<ThienThach, Vector3>();
+                var daThay = new HashSet<ThienThach>();
+                float hanH = Time.time + 6f; bool daCo = false;
+                while (Time.time < hanH)
+                {
+                    int con = 0;
+                    foreach (var tt in Object.FindObjectsByType<ThienThach>(FindObjectsSortMode.None))
+                    {
+                        if (tt.boQua != toi) continue;
+                        con++; daThay.Add(tt);
+                        dichCuoi[tt] = tt.DiemDich;
+                        if (tt.MucTieuNham != null && !nham.ContainsKey(tt))
+                        {
+                            nham[tt] = tt.MucTieuNham;
+                            lechDich[tt] = Vector3.Distance(Ngang(tt.DiemDich), Ngang(tt.MucTieuNham.transform.position));
+                        }
+                    }
+                    if (con > 0) daCo = true;
+                    if (daCo && con == 0) break;
+                    yield return null;
+                }
+                int n0 = 0, n1 = 0, n2 = 0, khac = 0; float lechMax = 0f, xaNgamMax = 0f;
+                foreach (var kv in nham)
+                {
+                    if (kv.Value == qA) n0++; else if (kv.Value == qB) n1++; else if (kv.Value == qC) n2++; else khac++;
+                    lechMax = Mathf.Max(lechMax, lechDich[kv.Key]);
+                }
+                foreach (var kv in dichCuoi) xaNgamMax = Mathf.Max(xaNgamMax, Vector3.Distance(Ngang(kv.Value), Ngang(P)));
+                if (ca == 0)
+                {
+                    Ghi(string.Format("H1. cap {0}: {1} qua roi; nham quai A (2 m) {2}, quai B (3,4 m) {3}, quai C (7 m, ngoai 5 m) {4}, ke khac {5}; "
+                        + "diem dich lech than quai lon nhat {6:F2} m", CapDo.CapCuaKyNang(4), daThay.Count, n0, n1, n2, khac, lechMax));
+                    Kiem(daThay.Count == ThienThach.SoQuaCap5 && n0 + n1 == daThay.Count, "khong phai moi qua deu nham ke dich trong 5 m");
+                    Kiem(n0 >= 1 && n1 >= 1 && Mathf.Abs(n0 - n1) <= 1, "cac qua khong chia deu / quay vong cho hai ke dich");
+                    Kiem(n2 == 0, "nham ca ke ngoai 5 m");
+                    Kiem(lechMax < 0.3f, "diem dich khong o duoi chan ke bi nham");
+                }
+                else
+                {
+                    Ghi(string.Format("H2. doi chung khong ai trong 5 m: {0} qua, nham {1} qua; diem dich xa cho ngam nhat {2:F2} m (lech ngau nhien <= 2,8)",
+                        daThay.Count, nham.Count, xaNgamMax));
+                    Kiem(daThay.Count == ThienThach.SoQuaCap5 && nham.Count == 0 && xaNgamMax <= 2.85f, "khong ai trong vung ma qua van nham / roi xa");
+                }
+                foreach (var v in Object.FindObjectsByType<VungLua>(FindObjectsSortMode.None)) Object.Destroy(v.gameObject);
+            }
+            foreach (var qH in new[] { qA, qB, qC }) DatQuai(qH, pc.transform.position + new Vector3(80f, 0f, 80f));
+        }
+
         Ghi("");
         Ghi("so loi ghi nhan = " + loi);
         Ket();
+    }
+
+    static Vector3 Ngang(Vector3 v) { v.y = 0f; return v; }
+
+    /// <summary>Dat quai (AI da tat) toi cho, bam dat.</summary>
+    static void DatQuai(Damageable q, Vector3 p)
+    {
+        var cc = q.GetComponent<CharacterController>();
+        bool bat = cc != null && cc.enabled;
+        if (bat) cc.enabled = false;
+        p.y = VfxFactory.GroundY(p) + 0.05f;
+        q.transform.position = p;
+        if (bat) cc.enabled = true;
+        Physics.SyncTransforms();
     }
 
     static void TraLaiCanh()

@@ -40,6 +40,8 @@ public static class ThuHoaLocXoay
     [MenuItem("Diablo 2.5D/75. Chay thu HOA LOC XOAY + Gio loc hoi mana", false, 164)]
     public static void Chay()
     {
+        // 09/10/2026 Hoa loc xoay bi AN trong game (CapDo.AnHoaLocXoay) - phep thu van thu co che
+        CapDo.ChoPhepKyAnChoPhepThu = true;
         if (EditorSceneManager.GetActiveScene().isDirty)
         {
             EditorUtility.DisplayDialog("Chay thu Hoa loc xoay", "Scene dang mo co thay doi chua luu - luu hoac bo truoc da.", "OK");
@@ -146,6 +148,45 @@ public static class ThuHoaLocXoay
         var mauToi = toi.GetComponent<Damageable>();
         mauToi.maxHealth = 1e6f; mauToi.health = 1e6f;
         int maskEnemy = LayerMask.GetMask("Enemy");
+
+        // ================= Z. AN HOAN TOAN (nguoi dung 09/10/2026) =================
+        // Tat co phep thu -> nhu trong game that: khong co trong Sach phep, o da luu bi xoa, CastAt tu choi, BOT khong cong diem.
+        {
+            CapDo.ChoPhepKyAnChoPhepThu = false;
+            bool trongSach = false;
+            foreach (var ds in SachPhep.KyNangTheoNhom) if (System.Array.IndexOf(ds, K) >= 0) trongSach = true;
+            // O da luu co ky nang 14 (ban cu): doc lai phai thanh o trong
+            string cuTron = PlayerPrefs.GetString("diablo25d.sachphep.tron", ""), cuVuong = PlayerPrefs.GetString("diablo25d.sachphep.vuong", "");
+            PlayerPrefs.SetString("diablo25d.sachphep.tron", "0,1,2,3,4,5," + K);
+            PlayerPrefs.SetString("diablo25d.sachphep.vuong", K + ",1,2,3,4,5,6");
+            SachPhep.NapLai();
+            bool oCo14 = System.Array.IndexOf(SachPhep.OTron, K) >= 0 || System.Array.IndexOf(SachPhep.OVuong, K) >= 0;
+            string oT = string.Join(",", System.Array.ConvertAll(SachPhep.OTron, x => x.ToString()));
+            PlayerPrefs.SetString("diablo25d.sachphep.tron", cuTron); PlayerPrefs.SetString("diablo25d.sachphep.vuong", cuVuong);
+            SachPhep.NapLai();
+            // BOT: ke hoach diem he Phong
+            bool botCo = System.Array.IndexOf(MayBot.KeHoachDiem(MayBot.HePhong), K) >= 0;
+            // CastAt that: mo khoa, co Gio loc dang bay, du mana -> van bi tu choi
+            CapDo.MoCaDuongChoPhepThu(CapDo.KyGioLoc); CapDo.MoCaDuongChoPhepThu(K);
+            toi.mana = toi.maxMana;
+            toi.CastAt(CapDo.KyGioLoc, toi.transform.position + toi.transform.forward * 10f);
+            yield return new WaitForSeconds(0.6f);
+            int locTruoc = Object.FindObjectsByType<Tornado>(FindObjectsSortMode.None).Length;
+            bool coGio = HoaLocXoay.CoLocDeHoa(mauToi);
+            float manaTruoc = toi.mana;
+            toi.CastAt(K, toi.transform.position + toi.transform.forward * 10f);
+            yield return new WaitForSeconds(0.8f);
+            int locSau = Object.FindObjectsByType<Tornado>(FindObjectsSortMode.None).Length;
+            Ghi(string.Format("Z. AN: trong Sach phep {0}; o luu \"0,1,2,3,4,5,14\" doc ra \"{1}\" (con 14: {2}); ke hoach BOT Phong co 14: {3}; "
+                + "CastAt(14) khi co Gio loc dang bay ({4}): Loc xoay {5} -> {6}, mana {7:F0} -> {8:F0}",
+                trongSach, oT, oCo14, botCo, coGio, locTruoc, locSau, manaTruoc, toi.mana));
+            Kiem(!trongSach && !oCo14 && !botCo, "Hoa loc xoay chua an khoi Sach phep / o / BOT");
+            Kiem(coGio && locSau == locTruoc && toi.mana >= manaTruoc - 0.01f, "Hoa loc xoay bi an ma van tung duoc");
+            foreach (var g in Object.FindObjectsByType<GioLoc>(FindObjectsSortMode.None)) Object.Destroy(g.gameObject);
+            CapDo.ChoPhepKyAnChoPhepThu = true;
+            CapDo.BatDauTranMoi();
+            yield return new WaitForSeconds(0.5f);
+        }
 
         // ================= A. THONG SO =================
         Ghi("");
@@ -447,6 +488,7 @@ public static class ThuHoaLocXoay
     static void Ket()
     {
         TranHienTai.Xoa();
+        CapDo.ChoPhepKyAnChoPhepThu = false;
         File.WriteAllText("PlayTestShots/hoalocxoay.txt", bao.ToString());
         var rac = GameObject.Find("TAM_HoaLoc");
         if (rac != null) Object.DestroyImmediate(rac);

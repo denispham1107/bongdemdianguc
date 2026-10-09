@@ -20,15 +20,31 @@ using UnityEngine;
 /// se co tu the bi NGA NGUA ra sau tren khong trung thay vi tu the dung": hinh lat ngua toi GocNgua 75 do (cung chieu lat cua
 /// BiDanhNga: quanh truc X cua GOC nhan vat - dinh dau ve sau lung) quanh diem HONG (TamXoayNgua 0,9 m tren chan) trong 30% dau
 /// duong bay, giu ngua, 28% cuoi dung lai de cham dat bang chan. Dang bi danh nga thi BiDanhNga giu goc xoay, cai nay chi cong do cao.
+///
+/// 09/10/2026 nguoi dung: "nang tu tu ke dich dang dung, roi ke dich chuyen thanh tu the NAM o tren cao, giu tu the nam do roi xuong dat"
+/// (chon 1,2 giay, nam ngua NGANG 90 do, cham dat la dung day ngay). Ba chang theo ti le thoi gian (cap ky nang keo dai thi ca ba dai ra):
+///   LEN  0 - 55%: nang 0 -> 3 m em (SmoothStep: cham luc dau, cham luc toi dinh); dung thang toi 45% chang, roi nga ngua NGANG 90 do
+///                 xong dung luc toi dinh;
+///   ROI  55 - 85%: giu nam ngang, roi nhanh dan (1 - t^2) xuong dat - than nam ha dan cho LUNG cham dat (truc than cao NangKhiNam
+///                 0,22 m nhu BiDanhNga), khong phai chan;
+///   DAY  85 - 100%: chong dung day tu tu the nam tren dat.
+/// Xoay quanh diem HONG (TamXoayNgua) nen than khong vang ra xa cot va cham.
 /// </summary>
 [DefaultExecutionOrder(10001)]
 public class BiHatTung : MonoBehaviour
 {
-    public const float GiayMacDinh = 0.8f;     // nguoi dung 09/10/2026 (truoc 0,7) - chi Gio loc dung
+    public const float GiayMacDinh = 1.2f;     // nguoi dung 09/10/2026: 0,7 -> 0,8, cung ngay lan hai 1,2 (nang tu tu + nam roi xuong) - chi Gio loc dung
     public const float CaoBay = 3f;
 
-    /// <summary>Goc nga ngua toi da tren khong (do) va do cao diem xoay (hong) tren chan model (m).</summary>
-    public const float GocNgua = 75f, TamXoayNgua = 0.9f;
+    /// <summary>Goc nga ngua tren khong (do - 90 = nam ngang, nguoi dung 09/10/2026, truoc 75) va do cao diem xoay (hong) tren chan model (m).</summary>
+    public const float GocNgua = 90f, TamXoayNgua = 0.9f;
+
+    /// <summary>Ranh gioi ba chang (ti le thoi gian): het LEN, het ROI. Con lai la DAY.</summary>
+    public const float HetLen = 0.55f, HetRoi = 0.85f;
+    /// <summary>Phan chang LEN con dung thang truoc khi bat dau nga ra nam.</summary>
+    public const float DungTruocKhiNam = 0.45f;
+    /// <summary>Nam tren dat: truc than cao chung nay (bang BiDanhNga.NangKhiNam - lung khong chim xuong dat).</summary>
+    public const float CaoTrucKhiNam = 0.22f;
 
     /// <summary>Tong thoi gian bay (tinh tu lan hat gan nhat).</summary>
     public float thoiGian = GiayMacDinh;
@@ -149,12 +165,10 @@ public class BiHatTung : MonoBehaviour
     {
         daTroi += Time.deltaTime;
         float u = Mathf.Clamp01(daTroi / Mathf.Max(0.01f, thoiGian));
-        // Parabol len CaoBay roi ve dat; bat dau tu do cao dang co (bi hat tiep giua khong trung)
-        CaoHienTai = Mathf.Lerp(caoLucDau, 0f, u) + CaoBay * 4f * u * (1f - u);
+        TinhTuThe(u, caoLucDau, nguaLucDau, out float cao, out float ngua);
+        CaoHienTai = cao;
+        NguaHienTai = ngua;
         if (CaoHienTai > CaoLonNhat) CaoLonNhat = CaoHienTai;
-        // Nga ngua: nhanh trong 30% dau, giu, dung lai trong 28% cuoi (cham dat bang chan)
-        float vao = Mathf.Max(nguaLucDau, Mathf.SmoothStep(0f, 1f, u / 0.3f));
-        NguaHienTai = vao * (1f - Mathf.SmoothStep(0f, 1f, (u - 0.72f) / 0.28f));
 
         if (hinh != null && coPosGoc)
         {
@@ -163,15 +177,42 @@ public class BiHatTung : MonoBehaviour
             if (nga != null && nga.DangNga) hinh.localPosition += Vector3.up * CaoHienTai;
             else
             {
-                // -GocNgua quanh truc X cua GOC (nhan ben trai rotGoc - xem BiDanhNga: model Meshy xoay san 180 do), quanh diem hong
+                // -GocNgua quanh truc X cua GOC (nhan ben trai rotGoc - xem BiDanhNga: model Meshy xoay san 180 do), quanh diem hong;
+                // cang gan dat (va cang nam) thi ha than cang nhieu de luc cham dat LUNG nam sat dat (truc than CaoTrucKhiNam);
+                // tren dinh khong ha - hong van nang du CaoBay
                 var xoay = Quaternion.Euler(-GocNgua * NguaHienTai, 0f, 0f);
                 Vector3 tam = posGoc + Vector3.up * TamXoayNgua;
                 hinh.localRotation = xoay * rotGoc;
-                hinh.localPosition = tam + xoay * (posGoc - tam) + Vector3.up * CaoHienTai;
+                hinh.localPosition = tam + xoay * (posGoc - tam)
+                                   + Vector3.up * (CaoHienTai - (TamXoayNgua - CaoTrucKhiNam) * NguaHienTai * (1f - CaoHienTai / CaoBay));
             }
         }
 
         if (!DangBay) Destroy(this);
+    }
+
+    /// <summary>Do cao nang (m) va muc nam (0 dung - 1 nam ngang) tai ti le thoi gian u - ba chang LEN / ROI / DAY.
+    /// Public de phep thu (menu 71) doi chieu voi tu the that.</summary>
+    public static void TinhTuThe(float u, float caoDau, float nguaDau, out float cao, out float ngua)
+    {
+        if (u < HetLen)
+        {
+            float s = u / HetLen;
+            cao = Mathf.Lerp(caoDau, CaoBay, Mathf.SmoothStep(0f, 1f, s));
+            ngua = Mathf.Max(nguaDau, Mathf.SmoothStep(0f, 1f, (s - DungTruocKhiNam) / (1f - DungTruocKhiNam)));
+        }
+        else if (u < HetRoi)
+        {
+            float s = (u - HetLen) / (HetRoi - HetLen);
+            cao = CaoBay * (1f - s * s);
+            ngua = 1f;
+        }
+        else
+        {
+            float s = (u - HetRoi) / (1f - HetRoi);
+            cao = 0f;
+            ngua = 1f - Mathf.SmoothStep(0f, 1f, s);
+        }
     }
 
     void OnDestroy()
