@@ -391,7 +391,9 @@ public static class ThuGiaoDien
                 Kiem(dinhMu < float.MaxValue, "khong tim thay xuong dau phu thuy de do");
                 // 08/10/2026 nguoi dung xin to them 10% (x0,572): luc dap nhip to nhat (thoang qua moi giay) mep vong cham chop mu
                 // 2 diem - chap nhan; luc DUNG YEN phai tren chop mu, luc dap to nhat phai tren TRAN (khong che mat).
-                Kiem(dayYen < dinhMu, "vong / con so dem nguoc (dung yen) de len chop mu phu thuy");
+                // 09/10/2026 nguoi dung xin to them 10% nua (x0,6292) va DUYET "giu nhu anh": luc dung yen mep vong cham chop mu ~10 diem
+                // (man 580) - cho phep, mien la con o NUA TREN khoang chop mu -> tran (khong xuong toi mat).
+                Kiem(dayYen < dinhMu + 0.5f * (tran - dinhMu), "vong / con so dem nguoc (dung yen) xuong qua nua khoang chop mu - tran");
                 Kiem(dayDn < tran, "vong / con so dem nguoc (dap to nhat) che mat phu thuy");
                 Kiem(dayCu > dinhMu, "doi chung hong: ban cu giua man cung khong de len dau - phep do khong phan biet duoc");
                 Kiem(tamDn.y - nuaCaoDap > ManSanh.KhungGachDemNguoc(sGd).yMax, "vong dem nguoc de len gach do / dong chu");

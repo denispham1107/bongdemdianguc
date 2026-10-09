@@ -7748,6 +7748,10 @@ Người dùng gửi 5 ảnh chụp có đánh dấu:
 - Vòng đếm ngược trên ảnh: ×0,52 rộng 107 điểm ở hàng y 118; ×0,572 rộng **117** ở hàng y 122 (bản cũ 215 ở giữa màn). Mép dưới lúc đập
   to nhất y **178**, chóp mũ phù thuỷ (xương `head_end` + 0,03 m, như `BangTen`) y **186**; đối chứng bản cũ giữa màn: đáy y 405.
 - Menu 50: **0 lỗi**, 0 chữ bị cắt ở mọi màn; menu 57 (bàn phím ảo, 8 cỡ màn × 3 mức che × 2 trang): **0 lỗi**.
+- **09/10/2026: to thêm 10% nữa → ×0,6292** (người dùng). Vòng rộng 129 điểm ở hàng y 128; tâm đã sát gạch đỏ dưới dòng chữ nên không lên
+  được nữa → đứng yên mép dưới y **196**, chóp mũ y 186 (đè ~10 điểm), đập to nhất y 201, trán y 221 — không che mặt. Tôi gửi ảnh và hỏi
+  (dời dòng chữ lên / giữ / chỉ to 5%): người dùng chọn **giữ như ảnh**. Phép đo 7d đổi: đứng yên phải ở nửa trên khoảng chóp mũ → trán
+  (thay cho "trên chóp mũ"); đập to nhất vẫn phải trên trán. Menu 50: **0 lỗi**.
 
 ### Thiết kế lại chữ "ÁC QUỶ TRỞ LẠI": chữ máu đặc 3D + nền địa ngục cho trang Loading (06/10/2026)
 

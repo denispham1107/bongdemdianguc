@@ -938,8 +938,9 @@ hơn ×1,5 và mở xuống 1,8–4,3 m** (người dùng chọn sau menu 94 ch�
   **Không đổi `productName`** trong Unity (vẫn "Diablo 2.5D"): cache dữ liệu và chỗ lưu của người chơi tính theo nó.
 - ⚠️ **08/10/2026 MÀN ĐĂNG NHẬP / SẢNH / PHÒNG** (người dùng, ảnh đánh dấu): ảnh tên game lên gần mép trên (`ManDangNhap.TamTieuDe`
   0,153 — 0,11 người dùng thấy "hơi cao quá", khung đăng nhập giữ chỗ); lòng khung + hàng + ghế trống + nền ô nhập **đục bớt 40%** (`GiaoDien.DoDucKhungSanh` 0,33 /
-  `DoDucHangSanh` 0,27 — chỉ ba màn này, Sách phép / Cài đặt / HUD giữ hằng cũ); đếm ngược 5 giây, vòng + số **×0,572** (0,52 rồi người dùng
-  xin to thêm 10%) ở 0,204 chiều cao (`ManSanh.TamDemNguoc`; đứng yên trên chóp mũ phù thuỷ, đập nhịp to nhất trên trán). Menu 50 đo trên ảnh: cảnh lọt qua 0,66–0,72 (cũ ~0,45), tên game tâm 0,164.
+  `DoDucHangSanh` 0,27 — chỉ ba màn này, Sách phép / Cài đặt / HUD giữ hằng cũ); đếm ngược 5 giây, vòng + số **×0,6292** (0,52 → ×1,1 = 0,572 →
+  09/10/2026 ×1,1 nữa) ở 0,204 chiều cao (`ManSanh.TamDemNguoc` — sát gạch đỏ nên không lên được nữa); ⚠️ đứng yên mép dưới CHẠM chóp mũ ~10 điểm
+  (người dùng xem ảnh, chọn "giữ như ảnh"), đập nhịp to nhất vẫn trên trán. Menu 50 đo trên ảnh: cảnh lọt qua 0,66–0,72 (cũ ~0,45), tên game tâm 0,164.
 - ⚠️ **MÁY BOT — ĐANG LÀM TỪNG BƯỚC** (người dùng 08/10/2026; chọn độ khó khi thêm · mỗi BOT một hệ chính ngẫu nhiên · tính như người
   khi kết trận, không lưu thành tích · báo sau mỗi bước): **bước 1 XONG** — chủ phòng bấm ghế trống → bảng DỄ / THƯỜNG / KHÓ; BOT là ghế
   `phong/{mã}/nguoiChoi/bot_{d|t|k}_xxxxxxxx` (`Mang/MayBot.cs`, `PhongMang.ThemBot`; độ khó nằm trong uid vì luật chỉ cho 5 trường — không đổi
