@@ -222,28 +222,21 @@
         '<stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient>' +
       '<filter id="vt-da" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency="1.1" numOctaves="3" seed="4"/>' +
         '<feColorMatrix values="0 0 0 0 .1  0 0 0 0 .03  0 0 0 0 .03  0 0 0 -2 1.2"/><feComposite in2="SourceGraphic" operator="in"/></filter>' +
-      // Chu DA BIA MO: nen da (gradient) + hat san toi + VET MAU loang (nhieu tan so thap, cat nguong) - nhu vat lieu bia mo trong game
+      // Chu DA BIA MO: nen da (gradient) + hat san toi (09/10/2026 nguoi dung bo vet mau loang tren chu)
       '<linearGradient id="vt-mat-da" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="' + DA[2] + '"/><stop offset=".55" stop-color="' + DA[1] + '"/>' +
         '<stop offset="1" stop-color="' + DA[0] + '"/></linearGradient>' +
       '<filter id="vt-bia" x="-5%" y="-10%" width="110%" height="125%" color-interpolation-filters="sRGB">' +
         '<feTurbulence type="fractalNoise" baseFrequency=".85" numOctaves="3" seed="5" result="h"/>' +
         '<feColorMatrix in="h" values="0 0 0 0 .1  0 0 0 0 .09  0 0 0 0 .07  0 0 0 -1.5 1.02" result="hA"/>' +
         '<feComposite in="hA" in2="SourceAlpha" operator="in" result="san"/>' +
-        '<feTurbulence type="fractalNoise" baseFrequency=".07 .11" numOctaves="3" seed="23" result="v"/>' +
-        '<feColorMatrix in="v" values="0 0 0 0 .5  0 0 0 0 .1  0 0 0 0 .1  0 0 0 16 -8.4" result="vD"/>' +
-        '<feColorMatrix in="v" values="0 0 0 0 .3  0 0 0 0 .03  0 0 0 0 .05  0 0 0 16 -9.2" result="vT"/>' +
-        '<feComposite in="vD" in2="SourceAlpha" operator="in" result="mau"/>' +
-        '<feComposite in="vT" in2="SourceAlpha" operator="in" result="mauSam"/>' +
-        '<feMerge><feMergeNode in="SourceGraphic"/><feMergeNode in="san"/><feMergeNode in="mau"/><feMergeNode in="mauSam"/></feMerge></filter>' +
-      // Ban NHE cho dong chu nho: it vet mau hon (nguong cao hon) de dau tieng Viet doc ro
+        // 09/10/2026 nguoi dung: BO vet mau loang tren chu + so (giu mau da bia + hat san; da xoa cac lop vet mau)
+        '<feMerge><feMergeNode in="SourceGraphic"/><feMergeNode in="san"/></feMerge></filter>' +
+      // Ban cho dong chu nho (cung da bia + hat san)
       '<filter id="vt-bia-nhe" x="-5%" y="-10%" width="110%" height="125%" color-interpolation-filters="sRGB">' +
         '<feTurbulence type="fractalNoise" baseFrequency=".85" numOctaves="3" seed="5" result="h"/>' +
         '<feColorMatrix in="h" values="0 0 0 0 .1  0 0 0 0 .09  0 0 0 0 .07  0 0 0 -1.5 1.02" result="hA"/>' +
         '<feComposite in="hA" in2="SourceAlpha" operator="in" result="san"/>' +
-        '<feTurbulence type="fractalNoise" baseFrequency=".09 .14" numOctaves="3" seed="31" result="v"/>' +
-        '<feColorMatrix in="v" values="0 0 0 0 .5  0 0 0 0 .1  0 0 0 0 .1  0 0 0 16 -9.4" result="vD"/>' +
-        '<feComposite in="vD" in2="SourceAlpha" operator="in" result="mau"/>' +
-        '<feMerge><feMergeNode in="SourceGraphic"/><feMergeNode in="san"/><feMergeNode in="mau"/></feMerge></filter>' +
+        '<feMerge><feMergeNode in="SourceGraphic"/><feMergeNode in="san"/></feMerge></filter>' +
       '<filter id="vt-khoi" x="-30%" y="-80%" width="160%" height="260%"><feTurbulence type="turbulence" baseFrequency=".05 .12" numOctaves="2" seed="2">' +
         '<animate attributeName="seed" values="1;2;3;4;5;6;7;8" dur="1.6s" repeatCount="indefinite"/></feTurbulence>' +
         '<feDisplacementMap in="SourceGraphic" scale="1.8"/></filter>' +
