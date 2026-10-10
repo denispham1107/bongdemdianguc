@@ -35,6 +35,19 @@ public static class TiengDong
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
     static void KhiKhoiDong() { khungCuoi = -1; SoLan[0] = 0; SoLan[1] = 0; LoaiGanNhat = null; }
 
+    /// <summary>
+    /// NAP SAN hai tieng bam (NhacNen goi khi scene dau tien da nap). Tren WebGL clip giai ma BAT DONG BO: nap luc bam thi lan bam
+    /// DAU TIEN mat tieng (do tren trang that 11/10/2026: lan 1 khong co buffer nao duoc phat, lan 2 moi keu).
+    /// </summary>
+    public static void NapTruoc()
+    {
+        for (int i = 0; i < 2; i++)
+        {
+            if (clip[i] == null) clip[i] = Resources.Load<AudioClip>(duong[i]);
+            if (clip[i] != null && clip[i].loadState == AudioDataLoadState.Unloaded) clip[i].LoadAudioData();
+        }
+    }
+
     /// <summary>Tieng bam nut thuong.</summary>
     public static void Bam() { Phat(Loai.BamThuong); }
 

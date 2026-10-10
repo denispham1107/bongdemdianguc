@@ -125,6 +125,7 @@ public class NhacNen : MonoBehaviour
     void ChonTheoCanh(string ten)
     {
         canhDaChon = ten;
+        TiengDong.NapTruoc();
         coPhepThu = FindAnyObjectByType<ChayThuMang>() != null;
         if (ten == TenCanhSanh)
         {
@@ -192,6 +193,7 @@ public class NhacNen : MonoBehaviour
         float dt = Mathf.Min(Time.unscaledDeltaTime, 0.1f);
         CapNhat(sanh, dt);
         CapNhat(tran, dt);
+        PhatTiengDangCho();
 
         // TU PHUC HOI: dang can keu ma nguon im / mat clip (clip bi don, nguon bi dung ngoai y) -> nap + phat lai, toi da
         // moi giay mot lan (de khong phat lai lien tuc neu nen tang bao "khong keu" trong luc cho cu cham dau tien tren web)
@@ -252,8 +254,29 @@ public class NhacNen : MonoBehaviour
         if (nguonHieuUng == null || c == null) return;
         if (coPhepThu && !BatTrongPhepThu) return;
         if (dungTiengTruoc) nguonHieuUng.Stop();
+        // Clip chua giai ma xong (WebGL bat dong bo) thi PlayOneShot bi bo qua im lang - giu lai, Update phat khi nap xong
+        if (c.loadState != AudioDataLoadState.Loaded)
+        {
+            if (c.loadState == AudioDataLoadState.Unloaded) c.LoadAudioData();
+            choClip = c; choAmLuong = amLuong; choHan = Time.unscaledTime + 0.5f;
+            return;
+        }
         nguonHieuUng.volume = 1f;
         nguonHieuUng.PlayOneShot(c, Mathf.Clamp01(amLuong));
+    }
+
+    // Tieng dang cho clip nap xong (toi da 0,5 s - tre hon thi bo, tieng bam muon nghe la sai)
+    AudioClip choClip;
+    float choAmLuong, choHan;
+
+    void PhatTiengDangCho()
+    {
+        if (choClip == null) return;
+        if (Time.unscaledTime > choHan || choClip.loadState == AudioDataLoadState.Failed) { choClip = null; return; }
+        if (choClip.loadState != AudioDataLoadState.Loaded) return;
+        nguonHieuUng.volume = 1f;
+        nguonHieuUng.PlayOneShot(choClip, Mathf.Clamp01(choAmLuong));
+        choClip = null;
     }
 
     /// <summary>Am luong dang dat cho nguon (phep thu doc).</summary>
