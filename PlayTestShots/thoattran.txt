@@ -1,11 +1,11 @@
 [ban 1] nut thoat tran
-A1. cam ung 1619x570 (s 0.528): thoat (1586,537) · con mat (1586,491) · Sach phep (1586,444); ban kinh 21.1
-    khoang cach tam: thoat-mat 46.4, mat-sach 46.4 (can > 2r = 42.2); mat & sach cung cot: True
-A2. may tinh: thoat (1586,537) · Sach phep (1586,491); chuot tren thoat chan chay True, tren sach True, giua man False
-B. anh: diem do-cam trong vong nut thoat 103/1260 (8.2 %); doi chung cung hang lech trai 0/1264
+A1. cam ung 1621x559 (s 0.518): thoat (1589,527) · con mat (1589,481) · Sach phep (1589,436); ban kinh 20.7
+    khoang cach tam: thoat-mat 45.5, mat-sach 45.5 (can > 2r = 41.4); mat & sach cung cot: True
+A2. may tinh: thoat (1589,527) · Sach phep (1589,481); chuot tren thoat chan chay True, tren sach True, giua man False
+B. anh: diem do-cam trong vong nut thoat 100/1211 (8.3 %); doi chung cung hang lech trai 0/1218
 C. doi chung bang dong: huongDi 1.00; mo bang: DangHoiThoat True, KhoaInputTran True, huongDi 0.00, Sach phep da dong True
     chu bi cat trong bang: 0 (""), bi thu nho: 0
-    anh bang: nen lam toi 0.175 -> 0.068 (x0.39); diem do o vung tieu de giua man 1 -> 1216
+    anh bang: nen lam toi 0.182 -> 0.070 (x0.38); diem do o vung tieu de giua man 3 -> 1298
 D. o lai: DangHoiThoat False, KhoaInputTran False, huongDi 1.00
 E. thoat tran: scene = MainMenu, DangHoiThoat False
 

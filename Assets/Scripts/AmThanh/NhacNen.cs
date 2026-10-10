@@ -64,6 +64,7 @@ public class NhacNen : MonoBehaviour
     public readonly BanNhac tran = new BanNhac { duong = DuongNhacTran, heSo = HeSoTrongTran };
 
     bool coPhepThu;
+    // (coPhepThu cung chan tieng hieu ung - xem PhatHieuUng)
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
     static void KhiKhoiDong() { DamBao(); }
@@ -84,6 +85,10 @@ public class NhacNen : MonoBehaviour
         Ban = this;
         sanh.nguon = TaoNguon("Sanh");
         tran.nguon = TaoNguon("Tran");
+        // Nguon HIEU UNG (11/10/2026): tieng bam nut... - TiengDong goi PhatHieuUng, am luong theo thanh "Hiệu ứng"
+        nguonHieuUng = TaoNguon("HieuUng");
+        nguonHieuUng.loop = false;
+        nguonHieuUng.volume = 1f;
         SceneManager.sceneLoaded += KhiNapCanh;
         // KHONG chon nhac o day (BeforeSceneLoad - scene dau tien chua nap). sceneLoaded KHONG ban cho scene dau tien khi vao
         // Play trong Editor (menu 121: khong chon gi ca) - Update tu nhan ra scene dang mo da doi, ke ca scene dau tien
@@ -234,6 +239,21 @@ public class NhacNen : MonoBehaviour
             b.giu = null;
             Resources.UnloadAsset(c);
         }
+    }
+
+    AudioSource nguonHieuUng;
+
+    /// <summary>
+    /// Phat mot tieng hieu ung (TiengDong goi). <paramref name="dungTiengTruoc"/>: tieng nay THAY tieng vua phat cung khung
+    /// (xac nhan thang bam thuong) - dung tieng truoc. Dang chay phep thu thi im (tru BatTrongPhepThu).
+    /// </summary>
+    public void PhatHieuUng(AudioClip c, float amLuong, bool dungTiengTruoc)
+    {
+        if (nguonHieuUng == null || c == null) return;
+        if (coPhepThu && !BatTrongPhepThu) return;
+        if (dungTiengTruoc) nguonHieuUng.Stop();
+        nguonHieuUng.volume = 1f;
+        nguonHieuUng.PlayOneShot(c, Mathf.Clamp01(amLuong));
     }
 
     /// <summary>Am luong dang dat cho nguon (phep thu doc).</summary>

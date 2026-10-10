@@ -805,6 +805,7 @@ public partial class GameHUD : MonoBehaviour
     {
         if (Vector2.Distance(diem, TamNutKhoaCam(s)) > BanKinhNutKhoaCam(s)) return false;
 
+        TiengDong.Bam();
         CamUng.KhoaCam = !CamUng.KhoaCam;
         Say(CamUng.KhoaCam ? "Đã khoá góc nhìn" : "Đã mở khoá góc nhìn");
         return true;
@@ -939,6 +940,7 @@ public partial class GameHUD : MonoBehaviour
     bool BamNutSachPhep(Vector2 diem, float s)
     {
         if (Vector2.Distance(diem, TamNutSachPhep(s)) > BanKinhNutSachPhep(s)) return false;
+        TiengDong.Bam();
         CuaSoSachPhep.Mo();
         return true;
     }
@@ -989,7 +991,7 @@ public partial class GameHUD : MonoBehaviour
         // duoi) se dong sach phep giua chung.
         if (!CamUng.DangDung && !KhoaInputTran
             && GUI.Button(new Rect(gx - r, gy - r, r * 2f, r * 2f), GUIContent.none, GUIStyle.none))
-            CuaSoSachPhep.Mo();
+        { TiengDong.Bam(); CuaSoSachPhep.Mo(); }
     }
 
     /// <summary>
@@ -1334,9 +1336,10 @@ public partial class GameHUD : MonoBehaviour
     /// <summary>Mo khoa (con khoa) hoac nang cap mot cap. Tra ve true neu da tieu diem.</summary>
     public static bool BamDauCong(int ky)
     {
-        if (CapDo.MoKhoaDuoc(ky)) return CapDo.MoKhoa(ky);
-        if (CapDo.NangCapDuoc(ky)) return CapDo.NangCap(ky);
-        return false;
+        bool duoc = CapDo.MoKhoaDuoc(ky) ? CapDo.MoKhoa(ky) : CapDo.NangCapDuoc(ky) && CapDo.NangCap(ky);
+        // Mo khoa / nang cap = nut CHINH (tieng xac nhan, 11/10/2026)
+        if (duoc) TiengDong.XacNhan(); else TiengDong.Bam();
+        return duoc;
     }
 
     bool CoTheBamDauCong()

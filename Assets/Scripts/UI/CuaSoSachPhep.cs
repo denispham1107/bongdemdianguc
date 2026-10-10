@@ -298,19 +298,23 @@ public static class CuaSoSachPhep
             // Phan THAN chi tiet cuon bang ngon tay (vuot doc) - dien thoai khong co con lan
             keoThan = b.thanChiTiet.Contains(tro);
 
-            if (b.nutDong.Contains(tro)) { Dong(); return; }
+            // Tieng bam (TiengDong, 11/10/2026): nut dong, nut MO KHOA / NANG CAP (xac nhan neu thanh cong), cham chon hang / o
+            if (b.nutDong.Contains(tro)) { TiengDong.Bam(); Dong(); return; }
 
             // Nut MO KHOA / NANG CAP
             if (b.nutHoc.Contains(tro) && !xemTruoc)
             {
-                if (CapDo.MoKhoaDuoc(dangXem)) CapDo.MoKhoa(dangXem);
-                else if (CapDo.NangCapDuoc(dangXem)) CapDo.NangCap(dangXem);
+                bool duoc = false;
+                if (CapDo.MoKhoaDuoc(dangXem)) duoc = CapDo.MoKhoa(dangXem);
+                else if (CapDo.NangCapDuoc(dangXem)) duoc = CapDo.NangCap(dangXem);
+                if (duoc) TiengDong.XacNhan(); else TiengDong.Bam();
                 return;
             }
 
             int hang = HangTaiDiem(b, tro, s);
             if (hang >= 0)
             {
+                TiengDong.Bam();
                 ChonKyNang(hang);
                 keoTuKho = KeoDuocTuKho(hang) ? hang : -1;
             }
@@ -319,6 +323,7 @@ public static class CuaSoSachPhep
                 int o = OTaiDiem(b, tro, s);
                 if (o >= 0)
                 {
+                    TiengDong.Bam();
                     ChonO(o);
                     keoTuO = o;
                 }

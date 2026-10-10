@@ -13955,6 +13955,38 @@ hồi (mỗi giây, sau 2 giây chờ nạp nền) nhưng phép thử đòi nó 
 chặn tự phát nên giả lập: tạm dừng AudioContext → đồng hồ âm thanh đứng (40,54 → 40,54); một cú bấm thật → Unity tự mở lại (→ 42,65), vẫn một
 nguồn. Menu 48: 0 lỗi. Ảnh `PlayTestShots/nhacnen_1_tab_amthanh.png`, `nhacnen_2_keo_30.png`.
 
+## Tiếng bấm nút + thanh "Hiệu ứng" (11/10/2026)
+
+**Người dùng:** trong Cài đặt › Âm thanh thêm thanh "Hiệu ứng" chỉnh to nhỏ cho mọi tiếng động trong game; tạo tiếng động mỗi lần bấm bất kỳ
+nút nào ở đăng nhập, đăng ký, sảnh / phòng và trong game. Chọn thêm: trong trận chỉ nút giao diện kêu (nút tung kỹ năng và cần điều khiển
+không — bấm liên tục khi đánh nhau sẽ rất ồn); hai tiếng (bấm thường + xác nhận cho nút chính); mặc định 80%.
+
+**Tiếng:** tổng hợp bằng numpy (`CongCu/AmThanh/tieng_bam.py`), ba mẫu cho người dùng nghe — A Đá mộ, B Xương, C Chuông sắt rỉ — người dùng
+chọn **A**: cú gõ vào bia đá + cộng hưởng phiến đá + vụn đá, vang hầm mộ; xác nhận thêm cú gõ thứ hai và chuông Rê. Stereo thật (mỗi kênh một
+tiếng vang riêng, tương quan 0,55–0,76).
+
+**Cái bẫy:** bản đầu tiếng xác nhận của A và B dồn 93–94% năng lượng dưới 200 Hz (tiếng "thụp" trầm). Loa điện thoại — nền tảng chính —
+gần như không phát dải ấy: trên điện thoại hai tiếng này sẽ gần như im. Sửa: thêm cộng hưởng dải trung (phiến đá 2,7 / 4,1 / 6,3 lần tần số
+gốc, thân trống 250–900 Hz), nâng chuông lên Rê4, cắt dưới 120 Hz → A xác nhận còn 17% dưới 200 Hz, 80% ở 200 Hz–1 kHz.
+
+**Làm:** `TiengDong` là lối đi chung cho mọi tiếng động (âm lượng = thanh Hiệu ứng); `GiaoDien.Nut` / `Tab` tự kêu, nút chính truyền
+`xacNhan`; các nút vẽ riêng (hàng chọn mức đồ hoạ, ghế thêm BOT, nút Sách phép, con mắt, Thoát trận, nút trong Sách phép, dấu "+") gọi
+thẳng. Một khung chỉ một tiếng (trên WebGL một cú chạm sinh cả sự kiện chạm lẫn chuột), xác nhận thắng bấm thường.
+
+**Số đo — menu 122 (0 lỗi):**
+
+| Mục | Kết quả |
+|---|---|
+| File | trùng byte bản gốc, 2 kênh 44,1 kHz (0,60 / 1,15 s), không ép mono |
+| Mã nguồn | 9 / 9 chỗ gọi đúng loại tiếng |
+| Sự kiện chuột giả | Nut → 1 thường; Nut xác nhận → 1 xác nhận; Tab → 1 thường; bấm ngoài nút → 0 |
+| Cùng khung | hai lần bấm → 1 tiếng; bấm + xác nhận → chỉ xác nhận |
+| Tiếng thật ở loa | đỉnh RMS trái 0,20 / phải 0,19, tương quan 0,55 (mono = 1); 40% / 80% = ×0,50 |
+| Tab Âm thanh | ảnh: nút hình thoi Nhạc nền 0,597, Hiệu ứng 0,797; kéo 40 → 41 trong 0,15 s: đúng 1 tiếng thử; HỦY về 80%; OK lưu 40, nhạc không đổi |
+| Trong trận | dấu "+" mở khoá Cầu lửa → tiếng xác nhận; "+" không mở được → tiếng thường |
+
+Menu 121, 48 (182 chuỗi có dấu, font đủ), 118, 59: 0 lỗi; menu 85 chỉ còn lỗi cũ mục B. Ảnh `PlayTestShots/tiengbam_1_tab_amthanh.png`.
+
 ## Phần 4 — Menu công cụ "Diablo 2.5D"
 
 | Mục | Tác dụng |

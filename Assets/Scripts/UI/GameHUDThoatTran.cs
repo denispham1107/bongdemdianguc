@@ -57,6 +57,7 @@ public partial class GameHUD
     bool BamNutThoat(Vector2 diem, float s)
     {
         if (Vector2.Distance(diem, TamNutThoat(s)) > BanKinhNutThoat(s)) return false;
+        TiengDong.Bam();
         MoHoiThoat();
         return true;
     }
@@ -120,7 +121,7 @@ public partial class GameHUD
         // Ban may tinh: bat cu bam bang IMGUI (ban cam ung co duong doc ngon rieng - xem DocCamUng)
         if (!CamUng.DangDung && !KhoaInputTran
             && GUI.Button(new Rect(gx - r, gy - r, r * 2f, r * 2f), GUIContent.none, GUIStyle.none))
-            MoHoiThoat();
+        { TiengDong.Bam(); MoHoiThoat(); }
     }
 
     /// <summary>So nguoi choi THAT khac con trong tran (khong tinh BOT) - de canh bao chu phong.</summary>

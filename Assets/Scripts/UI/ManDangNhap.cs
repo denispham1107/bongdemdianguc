@@ -201,7 +201,7 @@ public class ManDangNhap : MonoBehaviour
             ? "ĐANG CHỜ..."
             : (trang == Trang.DangKy ? "TẠO TÀI KHOẢN" : "VÀO GAME");
 
-        if (GiaoDien.Nut(new Rect(xx, yy, rr, 62f * s), chuNut, GiaoDien.KieuNutMau) && !dangCho)
+        if (GiaoDien.Nut(new Rect(xx, yy, rr, 62f * s), chuNut, GiaoDien.KieuNutMau, !dangCho) && !dangCho)
             BamNutChinh();
         GUI.enabled = true;
         yy += 62f * s + 16f * s;

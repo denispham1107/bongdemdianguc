@@ -108,9 +108,9 @@ public class MainMenuUI : MonoBehaviour
         float y = Screen.height * 0.42f;
 
         if (GUI.Button(new Rect(x, y, w, h), "VAO CHOI - NGHIA DIA", button))
-            Play(act2Scene);
+        { TiengDong.XacNhan(); Play(act2Scene); }
         if (GUI.Button(new Rect(x, y + h + 14f * s, w, h), "THOAT", button))
-            Quit();
+        { TiengDong.Bam(); Quit(); }
 
         // Bang huong dan
         string[] lines =

@@ -643,13 +643,20 @@ public static class GiaoDien
         return "…";
     }
 
-    /// <summary>Nut co chu tu vua o.</summary>
-    public static bool Nut(Rect r, string chu, GUIStyle k)
+    /// <summary>Nut co chu tu vua o. Bam thi keu tieng bam THUONG (TiengDong - 11/10/2026).</summary>
+    public static bool Nut(Rect r, string chu, GUIStyle k) { return Nut(r, chu, k, false); }
+
+    /// <summary>
+    /// Nut co chu tu vua o. <paramref name="xacNhan"/> = nut CHINH (VÀO GAME, TẠO TÀI KHOẢN, OK, TẠO PHÒNG, SẴN SÀNG...) - keu
+    /// tieng XAC NHAN thay tieng bam thuong (nguoi dung chon hai tieng, 11/10/2026).
+    /// </summary>
+    public static bool Nut(Rect r, string chu, GUIStyle k, bool xacNhan)
     {
         int goc = k.fontSize;
         string ve = VuaO(chu, k, r.width - k.padding.horizontal - 4f);
         bool bam = GUI.Button(r, ve, k);
         k.fontSize = goc;
+        if (bam) { if (xacNhan) TiengDong.XacNhan(); else TiengDong.Bam(); }
         return bam;
     }
 
@@ -664,6 +671,7 @@ public static class GiaoDien
         bool bam = GUI.Button(r, ve, k);
         k.fontSize = goc;
         k.normal.textColor = cu;
+        if (bam) TiengDong.Bam();
 
         float d = Mathf.Max(2f, 3f * s);
         if (chon) To(new Rect(r.x, r.yMax - d, r.width, d), MauMauSang);

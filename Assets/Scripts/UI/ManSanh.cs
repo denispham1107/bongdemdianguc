@@ -52,6 +52,8 @@ public class ManSanh : MonoBehaviour
     int tabCaiDat;
     MucDoHoa mucChon;
     int nhacChon;           // am luong nhac dang keo (0-100), luu khi bam OK
+    int hieuUngChon;        // am luong hieu ung dang keo (0-100) - 11/10/2026
+    float henTiengThu;      // keo thanh Hieu ung: phat tieng bam thu, toi da moi 0,15 s
 
     /// <summary>Be rong khung ao cua sanh, tinh bang don vi truoc khi nhan ti le.</summary>
     public const float RongKhungAo = 1000f;
@@ -374,7 +376,7 @@ public class ManSanh : MonoBehaviour
                                      "Tên phòng (không bắt buộc)");
 
         GUI.enabled = !dangCho && !khoa;
-        if (GiaoDien.Nut(new Rect(kt.xMax - le - rongTao, yh, rongTao, cao), "TẠO PHÒNG", GiaoDien.KieuNutMau))
+        if (GiaoDien.Nut(new Rect(kt.xMax - le - rongTao, yh, rongTao, cao), "TẠO PHÒNG", GiaoDien.KieuNutMau, true))
             StartCoroutine(ChayTaoPhong());
         GUI.enabled = !khoa;
 
@@ -567,7 +569,7 @@ public class ManSanh : MonoBehaviour
         float rongNut = PhongMang.LaHost ? (rong - 16f * s) * 0.5f : rong;
         if (GiaoDien.Nut(new Rect(x, y, rongNut, 64f * s),
                          dangSanSang ? "BỎ SẴN SÀNG" : "SẴN SÀNG",
-                         PhongMang.LaHost || dangSanSang ? GiaoDien.KieuNutDa : GiaoDien.KieuNutMau))
+                         PhongMang.LaHost || dangSanSang ? GiaoDien.KieuNutDa : GiaoDien.KieuNutMau, !dangSanSang))
             StartCoroutine(PhongMang.DatSanSang(!dangSanSang, null));
 
         if (PhongMang.LaHost)
@@ -716,7 +718,7 @@ public class ManSanh : MonoBehaviour
                 GiaoDien.Chu(new Rect(o.x, o.y, o.width - 20f * s, o.height), "+  THÊM MÁY BOT", kb);
                 kb.alignment = cb; kb.normal.textColor = mb;
                 if (GUI.Button(o, GUIContent.none, GUIStyle.none) && !dangThemBot)
-                    MoChonBot(doiGhe);
+                { TiengDong.Bam(); MoChonBot(doiGhe); }
             }
             return;
         }
@@ -1071,6 +1073,7 @@ public class ManSanh : MonoBehaviour
         tabCaiDat = 0;
         mucChon = CaiDatDoHoa.Muc;
         nhacChon = CaiDatAmThanh.NhacPhanTram;
+        hieuUngChon = CaiDatAmThanh.HieuUngPhanTram;
         CaiDatAmThanh.BoXemTruoc();
         baoCaiDat = "";
         // O ten phong dang giu ban phim thi van go chu vao duoc du da bi khoa
@@ -1094,6 +1097,16 @@ public class ManSanh : MonoBehaviour
     }
     public int NhacChon { get { return nhacChon; } }
 
+    /// <summary>Keo thanh am luong HIEU UNG: nghe thu ngay - phat tieng bam o muc moi (toi da moi 0,15 s); chua luu.</summary>
+    public void DatAmLuongHieuUng(int phanTram)
+    {
+        hieuUngChon = Mathf.Clamp(phanTram, 0, 100);
+        CaiDatAmThanh.XemTruocHieuUng(hieuUngChon);
+        baoCaiDat = "";
+        if (Time.unscaledTime >= henTiengThu) { henTiengThu = Time.unscaledTime + 0.15f; TiengDong.Bam(); }
+    }
+    public int HieuUngChon { get { return hieuUngChon; } }
+
     /// <summary>Nut HỦY: dong bang, bo moi thay doi chua luu (am luong ve muc da luu).</summary>
     public void BamHuyCaiDat()
     {
@@ -1108,7 +1121,8 @@ public class ManSanh : MonoBehaviour
     public void BamOKCaiDat()
     {
         // Am luong nhac: luu ngay, KHONG can tai lai game
-        if (nhacChon != CaiDatAmThanh.NhacPhanTram && !CaiDatAmThanh.Luu(nhacChon))
+        if ((nhacChon != CaiDatAmThanh.NhacPhanTram && !CaiDatAmThanh.Luu(nhacChon))
+            || (hieuUngChon != CaiDatAmThanh.HieuUngPhanTram && !CaiDatAmThanh.LuuHieuUng(hieuUngChon)))
         {
             baoCaiDat = "Trình duyệt không cho lưu cài đặt (có thể đang ở chế độ ẩn danh).";
             return;
@@ -1180,7 +1194,7 @@ public class ManSanh : MonoBehaviour
                          "HỦY", GiaoDien.KieuNutDa))
             BamHuyCaiDat();
 
-        if (GiaoDien.Nut(new Rect(x + rong - le - rongNut, yb, rongNut, 58f * s), "OK", GiaoDien.KieuNutMau))
+        if (GiaoDien.Nut(new Rect(x + rong - le - rongNut, yb, rongNut, 58f * s), "OK", GiaoDien.KieuNutMau, true))
             BamOKCaiDat();
 
         GUI.enabled = true;
@@ -1192,7 +1206,14 @@ public class ManSanh : MonoBehaviour
         return new Rect(x, y + 42f * s, rong, 84f * s);
     }
 
-    /// <summary>Thanh keo trong hang Nhac nen.</summary>
+    /// <summary>Hang "Hiệu ứng" (duoi hang Nhac nen) - phep thu (menu 122) hoi.</summary>
+    public static Rect HangHieuUng(float x, float y, float rong, float s)
+    {
+        var n = HangNhacNen(x, y, rong, s);
+        return new Rect(n.x, n.yMax + 12f * s, n.width, n.height);
+    }
+
+    /// <summary>Thanh keo trong hang Nhac nen (cung dung cho hang Hieu ung).</summary>
     public static Rect ThanhNhacNen(Rect hang, float s)
     {
         float rongTen = 230f * s, rongSo = 96f * s;
@@ -1203,25 +1224,35 @@ public class ManSanh : MonoBehaviour
     {
         GiaoDien.Chu(new Rect(x, y, rong, 30f * s), "Âm lượng · kéo để nghe thử, bấm OK để lưu", GiaoDien.KieuChuMo);
         var o = HangNhacNen(x, y, rong, s);
-        GiaoDien.Hang(o, s, GiaoDien.MauMauSang);
+        int pt = VeHangAmLuong(o, "Nhạc nền", nhacChon, s);
+        if (pt != nhacChon) DatAmLuongNhac(pt);
 
+        var o2 = HangHieuUng(x, y, rong, s);
+        int pt2 = VeHangAmLuong(o2, "Hiệu ứng", hieuUngChon, s);
+        if (pt2 != hieuUngChon) DatAmLuongHieuUng(pt2);
+
+        GiaoDien.ChuNhieuDong(new Rect(x, o2.yMax + 18f * s, rong, 110f * s),
+            "Nhạc nền phát ở màn đăng nhập, sảnh và trong trận (trong trận nhỏ hơn 30% để nghe rõ tiếng giao tranh). "
+            + "Hiệu ứng: tiếng bấm nút và mọi tiếng động trong game. "
+            + "Trên trình duyệt, âm thanh bắt đầu sau lần chạm hoặc bấm đầu tiên.", GiaoDien.KieuChuMo);
+    }
+
+    /// <summary>Mot hang am luong: ten + thanh keo + so phan tram. Tra ve gia tri moi (0-100).</summary>
+    int VeHangAmLuong(Rect o, string ten, int giaTri, float s)
+    {
+        GiaoDien.Hang(o, s, GiaoDien.MauMauSang);
         var kt = GiaoDien.KieuTieuDeNho;
         var mt = kt.normal.textColor;
         kt.normal.textColor = GiaoDien.MauGiay;
-        GiaoDien.Chu(new Rect(o.x + 26f * s, o.y, 200f * s, o.height), "Nhạc nền", kt);
+        GiaoDien.Chu(new Rect(o.x + 26f * s, o.y, 200f * s, o.height), ten, kt);
 
         var thanh = ThanhNhacNen(o, s);
-        float moi = GiaoDien.ThanhKeo(thanh, nhacChon / 100f, s);
-        int pt = Mathf.RoundToInt(moi * 100f);
-        if (pt != nhacChon) DatAmLuongNhac(pt);
+        int pt = Mathf.RoundToInt(GiaoDien.ThanhKeo(thanh, giaTri / 100f, s) * 100f);
 
         kt.normal.textColor = Color.white;
-        GiaoDien.Chu(new Rect(thanh.xMax + 12f * s, o.y, o.xMax - thanh.xMax - 12f * s, o.height), nhacChon + "%", kt);
+        GiaoDien.Chu(new Rect(thanh.xMax + 12f * s, o.y, o.xMax - thanh.xMax - 12f * s, o.height), pt + "%", kt);
         kt.normal.textColor = mt;
-
-        GiaoDien.ChuNhieuDong(new Rect(x, o.yMax + 18f * s, rong, 90f * s),
-            "Nhạc phát ở màn đăng nhập, sảnh và trong trận (trong trận nhỏ hơn 30% để nghe rõ tiếng giao tranh). "
-            + "Trên trình duyệt, nhạc bắt đầu sau lần chạm hoặc bấm đầu tiên.", GiaoDien.KieuChuMo);
+        return pt;
     }
 
     void VeTabGiaoDien(float x, float y, float rong, float s)
@@ -1241,7 +1272,7 @@ public class ManSanh : MonoBehaviour
             if (chon) GiaoDien.To(o, new Color(0.7f, 0.08f, 0.05f, 0.22f));
 
             // Ca hang la mot nut trong suot: bam vao dau cung chon
-            if (GUI.Button(o, GUIContent.none, GUIStyle.none)) ChonMucDoHoa(m);
+            if (GUI.Button(o, GUIContent.none, GUIStyle.none)) { TiengDong.Bam(); ChonMucDoHoa(m); }
 
             string ten = CaiDatDoHoa.Ten[i] + (m == CaiDatDoHoa.Muc ? " (hiện giờ)" : "");
             var kt = GiaoDien.KieuTieuDeNho;
