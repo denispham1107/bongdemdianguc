@@ -1012,7 +1012,7 @@ hơn ×1,5 và mở xuống 1,8–4,3 m** (người dùng chọn sau menu 94 ch�
   23 m; đi tuần 45 s: 230 m, +15/64 ô. Menu 113, 115: 0 lỗi.
 - ⚠️ **NHÀO LỘN — KỸ NĂNG 22, NHÓM HỖ TRỢ** (10/10/2026, người dùng; `Skills/NhaoLon.cs`): **có sẵn cấp 1 từ đầu trận như hai bình, chỉ MỘT cấp**
   (`CapDo.LaKyCoSan`, `CapToiDaCua` = 1; Sách phép ghi "CÓ SẴN — chỉ một cấp"). Người dùng chọn: **0 năng lượng**, hồi chiêu **4 s**, lăn **TỚI chỗ ngắm
-  tối đa 5 m** (tối thiểu 0,8; chạm nhanh trên cảm ứng = đủ 5 m về hướng cần / mặt), **KHÔNG miễn sát thương**, vật cản chặn lại (không xuyên như Tốc
+  tối đa 8 m** (cùng ngày người dùng đổi 5 → 8, vẫn MỘT vòng lộn, 8 m = 0,76 s; tối thiểu 0,8; chạm nhanh trên cảm ứng = đủ 8 m về hướng cần / mặt), **KHÔNG miễn sát thương**, vật cản chặn lại (không xuyên như Tốc
   biến; lăn qua mép vực là rơi), **BOT dùng** khi bị áp sát < 4 m (mỗi giây xét một lần, Dễ 20% / Thường 50% / Khó 85%, ô 2,5 + 5 m phải đi được —
   `BotDieuKhien.NhaoLonNeuApSat`). Đang lăn: không tung phép khác ("Đang nhào lộn!"), bình vẫn uống; bị choáng / đóng băng / ngã / hất tung / lốc xoáy
   thì không lăn và đang lăn thì dừng. Di chuyển trong `PlayerController.HandleMovement` (`NhaoLon.BuocDi`: quãng theo `TiLeQuang` lao nhanh đầu,

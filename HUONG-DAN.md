@@ -13881,6 +13881,8 @@ trên nền đen và tăng đèn cho nhân vật (phần tối sẽ biến mất
 | Bị đánh ngã giữa vòng | dừng lăn, ngã xong model về đúng tư thế gốc |
 | Bản sao mạng | có hình lăn (360°), tự đi 0 m |
 
+**Cùng ngày, người dùng đổi tầm 5 → 8 m** (chọn giữ MỘT vòng lộn, thời gian theo quãng: 8 m = 0,76 giây). Menu 119 (0 lỗi): ngắm 8 / 2 / 12 / 0,3 m → lăn 8,00 / 2,00 / 8,00 / 0,80 m (0,74 s cho 8 m); 45 khung, bước góc lớn nhất 17,7° (TB 8,1°); chạm đất −0,009 … +0,026 m.
+
 Menu 115 F2: BOT Khó bị đối thủ áp sát 2,4 m → nhào lộn sau 1,2 s, ra xa 7,4 m; trận thật 90 s: 2 / 0 / 1 lần. Menu 59, 60, 66, 77, 80: 0 lỗi. Ảnh
 `PlayTestShots/nhaolon_cac_khung.png`, `nhaolon_dong.gif`.
 

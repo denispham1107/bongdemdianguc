@@ -1,14 +1,15 @@
 using UnityEngine;
 
 /// <summary>
-/// KY NANG 22 - NHAO LON (nguoi dung 10/10/2026, nhom HO TRO): nhan vat nhao lon tien ve phia ngam, toi da 5 m, hoi chieu 4 giay.
-/// Nguoi dung chon: CO SAN tu dau tran nhu binh mau / binh mana, CHI MOT CAP; khong ton nang luong; lan TOI CHO NGAM (gan hon 5 m thi
-/// lan ngan lai, bam nhanh tren cam ung = du 5 m ve huong dang nhin / day can); KHONG mien sat thuong (ne duoc la nho ra khoi vung
+/// KY NANG 22 - NHAO LON (nguoi dung 10/10/2026, nhom HO TRO): nhan vat nhao lon tien ve phia ngam, toi da 8 m (nguoi dung
+/// 10/10/2026 lan hai, truoc 5 m - van MOT vong lon, chon 0,76 giay), hoi chieu 4 giay.
+/// Nguoi dung chon: CO SAN tu dau tran nhu binh mau / binh mana, CHI MOT CAP; khong ton nang luong; lan TOI CHO NGAM (gan hon 8 m thi
+/// lan ngan lai, bam nhanh tren cam ung = du 8 m ve huong dang nhin / day can); KHONG mien sat thuong (ne duoc la nho ra khoi vung
 /// don); vat can (bia, tuong, cay) thi DUNG LAI - khac Toc bien di xuyen; BOT dung de lan tranh khi bi ap sat.
 ///
 /// DI CHUYEN (chi may dieu khien nhan vat - PlayerController.HandleMovement goi <see cref="BuocDi"/>): CharacterController.Move theo
 /// mot duong cong quang duong lao nhanh luc dau, cham dan luc dung day (<see cref="TiLeQuang"/>), trong luc van keo - lan qua mep vuc
-/// thi roi xuong. Thoi gian lan theo quang (<see cref="ThoiGianLan"/>: 5 m = 0,6 giay). Ban sao nguoi choi khac: vi tri den tu goi tin,
+/// thi roi xuong. Thoi gian lan theo quang (<see cref="ThoiGianLan"/>: 5 m = 0,6 giay, 8 m = 0,76 giay). Ban sao nguoi choi khac: vi tri den tu goi tin,
 /// may nay chi chay HINH (cung goi phep -> cung huong, cung thoi gian).
 ///
 /// HINH - nhao lon MEM (dung tai cho, model Meshy chi co clip di bo): moi khung SAU NguoiChoiHoatHinh (thu tu 9000, truoc BiDanhNga
@@ -26,7 +27,7 @@ using UnityEngine;
 [DefaultExecutionOrder(9000)]
 public class NhaoLon : MonoBehaviour
 {
-    public const float Tam = 5f;
+    public const float Tam = 8f;
     public const float HoiChieu = 4f;
     public const float NangLuong = 0f;
     /// <summary>Khong niem chu - 0,02 giay vua du mot khung de goi phep bay sang may khac (nhu Toc bien).</summary>
@@ -55,7 +56,7 @@ public class NhaoLon : MonoBehaviour
         return Mathf.Lerp(BangKhe[i], BangKhe[i + 1], g - i);
     }
 
-    /// <summary>Thoi gian lan het quang <paramref name="quang"/> m: 5 m = 0,60 giay, 2 m = 0,44 giay.</summary>
+    /// <summary>Thoi gian lan het quang <paramref name="quang"/> m: 8 m = 0,76 giay, 5 m = 0,60 giay, 2 m = 0,44 giay.</summary>
     public static float ThoiGianLan(float quang) { return GiayGoc + GiayMoiMet * quang; }
 
     /// <summary>Ti le quang duong da di o ti le thoi gian u (0..1): lao nhanh luc dau (van toc 1,6 x trung binh), cham dan luc dung day (0,4 x).</summary>
@@ -116,7 +117,7 @@ public class NhaoLon : MonoBehaviour
     }
 
     /// <summary>
-    /// Bat dau nhao lon tu cho dang dung toi <paramref name="diemNgam"/> (kep 5 m, toi thieu QuangToiThieu). <paramref name="laChu"/> = may
+    /// Bat dau nhao lon tu cho dang dung toi <paramref name="diemNgam"/> (kep Tam = 8 m, toi thieu QuangToiThieu). <paramref name="laChu"/> = may
     /// nay dieu khien nhan vat (di chuyen that); false = ban sao mang, chi hinh.
     /// </summary>
     public static NhaoLon Bat(PlayerController pc, Vector3 diemNgam, bool laChu)

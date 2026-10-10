@@ -357,7 +357,7 @@ public static class SachPhep
             case CapDo.KyKhangPhong: return "Bị động — chịu ít sát thương hệ Phong";
             case CapDo.KyTocDo: return "Bị động — chạy nhanh hơn";
             case CapDo.KyMayGiong: return "36 tia sét, mưa làm ướt, mây trôi";
-            case CapDo.KyNhaoLon: return "Lộn nhào tới chỗ ngắm, xa nhất 5 m";
+            case CapDo.KyNhaoLon: return "Lộn nhào tới chỗ ngắm, xa nhất 8 m";
             default: return "";
         }
     }
@@ -487,8 +487,8 @@ public static class SachPhep
                      + "Lốc lướt qua lò lửa thì dập tắt lửa, 30 giây sau lò cháy lại.\n\n"
                      + "CẤP 5: phóng cùng lúc BA cơn lốc hình quạt.";
             case CapDo.KyNhaoLon:
-                return "Nhân vật cuộn tròn người lại và NHÀO LỘN về phía bạn ngắm — xa nhất 5 mét, ngắm gần hơn thì lộn ngắn lại. "
-                     + "Chạm nhanh vào nút (không kéo ngắm) thì lộn đủ 5 mét về hướng đang chạy / đang nhìn.\n\n"
+                return "Nhân vật cuộn tròn người lại và NHÀO LỘN về phía bạn ngắm — xa nhất 8 mét, ngắm gần hơn thì lộn ngắn lại. "
+                     + "Chạm nhanh vào nút (không kéo ngắm) thì lộn đủ 8 mét về hướng đang chạy / đang nhìn.\n\n"
                      + "Bấm là lộn ngay, không có động tác niệm — dùng để né quả cầu đang bay tới, thoát khỏi vùng mưa băng hay "
                      + "lùi xa khỏi quái đang áp sát. Đang lộn VẪN ăn sát thương nếu bị đánh trúng; gặp bia mộ, tường, cây thì dừng lại "
                      + "(không xuyên qua như Tốc biến); lộn qua mép vực là rơi xuống.\n\n"

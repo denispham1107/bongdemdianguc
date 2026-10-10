@@ -9,7 +9,7 @@ using UnityEngine;
 /// <summary>
 /// MENU 119 - NHAO LON (ky nang 22, nguoi dung 10/10/2026). Play Act2 that, tung bang PlayerController.CastAt.
 ///   A. CO SAN cap 1, toi da 1 cap, khong mo / nang duoc, nam trong nhom HO TRO, icon nap duoc (Read/Write).
-///   B. QUANG DUONG (huong trong, khong vat can - tu do bang SphereCast): ngam 5 / 2 / 9 / 0,3 m -> lan 5 / 2 / 5 / 0,8 m (do vi tri goc that
+///   B. QUANG DUONG (huong trong, khong vat can - tu do bang SphereCast): ngam Tam / 2 / Tam+4 / 0,3 m -> lan Tam / 2 / Tam / 0,8 m (do vi tri goc that
 ///      truoc / sau), thoi gian = NhaoLon.ThoiGianLan, khong tru mana, hoi chieu 4 giay (bam lai bi tu choi, 4,1 s sau duoc).
 ///   C. HINH (tung khung): goc lat tang deu 0 -> 360 (do tu XUONG DAU so voi hong, khong doc bien cua NhaoLon), buoc goc lon nhat moi khung
 ///      (mem = khong nhay), giua vong dau thap hon hong; CHAM DAT do bang BakeMesh: dinh thap nhat cach dat trong [-0,06; 0,22] m khi dang
@@ -82,11 +82,11 @@ public static class ThuNhaoLon
                 c.y = GioLoc.MatDatY(c, c.y);
                 bool trong = true;
                 foreach (float cao in new[] { 0.6f, 1.2f })
-                    if (Physics.SphereCast(c + Vector3.up * cao - h * 0.6f, 0.45f, h, out _, 8f, mask, QueryTriggerInteraction.Ignore)) { trong = false; break; }
+                    if (Physics.SphereCast(c + Vector3.up * cao - h * 0.6f, 0.45f, h, out _, NhaoLon.Tam + 3f, mask, QueryTriggerInteraction.Ignore)) { trong = false; break; }
                 if (!trong) continue;
                 float d0 = c.y;
                 bool phang = true;
-                for (float s = 1f; s <= 7.5f; s += 1f)
+                for (float s = 1f; s <= NhaoLon.Tam + 2.5f; s += 1f)
                 {
                     var q = c + h * s;
                     if (Mathf.Abs(GioLoc.MatDatY(q, q.y) - d0) > 0.6f) { phang = false; break; }
@@ -169,7 +169,7 @@ public static class ThuNhaoLon
         Vector3 cho, huong;
         if (!TimDuongTrong(dir.player.position, out cho, out huong)) { Ghi("[LOI] khong tim duoc duong trong"); loi++; Ket(); yield break; }
         float[] kq = new float[2];
-        float[] ngams = { 5f, 2f, 9f, 0.3f }, mong = { 5f, 2f, 5f, NhaoLon.QuangToiThieu };
+        float[] ngams = { NhaoLon.Tam, 2f, NhaoLon.Tam + 4f, 0.3f }, mong = { NhaoLon.Tam, 2f, NhaoLon.Tam, NhaoLon.QuangToiThieu };
         for (int i = 0; i < ngams.Length; i++)
         {
             DatCho(pc.transform, cho);
@@ -206,8 +206,8 @@ public static class ThuNhaoLon
         if (cam != null)
         {
             Vector3 benPhai = Vector3.Cross(Vector3.up, huong).normalized;
-            Vector3 giuaDuong = cho + huong * 2.5f + Vector3.up * 0.9f;
-            cam.transform.position = giuaDuong - benPhai * 7.5f + Vector3.up * 1.2f;
+            Vector3 giuaDuong = cho + huong * (NhaoLon.Tam * 0.5f) + Vector3.up * 0.9f;
+            cam.transform.position = giuaDuong - benPhai * 9.5f + Vector3.up * 1.4f;
             cam.transform.LookAt(giuaDuong);
         }
         while (pc.HoiChieuGiay(CapDo.KyNhaoLon) > 0f) yield return null;
@@ -222,7 +222,7 @@ public static class ThuNhaoLon
 
         // Dong ho game CO DINH 60 khung / giay: Editor cham (~15 khung/giay) thi ca vong lan chi lay duoc 9 mau, khong do duoc do muot
         Time.captureDeltaTime = 1f / 60f;
-        pc.CastAt(CapDo.KyNhaoLon, cho + huong * 5f);
+        pc.CastAt(CapDo.KyNhaoLon, cho + huong * NhaoLon.Tam);
         var goc = new List<float>(); var khe = new List<float>(); int dauDuoiHong = 0, soKhung = 0, soAnh = 0;
         float gocTruoc = 0f, gocCong = 0f, buocLonNhat = 0f;
         Vector3 phai = Vector3.Cross(Vector3.up, huong).normalized;
@@ -249,7 +249,7 @@ public static class ThuNhaoLon
         while (pc.HoiChieuGiay(CapDo.KyNhaoLon) > 0f) yield return null;
         DatCho(pc.transform, cho);
         yield return new WaitForSeconds(0.3f);
-        pc.CastAt(CapDo.KyNhaoLon, cho + huong * 5f);
+        pc.CastAt(CapDo.KyNhaoLon, cho + huong * NhaoLon.Tam);
         float hanAnh = Time.time + 3f;
         while (pc.GetComponent<NhaoLon>() == null && Time.time < hanAnh) yield return null;
         var nlAnh = pc.GetComponent<NhaoLon>();
@@ -282,7 +282,7 @@ public static class ThuNhaoLon
             yield return new WaitForSeconds(0.3f);
             var tong = new float[25]; var dem = new int[25];
             Time.captureDeltaTime = 1f / 400f;            // lay mau day: ~240 khung trong mot vong lan
-            pc.CastAt(CapDo.KyNhaoLon, cho + huong * 5f);
+            pc.CastAt(CapDo.KyNhaoLon, cho + huong * NhaoLon.Tam);
             float hanK = Time.time + 3f;
             while (pc.GetComponent<NhaoLon>() == null && Time.time < hanK) yield return null;
             var nk = pc.GetComponent<NhaoLon>();
@@ -313,7 +313,7 @@ public static class ThuNhaoLon
         hop.transform.position = cho + huong * 2.5f + Vector3.up * 1.0f;
         hop.transform.rotation = Quaternion.LookRotation(huong);
         Physics.SyncTransforms();
-        yield return LanMotLan(pc, cho + huong * 5f, kq);
+        yield return LanMotLan(pc, cho + huong * NhaoLon.Tam, kq);
         float denMat = 2.5f - 0.3f;
         Ghi(string.Format("D. hop chan o {0:F1} m (mat truoc {1:F1} m): lan duoc {2:F2} m", 2.5f, denMat, kq[0]));
         Kiem(kq[0] < denMat + 0.05f && kq[0] > 1.0f, "nhao lon xuyen qua vat can / khong lan");
@@ -325,7 +325,7 @@ public static class ThuNhaoLon
         DatCho(pc.transform, cho);
         CapDo.MoCaDuongChoPhepThu(0);
         yield return new WaitForSeconds(0.2f);
-        pc.CastAt(CapDo.KyNhaoLon, cho + huong * 5f);
+        pc.CastAt(CapDo.KyNhaoLon, cho + huong * NhaoLon.Tam);
         han = Time.time + 1f;
         while (!NhaoLon.Dang(pc.gameObject) && Time.time < han) yield return null;
         pc.mana = 100f;
@@ -349,7 +349,7 @@ public static class ThuNhaoLon
         StunnedEffect.Apply(toi, 1.0f);
         yield return null;
         Vector3 pChoang = pc.transform.position;
-        pc.CastAt(CapDo.KyNhaoLon, pChoang + huong * 5f);
+        pc.CastAt(CapDo.KyNhaoLon, pChoang + huong * NhaoLon.Tam);
         yield return new WaitForSeconds(0.5f);
         Ghi(string.Format("E2. bi choang: \"{0}\", di {1:F2} m", pc.LastMessage, Ngang(pChoang, pc.transform.position)));
         Kiem(pc.LastMessage == "BẠN ĐANG BỊ CHOÁNG!" && Ngang(pChoang, pc.transform.position) < 0.05f, "bi choang van nhao lon");
