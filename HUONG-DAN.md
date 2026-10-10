@@ -13921,6 +13921,40 @@ cạnh, dải đo dày cố định 9 s — ô nhỏ lại thì dải ấy ăn v
 CHÍNH ô ấy lúc không chọn (×3,70 cảm ứng / ×6,64 máy tính) và kiểm ô cũ tắt sáng (×1,77 / ×2,47). Mục F của menu 59 tự đặt cuộn cột trái về 0
 (một lần chạy cột đang cuộn sẵn 2 hàng — chuột thật trên Game view). Menu 22, 59, 66, 85, 118: 0 lỗi. Ảnh `PlayTestShots/o8_*.png`.
 
+## Nhạc nền + tab "Âm thanh" (10/10/2026)
+
+**Người dùng:** tích hợp hai bản nhạc nền (làm ở phiên "Âm nhạc và âm thanh game") vào game; trong CÀI ĐẶT thêm tab "Âm thanh" cạnh "Giao diện"
+với thanh chỉnh âm lượng nhạc; nhạc phát liền từ màn đăng nhập sang sảnh; vào trận thì nhạc nhỏ dần; trên web nhạc chỉ bắt đầu sau cú chạm
+đầu tiên. Chọn thêm: vào trận nhạc sảnh nhỏ dần rồi chuyển sang nhạc Act2; mặc định 60%; trong trận nhạc bằng 70% mức đã chỉnh.
+
+**Làm:** `NhacNen` — một vật thể sống qua các màn, hai nguồn phát 2D (giữ nguyên stereo). Sảnh (MainMenu) phát nhạc sảnh; vào Act2 nhạc sảnh
+nhỏ dần trong 2 giây — bắt đầu ngay lúc rời sảnh vì `LoadScene` đồng bộ làm đứng vòng lặp trong lúc nạp màn — rồi dừng và thả clip khỏi bộ
+nhớ, nhạc Act2 to dần trong 3 giây. `CaiDatAmThanh` lưu âm lượng vào localStorage như cài đặt đồ hoạ. Tab "Âm thanh": thanh kéo đỏ máu với
+nút hình thoi (vùng bấm cao bằng cả hàng cho ngón tay), kéo là nghe thử ngay, HỦY trả về mức cũ, OK lưu mà không tải lại game.
+
+**Hai cái bẫy đã vấp (Unity 6.5):** (1) lần chạy đầu nhạc không phát lúc mở game — `AudioSource` vừa tạo báo `isPlaying = true` dù chưa có
+clip, nên code tưởng nhạc sảnh "đang kêu" và không phát (nhật ký tạm: lần phát đầu tiên đến từ đường tự phục hồi, không từ đường chọn nhạc);
+(2) `sceneLoaded` không bắn cho scene đầu tiên khi vào Play trong Editor — nay `Update` tự nhận ra scene đang mở đổi. Có thêm đường tự phục
+hồi (mỗi giây, sau 2 giây chờ nạp nền) nhưng phép thử đòi nó **0 lần** — nhạc phải đúng ngay từ đầu.
+
+**Số đo — menu 121 (0 lỗi):**
+
+| Mục | Kết quả |
+|---|---|
+| File | trùng từng byte bản gốc; 2 kênh, 44,1 kHz, 128 / 192 s, không ép mono; `.data` +4,9 MB |
+| Mở game | 1 vật thể, nhạc sảnh 0,600 (mặc định 60%), mặc định không ghi xuống kho |
+| Tiếng thật ở loa | RMS trái 0,050 / phải 0,033, tương quan hai kênh 0,43 (mono = 1,00) |
+| Đăng nhập → sảnh | nhạc chạy liền (giây 3,3 → 5,6), không phát lại |
+| Thanh kéo | sự kiện chuột giả: 25% / 80% / quá phải 1,0 / bấm ngoài không đổi; ảnh: tâm nút 0,597 / 0,296 (mong 0,60 / 0,30) |
+| Kéo 30% | tiếng thật ×0,48 so với 60% (mong 0,50), kho chưa ghi |
+| HỦY · OK 45% | về 0,600, không ghi · kho 45, đọc lại 45, không tải lại game |
+| Vào trận | sảnh 0,447 ngay sau khi rời → 0 (không lúc nào to lên), dừng + thả clip; Act2 0 → 0,315 (= 0,45 × 0,7); vẫn 1 vật thể |
+| Về sảnh | nhạc sảnh phát lại từ giây 0,00 tới 0,450; Act2 dừng + thả clip |
+
+**Web (bản build chạy trên máy chủ cục bộ, chưa deploy):** nhạc giải mã 2 kênh 128 s, phát đúng một nguồn lặp. Trình duyệt trong ứng dụng không
+chặn tự phát nên giả lập: tạm dừng AudioContext → đồng hồ âm thanh đứng (40,54 → 40,54); một cú bấm thật → Unity tự mở lại (→ 42,65), vẫn một
+nguồn. Menu 48: 0 lỗi. Ảnh `PlayTestShots/nhacnen_1_tab_amthanh.png`, `nhacnen_2_keo_30.png`.
+
 ## Phần 4 — Menu công cụ "Diablo 2.5D"
 
 | Mục | Tác dụng |

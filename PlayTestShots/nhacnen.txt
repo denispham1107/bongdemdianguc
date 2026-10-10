@@ -1,0 +1,22 @@
+[ban 1] nhac nen + tab Am thanh
+A. NhacSanh.wav: trung ban goc True; 2 kenh, 44100 Hz, 128.00 s; ForceToMono False; nap CompressedInMemory, nen Vorbis chat luong 0.50, nen trong nen True; WebGL nap CompressedInMemory
+A. NhacTranAct2.wav: trung ban goc True; 2 kenh, 44100 Hz, 192.00 s; ForceToMono False; nap CompressedInMemory, nen Vorbis chat luong 0.50, nen trong nen True; WebGL nap CompressedInMemory
+
+B1. man dang nhap: 1 vat the NhacNen; nhac sanh NhacSanh keu True, am luong 0.600 (mac dinh 60% -> 0,600); nhac tran keu False; kho co khoa am luong False
+    so lan nhac phai tu phuc hoi: 0 (phai 0 - phat dung ngay tu dau, khong nho phuc hoi) 
+B2. tieng that o loa (40 khung): RMS trai 0.0499 phai 0.0326, tuong quan hai kenh 0.433 (mono = 1,000)
+B3. dang nhap -> sanh: nhac sanh tu giay 3.29 toi 5.61 (chay lien, khong ve 0), keu True, am luong 0.600
+C1. anh nhacnen_1_tab_amthanh: ray 729-955 (diem anh), tam nut thoi o 0.597 chieu dai ray (mong 0.60), 55 diem do sam (phan da keo), 10 diem vien nut
+C2. thanh keo (su kien gia): bam 25% -> 0.250, keo 80% -> 0.800, keo qua phai -> 1.000, bam ngoai o (dang 0,700) -> 0.700, giu / tha nhan True/True
+C3. keo ve 30%: nguon 0.300; tieng that 30% / 60% = x0.48 (mong x0,50); kho chua ghi True
+C1. anh nhacnen_2_keo_30: ray 729-955 (diem anh), tam nut thoi o 0.296 chieu dai ray (mong 0.30), 52 diem do sam (phan da keo), 10 diem vien nut
+C4. HUY: bang dong True, am luong ve 0.600, kho co khoa False
+C5. 45% + OK: bang dong True, kho ghi 45, doc lai 45, am luong 0.450, khong tai lai game (sanh con True)
+D1. vao tran: goi roi sanh -> am luong sanh 0.447 (khung sau); nap Act2 xong luc 1.73 s; nhac sanh tat han luc 3.67 s, tha clip True, co luc to len False
+D2. nhac Act2: clip NhacTranAct2, keu True, am luong cuoi 0.315 (mong 0,45 x 0,7 = 0.315), co luc nho di False; 1 vat the NhacNen
+    mau (giay: sanh / tran): 1.7: 0.42 / 0.01  2.2: 0.31 / 0.06  2.8: 0.20 / 0.12  3.3: 0.08 / 0.17  3.8: 0.00 / 0.22  4.3: 0.00 / 0.28  4.8: 0.00 / 0.32  5.3: 0.00 / 0.32  
+D3. tieng that trong tran: RMS trai 0.0270 phai 0.0274, tuong quan 0.599
+E. ve sanh: nap xong 0.63 s; nhac sanh phat lai tu giay 0.00, keu True, am luong 0.450 (mong 0,450); nhac Act2 tat luc 2.52 s, tha clip True
+    so lan tu phuc hoi ca phep thu: 0
+
+so loi ghi nhan = 0

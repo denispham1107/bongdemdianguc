@@ -671,6 +671,59 @@ public static class GiaoDien
         return bam;
     }
 
+    /// <summary>
+    /// THANH KEO 0-1 (10/10/2026, tab "Âm thanh" cua CAI DAT): ray do mau + nut hinh thoi. Vung bam = CA o r (cao bang hang, de
+    /// ngon tay trung), bam vao dau tren ray la nhay toi do roi keo tiep. Tra gia tri moi. Chuot / cham (WebGL doi cham dau tien
+    /// thanh su kien chuot cua IMGUI) giu thanh bang hotControl nen keo ra ngoai o van theo.
+    /// </summary>
+    public static float ThanhKeo(Rect r, float giaTri, float s)
+    {
+        int id = GUIUtility.GetControlID(FocusType.Passive);
+        var e = Event.current;
+        float le = Mathf.Max(10f, 18f * s);                 // chua cho nut thoi o hai dau
+        float trai = r.x + le, rongRay = Mathf.Max(1f, r.width - 2f * le);
+        switch (e.GetTypeForControl(id))
+        {
+            case EventType.MouseDown:
+                if (GUI.enabled && r.Contains(e.mousePosition))
+                {
+                    GUIUtility.hotControl = id;
+                    giaTri = Mathf.Clamp01((e.mousePosition.x - trai) / rongRay);
+                    GUI.changed = true;
+                    e.Use();
+                }
+                break;
+            case EventType.MouseDrag:
+                if (GUIUtility.hotControl == id)
+                {
+                    giaTri = Mathf.Clamp01((e.mousePosition.x - trai) / rongRay);
+                    GUI.changed = true;
+                    e.Use();
+                }
+                break;
+            case EventType.MouseUp:
+                if (GUIUtility.hotControl == id) { GUIUtility.hotControl = 0; e.Use(); }
+                break;
+            case EventType.Repaint:
+                float day = Mathf.Max(4f, 8f * s);
+                var ray = new Rect(trai, r.center.y - day * 0.5f, rongRay, day);
+                To(ray, new Color(0.10f, 0.05f, 0.045f, 0.95f));
+                To(new Rect(ray.x, ray.y, ray.width * giaTri, ray.height), MauMau);
+                DuongKe(ray, new Color(0.45f, 0.26f, 0.22f, 0.9f));
+                // Nut hinh thoi (o vuong xoay 45 do): quang mo + vien sang + long do sam
+                float cx = trai + rongRay * giaTri, cy = r.center.y;
+                float k = Mathf.Max(8f, 15f * s);
+                var cu = GUI.matrix;
+                GUIUtility.RotateAroundPivot(45f, new Vector2(cx, cy));
+                To(new Rect(cx - k * 1.45f, cy - k * 1.45f, k * 2.9f, k * 2.9f), new Color(0.95f, 0.18f, 0.11f, 0.18f));
+                To(new Rect(cx - k, cy - k, 2f * k, 2f * k), MauMauSang);
+                To(new Rect(cx - k * 0.62f, cy - k * 0.62f, k * 1.24f, k * 1.24f), new Color(0.38f, 0.03f, 0.02f, 1f));
+                GUI.matrix = cu;
+                break;
+        }
+        return giaTri;
+    }
+
     /// <summary>O nhap chu, co dong goi y mo khi trong va chua bam vao.</summary>
     public static string ONhap(Rect r, string ten, string giaTri, int toiDa, string goiY, bool matKhau = false)
     {

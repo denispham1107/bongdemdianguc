@@ -131,7 +131,10 @@ public class MainMenuUI : MonoBehaviour
     void Play(string sceneName)
     {
         if (Application.CanStreamedLevelBeLoaded(sceneName))
+        {
+            NhacNen.BatDauRoiSanh();
             SceneManager.LoadScene(sceneName);
+        }
         else
             Debug.LogWarning("[MainMenu] Chua co scene ten: " + sceneName);
     }
