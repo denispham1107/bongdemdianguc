@@ -23,7 +23,7 @@ public partial class GameHUD
     public static GameHUD Ban { get; private set; }
 
     void OnEnable() { Ban = this; }
-    void OnDisable() { if (Ban == this) Ban = null; }
+    void OnDisable() { if (Ban == this) Ban = null; DongHoiThoat(); }
 
     // ================================================================
     //  KICH THUOC (don vi o man hinh cao 1080)

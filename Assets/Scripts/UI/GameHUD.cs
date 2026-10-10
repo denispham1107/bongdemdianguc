@@ -111,10 +111,11 @@ public partial class GameHUD : MonoBehaviour
         // Dang mo sach thi TRAN DAU KHONG DUOC NHAN INPUT NUA: khong doc can,
         // khong doc nut ky nang, khong xoay camera - nguoi choi dang keo tha
         // trong bang, moi ngon tay cua ho la cua cai bang ay.
-        if (Input.GetKeyDown(KeyCode.P)) CuaSoSachPhep.DaoTrangThai();
-        if (CuaSoSachPhep.DangMo && Input.GetKeyDown(KeyCode.Escape)) CuaSoSachPhep.Dong();
+        // Bang THOAT TRAN dang mo cung khoa input y nhu vay (GameHUDThoatTran.cs). ESC: xem XuLyEsc.
+        if (Input.GetKeyDown(KeyCode.P) && !DangHoiThoat) CuaSoSachPhep.DaoTrangThai();
+        XuLyEsc();
 
-        if (CuaSoSachPhep.DangMo)
+        if (KhoaInputTran)
         {
             CamUng.Huong = Vector2.zero;
             CamUng.DangKeo = false;
@@ -123,7 +124,7 @@ public partial class GameHUD : MonoBehaviour
             ngonJoy = -1;
             ngonNut.Clear();
             HuyNgam();
-            CuaSoSachPhep.CapNhat(Screen.height / Ref);
+            if (CuaSoSachPhep.DangMo) CuaSoSachPhep.CapNhat(Screen.height / Ref);
             CapNhatChiBao();
             return;
         }
@@ -204,6 +205,7 @@ public partial class GameHUD : MonoBehaviour
         anhDauCong = Resources.Load<Texture2D>("GiaoDien/DauCong");
         anhMatQuy = Resources.Load<Texture2D>("GiaoDien/MatQuy");
         anhMatQuyKhoa = Resources.Load<Texture2D>("GiaoDien/MatQuyKhoa");
+        anhThoatTran = Resources.Load<Texture2D>("GiaoDien/ThoatTran");
 
         // VANH mong, khong phai dia. vongNen o tren long trong chi 0,10 - gan
         // nhu dac - nen to mau len no la phu mot lop kem len KIN mat nut, lam
@@ -252,13 +254,17 @@ public partial class GameHUD : MonoBehaviour
 
         // PC giu nguyen thanh ky nang vuong o day man hinh; may cam ung thi doi
         // sang cum nut tron o goc phai duoi cho vua tam ngon cai.
-        if (CamUng.DangDung) { VeNutKyNangTron(s); VeNutKhoaCam(s); VeNutSachPhep(s); }
-        else { DrawSkillBar(s); VeNutSachPhep(s); }
+        // Bang thoat tran mo: HUD ve TREN moi script OnGUI khac (ten tren dau, so sat thuong...) va nhan bam truoc
+        GUI.depth = DangHoiThoat ? -50 : 0;
+        // Cot goc phai tren: THOAT TRAN o dung goc, con mat + Sach phep don xuong (10/10/2026)
+        if (CamUng.DangDung) { VeNutKyNangTron(s); VeNutThoat(s); VeNutKhoaCam(s); VeNutSachPhep(s); }
+        else { DrawSkillBar(s); VeNutThoat(s); VeNutSachPhep(s); }
 
         // Bang mau/mana, khung dot quai, moi dong thong bao - mot bo cuc chung,
         // khong khung nao de len khung nao (GameHUDKinhDi.cs)
         VeHUDKinhDi(s);
         DrawMessages(s);
+        VeHoiThoat(s);          // bang xac nhan thoat tran - ve CUOI, nam tren moi thu cua HUD
 
         // Sach phep ve SAU CUNG: no phu kin tran dau, khong duoc de thanh mau
         // hay dong thong bao noi len tren no.
@@ -379,6 +385,11 @@ public partial class GameHUD : MonoBehaviour
                 ngonJoy = t.fingerId;
                 continue;
             }
+            if (BamNutThoat(t.position, s))
+            {
+                ngonNut.Add(t.fingerId);
+                continue;
+            }
             if (BamNutKhoaCam(t.position, s))
             {
                 ngonNut.Add(t.fingerId);
@@ -450,6 +461,10 @@ public partial class GameHUD : MonoBehaviour
                 Vector2 pos = Input.mousePosition;
                 if (ngonJoy == -1 && Vector2.Distance(pos, tam) <= bk * 1.35f)
                     ngonJoy = -2;
+                else if (BamNutThoat(pos, s))
+                {
+                    // da mo bang xac nhan thoat tran
+                }
                 else if (BamNutKhoaCam(pos, s))
                 {
                     // da bat/tat khoa ngay luc bam, khong phai lam gi them
@@ -771,10 +786,10 @@ public partial class GameHUD : MonoBehaviour
 
     float BanKinhNutKhoaCam(float s) { return 40f * s; }
 
-    Vector2 TamNutKhoaCam(float s)
+    public Vector2 TamNutKhoaCam(float s)
     {
-        // Toa do dem tu DUOI len, giong Input.mousePosition
-        return new Vector2(Screen.width - 62f * s, Screen.height - 62f * s);
+        // Toa do dem tu DUOI len, giong Input.mousePosition. 10/10/2026: don xuong mot nac nhuong goc cho nut THOAT TRAN.
+        return new Vector2(Screen.width - 62f * s, Screen.height - (62f + KhoangCotGoc) * s);
     }
 
     /// <summary>
@@ -913,7 +928,7 @@ public partial class GameHUD : MonoBehaviour
             Vector2 t = TamNutKhoaCam(s);
             return new Vector2(t.x, t.y - 88f * s);
         }
-        return new Vector2(Screen.width - 62f * s, Screen.height - 62f * s);
+        return TamNutSachPhepMayTinh(s);       // ban may tinh: ngay duoi nut thoat tran
     }
 
     bool BamNutSachPhep(Vector2 diem, float s)
@@ -967,7 +982,7 @@ public partial class GameHUD : MonoBehaviour
         // Dang mo thi KHONG bat cu bam nua: nut nay ve TRUOC cua so, ma IMGUI
         // cho cai ve truoc gianh su kien - bam vao bang (ngay cho nut nay nam
         // duoi) se dong sach phep giua chung.
-        if (!CamUng.DangDung && !CuaSoSachPhep.DangMo
+        if (!CamUng.DangDung && !KhoaInputTran
             && GUI.Button(new Rect(gx - r, gy - r, r * 2f, r * 2f), GUIContent.none, GUIStyle.none))
             CuaSoSachPhep.Mo();
     }
@@ -1317,7 +1332,7 @@ public partial class GameHUD : MonoBehaviour
 
     bool CoTheBamDauCong()
     {
-        if (CuaSoSachPhep.DangMo || KetTran.DaXong) return false;
+        if (KhoaInputTran || KetTran.DaXong) return false;
         if (director != null && director.PlayerDead) return false;
         return CapDo.DiemKyNang > 0;
     }
@@ -1555,7 +1570,7 @@ public partial class GameHUD : MonoBehaviour
         // Dang mo Sach phep thi khong: thanh nay van ve (nam duoi bang) nhung
         // IMGUI cho no gianh su kien truoc, nen moi cu keo tha trong bang di
         // ngang qua day la mot phat ban ra.
-        if (player != null && !CuaSoSachPhep.DangMo
+        if (player != null && !KhoaInputTran
             && GUI.Button(r, GUIContent.none, GUIStyle.none))
             player.CastForward(skill);
     }
@@ -1707,7 +1722,7 @@ public partial class GameHUD : MonoBehaviour
                 "PHÍM 1: Quả cầu lửa   2: Mưa băng   3: Sấm sét   4: Lốc xoáy (cuốn quái lên trời)",
                 "Hàng số bị kẹt (bộ gõ tiếng Việt) thì dùng Z X V B thay cho 1 2 3 4",
                 "PHÍM C: đổi góc nhìn 3D / 2.5D / 2D      Q,E: xoay      Con lăn chuột: phóng to",
-                "WASD: di chuyển trực tiếp     R: chơi lại     ESC: về màn hình chính",
+                "WASD: di chuyển trực tiếp     R: chơi lại     ESC: thoát trận",
             };
 
             float w = 900f * s, lh = 30f * s;

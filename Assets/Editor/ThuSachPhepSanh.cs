@@ -505,7 +505,8 @@ console.log(out.join('|'));
             yield return new WaitForSecondsRealtime(0.6f);
             float sh = Screen.height / 1080f;
             float r = 40f * sh;
-            var tamNut = new Vector2(Screen.width - 62f * sh, 62f * sh);     // toa do GUI (y tu tren)
+            var tamCham = hud.TamNutKhoaCam(sh);                             // 10/10/2026: con mat don xuong duoi nut thoat tran
+            var tamNut = new Vector2(tamCham.x, Screen.height - tamCham.y);   // toa do GUI (y tu tren)
             Texture2D texMo = null, texDong = null;
             yield return ChupTex(t => texMo = t);
             CamUng.KhoaCam = true;

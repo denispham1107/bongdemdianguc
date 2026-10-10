@@ -591,7 +591,7 @@ public class GameDirector : MonoBehaviour
         {
             if (DuocChoiLai && Input.GetKeyDown(KeyCode.R))
                 SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-            if (Input.GetKeyDown(KeyCode.Escape)) BackToMenu();
+            if (Input.GetKeyDown(KeyCode.Escape) && GameHUD.Ban == null) BackToMenu();   // co HUD: HUD xu ly ESC (XuLyEsc)
             return;
         }
 
@@ -616,7 +616,8 @@ public class GameDirector : MonoBehaviour
 
         if (DuocChoiLai && Input.GetKeyDown(KeyCode.R))
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-        if (Input.GetKeyDown(KeyCode.Escape)) BackToMenu();
+        // Co HUD thi ESC HOI XAC NHAN thoat tran (GameHUD.XuLyEsc, nguoi dung 10/10/2026) - khong ve sanh ngay nua
+        if (Input.GetKeyDown(KeyCode.Escape) && GameHUD.Ban == null) BackToMenu();
     }
 
     /// <summary>

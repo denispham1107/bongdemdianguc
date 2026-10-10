@@ -80,7 +80,7 @@ public class DocInput : MonoBehaviour
         // Khong chan o day thi moi cu cham de keo tha trong bang deu bi hieu
         // thanh "bam chuot trai xuong san" - nhan vat chay di trong khi nguoi
         // choi dang sap xep ky nang, va bam phim 1..7 van ban ra phep.
-        if (CuaSoSachPhep.DangMo) return g;
+        if (GameHUD.KhoaInputTran) return g;      // Sach phep HOAC bang xac nhan thoat tran
 
         g.laCamUng = CamUng.DangDung;
         g.coBamPhim = Input.anyKeyDown;
@@ -153,10 +153,8 @@ public class DocInput : MonoBehaviour
         // Dau "+" nang cap nho len tren canh o ky nang - bam vao do khong duoc keo nhan vat chay di
         if (GameHUD.ConTroTrenDauCongVuong(Input.mousePosition)) return true;
 
-        // Nut SACH PHEP o goc phai tren: bam vao no ma khong chan o day thi
-        // nhan vat vua mo sach vua chay ve phia goc man hinh.
-        float s = Screen.height / 1080f;
-        var tam = new Vector2(Screen.width - 62f * s, Screen.height - 62f * s);
-        return Vector2.Distance(Input.mousePosition, tam) <= 46f * s;
+        // Nut THOAT TRAN + SACH PHEP o cot goc phai tren: bam vao ma khong chan o day thi
+        // nhan vat vua mo bang vua chay ve phia goc man hinh.
+        return GameHUD.ConTroTrenNutGoc(Input.mousePosition);
     }
 }

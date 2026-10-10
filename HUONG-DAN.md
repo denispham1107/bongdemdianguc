@@ -13816,6 +13816,32 @@ lại người dùng.
 từ chối ("BẠN ĐANG BỊ LỐC XOÁY CUỐN!"), mana 180 giữ nguyên, không thoát được lốc; bình máu 1 → 0, máu 1000 → 1200; đối chứng thoát lốc → tung lại
 được (3 quả). Mục A sửa theo luật 09/10 (Lốc xoáy 18 m, Thiên thạch 23 m).
 
+## Nút thoát trận + bảng xác nhận (10/10/2026)
+
+**Người dùng:** dời nút con mắt và Sách phép xuống để có chỗ cho nút mới hình cánh cửa + mũi tên chỉ ra ngoài; bấm vào là rời trận về sảnh, trước
+khi thoát có thông báo xác nhận; icon phải thật chi tiết, hợp phong cách kinh dị. Người dùng chọn thêm: bản máy tính cũng có nút và ESC cũng hỏi
+xác nhận; chủ phòng có cảnh báo riêng; icon "cửa hầm mộ hé mở + mũi tên máu".
+
+**Trước đây:** bản máy tính bấm ESC là về sảnh **ngay**, không hỏi; bản điện thoại không có đường thoát nào khi đang sống (nút TRỞ VỀ chỉ hiện khi
+đã chết / hết trận / chủ phòng rời).
+
+**Icon** (Blender MCP, `CongCu/Blender/nut_thoat_tran.blend`, scene `NutThoat`, Cycles, máy quay trực giao chếch phải): 9 viên đá vòm + đá xếp
+hai trụ (vật liệu đá có vết nứt Voronoi, rêu, vết máu khô, sứt mẻ bằng displace), cánh cửa 5 tấm ván gỗ mục + 2 đai sắt gỉ 16 đinh tán + vòng gõ
+cửa, hé mở 38° ra phía người xem; trong hầm: bậc thang đi xuống, ánh đỏ từ dưới sâu, **đôi mắt vàng** trong bóng tối; sương tràn qua bậc cửa (khối
+volume); **mũi tên máu** bóng ướt có viền đen (đọc được trên nút nhỏ) và bốn giọt máu chảy. Phần trong hầm bị một tấm **holdout** có lỗ hình vòm che
+lại — không có nó tường / bậc thang lòi ra ngoài khung. Ảnh 256 × 256 nền trong suốt → `Resources/GiaoDien/ThoatTran.png`.
+
+**Code** (`UI/GameHUDThoatTran.cs`): cột góc phải trên — THOÁT TRẬN ở đúng góc (cách mép 62 đơn vị), con mắt và Sách phép dời xuống, mỗi nút cách
+nhau 88 đơn vị. Bảng xác nhận vẽ CUỐI `OnGUI` của HUD (`GUI.depth` −50 khi mở để nằm trên tên trên đầu / số sát thương); khi mở thì khoá input trận
+y như Sách phép (`GameHUD.KhoaInputTran`). Không có "bấm ra ngoài bảng = ở lại": trên WebGL cú chạm mở bảng còn sinh thêm sự kiện chuột ở góc màn
+ngay khung ấy — bảng vừa mở đã tự đóng. Đồng ý → `GameDirector.BackToMenu()` (chơi mạng thì đóng kênh trước để máy kia biết ngay).
+
+**Số đo — menu 118 (0 lỗi):** cột nút (màn thử 1619 × 580) thoát (1586, 547) · mắt (1586, 499) · sách (1586, 452), cách nhau 47,3 > 2r 43,0; bản
+máy tính sách ngay dưới nút thoát; chuột trên hai nút thì nhân vật không chạy về góc. Ảnh thật: vòng nút thoát có 8,6% điểm đỏ-cam (lòng hầm + mũi
+tên), vòng đối chứng cùng hàng 0. Bảng mở: nền tối ×0,38, vùng tiêu đề 9 → 1 385 điểm đỏ, cần điều khiển đang đẩy mà hướng đi 0,00 (đối chứng bảng
+đóng 1,00), Sách phép đang mở tự đóng, 0 chữ bị cắt; Ở LẠI → input chạy lại (1,00); THOÁT TRẬN → scene MainMenu. Menu 59, 66: 0 lỗi. Ảnh
+`PlayTestShots/thoattran_*.png`. Cảnh báo chủ phòng chỉ hiện khi đang chơi mạng còn người khác — chưa thử hai máy thật.
+
 ## Phần 4 — Menu công cụ "Diablo 2.5D"
 
 | Mục | Tác dụng |
