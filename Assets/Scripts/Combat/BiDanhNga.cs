@@ -203,6 +203,7 @@ public class BiDanhNga : MonoBehaviour
             // 2,7 m: CAO HON cho so sat thuong hien ra (2,1 m) - dat thap hon thi
             // ca chuc con so bay len de kin chu NGA.
             Vector3 w = n.transform.position + Vector3.up * 2.7f;
+            if (!TamNhin.ThayDuoc(w)) continue;               // ngoai tam nhin 25 m (suong chien tranh)
             Vector3 man = cam.WorldToScreenPoint(w);
             if (man.z <= 0f) continue;
 

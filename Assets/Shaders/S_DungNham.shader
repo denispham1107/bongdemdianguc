@@ -44,6 +44,7 @@ Shader "Diablo25D/DungNham"
             #pragma multi_compile_fog
             #pragma target 3.0
             #include "UnityCG.cginc"
+            #include "SuongChienTranh.cginc"
             sampler2D _MainTex, _HuongGan;
             float _TiLe, _Sang, _SuongMu, _TocChay, _QuangChuKy, _DoChay, _AnhVien, _UonGan, _TocUon;
             fixed4 _MauVien;
@@ -130,6 +131,7 @@ Shader "Diablo25D/DungNham"
                 fixed4 goc = col;
                 UNITY_APPLY_FOG(i.fogCoord, col);
                 col.rgb = lerp(goc.rgb, col.rgb, _SuongMu);
+                TN_Ap(col.rgb, i.w);       // suong chien tranh (TamNhin.cs)
                 return col;
             }
             ENDCG

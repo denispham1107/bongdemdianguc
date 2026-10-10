@@ -82,8 +82,10 @@ Shader "Diablo25D/NuocDam"
         LOD 200
 
         CGPROGRAM
-        #pragma surface surf Standard alpha:fade vertex:vert
+        #pragma surface surf Standard alpha:fade vertex:vert finalcolor:tnFinal
         #pragma target 3.0
+        #pragma multi_compile_fog       // finalcolor tat code suong tu sinh -> TN_SuongUnity can keyword FOG_*
+        #include "SuongChienTranh.cginc"
 
         fixed4 _Color;
         fixed4 _ColorSau;
@@ -236,6 +238,17 @@ Shader "Diablo25D/NuocDam"
             // Cho nong thi lo day bun ra, cho sau thi duc han.
             // Bot va vien mep deu dac hon cho ra khoi nuoc.
             o.Alpha = saturate(lerp(0.30, 0.94, sau) + vien * 0.25 + bot * 0.55) * coNuoc;
+        }
+        // Suong chien tranh (TamNhin.cs, 10/10/2026)
+        void tnFinal(Input IN, SurfaceOutputStandard o, inout fixed4 color)
+        {
+            #ifdef UNITY_PASS_FORWARDADD
+                TN_SuongUnity(color.rgb, IN.worldPos, true);
+                TN_ApCong(color.rgb, IN.worldPos);
+            #else
+                TN_SuongUnity(color.rgb, IN.worldPos, false);
+                TN_Ap(color.rgb, IN.worldPos);
+            #endif
         }
         ENDCG
     }

@@ -93,6 +93,7 @@ public class DamagePopup : MonoBehaviour
             if (p == null || string.IsNullOrEmpty(p.chu)) continue;
 
             Vector3 w = p.transform.position;
+            if (!TamNhin.ThayDuoc(w)) continue;               // ngoai tam nhin 25 m (suong chien tranh)
             Vector3 man = cam.WorldToScreenPoint(w);
             if (man.z <= 0f) continue;                        // sau lung camera
 

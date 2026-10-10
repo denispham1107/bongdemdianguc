@@ -13755,6 +13755,49 @@ cùng dự án. Trang quản trị đăng nhập bằng email / mật khẩu nê
 firebase hosting:clone <tên>@<mã bản> <tên>:live
 ```
 
+## Tầm nhìn 25 m + sương chiến tranh kiểu StarCraft 2 (10/10/2026)
+
+**Người dùng:** "người chơi kéo camera thật xa nhìn được từ đầu map đến cuối map — chỉnh tầm nhìn chỉ trong 25 m, vượt quá có sương mù bao phủ
+như StarCraft 2; máy BOT cũng vậy". Chọn: kiểu SC2 (cảnh vật ngoài tầm vẫn thấy nhưng tối mờ, không thấy quái / người / BOT / hiệu ứng); chế độ
+Đôi chia sẻ tầm nhìn đồng đội; chết rồi giữ 25 m quanh xác; BOT không thấy ai thì đi tuần khắp bản đồ.
+
+**Vì sao không dùng hậu kỳ toàn màn hình:** muốn biết mỗi điểm ảnh cách nhân vật bao xa thì cần ảnh độ sâu; Built-in RP không có sẵn, bật lên là
+vẽ lại cả cảnh thêm một lượt — quá nặng cho điện thoại. Nên sương được tính **ngay trong shader cảnh vật**: hàm chung `SuongChienTranh.cginc`
+đọc tối đa 4 nguồn nhìn (`_TN_Tam`), ngoài 25 m (mép mờ 3 m) thì tối còn 32%, nhạt màu 75%, phủ mây xám xanh trôi chậm. Gắn vào: bia / đá
+(DaMoTriplanar), vỏ cây, nước, vách vực, dung nham, khói vực; 6 vật liệu Standard của cảnh (cỏ, lá, than lò, đá lò, sắt) được nhân bản lúc chạy
+sang shader mới `ChuanSuong` (cùng tên thuộc tính với Standard); địa hình (shader của Unity, không sửa) được phủ bằng một tấm lưới bám đất
+`SuongDat` vẽ đè.
+
+**Ẩn thứ không được thấy:** mỗi 0,2 s `TamNhin` duyệt các renderer: mọi thứ sinh sau khi vào trận (kỹ năng, hiệu ứng, bình rơi…), mọi renderer của
+quái / người chơi khác / BOT / xác, và hạt / vệt / đồ trong suốt của cảnh (lửa lò, tàn lửa — cộng sáng nên shader không phủ sương được) — ngoài tầm
+thì `forceRenderingOff` (cờ riêng, không đụng `enabled` mà code hiệu ứng tự bật tắt). Đèn ngoài tầm → `cullingMask = 0`. Tên trên đầu, số sát
+thương, dấu bị đánh ngã hỏi `TamNhin.ThayDuoc` trước khi vẽ.
+
+**BOT:** `BotDieuKhien.ChonMucTieu` chỉ xét quái / đối thủ trong tầm nhìn (`TamNhin.NhinThay`: 25 m quanh BOT hoặc đồng đội còn sống). Không thấy
+ai → đi tuần: bản đồ chia 8 × 8 ô, ô nào lọt vào tầm nhìn thì đánh dấu "vừa ghé", BOT tới ô lâu chưa ghé nhất (gần hơn thì được cộng điểm).
+
+**Cái bẫy đã vấp:** surface shader có `finalcolor` thì Unity **không tự sinh code sương khoảng cách** — bản đầu bia / đá mất hẳn sương cũ của Act2.
+Phép đo menu 117 mục C bắt được (k = 1,000); sửa bằng `#pragma multi_compile_fog` + tự áp lại (`TN_SuongUnity`). Đo lại: DaMo k 0,860, ChuanSuong
+0,836, Standard (Unity tự áp, đối chứng) 0,843, lý thuyết exp(−(0,0105 × 40)²) = 0,838 — đúng một lần, không hai lần (0,703).
+
+**Số đo — menu 117 (0 lỗi):**
+
+| Mục | Kết quả |
+|---|---|
+| Ảnh nhìn thẳng xuống, cùng khung bật / tắt sương | trong 6–20 m ×1,00 (địa hình lẫn vật); ngoài 31–45 m địa hình ×0,28, vật ×0,33 — tối mà vẫn thấy |
+| Quái 20 / 30 / 60 m | hiện / ẩn / ẩn; quái 30 m đi vào 15 m → hiện lại |
+| Hiệu ứng sinh lúc chạy 10 / 35 m · đèn 5 / 45 m | hiện / ẩn · sáng / tắt |
+| Lửa lò gần (6 m) / xa (74 m) | hạt hiện 4/4 / ẩn 4/4 |
+| Đồng đội ở 40 m | thấy đồng đội và quái cạnh nó (44 m từ mình); bỏ đồng đội → quái ẩn |
+| Chết | 10 m quanh xác thấy, 30 m không |
+| Chi phí | một lượt quét 0,40 ms (1 182 renderer, Editor), 5 lượt / giây |
+
+Ảnh: `PlayTestShots/tamnhin_25d_keo_xa.png`, `tamnhin_3d_keo_xa.png`, đối chứng tắt `tamnhin_25d_doi_chung_tat.png`.
+
+**Menu 114 mục D viết lại (0 lỗi):** đối thủ 45 m (ngoài tầm) không nhắm; bị bắn từ 23 m → nhắm sau 0,35 s, tới 7 m; bị bắn từ 45 m → không biết;
+cấp 7 săn đối thủ 23 m (còn 7,2 m sau 6 s), đối thủ 45 m không biết; cấp 1 quái 22 m + người 23 m → quái; cấp 7 quái 10 m → quái, quái 22 m →
+người; đi tuần 45 s không thấy ai: 230 m, ô đã ghé 36 → 51 / 64, xa chỗ xuất phát nhất 68 m. Menu 113, 115: 0 lỗi.
+
 ## Phần 4 — Menu công cụ "Diablo 2.5D"
 
 | Mục | Tác dụng |

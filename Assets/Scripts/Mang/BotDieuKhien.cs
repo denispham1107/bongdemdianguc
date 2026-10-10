@@ -16,6 +16,9 @@ using UnityEngine;
 ///     <see cref="CapSanNguoi"/>: DANH TRA nguoi vua danh minh trong <see cref="GiayDanhTra"/> s (du xa), khong thi di giet
 ///     QUAI gan nhat ca ban do, het quai thi DI TUAN. Tu cap 7: quai ap sat trong 20 m thi giet truoc, roi SAN doi thu gan
 ///     nhat ca ban do, khong con doi thu thi quai. Chon lai theo nhip phan xa cua do kho (<see cref="NhipPhanXa"/>).
+///     10/10/2026 TAM NHIN 25 m (nguoi dung): moi thu tren chi tinh trong tam nhin (<see cref="TamNhin.NhinThay"/> - 25 m quanh BOT hoac
+///     dong doi con song); "ca ban do" nay la "trong tam nhin". Khong thay ai -> DI TUAN KHAP BAN DO: luoi 8 x 8 o, toi o lau chua ghe
+///     nhat (<see cref="ChonDiemTuan"/>).
 ///   - DUONG DI: A* tren luoi BanDoBot (dung mot lan luc vao tran), lam thang, tinh lai moi 1,2 s / khi dich doi cho. Toi gan
 ///     muc tieu <see cref="TamGiu"/> m thi dung (buoc 4: tung phep tu day).
 ///   - CHONG VUC: moi khung do dat PHIA TRUOC 0,9 / 1,7 m (tia xuong lop Ground + luoi). Hut chan -> DUNG, cam tam cho do,
@@ -362,6 +365,7 @@ public class BotDieuKhien : MonoBehaviour
             lucChonLai = Time.time + NhipPhanXa(doKho);
         }
         CapNhatMucTieu(dt);
+        DanhDauOQua();
         if (dungDanh) { ChiDiemNeuCo(); UongBinhNeuCan(); }
 
         Vector3 huong = Vector3.zero;
@@ -420,7 +424,7 @@ public class BotDieuKhien : MonoBehaviour
         for (int i = 0; i < quai.Count; i++)
         {
             var q = quai[i];
-            if (!HopLe(q)) continue;
+            if (!HopLe(q) || !TamNhin.NhinThay(mau, q.transform.position)) continue;    // chi thay trong 25 m (10/10/2026)
             float d = (q.transform.position - p).sqrMagnitude;
             if (d < dQuaiGan) { dQuaiGan = d; quaiGan = q; }
             if (d < dQuaiXa) { dQuaiXa = d; quaiXa = q; }
@@ -429,7 +433,7 @@ public class BotDieuKhien : MonoBehaviour
         {
             if (t == null || t == transform) continue;
             var d = t.GetComponent<Damageable>();
-            if (!LaDoiThu(d)) continue;
+            if (!LaDoiThu(d) || !TamNhin.NhinThay(mau, t.position)) continue;
             float kc = (t.position - p).sqrMagnitude;
             if (kc < dNguoiGan) { dNguoiGan = kc; nguoiGan = d; }
             if (kc < dNguoiXa) { dNguoiXa = kc; nguoiXa = d; }
@@ -440,7 +444,8 @@ public class BotDieuKhien : MonoBehaviour
 
         // Ke vua danh minh (du xa)
         Damageable keDanh = null;
-        if (mau != null && Time.time - mau.lucNguoiChoiDanh <= GiayDanhTra && LaDoiThu(mau.nguoiChoiDanhCuoi))
+        if (mau != null && Time.time - mau.lucNguoiChoiDanh <= GiayDanhTra && LaDoiThu(mau.nguoiChoiDanhCuoi)
+            && TamNhin.NhinThay(mau, mau.nguoiChoiDanhCuoi.transform.position))
             keDanh = mau.nguoiChoiDanhCuoi;
 
         if (pc.Cap.Cap >= CapSanNguoi)
@@ -504,15 +509,74 @@ public class BotDieuKhien : MonoBehaviour
             return true;
         }
 
-        // Khong co ai: di tuan
+        // Khong thay ai trong tam nhin: DI TUAN KHAP BAN DO (10/10/2026, nguoi dung chon) - toi o lau chua ghe nhat
         dangGiu = false;
-        if (!coDiemTuan || Time.time >= lucDoiTuan || KhoangNgang(transform.position, diemTuan) < 1.5f)
+        if (!coDiemTuan || Time.time >= lucDoiTuan || KhoangNgang(transform.position, diemTuan) < 2.5f)
         {
-            coDiemTuan = BanDoBot.DiemNgauNhien(transform.position, 20f, out diemTuan);
-            lucDoiTuan = Time.time + 8f;
+            coDiemTuan = ChonDiemTuan(out diemTuan);
+            if (!coDiemTuan) coDiemTuan = BanDoBot.DiemNgauNhien(transform.position, 20f, out diemTuan);
+            lucDoiTuan = Time.time + KhoangNgang(transform.position, diemTuan) / 3.5f + 8f;
         }
         if (!coDiemTuan) return false;
         dich = diemTuan;
+        return true;
+    }
+
+    // ================================================================
+    //  DI TUAN KHAP BAN DO (tam nhin 25 m - 10/10/2026)
+    // ================================================================
+
+    /// <summary>Luoi o di tuan: <see cref="SoOTuan"/> x <see cref="SoOTuan"/> o phu ban do (128 m quanh tam).</summary>
+    public const int SoOTuan = 8;
+    const float NuaBanDo = 64f;
+    readonly float[] lucQuaO = new float[SoOTuan * SoOTuan];
+    readonly bool[] oHong = new bool[SoOTuan * SoOTuan];
+    readonly Vector3[] choO = new Vector3[SoOTuan * SoOTuan];
+    readonly bool[] daTinhO = new bool[SoOTuan * SoOTuan];
+    float lucDanhDau;
+    /// <summary>So o khac nhau da ghe (phep thu menu 114 doc).</summary>
+    public int SoODaGhe { get { int n = 0; for (int i = 0; i < lucQuaO.Length; i++) if (lucQuaO[i] > 0f) n++; return n; } }
+
+    Vector3 TamO(int i)
+    {
+        var dir = GameDirector.Instance;
+        Vector3 c = dir != null ? dir.arenaCenter : Vector3.zero;
+        float co = NuaBanDo * 2f / SoOTuan;
+        return c + new Vector3(-NuaBanDo + co * (i % SoOTuan + 0.5f), 0f, -NuaBanDo + co * (i / SoOTuan + 0.5f));
+    }
+
+    /// <summary>Danh dau cac o trong tam nhin la "vua ghe" (moi giay mot lan).</summary>
+    void DanhDauOQua()
+    {
+        if (Time.time < lucDanhDau) return;
+        lucDanhDau = Time.time + 1f;
+        Vector3 p = transform.position;
+        for (int i = 0; i < lucQuaO.Length; i++)
+            if (KhoangNgang(TamO(i), p) < TamNhin.BanKinh * 0.8f) lucQuaO[i] = Time.time;
+    }
+
+    /// <summary>O lau chua ghe nhat (tru gan quanh minh, tru o khong co cho dung), gan hon thi duoc cong mot chut.</summary>
+    bool ChonDiemTuan(out Vector3 ra)
+    {
+        ra = transform.position;
+        Vector3 p = transform.position;
+        float tot = float.MinValue; int chon = -1;
+        for (int i = 0; i < lucQuaO.Length; i++)
+        {
+            if (oHong[i]) continue;
+            if (!daTinhO[i])
+            {
+                daTinhO[i] = true;
+                Vector3 c;
+                if (BanDoBot.ODiDuocGanNhat(TamO(i), 7f, out c)) choO[i] = c; else { oHong[i] = true; continue; }
+            }
+            float kc = KhoangNgang(choO[i], p);
+            if (kc < 18f) continue;
+            float diem = (Time.time - lucQuaO[i]) - kc * 0.25f + Random.value * 6f;
+            if (diem > tot) { tot = diem; chon = i; }
+        }
+        if (chon < 0) return false;
+        ra = choO[chon];
         return true;
     }
 

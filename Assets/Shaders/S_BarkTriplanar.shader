@@ -32,8 +32,10 @@ Shader "Diablo25D/BarkTriplanar"
         LOD 250
 
         CGPROGRAM
-        #pragma surface surf Standard fullforwardshadows
+        #pragma surface surf Standard fullforwardshadows finalcolor:tnFinal
         #pragma target 3.0
+        #pragma multi_compile_fog       // finalcolor tat code suong tu sinh -> TN_SuongUnity can keyword FOG_*
+        #include "SuongChienTranh.cginc"
 
         sampler2D _MainTex;
         sampler2D _BumpMap;
@@ -133,6 +135,17 @@ Shader "Diablo25D/BarkTriplanar"
             // Cho co nhua thi bong hon han, do la dau hieu de nhan ra nhua
             o.Smoothness = lerp(_Glossiness, 0.55, nhua);
             o.Metallic = 0;
+        }
+        // Suong chien tranh (TamNhin.cs, 10/10/2026)
+        void tnFinal(Input IN, SurfaceOutputStandard o, inout fixed4 color)
+        {
+            #ifdef UNITY_PASS_FORWARDADD
+                TN_SuongUnity(color.rgb, IN.worldPos, true);
+                TN_ApCong(color.rgb, IN.worldPos);
+            #else
+                TN_SuongUnity(color.rgb, IN.worldPos, false);
+                TN_Ap(color.rgb, IN.worldPos);
+            #endif
         }
         ENDCG
     }

@@ -1,0 +1,16 @@
+[ban 1] tam nhin 25 m + suong chien tranh
+A. _TN_Bat 1, ban kinh 25, mep 3; vat lieu Standard da doi sang ChuanSuong: 6; tam suong dia hinh: True; ThayDuoc(nhan vat) True
+B. lop Ground: vanh 6-20 m sang 0.173 -> 0.173 (x1.00, 18292 diem); vanh 31-45 m 0.175 -> 0.050 (x0.28, 53468 diem)
+B. lop Default: vanh 6-20 m sang 0.135 -> 0.135 (x1.00, 18292 diem); vanh 31-45 m 0.142 -> 0.047 (x0.33, 53468 diem)
+C. Standard: tat suong 0.594, bat suong 0.527, mau suong 0.165 -> k 0.843 (mong exp(-(mat do x 40 m)^2) = 0.838; ap hai lan = 0.703)
+C. Diablo25D/DaMoTriplanar: tat suong 0.261, bat suong 0.247, mau suong 0.165 -> k 0.860 (mong exp(-(mat do x 40 m)^2) = 0.838; ap hai lan = 0.703)
+C. Diablo25D/ChuanSuong: tat suong 0.594, bat suong 0.524, mau suong 0.165 -> k 0.836 (mong exp(-(mat do x 40 m)^2) = 0.838; ap hai lan = 0.703)
+D. quai 20 / 30 / 60 m: an False / True / True (mong False / True / True); hat sinh luc chay 10 / 35 m: an False / True; den 5 / 45 m: mat na -257 / 0 (goc -1); dang an 58 renderer, tat 16 den
+D2. quai 30 m di vao 15 m: an False
+D3. lo lua gan (6 m): hat hien 4/4; lo xa (74 m): hat an 4/4
+D4. mot luot quet: 0.40 ms (TB 20 lan, 1182 renderer trong canh) -> 1.99 ms / giay
+E. dong doi o 40 m: thay dong doi True, thay quai canh dong doi (44 m tu minh) True; NhinThay (logic BOT) True
+E2. doi chung bo dong doi: quai do an True
+F. da chet True: thay 10 m quanh xac True, 30 m False
+
+so loi ghi nhan = 0

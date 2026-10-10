@@ -146,6 +146,7 @@ public class BangTen : MonoBehaviour
         var cam = Camera.main;
         if (cam == null) return;
 
+        if (!TamNhin.ThayDuoc(transform.position)) return;     // ngoai tam nhin 25 m (suong chien tranh)
         Vector3 man = cam.WorldToScreenPoint(DiemTrenDau());
         if (man.z <= 0f) return;                              // sau lung camera
 

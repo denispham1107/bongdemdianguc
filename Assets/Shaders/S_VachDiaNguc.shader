@@ -19,8 +19,10 @@ Shader "Diablo25D/VachDiaNguc"
     {
         Tags { "RenderType"="Opaque" "Queue"="Geometry" }
         CGPROGRAM
-        #pragma surface surf Lambert vertex:vert
+        #pragma surface surf Lambert vertex:vert finalcolor:tnFinal
         #pragma target 3.0
+        #pragma multi_compile_fog       // finalcolor tat code suong tu sinh -> TN_SuongUnity can keyword FOG_*
+        #include "SuongChienTranh.cginc"
         sampler2D _MainTex;
         float _TiLe, _AnhDo, _SangNut, _NhipNut;
         fixed4 _MauDa, _MauAnhDo, _MauNut;
@@ -45,6 +47,17 @@ Shader "Diablo25D/VachDiaNguc"
             // vet nut sang hon o cho da sang (mat da), toi o khe - de nut nam tren da chu khong phu deu
             float nut = IN.color.g * tho * (0.6 + 0.8 * dot(da, float3(0.33, 0.33, 0.33)));
             o.Emission = _MauAnhDo.rgb * IN.color.r * _AnhDo + _MauNut.rgb * nut * _SangNut;
+        }
+        // Suong chien tranh (TamNhin.cs, 10/10/2026)
+        void tnFinal(Input IN, SurfaceOutput o, inout fixed4 color)
+        {
+            #ifdef UNITY_PASS_FORWARDADD
+                TN_SuongUnity(color.rgb, IN.worldPos, true);
+                TN_ApCong(color.rgb, IN.worldPos);
+            #else
+                TN_SuongUnity(color.rgb, IN.worldPos, false);
+                TN_Ap(color.rgb, IN.worldPos);
+            #endif
         }
         ENDCG
     }
