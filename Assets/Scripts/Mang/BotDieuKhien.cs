@@ -37,6 +37,8 @@ using UnityEngine;
 ///     binh ma co binh roi trong 14 m (va khong ke thu nao sat) thi di nhat - chu phong giao binh cho BOT
 ///     (QuanLyBinhRoi.XetBotNhat).
 ///   - LUI: Thuong / Kho bi ap sat duoi 4 m (khong dang niem) thi lui ra (o lui phai di duoc).
+///   - NHAO LON (10/10/2026, nguoi dung): bi ap sat duoi 4 m thi moi giay xet MOT lan, voi xac suat <see cref="TiLeNhaoLon"/> (De it, Kho
+///     nhieu) lan ra xa 5 m theo huong lui / cheo / ngang - o 2,5 m va 5 m phai di duoc (khong lan xuong vuc).
 /// </summary>
 [DefaultExecutionOrder(-40)]
 public class BotDieuKhien : MonoBehaviour
@@ -117,7 +119,11 @@ public class BotDieuKhien : MonoBehaviour
     [System.NonSerialized] public bool dungDanh = true;
 
     // So dem chan doan
-    [System.NonSerialized] public int soPhepDaTung, soBinhMauDaUong, soBinhManaDaUong, soLanLui, soBinhDaNhatXin;
+    [System.NonSerialized] public int soPhepDaTung, soBinhMauDaUong, soBinhManaDaUong, soLanLui, soBinhDaNhatXin, soLanNhaoLon;
+
+    /// <summary>Xac suat BOT nhao lon tranh moi lan xet (moi giay mot lan khi bi ap sat).</summary>
+    public static float TiLeNhaoLon(int doKho) { return doKho == MayBot.De ? 0.2f : doKho == MayBot.Kho ? 0.85f : 0.5f; }
+    float lucXetNhaoLon;
     [System.NonSerialized] public readonly int[] demTheoKy = new int[CapDo.SoKyNang];
     [System.NonSerialized] public float tongSaiSoNgam; [System.NonSerialized] public int soLanDoNgam;
 
@@ -380,6 +386,9 @@ public class BotDieuKhien : MonoBehaviour
             lucTimLai = 0f;                       // tim duong khac ngay khung sau
             huong = Vector3.zero;
         }
+
+        // NHAO LON tranh khi bi ap sat (moi do kho, 10/10/2026)
+        if (dungDanh && !coDiemEp && !pc.DangNiemChu) NhaoLonNeuApSat(p);
 
         // LUI khi bi ap sat (Thuong / Kho): o lui phai di duoc - khong lui xuong vuc
         if (dungDanh && doKho >= MayBot.Thuong && !coDiemEp && !pc.DangNiemChu)
@@ -650,6 +659,28 @@ public class BotDieuKhien : MonoBehaviour
     }
 
     static float KhoangNgang(Vector3 a, Vector3 b) { a.y = 0f; b.y = 0f; return Vector3.Distance(a, b); }
+
+    /// <summary>Bi ap sat duoi <see cref="GanLui"/>: moi giay xet mot lan, gieo <see cref="TiLeNhaoLon"/>, lan 5 m ra xa ke thu.</summary>
+    void NhaoLonNeuApSat(Vector3 p)
+    {
+        if (Time.time < lucXetNhaoLon) return;
+        if (NhaoLon.Dang(gameObject) || pc.HoiChieuGiay(CapDo.KyNhaoLon) > 0f || !pc.Cap.DaMo(CapDo.KyNhaoLon)) return;
+        float keGan;
+        var ke = KeThuGanNhat(out keGan);
+        if (ke == null || keGan >= GanLui) return;
+        lucXetNhaoLon = Time.time + 1f;
+        if (Random.value > TiLeNhaoLon(doKho)) return;
+        Vector3 lui = HuongNgang(ke.transform.position, p);
+        Vector3 benCanh = new Vector3(-lui.z, 0f, lui.x);
+        Vector3[] thu = { lui, (lui + benCanh).normalized, (lui - benCanh).normalized, benCanh, -benCanh };
+        foreach (var h in thu)
+            if (BanDoBot.DiDuoc(p + h * 2.5f) && BanDoBot.DiDuoc(p + h * NhaoLon.Tam))
+            {
+                pc.CastAt(CapDo.KyNhaoLon, p + h * NhaoLon.Tam);
+                if (NhaoLon.Dang(gameObject) || pc.HoiChieuGiay(CapDo.KyNhaoLon) > 0f) soLanNhaoLon++;
+                return;
+            }
+    }
 
     static Vector3 HuongNgang(Vector3 tu, Vector3 den)
     {

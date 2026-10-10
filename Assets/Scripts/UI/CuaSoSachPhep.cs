@@ -743,6 +743,8 @@ public static class CuaSoSachPhep
                        ? Mathf.RoundToInt(PlayerController.MauBinhTheoCap(capKy)) + " máu"
                        : Mathf.RoundToInt(PlayerController.ManaBinhTheoCap(capKy)) + " năng lượng")
                     + "   ·   đang có " + CapDo.SoBinh(dangXem) + " bình";
+        else if (dangXem == CapDo.KyNhaoLon)
+            dongCap = "Có sẵn từ đầu trận   ·   chỉ một cấp   ·   lộn xa nhất " + NhaoLon.Tam.ToString("0") + " m   ·   không tốn năng lượng";
         else if (dangXem == CapDo.KyTocDo)
             dongCap = "Bị động cấp " + capKy + " / " + CapDo.CapToiDaCua(dangXem) + "   ·   nhanh hơn "
                     + (CapDo.TocThemTheoCap(capKy) * 100f).ToString("0.#") + "% tốc độ gốc";
@@ -804,6 +806,8 @@ public static class CuaSoSachPhep
             chu = nhac != null ? nhac
                 : (CapDo.DiemKyNang > 0 ? "MỞ KHOÁ  (1 điểm)" : "Hết điểm kỹ năng — lên cấp để có thêm");
         }
+        else if (dangXem == CapDo.KyNhaoLon)
+            chu = "CÓ SẴN — chỉ một cấp";
         else if (capKy >= CapDo.CapToiDaCua(dangXem))
             chu = "ĐÃ TỐI ĐA (cấp " + CapDo.CapToiDaCua(dangXem) + ")";
         else

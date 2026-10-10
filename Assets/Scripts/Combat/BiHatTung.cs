@@ -159,6 +159,7 @@ public class BiHatTung : MonoBehaviour
             foreach (Transform c in transform)
                 if (c.GetComponentInChildren<Renderer>() != null) { hinh = c; break; }
         if (hinh != null) { posGoc = hinh.localPosition; rotGoc = hinh.localRotation; coPosGoc = true; }
+        NhaoLon.LayGoc(this, ref posGoc, ref rotGoc);        // bi hat tung giua luc nhao lon: goc dung that
     }
 
     void LateUpdate()

@@ -212,6 +212,7 @@ public class XacNam : MonoBehaviour
                 }
 
         posDau = hinh.localPosition; rotDau = hinh.localRotation;
+        NhaoLon.LayGoc(this, ref posDau, ref rotDau);        // chet giua luc nhao lon: nga tu tu the dung, khong tu tu the dang lat
         posGoc = posDau; rotGoc = rotDau;
         // Dang nga / dang bay: tu the DUNG goc nam trong hai hieu ung ay, khong phai tu the luc nay
         var hat = GetComponent<BiHatTung>();

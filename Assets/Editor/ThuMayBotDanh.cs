@@ -116,7 +116,7 @@ public static class ThuMayBotDanh
         var d = bot.GetComponent<Damageable>();
         d.health = d.maxHealth;
         bot.mana = bot.maxMana;
-        nao.soPhepDaTung = 0; nao.soBinhMauDaUong = 0; nao.soBinhManaDaUong = 0; nao.soLanLui = 0;
+        nao.soPhepDaTung = 0; nao.soBinhMauDaUong = 0; nao.soBinhManaDaUong = 0; nao.soLanLui = 0; nao.soLanNhaoLon = 0;
         nao.tongSaiSoNgam = 0f; nao.soLanDoNgam = 0;
         for (int i = 0; i < nao.demTheoKy.Length; i++) nao.demTheoKy[i] = 0;
     }
@@ -309,6 +309,33 @@ public static class ThuMayBotDanh
             n0.dungYen = true;
         }
 
+        // ---- F2. NHAO LON khi bi ap sat (10/10/2026) ----
+        {
+            LamMoiBot(b0, n0, MayBot.HeLua, MayBot.Kho, 3);
+            DatCho(b0, choBot);
+            Vector3 gan;
+            BanDoBot.ODiDuocGanNhat(choBot + new Vector3(0f, 0f, 2.5f), 1f, out gan);
+            DatCho(toi, gan);
+            dToi.maxHealth = dToi.health = 1e7f;
+            yield return null;
+            Vector3 p0 = b0.transform.position;
+            float kc0 = Ngang(p0, toi.transform.position);
+            n0.dungYen = false;
+            float t0 = Time.time; float xaNhat = 0f; bool daLan = false;
+            while (Time.time - t0 < 4f)
+            {
+                if (NhaoLon.Dang(b0.gameObject)) daLan = true;
+                xaNhat = Mathf.Max(xaNhat, Ngang(b0.transform.position, toi.transform.position));
+                if (daLan && !NhaoLon.Dang(b0.gameObject)) break;
+                yield return null;
+            }
+            Ghi(string.Format("F2. Kho, doi thu ap sat {0:F1} m: nhao lon {1} lan sau {2:F1} s, xa doi thu nhat {3:F1} m (ty le xet moi giay {4:P0})",
+                kc0, n0.soLanNhaoLon, Time.time - t0, xaNhat, BotDieuKhien.TiLeNhaoLon(MayBot.Kho)));
+            Kiem(n0.soLanNhaoLon >= 1 && daLan && xaNhat > kc0 + 3f, "BOT khong nhao lon tranh khi bi ap sat");
+            n0.dungYen = true;
+            yield return new WaitForSeconds(0.5f);
+        }
+
         // ---- G. Tran that 90 s ----
         {
             DatCho(toi, tam + new Vector3(-50f, 0f, 50f));
@@ -340,7 +367,7 @@ public static class ThuMayBotDanh
                 if (kn > 0) coKn++;
                 int soLoai;
                 Ghi("G" + i + ". " + bots[i].name + " he " + MayBot.TenHe(nao[i].he) + ": +" + kn + " kinh nghiem (cap " + bots[i].Cap.Cap + "), " + nao[i].soPhepDaTung + " chieu ("
-                    + DemKy(nao[i], out soLoai) + "), binh mau / mana uong " + nao[i].soBinhMauDaUong + " / " + nao[i].soBinhManaDaUong + ", lui " + nao[i].soLanLui
+                    + DemKy(nao[i], out soLoai) + "), binh mau / mana uong " + nao[i].soBinhMauDaUong + " / " + nao[i].soBinhManaDaUong + ", lui " + nao[i].soLanLui + ", nhao lon " + nao[i].soLanNhaoLon
                     + ", mau " + Mathf.RoundToInt(dd.health) + "/" + Mathf.RoundToInt(dd.maxHealth) + (dd.IsDead ? " (DA CHET)" : ""));
             }
             Ghi("G. " + lanDot + " dot quai, " + coKn + "/3 BOT co kinh nghiem ha quai");

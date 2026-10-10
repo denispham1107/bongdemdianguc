@@ -59,7 +59,7 @@ public static class SachPhep
         new[] { 6, 2, CapDo.KyCauDien },                          // Giut set, Sam set, Qua cau dien
         // 09/10/2026 nguoi dung AN Hoa loc xoay (CapDo.AnHoaLocXoay) - hien lai thi chen CapDo.KyHoaLocXoay sau Loc xoay (3)
         new[] { CapDo.KyGioLoc, 3, CapDo.KyMayGiong },                            // Gio loc, Loc xoay, May giong
-        new[] { CapDo.KyBinhMau, CapDo.KyBinhMana, 5, CapDo.KyTocBien },   // Binh mau, Binh mana, Khien, Toc bien
+        new[] { CapDo.KyBinhMau, CapDo.KyBinhMana, 5, CapDo.KyTocBien, CapDo.KyNhaoLon },   // Binh mau, Binh mana, Khien, Toc bien, Nhao lon (10/10/2026)
         // NHOM BI DONG (nguoi dung 19/09/2026): khong bam duoc, khong keo vao o - mo khoa / nang cap
         // la cong vinh vien vao thuoc tinh nhan vat.
         new[] { CapDo.KyKhangLua, CapDo.KyKhangBang, CapDo.KyKhangSet, CapDo.KyKhangPhong, CapDo.KyTocDo },
@@ -324,6 +324,7 @@ public static class SachPhep
             case CapDo.KyKhangPhong: return "KHÁNG PHONG";
             case CapDo.KyTocDo: return "TỐC ĐỘ DI CHUYỂN";
             case CapDo.KyMayGiong: return "MÂY GIÔNG";
+            case CapDo.KyNhaoLon: return "NHÀO LỘN";
             default: return "";
         }
     }
@@ -356,6 +357,7 @@ public static class SachPhep
             case CapDo.KyKhangPhong: return "Bị động — chịu ít sát thương hệ Phong";
             case CapDo.KyTocDo: return "Bị động — chạy nhanh hơn";
             case CapDo.KyMayGiong: return "36 tia sét, mưa làm ướt, mây trôi";
+            case CapDo.KyNhaoLon: return "Lộn nhào tới chỗ ngắm, xa nhất 5 m";
             default: return "";
         }
     }
@@ -484,6 +486,13 @@ public static class SachPhep
                      + "đi, không đánh được, và chiêu đang niệm dở bị NGẮT NGAY.\n\n"
                      + "Lốc lướt qua lò lửa thì dập tắt lửa, 30 giây sau lò cháy lại.\n\n"
                      + "CẤP 5: phóng cùng lúc BA cơn lốc hình quạt.";
+            case CapDo.KyNhaoLon:
+                return "Nhân vật cuộn tròn người lại và NHÀO LỘN về phía bạn ngắm — xa nhất 5 mét, ngắm gần hơn thì lộn ngắn lại. "
+                     + "Chạm nhanh vào nút (không kéo ngắm) thì lộn đủ 5 mét về hướng đang chạy / đang nhìn.\n\n"
+                     + "Bấm là lộn ngay, không có động tác niệm — dùng để né quả cầu đang bay tới, thoát khỏi vùng mưa băng hay "
+                     + "lùi xa khỏi quái đang áp sát. Đang lộn VẪN ăn sát thương nếu bị đánh trúng; gặp bia mộ, tường, cây thì dừng lại "
+                     + "(không xuyên qua như Tốc biến); lộn qua mép vực là rơi xuống.\n\n"
+                     + "Có sẵn ngay từ đầu trận, chỉ một cấp. Không tốn năng lượng, hồi chiêu 4 giây.";
             case CapDo.KyTocBien:
                 return "Nhân vật tan đi ở chỗ đang đứng và hiện ra ngay tại nơi bạn ngắm, xa nhất 15 m. Đi được XUYÊN QUA tường, bia mộ và mọi vật cản — chỉ cần chỗ đến đứng được.\n\n"
                      + "Ngắm vào chỗ không đứng được thì bạn dừng ở điểm trống gần nơi ngắm nhất trên đường thẳng. Bấm là đi ngay, không có động tác niệm, nên dùng để né đòn đang bay tới.\n\n"
@@ -612,6 +621,7 @@ public static class SachPhep
             // Hoi chieu Toc bien GIAM theo cap - doc hoi chieu HIEN TAI chu khong phai truong cap 1
             case CapDo.KyTocBien: nangLuong = pc.tocBienCost; hoiChieu = pc.HoiChieuTocBien; niemChu = pc.tocBienCastTime; break;
             case CapDo.KyMayGiong: nangLuong = pc.mayGiongCost; hoiChieu = pc.mayGiongCooldown; niemChu = pc.mayGiongCastTime; break;
+            case CapDo.KyNhaoLon: nangLuong = NhaoLon.NangLuong; hoiChieu = NhaoLon.HoiChieu; niemChu = 0f; break;
         }
     }
 }

@@ -13842,6 +13842,48 @@ tên), vòng đối chứng cùng hàng 0. Bảng mở: nền tối ×0,38, vùn
 đóng 1,00), Sách phép đang mở tự đóng, 0 chữ bị cắt; Ở LẠI → input chạy lại (1,00); THOÁT TRẬN → scene MainMenu. Menu 59, 66: 0 lỗi. Ảnh
 `PlayTestShots/thoattran_*.png`. Cảnh báo chủ phòng chỉ hiện khi đang chơi mạng còn người khác — chưa thử hai máy thật.
 
+## Kỹ năng Nhào lộn (10/10/2026)
+
+**Người dùng:** thêm kỹ năng "Nhào lộn" nhóm Hỗ trợ, mở sẵn như bình máu / bình mana, chỉ một cấp; nhào lộn tới hướng chỉ định tối đa 5 m; hồi chiêu
+4 giây; động tác thật mềm mại; icon chi tiết, hợp phong cách kinh dị. Chọn thêm: không tốn năng lượng; lăn tới chỗ ngắm (gần hơn 5 m thì lăn ngắn
+lại); không miễn sát thương; máy BOT dùng để lăn tránh khi bị áp sát.
+
+**Số hiệu 22** (thêm ở cuối — số hiệu đi qua gói tin và nằm trong thứ tự ô đã lưu). Có sẵn cấp 1 (`CapDo.LaKyCoSan`), cấp tối đa 1. Đi qua gói phép như
+mọi kỹ năng: máy người tung lăn thật, máy khác chỉ chạy hình (vị trí nhân vật vẫn đến từ gói trạng thái).
+
+**Động tác** — model Meshy chỉ có clip đi bộ nên dựng tại chỗ mỗi khung, sau bộ hoạt hình: (1) cuộn tròn thân — cột sống cong tới trước, đầu cúi, đùi
+kéo sát ngực, cẳng chân gập, hai tay ôm gối, ngắm hướng từng đoạn xương trong khung gốc nhân vật (cùng cách tư thế Giựt sét, không đoán trục xương
+Meshy); (2) lật cả model 360° quanh tâm quả bóng theo đường cong smootherstep (vận tốc góc liên tục, không giật đầu / cuối); (3) chạm đất. Quãng đường
+lao nhanh lúc đầu, chậm dần lúc đứng dậy; 5 m mất 0,6 giây.
+
+**Cái bẫy đã vấp — chạm đất:** lấy xương thấp nhất cách đất một khe cố định thì lúc lún 9 cm, lúc hở 14 cm: áo choàng thò dưới xương từ 7 tới 29 cm
+tuỳ góc lộn. Vì ở mỗi góc tư thế luôn y hệt nhau, phép thử đo MỘT LẦN bằng BakeMesh (147 mẫu, mỗi 15°) rồi ghi cứng thành `NhaoLon.BangKhe` — lúc
+chơi không phải BakeMesh. Sau đó: −1,1 … +2,4 cm.
+
+**Cái bẫy thứ hai:** bị đánh ngã / hất tung / chết GIỮA vòng lăn thì các hiệu ứng ấy chụp tư thế model lúc gắn vào làm "gốc" — tức tư thế đang lộn
+ngược, rồi trả model về đó. Nay chúng hỏi `NhaoLon.LayGoc` để lấy tư thế đứng thật.
+
+**Icon** (Blender MCP, `CongCu/Blender/nhao_lon.blend`): nạp chính model phù thuỷ trong game, tạo dáng cuộn tròn bằng bpy, ba bóng ma tím trong suốt
+(viền sáng) ở các pha lộn trước nhào từ trên xuống, mũi tên máu cong quanh thân chỉ chiều lộn. Icon kỹ năng được CỘNG sáng lên đĩa nút nên render
+trên nền đen và tăng đèn cho nhân vật (phần tối sẽ biến mất trên đĩa).
+
+**Số đo — menu 119 (0 lỗi):**
+
+| Mục | Kết quả |
+|---|---|
+| Có sẵn / cấp tối đa / nhóm | cấp 1 / 1, không mở khoá / nâng được, nằm cùng nhóm với Tốc biến |
+| Quãng đường (ngắm 5 / 2 / 9 / 0,3 m) | 5,00 / 2,00 / 5,00 / 0,80 m; thời gian 0,60 / 0,44 / 0,58 / 0,36 s |
+| Năng lượng · hồi chiêu | không giảm · bấm lại ngay bị từ chối "NHÀO LỘN đang hồi chiêu" |
+| Độ mềm (60 khung / giây cố định) | 35 khung, lật 358°, bước lớn nhất 22° (TB 10,5°), giữa vòng đầu thấp hơn hông 10 khung |
+| Chạm đất (BakeMesh) | −0,011 … +0,024 m (trước bảng khe: −0,087 … +0,136) |
+| Vật cản 2,5 m | dừng ở 1,80 m |
+| Đang lăn bấm Quả cầu lửa · bị choáng | từ chối "Đang nhào lộn!" · không lăn |
+| Bị đánh ngã giữa vòng | dừng lăn, ngã xong model về đúng tư thế gốc |
+| Bản sao mạng | có hình lăn (360°), tự đi 0 m |
+
+Menu 115 F2: BOT Khó bị đối thủ áp sát 2,4 m → nhào lộn sau 1,2 s, ra xa 7,4 m; trận thật 90 s: 2 / 0 / 1 lần. Menu 59, 60, 66, 77, 80: 0 lỗi. Ảnh
+`PlayTestShots/nhaolon_cac_khung.png`, `nhaolon_dong.gif`.
+
 ## Phần 4 — Menu công cụ "Diablo 2.5D"
 
 | Mục | Tác dụng |

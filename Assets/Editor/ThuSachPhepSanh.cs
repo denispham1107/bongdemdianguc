@@ -360,7 +360,7 @@ console.log(out.join('|'));
         Kiem(xemTruoc, "nut KY NANG khong mo che do xem truoc");
         Kiem(soMoXemTruoc == SachPhep.SoKyNang, "xem truoc van con ky nang bi khoa");
         // Dau tran chi hai ky nang BINH co san (nguoi dung 25/09/2026) - moi thu khac con khoa
-        int soBinh = 0; for (int i = 0; i < SachPhep.SoKyNang; i++) if (CapDo.LaKyBinh(i)) soBinh++;
+        int soBinh = 0; for (int i = 0; i < SachPhep.SoKyNang; i++) if (CapDo.LaKyCoSan(i)) soBinh++;   // hai binh + Nhao lon (10/10/2026)
         Kiem(soMoDoiChung == soBinh, "doi chung hong: trong tran luc moi vao so ky nang da mo khac so ky nang binh (" + soBinh + ")");
         Kiem(soHangThay >= 6 && tiLeMin >= 1.5f, "hinh ky nang o sanh chua sang du mau (van xam / co o khoa?)");
         Kiem(oMin >= 1.5f, "hinh trong o o sanh chua sang du mau (van xam / co o khoa?)");

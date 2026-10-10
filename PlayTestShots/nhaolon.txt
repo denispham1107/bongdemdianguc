@@ -1,0 +1,18 @@
+[ban 1] nhao lon
+A. so ky nang 23; cap Nhao lon dau tran 1/1; mo khoa duoc False, nang cap duoc False; nhom HO TRO True; ten "NHÀO LỘN"; icon 256x256 (diem giua RGBA(0.243, 0.102, 0.157, 1.000))
+B1. ngam 5 m -> lan 5.00 m (mong 5), 0.58 s (mong 0.60); mana 100.0 -> 106.8; hoi chieu con 3.25 s
+    bam lai ngay: tu choi = True ("NHÀO LỘN đang hồi chiêu"), hoi chieu con 2.93 s
+B2. ngam 2 m -> lan 2.00 m (mong 2), 0.43 s (mong 0.44); mana 100.0 -> 129.6; hoi chieu con 3.40 s
+B3. ngam 9 m -> lan 5.00 m (mong 5), 0.60 s (mong 0.60); mana 100.0 -> 134.9; hoi chieu con 3.25 s
+B4. ngam 0.3 m -> lan 0.80 m (mong 0.8), 0.37 s (mong 0.38); mana 100.0 -> 132.0; hoi chieu con 3.45 s
+C0. dung yen: dinh thap nhat cach dat -0.016 m
+C. 35 khung: goc lat (xuong hong->dau) cong 358 do, don dieu True, buoc lon nhat 22.3 do/khung (TB 10.5); dau duoi hong 10 khung
+    cham dat khi cuon (BakeMesh, 26 khung): dinh thap nhat cach dat -0.011 .. 0.024 m; het lan model ve goc: True
+C9. bang khe (cuon het, moi 15 do): { -, 0.070f, 0.149f, 0.272f, 0.284f, 0.263f, 0.225f, 0.178f, 0.147f, 0.185f, 0.173f, 0.180f, 0.212f, 0.224f, 0.220f, 0.193f, 0.182f, 0.161f, 0.144f, 0.146f, 0.127f, 0.117f, 0.105f, 0.095f, - }
+    so mau moi o: 0 12 9 8 6 6 5 5 5 4 5 4 5 4 5 5 4 5 6 5 7 7 9 4 0 
+D. hop chan o 2.5 m (mat truoc 2.2 m): lan duoc 1.80 m
+E1. dang lan bam Qua cau lua -> "Đang nhào lộn!"; bi danh nga giua vong (dang lan True) -> dung lan True; nga xong model ve dung goc True
+E2. bi choang: "BẠN ĐANG BỊ CHOÁNG!", di 0.00 m
+F. ban sao: co hinh lan True (goc lon nhat 360), tu di 0.00 m (phai 0 - vi tri tu goi tin)
+
+so loi ghi nhan = 0

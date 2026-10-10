@@ -15,7 +15,7 @@ B1. nhan vat cap 10: mau x3.518, nang luong x2.358, toc do x1.363 | cap 20: mau 
 B2. ky nang cap 5: sat thuong x2.074, nang luong x1.464, hieu ung +0.60 giay, mau khien x1.749
 
 C. diem ky nang: mo khoa va nang cap
-C1. vao tran: cap 1, diem 1, so ky nang da mo 2 (binh mau cap 1, binh mana cap 1)
+C1. vao tran: cap 1, diem 1, so ky nang da mo 3 (binh mau cap 1, binh mana cap 1)
 C2. mo ky nang 0 -> True (phai True); mo tiep ky nang 6 -> False (phai False)
 C3. sau khi len cap 20 con 19 diem; nang ky nang 0 duoc 4 lan -> cap 5 (toi da 5)
 

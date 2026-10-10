@@ -91,6 +91,13 @@ public static class CapDo
     /// Nguoi dung chon KHONG CAN dieu kien mo khoa.</summary>
     public const int KyMayGiong = 21;
 
+    /// <summary>Ky nang 22 - NHAO LON (nhom HO TRO, nguoi dung 10/10/2026): lan toi cho ngam toi da 5 m, hoi chieu 4 giay, khong ton
+    /// nang luong. CO SAN tu dau tran nhu hai binh (khong ton diem), CHI MOT CAP - xem <see cref="LaKyCoSan"/>, Skills/NhaoLon.cs.</summary>
+    public const int KyNhaoLon = 22;
+
+    /// <summary>Ky nang CO SAN cap 1 luc vao tran, khong can mo khoa: binh mau, binh mana (25/09/2026), Nhao lon (10/10/2026).</summary>
+    public static bool LaKyCoSan(int ky) { return LaKyBinh(ky) || ky == KyNhaoLon; }
+
     /// <summary>Phan toc do goc duoc cong them o cap <paramref name="capKy"/> cua ky nang Toc do (0 = chua mo).</summary>
     public static float TocThemTheoCap(int capKy)
     {
@@ -104,7 +111,7 @@ public static class CapDo
     public const int CapBinhToiDa = 3;
 
     /// <summary>Cap toi da cua TUNG ky nang: binh mau / binh mana la 3, con lai 5.</summary>
-    public static int CapToiDaCua(int ky) { return LaKyBinh(ky) ? CapBinhToiDa : CapKyNangToiDa; }
+    public static int CapToiDaCua(int ky) { return LaKyBinh(ky) ? CapBinhToiDa : ky == KyNhaoLon ? 1 : CapKyNangToiDa; }
 
     public static bool LaKyBinh(int ky) { return ky == KyBinhMau || ky == KyBinhMana; }
 
@@ -123,7 +130,7 @@ public static class CapDo
     /// nhat 5,98 m/giay). Dung o cap 10: x1,363 (~7,1 m/giay).
     /// </summary>
     public const int CapTangTocToiDa = 10;
-    public const int SoKyNang = 22;      // 7 phep + binh mau + binh mana + qua cau bang + gio loc + lua dia nguc + tang hinh + qua cau dien + hoa loc xoay + toc bien + 4 khang bi dong + toc do + may giong
+    public const int SoKyNang = 23;      // 7 phep + binh mau + binh mana + qua cau bang + gio loc + lua dia nguc + tang hinh + qua cau dien + hoa loc xoay + toc bien + 4 khang bi dong + toc do + may giong + nhao lon
 
     /// <summary>Giet mot nguoi choi khac duoc bao nhieu kinh nghiem.</summary>
     public const int KnGietNguoi = 250;
@@ -385,6 +392,8 @@ public class BangCap
         // Binh mau / binh mana CO SAN cap 1 (nguoi dung 25/09/2026) - khong ton diem ky nang
         capKyNang[CapDo.KyBinhMau] = 1;
         capKyNang[CapDo.KyBinhMana] = 1;
+        // Nhao lon CO SAN cap 1 - va chi co mot cap (nguoi dung 10/10/2026)
+        capKyNang[CapDo.KyNhaoLon] = 1;
         BaoDoi();
     }
 

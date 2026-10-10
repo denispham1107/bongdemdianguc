@@ -342,6 +342,8 @@ public class NguoiChoiHoatHinh : MonoBehaviour
     /// <summary>Muc di bo 0..1 (toc do ep tu mang, hoac van toc that cua CharacterController).</summary>
     float TocDoDi()
     {
+        // Dang NHAO LON: khong buoc chan (than dang cuon tron - NhaoLon dat tu the) - het lan moi di tiep
+        if (NhaoLon.Dang(gameObject)) return 0f;
         if (tocDoEp >= 0f) return Mathf.Clamp01(tocDoEp);
         if (vaCham == null) return 0f;
         Vector3 v = vaCham.velocity; v.y = 0f;
@@ -416,6 +418,8 @@ public class NguoiChoiHoatHinh : MonoBehaviour
         // Bi danh nga / hat tung: model con dang bi lat - de nguyen
         var nga = GetComponent<BiDanhNga>(); var hat = GetComponent<BiHatTung>();
         if ((nga != null && nga.DangNga) || (hat != null && hat.DangBay)) { daCoHaThan = false; return; }
+        // Dang nhao lon: NhaoLon tu dat qua bong cham dat - khong ha hong / nhac chan
+        if (NhaoLon.Dang(gameObject)) { daCoHaThan = false; return; }
 
         float w = 1f - Mathf.Clamp01(mucDi);
         if (w > 0.001f) DungChan(w);

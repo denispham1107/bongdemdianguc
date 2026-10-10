@@ -62,6 +62,9 @@ public static class IconKyNang
     public static Texture2D HoaLocXoay() { return Ve("Icons/HoaLocXoay", new Color(0.10f, 0.09f, 0.07f)); }
     // Toc bien: VE LAI LAN HAI 29/09/2026 (sinh_icon_ve_lai_5.py): khong ve hinh nguoi - cho cu khoi tim bay len + vong co lai,
     // vet phep cong vut sang cho moi, vong phep khac ky tu no ra + cot sang (dung hai hieu ung bien mat / hien ra trong game)
+    /// <summary>Nhao lon (10/10/2026): Blender MCP CongCu/Blender/nhao_lon.blend scene "NhaoLon" - chinh model phu thuy cuon tron giua
+    /// vong lon, mui ten mau cong quanh than chi chieu lon, ba bong ma tim nhao tu tren xuong noi duoi. Nen tim ruou vang toi.</summary>
+    public static Texture2D NhaoLon()    { return Ve("Icons/NhaoLon",    new Color(0.12f, 0.04f, 0.12f)); }
     public static Texture2D TocBien()    { return Ve("Icons/TocBien",    new Color(0.09f, 0.04f, 0.15f)); }
 
     // BON KY NANG BI DONG "KHANG ..." (19/09/2026) + TOC DO: VE LAI 29/09/2026 bang script (CongCu/Icon/sinh_icon_ve_lai_4.py -
@@ -108,6 +111,7 @@ public static class IconKyNang
         bo[CapDo.KyKhangPhong] = KhangPhong();
         bo[CapDo.KyTocDo]      = TocDo();
         bo[CapDo.KyMayGiong]   = MayGiong();
+        bo[CapDo.KyNhaoLon]    = NhaoLon();
         return bo;
     }
 

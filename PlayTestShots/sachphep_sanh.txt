@@ -1,14 +1,14 @@
 [menu 66] nut KY NANG o sanh, cat thu tu o, con mat quy
-A1. 428 chuoi trong 3 file; ky tu Inter thieu: ""; co chu "KỸ NĂNG" (co dau): co
+A1. 440 chuoi trong 3 file; ky tu Inter thieu: ""; co chu "KỸ NĂNG" (co dau): co
 A2. cau noi chay bang node: rong=[]|ghi=1|doc=[8,7,3,2,4,5,6]|kho=[8,7,3,2,4,5,6]|dau=[Kỹ năng]|camdoc=[]|camghi=0|so=7
 A3. SachPhep.cs: khai bao + goi CD_DocChuoi co, CD_GhiChuoi co, chi tren WebGL co
 
 B. man Game 1619x580, ti le sach 0.537; nut CAI DAT (x:863.74, y:17.19, width:91.30, height:26.85), KY NANG (x:796.61, y:183.67, width:91.30, height:27.93)
-B1. xem truoc: XemTruoc = True, ky nang hien da mo / keo duoc 22/22; doi chung trong tran (con khoa) 2/22
-    do sang VANH hinh cot trai (xem truoc / doi chung khoa; ne o khoa giua hinh): 0:0.187/0.056(x3.35) 1:0.259/0.081(x3.19) 2:0.210/0.070(x3.00) 6:0.210/0.060(x3.49) 9:0.207/0.032(x6.43) 11:0.158/0.032(x4.91) 12:0.198/0.034(x5.79) -> thap nhat x3.00 tren 7 hang
-    do sang hinh trong o: o1:x2.09 o2:x2.30 o3:x2.10 o4:x2.32 o6:x2.48 o7:x2.08 -> thap nhat x2.08
-B1b. bang bieu tuong dung chung: 22 o (so ky nang 22), o rong: khong co
-B1b2. sau khi cuon het cot, do sang VANH hinh nhom BI DONG: 16:vanh 0.191 ca hinh 0.292/o trong 0.123(x2.38) 17:vanh 0.193 ca hinh 0.281/o trong 0.118(x2.39) 18:vanh 0.164 ca hinh 0.234/o trong 0.117(x1.99) 19:vanh 0.189 ca hinh 0.247/o trong 0.117(x2.10) 20:vanh 0.163 ca hinh 0.220/o trong 0.117(x1.88) -> thap nhat 0.163 tren 5 hang; moc cac ky nang khac cung khung hinh 0.216 (4 hang); ca hinh so voi O TRONG that thap nhat x1.88
+B1. xem truoc: XemTruoc = True, ky nang hien da mo / keo duoc 23/23; doi chung trong tran (con khoa) 3/23
+    do sang VANH hinh cot trai (xem truoc / doi chung khoa; ne o khoa giua hinh): 0:0.187/0.056(x3.35) 1:0.259/0.081(x3.18) 2:0.210/0.070(x3.00) 6:0.210/0.060(x3.48) 9:0.207/0.032(x6.42) 11:0.158/0.032(x4.91) 12:0.198/0.034(x5.77) -> thap nhat x3.00 tren 7 hang
+    do sang hinh trong o: o1:x2.09 o2:x2.30 o3:x2.10 o4:x2.32 o6:x2.48 o7:x2.07 -> thap nhat x2.07
+B1b. bang bieu tuong dung chung: 23 o (so ky nang 23), o rong: khong co
+B1b2. sau khi cuon het cot, do sang VANH hinh nhom BI DONG: 16:vanh 0.191 ca hinh 0.292/o trong 0.123(x2.37) 17:vanh 0.193 ca hinh 0.281/o trong 0.118(x2.38) 18:vanh 0.165 ca hinh 0.234/o trong 0.118(x1.98) 19:vanh 0.189 ca hinh 0.247/o trong 0.117(x2.10) 20:vanh 0.163 ca hinh 0.220/o trong 0.117(x1.88) -> thap nhat 0.163 tren 5 hang; moc cac ky nang khac cung khung hinh 0.216 (4 hang); ca hinh so voi O TRONG that thap nhat x1.88
 B2. nhan vat mau o man chinh: PhuThuy_TrungBay; cau lua nang luong 25 / hoi 0.9 (prefab 25 / 0.9); thien thach nang luong 45 (prefab 45)
 B3. kho luu sau khi sap o sanh: vuong [8,7,3,2,4,5,6] (mong [8,7,3,2,4,5,6]), tron [0,1,2,3,4,5,8] (mong [0,1,2,3,4,5,8], cam ung bat True)
 B4. vao Act2 luc sach dang mo (True): sach con mo = False, thanh ky nang trong tran [8,7,3,2,4,5,6]

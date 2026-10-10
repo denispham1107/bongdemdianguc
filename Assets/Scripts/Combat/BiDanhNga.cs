@@ -118,6 +118,8 @@ public class BiDanhNga : MonoBehaviour
                 if (c.GetComponentInChildren<Renderer>() != null) { hinh = c; break; }
 
         if (hinh != null) { posGoc = hinh.localPosition; rotGoc = hinh.localRotation; }
+        // Bi nga giua luc NHAO LON: model dang lat - goc dung lay tu NhaoLon, khong chup tu the dang lon nguoc
+        NhaoLon.LayGoc(this, ref posGoc, ref rotGoc);
     }
 
     void LateUpdate()

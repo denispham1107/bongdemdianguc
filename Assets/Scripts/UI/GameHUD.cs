@@ -1434,6 +1434,7 @@ public partial class GameHUD : MonoBehaviour
             case CapDo.KyHoaLocXoay: return player.HoaLocXoayCooldown01;
             case CapDo.KyTocBien: return player.TocBienCooldown01;
             case CapDo.KyMayGiong: return player.MayGiongCooldown01;
+            case CapDo.KyNhaoLon: return player.NhaoLonCooldown01;
             // Khong de "default" tra ve Khieng: them ky nang moi ma quen sua
             // cho nay thi nut moi lay nham vong hoi chieu cua Khieng, va loi ay
             // nhin vao khong doc ra duoc.

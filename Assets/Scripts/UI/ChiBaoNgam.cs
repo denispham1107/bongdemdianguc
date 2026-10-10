@@ -231,6 +231,7 @@ public class ChiBaoNgam : MonoBehaviour
             case CapDo.KyHoaLocXoay: return new Color(0.82f, 0.78f, 0.62f);   // hoa loc xoay - xam cat nhu Loc xoay
             case CapDo.KyTocBien: return new Color(0.78f, 0.45f, 1.00f);      // toc bien - tim
             case CapDo.KyMayGiong: return new Color(0.80f, 0.88f, 1.00f);     // may giong - trang xanh
+            case CapDo.KyNhaoLon: return new Color(1.00f, 0.38f, 0.30f);      // nhao lon - do mau (mui ten mau tren icon)
             default: return new Color(0.40f, 0.95f, 1.00f);
         }
     }
