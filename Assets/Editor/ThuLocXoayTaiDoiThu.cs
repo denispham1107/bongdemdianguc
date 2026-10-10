@@ -101,7 +101,8 @@ public static class ThuLocXoayTaiDoiThu
 
         // ---- A ----
         Ghi(string.Format("A. tam ngam Loc xoay {0} m, Thien thach {1} m; don thang (truot tu nguoi choi) {2}", toi.TamNgam(3), toi.TamNgam(4), toi.DonThang(3)));
-        Kiem(Mathf.Abs(toi.TamNgam(3) - toi.TamNgam(4)) < 0.01f && !toi.DonThang(3), "tam Loc xoay khac Thien thach / van la phep don thang");
+        // 09/10/2026: Thien thach len 23 m, nguoi dung chon Loc xoay GIU 18 m (truoc "bang Thien thach") - so viet tay
+        Kiem(Mathf.Abs(toi.TamNgam(3) - 18f) < 0.01f && Mathf.Abs(toi.TamNgam(4) - 23f) < 0.01f && !toi.DonThang(3), "tam Loc xoay khong phai 18 m / Thien thach khong phai 23 m / van la phep don thang");
 
         // ---- B ----
         var biaTrai = TaoBia("TAM_BiaTrai", goc + truoc * 7f - phai * 6f, lopDich);      // ~9,2 m
@@ -170,6 +171,57 @@ public static class ThuLocXoayTaiDoiThu
             giam[0], giam[1], lechSauChet));
         Kiem(giam[0] > 3.5f && giam[0] > giam[1] + 2.5f, "loc khong bam theo doi thu");
         Kiem(lechSauChet < 40f, "doi thu chet ma loc khong troi lai theo huong luc tung");
+
+        // ---- F: BI CUON KHONG DUNG DUOC KY NANG (nguoi dung 10/10/2026; chon: ngat phep dang niem, binh van uong, Toc bien cap 5 cung bi chan)
+        {
+            var mauToi = toi.GetComponent<Damageable>();
+            mauToi.maxHealth = mauToi.health = 5000f;
+            CapDo.MoCaDuongChoPhepThu(0);
+            CapDo.MoCaDuongChoPhepThu(CapDo.KyTocBien);
+            for (int v = 0; v < 40 && CapDo.CapCuaKyNang(CapDo.KyTocBien) < 5; v++) { CapDo.ThemDiemChoPhepThu(1); if (!CapDo.NangCap(CapDo.KyTocBien)) break; }
+            System.Func<int> demCau = () => { int n = 0; foreach (var f in Object.FindObjectsByType<Fireball>(FindObjectsSortMode.None)) if (f.boQua == mauToi) n++; return n; };
+            // F1: dang niem Qua cau lua thi bi cuon -> ngat, khong qua nao bay ra
+            toi.mana = toi.maxMana;
+            int ngat0 = PlayerController.SoLanNgatChieu, cau0 = demCau();
+            toi.CastAt(0, toi.transform.position + truoc * 10f);
+            bool dangNiem = toi.DangNiemChu;
+            var loc = Tornado.Spawn(toi.transform.position + truoc * 0.5f, truoc, 1 << toi.gameObject.layer);
+            loc.duration = 8f; loc.moveSpeed = 0f;
+            var w = WhirledEffect.Catch(mauToi, loc);
+            int maxCau = 0;
+            for (float tD = Time.time; Time.time - tD < 1.0f; ) { maxCau = Mathf.Max(maxCau, demCau() - cau0); yield return null; }
+            Ghi(string.Format("F1. dang niem Qua cau lua ({0}) bi cuon: ngat {1} lan, qua cau bay ra {2}", dangNiem, PlayerController.SoLanNgatChieu - ngat0, maxCau));
+            Kiem(w != null && dangNiem && PlayerController.SoLanNgatChieu - ngat0 == 1 && maxCau == 0, "bi cuon ma phep dang niem khong bi ngat");
+            // F2: dang bi cuon: Qua cau lua, Toc bien cap 5 bi tu choi; binh mau van uong duoc
+            bool conCuon = toi.GetComponent<WhirledEffect>() != null;
+            toi.mana = toi.maxMana; float mana0 = toi.mana; int cau1 = demCau();
+            toi.CastAt(0, toi.transform.position + truoc * 10f); string nhacCau = toi.LastMessage;
+            yield return new WaitForSeconds(0.5f);
+            int cauBay = demCau() - cau1;
+            Vector3 vt0 = toi.transform.position;
+            toi.CastAt(CapDo.KyTocBien, toi.transform.position + truoc * 8f); string nhacTb = toi.LastMessage;
+            yield return null;
+            bool coTocBien = toi.GetComponent<WhirledEffect>() == null;
+            toi.Cap.ThemBinh(CapDo.KyBinhMau);
+            mauToi.health = 1000f; int binh0 = toi.Cap.SoBinh(CapDo.KyBinhMau);
+            toi.CastAt(CapDo.KyBinhMau, toi.transform.position);
+            yield return null;
+            Ghi(string.Format("F2. dang bi cuon {0}: Qua cau lua -> \"{1}\", bay ra {2}, mana {3:F0} -> {4:F0}; Toc bien cap {5} -> \"{6}\", thoat loc {7}; binh mau {8} -> {9}, mau 1000 -> {10:F0}",
+                conCuon, nhacCau, cauBay, mana0, toi.mana, CapDo.CapCuaKyNang(CapDo.KyTocBien), nhacTb, coTocBien, binh0, toi.Cap.SoBinh(CapDo.KyBinhMau), mauToi.health));
+            Kiem(conCuon && cauBay == 0 && toi.mana >= mana0 - 0.01f && nhacCau == "BẠN ĐANG BỊ LỐC XOÁY CUỐN!", "bi cuon van tung duoc ky nang");
+            Kiem(CapDo.CapCuaKyNang(CapDo.KyTocBien) == 5 && !coTocBien && nhacTb == "BẠN ĐANG BỊ LỐC XOÁY CUỐN!", "Toc bien cap 5 van thoat duoc loc");
+            Kiem(toi.Cap.SoBinh(CapDo.KyBinhMau) == binh0 - 1 && mauToi.health > 1000f, "bi cuon thi khong uong duoc binh");
+            // F3: doi chung - thoat loc thi tung lai duoc
+            if (loc != null) Object.Destroy(loc.gameObject);
+            var wc = toi.GetComponent<WhirledEffect>(); if (wc != null) Object.Destroy(wc);
+            yield return new WaitForSeconds(1.2f);
+            toi.mana = toi.maxMana; int cau2 = demCau();
+            toi.CastAt(0, toi.transform.position + truoc * 10f);
+            int maxCau2 = 0;
+            for (float tD = Time.time; Time.time - tD < 1.0f; ) { maxCau2 = Mathf.Max(maxCau2, demCau() - cau2); yield return null; }
+            Ghi("F3. doi chung het bi cuon: Qua cau lua bay ra " + maxCau2);
+            Kiem(maxCau2 >= 1, "doi chung: thoat loc ma van khong tung duoc");
+        }
 
         Ghi("so loi ghi nhan = " + soLoi);
         File.WriteAllText(Ra, bao.ToString());

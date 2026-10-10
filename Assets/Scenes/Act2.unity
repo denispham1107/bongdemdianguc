@@ -115615,7 +115615,7 @@ MonoBehaviour:
   boltCost: 45
   boltCooldown: 4
   boltCastTime: 0.62
-  tornadoCost: 65
+  tornadoCost: 50
   tornadoCooldown: 2
   tornadoCastTime: 0.72
   meteorCost: 45
@@ -115632,7 +115632,7 @@ MonoBehaviour:
   quaCauBangCost: 25
   quaCauBangCooldown: 0.9
   quaCauBangCastTime: 0.38
-  gioLocCost: 40
+  gioLocCost: 35
   gioLocCooldown: 0.9
   gioLocCastTime: 0.38
   luaDiaNgucCost: 40

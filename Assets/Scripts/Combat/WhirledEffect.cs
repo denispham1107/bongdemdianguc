@@ -59,6 +59,10 @@ public class WhirledEffect : MonoBehaviour
         w.height = Mathf.Max(0f, d.transform.position.y - tornado.transform.position.y);
         w.targetHeight = Random.Range(tornado.liftHeight * 0.45f, tornado.liftHeight);
 
+        // Dang niem phep thi NGAT ngay (nguoi dung 10/10/2026, giong bi Gio loc hat tung); suot luc bi cuon CastAt tu choi
+        var pcBiCuon = d.GetComponent<PlayerController>();
+        if (pcBiCuon != null) pcBiCuon.NgatChieu();
+
         DamagePopup.SpawnText(d.transform.position + Vector3.up * 2.1f, "BỊ CUỐN!",
                               new Color(0.85f, 0.82f, 0.70f));
         return w;

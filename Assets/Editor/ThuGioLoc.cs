@@ -503,7 +503,7 @@ public static class ThuGioLoc
             GioLoc.TocDo, tocQuaCau, bo != null ? bo.Length : -1, bo != null && bo.Length > K && bo[K] != null ? "co" : "KHONG",
             tIcon != null ? tIcon.width + "x" + tIcon.height : "KHONG", SachPhep.Ten(K), SachPhep.TomTat(K), SachPhep.MoTa(K).Length));
         // 09/10/2026 nguoi dung: 40 nang luong, hoi chieu 0,9 giay (truoc 20 / 0,4)
-        Kiem(Mathf.Approximately(toi.gioLocCost, 40f) && Mathf.Approximately(nl, 40f), "nang luong khong phai 40");
+        Kiem(Mathf.Approximately(toi.gioLocCost, 35f) && Mathf.Approximately(nl, 35f), "nang luong khong phai 35 (nguoi dung 10/10/2026)");
         Kiem(Mathf.Approximately(toi.gioLocCooldown, 0.9f) && Mathf.Approximately(hc, 0.9f), "hoi chieu khong phai 0,9");
         Kiem(Mathf.Approximately(toi.gioLocCastTime, 0.38f), "niem khong phai 0,38");
         // 26/09/2026: hinh quat - cap 1-4 ba loc, cap 5 nam loc; 29/09/2026 goc 15 -> 20 do giua hai loc (nguoi dung chon)
@@ -562,7 +562,7 @@ public static class ThuGioLoc
             tuChoiKhoa, daTung, soLocBay, manaTon, hoiNgaySau, lucNhan, thayNhacHoi, mauB - biaB.health, biaB.keDanhCuoi == mauToi));
         Kiem(tuChoiKhoa, "ky nang khoa ma van tung duoc");
         Kiem(daTung && soLocBay == 2, "tung Gio loc cap 1 khong ra dung 2 loc");
-        Kiem(Mathf.Abs(manaTon - 40f) < 0.01f, "khong ton dung 40 nang luong");
+        Kiem(Mathf.Abs(manaTon - 35f) < 0.01f, "khong ton dung 35 nang luong (10/10/2026)");
         Kiem(tuChoiHoiChieu && tungLai, "hoi chieu 0,9 giay khong dung");
         Kiem(biaB.keDanhCuoi == mauToi, "trung bia ma khong ghi ke danh (mat kinh nghiem)");
         Object.Destroy(biaB.gameObject);
@@ -1759,17 +1759,17 @@ public static class ThuGioLoc
             float moiCu = 75f * Mathf.Pow(1.2f, 4);            // 155,52 moi lan trung o cap 5
             int soCu = Mathf.RoundToInt(matM / moiCu);
             // 09/10/2026 nguoi dung bo ngoai le "cap 5 chi 25" - cap 5 tinh nhu ky nang khac: 40 x 1,1^4 (viet tay, khong doc ham)
-            float mongTon4 = 40f * Mathf.Pow(1.1f, 3), mongTon5 = 40f * Mathf.Pow(1.1f, 4);
+            float mongTon4 = 35f * Mathf.Pow(1.1f, 3), mongTon5 = 35f * Mathf.Pow(1.1f, 4);   // 10/10/2026: goc 35 (truoc 40)
             Ghi(string.Format("M. cap 4 (doi chung): {0} loc, huong bay {1}(mong -15 15), ton {2:F2} nang luong (mong {3:F2} - nang luong KHONG nhan theo so loc)",
                 bon.Count, goc4, ton4, mongTon4));
-            Ghi(string.Format("M. cap {0}: {1} loc, huong bay {2}(mong -30 0 30), goc tinh tu quang duong da bay 0,35 s: {3}(khop {4}/3); ton {5:F2} (mong {6:F2} - 40 x 1,1^4)",
+            Ghi(string.Format("M. cap {0}: {1} loc, huong bay {2}(mong -30 0 30), goc tinh tu quang duong da bay 0,35 s: {3}(khop {4}/3); ton {5:F2} (mong {6:F2} - 35 x 1,1^4)",
                 cap5, nam.Count, goc5, gocViTri, dungGocViTri, ton5, mongTon5));
             Ghi(string.Format("M. bia tren duong loc giua mat {0:F1} = {1} cu x {2:F2} (moi loc trung mot lan; mong 1 cu: chi loc giua, hai loc 30 do cach 3,5 m)",
                 matM, soCu, moiCu));
             Kiem(bon.Count == 2 && goc4 == "-15 15 " && Mathf.Abs(ton4 - mongTon4) < 0.05f, "cap 4 khong phai 2 loc lech 30 do / nang luong thuong");
             Kiem(cap5 == 5 && nam.Count == 3 && goc5 == "-30 0 30 ", "cap 5 khong ra dung 3 loc hinh quat 30 do");
             Kiem(dungGocViTri == 3, "vi tri loc sau khi bay khong toe dung hinh quat");
-            Kiem(Mathf.Abs(ton5 - mongTon5) < 0.05f, "cap 5 khong ton dung 40 x 1,1^4 nang luong");
+            Kiem(Mathf.Abs(ton5 - mongTon5) < 0.05f, "cap 5 khong ton dung 35 x 1,1^4 nang luong");
             // bia co 10 000 000 mau: float o do lon nay chi chinh xac toi 1 don vi, moi cu 155,52 thanh 156
             Kiem(soCu == 1 && Mathf.Abs(matM - soCu * moiCu) < 0.6f * soCu, "bia giua khong bi dung so loc di qua trung (moi loc mot lan)");
             Object.Destroy(biaM.gameObject);

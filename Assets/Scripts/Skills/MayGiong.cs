@@ -17,7 +17,7 @@ using UnityEngine;
 /// </summary>
 public class MayGiong : MonoBehaviour
 {
-    public const float NangLuong = 50f;
+    public const float NangLuong = 45f;      // 10/10/2026 nguoi dung (truoc 50)
     /// <summary>Hoi chieu (nguoi dung 26/09/2026: 7 -> 5,5 giay).</summary>
     public const float HoiChieu = 5.5f;
     public const float NiemChu = 0.5f;

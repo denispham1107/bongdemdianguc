@@ -138,6 +138,12 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
   Tàng hình 40 · Giựt sét 25 · Sấm sét 45 · Cầu điện 55 · Gió lốc 40 · Lốc xoáy 65 · Hoá lốc xoáy 45 · Mây giông 50 · Khiên 45 · Tốc biến 40; mỗi cấp +10%
   nhân dồn — ⚠️ **BỎ ngoại lệ "Gió lốc cấp 5 chỉ 25"** (người dùng chọn; cấp 5 = 58,56; `GioLoc.NangLuongCap5` đã xoá). **Hồi chiêu 0,9 s** cho
   Cầu lửa · Cầu băng · Giựt sét · Gió lốc (người dùng "delay skill 0,9 giây", chọn = hồi chiêu; trước 0,55 / 0,55 / 0,4 / 0,4).
+  ⚠️ **10/10/2026: Gió lốc 40 → 35, Lốc xoáy 65 → 50, Mây giông 50 → 45** (code + prefab + Act2; Mây giông là hằng `MayGiong.NangLuong`). Menu 71, 83: 0 lỗi.
+- ⚠️ **BỊ LỐC XOÁY CUỐN KHÔNG DÙNG ĐƯỢC KỸ NĂNG** (10/10/2026, người dùng — người chơi lẫn BOT; chọn: ngắt phép đang niệm, bình VẪN uống được,
+  Tốc biến cấp 5 cũng bị chặn): `PlayerController.LyDoKhongTungDuoc` thêm `WhirledEffect` → "BẠN ĐANG BỊ LỐC XOÁY CUỐN!"; tham số `choUongBinh`
+  (bình chỉ bỏ qua Lốc xoáy — choáng / đóng băng / ngã / hất tung VẪN chặn cả bình như trước); `WhirledEffect.Catch` gọi `NgatChieu`. Menu 99 F
+  (0 lỗi): đang niệm bị cuốn → ngắt 1, 0 quả; đang cuốn Quả cầu lửa / Tốc biến cấp 5 bị từ chối, mana giữ, bình máu 1000 → 1200; thoát lốc → tung
+  lại được. Menu 99 A sửa: Lốc xoáy 18 m, Thiên thạch 23 m (viết tay).
 - ⚠️ **HIỆU ỨNG KỸ NĂNG MỚI (09/10/2026, người dùng — mọi dòng cũ "40% đóng băng / 15% choáng / 80% hất tung / chậm 50% 2 s / hất 0,7 s" bên
   dưới là LỊCH SỬ)**: **Quả cầu lửa** cấp 1–4 mỗi quả (cả quả nảy) **10% đánh ngã 1 s** (`Fireball.NgaXacSuatThuong` / `NgaGiayThuong`; người dùng
   chọn cấp 5 GIỮ 30% / 1,5 s); **Quả cầu băng** đóng băng **20% · 1 s**, chậm ~~80% · 3 s~~ **50% · 2 s** mọi lần trúng (`QuaCauBang.XacSuatDongBang`, `GiayDongBang`,

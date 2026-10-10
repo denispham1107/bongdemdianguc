@@ -48,7 +48,7 @@ public class PlayerController : MonoBehaviour
     public float boltCastTime = 0.62f;
 
     [Header("Ky nang 4 - Loc xoay")]
-    public float tornadoCost = 65f;  // 09/10/2026 nguoi dung (so con nam trong prefab Player_Sorceress + nhan vat trong Act2)
+    public float tornadoCost = 50f;  // 10/10/2026 nguoi dung (truoc 65; 09/10 la 65) (so con nam trong prefab Player_Sorceress + nhan vat trong Act2)
     public float tornadoCooldown = 2f;
     public float tornadoCastTime = 0.72f;
 
@@ -90,7 +90,7 @@ public class PlayerController : MonoBehaviour
 
     [Header("Ky nang 11 - Gio loc (so hieu 10)")]
     // Nguoi dung 16/09/2026: "Skill delay 0.4 giay" = hoi chieu; chon 20 nang luong, niem 0,38 s nhu Qua cau bang.
-    public float gioLocCost = 40f;  // 09/10/2026 nguoi dung (so con nam trong prefab Player_Sorceress + nhan vat trong Act2)
+    public float gioLocCost = 35f;  // 10/10/2026 nguoi dung (truoc 40) (so con nam trong prefab Player_Sorceress + nhan vat trong Act2)
     public float gioLocCooldown = 0.9f;   // 09/10/2026 nguoi dung: "delay skill 0,9 giay" = hoi chieu (truoc 0.4)
     public float gioLocCastTime = 0.38f;
 
@@ -912,8 +912,9 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    /// <summary>Ly do dang khong tung duoc phep, null neu tung duoc.</summary>
-    string LyDoKhongTungDuoc()
+    /// <summary>Ly do dang khong tung duoc phep, null neu tung duoc. <paramref name="choUongBinh"/> = hoi cho binh mau / mana: bi LOC XOAY
+    /// cuon van uong duoc (nguoi dung 10/10/2026), cac trang thai khac giu luat cu (chan ca binh).</summary>
+    string LyDoKhongTungDuoc(bool choUongBinh = false)
     {
         var f = GetComponent<FrozenEffect>();
         if (f != null && f.IsFullyFrozen) return "BẠN ĐANG BỊ ĐÓNG BĂNG!";
@@ -923,6 +924,9 @@ public class PlayerController : MonoBehaviour
         if (ht != null && ht.DangBay) return "BẠN ĐANG BỊ HẤT TUNG!";
         var st = GetComponent<StunnedEffect>();
         if (st != null && st.IsStunned) return "BẠN ĐANG BỊ CHOÁNG!";
+        // Bi LOC XOAY cuon (nguoi dung 10/10/2026): khong dung duoc ky nang nao - ca nguoi choi lan may BOT (binh van uong duoc,
+        // xu ly truoc o dau CastAt). Toc bien cap 5 KHONG duoc go troi: CastAt chan rieng truoc (TocBien.DangBiCuonLoc).
+        if (!choUongBinh && GetComponent<WhirledEffect>() != null) return "BẠN ĐANG BỊ LỐC XOÁY CUỐN!";
         return null;
     }
 
@@ -1141,7 +1145,7 @@ public class PlayerController : MonoBehaviour
     public float UongBinh(int ky)
     {
         string ten = SachPhep.Ten(ky);
-        string caidangkhoa = LyDoKhongTungDuoc();
+        string caidangkhoa = LyDoKhongTungDuoc(true);
         if (caidangkhoa != null) { Say(caidangkhoa); return 0f; }
         if (!Cap.DaMo(ky)) { Say(ten + " chưa mở khoá — vào SÁCH PHÉP để mở"); return 0f; }
         if (Cap.SoBinh(ky) <= 0)

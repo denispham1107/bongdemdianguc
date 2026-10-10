@@ -13798,6 +13798,24 @@ Phép đo menu 117 mục C bắt được (k = 1,000); sửa bằng `#pragma mul
 cấp 7 săn đối thủ 23 m (còn 7,2 m sau 6 s), đối thủ 45 m không biết; cấp 1 quái 22 m + người 23 m → quái; cấp 7 quái 10 m → quái, quái 22 m →
 người; đi tuần 45 s không thấy ai: 230 m, ô đã ghé 36 → 51 / 64, xa chỗ xuất phát nhất 68 m. Menu 113, 115: 0 lỗi.
 
+## Mana Phong mới + bị Lốc xoáy cuốn không dùng được kỹ năng (10/10/2026)
+
+**Mana cấp 1 (người dùng):** Gió lốc 40 → **35**, Lốc xoáy 65 → **50**, Mây giông 50 → **45**. Gió lốc / Lốc xoáy nằm ở ba chỗ (code
+`PlayerController`, prefab `Player_Sorceress` — bản sao người khác + BOT lấy từ đây, nhân vật đặt sẵn trong Act2), Mây giông là hằng
+`MayGiong.NangLuong`. Cấp cao vẫn +10% mỗi cấp nhân dồn (Gió lốc cấp 5 = 51,24). Menu 71 (35, cấp 4 46,59, cấp 5 51,24) và 83 (45): 0 lỗi.
+
+**Bị Lốc xoáy cuốn (người dùng: người chơi và cả máy BOT không dùng được skill).** Người dùng chọn: phép đang niệm bị NGẮT ngay (như bị Gió lốc
+hất tung); bình máu / mana VẪN uống được; Tốc biến cấp 5 (vốn gỡ được choáng / ngã / đóng băng) cũng bị chặn. Cài đặt: `LyDoKhongTungDuoc` thêm
+`WhirledEffect` (dùng chung cho người chơi và BOT vì BOT đi qua `CastAt`); `WhirledEffect.Catch` gọi `NgatChieu`.
+
+⚠️ Lúc hỏi người dùng, tôi ghi "bình vẫn uống được giống luật khi bị choáng / đóng băng" — **sai**: hàm uống bình dùng chung cái chặn với kỹ năng nên
+các trạng thái ấy chặn cả bình. Đã làm đúng lựa chọn (chỉ Lốc xoáy cho uống bình, tham số `choUongBinh`), giữ luật cũ cho các trạng thái khác và báo
+lại người dùng.
+
+**Menu 99 mục F (0 lỗi, tung thật):** đang niệm Quả cầu lửa thì bị cuốn → ngắt 1 lần, 0 quả bay ra; đang bị cuốn: Quả cầu lửa và Tốc biến cấp 5 bị
+từ chối ("BẠN ĐANG BỊ LỐC XOÁY CUỐN!"), mana 180 giữ nguyên, không thoát được lốc; bình máu 1 → 0, máu 1000 → 1200; đối chứng thoát lốc → tung lại
+được (3 quả). Mục A sửa theo luật 09/10 (Lốc xoáy 18 m, Thiên thạch 23 m).
+
 ## Phần 4 — Menu công cụ "Diablo 2.5D"
 
 | Mục | Tác dụng |

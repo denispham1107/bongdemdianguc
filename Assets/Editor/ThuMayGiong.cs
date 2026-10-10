@@ -287,8 +287,8 @@ public static class ThuMayGiong
         Kiem(SachPhep.Ten(K) == "MÂY GIÔNG" && trongPhong, "ten / nhom PHONG sai");
         Kiem(mt.Contains("125") && mt.Contains("45%") && mt.Contains("0,85") && mt.Contains("3 giây") && mt.Contains("20 tia") && mt.Contains("5 giây") && mt.Contains("ƯỚT") && mt.Contains("50%"), "mo ta Sach phep thieu con so / thieu mua uot");
         Kiem(bo != null && bo.Length == CapDo.SoKyNang && bo[K] != null, "thieu icon May giong");
-        Kiem(Mathf.Approximately(toi.mayGiongCost, 50f) && Mathf.Approximately(toi.mayGiongCooldown, 5.5f) && Mathf.Approximately(toi.mayGiongCastTime, 0.5f)
-             && Mathf.Approximately(nl, 50f) && Mathf.Approximately(hc, 5.5f), "nang luong / hoi chieu 5,5 / niem sai");
+        Kiem(Mathf.Approximately(toi.mayGiongCost, 45f) && Mathf.Approximately(toi.mayGiongCooldown, 5.5f) && Mathf.Approximately(toi.mayGiongCastTime, 0.5f)
+             && Mathf.Approximately(nl, 45f) && Mathf.Approximately(hc, 5.5f), "nang luong 45 / hoi chieu 5,5 / niem sai");
         Kiem(Mathf.Approximately(toi.TamNgam(K), toi.TamNgam(2)) && Mathf.Abs(toi.TamNgam(K) - 12f) < 0.01f, "tam khong bang Sam set (12 m)");
         Kiem(Mathf.Approximately(toi.BanKinhSatThuong(K), 6f), "vung ngam khong phai 6 m");
         Kiem(PlayerController.KyGaySatThuong(K), "May giong khong tinh la ky nang gay sat thuong");
@@ -400,7 +400,7 @@ public static class ThuMayGiong
         Ghi(string.Format("D. {0} lan bia mat mau, boi so 125: {1}; tia nham ke dich {2}/{3} ({4:P0}, mong ~65%)",
             buocMat.Count, boiSo125, soNham, soTia, soTia > 0 ? soNham / (float)soTia : 0f));
         Ghi("D. (cum bia dung giua mua -> deu BI UOT: moi lan mat mau phai la boi so 187,5 = 125 x 1,5)");
-        Kiem(Mathf.Abs(manaTon - 50f) < 0.01f && Mathf.Abs(hoiNgaySau - 5.5f) < 0.05f, "khong ton 50 / hoi chieu 5,5");
+        Kiem(Mathf.Abs(manaTon - 45f) < 0.01f && Mathf.Abs(hoiNgaySau - 5.5f) < 0.05f, "khong ton 45 / hoi chieu 5,5");
 
         // HUONG BAY giong nhau moi may: diem ngam that va diem da qua goi tin (nen 0,01 m) ra cung huong; 40 cho ngam trai deu 4 goc
         {
