@@ -955,7 +955,7 @@ hơn ×1,5 và mở xuống 1,8–4,3 m** (người dùng chọn sau menu 94 ch�
   kèm), mặt chữ màu đá lấy mẫu từ ảnh tên game (#6e695e / #85836f / #a09d86) + hạt sần (cùng ngày người dùng **bỏ vết máu loang trên chữ + số**,
   đã xoá các lớp lọc ấy; sau đó bỏ luôn 3 vệt máu nhỏ giọt dưới chân số); **vòng canh GIỮA đáy ảnh tên game và dòng tác giả** bằng JS
   (`canhVong`: đo lại khi ảnh / font nạp và khi đổi cỡ màn, dịch `transform`) — đo 932×430 / 390×844 / 1000×640: khoảng trên/dưới 23/23, 30/31, 31/32;
-  5 nét sao sáng ở 0 / 20 / 40 / 60 / 80% (nét ngang trước chỉ sáng khi qua 90%, người dùng chọn "đủ 5 nét sớm hơn"), hai bóng ma lệch rung, dòng chữ vặn như khói. ⚠️ Bộ lọc SVG phải `color-interpolation-filters="sRGB"` — mặc định
+  số % canh vào TÂM KHUNG NGÔI SAO (10/10/2026 người dùng: cỡ 42 → 36, dòng chân 10 → 3,2 — `SO_CO`/`SO_Y`; tâm chữ số đo lệch tâm sao 0,17 đơn vị, cũ 5,35); 5 nét sao sáng ở 0 / 20 / 40 / 60 / 80% (nét ngang trước chỉ sáng khi qua 90%, người dùng chọn "đủ 5 nét sớm hơn"), hai bóng ma lệch rung, dòng chữ vặn như khói. ⚠️ Bộ lọc SVG phải `color-interpolation-filters="sRGB"` — mặc định
   linearRGB đẩy đỏ máu thành HỒNG. Màn thấp (≤ 520) tên game co về 105vh rộng cho vòng vừa màn. Đo (máy chủ tĩnh `web/`): 1000×640 vòng y 273–555,
   844×390 vòng 172 px y 162–333 + tác giả ≤ 360, 390×844 vòng 289 px — không tràn; console 0 lỗi; font nạp được.
   ⚠️ **Cùng ngày (sau): MẶT CHỮ = ĐÁ BIA MỘ** cho CẢ trang Loading lẫn màn trong game (người dùng: "màu giống bia mộ trong game, sần sùi,

@@ -307,10 +307,13 @@
     el("ellipse", { rx: 52, ry: 32, cy: 4, fill: "url(#vt-long)", opacity: .9 }, svg);
     function chu(at, nd) { var e = el("text", at, svg); e.setAttribute("text-anchor", "middle"); e.textContent = nd; return e; }
     var F = "CormorantViet, InterViet, serif";
-    var soMo = chu({ y: 10, "font-family": F, "font-weight": 700, "font-size": 42, fill: "#e8f0ff", filter: "url(#vt-mo)", opacity: .35 }, "0%");
-    var soDo = chu({ y: 10, "font-family": F, "font-weight": 700, "font-size": 42, fill: "#a30a06", opacity: .55, "class": "ma1" }, "0%");
-    var soLam = chu({ y: 10, "font-family": F, "font-weight": 700, "font-size": 42, fill: "#6f8cff", opacity: .2, "class": "ma2" }, "0%");
-    var so = chu({ y: 10, "font-family": F, "font-weight": 700, "font-size": 42, fill: "url(#vt-mat-da)", filter: "url(#vt-bia)",
+    // So % canh vao TAM KHUNG NGOI SAO (10/10/2026 nguoi dung): sao 5 canh ban kinh 56 -> dinh tren -56, hai dinh duoi +45,3 -> tam -5,35.
+    // Chu so Cormorant cao 0,5 em tren dong chan (do bang canvas) -> co 36, dong chan 3,2 => giua chu so o -5,35; dinh chu so -14,8, vua duoi net sao ngang (-16,2).
+    var SO_CO = 36, SO_Y = 3.2;
+    var soMo = chu({ y: SO_Y, "font-family": F, "font-weight": 700, "font-size": SO_CO, fill: "#e8f0ff", filter: "url(#vt-mo)", opacity: .35 }, "0%");
+    var soDo = chu({ y: SO_Y, "font-family": F, "font-weight": 700, "font-size": SO_CO, fill: "#a30a06", opacity: .55, "class": "ma1" }, "0%");
+    var soLam = chu({ y: SO_Y, "font-family": F, "font-weight": 700, "font-size": SO_CO, fill: "#6f8cff", opacity: .2, "class": "ma2" }, "0%");
+    var so = chu({ y: SO_Y, "font-family": F, "font-weight": 700, "font-size": SO_CO, fill: "url(#vt-mat-da)", filter: "url(#vt-bia)",
       stroke: "#0d0a08", "stroke-width": 2.6, "paint-order": "stroke" }, "0%");
     var nhan = chu({ y: 32, "font-family": F, "font-weight": 700, "font-size": 12.5, "letter-spacing": 2.4, fill: "url(#vt-mat-da)",
       stroke: "#0d0a08", "stroke-width": 2.4, "paint-order": "stroke" }, "ĐANG TRIỆU HỒI");
