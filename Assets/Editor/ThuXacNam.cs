@@ -474,8 +474,10 @@ public static class ThuXacNam
         Ghi("");
         {
             var oVCu = (int[])SachPhep.OVuong.Clone(); var oTCu = (int[])SachPhep.OTron.Clone();
-            int[] boThu = { 0, CapDo.KyQuaCauBang, CapDo.KyBinhMana, CapDo.KyBinhMau, CapDo.KyGioLoc, 5, 6 };
-            for (int o = 0; o < 7; o++) { SachPhep.OVuong[o] = boThu[o]; SachPhep.OTron[o] = boThu[o]; }
+            // 10/10/2026: 8 o (o thu tam - Toc bien: Nhao lon chi mot cap, khong bao gio co dau cong)
+            int[] boThu = { 0, CapDo.KyQuaCauBang, CapDo.KyBinhMana, CapDo.KyBinhMau, CapDo.KyGioLoc, 5, 6, CapDo.KyTocBien };
+            int N = Mathf.Min(SachPhep.SoOTron, SachPhep.SoOVuong);
+            for (int o = 0; o < N; o++) { SachPhep.OVuong[o] = boThu[o]; SachPhep.OTron[o] = boThu[o]; }
             CapDo.BatDauTranMoi();     // cap 1, 1 diem, binh co san cap 1
             bool c0 = GameHUD.CoDauCong(0), cTT = GameHUD.CoDauCong(4), cBinh = GameHUD.CoDauCong(CapDo.KyBinhMau), cTrong = GameHUD.CoDauCong(SachPhep.Trong);
             Ghi(string.Format("D. dau tran ({0} diem): Cau lua (khoa, khong can bac) {1}; Thien thach (can Cau lua cap 2) {2}; Binh mau (cap 1/3) {3}; o trong {4}",
@@ -497,14 +499,14 @@ public static class ThuXacNam
 
             // Hinh hoc: dat lai de moi o deu co dau cong
             CapDo.BatDauTranMoi(); CapDo.ThemDiemChoPhepThu(30);
-            int soCo = 0; for (int o = 0; o < 7; o++) if (GameHUD.CoDauCong(boThu[o])) soCo++;
+            int soCo = 0; for (int o = 0; o < N; o++) if (GameHUD.CoDauCong(boThu[o])) soCo++;
             float s = Screen.height / 1080f;
             float r = hud.BanKinhNut(s), rb = r * GameHUD.DauCongTronBanKinh;
             float heHinh = 999f, heBam = 999f, traiMan = 999f; int dungO = 0, giuaNutLaTung = 0;
-            for (int o = 0; o < 7; o++)
+            for (int o = 0; o < N; o++)
             {
                 Vector2 tc = hud.TamDauCongTron(o, s);
-                for (int j = 0; j < 7; j++)
+                for (int j = 0; j < N; j++)
                 {
                     if (j == o) continue;
                     float kc = Vector2.Distance(tc, hud.TamNut(j, s));
@@ -517,10 +519,10 @@ public static class ThuXacNam
             }
             // O vuong: huy hieu khong cat o khac, nam gon trong be ngang o minh
             float heVuong = 999f; int trongO = 0, chuotDung = 0;
-            for (int o = 0; o < 7; o++)
+            for (int o = 0; o < N; o++)
             {
                 Rect b = GameHUD.VungDauCongVuong(o, s), me = GameHUD.RectOVuong(o, s);
-                for (int j = 0; j < 7; j++)
+                for (int j = 0; j < N; j++)
                 {
                     if (j == o) continue;
                     Rect k = GameHUD.RectOVuong(j, s);
@@ -532,14 +534,14 @@ public static class ThuXacNam
                 Vector2 giuaO = new Vector2(me.center.x, Screen.height - me.center.y);
                 if (GameHUD.ConTroTrenDauCongVuong(c) && !GameHUD.ConTroTrenDauCongVuong(giuaO)) chuotDung++;
             }
-            Ghi(string.Format("D. nut TRON ({0}/7 o co dau cong): khe hep nhat tu huy hieu toi nut KHAC {1:F1} (vung bam x1,2: {2:F1}) don vi 1080; cach mep man {3:F1}; cham giua huy hieu -> dung o {4}/7; cham giua nut -> van la tung ky nang {5}/7",
+            Ghi(string.Format("D. nut TRON ({0}/"+N+" o co dau cong): khe hep nhat tu huy hieu toi nut KHAC {1:F1} (vung bam x1,2: {2:F1}) don vi 1080; cach mep man {3:F1}; cham giua huy hieu -> dung o {4}/"+N+"; cham giua nut -> van la tung ky nang {5}/"+N+"",
                 soCo, heHinh, heBam, traiMan, dungO, giuaNutLaTung));
-            Ghi(string.Format("D. o VUONG: huy hieu {0:F1} x {0:F1}, khe toi o khac {1:F1}; nam trong be ngang o minh {2}/7; chuot tren huy hieu duoc chan (khong keo nhan vat) va giua o thi khong {3}/7",
+            Ghi(string.Format("D. o VUONG: huy hieu {0:F1} x {0:F1}, khe toi o khac {1:F1}; nam trong be ngang o minh {2}/"+N+"; chuot tren huy hieu duoc chan (khong keo nhan vat) va giua o thi khong {3}/"+N+"",
                 GameHUD.RectOVuong(0, s).width * GameHUD.DauCongVuongCo / s, heVuong, trongO, chuotDung));
-            Kiem(soCo == 7, "doi chung hong: khong phai o nao cung co dau cong");
+            Kiem(soCo == N, "doi chung hong: khong phai o nao cung co dau cong");
             Kiem(heHinh > 0f && heBam > 0f && traiMan > 0f, "dau cong nut tron cham / de len nut khac hoac tran man");
-            Kiem(dungO == 7 && giuaNutLaTung == 7, "vung bam dau cong nut tron sai");
-            Kiem(heVuong > 0f && trongO == 7 && chuotDung == 7, "dau cong o vuong de len o khac / khong chan chuot");
+            Kiem(dungO == N && giuaNutLaTung == N, "vung bam dau cong nut tron sai");
+            Kiem(heVuong > 0f && trongO == N && chuotDung == N, "dau cong o vuong de len o khac / khong chan chuot");
 
             // Sach phep: ky nang CON KHOA keo duoc vao o (nguoi dung 26/09/2026), bi dong thi khong
             CapDo.BatDauTranMoi();
@@ -555,7 +557,7 @@ public static class ThuXacNam
                 khoaKeo, khoa, biDongKeo, biDong, datDuoc));
             Kiem(khoa > 5 && khoaKeo == khoa && biDong >= 5 && biDongKeo == 0 && datDuoc, "Sach phep: ky nang khoa khong keo duoc / bi dong keo duoc");
             CapDo.ThemDiemChoPhepThu(30);
-            for (int o = 0; o < 7; o++) { SachPhep.OVuong[o] = boThu[o]; SachPhep.OTron[o] = boThu[o]; }
+            for (int o = 0; o < N; o++) { SachPhep.OVuong[o] = boThu[o]; SachPhep.OTron[o] = boThu[o]; }
 
             // Anh huy hieu "+" (Blender): co, nen trong suot, mep alpha 0 (khong ve o vuong quanh huy hieu)
             var anhCong = Resources.Load<Texture2D>("GiaoDien/DauCong");
@@ -573,7 +575,7 @@ public static class ThuXacNam
             yield return new WaitForSeconds(0.3f);
             yield return Chup("xacnam_4_dau_cong_cam_ung");
             hud.epCamUng = false;
-            for (int o = 0; o < 7; o++) { SachPhep.OVuong[o] = oVCu[o]; SachPhep.OTron[o] = oTCu[o]; }
+            for (int o = 0; o < N; o++) { SachPhep.OVuong[o] = oVCu[o]; SachPhep.OTron[o] = oTCu[o]; }
             SachPhep.Luu();     // DatVaoO o tren da ghi thu tu o thu xuong may - ghi lai thu tu cu cua nguoi choi
         }
 

@@ -32,7 +32,7 @@ using UnityEngine;
 /// </summary>
 public static class ThuThanhKyNang
 {
-    const int SoO = 7;
+    static int SoO { get { return SachPhep.SoOVuong; } }   // 10/10/2026: 7 -> 8 o (doc tu SachPhep, khong ghi cung)
 
     // KHONG chep hang so nay tu GameHUD sang. Lan do dau chep "720" trong khi
     // GameHUD dung 1080, the la moi o ky nang bi tinh rong 66 px thay vi 44 px
@@ -161,10 +161,12 @@ public static class ThuThanhKyNang
         // Anh chup co the to hon Screen (Retina / scale), nen quy ve ti le
         float ti = anh.width / (float)Screen.width;
         float s = Screen.height / Ref;
-        float o = 84f * s, khe = 12f * s;
-        float tong = o * SoO + khe * (SoO - 1);
-        float x0 = (Screen.width - tong) * 0.5f;
-        float yBar = Screen.height - o - 22f * s;
+        // Hinh hoc o lay tu GameHUD.RectOVuong (10/10/2026: 8 o, cach day CachDayThanh - truoc ghi cung 7 o / 22 nen
+        // sau khi doi bo cuc phep do quet sai cho)
+        Rect o0 = GameHUD.RectOVuong(0, s);
+        float o = o0.width, khe = GameHUD.RectOVuong(1, s).x - o0.xMax;
+        float x0 = o0.x;
+        float yBar = o0.y;
 
         // Dai chu: chu ve o (yBar + o + 2s), cao 22s. Bat dau quet tu 3s cho
         // CHAC CHAN nam duoi duong vien o - lan do dau lay tu day o, the la
@@ -218,7 +220,7 @@ public static class ThuThanhKyNang
 
         Ghi(string.Format("be rong LY THUYET: \"[1/Z]\" = {0:F0} px, \"[1/Z] QUA CAU LUA\" = {1:F0} px",
                           rongMoi, rongCu));
-        Ghi("tong pixel mau chu duoi bay o = " + tongPixelChu);
+        Ghi("tong pixel mau chu duoi " + SoO + " o = " + tongPixelChu);
 
         for (int i = 0; i < SoO; i++)
             Ghi(string.Format("  o {0}: {1} pixel chu, cum rong {2} px",

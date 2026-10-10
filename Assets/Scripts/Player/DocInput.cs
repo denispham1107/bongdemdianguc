@@ -65,6 +65,9 @@ public class DocInput : MonoBehaviour
             || Input.GetKeyDown(KeyCode.B)) return 3;
         if (Input.GetKeyDown(KeyCode.Alpha7) || Input.GetKeyDown(KeyCode.Keypad7)
             || Input.GetKeyDown(KeyCode.G)) return 6;
+        // O thu tam (10/10/2026, nguoi dung chon 8 / H)
+        if (Input.GetKeyDown(KeyCode.Alpha8) || Input.GetKeyDown(KeyCode.Keypad8)
+            || Input.GetKeyDown(KeyCode.H)) return 7;
         return -1;
     }
 
@@ -149,7 +152,9 @@ public class DocInput : MonoBehaviour
     static bool ConTroTrenThanhKyNang()
     {
         // Thanh ky nang nam duoi day man hinh - khong di chuyen khi bam vao do
-        if (Input.mousePosition.y < Screen.height * 0.09f) return true;
+        // (truoc: y < 9% man - thanh nay cao hon tu khi doi len khoi mep duoi 10/10/2026, nen xet dung vung thanh)
+        float sThanh = Screen.height / 1080f;
+        if (GameHUD.VungThanhKyNang(sThanh).Contains(new Vector2(Input.mousePosition.x, Screen.height - Input.mousePosition.y))) return true;
         // Dau "+" nang cap nho len tren canh o ky nang - bam vao do khong duoc keo nhan vat chay di
         if (GameHUD.ConTroTrenDauCongVuong(Input.mousePosition)) return true;
 

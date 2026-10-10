@@ -55,8 +55,9 @@ public static class ThuSachPhepSanh
     static string phienGoc, tronGoc, vuongGoc;
 
     // Thu tu mong doi - TINH TAY tu cac thao tac o B3, khong hoi SachPhep
-    const string MongVuong = "8,7,3,2,4,5,6";
-    const string MongTron = "0,1,2,3,4,5,8";
+    // 10/10/2026: 8 o - o thu tam giu mac dinh Nhao lon (22)
+    const string MongVuong = "8,7,3,2,4,5,6,22";
+    const string MongTron = "0,1,2,3,4,5,8,22";
 
     [MenuItem("Diablo 2.5D/66. Chay thu NUT KY NANG o sanh (sach phep xem truoc) + con mat", false, 153)]
     public static void Chay()
@@ -489,7 +490,7 @@ console.log(out.join('|'));
         yield return new WaitForSeconds(2.0f);
         var hud = GameHUD.Ban;
         var sbTran = new StringBuilder();
-        for (int o = 0; o < SachPhep.SoOVuong; o++) sbTran.Append(SachPhep.KyNangTaiO(o)).Append(o < 6 ? "," : "");
+        for (int o = 0; o < SachPhep.SoOVuong; o++) sbTran.Append(SachPhep.KyNangTaiO(o)).Append(o < SachPhep.SoOVuong - 1 ? "," : "");
         Ghi("B4. vao Act2 luc sach dang mo (" + moTruocKhiVao + "): sach con mo = " + CuaSoSachPhep.DangMo
             + ", thanh ky nang trong tran [" + sbTran + "]");
         Kiem(moTruocKhiVao && !CuaSoSachPhep.DangMo, "vao tran ma Sach phep xem truoc van phu man hinh");

@@ -241,7 +241,12 @@ public partial class GameHUD : MonoBehaviour
         smallStyle.fontSize = Mathf.RoundToInt(18f * s);
         smallStyle.normal.textColor = new Color(0.85f, 0.82f, 0.75f);
 
-        keyStyle.fontSize = Mathf.RoundToInt(16f * s);
+        keyStyle.fontSize = Mathf.Max(8, Mathf.RoundToInt(16f * s));
+        // Le cua GUI.skin la DIEM ANH CO DINH, khong co theo s: man thap (580 cao) chu "[1/Z]" bi day xuong va cut nua duoi
+        // (nguoi dung chup anh 10/10/2026) - bo le, khong cat chu
+        keyStyle.padding = new RectOffset(0, 0, 0, 0);
+        keyStyle.margin = new RectOffset(0, 0, 0, 0);
+        keyStyle.clipping = TextClipping.Overflow;
         keyStyle.fontStyle = FontStyle.Bold;
         keyStyle.alignment = TextAnchor.UpperCenter;
         keyStyle.normal.textColor = new Color(1f, 0.9f, 0.6f);
@@ -1052,8 +1057,8 @@ public partial class GameHUD : MonoBehaviour
     // Nut phai DU TO cho ngon cai (dau ngon cai nguoi lon khoang 45-57 diem anh
     // o mat do man hinh thong thuong), nhung to qua thi sau nut khong xep vua
     // mot cum ma khong de len nhau.
-    /// <summary>So nut ky nang tren cum cam ung.</summary>
-    const int SoNut = 7;
+    /// <summary>So nut ky nang tren cum cam ung (10/10/2026: 7 -> 8, nut thu tam ngay duoi nut thu sau).</summary>
+    const int SoNut = 8;
 
     /// <summary>
     /// Le tu goc man hinh toi TAM cua cung. Phai lon hon ban kinh nut, khong
@@ -1120,6 +1125,10 @@ public partial class GameHUD : MonoBehaviour
     /// </summary>
     public static Vector2 LechNut(int i)
     {
+        // NUT THU TAM (10/10/2026, nguoi dung khoanh tron do ngay DUOI nut thu sau - cung ngoai goc 22 do): cach nut thu sau 156,
+        // nut thu ba (cung trong 10 do) 152,6 - duong kinh 131,2 nen ho 21-25; day nut cach mep duoi 46,4 don vi.
+        if (i == 7) return new Vector2(505f, 112f);
+
         // NUT THU BAY nam o mot cung RIENG, trong cung, sat goc man hinh.
         if (i == 6)
         {
@@ -1354,14 +1363,30 @@ public partial class GameHUD : MonoBehaviour
         return -1;
     }
 
+    /// <summary>
+    /// O vuong cach mep duoi bao nhieu (don vi bo cuc). 22 -> 36 (10/10/2026): chu phim tat "[1/Z]" nam DUOI o (cao 22) nen o cach day
+    /// 22 thi dong chu tran 2 don vi ra ngoai mep duoi - nguoi dung chup anh thay chu bi cat. Nay chu nam tron, cach day 12.
+    /// </summary>
+    public const float CachDayThanh = 36f;
+
+    /// <summary>Ca thanh o vuong + dong chu phim tat ben duoi (toa do GUI) - DocInput / bo cuc HUD dung.</summary>
+    public static Rect VungThanhKyNang(float s)
+    {
+        Rect dau = RectOVuong(0, s), cuoi = RectOVuong(SachPhep.SoOVuong - 1, s);
+        return Rect.MinMaxRect(dau.xMin, dau.yMin, cuoi.xMax, dau.yMax + 26f * s);
+    }
+
     /// <summary>O vuong thu o (toa do GUI, y tu tren xuong) - cung hinh hoc voi DrawSkillBar.</summary>
-    public static Rect RectOVuong(int o, float s)
+    public static Rect RectOVuong(int o, float s) { return RectOVuong(o, s, Screen.width, Screen.height); }
+
+    /// <summary>Nhu tren tren man W x H bat ky - phep thu (menu 120) do nhieu co man.</summary>
+    public static Rect RectOVuong(int o, float s, float W, float H)
     {
         int n = SachPhep.SoOVuong;
         float slot = 84f * s, gap = 12f * s;
         float total = slot * n + gap * (n - 1);
-        float x = (Screen.width - total) * 0.5f;
-        float y = Screen.height - slot - 22f * s;
+        float x = (W - total) * 0.5f;
+        float y = H - slot - CachDayThanh * s;
         return new Rect(x + (slot + gap) * o, y, slot, slot);
     }
 
@@ -1449,19 +1474,14 @@ public partial class GameHUD : MonoBehaviour
     void DrawSkillBar(float s)
     {
         int n = SachPhep.SoOVuong;
-        float slot = 84f * s;
-        float gap = 12f * s;
-        float total = slot * n + gap * (n - 1);
-        float x = (Screen.width - total) * 0.5f;
-        float y = Screen.height - slot - 22f * s;
-        // Hinh hoc nay chep o RectOVuong (dau cong + DocInput dung) - sua mot cho thi sua ca hai
+        // Hinh hoc o vuong: CHUNG mot ham RectOVuong (dau cong, DocInput, phep thu 120 cung dung)
 
         var icon = BoIcon();
         var bo = SachPhep.OVuong;
 
         // Phim tat cua tung O (khong phai cua tung ky nang): nguoi choi keo
         // Sam set sang o mot thi bam so 1 phai ra Sam set. Xem DocInput.
-        string[] phim = { "1/Z", "2/X", "3/V", "4/B", "5/N", "6/M", "7/G" };
+        string[] phim = { "1/Z", "2/X", "3/V", "4/B", "5/N", "6/M", "7/G", "8/H" };
 
         // DAU CONG: nut bam goi TRUOC o ky nang ben duoi - IMGUI cho nut goi truoc gianh cu bam, khong thi
         // cu bam vao phan dau cong lan tren o se thanh mot phat tung ky nang
@@ -1473,7 +1493,7 @@ public partial class GameHUD : MonoBehaviour
 
         for (int o = 0; o < n; o++)
         {
-            var r = new Rect(x + (slot + gap) * o, y, slot, slot);
+            var r = RectOVuong(o, s);
             int ky = bo[o];
             string ten = o < phim.Length ? phim[o] : (o + 1).ToString();
 

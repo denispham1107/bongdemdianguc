@@ -1,0 +1,39 @@
+[ban 1] 8 o ky nang
+A0. 8 nut; nut 8 lech (505, 112) tu goc phai duoi; ho hep nhat giua hai nut 16.6 (2-3), duong kinh 131.2; dau "+" cach nut khac >= 7.8
+A. 844x390 (s 0.361): le phai 34.8, le duoi 16.8, le trai 638, cach can dieu khien 478, cach cot goc phai tren 95 (diem anh)
+A. 1280x720 (s 0.667): le phai 64.2, le duoi 30.9, le trai 900, cach can dieu khien 605, cach cot goc phai tren 176 (diem anh)
+A. 1619x580 (s 0.537): le phai 51.7, le duoi 24.9, le trai 1313, cach can dieu khien 1075, cach cot goc phai tren 142 (diem anh)
+A. 1920x1080 (s 1.000): le phai 96.3, le duoi 46.4, le trai 1349, cach can dieu khien 907, cach cot goc phai tren 264 (diem anh)
+A. 2400x1080 (s 1.000): le phai 96.3, le duoi 46.4, le trai 1829, cach can dieu khien 1387, cach cot goc phai tren 264 (diem anh)
+A. 2778x1284 (s 1.189): le phai 114.5, le duoi 55.2, le trai 2100, cach can dieu khien 1574, cach cot goc phai tren 314 (diem anh)
+A. 1024x768 (s 0.711): le phai 68.5, le duoi 33.0, le trai 618, cach can dieu khien 304, cach cot goc phai tren 188 (diem anh)
+A. 2048x1536 (s 1.422): le phai 136.9, le duoi 66.0, le trai 1237, cach can dieu khien 607, cach cot goc phai tren 376 (diem anh)
+B. 844x390: 8 o vuong, le trai 286 / phai 286, dong chu phim cach mep duoi 4.3, chong nhau False
+B. 1280x720: 8 o vuong, le trai 388 / phai 388, dong chu phim cach mep duoi 8.0, chong nhau False
+B. 1619x580: 8 o vuong, le trai 607 / phai 607, dong chu phim cach mep duoi 6.4, chong nhau False
+B. 1920x1080: 8 o vuong, le trai 582 / phai 582, dong chu phim cach mep duoi 12.0, chong nhau False
+B. 2400x1080: 8 o vuong, le trai 822 / phai 822, dong chu phim cach mep duoi 12.0, chong nhau False
+B. 2778x1284: 8 o vuong, le trai 940 / phai 940, dong chu phim cach mep duoi 14.3, chong nhau False
+B. 1024x768: 8 o vuong, le trai 243 / phai 243, dong chu phim cach mep duoi 8.5, chong nhau False
+B. 2048x1536: 8 o vuong, le trai 486 / phai 486, dong chu phim cach mep duoi 17.1, chong nhau False
+C. Sach phep cam ung 844x390: 8 o, ho hep nhat 3.5 diem, ra ngoai vung o False, ra ngoai khung False, de len dong nhac False
+C. Sach phep cam ung 1280x720: 8 o, ho hep nhat 6.8 diem, ra ngoai vung o False, ra ngoai khung False, de len dong nhac False
+C. Sach phep cam ung 1619x580: 8 o, ho hep nhat 5.4 diem, ra ngoai vung o False, ra ngoai khung False, de len dong nhac False
+C. Sach phep cam ung 1920x1080: 8 o, ho hep nhat 10.5 diem, ra ngoai vung o False, ra ngoai khung False, de len dong nhac False
+C. Sach phep cam ung 2400x1080: 8 o, ho hep nhat 10.5 diem, ra ngoai vung o False, ra ngoai khung False, de len dong nhac False
+C. Sach phep cam ung 2778x1284: 8 o, ho hep nhat 12.6 diem, ra ngoai vung o False, ra ngoai khung False, de len dong nhac False
+C. Sach phep cam ung 1024x768: 8 o, ho hep nhat 7.3 diem, ra ngoai vung o False, ra ngoai khung False, de len dong nhac False
+C. Sach phep cam ung 2048x1536: 8 o, ho hep nhat 15.1 diem, ra ngoai vung o False, ra ngoai khung False, de len dong nhac False
+C. Sach phep may tinh 844x390: 8 o, ho hep nhat 3.6 diem, ra ngoai vung o False, ra ngoai khung False, de len dong nhac False
+C. Sach phep may tinh 1280x720: 8 o, ho hep nhat 6.7 diem, ra ngoai vung o False, ra ngoai khung False, de len dong nhac False
+C. Sach phep may tinh 1619x580: 8 o, ho hep nhat 5.4 diem, ra ngoai vung o False, ra ngoai khung False, de len dong nhac False
+C. Sach phep may tinh 1920x1080: 8 o, ho hep nhat 10.0 diem, ra ngoai vung o False, ra ngoai khung False, de len dong nhac False
+C. Sach phep may tinh 2400x1080: 8 o, ho hep nhat 10.0 diem, ra ngoai vung o False, ra ngoai khung False, de len dong nhac False
+C. Sach phep may tinh 2778x1284: 8 o, ho hep nhat 11.9 diem, ra ngoai vung o False, ra ngoai khung False, de len dong nhac False
+C. Sach phep may tinh 1024x768: 8 o, ho hep nhat 7.1 diem, ra ngoai vung o False, ra ngoai khung False, de len dong nhac False
+C. Sach phep may tinh 2048x1536: 8 o, ho hep nhat 14.2 diem, ra ngoai vung o False, ra ngoai khung False, de len dong nhac False
+D. mac dinh moi: [0,1,2,3,4,5,6,22]; ban ghi cu 7 o vuong 6..0 -> [6,5,4,3,2,1,0,22]; ban ghi cu tron co san Nhao lon o o 2 -> [2,22,0,1,3,4,5,-1]
+E. man that 1619x580: nut 8 tam (1348, 60) tu duoi, ban kinh 35.2; o 8 cam ung = 
+E2. anh may tinh 1619x580: chu phim tat 417 diem vang, cao 8 hang / co chu 9, hang thap nhat cach mep duoi 8
+
+so loi ghi nhan = 0

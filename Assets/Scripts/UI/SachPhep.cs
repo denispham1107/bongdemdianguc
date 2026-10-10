@@ -104,11 +104,11 @@ public static class SachPhep
         return -1;
     }
 
-    /// <summary>So o tren ban cam ung - bang so nut tron dang ve.</summary>
-    public const int SoOTron = 7;
+    /// <summary>So o tren ban cam ung - bang so nut tron dang ve. 10/10/2026 nguoi dung: 7 -> 8 (nut thu tam duoi nut thu sau).</summary>
+    public const int SoOTron = 8;
 
-    /// <summary>So o tren ban may tinh - bang so o vuong cua thanh ky nang.</summary>
-    public const int SoOVuong = 7;
+    /// <summary>So o tren ban may tinh - bang so o vuong cua thanh ky nang. 10/10/2026: 7 -> 8 (phim 8 / H).</summary>
+    public const int SoOVuong = 8;
 
     /// <summary>O khong co ky nang nao.</summary>
     public const int Trong = -1;
@@ -151,7 +151,9 @@ public static class SachPhep
     static int[] MacDinh(int soO)
     {
         var a = new int[soO];
-        for (int i = 0; i < soO; i++) a[i] = i < SoKyNang ? i : Trong;
+        for (int i = 0; i < soO; i++) a[i] = i < 7 ? i : Trong;
+        // O THU TAM mac dinh la NHAO LON (nguoi dung chon 10/10/2026 - ky nang co san, dung duoc ngay)
+        if (soO > 7) a[7] = CapDo.KyNhaoLon;
         return a;
     }
 
@@ -188,11 +190,12 @@ public static class SachPhep
 
         var phan = s.Split(',');
         var a = MacDinh(soO);
-        // Chi nhan ban ghi DUNG SO O. Ban cu (it o hon) ma nhet vao thi nhung o
-        // cuoi giu gia tri mac dinh, tuc mot ky nang hien ra hai cho.
-        if (phan.Length != soO) return a;
+        // Ban ghi CU it o hon (7 o, truoc 10/10/2026): GIU cach xep cu cho cac o dau, o moi lay mac dinh
+        // (Nhao lon) - neu ky nang ay da nam o o cu thi buoc bo trung ben duoi xoa o moi. Ban ghi dai hon /
+        // hong thi bo.
+        if (phan.Length > soO || phan.Length < 1) return a;
 
-        for (int i = 0; i < soO; i++)
+        for (int i = 0; i < phan.Length; i++)
         {
             int v;
             if (!int.TryParse(phan[i], out v)) return MacDinh(soO);

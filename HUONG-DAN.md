@@ -13886,6 +13886,41 @@ trên nền đen và tăng đèn cho nhân vật (phần tối sẽ biến mất
 Menu 115 F2: BOT Khó bị đối thủ áp sát 2,4 m → nhào lộn sau 1,2 s, ra xa 7,4 m; trận thật 90 s: 2 / 0 / 1 lần. Menu 59, 60, 66, 77, 80: 0 lỗi. Ảnh
 `PlayTestShots/nhaolon_cac_khung.png`, `nhaolon_dong.gif`.
 
+## Tám ô kỹ năng (10/10/2026)
+
+**Người dùng** (kèm ảnh): bản máy tính thêm một ô vuông kéo thả kỹ năng được; bản cảm ứng thêm một nút tròn ngay chỗ khoanh đỏ (dưới nút
+thứ sáu); cả hai cập nhật trong Sách phép; sắp lại bố cục để các ô không chồng nhau, không tràn ra mép dưới / mép phải màn hình và trong
+cửa sổ Sách phép. Chọn: phím **8 / H**; ô 8 mặc định **Nhào lộn**, ai đã xếp Nhào lộn vào ô khác thì ô 8 để trống, cách xếp 7 ô đã lưu giữ nguyên.
+
+**Làm:** `SachPhep` 8 ô mỗi bản; bản ghi 7 ô cũ đọc vào 7 ô đầu, ô 8 lấy mặc định rồi qua bước bỏ trùng. Nút tròn thứ tám ở (505, 112) đơn vị
+từ góc phải dưới — cùng cung ngoài với nút thứ sáu, cách nó 156, cách nút thứ ba 152,6 (đường kính 131,2). Thanh ô vuông 8 ô vẫn canh giữa.
+
+**Cái bẫy — chữ phím tắt bị cắt:** ảnh người dùng gửi cho thấy dòng "[1/Z]" dưới ô vuông mất nửa dưới. Hai nguyên nhân chồng nhau: (1) ô cách
+đáy 22 đơn vị mà dòng chữ cao 22 nằm DƯỚI ô cộng khe 2 → tràn 2 đơn vị; (2) `keyStyle` sinh từ `GUI.skin.label` mang đệm điểm ảnh CỐ ĐỊNH — ở
+màn thấp chữ cỡ 9 px trong ô cao 12 px còn chưa tới nửa chỗ. Chỉ dời thanh lên thì ảnh vẫn cắt chữ; phép đo đầu (khoảng cách tới mép dưới)
+KHÔNG bắt được lỗi (ảnh cũ vẫn "cách 8 px") → đổi sang đo **chiều cao chữ thật trên ảnh**: cũ 5 hàng / cỡ 9, nay 8 hàng. Sửa: thanh cách đáy 36
+(`GameHUD.CachDayThanh`), `keyStyle` đệm 0 + Overflow.
+
+**Sách phép:** bản PC hàng ô vuông nay canh giữa phần dưới dòng nhắc, chừa chỗ số ô (trước số ô tràn khỏi vùng ô). Bản cảm ứng cụm 8 nút thu
+theo vùng ô (hệ số 0,685 → 0,631 ở 1619×580).
+
+**Số đo — menu 120 (0 lỗi, 8 cỡ màn từ 844×390 tới 2048×1536):**
+
+| Mục | Kết quả |
+|---|---|
+| Cảm ứng — cụm 8 nút | hở hẹp nhất 16,6 đơn vị; lề dưới ≥ 16,8 px, lề phải ≥ 34,8 px; không chạm cần điều khiển / cột nút góc phải trên |
+| Dấu "+" | cách nút khác ≥ 7,8 đơn vị (trước 9,7 — "+" nút 8 gần nút 6) |
+| Máy tính — thanh 8 ô | không chồng; dòng chữ phím cách mép dưới 4,3 px (844×390) … 17,1 px (2048×1536) |
+| Chữ phím trên ảnh 1619×580 | cao 8 hàng điểm ảnh / cỡ chữ 9 (cũ 5) |
+| Sách phép (cả hai bản) | 8 ô trong vùng ô và trong khung, không đè dòng nhắc, hở ≥ 3,5 px |
+| Chuyển bản ghi | mặc định [0..6, 22]; bản cũ 6..0 → [6..0, 22]; Nhào lộn sẵn ở ô 2 → ô 8 trống |
+
+Các phép thử cũ phải sửa vì ghi cứng 7 ô: menu 22 (nay lấy hình học `RectOVuong`: 55–89 điểm chữ mỗi ô, bản cũ 10–16 vì bị cắt), 66 (thứ tự
+mong đợi 8 ô), 78 (tỉ lệ cụm chỉ xét 7 nút gốc), 85 (dấu "+" 8/8). Menu 59 F2b đổi đối chứng: trước so vành ô trống đang chọn với vành ô bên
+cạnh, dải đo dày cố định 9 s — ô nhỏ lại thì dải ấy ăn vào quầng của chính ô đang chọn, tỉ số tụt 1,50 → 1,32 mà hình không đổi; nay so với
+CHÍNH ô ấy lúc không chọn (×3,70 cảm ứng / ×6,64 máy tính) và kiểm ô cũ tắt sáng (×1,77 / ×2,47). Mục F của menu 59 tự đặt cuộn cột trái về 0
+(một lần chạy cột đang cuộn sẵn 2 hàng — chuột thật trên Game view). Menu 22, 59, 66, 85, 118: 0 lỗi. Ảnh `PlayTestShots/o8_*.png`.
+
 ## Phần 4 — Menu công cụ "Diablo 2.5D"
 
 | Mục | Tác dụng |

@@ -107,6 +107,10 @@ public static class ThuCumNutCamUng
     {
         float r, rong, cao;
         GameHUD.HinhHocCumNut(out r, out rong, out cao);
+        // 10/10/2026: cum co them NUT THU TAM (dat rieng, khong nhan he so) - phep so ti le x1,08 chi tinh BAY nut goc.
+        // Nut tam: menu 120 kiem (ho, mep man, can dieu khien, Sach phep).
+        rong = 0f; cao = 0f;
+        for (int i = 0; i < 7; i++) { var l7 = GameHUD.LechNut(i); rong = Mathf.Max(rong, l7.x + r); cao = Mathf.Max(cao, l7.y + r); }
 
         // ---- A. TO DUNG 20% ----
         // Ca cum duoc nhan cung mot he so nen be ngang / chieu cao cung phai len dung 20%.

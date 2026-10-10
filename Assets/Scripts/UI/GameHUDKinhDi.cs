@@ -229,14 +229,15 @@ public partial class GameHUD
         if (camUng)
         {
             // Cum nut ky nang hai cung quanh goc phai duoi (cung ngoai 392 + ban kinh nut 61)
-            daXep.Add(new Rect(W - 500f * s, H - 500f * s, 500f * s, 500f * s)); ten.Add("cum nut ky nang");
+            daXep.Add(new Rect(W - 580f * s, H - 580f * s, 580f * s, 580f * s)); ten.Add("cum nut ky nang");   // 10/10/2026: nut thu tam toi 570 tu mep phai
             // Can joystick: tam (232,5 ; 232,5) tu goc trai duoi, ban kinh 172,5
             daXep.Add(new Rect(60f * s, H - 405f * s, 345f * s, 345f * s)); ten.Add("can joystick");
         }
         else
         {
-            // Thanh ky nang vuong: 7 o 84 cach 12, cach day 22, chu phim tat ben duoi
-            daXep.Add(new Rect((W - 660f * s) * 0.5f, H - 106f * s, 660f * s, 106f * s)); ten.Add("thanh ky nang");
+            // Thanh ky nang vuong: 8 o 84 cach 12, cach day GameHUD.CachDayThanh, chu phim tat ben duoi (10/10/2026: 7 -> 8 o)
+            float rongThanh = (84f * SachPhep.SoOVuong + 12f * (SachPhep.SoOVuong - 1)) * s, caoThanh = (84f + GameHUD.CachDayThanh) * s;
+            daXep.Add(new Rect((W - rongThanh) * 0.5f, H - caoThanh, rongThanh, caoThanh)); ten.Add("thanh ky nang");
         }
 
         b.baoNhanVat = XepGiua(c.baoNhanVat, W, H, H * 0.62f - c.baoNhanVat.y * 0.5f, daXep, khe, s, true);

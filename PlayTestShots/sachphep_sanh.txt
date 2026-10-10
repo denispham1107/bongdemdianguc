@@ -3,16 +3,16 @@ A1. 440 chuoi trong 3 file; ky tu Inter thieu: ""; co chu "KỸ NĂNG" (co dau):
 A2. cau noi chay bang node: rong=[]|ghi=1|doc=[8,7,3,2,4,5,6]|kho=[8,7,3,2,4,5,6]|dau=[Kỹ năng]|camdoc=[]|camghi=0|so=7
 A3. SachPhep.cs: khai bao + goi CD_DocChuoi co, CD_GhiChuoi co, chi tren WebGL co
 
-B. man Game 1619x580, ti le sach 0.537; nut CAI DAT (x:863.74, y:17.19, width:91.30, height:26.85), KY NANG (x:796.61, y:183.67, width:91.30, height:27.93)
+B. man Game 1619x570, ti le sach 0.528; nut CAI DAT (x:862.81, y:16.89, width:89.72, height:26.39), KY NANG (x:796.83, y:180.50, width:89.72, height:27.44)
 B1. xem truoc: XemTruoc = True, ky nang hien da mo / keo duoc 23/23; doi chung trong tran (con khoa) 3/23
-    do sang VANH hinh cot trai (xem truoc / doi chung khoa; ne o khoa giua hinh): 0:0.187/0.056(x3.35) 1:0.259/0.081(x3.18) 2:0.210/0.070(x3.00) 6:0.210/0.060(x3.48) 9:0.207/0.032(x6.42) 11:0.158/0.032(x4.91) 12:0.198/0.034(x5.77) -> thap nhat x3.00 tren 7 hang
-    do sang hinh trong o: o1:x2.09 o2:x2.30 o3:x2.10 o4:x2.32 o6:x2.48 o7:x2.07 -> thap nhat x2.07
+    do sang VANH hinh cot trai (xem truoc / doi chung khoa; ne o khoa giua hinh): 0:0.201/0.084(x2.38) 1:0.256/0.083(x3.10) 2:0.216/0.072(x2.99) 6:0.209/0.077(x2.71) 9:0.215/0.047(x4.56) 11:0.163/0.047(x3.46) 12:0.210/0.052(x4.06) -> thap nhat x2.38 tren 7 hang
+    do sang hinh trong o: o1:x1.95 o2:x2.16 o3:x1.97 o4:x2.12 o6:x2.27 o7:x1.97 o8:x1.74 -> thap nhat x1.74
 B1b. bang bieu tuong dung chung: 23 o (so ky nang 23), o rong: khong co
-B1b2. sau khi cuon het cot, do sang VANH hinh nhom BI DONG: 16:vanh 0.191 ca hinh 0.292/o trong 0.123(x2.37) 17:vanh 0.193 ca hinh 0.281/o trong 0.118(x2.38) 18:vanh 0.165 ca hinh 0.234/o trong 0.118(x1.98) 19:vanh 0.189 ca hinh 0.247/o trong 0.117(x2.10) 20:vanh 0.163 ca hinh 0.220/o trong 0.117(x1.88) -> thap nhat 0.163 tren 5 hang; moc cac ky nang khac cung khung hinh 0.216 (4 hang); ca hinh so voi O TRONG that thap nhat x1.88
+B1b2. sau khi cuon het cot, do sang VANH hinh nhom BI DONG: 16:vanh 0.192 ca hinh 0.288/o trong 0.124(x2.33) 17:vanh 0.214 ca hinh 0.279/o trong 0.125(x2.24) 18:vanh 0.182 ca hinh 0.237/o trong 0.124(x1.91) 19:vanh 0.194 ca hinh 0.244/o trong 0.123(x1.98) 20:vanh 0.169 ca hinh 0.224/o trong 0.123(x1.82) -> thap nhat 0.169 tren 5 hang; moc cac ky nang khac cung khung hinh 0.232 (4 hang); ca hinh so voi O TRONG that thap nhat x1.82
 B2. nhan vat mau o man chinh: PhuThuy_TrungBay; cau lua nang luong 25 / hoi 0.9 (prefab 25 / 0.9); thien thach nang luong 45 (prefab 45)
-B3. kho luu sau khi sap o sanh: vuong [8,7,3,2,4,5,6] (mong [8,7,3,2,4,5,6]), tron [0,1,2,3,4,5,8] (mong [0,1,2,3,4,5,8], cam ung bat True)
-B4. vao Act2 luc sach dang mo (True): sach con mo = False, thanh ky nang trong tran [8,7,3,2,4,5,6]
-B5. con mat (ban kinh nut 21.5 diem): trong mat cam ruc 60 % (doi chung ngoai nut 0 %); duong cheo do: mo 0 % -> khoa 56 % (39 diem); hai trang thai khac nhau trung binh 0.038/kenh
-C. sau khi thoat Play, nap lai tu kho luu: vuong [8,7,3,2,4,5,6], tron [0,1,2,3,4,5,8]
+B3. kho luu sau khi sap o sanh: vuong [8,7,3,2,4,5,6,22] (mong [8,7,3,2,4,5,6,22]), tron [0,1,2,3,4,5,8,22] (mong [0,1,2,3,4,5,8,22], cam ung bat True)
+B4. vao Act2 luc sach dang mo (True): sach con mo = False, thanh ky nang trong tran [8,7,3,2,4,5,6,22]
+B5. con mat (ban kinh nut 21.1 diem): trong mat cam ruc 57 % (doi chung ngoai nut 0 %); duong cheo do: mo 0 % -> khoa 61 % (36 diem); hai trang thai khac nhau trung binh 0.038/kenh
+C. sau khi thoat Play, nap lai tu kho luu: vuong [8,7,3,2,4,5,6,22], tron [0,1,2,3,4,5,8,22]
 
 so loi ghi nhan = 0

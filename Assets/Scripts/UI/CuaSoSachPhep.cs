@@ -232,13 +232,16 @@ public static class CuaSoSachPhep
             return new Rect(cx - r, cy - r, r * 2f, r * 2f);
         }
 
-        // May tinh: MOT HANG O VUONG nam ngang
+        // May tinh: MOT HANG O VUONG nam ngang. Khoi = o + so thu tu ben duoi (4s + 18s) - nam GIUA dong nhac o tren va day vung.
+        // (Truoc 10/10/2026 chi canh giua rieng o, quen dong so: o cao het co thi so tran 7 diem ra ngoai vung - menu 120 bat duoc.)
         int n = SachPhep.SoOVuong;
         float hoNgang = 10f * s;
-        float canh = Mathf.Min((vung.width - hoNgang * (n + 1)) / n, vung.height - 46f * s);
+        float caoSo = 22f * s;
+        float tren = DongNhacO(vung, s).yMax + 4f * s, duoi = vung.yMax - 4f * s;
+        float canh = Mathf.Min((vung.width - hoNgang * (n + 1)) / n, (duoi - tren) - caoSo);
         float tong = canh * n + hoNgang * (n - 1);
         float x = vung.x + (vung.width - tong) * 0.5f;
-        float y = vung.y + (vung.height - canh) * 0.5f + 8f * s;
+        float y = tren + ((duoi - tren) - (canh + caoSo)) * 0.5f;
         return new Rect(x + i * (canh + hoNgang), y, canh, canh);
     }
 

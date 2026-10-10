@@ -251,8 +251,8 @@ public static class ThuSachPhep
         SachPhep.DatLai();
         var bo = SachPhep.BoDangDung;
         bool macDinhDung = true;
-        for (int i = 0; i < SachPhep.SoOTron; i++) if (bo[i] != i) macDinhDung = false;
-        Ghi("C1. mac dinh: " + Ke(bo) + " (phai la 0..6)");
+        for (int i = 0; i < SachPhep.SoOTron; i++) if (bo[i] != (i < 7 ? i : CapDo.KyNhaoLon)) macDinhDung = false;   // 10/10/2026: o 8 = Nhao lon
+        Ghi("C1. mac dinh: " + Ke(bo) + " (phai la 0..6 + Nhao lon)");
         Kiem(macDinhDung, "thu tu mac dinh khong con la 0..6");
 
         // Dat ky nang 5 vao o 0: ky nang 0 phai DOI CHO sang o 5, khong duoc mat
@@ -281,8 +281,8 @@ public static class ThuSachPhep
         CamUng.EpBat = false;
         var boPc = SachPhep.BoDangDung;
         bool pcConNguyen = true;
-        for (int i = 0; i < SachPhep.SoOVuong; i++) if (boPc[i] != i) pcConNguyen = false;
-        Ghi("C5. doi sang ban may tinh -> " + Ke(boPc) + " (phai con 0..6)");
+        for (int i = 0; i < SachPhep.SoOVuong; i++) if (boPc[i] != (i < 7 ? i : CapDo.KyNhaoLon)) pcConNguyen = false;
+        Ghi("C5. doi sang ban may tinh -> " + Ke(boPc) + " (phai con 0..6 + Nhao lon)");
         Kiem(pcConNguyen, "sua ban cam ung lam doi luon ban may tinh");
 
         CamUng.EpBat = true;
@@ -587,6 +587,10 @@ public static class ThuSachPhep
         CapDo.MoCaDuongChoPhepThu(1); CapDo.MoCaDuongChoPhepThu(3); CapDo.NangCap(3); CapDo.NangCap(3);
         SachPhep.DatLai();
         CuaSoSachPhep.Mo();
+        // Tu dung trang thai: cot trai cuon ve dau (Mo() khong dat lai cuon - lan chay 10/10/2026 cot dang cuon san 2 hang,
+        // hang 0 va 4 khuat, F1 / F1b do rong)
+        float cuonCu = CuaSoSachPhep.CuonKho; CuaSoSachPhep.CuonKho = 0f; CuaSoSachPhep.CuonThan = 0f;
+        Ghi("F. cuon cot trai " + cuonCu.ToString("F1") + " -> 0");
         var b = CuaSoSachPhep.TinhBoCuc(Screen.width, Screen.height, s);
 
         // ---- F1. hang dang chon sang nhat; da mo sang hon con khoa ----
@@ -670,6 +674,26 @@ public static class ThuSachPhep
 
             // O TRONG: bo ky nang o o 2 ra roi cham vao -> chinh o trong ay sang, o giu ky nang dang xem thi tat
             SachPhep.BoKhoiO(2);
+            // DOI CHUNG (10/10/2026): CHINH o trong ay luc KHONG duoc chon (dang chon o xa no nhat). Truoc so voi vanh o 2
+            // ben canh - dai do vanh day co dinh 9 s, bang 8 o thi o nho lai (he so 0,685 -> 0,631) nen dai do quanh o 2 an
+            // vao quang cua chinh o trong dang chon: ti so tut 1,50 -> 1,32 ma hinh khong doi.
+            int oXa = 0; float xaNhat = -1f;
+            Vector2 tam2 = CuaSoSachPhep.OTaiVung(b.vungO, 2, s).center;
+            for (int o = 0; o < n; o++)
+            {
+                float d = (CuaSoSachPhep.OTaiVung(b.vungO, o, s).center - tam2).sqrMagnitude;
+                if (o != 2 && d > xaNhat) { xaNhat = d; oXa = o; }
+            }
+            CuaSoSachPhep.ChonO(oXa);
+            float vTrongKhong = 0f;
+            for (int lan = 0; lan < 4; lan++)
+            {
+                Texture2D tex = null;
+                yield return ChupTex(t => tex = t);
+                vTrongKhong += DoSangVanh(tex, CuaSoSachPhep.OTaiVung(b.vungO, 2, s), s) * 0.25f;
+                Object.Destroy(tex);
+                yield return new WaitForSecondsRealtime(0.39f);
+            }
             CuaSoSachPhep.ChonO(2);
             float vTrong = 0f, vCu = 0f;
             for (int lan = 0; lan < 4; lan++)
@@ -681,9 +705,12 @@ public static class ThuSachPhep
                 Object.Destroy(tex);
                 yield return new WaitForSecondsRealtime(0.39f);
             }
-            Ghi("F2b. cham o trong 3: vanh o trong " + vTrong.ToString("F3") + ", vanh o " + (oGiu1 + 1) + " (vua chon luc nay) "
-                + vCu.ToString("F3") + " (x" + (vCu > 0 ? (vTrong / vCu).ToString("F2") : "?") + ")");
-            Kiem(vTrong >= vCu * 1.4f, "cham o trong ma o trong khong hien la dang chon");
+            Ghi("F2b. cham o trong 3: vanh o trong " + vTrong.ToString("F3") + " / chinh no luc khong chon (chon o " + (oXa + 1) + ") "
+                + vTrongKhong.ToString("F3") + " (x" + (vTrongKhong > 0 ? (vTrong / vTrongKhong).ToString("F2") : "?") + ")"
+                + " | vanh o " + (oGiu1 + 1) + ": luc dang chon " + vChon.ToString("F3") + " -> nay " + vCu.ToString("F3")
+                + " (x" + (vCu > 0 ? (vChon / vCu).ToString("F2") : "?") + ")");
+            Kiem(vTrong >= vTrongKhong * 1.4f, "cham o trong ma o trong khong hien la dang chon");
+            Kiem(vChon >= vCu * 1.4f, "chon o trong ma o " + (oGiu1 + 1) + " van con sang nhu dang chon");
             SachPhep.DatLai();
         }
 

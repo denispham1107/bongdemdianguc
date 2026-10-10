@@ -1,14 +1,15 @@
-man = 1568x505, Ref cua GameHUD = 1080, cam ung dang dung = False
-ti le anh/man = 1.00, dai chu = 9 pixel cao
-be rong LY THUYET: "[1/Z]" = 20 px, "[1/Z] QUA CAU LUA" = 76 px
-tong pixel mau chu duoi bay o = 119
-  o 1: 12 pixel chu, cum rong 13 px
-  o 2: 17 pixel chu, cum rong 18 px
-  o 3: 17 pixel chu, cum rong 18 px
-  o 4: 16 pixel chu, cum rong 18 px
-  o 5: 19 pixel chu, cum rong 18 px
-  o 6: 19 pixel chu, cum rong 17 px
-  o 7: 19 pixel chu, cum rong 18 px
+man = 1619x580, Ref cua GameHUD = 1080, cam ung dang dung = False
+ti le anh/man = 1.00, dai chu = 13 pixel cao
+be rong LY THUYET: "[1/Z]" = 24 px, "[1/Z] QUA CAU LUA" = 93 px
+tong pixel mau chu duoi 8 o = 549
+  o 1: 64 pixel chu, cum rong 22 px
+  o 2: 63 pixel chu, cum rong 22 px
+  o 3: 62 pixel chu, cum rong 24 px
+  o 4: 66 pixel chu, cum rong 22 px
+  o 5: 77 pixel chu, cum rong 24 px
+  o 6: 89 pixel chu, cum rong 25 px
+  o 7: 55 pixel chu, cum rong 23 px
+  o 8: 73 pixel chu, cum rong 24 px
 cam ung dang dung = True
 ban cam ung: khong ve thanh ky nang PC - xem thanh_ky_nang_cam_ung.png
 so loi ghi nhan = 0
