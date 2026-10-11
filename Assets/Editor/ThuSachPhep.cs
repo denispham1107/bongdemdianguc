@@ -251,15 +251,16 @@ public static class ThuSachPhep
         SachPhep.DatLai();
         var bo = SachPhep.BoDangDung;
         bool macDinhDung = true;
-        for (int i = 0; i < SachPhep.SoOTron; i++) if (bo[i] != (i < 7 ? i : CapDo.KyNhaoLon)) macDinhDung = false;   // 10/10/2026: o 8 = Nhao lon
-        Ghi("C1. mac dinh: " + Ke(bo) + " (phai la 0..6 + Nhao lon)");
-        Kiem(macDinhDung, "thu tu mac dinh khong con la 0..6");
+        var mdTron = SachPhep.MacDinhTron();       // 11/10/2026: o 4/5/6 = Binh mana / Binh mau / Toc bien, o 8 Nhao lon
+        for (int i = 0; i < SachPhep.SoOTron; i++) if (bo[i] != mdTron[i]) macDinhDung = false;
+        Ghi("C1. mac dinh: " + Ke(bo) + " (phai la " + Ke(mdTron) + ")");
+        Kiem(macDinhDung, "thu tu mac dinh cam ung sai");
 
-        // Dat ky nang 5 vao o 0: ky nang 0 phai DOI CHO sang o 5, khong duoc mat
-        SachPhep.DatVaoO(0, 5);
+        // Dat Toc bien (dang o o 5) vao o 0: Cau lua phai DOI CHO sang o 5, khong duoc mat
+        SachPhep.DatVaoO(0, CapDo.KyTocBien);
         bo = SachPhep.BoDangDung;
-        Ghi("C2. dat ky nang 5 vao o 0 -> " + Ke(bo));
-        Kiem(bo[0] == 5 && bo[5] == 0, "dat vao o khong doi cho dung");
+        Ghi("C2. dat Toc bien vao o 0 -> " + Ke(bo));
+        Kiem(bo[0] == CapDo.KyTocBien && bo[5] == 0, "dat vao o khong doi cho dung");
         Kiem(KhongTrung(bo), "mot ky nang nam o hai o - bi nhan ban");
 
         // Bo khoi o roi dat lai
@@ -282,7 +283,7 @@ public static class ThuSachPhep
         var boPc = SachPhep.BoDangDung;
         bool pcConNguyen = true;
         for (int i = 0; i < SachPhep.SoOVuong; i++) if (boPc[i] != (i < 7 ? i : CapDo.KyNhaoLon)) pcConNguyen = false;
-        Ghi("C5. doi sang ban may tinh -> " + Ke(boPc) + " (phai con 0..6 + Nhao lon)");
+        Ghi("C5. doi sang ban may tinh -> " + Ke(boPc) + " (phai con 0..6 + Nhao lon - mac dinh may tinh khong doi)");
         Kiem(pcConNguyen, "sua ban cam ung lam doi luon ban may tinh");
 
         CamUng.EpBat = true;
@@ -716,6 +717,8 @@ public static class ThuSachPhep
 
         // ---- F3. o khoa trong o: CUNG ky nang 5, chup luc khoa roi mo khoa ----
         {
+            // 11/10/2026: mac dinh cam ung moi khong con Khien - dat Khien vao o 6 (o giu Toc bien) truoc khi do
+            if (SachPhep.ONaoGiu(5) < 0) SachPhep.DatVaoO(5, 5);
             int o5 = SachPhep.ONaoGiu(5);
             var r5 = CuaSoSachPhep.OTaiVung(b.vungO, o5, s);
             var giua = new Rect(r5.center.x - r5.width * 0.3f, r5.center.y - r5.height * 0.3f, r5.width * 0.6f, r5.height * 0.6f);
@@ -826,11 +829,11 @@ public static class ThuSachPhep
         yield return new WaitForSeconds(0.4f);
 
         SachPhep.DatLai();
-        SachPhep.DatVaoO(0, 4);          // dua Thien thach ra nut trong cung
+        SachPhep.DatVaoO(0, CapDo.KyTocBien);   // dua Toc bien (o 6 mac dinh cam ung moi) ra nut trong cung
         yield return new WaitForSeconds(0.4f);
         var boSau = SachPhep.BoDangDung;
-        Ghi("D5. keo Thien thach (4) vao o 1 -> " + Ke(boSau));
-        Kiem(boSau[0] == 4 && boSau[4] == 0, "sap xep lai khong an len bo o dang dung");
+        Ghi("D5. keo Toc bien (15) vao o 1 -> " + Ke(boSau));
+        Kiem(boSau[0] == CapDo.KyTocBien && boSau[5] == 0, "sap xep lai khong an len bo o dang dung");
         yield return Chup("sachphep_4_hud_da_doi_cho");
 
         SachPhep.DatLai();

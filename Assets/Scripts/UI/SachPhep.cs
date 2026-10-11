@@ -138,22 +138,63 @@ public static class SachPhep
     //  NAP - LUU
     // ================================================================
 
+    // ---- LUU THEO TUNG TAI KHOAN (11/10/2026, nguoi dung) ----
+    // Khoa luu = khoa goc + "." + uid. Chua dang nhap (phep thu / Editor vao thang Act2) thi dung khoa goc chung cua may.
+    // Lan dau mot tai khoan gap may nay (chua co khoa rieng) va ho so DA TAI (HoSoMang.UidDaTai == uid):
+    //   - tai khoan CU (soTranChoi > 0): dung cach xep chung cua may (ban luu truoc 11/10/2026) - khong mat cach xep dang dung;
+    //   - tai khoan MOI (0 tran): bo MAC DINH moi (nguoi dung chon "tai khoan moi luon bat dau bang bo moi du may da co nguoi xep").
+    // Quyet dinh ay GHI NGAY vao khoa rieng - khong thi choi xong tran dau (soTranChoi 1) lan sau lai bi "chuyen" sang cach xep cua may.
+    // Ho so chua tai thi tam dung mac dinh, KHONG ghi; tai xong (hoac doi tai khoan) Nap tu doc lai.
+    static string uidDaNap;
+    static bool hoSoDaNap;
+
     static void Nap()
     {
-        if (oTron != null && oVuong != null) return;
-        oTron = Doc(KhoaTron, SoOTron);
-        oVuong = Doc(KhoaVuong, SoOVuong);
+        string uid = FirebaseMang.Uid;
+        bool hoSo = !string.IsNullOrEmpty(uid) && HoSoMang.UidDaTai == uid;
+        if (oTron != null && oVuong != null && uid == uidDaNap && hoSo == hoSoDaNap) return;
+        uidDaNap = uid;
+        hoSoDaNap = hoSo;
+        oTron = DocTheoTaiKhoan(KhoaTron, SoOTron, MacDinhTron(), uid, hoSo);
+        oVuong = DocTheoTaiKhoan(KhoaVuong, SoOVuong, MacDinhVuong(), uid, hoSo);
+    }
+
+    /// <summary>Khoa luu cua mot tai khoan (uid rong = khoa chung cua may).</summary>
+    public static string KhoaCua(string khoaGoc, string uid) { return string.IsNullOrEmpty(uid) ? khoaGoc : khoaGoc + "." + uid; }
+    public static string KhoaTronGoc { get { return KhoaTron; } }
+    public static string KhoaVuongGoc { get { return KhoaVuong; } }
+
+    static int[] DocTheoTaiKhoan(string khoaGoc, int soO, int[] macDinh, string uid, bool hoSo)
+    {
+        if (string.IsNullOrEmpty(uid)) return Doc(khoaGoc, soO, macDinh);
+        string khoa = KhoaCua(khoaGoc, uid);
+        if (!string.IsNullOrEmpty(DocChuoi(khoa))) return Doc(khoa, soO, macDinh);
+        if (!hoSo) return (int[])macDinh.Clone();
+        var a = HoSoMang.CuaToi.soTranChoi > 0 ? Doc(khoaGoc, soO, macDinh) : (int[])macDinh.Clone();
+        GhiChuoi(khoa, string.Join(",", System.Array.ConvertAll(a, x => x.ToString())));
+        PlayerPrefs.Save();
+        return a;
     }
 
     /// <summary>Quen het, doc lai tu dau - dung cho phep thu.</summary>
     public static void NapLai() { oTron = null; oVuong = null; Nap(); }
 
-    static int[] MacDinh(int soO)
+    /// <summary>
+    /// Mac dinh ban CAM UNG (11/10/2026, nguoi dung khoanh 4 nut tren anh): nut 4 Binh mana, nut 5 Binh mau, nut 6 Toc bien, nut 8
+    /// Nhao lon; nut 1-3 Cau lua / Mua bang / Sam set, nut 7 Giat set (nhu cu).
+    /// </summary>
+    public static int[] MacDinhTron()
     {
-        var a = new int[soO];
-        for (int i = 0; i < soO; i++) a[i] = i < 7 ? i : Trong;
+        return new[] { 0, 1, 2, CapDo.KyBinhMana, CapDo.KyBinhMau, CapDo.KyTocBien, 6, CapDo.KyNhaoLon };
+    }
+
+    /// <summary>Mac dinh ban MAY TINH (giu nhu cu - nguoi dung chon "chi ban cam ung"): o 1-7 = ky nang 0-6, o 8 Nhao lon.</summary>
+    public static int[] MacDinhVuong()
+    {
+        var a = new int[SoOVuong];
+        for (int i = 0; i < SoOVuong; i++) a[i] = i < 7 ? i : Trong;
         // O THU TAM mac dinh la NHAO LON (nguoi dung chon 10/10/2026 - ky nang co san, dung duoc ngay)
-        if (soO > 7) a[7] = CapDo.KyNhaoLon;
+        if (SoOVuong > 7) a[7] = CapDo.KyNhaoLon;
         return a;
     }
 
@@ -183,13 +224,13 @@ public static class SachPhep
         PlayerPrefs.SetString(khoa, giaTri);
     }
 
-    static int[] Doc(string khoa, int soO)
+    static int[] Doc(string khoa, int soO, int[] macDinh)
     {
         string s = DocChuoi(khoa);
-        if (string.IsNullOrEmpty(s)) return MacDinh(soO);
+        if (string.IsNullOrEmpty(s)) return (int[])macDinh.Clone();
 
         var phan = s.Split(',');
-        var a = MacDinh(soO);
+        var a = (int[])macDinh.Clone();
         // Ban ghi CU it o hon (7 o, truoc 10/10/2026): GIU cach xep cu cho cac o dau, o moi lay mac dinh
         // (Nhao lon) - neu ky nang ay da nam o o cu thi buoc bo trung ben duoi xoa o moi. Ban ghi dai hon /
         // hong thi bo.
@@ -198,7 +239,7 @@ public static class SachPhep
         for (int i = 0; i < phan.Length; i++)
         {
             int v;
-            if (!int.TryParse(phan[i], out v)) return MacDinh(soO);
+            if (!int.TryParse(phan[i], out v)) return (int[])macDinh.Clone();
             a[i] = (v >= 0 && v < SoKyNang && !CapDo.KyAn(v)) ? v : Trong;     // ky nang bi an (Hoa loc xoay) roi khoi o
         }
 
@@ -214,8 +255,8 @@ public static class SachPhep
     public static void Luu()
     {
         Nap();
-        GhiChuoi(KhoaTron, string.Join(",", System.Array.ConvertAll(oTron, x => x.ToString())));
-        GhiChuoi(KhoaVuong, string.Join(",", System.Array.ConvertAll(oVuong, x => x.ToString())));
+        GhiChuoi(KhoaCua(KhoaTron, uidDaNap), string.Join(",", System.Array.ConvertAll(oTron, x => x.ToString())));
+        GhiChuoi(KhoaCua(KhoaVuong, uidDaNap), string.Join(",", System.Array.ConvertAll(oVuong, x => x.ToString())));
         PlayerPrefs.Save();
     }
 
@@ -223,8 +264,8 @@ public static class SachPhep
     public static void DatLai()
     {
         Nap();
-        oTron = MacDinh(SoOTron);
-        oVuong = MacDinh(SoOVuong);
+        oTron = MacDinhTron();
+        oVuong = MacDinhVuong();
         Luu();
     }
 

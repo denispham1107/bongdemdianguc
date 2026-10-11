@@ -57,7 +57,9 @@ public static class ThuSachPhepSanh
     // Thu tu mong doi - TINH TAY tu cac thao tac o B3, khong hoi SachPhep
     // 10/10/2026: 8 o - o thu tam giu mac dinh Nhao lon (22)
     const string MongVuong = "8,7,3,2,4,5,6,22";
-    const string MongTron = "0,1,2,3,4,5,8,22";
+    // 11/10/2026: mac dinh cam ung moi [0,1,2,8,7,15,6,22]; dat Binh mana (8) vao o 7 -> doi cho voi o 4
+    const string MongTron = "0,1,2,6,7,15,8,22";
+    static string uidThu;
 
     [MenuItem("Diablo 2.5D/66. Chay thu NUT KY NANG o sanh (sach phep xem truoc) + con mat", false, 153)]
     public static void Chay()
@@ -467,13 +469,15 @@ console.log(out.join('|'));
         SachPhep.DatVaoO(0, 8);
         SachPhep.DatVaoO(1, 7);
         SachPhep.DoiHaiO(2, 3);
-        string khoVuong = PlayerPrefs.GetString(KhoaVuong, "");
+        // 11/10/2026: o ky nang luu THEO TAI KHOAN - doc khoa rieng cua tai khoan thu
+        uidThu = FirebaseMang.Uid;
+        string khoVuong = PlayerPrefs.GetString(SachPhep.KhoaCua(KhoaVuong, uidThu), "");
         // bo cam ung: doi qua CamUng.EpBat (man chinh khong co GameHUD ghi de moi khung)
         CamUng.EpBat = true;
         yield return null;
         bool camUngBat = CamUng.DangDung;
         SachPhep.DatVaoO(6, 8);
-        string khoTron = PlayerPrefs.GetString(KhoaTron, "");
+        string khoTron = PlayerPrefs.GetString(SachPhep.KhoaCua(KhoaTron, uidThu), "");
         CamUng.EpBat = false;
         yield return null;
         Ghi("B3. kho luu sau khi sap o sanh: vuong [" + khoVuong + "] (mong [" + MongVuong + "]), tron [" + khoTron
@@ -592,12 +596,15 @@ console.log(out.join('|'));
         if (EditorApplication.isPlaying) return;
         EditorApplication.update -= TraLai;
 
-        // ---- Nhu mo game lan sau: quen bo nho, doc lai tu kho luu ----
+        // ---- Nhu mo game lan sau: quen bo nho, doc lai tu kho luu (cung tai khoan - o luu theo tai khoan) ----
+        FirebaseMang.DatUidChoPhepThu(uidThu);
         SachPhep.NapLai();
         string vuong = string.Join(",", System.Array.ConvertAll(SachPhep.OVuong, x => x.ToString()));
         string tron = string.Join(",", System.Array.ConvertAll(SachPhep.OTron, x => x.ToString()));
         Ghi("C. sau khi thoat Play, nap lai tu kho luu: vuong [" + vuong + "], tron [" + tron + "]");
         Kiem(vuong == MongVuong && tron == MongTron, "thoat game mo lai thi mat thu tu o");
+        FirebaseMang.DatUidChoPhepThu(null);
+        SachPhep.NapLai();
 
         if (coPhienGoc) PlayerPrefs.SetString(KhoaPhien, phienGoc); else PlayerPrefs.DeleteKey(KhoaPhien);
         if (coTronGoc) PlayerPrefs.SetString(KhoaTron, tronGoc); else PlayerPrefs.DeleteKey(KhoaTron);

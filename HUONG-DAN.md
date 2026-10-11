@@ -14018,6 +14018,21 @@ kênh 0,71. Menu 50 mục 7e (phòng đếm ngược thật, dừng ở 0,4 s): 
 **Nhào lộn:** hồi chiêu 4 → 3 giây (`NhaoLon.HoiChieu`, Sách phép ghi 3 giây). Menu 119 đo thêm thời gian hồi chiêu thật: dùng lại được sau
 3,01 s tính từ lúc bấm; 0 lỗi.
 
+## Ô kỹ năng lưu theo tài khoản + mặc định cảm ứng mới (11/10/2026)
+
+**Người dùng** (ảnh khoanh 4 nút tròn): tài khoản mới tạo bắt đầu chơi thì 4 ô ấy có kỹ năng như trong ảnh, người chơi tự xếp lại sau.
+Đối chiếu toạ độ `GameHUD.LechNut` với ảnh (2000×924): bốn ô là nút 4, 5, 6, 8 — Bình mana, Bình máu, Tốc biến (nhận ra bằng icon), Nhào
+lộn. Hỏi thêm: thứ tự ô đang lưu THEO MÁY — người dùng chọn **lưu theo từng tài khoản** (tài khoản mới luôn bắt đầu bằng bộ mới dù máy đã
+có người xếp), và **chỉ bản cảm ứng** đổi mặc định.
+
+**Làm:** khoá lưu gắn uid. Lần đầu một tài khoản gặp máy: tài khoản cũ (đã chơi trận nào) giữ cách xếp đang lưu trên máy — người đang chơi
+không mất cách xếp; tài khoản mới (0 trận) nhận bộ mới. Quyết định ghi ngay vào khoá riêng. Hồ sơ chưa tải thì tạm dùng mặc định, không ghi.
+
+**Số đo — menu 124 (0 lỗi):** chưa đăng nhập: mặc định [0,1,2,8,7,15,6,22] / máy tính [0..6,22]; tài khoản mới trên máy đã có cách xếp
+cũ → bộ mới (đã ghi khoá riêng); tài khoản cũ 64 trận → cách xếp cũ của máy; sửa ô tài khoản cũ không đổi tài khoản mới và ngược lại;
+tài khoản mới sau trận đầu vẫn giữ bộ mới; tài khoản mới thứ hai cũng nhận bộ mới; hồ sơ chưa tải → không ghi. Menu 59, 66 (đăng nhập thật:
+lưu và đọc lại đúng theo tài khoản qua sảnh → trận → mở lại), 120: 0 lỗi. Ảnh `PlayTestShots/sachphep_1_hud_camung.png`.
+
 ## Phần 4 — Menu công cụ "Diablo 2.5D"
 
 | Mục | Tác dụng |

@@ -30,6 +30,13 @@ public static class HoSoMang
 
     public static HoSo CuaToi = new HoSo();
 
+    /// <summary>
+    /// Uid cua tai khoan ma <see cref="CuaToi"/> dang chua ho so (11/10/2026). CuaToi la MOT doi tuong dung lai qua cac lan dang nhap -
+    /// doi tai khoan thi toi khi tai xong no van giu so lieu cua nguoi truoc. SachPhep hoi cai nay de biet "so tran da choi" la cua
+    /// DUNG tai khoan dang dang nhap.
+    /// </summary>
+    public static string UidDaTai;
+
     static string DuongHoSo(string uid)
     {
         return FirebaseMang.DuongFirestore + "/nguoichoi/" + uid;
@@ -69,6 +76,7 @@ public static class HoSoMang
             if (yc.result == UnityWebRequest.Result.Success)
             {
                 DocVao(yc.downloadHandler.text, CuaToi);
+                UidDaTai = uid;
                 FirebaseMang.TenHienThi = CuaToi.ten;
 
                 if (CuaToi.biKhoa)
@@ -128,6 +136,7 @@ public static class HoSoMang
             CuaToi.soTranChoi = CuaToi.soTranThang = 0;
             CuaToi.soQuaiDaDiet = CuaToi.soNguoiDaHa = 0;
             CuaToi.biKhoa = false;
+            UidDaTai = uid;
             FirebaseMang.TenHienThi = ten;
             xong(true, null);
         }

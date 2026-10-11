@@ -33,7 +33,7 @@ C. Sach phep may tinh 2778x1284: 8 o, ho hep nhat 11.9 diem, ra ngoai vung o Fal
 C. Sach phep may tinh 1024x768: 8 o, ho hep nhat 7.1 diem, ra ngoai vung o False, ra ngoai khung False, de len dong nhac False
 C. Sach phep may tinh 2048x1536: 8 o, ho hep nhat 14.2 diem, ra ngoai vung o False, ra ngoai khung False, de len dong nhac False
 D. mac dinh moi: [0,1,2,3,4,5,6,22]; ban ghi cu 7 o vuong 6..0 -> [6,5,4,3,2,1,0,22]; ban ghi cu tron co san Nhao lon o o 2 -> [2,22,0,1,3,4,5,-1]
-E. man that 1619x580: nut 8 tam (1348, 60) tu duoi, ban kinh 35.2; o 8 cam ung = 
-E2. anh may tinh 1619x580: chu phim tat 417 diem vang, cao 8 hang / co chu 9, hang thap nhat cach mep duoi 8
+E. man that 1621x559: nut 8 tam (1360, 58) tu duoi, ban kinh 33.9; o 8 cam ung = NHÀO LỘN
+E2. anh may tinh 1621x559: chu phim tat 312 diem vang, cao 7 hang / co chu 8, hang thap nhat cach mep duoi 9
 
 so loi ghi nhan = 0

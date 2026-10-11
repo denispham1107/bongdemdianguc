@@ -56,6 +56,9 @@ public static class FirebaseMang
     /// <summary>Ten hien thi trong game - doc tu ho so, khong phai tu Firebase Auth.</summary>
     public static string TenHienThi { get; set; }
 
+    /// <summary>Phep thu (menu 124) dat uid gia de thu luu o ky nang theo tai khoan - KHONG co token, khong goi duoc mang.</summary>
+    public static void DatUidChoPhepThu(string uid) { Uid = uid; }
+
     public static void Quen()
     {
         Uid = null; Email = null; IdToken = null; refreshToken = null;
