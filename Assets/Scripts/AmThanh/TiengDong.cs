@@ -12,6 +12,10 @@ using UnityEngine;
 /// File: Resources/AmThanh/HieuUng/BamThuong.wav, BamXacNhan.wav - chep nguyen byte tu CongCu/AmThanh/TiengBamThu/A_da_mo_*.wav
 /// (CongCu/AmThanh/tieng_bam.py, numpy, STEREO). Nang luong chinh 200 Hz - 1 kHz: loa dien thoai phat duoc.
 ///
+/// TIENG DEM NGUOC (11/10/2026, nguoi dung chon mau "Nhịp tim" trong 3 mau - CongCu/AmThanh/tieng_dem_nguoc.py): moi giay cua man dem
+/// nguoc truoc tran (ManSanh) - <see cref="DemNguoc"/>: so 5..2 mot nhip tim, so 1 nhip tim manh + tieng gam tram. File
+/// Resources/AmThanh/HieuUng/DemNguoc.wav, DemNguocCuoi.wav (chep nguyen byte tu CongCu/AmThanh/DemNguocThu/B_tim_dap_nhip*.wav).
+///
 /// Mot nguon 2D tren vat the <see cref="NhacNen"/> (song qua cac man), PlayOneShot. Moi khung chi MOT tieng bam (cu cham tren WebGL
 /// sinh ca su kien cham lan chuot - khong keu doi); xac nhan thang bam thuong cung khung. Dang chay phep thu (co ChayThuMang) thi
 /// IM - tru <see cref="NhacNen.BatTrongPhepThu"/>; van dem <see cref="SoLan"/> de phep thu kiem.
@@ -20,20 +24,22 @@ public static class TiengDong
 {
     public const string DuongBamThuong = "AmThanh/HieuUng/BamThuong";
     public const string DuongBamXacNhan = "AmThanh/HieuUng/BamXacNhan";
+    public const string DuongDemNguoc = "AmThanh/HieuUng/DemNguoc";
+    public const string DuongDemNguocCuoi = "AmThanh/HieuUng/DemNguocCuoi";
 
-    public enum Loai { BamThuong = 0, BamXacNhan = 1 }
+    public enum Loai { BamThuong = 0, BamXacNhan = 1, DemNguoc = 2, DemNguocCuoi = 3 }
 
-    static readonly AudioClip[] clip = new AudioClip[2];
-    static readonly string[] duong = { DuongBamThuong, DuongBamXacNhan };
+    static readonly AudioClip[] clip = new AudioClip[4];
+    static readonly string[] duong = { DuongBamThuong, DuongBamXacNhan, DuongDemNguoc, DuongDemNguocCuoi };
     static int khungCuoi = -1;
     static Loai loaiCuoi;
 
     /// <summary>Dem so tieng da phat theo loai (phep thu doc / dat lai).</summary>
-    public static readonly int[] SoLan = new int[2];
+    public static readonly int[] SoLan = new int[4];
     public static Loai? LoaiGanNhat;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-    static void KhiKhoiDong() { khungCuoi = -1; SoLan[0] = 0; SoLan[1] = 0; LoaiGanNhat = null; }
+    static void KhiKhoiDong() { khungCuoi = -1; for (int i = 0; i < SoLan.Length; i++) SoLan[i] = 0; LoaiGanNhat = null; }
 
     /// <summary>
     /// NAP SAN hai tieng bam (NhacNen goi khi scene dau tien da nap). Tren WebGL clip giai ma BAT DONG BO: nap luc bam thi lan bam
@@ -41,7 +47,7 @@ public static class TiengDong
     /// </summary>
     public static void NapTruoc()
     {
-        for (int i = 0; i < 2; i++)
+        for (int i = 0; i < clip.Length; i++)
         {
             if (clip[i] == null) clip[i] = Resources.Load<AudioClip>(duong[i]);
             if (clip[i] != null && clip[i].loadState == AudioDataLoadState.Unloaded) clip[i].LoadAudioData();
@@ -54,8 +60,19 @@ public static class TiengDong
     /// <summary>Tieng bam nut CHINH (xac nhan).</summary>
     public static void XacNhan() { Phat(Loai.BamXacNhan); }
 
+    /// <summary>Mot giay dem nguoc truoc tran: so 1 la nhip cuoi (manh hon), con lai nhip thuong.</summary>
+    public static void DemNguoc(int so) { Phat(so <= 1 ? Loai.DemNguocCuoi : Loai.DemNguoc); }
+
     public static void Phat(Loai loai)
     {
+        // Tieng dem nguoc: khong qua bo chong lap cua tieng bam (khac loai, khong bao gio trung khung voi nhau)
+        if (loai >= Loai.DemNguoc)
+        {
+            SoLan[(int)loai]++;
+            LoaiGanNhat = loai;
+            PhatClip((int)loai, false);
+            return;
+        }
         // Mot tieng moi khung; xac nhan thang thuong (vd. nut "+" goi ca hai duong)
         if (Time.frameCount == khungCuoi && (loai <= loaiCuoi)) return;
         bool thayThe = Time.frameCount == khungCuoi;
@@ -65,9 +82,13 @@ public static class TiengDong
         SoLan[(int)loai]++;
         LoaiGanNhat = loai;
 
+        PhatClip((int)loai, thayThe);
+    }
+
+    static void PhatClip(int i, bool thayThe)
+    {
         var nn = NhacNen.DamBao();
         if (nn == null) return;
-        int i = (int)loai;
         // Clip tinh: thoat Play trong Editor la clip bi huy - kiem bang null cua Unity, khong co co "da nap"
         if (clip[i] == null) clip[i] = Resources.Load<AudioClip>(duong[i]);
         if (clip[i] == null) { Debug.LogWarning("[TiengDong] thieu " + duong[i]); return; }

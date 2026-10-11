@@ -58,8 +58,37 @@ public class ManSanh : MonoBehaviour
     /// <summary>Be rong khung ao cua sanh, tinh bang don vi truoc khi nhan ti le.</summary>
     public const float RongKhungAo = 1000f;
 
+    int soDaKeu = -1;       // so dem nguoc da phat tieng (11/10/2026) - moi lan so doi mot nhip tim
+
+    /// <summary>
+    /// TIENG DEM NGUOC: moi lan con so tren man dem nguoc DOI (5, 4, 3, 2, 1 - cung cong thuc voi VeDemNguoc) phat MOT nhip tim
+    /// (TiengDong.DemNguoc - so 1 la nhip cuoi). Dat trong Update chu khong OnGUI (OnGUI chay nhieu luot moi khung).
+    /// </summary>
+    void TiengDemNguoc()
+    {
+        bool dangDem = FirebaseMang.DaDangNhap && dangO == Cho.TrongPhong && PhongMang.PhongHienTai != null
+                       && PhongMang.PhongHienTai.trangThai == "demNguoc";
+        XetTiengDemNguoc(dangDem, dangDem ? PhongMang.ConLaiGiay() : 999, ref soDaKeu);
+    }
+
+    /// <summary>
+    /// Mot buoc xet tieng dem nguoc (ham THUAN + phat tieng - phep thu menu 123 bom chuoi thoi gian gia). Tra ve so vua keu
+    /// (5..1) hoac -1. So tinh y het VeDemNguoc: ceil(con lai).
+    /// </summary>
+    public static int XetTiengDemNguoc(bool dangDem, double conLai, ref int soDaKeu)
+    {
+        if (!dangDem) { soDaKeu = -1; return -1; }
+        int con = Mathf.Clamp(Mathf.CeilToInt((float)conLai), 0, 99);
+        if (con == soDaKeu) return -1;
+        soDaKeu = con;
+        if (con < 1 || con > PhongMang.GiayDemNguoc) return -1;
+        TiengDong.DemNguoc(con);
+        return con;
+    }
+
     void Update()
     {
+        TiengDemNguoc();
         // Bang cai dat da dong bang bat ky duong nao (HỦY, roi sanh...) -> bo nghe thu, tra ve am luong da luu
         if (!moCaiDat && CaiDatAmThanh.DangXemTruoc) CaiDatAmThanh.BoXemTruoc();
         if (!FirebaseMang.DaDangNhap || dangO != Cho.Sanh)

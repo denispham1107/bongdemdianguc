@@ -290,6 +290,7 @@ public static class ThuGiaoDien
             // phong "dang choi".
             var p = PhongMang.PhongHienTai;
             string cu = p.trangThai; double cuLuc = p.batDauLuc;
+            int nhip0 = TiengDong.SoLan[(int)TiengDong.Loai.DemNguoc], cuoi0 = TiengDong.SoLan[(int)TiengDong.Loai.DemNguocCuoi];
             p.trangThai = "demNguoc";
             p.batDauLuc = PhongMang.GioMayChu() + 7400.0;
             yield return DoMan("7. dem nguoc", "gd_7_demnguoc");
@@ -397,6 +398,18 @@ public static class ThuGiaoDien
                 Kiem(dayDn < tran, "vong / con so dem nguoc (dap to nhat) che mat phu thuy");
                 Kiem(dayCu > dinhMu, "doi chung hong: ban cu giua man cung khong de len dau - phep do khong phan biet duoc");
                 Kiem(tamDn.y - nuaCaoDap > ManSanh.KhungGachDemNguoc(sGd).yMax, "vong dem nguoc de len gach do / dong chu");
+            }
+
+            // 7e. TIENG DEM NGUOC (11/10/2026): duong THAT ManSanh.Update - dem so nhip tim cho toi khi con 0,4 s (dung truoc 0 de
+            // khong nhay vao tran). Dem 7,4 s -> keu o so 5, 4, 3, 2 (nhip) va 1 (nhip cuoi).
+            {
+                float han = Time.realtimeSinceStartup + 10f;
+                bool kipDo = PhongMang.ConLaiGiay() > 0.45;
+                while (PhongMang.ConLaiGiay() > 0.4 && Time.realtimeSinceStartup < han) yield return null;
+                int nhip = TiengDong.SoLan[(int)TiengDong.Loai.DemNguoc] - nhip0, cuoi = TiengDong.SoLan[(int)TiengDong.Loai.DemNguocCuoi] - cuoi0;
+                Ghi("7e. tieng dem nguoc (duong that ManSanh.Update): " + nhip + " nhip tim + " + cuoi + " nhip cuoi (mong 4 + 1)"
+                    + (kipDo ? "" : " - KHONG KIP DO (dem nguoc da qua 0,45 s)"));
+                Kiem(kipDo && nhip == 4 && cuoi == 1, "dem nguoc trong sanh khong keu moi giay mot nhip tim");
             }
             p.trangThai = cu; p.batDauLuc = cuLuc;
 

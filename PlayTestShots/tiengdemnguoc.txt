@@ -1,0 +1,8 @@
+[ban 1] tieng dem nguoc
+A. DemNguoc.wav: trung ban goc True; 2 kenh 0.85 s; ForceToMono False
+A. DemNguocCuoi.wav: trung ban goc True; 2 kenh 2.10 s; ForceToMono False
+
+B. chuoi gia: binh thuong 5-4-3-2-1 (nhip 4, cuoi 1); co khung giat 0,4 s 5-4-3-2-1 (nhip 4, cuoi 1); vao giua chung (3,4 s) 4-3-2-1 (nhip 3, cuoi 1); dem lai 5-4-3-2-1 (nhip 4, cuoi 1)
+C. tieng that: phat luc 0.00, 1.01, 2.01, 3.01, 4.01 s; nghe thay 5 tieng, cach nhau 1.01 / 1.02 / 0.98 / 1.00 s; dinh tung tieng 0.108 / 0.108 / 0.108 / 0.108 / 0.179; tieng cuoi keo dai 0.76 s; tuong quan hai kenh 0.622
+
+so loi ghi nhan = 0

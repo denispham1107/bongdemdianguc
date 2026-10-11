@@ -13987,6 +13987,24 @@ thẳng. Một khung chỉ một tiếng (trên WebGL một cú chạm sinh cả
 
 Menu 121, 48 (182 chuỗi có dấu, font đủ), 118, 59: 0 lỗi; menu 85 chỉ còn lỗi cũ mục B. Ảnh `PlayTestShots/tiengbam_1_tab_amthanh.png`.
 
+## Tiếng đếm ngược trước trận (11/10/2026)
+
+**Người dùng:** thêm âm thanh mỗi giây khi đang đếm ngược vào trận, hợp phong cách kinh dị. Ba mẫu nghe thử (mỗi mẫu một bản ghép đủ 5 giây
+như trong game): A Chuông tang, B Nhịp tim, C Đồng hồ ma — người dùng chọn **B**: số 5–2 một nhịp tim (thình-thịch, có thân ở dải trung
+cho loa điện thoại), số 1 nhịp tim mạnh + tiếng gầm trầm. Dưới 200 Hz chỉ 9–16% năng lượng; stereo.
+
+**Làm:** `ManSanh` xét mỗi khung (trong `Update`, vì `OnGUI` chạy nhiều lượt mỗi khung) — con số tính y hệt màn vẽ (`ceil(còn lại)`), số
+đổi thì phát một tiếng qua `TiengDong` (âm lượng theo thanh Hiệu ứng). Vào phòng giữa chừng thì đếm từ số đang hiện.
+
+**Cái bẫy trên web (tiếng bấm, phát hiện khi kiểm bản deploy trước):** lần bấm ĐẦU TIÊN sau khi mở game im — clip WebGL giải mã bất đồng bộ,
+nạp lúc bấm thì `PlayOneShot` bị bỏ qua. Nay nạp sẵn mọi tiếng khi scene đầu nạp xong, và nếu clip chưa xong thì giữ tiếng tối đa 0,5 s rồi
+phát. Đo trên trang thật: lần bấm 1 → một tiếng 0,6 s (Unity tạo một nguồn rồi dừng ngay, phát nguồn thứ hai — tai nghe đúng một tiếng).
+
+**Số đo — menu 123 (0 lỗi):** chuỗi thời gian giả (bước khung 8–50 ms): 5-4-3-2-1 (4 nhịp + 1 nhịp cuối); có khung giật 0,4 s: vẫn
+5-4-3-2-1; vào giữa chừng còn 3,4 s: 4-3-2-1; đếm lại: 5-4-3-2-1. Tiếng thật ở loa theo đồng hồ thật: 5 tiếng cách nhau 1,01 / 1,02 /
+0,98 / 1,00 s, đỉnh 0,108 ×4 rồi 0,179 (nhịp cuối), nhịp cuối kéo dài 0,76 s, tương quan hai kênh 0,62. Menu 50 mục 7e — đường thật trong
+phòng đếm ngược (`ManSanh.Update`): 4 nhịp + 1 nhịp cuối. Menu 122: 0 lỗi.
+
 ## Phần 4 — Menu công cụ "Diablo 2.5D"
 
 | Mục | Tác dụng |
