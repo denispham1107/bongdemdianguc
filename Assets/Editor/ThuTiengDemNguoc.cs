@@ -8,12 +8,12 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 
 /// <summary>
-/// MENU 123 - TIENG DEM NGUOC (11/10/2026, nguoi dung chon mau "Nhịp tim").
+/// MENU 123 - TIENG DEM NGUOC (11/10/2026, nguoi dung chon lai mau C "Đồng hồ ma"; tieng cuoi o so 0 - truoc o so 1, nguoi dung bao loi).
 ///
-/// A. NGOAI PLAY: DemNguoc.wav / DemNguocCuoi.wav trung tung byte ban goc CongCu/AmThanh/DemNguocThu/B_tim_dap_nhip*.wav, STEREO.
-/// B. ManSanh.XetTiengDemNguoc voi chuoi thoi gian GIA (buoc khung ngau nhien 8-50 ms + mot khung giat 0,4 s): dung 5 tieng 5-4-3-2-1,
-///    so 1 la nhip cuoi; vao giua chung (con 3,4 s) -> 4-3-2-1; het dem nguoc / dem lai -> bat dau lai.
-/// C. TIENG THAT o loa theo dong ho that 5 giay (nhac nen tat tieng tam): 5 diem bat dau tieng cach nhau ~1 s, nhip cuoi to / dai
+/// A. NGOAI PLAY: DemNguoc.wav / DemNguocCuoi.wav trung tung byte ban goc CongCu/AmThanh/DemNguocThu/C_dong_ho_ma_nhip*.wav, STEREO.
+/// B. ManSanh.XetTiengDemNguoc voi chuoi thoi gian GIA (buoc khung ngau nhien 8-50 ms + mot khung giat 0,4 s): dung 6 tieng
+///    5-4-3-2-1-0, tieng CUOI o so 0; vao giua chung (con 3,4 s) -> 4-3-2-1-0; het dem nguoc / dem lai -> bat dau lai.
+/// C. TIENG THAT o loa theo dong ho that (nhac nen tat tieng tam): 6 diem bat dau tieng cach nhau ~1 s, tieng cuoi (so 0) to / dai
 ///    hon, hai kenh khac nhau (stereo).
 /// Ket qua: PlayTestShots/tiengdemnguoc.txt.
 /// </summary>
@@ -33,7 +33,7 @@ public static class ThuTiengDemNguoc
         bao.Length = 0; loi = 0; daBatDau = false;
         Ghi("[ban 1] tieng dem nguoc");
         string[] game = { "Assets/Resources/" + TiengDong.DuongDemNguoc + ".wav", "Assets/Resources/" + TiengDong.DuongDemNguocCuoi + ".wav" };
-        string[] goc = { "CongCu/AmThanh/DemNguocThu/B_tim_dap_nhip.wav", "CongCu/AmThanh/DemNguocThu/B_tim_dap_nhip_cuoi.wav" };
+        string[] goc = { "CongCu/AmThanh/DemNguocThu/C_dong_ho_ma_nhip.wav", "CongCu/AmThanh/DemNguocThu/C_dong_ho_ma_nhip_cuoi.wav" };
         for (int i = 0; i < 2; i++)
         {
             var imp = AssetImporter.GetAtPath(game[i]) as AudioImporter;
@@ -77,7 +77,7 @@ public static class ThuTiengDemNguoc
         while (t > -0.3)
         {
             int k = ManSanh.XetTiengDemNguoc(true, t, ref daKeu);
-            if (k > 0) so.Add(k);
+            if (k >= 0) so.Add(k);
             double buoc = 0.008 + r.NextDouble() * 0.042;
             if (coGiat && !daGiat && t < 2.6) { buoc = 0.4; daGiat = true; }
             t -= buoc;
@@ -99,17 +99,17 @@ public static class ThuTiengDemNguoc
         var r = new System.Random(123);
         List<int> so;
         string kq1 = ChuoiGia(5.0, r, false, out so);
-        bool dung1 = string.Join("-", so) == "5-4-3-2-1";
+        bool dung1 = string.Join("-", so) == "5-4-3-2-1-0";
         string kq2 = ChuoiGia(5.0, r, true, out so);
-        bool dung2 = string.Join("-", so) == "5-4-3-2-1";
+        bool dung2 = string.Join("-", so) == "5-4-3-2-1-0";
         string kq3 = ChuoiGia(3.4, r, false, out so);
-        bool dung3 = string.Join("-", so) == "4-3-2-1";
+        bool dung3 = string.Join("-", so) == "4-3-2-1-0";
         string kq4 = ChuoiGia(5.0, r, false, out so);              // dem lai lan nua (vd. chu phong huy roi bat dau lai)
-        bool dung4 = string.Join("-", so) == "5-4-3-2-1";
+        bool dung4 = string.Join("-", so) == "5-4-3-2-1-0";
         CaiDatAmThanh.BoXemTruoc();
         Ghi("B. chuoi gia: binh thuong " + kq1 + "; co khung giat 0,4 s " + kq2 + "; vao giua chung (3,4 s) " + kq3 + "; dem lai " + kq4);
-        Kiem(dung1 && dung2 && dung3 && dung4 && kq1.EndsWith("(nhip 4, cuoi 1)") && kq3.EndsWith("(nhip 3, cuoi 1)"),
-             "tieng dem nguoc khong dung moi giay mot tieng / nhip cuoi o so 1");
+        Kiem(dung1 && dung2 && dung3 && dung4 && kq1.EndsWith("(nhip 5, cuoi 1)") && kq3.EndsWith("(nhip 4, cuoi 1)"),
+             "tieng dem nguoc khong dung moi giay mot tieng / tieng cuoi khong o so 0");
         yield return new WaitForSecondsRealtime(2.5f);
 
         // ---- C. tieng that theo dong ho that ----
@@ -119,11 +119,11 @@ public static class ThuTiengDemNguoc
         float t0 = Time.realtimeSinceStartup;
         int daKeu = -1;
         var lucKeu = new List<float>();
-        while (Time.realtimeSinceStartup - t0 < 7.5f)
+        while (Time.realtimeSinceStartup - t0 < 8.0f)
         {
             float t = Time.realtimeSinceStartup - t0;
             int k = ManSanh.XetTiengDemNguoc(t < 5.3f, 5.0 - t, ref daKeu);
-            if (k > 0) lucKeu.Add(t);
+            if (k >= 0) lucKeu.Add(t);
             yield return null;
             AudioListener.GetOutputData(bufL, 0);
             AudioListener.GetOutputData(bufR, 1);
@@ -155,10 +155,10 @@ public static class ThuTiengDemNguoc
         Ghi("C. tieng that: phat luc " + string.Join(", ", lucKeu.ConvertAll(x => x.ToString("F2"))) + " s; nghe thay " + batDau.Count
             + " tieng, cach nhau " + string.Join(" / ", kc) + " s; dinh tung tieng " + string.Join(" / ", dinhMoi.ConvertAll(x => x.ToString("F3")))
             + "; tieng cuoi keo dai " + daiCuoi.ToString("F2") + " s; tuong quan hai kenh " + tq.ToString("F3"));
-        bool deu = batDau.Count == 5;
+        bool deu = batDau.Count == 6;
         for (int i = 1; i < batDau.Count; i++) deu &= Mathf.Abs(batDau[i] - batDau[i - 1] - 1f) < 0.08f;
-        Kiem(deu, "khong nghe thay dung 5 tieng cach nhau 1 giay");
-        Kiem(dinhMoi.Count == 5 && dinhMoi[4] > dinhMoi[0] * 1.05f && daiCuoi > 0.6f, "nhip cuoi khong manh / dai hon nhip thuong");
+        Kiem(deu, "khong nghe thay dung 6 tieng (5-4-3-2-1-0) cach nhau 1 giay");
+        Kiem(dinhMoi.Count == 6 && dinhMoi[5] > dinhMoi[0] * 1.05f && daiCuoi > 0.6f, "tieng cuoi (so 0) khong manh / dai hon tieng thuong");
         Kiem(tq < 0.99f, "tieng dem nguoc khong stereo");
         Ket();
     }

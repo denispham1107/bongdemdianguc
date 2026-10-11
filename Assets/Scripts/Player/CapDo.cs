@@ -91,7 +91,7 @@ public static class CapDo
     /// Nguoi dung chon KHONG CAN dieu kien mo khoa.</summary>
     public const int KyMayGiong = 21;
 
-    /// <summary>Ky nang 22 - NHAO LON (nhom HO TRO, nguoi dung 10/10/2026): lan toi cho ngam toi da 5 m, hoi chieu 4 giay, khong ton
+    /// <summary>Ky nang 22 - NHAO LON (nhom HO TRO, nguoi dung 10/10/2026): lan toi cho ngam toi da 8 m, hoi chieu 3 giay, khong ton
     /// nang luong. CO SAN tu dau tran nhu hai binh (khong ton diem), CHI MOT CAP - xem <see cref="LaKyCoSan"/>, Skills/NhaoLon.cs.</summary>
     public const int KyNhaoLon = 22;
 

@@ -495,7 +495,7 @@ public static class SachPhep
                      + "Bấm là lộn ngay, không có động tác niệm — dùng để né quả cầu đang bay tới, thoát khỏi vùng mưa băng hay "
                      + "lùi xa khỏi quái đang áp sát. Đang lộn VẪN ăn sát thương nếu bị đánh trúng; gặp bia mộ, tường, cây thì dừng lại "
                      + "(không xuyên qua như Tốc biến); lộn qua mép vực là rơi xuống.\n\n"
-                     + "Có sẵn ngay từ đầu trận, chỉ một cấp. Không tốn năng lượng, hồi chiêu 4 giây.";
+                     + "Có sẵn ngay từ đầu trận, chỉ một cấp. Không tốn năng lượng, hồi chiêu 3 giây.";
             case CapDo.KyTocBien:
                 return "Nhân vật tan đi ở chỗ đang đứng và hiện ra ngay tại nơi bạn ngắm, xa nhất 15 m. Đi được XUYÊN QUA tường, bia mộ và mọi vật cản — chỉ cần chỗ đến đứng được.\n\n"
                      + "Ngắm vào chỗ không đứng được thì bạn dừng ở điểm trống gần nơi ngắm nhất trên đường thẳng. Bấm là đi ngay, không có động tác niệm, nên dùng để né đòn đang bay tới.\n\n"

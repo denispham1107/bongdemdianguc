@@ -73,7 +73,7 @@ public class ManSanh : MonoBehaviour
 
     /// <summary>
     /// Mot buoc xet tieng dem nguoc (ham THUAN + phat tieng - phep thu menu 123 bom chuoi thoi gian gia). Tra ve so vua keu
-    /// (5..1) hoac -1. So tinh y het VeDemNguoc: ceil(con lai).
+    /// (5..0 - so 0 la tieng cuoi) hoac -1. So tinh y het VeDemNguoc: ceil(con lai), kep duoi o 0.
     /// </summary>
     public static int XetTiengDemNguoc(bool dangDem, double conLai, ref int soDaKeu)
     {
@@ -81,7 +81,7 @@ public class ManSanh : MonoBehaviour
         int con = Mathf.Clamp(Mathf.CeilToInt((float)conLai), 0, 99);
         if (con == soDaKeu) return -1;
         soDaKeu = con;
-        if (con < 1 || con > PhongMang.GiayDemNguoc) return -1;
+        if (con > PhongMang.GiayDemNguoc) return -1;
         TiengDong.DemNguoc(con);
         return con;
     }
@@ -117,6 +117,8 @@ public class ManSanh : MonoBehaviour
             && PhongMang.DenGioVaoTran(PhongMang.PhongHienTai, PhongMang.ConLaiGiay()))
         {
             daVaoTran = true;
+            // Tieng cuoi (so 0) chua keu - khach vao vi chu phong da ghi "dangChoi" truoc khi dong ho may nay cham 0 -> keu ngay luc vao
+            if (soDaKeu != 0) { soDaKeu = 0; TiengDong.DemNguoc(0); }
             StartCoroutine(VaoTran());
             return;
         }

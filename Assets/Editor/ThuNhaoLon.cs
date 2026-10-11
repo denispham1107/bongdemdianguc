@@ -180,6 +180,7 @@ public static class ThuNhaoLon
             while (pc.HoiChieuGiay(CapDo.KyNhaoLon) > 0f) yield return null;
             Vector3 ngam = cho + huong * ngams[i];
             ngam.y = GioLoc.MatDatY(ngam, ngam.y);
+            float lucBam = Time.time;
             yield return LanMotLan(pc, ngam, kq);
             float tgMong = NhaoLon.ThoiGianLan(mong[i]);
             Ghi(string.Format("B{0}. ngam {1} m -> lan {2:F2} m (mong {3}), {4:F2} s (mong {5:F2}); mana {6:F1} -> {7:F1}; hoi chieu con {8:F2} s",
@@ -189,13 +190,18 @@ public static class ThuNhaoLon
             Kiem(pc.mana >= mana0 - 0.01f, "nhao lon tru nang luong");
             if (i == 0)
             {
-                // bam lai ngay -> hoi chieu tu choi; doi het 4 s -> duoc
+                // bam lai ngay -> hoi chieu tu choi; doi het 3 s (11/10/2026, truoc 4) -> duoc
                 Vector3 p0 = pc.transform.position;
                 pc.CastAt(CapDo.KyNhaoLon, p0 + huong * 3f);
                 yield return new WaitForSeconds(0.3f);
                 bool tuChoi = NhaoLon.Dang(pc.gameObject) == false && Ngang(p0, pc.transform.position) < 0.05f;
                 Ghi("    bam lai ngay: tu choi = " + tuChoi + " (\"" + pc.LastMessage + "\"), hoi chieu con " + pc.HoiChieuGiay(CapDo.KyNhaoLon).ToString("F2") + " s");
-                Kiem(tuChoi && pc.LastMessage == "NHÀO LỘN đang hồi chiêu", "hoi chieu 4 giay khong chan");
+                Kiem(tuChoi && pc.LastMessage == "NHÀO LỘN đang hồi chiêu", "hoi chieu khong chan");
+                // Do THOI GIAN hoi chieu that (dong ho game): tu luc bam toi luc dung lai duoc
+                while (pc.HoiChieuGiay(CapDo.KyNhaoLon) > 0f && Time.time - lucBam < 10f) yield return null;
+                float hoi = Time.time - lucBam;
+                Ghi("    hoi chieu that: dung lai duoc sau " + hoi.ToString("F2") + " s tu luc bam (mong 3)");
+                Kiem(Mathf.Abs(hoi - 3f) < 0.15f, "hoi chieu nhao lon khong phai 3 giay");
             }
         }
 

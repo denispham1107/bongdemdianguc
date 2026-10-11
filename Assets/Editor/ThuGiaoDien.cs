@@ -401,15 +401,15 @@ public static class ThuGiaoDien
             }
 
             // 7e. TIENG DEM NGUOC (11/10/2026): duong THAT ManSanh.Update - dem so nhip tim cho toi khi con 0,4 s (dung truoc 0 de
-            // khong nhay vao tran). Dem 7,4 s -> keu o so 5, 4, 3, 2 (nhip) va 1 (nhip cuoi).
+            // khong nhay vao tran). Dem 7,4 s -> keu tich-tac o so 5, 4, 3, 2, 1; tieng cuoi o so 0 (luc vao tran) - chua toi.
             {
                 float han = Time.realtimeSinceStartup + 10f;
                 bool kipDo = PhongMang.ConLaiGiay() > 0.45;
                 while (PhongMang.ConLaiGiay() > 0.4 && Time.realtimeSinceStartup < han) yield return null;
                 int nhip = TiengDong.SoLan[(int)TiengDong.Loai.DemNguoc] - nhip0, cuoi = TiengDong.SoLan[(int)TiengDong.Loai.DemNguocCuoi] - cuoi0;
-                Ghi("7e. tieng dem nguoc (duong that ManSanh.Update): " + nhip + " nhip tim + " + cuoi + " nhip cuoi (mong 4 + 1)"
+                Ghi("7e. tieng dem nguoc (duong that ManSanh.Update): " + nhip + " tich-tac + " + cuoi + " nhip cuoi (mong 5 + 0 - tieng cuoi o so 0)"
                     + (kipDo ? "" : " - KHONG KIP DO (dem nguoc da qua 0,45 s)"));
-                Kiem(kipDo && nhip == 4 && cuoi == 1, "dem nguoc trong sanh khong keu moi giay mot nhip tim");
+                Kiem(kipDo && nhip == 5 && cuoi == 0, "dem nguoc trong sanh khong keu moi giay mot tieng (hoac tieng cuoi som truoc so 0)");
             }
             p.trangThai = cu; p.batDauLuc = cuLuc;
 

@@ -14005,6 +14005,19 @@ phát. Đo trên trang thật: lần bấm 1 → một tiếng 0,6 s (Unity tạ
 0,98 / 1,00 s, đỉnh 0,108 ×4 rồi 0,179 (nhịp cuối), nhịp cuối kéo dài 0,76 s, tương quan hai kênh 0,62. Menu 50 mục 7e — đường thật trong
 phòng đếm ngược (`ManSanh.Update`): 4 nhịp + 1 nhịp cuối. Menu 122: 0 lỗi.
 
+## Tiếng đếm ngược: đổi sang "Đồng hồ ma", tiếng cuối ở số 0 · Nhào lộn hồi chiêu 3 giây (11/10/2026)
+
+**Người dùng:** chọn lại mẫu C "Đồng hồ ma" (thay "Nhịp tim"); báo lỗi tiếng đếm ngược cuối cùng rơi ở số 1 chứ không phải số 0. Nay số 5, 4,
+3, 2, 1 là tiếng tích-tắc; số 0 — lúc vào trận — là đồng hồ điểm chuông + hơi thở thì thầm. Máy khách có thể vào trận vì chủ phòng đã ghi
+"đang chơi" trước khi đồng hồ máy mình chạm 0 (số 0 không bao giờ hiện) — lúc ấy tiếng cuối phát ngay khi bắt đầu vào trận, không mất.
+
+**Số đo — menu 123 (0 lỗi):** chuỗi giả 5-4-3-2-1-0 (5 tích-tắc + 1 tiếng cuối), có khung giật 0,4 s cũng vậy, vào giữa chừng 4-3-2-1-0;
+tiếng thật 6 tiếng cách nhau 1,00 / 1,01 / 1,00 / 1,00 / 1,05 s, đỉnh 0,073 × 5 rồi 0,205 (số 0), tiếng cuối dài 1,47 s, tương quan hai
+kênh 0,71. Menu 50 mục 7e (phòng đếm ngược thật, dừng ở 0,4 s): 5 tích-tắc, chưa có tiếng cuối.
+
+**Nhào lộn:** hồi chiêu 4 → 3 giây (`NhaoLon.HoiChieu`, Sách phép ghi 3 giây). Menu 119 đo thêm thời gian hồi chiêu thật: dùng lại được sau
+3,01 s tính từ lúc bấm; 0 lỗi.
+
 ## Phần 4 — Menu công cụ "Diablo 2.5D"
 
 | Mục | Tác dụng |

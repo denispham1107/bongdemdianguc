@@ -2,7 +2,7 @@ using UnityEngine;
 
 /// <summary>
 /// KY NANG 22 - NHAO LON (nguoi dung 10/10/2026, nhom HO TRO): nhan vat nhao lon tien ve phia ngam, toi da 8 m (nguoi dung
-/// 10/10/2026 lan hai, truoc 5 m - van MOT vong lon, chon 0,76 giay), hoi chieu 4 giay.
+/// 10/10/2026 lan hai, truoc 5 m - van MOT vong lon, chon 0,76 giay), hoi chieu 4 giay (11/10/2026: 3 giay).
 /// Nguoi dung chon: CO SAN tu dau tran nhu binh mau / binh mana, CHI MOT CAP; khong ton nang luong; lan TOI CHO NGAM (gan hon 8 m thi
 /// lan ngan lai, bam nhanh tren cam ung = du 8 m ve huong dang nhin / day can); KHONG mien sat thuong (ne duoc la nho ra khoi vung
 /// don); vat can (bia, tuong, cay) thi DUNG LAI - khac Toc bien di xuyen; BOT dung de lan tranh khi bi ap sat.
@@ -28,7 +28,7 @@ using UnityEngine;
 public class NhaoLon : MonoBehaviour
 {
     public const float Tam = 8f;
-    public const float HoiChieu = 4f;
+    public const float HoiChieu = 3f;   // 11/10/2026 nguoi dung: 4 -> 3 giay
     public const float NangLuong = 0f;
     /// <summary>Khong niem chu - 0,02 giay vua du mot khung de goi phep bay sang may khac (nhu Toc bien).</summary>
     public const float GiayNiem = 0.02f;
