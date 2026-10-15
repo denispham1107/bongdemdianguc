@@ -11,7 +11,7 @@ using UnityEngine.SceneManagement;
 /// <summary>
 /// MENU 121 - NHAC NEN + TAB "Âm thanh" (10/10/2026, nguoi dung).
 ///
-/// A. NGOAI PLAY: hai clip trong Resources trung tung byte voi ban goc o CongCu/AmThanh/NhacThu (md5), Unity doc ra STEREO 2 kenh
+/// A. NGOAI PLAY: hai clip trong Resources trung tung byte voi ban goc o CongCu/AmThanh/NhacMoiThu (md5; ban "Hop nhac ma" 15/10/2026), Unity doc ra STEREO 2 kenh
 ///    44,1 kHz, 128 / 192 s, KHONG Force To Mono (quy tac nguoi dung), kieu nap / nen.
 /// B. MAN CHINH (dang nhap, sanh): co dung MOT vat the NhacNen, nhac sanh dang keu, am luong mac dinh 60% (khoa trong kho bi xoa
 ///    tam = nguoi choi moi; mac dinh KHONG duoc ghi xuong kho). Do TIENG THAT o loa (AudioListener.GetOutputData, doc lap voi code
@@ -95,7 +95,7 @@ public static class ThuNhacNen
     static void KiemTep()
     {
         string[] trongGame = { "Assets/Resources/" + NhacNen.DuongNhacSanh + ".wav", "Assets/Resources/" + NhacNen.DuongNhacTran + ".wav" };
-        string[] goc = { "CongCu/AmThanh/NhacThu/sanh_thu1.wav", "CongCu/AmThanh/NhacThu/tran_act2_thu3.wav" };
+        string[] goc = { "CongCu/AmThanh/NhacMoiThu/C_sanh_day_du.wav", "CongCu/AmThanh/NhacMoiThu/C_tran_day_du.wav" };
         float[] doDai = { 128f, 192f };
         for (int i = 0; i < 2; i++)
         {

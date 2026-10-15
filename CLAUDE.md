@@ -1028,6 +1028,11 @@ hơn ×1,5 và mở xuống 1,8–4,3 m** (người dùng chọn sau menu 94 ch�
 - ⚠️ **NHẠC NỀN + TAB "ÂM THANH"** (10/10/2026, người dùng; game trước đó KHÔNG có âm thanh nào): hai bản nhạc tổng hợp bằng numpy ở phiên
   "Âm nhạc và âm thanh game" (`CongCu/AmThanh/nhac_sanh.py`, `nhac_tran.py`; bản gốc `CongCu/AmThanh/NhacThu/sanh_thu1.wav` 128 s,
   `tran_act2_thu3.wav` 192 s) chép NGUYÊN BYTE vào `Resources/AmThanh/Nhac/NhacSanh.wav`, `NhacTranAct2.wav` (git lưu một bản blob).
+  ⚠️ **15/10/2026 THAY BẰNG NHẠC "HỘP NHẠC MA"** (người dùng: bản cũ "quá nhiều tạp âm xào xạc, chói tai"; chọn mẫu C trong 3, giữ 128 / 192 s):
+  `CongCu/AmThanh/nhac_kinh_di_moi.py C <sanh|tran> <giây> <ra.wav> 1510` → bản gốc `CongCu/AmThanh/NhacMoiThu/C_sanh_day_du.wav`,
+  `C_tran_day_du.wav` (chép nguyên byte, cùng tên file trong Resources). **Không lớp nào sinh từ tiếng ồn** (bản cũ: gió / thì thầm / tiếng rít / búa
+  piano bằng ồn → độ phẳng phổ 1–4 kHz 0,09–0,13, mới 0,003–0,011); cắt < 120 Hz, thông thấp 4,5 kHz. ⚠️ Nhạc cụ trầm (trống, nhịp tim) phải có thân
+  ≥ ~90 Hz — dưới đó bộ lọc 120 Hz nuốt mất (đo từng lớp SAU EQ). Mọi dòng về hai bản cũ bên dưới là LỊCH SỬ (cách phát / âm lượng vẫn đúng).
   ⚠️ **QUY TẮC: mọi âm thanh STEREO, không Force To Mono.** Nhập: Vorbis 0,5, Compressed In Memory, nạp nền → `.data` +4,9 MB.
   `AmThanh/NhacNen.cs` (một vật thể DontDestroyOnLoad, hai AudioSource 2D): MainMenu = nhạc sảnh phát LIỀN từ đăng nhập sang sảnh; vào
   Act2 (người dùng chọn) nhạc sảnh nhỏ dần 2 s (bắt đầu ngay lúc rời sảnh — `NhacNen.BatDauRoiSanh` trong `ManSanh.VaoTran` /

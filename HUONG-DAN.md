@@ -14083,6 +14083,41 @@ Menu 125 (sau khi sửa `TiengViTri`): 0 lỗi — phép thử được làm ch�
 trước hai quả kia 0,12 s — hai vụ nổ tách thật, âm lượng đầy là đúng); mục D đo mỗi khoảng cách HAI lần (một lần 14 m ra ×0,37 — lần nghe tự lệch tới
 ~18% dù khung dài nhất chỉ 0,03–0,05 s); mục E1 chờ loa im rồi mới thả vụ nổ. Chưa nghe thử trên web.
 
+## Nhạc nền mới "Hộp nhạc ma" — bỏ tạp âm xào xạc (15/10/2026)
+
+**Người dùng:** nhạc nền ở màn đăng nhập, sảnh, phòng và trong trận "còn quá nhiều tiếng tạp âm xào xạc, quá chói tai và không cần thiết" — làm
+lại nhạc mới, stereo, thật kinh dị, ghê sợ, không tạp âm chói tai. Chọn mẫu **C "Hộp nhạc ma"** trong 3 mẫu nghe thử (A "Nhà thờ ma", B "Dây đàn rùng
+rợn"); độ dài giữ như cũ (sảnh 128 s, trận 192 s, lặp liền mạch, cùng tên file nên không sửa code).
+
+**Nguyên nhân tạp âm (đo trên hai file cũ):** bản cũ có năm lớp làm TỪ TIẾNG ỒN — gió (ồn lọc 520 Hz), thì thầm (ồn lọc 1,3 / 2,6 / 5,2 kHz),
+tiếng rít (ồn 3,2 kHz ×2,5), tiếng búa piano, tiếng gõ chuông / trống. Đo theo từng đoạn 16 s: độ phẳng phổ dải 1–4 kHz (1 = tiếng ồn trắng, 0 = nốt
+nhạc sạch) trung bình 0,13 (sảnh) / 0,09 (trận), có đoạn 0,23; đoạn cuối mỗi bản (tiếng rít dẫn vào vòng mới) 93–96% năng lượng nằm ở 1–4 kHz.
+
+**Làm:** `CongCu/AmThanh/nhac_kinh_di_moi.py` — mọi nhạc cụ là TỔNG SÓNG SIN có cao độ, không lớp nào sinh từ tiếng ồn: hộp nhạc lạc điệu chơi
+giai điệu Dies Irae, piano chơi NGƯỢC (phồng lên rồi tắt đột ngột), tiếng rên trẻ con (nguyên âm "u" trượt cao độ), kim loại kéo vĩ (phân âm không
+điều hoà, uốn cao độ chậm), nền trầm rung phách, chuông đồng (tiếng gõ = vài phân âm cao tắt 35–80 ms thay cho tiếng ồn), nhịp tim; trong trận thêm
+trống (tiếng gõ = sin 700–900 Hz tắt 10 ms), dây nảy chromatic, "braam", cụm piano nghịch tai, dây căng trượt lên. Cả bản: cắt < 120 Hz, lọc thông
+thấp 4,5 kHz, vang tắt nhanh ở dải cao. Sảnh: 4 đoạn 32 s (hộp nhạc + rên · piano ngược phồng lên + kim loại · cụm dây trầm dâng lên + tim mạnh ·
+hộp nhạc CHẬM DẦN như hết dây cót). Trận (90 nhịp/phút, 72 ô như bản cũ): mở màn · vào nhịp · cao trào · nghỉ · dâng lại · thưa dần.
+⚠️ **Bẫy đã vấp khi trộn:** trống (thân 52–60 Hz) và nhịp tim (58 / 50 Hz) sau bộ lọc cắt 120 Hz gần như MẤT HẲN (đo từng lớp sau EQ: trống −27 dB,
+tim −40 dB so với hộp nhạc −9 dB) — trên điện thoại sẽ không nghe thấy; nay thân trống ×1,8 (94–108 Hz) + phân âm 1,59 / 2,14, tim 95 / 80 Hz + bão hoà
+(trống −15…−17 dB, tim −24 dB). Lần đầu đoạn NGHỈ to bằng đoạn cao trào (hộp nhạc + tiếng rên chiếm chỗ) → hạ theo đoạn.
+
+**Số đo:**
+
+| | Cũ (sảnh / trận) | Mới (sảnh / trận) |
+|---|---|---|
+| Độ phẳng phổ 1–4 kHz, TB / p90 | 0,127 / 0,361 · 0,087 / 0,288 | **0,003 / 0,013 · 0,011 / 0,023** |
+| Đoạn 16 s ồn nhất | 0,23 · 0,22 | 0,01 · 0,02 |
+| Dưới 200 Hz | 34% · 47% | 7% · 14% |
+| Tương quan hai kênh (mono = 1) | 0,54 · 0,58 | 0,21 · 0,28 |
+| Bước nhảy ở chỗ nối vòng lặp | 0,028 · 0,098 | 0,001 · 0,002 (bước thường p99,9 0,044) |
+| Độ to theo đoạn (dB) | — | sảnh −22,0 / −22,3 / −21,5 / −23,1 · trận −22,7 / −22,7 / **−19,7** / −22,5 / −22,2 / −26,3 |
+
+Menu 121 (0 lỗi; mục A nay so md5 với `CongCu/AmThanh/NhacMoiThu/C_*_day_du.wav`): 2 kênh 128,00 / 192,00 s, Vorbis 0,5; tiếng thật ở loa sảnh
+tương quan 0,42, trong trận 0,60; chuyển sảnh → trận, kéo / HỦY / OK, về sảnh đúng như cũ. Mẫu nghe thử 40 s ở `CongCu/AmThanh/NhacMoiThu/`
+(không đưa vào git). Chưa nghe thử trên web.
+
 ## Phần 4 — Menu công cụ "Diablo 2.5D"
 
 | Mục | Tác dụng |
