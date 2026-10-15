@@ -1048,7 +1048,9 @@ hơn ×1,5 và mở xuống 1,8–4,3 m** (người dùng chọn sau menu 94 ch�
 - ⚠️ **TIẾNG BẤM NÚT + THANH "HIỆU ỨNG"** (11/10/2026, người dùng): tab Âm thanh có thêm hàng **"Hiệu ứng"** = âm lượng MỌI tiếng động
   (`CaiDatAmThanh.HieuUngDangNghe`, khoá `diablo25d.amLuongHieuUng`, **mặc định 80%**; kéo là phát tiếng bấm thử, tối đa mỗi 0,15 s).
   ⚠️ **Mọi tiếng động mới (kỹ năng, quái...) phải phát qua `AmThanh/TiengDong.cs`** (hoặc nhân `HieuUngDangNghe`) — không thì thanh Hiệu ứng không
-  điều khiển được. Tiếng bấm: người dùng chọn mẫu **A "Đá mộ"** trong 3 mẫu (`CongCu/AmThanh/tieng_bam.py`, numpy, ảnh nghe thử
+  điều khiển được. ⚠️ **Tạo tiếng kỹ năng mới: làm theo memory `quy-trinh-tieng-ky-nang-moi`** (16/10/2026, người dùng xin ghi nhớ sau khi Quả cầu
+  lửa + Thiên thạch phải làm lại 2–3 lần: "quá mono", "chưa giống thật", "đơn điệu") — mỗi lớp sinh riêng từng kênh, mô hình lửa thật, 3 biến thể
+  khác cấu trúc + cao độ ±6%, vật lao tới sáng dần + to theo 1/khoảng cách, cú đập nổi; đo tương quan clip + ở loa, chênh biến thể, dải tần. Tiếng bấm: người dùng chọn mẫu **A "Đá mộ"** trong 3 mẫu (`CongCu/AmThanh/tieng_bam.py`, numpy, ảnh nghe thử
   `CongCu/AmThanh/TiengBamThu/`) — **hai tiếng**: thường (`TiengDong.Bam`, `GiaoDien.Nut` / `Tab` tự kêu) và **xác nhận** (`GiaoDien.Nut(..., true)`:
   VÀO GAME, TẠO TÀI KHOẢN, TẠO PHÒNG, SẴN SÀNG, OK; MỞ KHÓA / NÂNG CẤP trong Sách phép và dấu "+" khi thành công). Trong trận chỉ nút GIAO DIỆN kêu
   (Sách phép, con mắt, Thoát trận, nút trong bảng); nút tung kỹ năng / cần điều khiển KHÔNG (người dùng chọn). Một tiếng mỗi khung (xác nhận thắng).
