@@ -6,7 +6,7 @@ A2. ma nguon: 9/9 cho goi tieng dung loai
 B1. mac dinh hieu ung 80% (dang nghe 0.80); kho co khoa False
 B2. su kien gia (them thuong/xac nhan): Nut 1/0, Nut xac nhan 0/1, Tab 1/0, bam ngoai nut 0/0
 B3. cung khung: hai lan bam -> 1 tieng; bam + xac nhan -> thuong 0, xac nhan 1
-B4. tieng that (xac nhan): dinh RMS trai 0.2019 phai 0.1868, tuong quan hai kenh 0.560 (mono = 1); 40% / 80% = x0.50 (mong 0,50)
+B4. tieng that (xac nhan): dinh RMS trai 0.2019 phai 0.1868, tuong quan hai kenh 0.611 (mono = 1); 40% / 80% = x0.50 (mong 0,50)
 C1. anh: hang Nhac nen - tam nut thoi o 0.597 (mong 0.60)
 C1. anh: hang Hieu ung - tam nut thoi o 0.797 (mong 0.80)
 C2. keo Hieu ung 40 -> 41: 1 tieng bam thu (mong 1), dang nghe 0.41, kho chua ghi True

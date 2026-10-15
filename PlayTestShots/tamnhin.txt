@@ -8,7 +8,7 @@ C. Diablo25D/ChuanSuong: tat suong 0.594, bat suong 0.524, mau suong 0.165 -> k 
 D. quai 20 / 30 / 60 m: an False / True / True (mong False / True / True); hat sinh luc chay 10 / 35 m: an False / True; den 5 / 45 m: mat na -257 / 0 (goc -1); dang an 58 renderer, tat 16 den
 D2. quai 30 m di vao 15 m: an False
 D3. lo lua gan (6 m): hat hien 4/4; lo xa (74 m): hat an 4/4
-D4. mot luot quet: 0.40 ms (TB 20 lan, 1182 renderer trong canh) -> 1.99 ms / giay
+D4. mot luot quet: 0.62 ms (TB 20 lan, 1182 renderer trong canh) -> 3.12 ms / giay
 E. dong doi o 40 m: thay dong doi True, thay quai canh dong doi (44 m tu minh) True; NhinThay (logic BOT) True
 E2. doi chung bo dong doi: quai do an True
 F. da chet True: thay 10 m quanh xac True, 30 m False

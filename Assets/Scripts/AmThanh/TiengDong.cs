@@ -53,6 +53,7 @@ public static class TiengDong
             if (clip[i] == null) clip[i] = Resources.Load<AudioClip>(duong[i]);
             if (clip[i] != null && clip[i].loadState == AudioDataLoadState.Unloaded) clip[i].LoadAudioData();
         }
+        TiengViTri.NapTruoc();
     }
 
     /// <summary>Tieng bam nut thuong.</summary>

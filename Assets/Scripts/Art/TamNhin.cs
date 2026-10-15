@@ -153,6 +153,23 @@ public class TamNhin : MonoBehaviour
     }
 
     /// <summary>
+    /// AM THANH (15/10/2026, nguoi dung: "nguoi choi khac khong trong tam nhin (bi suong mu che) thi khong nghe duoc"): muc nghe
+    /// duoc cua diem p, 0..1 - 1 khi cach nguon nhin gan nhat &lt;= BanKinh - Mem, giam deu ve 0 o mep tam nhin (ngoai = suong che,
+    /// im). Phan hinh tat (man chinh, phep thu) thi 1. Dung boi <see cref="TiengViTri"/>.
+    /// </summary>
+    public static float MucThay(Vector3 p)
+    {
+        if (!Bat) return 1f;
+        float tot = 0f;
+        for (int i = 0; i < soTam; i++)
+        {
+            float dx = p.x - tam[i].x, dz = p.z - tam[i].y;
+            tot = Mathf.Max(tot, Mathf.Clamp01((BanKinh - Mathf.Sqrt(dx * dx + dz * dz)) / Mem));
+        }
+        return tot;
+    }
+
+    /// <summary>
     /// LOGIC (khong phu thuoc phan hinh): <paramref name="nguoiNhin"/> (nguoi choi / BOT) co thay diem <paramref name="p"/> khong -
     /// trong 25 m quanh chinh no hoac quanh mot dong doi con song (che do Doi chia se tam nhin).
     /// </summary>

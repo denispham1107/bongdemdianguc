@@ -59,6 +59,20 @@ public class Fireball : MonoBehaviour
     public HashSet<Damageable> khongCham;
     /// <summary>Dem cho phep thu: so qua nay da bat ra.</summary>
     public static int SoLanNay;
+    /// <summary>Qua nay sinh tu vu no cua qua truoc - khong keu tieng BAN (chi tieng bay + no).</summary>
+    public bool laQuaNay;
+
+    // AM THANH (15/10/2026, nguoi dung: mau "Lửa thật"): tieng BAN (mot tieng moi chum), tieng BAY (vong lap bam theo qua), tieng NO -
+    // moi qua cau lua: nguoi choi, ban sao mang, BOT, quai Phu thuy, Lua dia nguc, qua nay. Theo vi tri + suong mu: TiengViTri.
+    TiengViTri.Giong giongBay;
+
+    void Start()
+    {
+        if (!laQuaNay) TiengViTri.QuaCauLuaBan(transform.position);
+        giongBay = TiengViTri.QuaCauLuaBay(transform);
+    }
+
+    void OnDestroy() { TiengViTri.Dung(giongBay, transform); }
 
     [Header("Danh nga (Qua cau lua cap 5)")]
     /// <summary>Xac suat danh nga moi ke trong vung no. 0 = TAT - mac dinh, va qua cau cua quai di duong nay.</summary>
@@ -375,6 +389,8 @@ public class Fireball : MonoBehaviour
         if (exploded) return;
         exploded = true;
 
+        TiengViTri.Dung(giongBay, transform);
+        TiengViTri.QuaCauLuaNo(transform.position);
         VfxFactory.ThaDuoiLua(transform);
         // Ai dang trong vung no (TRUOC khi tru mau: ke chet vi vu no van tinh la "da trung") - de qua nay khong quay lai ho
         HashSet<Damageable> daTrungNo = soLanNay > 0 ? KeTrongVung(transform.position, blastRadius, damageMask, boQua) : null;
@@ -413,6 +429,7 @@ public class Fireball : MonoBehaviour
                 // Dui theo ke dich (no chay thi van trung) - dung lai co che tu di cua Lua dia nguc
                 q.mucTieu = ke; q.tocQueo = 540f; q.giayBatDauDi = 0f; q.tamTim = TamNay;
                 q.soLanNay = soLanNay - 1;
+                q.laQuaNay = true;
                 q.khongCham = daTrungNo;
                 SoLanNay++;
             }

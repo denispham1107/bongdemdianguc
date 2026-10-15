@@ -14033,6 +14033,32 @@ cũ → bộ mới (đã ghi khoá riêng); tài khoản cũ 64 trận → cách
 tài khoản mới sau trận đầu vẫn giữ bộ mới; tài khoản mới thứ hai cũng nhận bộ mới; hồ sơ chưa tải → không ghi. Menu 59, 66 (đăng nhập thật:
 lưu và đọc lại đúng theo tài khoản qua sảnh → trận → mở lại), 120: 0 lỗi. Ảnh `PlayTestShots/sachphep_1_hud_camung.png`.
 
+## Tiếng Quả cầu lửa: bắn · bay · nổ, không nghe trong sương (15/10/2026)
+
+**Người dùng:** thêm âm thanh STEREO cho Quả cầu lửa — lúc bắn ra, lúc bay, lúc va chạm và nổ; người chơi khác ngoài tầm nhìn (sương mù
+che) thì không nghe. Ba mẫu tổng hợp bằng numpy (`CongCu/AmThanh/tieng_qua_cau_lua.py`, nghe thử `CongCu/AmThanh/QuaCauLuaThu/*_ghep_nghe_thu.wav`):
+A "Hỏa ngục", B "Hắc thuật", C "Lửa thật" — người dùng chọn **C**: bắn = tiếng "phụp" như gas bắt lửa, bay = đuốc lửa phần phật (rung 12 Hz)
++ tanh tách, nổ = nổ nặng + mảnh vỡ rơi + lửa cháy rì rào. Áp cho mọi quả cầu lửa (người dùng chọn cả ba): của mình, người khác, BOT, **quả
+nảy** (không kêu tiếng bắn), **Lửa địa ngục**, **quái Phù thủy**. Tiếng **theo vị trí quả** (không theo người bắn) và **xa nhỏ, lệch trái/phải**.
+
+**Làm:** `AmThanh/TiengViTri.cs` — 16 giọng 3D (mỗi giọng một AudioSource), tiếng bắn một lần mỗi chùm, tiếng bay là vòng lặp 2 s bám theo
+quả (bắt đầu ở chỗ ngẫu nhiên trong vòng + cao độ ±6% để 3–5 quả không trùng pha), tối đa 6 tiếng bay; các quả nổ cùng chỗ cùng lúc thì quả
+thứ hai trở đi ×0,45. Âm lượng = hệ số × khoảng cách NGANG tới nhân vật mình (1 trong 4 m → 0,25 ở 25 m) × `TamNhin.MucThay` (1 trong 22 m
+quanh nguồn nhìn → 0 ở mép 25 m) × thanh Hiệu ứng, tính lại MỖI KHUNG. ⚠️ **Unity WebGL KHÔNG có `panStereo`** (bản build chỉ có
+`JS_Sound_Set3D/SetPosition`, không có hàm đặt pan) → dùng âm thanh 3D (`spatialBlend` 1) để lệch trái/phải theo camera; đường cong rolloff
+PHẲNG (camera cách nhân vật 15–20 m, để Unity tính thì mọi tiếng đều nhỏ như nhau), tự tính độ nhỏ. Spread 90 giữ stereo trong Editor; trên web
+PannerNode "equalpower" nhận stereo thì giữ hai kênh, chỉ đổi cân bằng. Ba file nhập Vorbis 0,7, Decompress On Load (~1 MB khi giải nén).
+
+**Số đo — menu 125 (0 lỗi, tiếng thật ở loa qua `AudioListener.GetOutputData`):** tung thật → 1 giọng bắn + 3 giọng bay, trúng hộp sau
+0,40 s → tiếng bay tắt, 3 tiếng nổ hệ số 1,00 / 0,45 / 0,45, tương quan hai kênh 0,77 / 0,81 (mono = 1); nổ bên phải / trái màn hình: năng
+lượng phải/trái 3,76 / 0,28 (giữa 1,02); nổ ở 2 / 14 / 20 m: mức 1,000 / 0,643 / 0,429, RMS loa ×1,00 / ×0,61 / ×0,48; nổ ở 40 m trong sương: không
+phát, loa im (đối chứng tắt sương: có giọng); quả "người khác" từ 40 m bay vào: tiếng bắn bị bỏ, tiếng bay im suốt 29 khung ngoài 25 m, bắt đầu
+nghe ở 24,2 m; quả của mình bay ra: ngoài 27,5 m im 79 khung, nổ ở 69 m không phát; quả nảy 0 tiếng bắn; quả quái 1 + 1; Lửa địa ngục 1 + 5;
+10 quả → 6 tiếng bay; thanh Hiệu ứng 0 → loa im; xoá quả không qua nổ → giọng trả hết. ⚠️ Lần chạy đầu sau khi nạp lại Editor hỏng mục B: quả cầu
+lửa ĐẦU TIÊN khựng rất lâu (biên dịch shader hiệu ứng) — trong một khung giật quả đã tới hộp, tiếng bắn đã phát hết theo đồng hồ thật; phép thử
+nay bắn một quả khởi động trước. Menu 70, 72, 84, 117: 0 lỗi; 122: 0 lỗi (lần đầu B2 chập chờn — sự kiện chuột giả 0/0, chạy lại đạt).
+Chưa nghe thử trên web (vòng lặp tiếng bay trên WebGL có thể hở một chút ở chỗ nối nếu bộ mã hoá web thêm đệm).
+
 ## Phần 4 — Menu công cụ "Diablo 2.5D"
 
 | Mục | Tác dụng |
