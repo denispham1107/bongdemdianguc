@@ -14059,6 +14059,30 @@ lửa ĐẦU TIÊN khựng rất lâu (biên dịch shader hiệu ứng) — tro
 nay bắn một quả khởi động trước. Menu 70, 72, 84, 117: 0 lỗi; 122: 0 lỗi (lần đầu B2 chập chờn — sự kiện chuột giả 0/0, chạy lại đạt).
 Chưa nghe thử trên web (vòng lặp tiếng bay trên WebGL có thể hở một chút ở chỗ nối nếu bộ mã hoá web thêm đệm).
 
+## Tiếng Thiên thạch: rơi · nổ · lửa cháy, không nghe trong sương (15/10/2026)
+
+**Người dùng:** thêm âm thanh STEREO cho Thiên thạch — lúc rơi từ trên xuống, lúc va chạm và nổ, và lửa cháy liên tục sau vụ nổ; người khác
+ngoài tầm nhìn thì không nghe. Ba mẫu (`CongCu/AmThanh/tieng_thien_thach.py`, dùng chung bộ công cụ với Quả cầu lửa; nghe thử
+`CongCu/AmThanh/ThienThachThu/*_ghep_nghe_thu.wav`): A "Đá lửa thật", B "Địa ngục", C "Điện ảnh" — người dùng chọn **A**: rơi = không khí bị xé
+toạc (rung hỗn loạn 25 Hz) to dần tới lúc chạm đất + tanh tách; nổ = đá vỡ "rắc" + thụp nặng + mưa sỏi đá rơi; cháy = đám lửa reo + gỗ nổ lách
+tách (vòng lặp 3 s). Người dùng chọn áp thêm cho **Thiên thạch của Quỷ dữ** (không có vùng lửa nên chỉ rơi + nổ) và **cây / bia / nhà mồ bị đốt**.
+
+**Làm:** `TiengViTri` mở rộng — mỗi giọng có CHỦ (thiên thạch, vùng lửa, cái cây): `Dung` / `DatHeSo` chỉ tác dụng khi giọng còn thuộc chủ ấy;
+giọng BÁM THEO chủ (quả bay, thiên thạch rơi) hoặc ĐỨNG YÊN (lửa); 24 giọng, tối đa 4 tiếng lửa. Tiếng rơi bắt đầu lúc thiên thạch hiện hình
+(sau khoảng chờ của loạt), clip 1,0 s to nhất ở 0,8 s (đường rơi 27 m ở 34 m/s ≈ 0,79 s), tắt ngay khi nổ. `VungLua` kêu tiếng lửa giữa vùng,
+yếu dần 2 s cuối như lửa, tắt khi hết giờ; `CayChay` kêu ở giữa thân (bia mộ nhỏ: không đặt ở gốc), to dần theo phần đã cháy (0,35 → 1), yếu dần 2 s
+cuối, tắt khi rụi; cây cao độ thấp hơn (0,82–0,92). Sương mù, xa nhỏ, lệch trái/phải như Quả cầu lửa.
+
+**Số đo — menu 126 (0 lỗi):** tung thật 3 thiên thạch: 3 tiếng rơi, 3/3 còn kêu tới khung chạm đất, từ lúc bắt đầu rơi tới lúc nổ 0,74–0,84 s; 3
+tiếng nổ; 3 tiếng lửa (trần 4); mức lửa vùng 1 s sau vụ nổ cuối 0,51 → 4,5 s sau 0,11, hết tiếng lửa 4,99 s (vùng lửa 5 s); loa tương quan hai kênh
+0,80. Đốt cây thật (cháy 7,1 s): tiếng ở 3,1 m trên gốc, hệ số 0,32 → 0,89 → 0,02, rụi thì trả giọng. Quỷ dữ: rơi +1, nổ +1, lửa +0. Thiên thạch ở 40 m
+trong sương: rơi + lửa mức 0 suốt, tiếng nổ bị bỏ, loa im 126 khung; đối chứng tắt sương có tiếng nổ. ⚠️ Hai lần đầu hỏng vì PHÉP ĐO: `No()` gọi
+`Dung` rồi `Destroy` cuối khung → khung ấy giọng đã rời chủ, phép thử đọc nhầm "không kêu" (nay ghi khung cuối còn kêu); một cây bị vùng lửa đốt
+cháy lâu hơn bị tính chung vào "tiếng lửa vùng" (nay chỉ xét giọng thuộc `VungLua`). Menu 62, 81, 18: 0 lỗi.
+Menu 125 (sau khi sửa `TiengViTri`): 0 lỗi — phép thử được làm chắc thêm: mục B chọn hướng trống rộng 1,9 m (một quả lệch 11° đâm bia ở 5,6 m
+trước hai quả kia 0,12 s — hai vụ nổ tách thật, âm lượng đầy là đúng); mục D đo mỗi khoảng cách HAI lần (một lần 14 m ra ×0,37 — lần nghe tự lệch tới
+~18% dù khung dài nhất chỉ 0,03–0,05 s); mục E1 chờ loa im rồi mới thả vụ nổ. Chưa nghe thử trên web.
+
 ## Phần 4 — Menu công cụ "Diablo 2.5D"
 
 | Mục | Tác dụng |

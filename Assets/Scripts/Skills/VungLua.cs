@@ -38,6 +38,13 @@ public class VungLua : MonoBehaviour
     float age, dotTimer;
     GameObject visual;
 
+    // TIENG LUA CHAY (15/10/2026, nguoi dung): vong lap dung yen giua vung lua, yeu dan cung lua (hai giay cuoi), tat khi het gio.
+    TiengViTri.Giong giongLua;
+
+    void Start() { giongLua = TiengViTri.LuaChay(transform.position, transform, TiengViTri.HeSoLuaVung, Random.Range(0.92f, 1.06f)); }
+
+    void OnDestroy() { TiengViTri.Dung(giongLua, transform); }
+
     public static VungLua Spawn(Vector3 tam, float banKinh, float thoiGian,
                                 float satThuongMoiGiay, LayerMask damageMask)
     {
@@ -58,6 +65,12 @@ public class VungLua : MonoBehaviour
     {
         float dt = Time.deltaTime;
         age += dt;
+
+        if (giongLua != null)
+        {
+            if (age >= duration) { TiengViTri.Dung(giongLua, transform); giongLua = null; }
+            else TiengViTri.DatHeSo(giongLua, transform, TiengViTri.HeSoLuaVung * Mathf.Clamp01((duration - age) / 2f));
+        }
 
         if (age < duration)
         {

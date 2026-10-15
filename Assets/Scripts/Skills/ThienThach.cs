@@ -117,6 +117,12 @@ public class ThienThach : MonoBehaviour
     bool daNo;
     bool daHienHinh;
 
+    // AM THANH (15/10/2026, nguoi dung: mau "Đá lửa thật"): tieng ROI bam theo thien thach tu luc hien hinh, tieng NO luc cham;
+    // vung lua de lai tu keu tieng lua chay (VungLua). Moi thien thach: nguoi choi, ban sao mang, BOT, Quy du. Xem TiengViTri.
+    TiengViTri.Giong giongRoi;
+
+    void OnDestroy() { TiengViTri.Dung(giongRoi, transform); }
+
     /// <summary>Roi qua lau ma chua cham gi thi tu no, khoi bay mai xuong duoi.</summary>
     const float SongToiDa = 6f;
 
@@ -244,6 +250,7 @@ public class ThienThach : MonoBehaviour
             daHienHinh = true;
             NhamKeDich();
             VfxFactory.BuildThienThachVisual(transform, bodyRadius);
+            giongRoi = TiengViTri.ThienThachRoi(transform);
         }
 
         age += dt;
@@ -307,6 +314,9 @@ public class ThienThach : MonoBehaviour
 
         Vector3 tam = transform.position;
         tam.y = VfxFactory.GroundY(tam) + 0.05f;
+
+        TiengViTri.Dung(giongRoi, transform);
+        TiengViTri.ThienThachNo(tam);
 
         // 1. Sat thuong tuc thi ca vung
         CombatUtil.AreaDamage(tam, blastRadius, impactDamage, damageMask,

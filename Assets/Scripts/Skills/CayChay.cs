@@ -428,6 +428,21 @@ public class CayChay : MonoBehaviour
         if (coDen) denDangBat++;
 
         bo = VfxFactory.BuildCayChay(chanCay, cao, banKinhLua, banKinhCanh, thoiGianChay, coDen);
+
+        // TIENG LUA CHAY (15/10/2026, nguoi dung chon ca cay / bia / nha mo bi dot): vong lap dung yen o giua than (khong o goc
+        // vat - bia mo nho), to dan theo phan da chay, yeu dan hai giay cuoi, tat luc chay rui. Cay to: cao do thap hon.
+        giongLua = TiengViTri.LuaChay(chanCay + Vector3.up * Mathf.Min(cao * 0.35f, 3f), transform, HeSoTiengLua(),
+                                      LaBiaNha(gameObject) ? Random.Range(0.95f, 1.05f) : Random.Range(0.82f, 0.92f));
+    }
+
+    TiengViTri.Giong giongLua;
+
+    /// <summary>He so tieng lua luc nay: 0,35 khi moi bat lua -> 1 khi ca cay dang chay, hai giay cuoi yeu dan.</summary>
+    float HeSoTiengLua()
+    {
+        float tiLe = diem != null && diem.Length > 0 ? (float)soChay / diem.Length : 1f;
+        float con = thoiGianChay - age;
+        return TiengViTri.HeSoLuaCay * Mathf.Lerp(0.35f, 1f, tiLe) * (con < 2f ? Mathf.Clamp01(con / 2f) : 1f);
     }
 
     void Update()
@@ -447,6 +462,7 @@ public class CayChay : MonoBehaviour
         // ---- Lua an lan ra ----
         nguongLan = xaNhat * Mathf.Clamp01(age / Mathf.Max(0.01f, thoiGianLan));
         soChay = DemDangChay();
+        TiengViTri.DatHeSo(giongLua, transform, HeSoTiengLua());
 
         BanHatLua(dt);
 
@@ -638,6 +654,7 @@ public class CayChay : MonoBehaviour
         if (daRui) return;
         daRui = true;
         dongHo = GiayHoiSinh;
+        TiengViTri.Dung(giongLua, transform);
         dangChay = Mathf.Max(0, dangChay - 1);
         if (coDen) { coDen = false; denDangBat = Mathf.Max(0, denDangBat - 1); }
 
@@ -679,6 +696,7 @@ public class CayChay : MonoBehaviour
         // va mau goc - khong de mot cai cay vo hinh dung chan duong mai mai.
         if (!daRui) dangChay = Mathf.Max(0, dangChay - 1);
         if (coDen) { coDen = false; denDangBat = Mathf.Max(0, denDangBat - 1); }
+        TiengViTri.Dung(giongLua, transform);
 
         for (int i = 0; i < hinh.Count; i++)
         {

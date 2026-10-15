@@ -1,0 +1,19 @@
+[ban 1] tieng thien thach
+A. ThienThachRoi.wav: trung ban goc True; 2 kenh 1.000 s; ForceToMono False
+A. ThienThachNo.wav: trung ban goc True; 2 kenh 3.300 s; ForceToMono False
+A. LuaChay.wav: trung ban goc True; 2 kenh 3.000 s; ForceToMono False
+
+B. tung that: 3 thien thach; yeu cau roi/no/lua +3/+3/+3; giong roi bat dau 3; no luc 1.35 / 1.62 / 1.97 s; tieng roi con keu ngay truoc khi no 3/3
+   tu luc bat dau tieng roi toi luc no: 0.84 / 0.79 / 0.74 s (clip roi dai 1,00 s, to nhat o 0,80 s)
+   tieng no cung luc toi da 3; tieng lua toi da 3 (tran 4); muc lua VUNG 1 s sau vu no cuoi 0.51, 4,5 s sau 0.11; het tieng lua 4.99 s sau vu no cuoi (lua chay 5 s)
+   loa: RMS dinh 0.2201, tuong quan hai kenh 0.799
+   cay / bia / nha bi dot trong luot nay: 0
+
+C. dot cay TREE_dead_738 (cach 8.0 m, chay 7.1 s): giong lua True, o cao 3.1 m tren goc; he so luc dau 0.32, 2,5 s truoc rui 0.89, 0,4 s truoc rui 0.02; 7.6 s sau: giong da tra True
+
+D. thien thach Quy du (khong vung lua): yeu cau roi +1, no +1, lua +0
+
+E. thien thach o 40 m (suong): muc roi lon nhat 0.000, muc lua lon nhat 0.000, tieng no bi suong che +1; RMS loa lon nhat 0.00000 (126 khung)
+E2. DOI CHUNG tat suong: thien thach o 40 m -> giong no 1, bi suong che +0
+
+so loi ghi nhan = 0

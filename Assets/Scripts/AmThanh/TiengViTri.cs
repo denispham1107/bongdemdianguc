@@ -3,35 +3,43 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 /// <summary>
-/// TIENG THEO VI TRI TRONG CANH (15/10/2026, nguoi dung - dau tien la Qua cau lua): tieng phat TAI mot cho trong the gioi (hoac BAM
+/// TIENG THEO VI TRI TRONG CANH (15/10/2026, nguoi dung - Qua cau lua, roi Thien thach): tieng phat TAI mot cho trong the gioi (hoac BAM
 /// theo mot vat dang bay). Nguoi dung chon:
 ///   - XA NHO, LECH TRAI / PHAI: AudioSource 3D (spatialBlend 1) - lech trai / phai theo cho tren man hinh (AudioListener o camera).
 ///     Spread <see cref="DoRong"/> giu do rong STEREO (quy tac nguoi dung: moi am thanh stereo); tren WebGL Unity dung PannerNode
-///     "equalpower" - nhan vao stereo thi giu hai kenh, chi doi can bang. Do nho theo khoang cach KHONG de Unity tinh (camera cach
-///     nhan vat ~15-20 m): duong cong rolloff phang, am luong tu tinh theo khoang cach NGANG toi nhan vat cua may nay
-///     (<see cref="HeSoKhoangCach"/>: to nhat trong <see cref="GanDayDu"/> m, con <see cref="MucMepTamNhin"/> o mep tam nhin 25 m).
+///     "equalpower" - nhan vao stereo thi giu hai kenh, chi doi can bang (WebGL KHONG co panStereo). Do nho theo khoang cach KHONG de
+///     Unity tinh (camera cach nhan vat ~15-20 m): duong cong rolloff phang, am luong tu tinh theo khoang cach NGANG toi nhan vat cua
+///     may nay (<see cref="HeSoKhoangCach"/>: to nhat trong <see cref="GanDayDu"/> m, con <see cref="MucMepTamNhin"/> o mep tam nhin 25 m).
 ///   - SUONG MU: nhan them <see cref="TamNhin.MucThay"/> theo VI TRI tieng, MOI KHUNG ("theo vi tri qua"): qua cua nguoi khac bay tu
 ///     suong vao tam thi bat dau nghe, qua cua minh bay ra ngoai 25 m thi tat dan, no trong suong thi im. Che do Doi chia se tam nhin
 ///     dong doi -> nghe ca quanh dong doi (nho theo khoang cach toi minh).
 /// Am luong cuoi = muc x thanh "Hiệu ứng" (<see cref="CaiDatAmThanh.HieuUngDangNghe"/>). Dang chay phep thu (co ChayThuMang) thi IM
 /// tru <see cref="NhacNen.BatTrongPhepThu"/> - van dem <see cref="SoLan"/>.
 ///
+/// Moi giong co mot CHU (Transform - qua cau, thien thach, vung lua, cai cay): chu bi xoa thi giong tat dan; <see cref="Dung"/> /
+/// <see cref="DatHeSo"/> chi tac dung khi giong con thuoc chu ay (giong da bi lay cho tieng khac thi bo qua). Giong BAM THEO chu (qua
+/// dang bay) hoac DUNG YEN tai mot cho (lua chay).
+///
 /// Mot vat the DontDestroyOnLoad, <see cref="SoGiongToiDa"/> giong (moi giong mot vat con co AudioSource). Het giong thi lay giong
-/// NHO NHAT; tieng bay toi da <see cref="SoTiengBayToiDa"/> (dot quai dong). Doi man thi dung het.
+/// NHO NHAT; vong lap moi loai co tran rieng (<see cref="TranVong"/>). Doi man thi dung het.
 /// Clip WebGL giai ma bat dong bo: nap san luc scene nap (<see cref="NapTruoc"/>, TiengDong goi), clip chua san thi giong cho.
 /// </summary>
 public class TiengViTri : MonoBehaviour
 {
-    public enum Loai { QuaCauLuaBan = 0, QuaCauLuaBay = 1, QuaCauLuaNo = 2 }
+    public enum Loai { QuaCauLuaBan = 0, QuaCauLuaBay = 1, QuaCauLuaNo = 2, ThienThachRoi = 3, ThienThachNo = 4, LuaChay = 5 }
 
-    // Mau "C - Lua that" (nguoi dung chon trong 3 mau) - CongCu/AmThanh/tieng_qua_cau_lua.py, chep nguyen byte tu
-    // CongCu/AmThanh/QuaCauLuaThu/C_lua_that_{ban,bay,no}.wav. Tieng bay la VONG LAP 2 s lien mach.
-    static readonly string[] duong = { "AmThanh/KyNang/QuaCauLuaBan", "AmThanh/KyNang/QuaCauLuaBay", "AmThanh/KyNang/QuaCauLuaNo" };
-    static readonly bool[] laVong = { false, true, false };
-    static readonly AudioClip[] clip = new AudioClip[3];
+    // Qua cau lua: mau "C - Lua that" (CongCu/AmThanh/tieng_qua_cau_lua.py, QuaCauLuaThu/C_lua_that_{ban,bay,no}.wav). Tieng bay la VONG LAP 2 s.
+    // Thien thach: mau "A - Da lua that" (CongCu/AmThanh/tieng_thien_thach.py, ThienThachThu/A_da_lua_that_{roi,no,chay}.wav). Lua chay
+    // la VONG LAP 3 s, dung cho vung lua sau vu no VA cay / bia / nha mo bi dot (CayChay). Moi file chep nguyen byte.
+    static readonly string[] duong = { "AmThanh/KyNang/QuaCauLuaBan", "AmThanh/KyNang/QuaCauLuaBay", "AmThanh/KyNang/QuaCauLuaNo",
+                                       "AmThanh/KyNang/ThienThachRoi", "AmThanh/KyNang/ThienThachNo", "AmThanh/KyNang/LuaChay" };
+    static readonly bool[] laVong = { false, true, false, false, false, true };
+    static readonly AudioClip[] clip = new AudioClip[6];
 
-    public const int SoGiongToiDa = 16;
+    public const int SoGiongToiDa = 24;
     public const int SoTiengBayToiDa = 6;
+    public const int SoTiengLuaToiDa = 4;
+    public static int TranVong(Loai l) { return l == Loai.LuaChay ? SoTiengLuaToiDa : SoTiengBayToiDa; }
     public const float GanDayDu = 4f;
     public const float MucMepTamNhin = 0.25f;
     /// <summary>Ngoai 25 m (chi nghe duoc nho tam nhin dong doi): tiep tuc nho dan ve 0 trong chung nay met.</summary>
@@ -43,9 +51,13 @@ public class TiengViTri : MonoBehaviour
     public const float HeSoBay = 0.45f;
     /// <summary>Qua thu hai tro di no cung cho cung luc (ca chum trung mot ke) nho lai - khong thi ba tieng no chong nhau qua to.</summary>
     public const float HeSoNoTrung = 0.45f;
+    /// <summary>Tieng thien thach roi (3-5 qua noi nhau 0,35 s).</summary>
+    public const float HeSoRoi = 0.8f;
+    /// <summary>Tieng lua chay: vung lua sau vu no (3-5 vung chong nhau) / cay - bia - nha mo dang chay (lua to hon).</summary>
+    public const float HeSoLuaVung = 0.6f, HeSoLuaCay = 0.9f;
 
     /// <summary>Dem tieng da yeu cau theo loai (ke ca luc im trong phep thu / bi suong che) - phep thu doc / dat lai.</summary>
-    public static readonly int[] SoLan = new int[3];
+    public static readonly int[] SoLan = new int[6];
     /// <summary>Tieng mot lan bi BO vi luc phat nam trong suong (MucThay = 0).</summary>
     public static int SoBiSuongChe;
 
@@ -53,7 +65,10 @@ public class TiengViTri : MonoBehaviour
     {
         public AudioSource nguon;
         public Loai loai;
+        /// <summary>Chu cua giong (vat phat ra tieng). null = tieng tu do (vu no).</summary>
         public Transform theo;
+        /// <summary>true = vi tri bam theo chu moi khung (qua dang bay); false = dung yen o viTri (lua chay).</summary>
+        public bool bamTheo, coChu;
         public Vector3 viTri;
         public float heSo, muc;
         public bool dung, dangCho, dangPhat;
@@ -70,7 +85,7 @@ public class TiengViTri : MonoBehaviour
     bool coPhepThu;
     float lucKiemPhepThu;
     float lucBanCuoi = -9f; Vector3 choBanCuoi;
-    readonly List<Vector4> noGanDay = new List<Vector4>();   // xyz cho no, w luc no
+    readonly List<Vector4> noGanDay = new List<Vector4>();   // xyz cho no, w luc no (Qua cau lua)
     static AnimationCurve duongPhang;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
@@ -164,7 +179,7 @@ public class TiengViTri : MonoBehaviour
         var b = DamBao();
         if (Time.time - b.lucBanCuoi < 0.06f && (cho - b.choBanCuoi).sqrMagnitude < 2.5f * 2.5f) return;
         b.lucBanCuoi = Time.time; b.choBanCuoi = cho;
-        b.Phat(Loai.QuaCauLuaBan, cho, null, 1f, Random.Range(0.97f, 1.03f));
+        b.Phat(Loai.QuaCauLuaBan, cho, null, false, 1f, Random.Range(0.97f, 1.03f));
     }
 
     /// <summary>Tieng BAY (vong lap) bam theo qua cau - goi <see cref="Dung"/> khi qua no / bi xoa.</summary>
@@ -172,7 +187,7 @@ public class TiengViTri : MonoBehaviour
     {
         SoLan[(int)Loai.QuaCauLuaBay]++;
         if (qua == null) return null;
-        return DamBao().Phat(Loai.QuaCauLuaBay, qua.position, qua, HeSoBay, Random.Range(0.94f, 1.06f));
+        return DamBao().Phat(Loai.QuaCauLuaBay, qua.position, qua, true, HeSoBay, Random.Range(0.94f, 1.06f));
     }
 
     /// <summary>Tieng VA CHAM + NO. Cac vu no gan nhau cung luc (ca chum trung mot cho) - qua thu hai tro di nho lai.</summary>
@@ -188,16 +203,53 @@ public class TiengViTri : MonoBehaviour
             if (((Vector3)v - cho).sqrMagnitude < 4f * 4f) heSo = HeSoNoTrung;
         }
         b.noGanDay.Add(new Vector4(cho.x, cho.y, cho.z, Time.time));
-        b.Phat(Loai.QuaCauLuaNo, cho, null, heSo, heSo < 1f ? Random.Range(0.9f, 1.06f) : Random.Range(0.97f, 1.03f));
+        b.Phat(Loai.QuaCauLuaNo, cho, null, false, heSo, heSo < 1f ? Random.Range(0.9f, 1.06f) : Random.Range(0.97f, 1.03f));
     }
 
-    /// <summary>Dung tieng bay cua <paramref name="qua"/> (qua no / bi xoa): tat dan <see cref="GiayMuot"/> roi tra giong. Giong da bi
-    /// lay cho tieng khac (het giong) thi khong con bam qua nay - bo qua, khong dung nham tieng khac.</summary>
-    public static void Dung(Giong g, Transform qua)
+    // ================================================================
+    //  THIEN THACH (ThienThach goi - cua nguoi choi, ban sao mang, BOT, Quy du) + LUA CHAY (VungLua, CayChay)
+    // ================================================================
+
+    /// <summary>Tieng ROI: bat dau luc thien thach hien hinh (bat dau roi), bam theo no, to dan toi luc cham dat (~0,8 s trong clip).
+    /// Thien thach no thi goi <see cref="Dung"/> - tieng roi tat ngay, tieng no thay vao.</summary>
+    public static Giong ThienThachRoi(Transform tt)
     {
-        if (g == null || qua == null || g.theo != qua) return;
+        SoLan[(int)Loai.ThienThachRoi]++;
+        if (tt == null) return null;
+        return DamBao().Phat(Loai.ThienThachRoi, tt.position, tt, true, HeSoRoi, Random.Range(0.95f, 1.05f));
+    }
+
+    /// <summary>Tieng VA CHAM + NO cua thien thach.</summary>
+    public static void ThienThachNo(Vector3 cho)
+    {
+        SoLan[(int)Loai.ThienThachNo]++;
+        DamBao().Phat(Loai.ThienThachNo, cho, null, false, 1f, Random.Range(0.94f, 1.04f));
+    }
+
+    /// <summary>Tieng LUA CHAY (vong lap) DUNG YEN tai <paramref name="cho"/>, thuoc <paramref name="chu"/> (vung lua / cai cay): chu doi
+    /// do to bang <see cref="DatHeSo"/> (lua yeu dan) va goi <see cref="Dung"/> khi tat.</summary>
+    public static Giong LuaChay(Vector3 cho, Transform chu, float heSo, float caoDo)
+    {
+        SoLan[(int)Loai.LuaChay]++;
+        if (chu == null) return null;
+        return DamBao().Phat(Loai.LuaChay, cho, chu, false, heSo, caoDo);
+    }
+
+    /// <summary>Doi he so cua giong (lua yeu dan / to len) - chi khi giong con thuoc <paramref name="chu"/>.</summary>
+    public static void DatHeSo(Giong g, Transform chu, float heSo)
+    {
+        if (g == null || chu == null || g.theo != chu || g.Ranh) return;
+        g.heSo = heSo;
+    }
+
+    /// <summary>Dung tieng cua <paramref name="chu"/> (qua no / lua tat / bi xoa): tat dan <see cref="GiayMuot"/> roi tra giong. Giong da
+    /// bi lay cho tieng khac (het giong) thi khong con thuoc chu nay - bo qua, khong dung nham tieng khac.</summary>
+    public static void Dung(Giong g, Transform chu)
+    {
+        if (g == null || chu == null || g.theo != chu) return;
         g.dung = true;
         g.theo = null;
+        g.coChu = false;
     }
 
     // ================================================================
@@ -221,7 +273,7 @@ public class TiengViTri : MonoBehaviour
 
     static float MucDich(Giong g) { return g.dung ? 0f : g.heSo * HeSoKhoangCach(g.viTri) * TamNhin.MucThay(g.viTri); }
 
-    Giong Phat(Loai loai, Vector3 cho, Transform theo, float heSo, float caoDo)
+    Giong Phat(Loai loai, Vector3 cho, Transform chu, bool bamTheo, float heSo, float caoDo)
     {
         if (Time.unscaledTime >= lucKiemPhepThu) KiemPhepThu();
         if (Im) return null;
@@ -229,21 +281,22 @@ public class TiengViTri : MonoBehaviour
         var c = LayClip(loai);
         if (c == null) return null;
 
-        var moi = new Giong { loai = loai, viTri = cho, theo = theo, heSo = heSo };
+        var moi = new Giong { loai = loai, viTri = cho, heSo = heSo };
         float dich = MucDich(moi);
-        // Tieng mot lan phat ra trong suong: bo han (khong ai nghe - khoi chiem giong)
-        if (!vong && dich <= 0.001f) { SoBiSuongChe++; return null; }
+        // Tieng mot lan TU DO (vu no) phat ra trong suong: bo han (khong ai nghe - khoi chiem giong). Tieng co chu (bay, roi, lua)
+        // van giu giong de vat di vao tam nhin thi nghe.
+        if (chu == null && dich <= 0.001f) { SoBiSuongChe++; return null; }
 
         if (vong)
         {
-            int soBay = 0; Giong nhoNhat = null;
+            int soVong = 0; Giong nhoNhat = null;
             foreach (var g in giong)
-                if (!g.Ranh && g.loai == Loai.QuaCauLuaBay && !g.dung)
+                if (!g.Ranh && g.loai == loai && !g.dung)
                 {
-                    soBay++;
+                    soVong++;
                     if (nhoNhat == null || g.muc < nhoNhat.muc) nhoNhat = g;
                 }
-            if (soBay >= SoTiengBayToiDa)
+            if (soVong >= TranVong(loai))
             {
                 if (nhoNhat.muc >= dich) return null;
                 TraVe(nhoNhat);
@@ -252,13 +305,14 @@ public class TiengViTri : MonoBehaviour
         var gg = LayGiongRanh(dich);
         if (gg == null) return null;
 
-        gg.loai = loai; gg.viTri = cho; gg.theo = theo; gg.heSo = heSo; gg.dung = false;
+        gg.loai = loai; gg.viTri = cho; gg.theo = chu; gg.coChu = chu != null; gg.bamTheo = bamTheo && chu != null;
+        gg.heSo = heSo; gg.dung = false;
         var a = gg.nguon;
         a.transform.position = cho;
         a.clip = c;
         a.loop = vong;
         a.pitch = caoDo;
-        // Tieng mot lan: muc dung ngay (phan len cua tieng nam trong clip); tieng bay: to dan tu 0 (khong "tach")
+        // Tieng mot lan: muc dung ngay (phan len cua tieng nam trong clip); vong lap: to dan tu 0 (khong "tach")
         gg.muc = vong ? 0f : dich;
         a.volume = gg.muc * CaiDatAmThanh.HieuUngDangNghe;
         if (c.loadState != AudioDataLoadState.Loaded)
@@ -276,7 +330,7 @@ public class TiengViTri : MonoBehaviour
         var a = g.nguon;
         g.dangCho = false;
         g.dangPhat = true;
-        // Tieng bay: bat dau o cho ngau nhien trong vong lap - 3-5 qua cung luc khong trung pha (cong lai thanh mot tieng to, phang)
+        // Vong lap: bat dau o cho ngau nhien - nhieu nguon cung luc khong trung pha (cong lai thanh mot tieng to, phang)
         if (a.loop && a.clip.samples > 0) a.timeSamples = Random.Range(0, a.clip.samples);
         a.Play();
     }
@@ -297,7 +351,7 @@ public class TiengViTri : MonoBehaviour
     static void TraVe(Giong g)
     {
         if (g.nguon != null) { g.nguon.Stop(); g.nguon.clip = null; g.nguon.volume = 0f; }
-        g.dangPhat = false; g.dangCho = false; g.dung = false; g.theo = null; g.muc = 0f;
+        g.dangPhat = false; g.dangCho = false; g.dung = false; g.theo = null; g.coChu = false; g.bamTheo = false; g.muc = 0f;
     }
 
     void Update()
@@ -316,9 +370,9 @@ public class TiengViTri : MonoBehaviour
                 if (c.loadState == AudioDataLoadState.Loaded) BatDau(g);
                 else continue;
             }
-            // Vat dang bam bi xoa (qua cau bi Destroy khong qua Explode, doi man...) -> tat dan
-            if (g.nguon.loop && g.theo == null) g.dung = true;
-            if (g.theo != null) g.viTri = g.theo.position;
+            // Chu bi xoa (qua cau bi Destroy khong qua Explode, vung lua het, doi man...) -> tat dan
+            if (g.coChu && g.theo == null) { g.dung = true; g.coChu = false; }
+            if (g.bamTheo && g.theo != null) g.viTri = g.theo.position;
             g.nguon.transform.position = g.viTri;
             g.muc = Mathf.MoveTowards(g.muc, MucDich(g), buoc);
             g.nguon.volume = g.muc * hieuUng;

@@ -2,24 +2,26 @@
 A. QuaCauLuaBan.wav: trung ban goc True; 2 kenh 0.800 s; ForceToMono False
 A. QuaCauLuaBay.wav: trung ban goc True; 2 kenh 2.000 s; ForceToMono False
 A. QuaCauLuaNo.wav: trung ban goc True; 2 kenh 2.600 s; ForceToMono False
-TamNhin.Bat True; giong toi da 16; nghe nen (im) ...
+TamNhin.Bat True; giong toi da 24; nghe nen (im) ...
    RMS nen 0.00000
 
 B. tung that: 3 qua; yeu cau ban/bay/no +3/+3/+3; giong luc bay: ban 1, bay 3 (muc 0.45); no sau 0.40 s; 0,2 s sau: bay con 0, no 3 (he so 1.00 / 0.45 / 0.45)
-   loa: luc bay RMS 0.0709, luc no RMS 0.0262 (dinh 0.0655), tuong quan hai kenh 0.774 / 0.810
+   loa: luc bay RMS 0.0923, luc no RMS 0.0361 (dinh 0.1088), tuong quan hai kenh 0.811 / 0.845
+   cho no tung qua (so voi nhan vat) + luc no: (8.0; 0.9; -2.9) luc 0.396 | (7.2; 0.9; -4.2) luc 0.396 | (6.5; 0.9; -5.5) luc 0.396
 
-C. no ben giua: nang luong phai / trai = 1.02; tuong quan 0.857
-C. no ben phai: nang luong phai / trai = 3.76; tuong quan 0.844
-C. no ben trai: nang luong phai / trai = 0.28; tuong quan 0.846
+C. no ben giua: nang luong phai / trai = 1.02; tuong quan 0.861
+C. no ben phai: nang luong phai / trai = 3.65; tuong quan 0.854
+C. no ben trai: nang luong phai / trai = 0.26; tuong quan 0.846
 
-D. no o 2 m: muc dat 1.000 (duong cong 1.000), RMS loa 0.0396 (x1.00 so voi 2 m)
-D. no o 14 m: muc dat 0.643 (duong cong 0.643), RMS loa 0.0241 (x0.61 so voi 2 m)
-D. no o 20 m: muc dat 0.429 (duong cong 0.429), RMS loa 0.0190 (x0.48 so voi 2 m)
+D. no o 2 m: muc dat 1.000 (duong cong 1.000), RMS loa 0.0403 / 0.0332 (khung dai nhat 0.03 / 0.03 s) -> x1.00 so voi 2 m
+D. no o 14 m: muc dat 0.643 (duong cong 0.643), RMS loa 0.0262 / 0.0258 (khung dai nhat 0.05 / 0.03 s) -> x0.65 so voi 2 m
+D. no o 20 m: muc dat 0.429 (duong cong 0.429), RMS loa 0.0184 / 0.0179 (khung dai nhat 0.04 / 0.03 s) -> x0.46 so voi 2 m
 
-E1. no o 40 m (trong suong, MucThay 0.00): giong 0, bi suong che +1, RMS loa 0.00000 (nen 0.00000)
+   nguon dang keu luc do: khong
+E1. no o 40 m (trong suong, MucThay 0.00): giong 0, bi suong che +1, RMS loa 0.00000 (nen 0.00000, khung dai nhat 0.03 s)
 E1b. DOI CHUNG tat suong: no o 40 m -> giong 1 (MucThay 1.00)
-E2. qua nguoi khac tu 40 m bay vao: tieng ban bi suong che +1 (giong ban moi 0); tieng bay muc lon nhat ngoai 25 m 0.000 (29 khung, RMS loa 0.00000); bat dau nghe o 24.2 m
-E3. qua cua minh bay ra xa: tieng bay trong 15 m muc 0.450, ngoai 27,5 m muc lon nhat 0.000 (79 khung); no o 69.1 m -> yeu cau no +1, bi suong che +1
+E2. qua nguoi khac tu 40 m bay vao: tieng ban bi suong che +1 (giong ban moi 0); tieng bay muc lon nhat ngoai 25 m 0.000 (31 khung, RMS loa 0.00000); bat dau nghe o 24.6 m
+E3. qua cua minh bay ra xa: tieng bay trong 15 m muc 0.450, ngoai 27,5 m muc lon nhat 0.000 (103 khung); no o 69.0 m -> yeu cau no +1, bi suong che +1
 
 F. qua nay: yeu cau ban +0, bay +1; qua quai (Fireball.Spawn): yeu cau ban +1, giong ban 1, bay 1; Lua dia nguc: giong ban 1, bay 5
    10 qua cung bay -> giong bay 6 (tran 6); Hiệu ứng 0 -> am luong giong lon nhat 0.000, RMS loa 0.00000; xoa 10 qua (khong no) -> giong con 0

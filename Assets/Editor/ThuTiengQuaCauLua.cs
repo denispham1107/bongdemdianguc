@@ -108,15 +108,19 @@ public static class ThuTiengQuaCauLua
         yield return new WaitForSecondsRealtime(0.15f);
     }
 
-    /// <summary>Nghe loa trong <paramref name="giay"/> s: kq = {RMS TB, nang luong trai, nang luong phai, tuong quan hai kenh, RMS dinh}.</summary>
+    /// <summary>Nghe loa trong <paramref name="giay"/> s: kq = {RMS TB, nang luong trai, nang luong phai, tuong quan hai kenh, RMS dinh,
+    /// khung dai nhat (s) - Editor khung giat thi bo dem GetOutputData bo sot tieng, so TB lech}.</summary>
     static IEnumerator Nghe(float giay, float[] kq)
     {
         var bl = new float[1024]; var br = new float[1024];
         double sl = 0, sr = 0, slr = 0, tong = 0; int so = 0; float dinh = 0;
         float han = Time.realtimeSinceStartup + giay;
+        float truoc = Time.realtimeSinceStartup, khungDai = 0f;
         while (Time.realtimeSinceStartup < han)
         {
             yield return null;
+            khungDai = Mathf.Max(khungDai, Time.realtimeSinceStartup - truoc);
+            truoc = Time.realtimeSinceStartup;
             AudioListener.GetOutputData(bl, 0);
             AudioListener.GetOutputData(br, 1);
             double a = 0, b = 0, ab = 0;
@@ -129,16 +133,19 @@ public static class ThuTiengQuaCauLua
         kq[1] = (float)sl; kq[2] = (float)sr;
         kq[3] = (sl > 0 && sr > 0) ? (float)(slr / System.Math.Sqrt(sl * sr)) : 1f;
         kq[4] = dinh;
+        kq[5] = khungDai;
     }
 
     static Vector3 TrenDat(Vector3 p) { p.y = GioLoc.MatDatY(p, p.y + 5f) + 1f; return p; }
 
-    static Vector3 HuongTrong(Vector3 goc, PlayerController pc, float dai)
+    /// <param name="rong">Ban kinh ong quet - muc B dung 1,9 m de trong CA CHUM (3 qua lech 11 do, o 9 m cach truc 1,7 m): ong 0,6 m
+    /// tung de qua ben dam vao bia o 5,6 m truoc hai qua kia 0,12 s - hai vu no that su tach roi.</param>
+    static Vector3 HuongTrong(Vector3 goc, PlayerController pc, float dai, float rong = 0.6f)
     {
         for (int i = 0; i < 24; i++)
         {
             Vector3 h = Quaternion.AngleAxis(i * 15f, Vector3.up) * Vector3.forward;
-            if (!Physics.SphereCast(goc + Vector3.up, 0.6f, h, out RaycastHit _, dai, pc.MatNaVatCan, QueryTriggerInteraction.Ignore))
+            if (!Physics.SphereCast(goc + Vector3.up * Mathf.Max(1f, rong + 0.3f), rong, h, out RaycastHit _, dai, pc.MatNaVatCan & ~LayerMask.GetMask("Ground"), QueryTriggerInteraction.Ignore))
                 return h;
         }
         return Vector3.forward;
@@ -167,7 +174,7 @@ public static class ThuTiengQuaCauLua
         Vector3 phai = cam.right; phai.y = 0; phai.Normalize();
         Vector3 truoc = cam.forward; truoc.y = 0; truoc.Normalize();
         Vector3 goc = pc.transform.position;
-        float[] kq = new float[5];
+        float[] kq = new float[6];
         Ghi("TamNhin.Bat " + TamNhin.Bat + "; giong toi da " + TiengViTri.SoGiongToiDa + "; nghe nen (im) ...");
         yield return Nghe(0.6f, kq);
         float nen = kq[0];
@@ -180,7 +187,7 @@ public static class ThuTiengQuaCauLua
         yield return new WaitForSeconds(1.0f);
         yield return ChoIm(4f);
         Ghi("");
-        Vector3 h = HuongTrong(goc, pc, 12f);
+        Vector3 h = HuongTrong(goc, pc, 8.5f, 1.9f);
         pc.transform.rotation = Quaternion.LookRotation(h);
         var hop = GameObject.CreatePrimitive(PrimitiveType.Cube);
         hop.name = "TAM_HopTiengLua";
@@ -200,21 +207,40 @@ public static class ThuTiengQuaCauLua
         float mucBay = 0; foreach (var g in TiengViTri.CacGiong) if (!g.Ranh && g.loai == TiengViTri.Loai.QuaCauLuaBay) mucBay = Mathf.Max(mucBay, g.muc);
         // nghe tu luc bay toi khi no xong
         float lucBatDau = Time.time;
-        float[] kqBay = new float[5];
+        float[] kqBay = new float[6];
         yield return Nghe(0.15f, kqBay);
         float hanNo = Time.time + 2f;
-        while (Object.FindAnyObjectByType<Fireball>() != null && Time.time < hanNo) yield return null;
+        // cho + luc no cua tung qua (vi tri cuoi cung thay duoc) - de doc vi sao he so no trung khong nhu mong
+        var viTriCuoi = new Dictionary<Fireball, Vector3>();
+        var choNo = new List<string>();
+        while (Time.time < hanNo)
+        {
+            bool con = false;
+            foreach (var f in qua)
+            {
+                if (f != null) { viTriCuoi[f] = f.transform.position; con = true; }
+                else if (viTriCuoi.ContainsKey(f))
+                {
+                    var p = viTriCuoi[f];
+                    choNo.Add(string.Format("({0:F1}; {1:F1}; {2:F1}) luc {3:F3}", p.x - goc.x, p.y - goc.y, p.z - goc.z, Time.time - lucBatDau));
+                    viTriCuoi.Remove(f);
+                }
+            }
+            if (!con && viTriCuoi.Count == 0) break;
+            yield return null;
+        }
         float lucNo = Time.time - lucBatDau;
         yield return new WaitForSeconds(0.2f);
         int bayConB = Dem(TiengViTri.Loai.QuaCauLuaBay), noB = Dem(TiengViTri.Loai.QuaCauLuaNo);
         var heSoNo = HeSoNo();
-        float[] kqNo = new float[5];
+        float[] kqNo = new float[6];
         yield return Nghe(1.0f, kqNo);
         Ghi(string.Format("B. tung that: {0} qua; yeu cau ban/bay/no +{1}/+{2}/+{3}; giong luc bay: ban {4}, bay {5} (muc {6:F2}); no sau {7:F2} s; 0,2 s sau: bay con {8}, no {9} (he so {10})",
             qua.Count, TiengViTri.SoLan[0] - b0, TiengViTri.SoLan[1] - y0, TiengViTri.SoLan[2] - n0, banB, bayB, mucBay, lucNo, bayConB, noB,
             string.Join(" / ", heSoNo.ConvertAll(x => x.ToString("F2")))));
         Ghi(string.Format("   loa: luc bay RMS {0:F4}, luc no RMS {1:F4} (dinh {2:F4}), tuong quan hai kenh {3:F3} / {4:F3}",
             kqBay[0], kqNo[0], kqNo[4], kqBay[3], kqNo[3]));
+        Ghi("   cho no tung qua (so voi nhan vat) + luc no: " + string.Join(" | ", choNo));
         Kiem(qua.Count == 3 && banB == 1 && bayB == 3, "tung Qua cau lua khong ra 1 tieng ban + 3 tieng bay");
         Kiem(bayConB == 0 && noB == 3 && heSoNo.Count == 3 && Mathf.Approximately(heSoNo[0], 1f) && heSoNo[1] < 0.5f, "trung hop: tieng bay khong tat / khong ra 3 tieng no (qua sau nho lai)");
         Kiem(kqBay[0] > nen * 5f + 1e-4f && kqNo[0] > nen * 5f + 1e-4f, "loa khong co tieng khi tung / no");
@@ -240,18 +266,25 @@ public static class ThuTiengQuaCauLua
         // ===== D. xa nho =====
         Ghi("");
         float[] kc = { 2f, 14f, 20f };
+        // Moi khoang cach do HAI lan, lay lan lon hon (va ghi ca hai): lan chay 15/10 co mot lan 14 m ra x0,37 (thap hon ca 20 m) - mot
+        // lan nghe lech khoi tieng; phep do mot lan khong phan biet duoc voi loi that.
         var rmsD = new float[3]; var mucD = new float[3];
         for (int i = 0; i < 3; i++)
         {
             Vector3 p = TrenDat(goc + truoc * kc[i]);
-            TiengViTri.QuaCauLuaNo(p);
-            yield return null;
-            foreach (var g in TiengViTri.CacGiong) if (!g.Ranh && g.loai == TiengViTri.Loai.QuaCauLuaNo) mucD[i] = g.muc;
-            yield return Nghe(1.6f, kq);
-            rmsD[i] = kq[0];
-            Ghi(string.Format("D. no o {0} m: muc dat {1:F3} (duong cong {2:F3}), RMS loa {3:F4} (x{4:F2} so voi 2 m)", kc[i], mucD[i],
-                TiengViTri.HeSoKhoangCach(p), rmsD[i], rmsD[i] / Mathf.Max(rmsD[0], 1e-9f)));
-            yield return ChoIm(3f);
+            var lan = new float[2]; var khung = new float[2];
+            for (int k = 0; k < 2; k++)
+            {
+                TiengViTri.QuaCauLuaNo(p);
+                yield return null;
+                foreach (var g in TiengViTri.CacGiong) if (!g.Ranh && g.loai == TiengViTri.Loai.QuaCauLuaNo) mucD[i] = g.muc;
+                yield return Nghe(1.6f, kq);
+                lan[k] = kq[0]; khung[k] = kq[5];
+                yield return ChoIm(3.5f);
+            }
+            rmsD[i] = Mathf.Max(lan[0], lan[1]);
+            Ghi(string.Format("D. no o {0} m: muc dat {1:F3} (duong cong {2:F3}), RMS loa {3:F4} / {4:F4} (khung dai nhat {5:F2} / {6:F2} s) -> x{7:F2} so voi 2 m", kc[i], mucD[i],
+                TiengViTri.HeSoKhoangCach(p), lan[0], lan[1], khung[0], khung[1], rmsD[i] / Mathf.Max(rmsD[0], 1e-9f)));
         }
         Kiem(Mathf.Abs(mucD[0] - 1f) < 0.01f && Mathf.Abs(mucD[1] - TiengViTri.HeSoKhoangCach(TrenDat(goc + truoc * 14f))) < 0.02f && mucD[2] < mucD[1],
              "muc am luong khong theo duong cong khoang cach");
@@ -259,6 +292,8 @@ public static class ThuTiengQuaCauLua
 
         // ===== E. suong mu =====
         Ghi("");
+        // cho loa that su im (toi da 3 s) roi moi do
+        for (int k = 0; k < 10; k++) { yield return Nghe(0.3f, kq); if (kq[4] < 1e-4f) break; }
         int che0 = TiengViTri.SoBiSuongChe;
         Vector3 xa = TrenDat(goc + truoc * 40f);
         TiengViTri.QuaCauLuaNo(xa);
@@ -266,8 +301,13 @@ public static class ThuTiengQuaCauLua
         int noXa = Dem(TiengViTri.Loai.QuaCauLuaNo);
         yield return Nghe(1.2f, kq);
         float rmsXa = kq[0];
-        Ghi(string.Format("E1. no o 40 m (trong suong, MucThay {0:F2}): giong {1}, bi suong che +{2}, RMS loa {3:F5} (nen {4:F5})",
-            TamNhin.MucThay(xa), noXa, TiengViTri.SoBiSuongChe - che0, rmsXa, nen));
+        var dangKeu = new List<string>();
+        foreach (var a in Object.FindObjectsByType<AudioSource>(FindObjectsSortMode.None))
+            if (a.isPlaying && a.clip != null && a.volume > 0f && !a.mute)
+                dangKeu.Add(a.name + ":" + a.clip.name + " vol " + a.volume.ToString("F2") + " t " + a.time.ToString("F2"));
+        Ghi("   nguon dang keu luc do: " + (dangKeu.Count > 0 ? string.Join(" | ", dangKeu) : "khong"));
+        Ghi(string.Format("E1. no o 40 m (trong suong, MucThay {0:F2}): giong {1}, bi suong che +{2}, RMS loa {3:F5} (nen {4:F5}, khung dai nhat {5:F2} s)",
+            TamNhin.MucThay(xa), noXa, TiengViTri.SoBiSuongChe - che0, rmsXa, nen, kq[5]));
         Kiem(noXa == 0 && TiengViTri.SoBiSuongChe - che0 == 1 && rmsXa < Mathf.Max(nen * 3f, rmsD[0] * 0.02f), "no trong suong van nghe thay");
         yield return ChoIm(2f);
         TamNhin.BatTrongPhepThu = false;
