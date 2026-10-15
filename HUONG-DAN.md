@@ -14157,6 +14157,40 @@ Menu 125 (0 lỗi): 7 file trùng từng byte bản gốc, stereo, tiếng bay 3
 lần nổ ra đủ 3 + 3 biến thể, cao độ 0,941–1,057; trái / phải, xa nhỏ, sương mù như cũ. Menu 126, 70, 72, 84: 0 lỗi. Mẫu nghe thử ở
 `CongCu/AmThanh/QuaCauLuaThu2/` (bản 2) và `QuaCauLuaThu3/` (bản 3). Chưa nghe thử trên web.
 
+## Tiếng Thiên thạch làm lại: stereo rõ, rơi lao tới thật, vỡ tung (16/10/2026)
+
+**Người dùng:** tiếng Thiên thạch "nghe vẫn còn quá mono" — làm lại cho rõ stereo, chân thật khi rơi từ trên trời xuống và khi va chạm vỡ tung.
+Nghe hai mẫu bản 2 (`tieng_thien_thach_2.py`, dùng lại mô hình lửa thật của Quả cầu lửa): "vẫn chưa giống tiếng thiên thạch bay rơi và vỡ tung
+lắm". Bản 3: chọn **A "Điện ảnh"** (trong A Điện ảnh / B Thực tế), **thay luôn tiếng lửa cháy** (vùng lửa + cây / bia / nhà mồ bị đốt).
+
+**Bản 2 yếu ở đâu (đo + soi lại):** (1) tiếng rơi to dần ĐỀU (x²) — vật lao tới thật to theo 1 / khoảng cách, dồn dập ở phút chót; (2) không có
+dấu hiệu "đang lao tới gần": phải SÁNG DẦN (xa thì không khí nuốt dải cao, nghe đục); (3) tiếng rít quá mờ; (4) tiếng nổ nghiêng về lửa mềm
+(80% năng lượng 200 Hz – 1 kHz), thiếu cú va chạm nặng và tiếng đá nghiền "rắc rắc". Bản 1 cũ: tiếng nổ đặt thân vụ nổ GIỮA (tương quan 0,57).
+
+**Làm (`CongCu/AmThanh/tieng_thien_thach_3.py`):** RƠI (1,4 s, chạm đất ở 0,8 s) — tiếng gầm lao tới (ồn rộng qua lọc thông thấp quét 350 Hz →
+~3 kHz theo khoảng cách ảo 12 → 0,6 m, to theo 1 / khoảng cách), tiếng RẦM như sấm (sin trầm rung hỗn loạn + bão hoà → hài âm 110–600 Hz), lửa
+lách tách, tiếng RÍT RƠI kiểu bom (hai giọng cao độ trượt 1150–1450 → ~45%), vị trí lướt từ một bên trời vào chỗ rơi. NỔ — nứt + "BÙM" bão hoà
+(40–60 ms đầu cực mạnh) + ĐÁ NGHIỀN (hàng nghìn hạt va chạm 0,8–5 kHz, cộng hưởng đá 1,3 / 2,2 / 3,4 kHz) + đá vỡ lớn nhỏ NẢY + đất đá đổ lộp độp +
+rền đất nhiều đợt + bụi tung toả hai bên + 35% nổ phụ + vang dài. LỬA CHÁY — mô hình lửa thật + lớp gầm trầm + cơn bùng / lắng (vòng lặp 3 s).
+`TiengViTri`: `ThienThachRoi1–3`, `ThienThachNo1–3` chọn ngẫu nhiên + cao độ ±6% (`CaoDoNgauNhien`, như Quả cầu lửa). Lần chỉnh trong bản 3:
+lần đầu tiếng rơi 18–25% năng lượng trên 4 kHz (chói) và tiếng nổ cú đập đầu chỉ bằng mức 0,3 s sau → giới hạn lọc 3,2 kHz, tiếng rầm ×1,8, BÙM ×1,9,
+đá vỡ / mưa đất nhỏ lại. ⚠️ Gọi menu bằng `delayCall` qua MCP lần này không chạy — gọi thẳng `ExecuteMenuItem` (bẫy `build-webgl-delaycall`).
+
+**Số đo:**
+
+| | Cũ ("Đá lửa thật") | Mới ("Điện ảnh") |
+|---|---|---|
+| Tương quan hai kênh trong clip (rơi / nổ / lửa) | −0,04 / 0,57 / 0,26 | 0,11–0,15 / 0,08–0,12 / 0,30 |
+| Tiếng rơi: mức ở 0,2 / 0,5 / 0,7 / 0,8 s | đều (x²) | −31 / −25 / −14 / −5 dB (dồn dập phút chót) |
+| Tiếng rơi: tâm phổ 0,1–0,3 s → 0,6–0,8 s | — | 860–1080 → 1350–1440 Hz (sáng dần) |
+| Trên 4 kHz (rơi) | — | 7% |
+| Ba biến thể nổ chênh TB đường bao | — (một file) | 3,4–4,5 dB |
+
+Menu 126 (0 lỗi): 7 file trùng từng byte bản gốc `ThienThachThu3/A_dien_anh_*`; tung thật 3 thiên thạch: tiếng rơi còn kêu tới lúc chạm 3/3 (rơi
+0,76–0,78 s), loa tương quan **0,41** (cũ 0,65), lửa vùng 0,51 → tắt 4,64 s; cây cháy 0,32 → 0,89 → 0,01; Quỷ dữ không lửa; 40 m trong sương im
+(đối chứng có); G: 30 rơi + 30 nổ ra đủ 3 + 3 biến thể, cao độ 0,941–1,059. Menu 62, 81, 18, 125: 0 lỗi. Mẫu nghe thử ở `CongCu/AmThanh/ThienThachThu2/`,
+`ThienThachThu3/`. Chưa nghe thử trên web.
+
 ## Phần 4 — Menu công cụ "Diablo 2.5D"
 
 | Mục | Tác dụng |

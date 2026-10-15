@@ -1087,6 +1087,12 @@ hơn ×1,5 và mở xuống 1,8–4,3 m** (người dùng chọn sau menu 94 ch�
   tác dụng khi còn thuộc chủ), bám theo hoặc đứng yên, 24 giọng, tối đa 4 tiếng lửa / 6 tiếng bay. Sương mù / xa nhỏ / trái-phải như Quả cầu lửa.
   Menu 126 (0 lỗi): 3/3 tiếng rơi còn kêu tới lúc chạm (rơi 0,74–0,84 s), lửa vùng 0,51 → 0,11 → tắt 4,99 s, cây 0,32 → 0,89 → 0,02, Quỷ dữ không lửa,
   40 m trong sương loa im (đối chứng có). Menu 125, 62, 81, 18: 0 lỗi. Chưa nghe thử trên web.
+  ⚠️⚠️ **16/10/2026 LÀM LẠI: mẫu A "ĐIỆN ẢNH"** (người dùng: "vẫn còn quá mono", bản 2 "chưa giống thiên thạch rơi và vỡ tung") —
+  `CongCu/AmThanh/tieng_thien_thach_3.py`: rơi = gầm lao tới SÁNG DẦN (lọc quét theo khoảng cách) + to theo 1 / khoảng cách (dồn dập phút chót) +
+  rầm như sấm + rít rơi kiểu bom + lướt từ một bên vào chỗ rơi; nổ = nứt + "BÙM" + đá nghiền + đá vỡ nảy + đất đá đổ; LỬA CHÁY thay bằng mô hình
+  lửa thật (người dùng đồng ý). File `ThienThachRoi1–3`, `ThienThachNo1–3`, `LuaChay` chép nguyên byte từ `ThienThachThu3/A_dien_anh_*`; chọn
+  ngẫu nhiên + cao độ ±6% như Quả cầu lửa; spread 120. Clip tương quan 0,08–0,15 (cũ nổ 0,57), loa khi tung thật 0,41 (cũ 0,65). Menu 126, 62,
+  81, 18, 125: 0 lỗi. Mọi dòng "mẫu A Đá lửa thật / clip 1 s" ở trên là LỊCH SỬ.
 - ⚠️ **Ô KỸ NĂNG LƯU THEO TÀI KHOẢN + MẶC ĐỊNH CẢM ỨNG MỚI** (11/10/2026, người dùng khoanh 4 nút trên ảnh; chọn "lưu theo từng tài
   khoản" + "chỉ bản cảm ứng"): mặc định `SachPhep.MacDinhTron()` = [Cầu lửa, Mưa băng, Sấm sét, **Bình mana, Bình máu, Tốc biến**, Giựt sét,
   **Nhào lộn**] (nút tròn 4, 5, 6, 8); máy tính `MacDinhVuong()` giữ [0..6, Nhào lộn]. Khoá lưu = khoá gốc + "." + uid (`SachPhep.KhoaCua`; chưa

@@ -10,7 +10,9 @@ using UnityEngine;
 /// <summary>
 /// MENU 126 - TIENG THIEN THACH (15/10/2026, nguoi dung: mau A "Đá lửa thật"; roi · no · lua chay; ca Quy du va cay / bia / nha mo bi dot;
 /// nguoi khac trong suong thi khong nghe). Play Act2 that, tat GameDirector + xoa quai, BAT tam nhin + tieng trong phep thu, tat nhac nen.
-///   A. (ngoai Play) ba file trung tung byte ban goc CongCu/AmThanh/ThienThachThu/A_da_lua_that_{roi,no,chay}.wav, STEREO; lua chay 3 s.
+///   A. (ngoai Play) bay file (roi 1-3, no 1-3, lua chay) trung tung byte ban goc CongCu/AmThanh/ThienThachThu3/A_dien_anh_*.wav (ban 3,
+///      16/10/2026 - nguoi dung: ban truoc "con qua mono", "chua giong thien thach roi va vo tung"), STEREO; lua chay 3 s.
+///   G. BIEN THE: 30 tieng roi + 30 tieng no -> du 3 bien the moi loai, cao do trong +-6%.
 ///   B. TUNG THAT (CastAt 4) cach ~9 m: theo doi tung khung - moi thien thach mot tieng roi tu luc hien hinh, tieng roi CON KEU toi luc
 ///      cham va tat ngay sau; moi vu no mot tieng no; moi vung lua mot tieng lua (tran 4), lua yeu dan 2 s cuoi, het 5 s thi tat.
 ///      Loa co tieng, hai kenh khac nhau.
@@ -36,19 +38,20 @@ public static class ThuTiengThienThach
         if (EditorSceneManager.GetActiveScene().isDirty) { Debug.LogWarning("[TiengTT] scene dang mo co thay doi chua luu"); return; }
         Directory.CreateDirectory("PlayTestShots");
         bao.Length = 0; loi = 0; daBatDau = false;
-        Ghi("[ban 1] tieng thien thach");
-        string[] ten = { "ThienThachRoi", "ThienThachNo", "LuaChay" }, goc = { "roi", "no", "chay" };
-        for (int i = 0; i < 3; i++)
+        Ghi("[ban 2] tieng thien thach (ban 3 'Dien anh', 3 bien the)");
+        string[] ten = { "ThienThachRoi1", "ThienThachRoi2", "ThienThachRoi3", "ThienThachNo1", "ThienThachNo2", "ThienThachNo3", "LuaChay" },
+                 goc = { "roi1", "roi2", "roi3", "no1", "no2", "no3", "chay" };
+        for (int i = 0; i < ten.Length; i++)
         {
             string game = "Assets/Resources/AmThanh/KyNang/" + ten[i] + ".wav";
-            string g = "CongCu/AmThanh/ThienThachThu/A_da_lua_that_" + goc[i] + ".wav";
+            string g = "CongCu/AmThanh/ThienThachThu3/A_dien_anh_" + goc[i] + ".wav";
             var imp = AssetImporter.GetAtPath(game) as AudioImporter;
             var c = AssetDatabase.LoadAssetAtPath<AudioClip>(game);
             bool trung = c != null && File.Exists(g) && Md5(g) == Md5(game);
             Ghi(string.Format("A. {0}: trung ban goc {1}; {2} kenh {3:F3} s; ForceToMono {4}", Path.GetFileName(game), trung,
                 c != null ? c.channels : 0, c != null ? c.length : 0, imp != null && imp.forceToMono));
             Kiem(trung && c.channels == 2 && imp != null && !imp.forceToMono, "file " + ten[i] + " khong dung ban goc / khong STEREO");
-            if (i == 2) Kiem(c != null && Mathf.Abs(c.length - 3f) < 0.001f, "tieng lua chay khong dai dung 3 s (vong lap)");
+            if (ten[i] == "LuaChay") Kiem(c != null && Mathf.Abs(c.length - 3f) < 0.001f, "tieng lua chay khong dai dung 3 s (vong lap)");
         }
         canhCu = EditorSceneManager.GetActiveScene().path;
         if (canhCu != "Assets/Scenes/Act2.unity") EditorSceneManager.OpenScene("Assets/Scenes/Act2.unity");
@@ -226,7 +229,7 @@ public static class ThuTiengThienThach
         Ghi(string.Format("B. tung that: {0} thien thach; yeu cau roi/no/lua +{1}/+{2}/+{3}; giong roi bat dau {4}; no luc {5} s; tieng roi con keu ngay truoc khi no {6}/{7}",
             tt.Count, TiengViTri.SoLan[3] - r0, TiengViTri.SoLan[4] - n0, TiengViTri.SoLan[5] - l0, batDauRoi.Count,
             string.Join(" / ", khungNo.ConvertAll(x => x.ToString("F2"))), roiConKeu, roiConKeuLucNo.Count));
-        Ghi("   tu luc bat dau tieng roi toi luc no: " + string.Join(" / ", giayRoi.ConvertAll(x => x.ToString("F2"))) + " s (clip roi dai 1,00 s, to nhat o 0,80 s)");
+        Ghi("   tu luc bat dau tieng roi toi luc no: " + string.Join(" / ", giayRoi.ConvertAll(x => x.ToString("F2"))) + " s (clip roi dai 1,40 s gom duoi vang, to nhat o 0,80-0,9 s)");
         Ghi(string.Format("   tieng no cung luc toi da {0}; tieng lua toi da {1} (tran {2}); muc lua VUNG 1 s sau vu no cuoi {3:F2}, 4,5 s sau {4:F2}; het tieng lua {5:F2} s sau vu no cuoi (lua chay {6} s)",
             lucNoMax, luaMax, TiengViTri.SoTiengLuaToiDa, mucLua1s, mucLua4s5, lucHetLua, giayLua));
         Ghi(string.Format("   loa: RMS dinh {0:F4}, tuong quan hai kenh {1:F3}", rmsDinh, tq));
@@ -336,6 +339,31 @@ public static class ThuTiengThienThach
         Ghi(string.Format("E2. DOI CHUNG tat suong: thien thach o 40 m -> giong no {0}, bi suong che +{1}", noDc - dc0, TiengViTri.SoBiSuongChe - che1));
         Kiem(noDc - dc0 == 1 && TiengViTri.SoBiSuongChe - che1 == 0, "doi chung: tat suong ma van bi bo (phep do khong phan biet)");
         TamNhin.BatTrongPhepThu = true;
+        yield return ChoIm(4f);
+
+        // ===== G. bien the + cao do =====
+        Ghi("");
+        var clipRoi = new HashSet<string>(); var clipNo = new HashSet<string>();
+        float caoMin = 9f, caoMax = 0f;
+        var vat = new GameObject("TAM_ThienThachGia").transform;
+        for (int i = 0; i < 30; i++)
+        {
+            vat.position = TrenDat(goc + h * 5f) + Vector3.up * 6f;
+            var gr = TiengViTri.ThienThachRoi(vat);
+            if (gr != null && gr.nguon.clip != null) { clipRoi.Add(gr.nguon.clip.name); caoMin = Mathf.Min(caoMin, gr.nguon.pitch); caoMax = Mathf.Max(caoMax, gr.nguon.pitch); }
+            TiengViTri.Dung(gr, vat);
+            TiengViTri.ThienThachNo(TrenDat(goc + h * (4f + (i % 3) * 3f)));
+            var gn = TiengViTri.GiongMoiNhat;
+            if (gn != null && gn.loai == TiengViTri.Loai.ThienThachNo && gn.nguon.clip != null) { clipNo.Add(gn.nguon.clip.name); caoMin = Mathf.Min(caoMin, gn.nguon.pitch); caoMax = Mathf.Max(caoMax, gn.nguon.pitch); }
+            yield return new WaitForSeconds(0.15f);
+        }
+        Object.Destroy(vat.gameObject);
+        Ghi(string.Format("G. 30 lan roi + 30 lan no: bien the roi {0} ({1}), no {2} ({3}); cao do {4:F3} - {5:F3}", clipRoi.Count,
+            string.Join(", ", clipRoi), clipNo.Count, string.Join(", ", clipNo), caoMin, caoMax));
+        Kiem(clipRoi.Count == 3 && clipNo.Count == 3, "khong du 3 bien the roi / no");
+        Kiem(caoMin >= 1f - TiengViTri.LechCaoDo - 1e-4f && caoMax <= 1f + TiengViTri.LechCaoDo + 1e-4f && caoMax - caoMin > 0.06f,
+             "cao do khong lech ngau nhien trong +-6%");
+        yield return ChoIm(5f);
         Ket();
     }
 

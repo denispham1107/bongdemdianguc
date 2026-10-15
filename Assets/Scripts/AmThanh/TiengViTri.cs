@@ -32,16 +32,21 @@ public class TiengViTri : MonoBehaviour
     // Qua cau lua: ban 3 "B - Khoi lua lon" (15/10/2026, CongCu/AmThanh/tieng_qua_cau_lua_3.py, QuaCauLuaThu3/B_khoi_lua_lon_*.wav -
     // mo hinh lua that: liem lua / xi hoi / lach tach ngau nhien khong deu). BA BIEN THE tieng ban + BA bien the tieng no, moi lan chon
     // ngau nhien + lech cao do +-6% (nguoi dung: ban truoc "don dieu"). Tieng bay la VONG LAP 3 s.
-    // Thien thach: mau "A - Da lua that" (CongCu/AmThanh/tieng_thien_thach.py, ThienThachThu/A_da_lua_that_{roi,no,chay}.wav). Lua chay
-    // la VONG LAP 3 s, dung cho vung lua sau vu no VA cay / bia / nha mo bi dot (CayChay). Moi file chep nguyen byte.
+    // Thien thach: ban 3 "A - Dien anh" (16/10/2026, CongCu/AmThanh/tieng_thien_thach_3.py, ThienThachThu3/A_dien_anh_*.wav - nguoi dung:
+    // ban truoc "con qua mono", "chua giong thien thach roi va vo tung"): gam lao toi sang dan + to theo 1 / khoang cach, ram nhu sam, rit
+    // roi kieu bom; no = nut + "bum" + da nghien + da vo nay + dat da do. BA bien the roi + BA bien the no (chon ngau nhien + cao do +-6%).
+    // Lua chay = lua that (mo hinh Qua cau lua ban 3) VONG LAP 3 s, dung cho vung lua sau vu no VA cay / bia / nha mo bi dot (CayChay).
+    // Moi file chep nguyen byte.
     static readonly string[][] duong = {
         new[] { "AmThanh/KyNang/QuaCauLuaBan1", "AmThanh/KyNang/QuaCauLuaBan2", "AmThanh/KyNang/QuaCauLuaBan3" },
         new[] { "AmThanh/KyNang/QuaCauLuaBay" },
         new[] { "AmThanh/KyNang/QuaCauLuaNo1", "AmThanh/KyNang/QuaCauLuaNo2", "AmThanh/KyNang/QuaCauLuaNo3" },
-        new[] { "AmThanh/KyNang/ThienThachRoi" }, new[] { "AmThanh/KyNang/ThienThachNo" }, new[] { "AmThanh/KyNang/LuaChay" } };
+        new[] { "AmThanh/KyNang/ThienThachRoi1", "AmThanh/KyNang/ThienThachRoi2", "AmThanh/KyNang/ThienThachRoi3" },
+        new[] { "AmThanh/KyNang/ThienThachNo1", "AmThanh/KyNang/ThienThachNo2", "AmThanh/KyNang/ThienThachNo3" },
+        new[] { "AmThanh/KyNang/LuaChay" } };
     static readonly bool[] laVong = { false, true, false, false, false, true };
-    static readonly AudioClip[][] clip = { new AudioClip[3], new AudioClip[1], new AudioClip[3], new AudioClip[1], new AudioClip[1], new AudioClip[1] };
-    /// <summary>Lech cao do toi da cua tieng ban / no Qua cau lua (+-6%, nguoi dung chon).</summary>
+    static readonly AudioClip[][] clip = { new AudioClip[3], new AudioClip[1], new AudioClip[3], new AudioClip[3], new AudioClip[3], new AudioClip[1] };
+    /// <summary>Lech cao do toi da cua tieng ban / no Qua cau lua va roi / no Thien thach (+-6%, nguoi dung chon).</summary>
     public const float LechCaoDo = 0.06f;
 
     public const int SoGiongToiDa = 24;
@@ -236,14 +241,14 @@ public class TiengViTri : MonoBehaviour
     {
         SoLan[(int)Loai.ThienThachRoi]++;
         if (tt == null) return null;
-        return DamBao().Phat(Loai.ThienThachRoi, tt.position, tt, true, HeSoRoi, Random.Range(0.95f, 1.05f));
+        return DamBao().Phat(Loai.ThienThachRoi, tt.position, tt, true, HeSoRoi, CaoDoNgauNhien());
     }
 
     /// <summary>Tieng VA CHAM + NO cua thien thach.</summary>
     public static void ThienThachNo(Vector3 cho)
     {
         SoLan[(int)Loai.ThienThachNo]++;
-        DamBao().Phat(Loai.ThienThachNo, cho, null, false, 1f, Random.Range(0.94f, 1.04f));
+        DamBao().Phat(Loai.ThienThachNo, cho, null, false, 1f, CaoDoNgauNhien());
     }
 
     /// <summary>Tieng LUA CHAY (vong lap) DUNG YEN tai <paramref name="cho"/>, thuoc <paramref name="chu"/> (vung lua / cai cay): chu doi

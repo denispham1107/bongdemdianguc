@@ -4,8 +4,8 @@ A. nhom 'BiaMo': 552 vat, chay duoc 552; 40 kieu luoi, co bo diem moi lua 40 (it
 A. nhom 'NhaMo': 7 vat, chay duoc 7; 2 kieu luoi, co bo diem moi lua 2 (it hon 300 diem: 0)
 A. nhom 'Da': 280 vat, chay duoc 0; 3 kieu luoi, co bo diem moi lua 0 (it hon 300 diem: 0)
 
-B1. BiaMo/TS_round_0: bat lua True; 340 diem moi lua; chay 4.7 giay; giua doan chay lan 100 %, do sang 0.697 -> 0.195 (x0.28); chay rui mat hinh True, tat va cham True; moc lai True, do sang sau khi moc 0.697
-B2. NhaMo/MAUS_A_001_682: bat lua True; 340 diem moi lua; chay 4.7 giay; giua doan chay lan 100 %, do sang 0.697 -> 0.196 (x0.28); chay rui mat hinh True, tat va cham True; moc lai True, do sang sau khi moc 0.697
+B1. BiaMo/TS_round_0: bat lua True; 340 diem moi lua; chay 4.7 giay; giua doan chay lan 100 %, do sang 0.697 -> 0.188 (x0.27); chay rui mat hinh True, tat va cham True; moc lai True, do sang sau khi moc 0.697
+B2. NhaMo/MAUS_A_001_682: bat lua True; 340 diem moi lua; chay 4.7 giay; giua doan chay lan 100 %, do sang 0.697 -> 0.190 (x0.27); chay rui mat hinh True, tat va cham True; moc lai True, do sang sau khi moc 0.697
 B3. so vat chay cung luc nhieu nhat 3 (tran 4); vat KHONG phai cay / bia / nha bi dot: 0 (phai 0)
 
 so loi ghi nhan = 0
