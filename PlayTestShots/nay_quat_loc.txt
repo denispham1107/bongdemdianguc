@@ -1,14 +1,14 @@
 [ban 1] qua nay + gio loc hinh quat
 
-A. Qua cau lua: A mat 69.63 (1 lan), B (sau A 3,9 m) mat 71.81 (1 lan, sau A 0.19 s), C (cach A 7 m) mat 0.00; qua nay 1; B/A = 1.031
+A. Qua cau lua: A mat 69.63 (1 lan), B (sau A 3,9 m) mat 71.63 (1 lan, sau A 0.22 s), C (cach A 7 m) mat 0.00; qua nay 1; B/A = 1.029
 A. DOI CHUNG bia dung mot minh: A mat 69.63, qua nay 0
 A. DOI CHUNG soLanNay 0: A mat 69.63, B mat 0.00, qua nay 0
 
-A2. chuoi 8 bia cach 3.9 m, soLanNay 6: qua nay 6; sat thuong ghi tren tung qua nay [85 85 85 85 85 85]; bia (mat x so lan) 0:71x1 1:65x1 2:70x1 3:73x1 4:70x1 5:68x1 6:50x1 7:0x0 
+A2. chuoi 8 bia cach 3.9 m, soLanNay 6: qua nay 6; sat thuong ghi tren tung qua nay [85 85 85 85 85 85]; bia (mat x so lan) 0:71x1 1:67x1 2:71x1 3:73x1 4:70x1 5:68x1 6:50x1 7:0x0 
 A2. chuoi 8 bia cach 3.9 m, soLanNay 1: qua nay 1; sat thuong ghi tren tung qua nay [85]; bia (mat x so lan) 0:71x1 1:67x1 2:0x0 3:0x0 4:0x0 5:0x0 6:0x0 7:0x0 
 
-   (chan doan qua nay bang) sinh o (0.0, 1.0, -0.4), tat o (0.0, 0.9, 3.0) sau 0.30 s; B o (0.0, -0.3, 3.4); A o (0.0, -0.5, -0.5); muc tieu (da tat)
-B. Qua cau bang: A mat 53.25 (1 lan), B (sau A 3,9 m) mat 54.50 (1 lan, sau A 0.27 s), C (cach A 7 m) mat 0.00; qua nay 1; B/A = 1.023
+   (chan doan qua nay bang) sinh o (0.0, 1.0, -0.4), tat o (0.0, 0.8, 3.0) sau 0.21 s; B o (0.0, -0.3, 3.4); A o (0.0, -0.5, -0.5); muc tieu (da tat)
+B. Qua cau bang: A mat 53.25 (1 lan), B (sau A 3,9 m) mat 54.69 (1 lan, sau A 0.18 s), C (cach A 7 m) mat 0.00; qua nay 1; B/A = 1.027
 B. DOI CHUNG bia dung mot minh: A mat 53.25, qua nay 0
 B. DOI CHUNG soLanNay 0: A mat 53.25, B mat 0.00, qua nay 0
 
@@ -19,6 +19,6 @@ A3. Lua dia nguc tung THAT vao chuoi 8 bia: 5 qua, mang soLanNay 6: 5; qua NAY 3
 
 C. cap 1: 2 loc (mong 2); goc so voi huong ngam: -15.0 15.0 ; cung moc True; loc giua 0 (goc 99.0); ton 35.00 nang luong (mong 35.00)
 C. cap 5: 3 loc (mong 3); goc so voi huong ngam: -30.0 0.0 30.0 ; cung moc True; loc giua 1 (goc 0.0); ton 51.24 nang luong (mong 51.24)
-D. Hoa loc xoay: 1 Loc xoay moi (cach cho loc giua luc bam 6.45 m, loc bay 9,5 m/s trong 0,7 s + niem); con 2 Gio loc
+D. Hoa loc xoay: 1 Loc xoay moi (cach cho loc giua luc bam 6.39 m, loc bay 9,5 m/s trong 0,7 s + niem); con 2 Gio loc
 
 so loi ghi nhan = 0

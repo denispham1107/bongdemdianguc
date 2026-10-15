@@ -14118,6 +14118,45 @@ Menu 121 (0 lỗi; mục A nay so md5 với `CongCu/AmThanh/NhacMoiThu/C_*_day_d
 tương quan 0,42, trong trận 0,60; chuyển sảnh → trận, kéo / HỦY / OK, về sảnh đúng như cũ. Mẫu nghe thử 40 s ở `CongCu/AmThanh/NhacMoiThu/`
 (không đưa vào git). Chưa nghe thử trên web.
 
+## Tiếng Quả cầu lửa làm lại: stereo rõ, lửa thật, không đơn điệu (16/10/2026)
+
+**Người dùng:** tiếng Quả cầu lửa "nghe vẫn còn quá mono" — làm lại cho thật rõ là stereo, chân thật khi bay và khi va chạm vỡ tung. Nghe ba
+mẫu bản 2 (chỉ làm rộng hơn): "chưa giống tiếng lửa thật, nghe còn đơn điệu quá". Bản 3: chọn **B "Khối lửa lớn"** (trong 2 mẫu), **mỗi lần chọn
+ngẫu nhiên 1 trong 3 biến thể + lệch cao độ ±6%**, và nâng độ rộng khi phát sau khi đo.
+
+**Vì sao nghe mono — hai chỗ:** (1) clip: phần to nhất của tiếng nổ / tiếng bắn đặt GIỮA (một nguồn mono cho hai kênh), lửa reo 60% là phần chung,
+vang trộn lại phần khô mono → clip bắn / nổ tương quan hai kênh 0,59 / 0,62; (2) Unity: AudioSource 3D `spread` 90 bóp hẹp thêm — đo ở loa 0,85.
+Trên WebGL Unity dùng PannerNode mặc định (equalpower, `rolloffFactor` 0, không đọc `spread`) — nguồn ở giữa thì giữ nguyên hai kênh của clip.
+
+**Vì sao nghe giả + đơn điệu:** lửa = ồn lọc dải TĨNH + rung phần phật ĐỀU 12 Hz; tanh tách cùng một dải lọc; vụ nổ = một bao tắt mũ duy nhất.
+Đo: bao biên độ tiếng bay biến thiên 0,20; ba biến thể đầu tiên của bản 3 có bao giống nhau 0,95–0,99 (chưa khác gì một file).
+
+**Làm (`CongCu/AmThanh/tieng_qua_cau_lua_3.py`):** mô hình lửa thật (kiểu Farnell "Designing Sound"): **liếm lửa** — ồn ~30 Hz khuếch đại rồi cắt
+thành sóng vuông ngẫu nhiên, mỗi lần đổi dấu một tiếng "phụp", lọc về 150–900 Hz; **xì hơi** — ồn 1–8 kHz nhân (ồn chậm)^4, từng cơn; **lách
+tách** — mỗi xung một tần số cộng hưởng / độ dài / độ to / vị trí riêng, phân bố theo đợt, xen tiếng "bốp" như mắt gỗ. Bay (vòng lặp 3 s): lửa lớn
++ lớp gầm lửa trầm + gió xé (tần số tâm trôi không đều) + những cú phụt lửa vật ngẫu nhiên + cơn bùng / lắng. Nổ: tiếng nứt chát + "ỤM" thân (tụt
+cao độ, bão hoà) + tiếng rền lăn nhiều đợt + khối lửa bùng ra + 45% có nổ phụ ở một bên + gió xé toả hai bên + mảnh vỡ NẢY 2–4 lần + mưa đất đá +
+tàn lửa tắt dần + vang stereo (phản xạ sớm khác nhau hai kênh). Mỗi biến thể gieo ngẫu nhiên cả CẤU TRÚC (độ lớn, lúc khối lửa bùng, nổ phụ, số đợt
+rền, số mảnh vỡ). Mọi thành phần sinh riêng từng kênh, có ~40% phần chung để giữ "tâm".
+`TiengViTri`: đường dẫn clip thành mảng biến thể (`QuaCauLuaBan1–3`, `QuaCauLuaNo1–3`, chọn ngẫu nhiên), cao độ ±`LechCaoDo` 6%, `spread` =
+`DoRong` (biến tĩnh, mặc định `DoRongMacDinh` **120**). ⚠️ Lần chạy đầu menu 125 mục F báo "quả bị xoá mà tiếng bay còn kêu" — thật ra là tiếng
+BẮN mới dài 1,45 s (cũ 0,8 s) còn kêu hợp lệ; nay mục F chỉ đếm giọng tiếng bay.
+
+**Số đo:**
+
+| | Cũ ("Lửa thật") | Mới ("Khối lửa lớn") |
+|---|---|---|
+| Tương quan hai kênh trong clip (bắn / bay / nổ) | 0,59 / 0,25 / 0,62 | 0,20–0,22 / 0,21 / 0,14–0,17 |
+| Bao biên độ tiếng bay biến thiên | 0,20 | 0,51 |
+| Ba biến thể khác nhau (chênh TB đường bao) | — (một file) | bắn 1,8–4,6 dB · nổ 4,6–7,2 dB; phần to (> −20 dB) dài 1,22 / 1,46 / 2,08 s |
+| Dưới 200 Hz | — | bắn 10–16% · bay 21% · nổ 7–11% |
+
+Menu 125 mục C2 (cùng biến thể nổ 1, cao độ 1, nổ ở 6 m): Spread 90 / 120 / 150 / 180 → tương quan ở loa khi nổ giữa **0,64 / 0,44 / 0,27 / 0,21**,
+nổ bên phải phải/trái **3,01 / 1,98 / 1,44 / 1,09**, bên trái **0,37 / 0,58 / 0,76 / 1,08** — từ 150 trở lên mất cảm giác bên → chọn **120**.
+Menu 125 (0 lỗi): 7 file trùng từng byte bản gốc, stereo, tiếng bay 3 s; tung thật: loa lúc bay tương quan 0,42 (bản cũ 0,85); G: 30 lần bắn + 30
+lần nổ ra đủ 3 + 3 biến thể, cao độ 0,941–1,057; trái / phải, xa nhỏ, sương mù như cũ. Menu 126, 70, 72, 84: 0 lỗi. Mẫu nghe thử ở
+`CongCu/AmThanh/QuaCauLuaThu2/` (bản 2) và `QuaCauLuaThu3/` (bản 3). Chưa nghe thử trên web.
+
 ## Phần 4 — Menu công cụ "Diablo 2.5D"
 
 | Mục | Tác dụng |

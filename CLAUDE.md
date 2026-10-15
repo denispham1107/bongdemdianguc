@@ -1073,6 +1073,13 @@ hơn ×1,5 và mở xuống 1,8–4,3 m** (người dùng chọn sau menu 94 ch�
   `panStereo`** → lệch trái/phải bằng 3D (`spatialBlend` 1, rolloff PHẲNG, spread 90). Kỹ năng mới có tiếng theo vị trí: thêm `Loai` + hàm vào
   `TiengViTri`. Menu 125 (0 lỗi): phải/trái 3,76 / 0,28; 2/14/20 m RMS ×1 / 0,61 / 0,48; trong sương loa im (đối chứng có); quả từ sương bay vào
   bắt đầu nghe ở 24,2 m. Menu 70, 72, 84, 117, 122: 0 lỗi. Chưa nghe thử trên web.
+  ⚠️⚠️ **16/10/2026 LÀM LẠI: mẫu B "KHỐI LỬA LỚN"** (người dùng: "vẫn còn quá mono", rồi "chưa giống lửa thật, đơn điệu") —
+  `CongCu/AmThanh/tieng_qua_cau_lua_3.py` (mô hình lửa thật: liếm lửa / xì hơi / lách tách ngẫu nhiên không đều), file
+  `QuaCauLuaBan1–3`, `QuaCauLuaBay` (vòng lặp **3 s**), `QuaCauLuaNo1–3` chép nguyên byte từ `QuaCauLuaThu3/B_khoi_lua_lon_*`; **mỗi lần chọn
+  ngẫu nhiên 1 trong 3 biến thể + cao độ ±6%** (`TiengViTri.LechCaoDo`); **spread 90 → 120** (`TiengViTri.DoRongMacDinh`, menu 125 C2 đo 90/120/150/180:
+  tương quan ở loa 0,64 / 0,44 / 0,27 / 0,21, bên phải 3,01 / 1,98 / 1,44 / 1,09 — 150+ mất bên; áp cho MỌI tiếng theo vị trí kể cả Thiên thạch).
+  Clip tương quan 0,14–0,22 (cũ 0,59 / 0,62). Tiếng bắn dài 1,45 s, nổ 4 s. Menu 125, 126, 70, 72, 84: 0 lỗi. Mọi dòng "mẫu C / spread 90 / 2 s" ở
+  trên là LỊCH SỬ.
 - ⚠️ **TIẾNG THIÊN THẠCH — RƠI · NỔ · LỬA CHÁY** (15/10/2026, người dùng chọn mẫu **A "Đá lửa thật"** — `CongCu/AmThanh/tieng_thien_thach.py`,
   `Resources/AmThanh/KyNang/ThienThach{Roi,No}.wav` + `LuaChay.wav` chép nguyên byte từ `ThienThachThu/A_da_lua_that_*`): tiếng rơi bám thiên thạch từ
   lúc hiện hình (clip 1 s, to nhất 0,8 s), tắt khi `No()`; tiếng nổ; `VungLua` + `CayChay` (cây / bia / nhà mồ bị đốt — người dùng chọn) kêu vòng lặp

@@ -11,10 +11,14 @@ using UnityEngine;
 /// MENU 125 - TIENG QUA CAU LUA (15/10/2026, nguoi dung: mau C "Lửa thật"; ban · bay · no; nguoi choi khac trong suong thi khong nghe).
 /// Play Act2 that, tat GameDirector + xoa quai, BAT phan hinh tam nhin (TamNhin.BatTrongPhepThu) va tieng (NhacNen.BatTrongPhepThu),
 /// tat tieng nhac nen. Do TIENG THAT o loa bang AudioListener.GetOutputData.
-///   A. (ngoai Play) ba file trung tung byte ban goc CongCu/AmThanh/QuaCauLuaThu/C_lua_that_*.wav, STEREO, khong ForceToMono; tieng bay 2 s.
+///   A. (ngoai Play) bay file (ban 1-3, bay, no 1-3) trung tung byte ban goc CongCu/AmThanh/QuaCauLuaThu3/B_khoi_lua_lon_*.wav (ban 3,
+///      15/10/2026 - nguoi dung: ban truoc "con qua mono", "chua giong lua that, don dieu"), STEREO, khong ForceToMono; tieng bay 3 s.
 ///   B. TUNG THAT (CastAt 0) vao hop o ~9 m: 1 giong ban (ca chum), 3 giong bay, trung hop -> bay tat, 3 giong no (qua 2, 3 nho lai);
 ///      loa co tieng, hai kenh khac nhau.
 ///   C. LECH TRAI / PHAI: no o ben phai / trai man hinh (8 m theo truc phai camera) -> nang luong kenh phai / trai lon hon; doi chung giua.
+///   C2. DO RONG (Spread 90 / 120 / 150 / 180): tuong quan hai kenh o loa khi no giua + ti le phai / trai khi no hai ben - chon muc
+///      TiengViTri.DoRongMacDinh: giu stereo rong ma van nghe ro ben. Phat CUNG mot bien the (no 1, cao do 1) cho moi muc.
+///   G. BIEN THE: 30 tieng ban + 30 tieng no -> du 3 bien the moi loai, cao do trong +-6%.
 ///   D. XA NHO: no o 2 / 14 / 20 m truoc mat -> muc dat va RMS loa giam dung duong cong TiengViTri.HeSoKhoangCach.
 ///   E. SUONG MU: no o 40 m -> bo (SoBiSuongChe +1), loa im; DOI CHUNG tat suong (TamNhin.BatTrongPhepThu = false) -> co giong.
 ///      Qua cua "nguoi khac" bay tu 40 m vao: tieng ban bi bo, tieng bay im ngoai 25 m, bat dau nghe khi vao tam.
@@ -40,19 +44,20 @@ public static class ThuTiengQuaCauLua
         if (EditorSceneManager.GetActiveScene().isDirty) { Debug.LogWarning("[TiengLua] scene dang mo co thay doi chua luu"); return; }
         Directory.CreateDirectory("PlayTestShots");
         bao.Length = 0; loi = 0; daBatDau = false;
-        Ghi("[ban 1] tieng qua cau lua");
-        string[] ten = { "Ban", "Bay", "No" }, goc = { "ban", "bay", "no" };
-        for (int i = 0; i < 3; i++)
+        Ghi("[ban 2] tieng qua cau lua (ban 3 'Khoi lua lon', 3 bien the)");
+        string[] ten = { "Ban1", "Ban2", "Ban3", "Bay", "No1", "No2", "No3" }, goc = { "ban1", "ban2", "ban3", "bay", "no1", "no2", "no3" };
+        for (int i = 0; i < ten.Length; i++)
         {
             string game = "Assets/Resources/AmThanh/KyNang/QuaCauLua" + ten[i] + ".wav";
-            string g = "CongCu/AmThanh/QuaCauLuaThu/C_lua_that_" + goc[i] + ".wav";
+            string g = "CongCu/AmThanh/QuaCauLuaThu3/B_khoi_lua_lon_" + goc[i] + ".wav";
             var imp = AssetImporter.GetAtPath(game) as AudioImporter;
             var c = AssetDatabase.LoadAssetAtPath<AudioClip>(game);
             bool trung = c != null && File.Exists(g) && Md5(g) == Md5(game);
-            Ghi(string.Format("A. {0}: trung ban goc {1}; {2} kenh {3:F3} s; ForceToMono {4}", Path.GetFileName(game), trung,
-                c != null ? c.channels : 0, c != null ? c.length : 0, imp != null && imp.forceToMono));
+            Ghi(string.Format("A. {0}: trung ban goc {1}; {2} kenh {3:F3} s; ForceToMono {4}; nap {5}, Vorbis {6:F2}", Path.GetFileName(game), trung,
+                c != null ? c.channels : 0, c != null ? c.length : 0, imp != null && imp.forceToMono,
+                imp != null ? imp.defaultSampleSettings.loadType.ToString() : "-", imp != null ? imp.defaultSampleSettings.quality : 0f));
             Kiem(trung && c.channels == 2 && imp != null && !imp.forceToMono, "file " + ten[i] + " khong dung ban goc / khong STEREO");
-            if (i == 1) Kiem(c != null && Mathf.Abs(c.length - 2f) < 0.001f, "tieng bay khong dai dung 2 s (vong lap)");
+            if (ten[i] == "Bay") Kiem(c != null && Mathf.Abs(c.length - 3f) < 0.001f, "tieng bay khong dai dung 3 s (vong lap)");
         }
         canhCu = EditorSceneManager.GetActiveScene().path;
         if (canhCu != "Assets/Scenes/Act2.unity") EditorSceneManager.OpenScene("Assets/Scenes/Act2.unity");
@@ -263,6 +268,59 @@ public static class ThuTiengQuaCauLua
         }
         Kiem(lr[1] > 1.3f && lr[2] < 1f / 1.3f && lr[1] > lr[0] && lr[2] < lr[0], "tieng khong lech theo ben trai / phai man hinh");
 
+        // ===== C2. do rong (Spread) =====
+        Ghi("");
+        float[] cacMuc = { 90f, 120f, 150f, 180f };
+        var tqMuc = new float[cacMuc.Length]; var phaiMuc = new float[cacMuc.Length]; var traiMuc = new float[cacMuc.Length];
+        for (int m = 0; m < cacMuc.Length; m++)
+        {
+            TiengViTri.DoRong = cacMuc[m];
+            for (int i = 0; i < 3; i++)
+            {
+                TiengViTri.QuaCauLuaNo(TrenDat(cho[i]));
+                var gm = TiengViTri.GiongMoiNhat;
+                if (gm != null && gm.nguon != null)
+                {   // cung mot bien the + cao do cho moi muc - so sanh cong bang
+                    gm.nguon.Stop();
+                    gm.nguon.clip = Resources.Load<AudioClip>("AmThanh/KyNang/QuaCauLuaNo1");
+                    gm.nguon.pitch = 1f;
+                    gm.nguon.Play();
+                }
+                yield return Nghe(1.6f, kq);
+                float r = kq[2] / Mathf.Max(kq[1], 1e-9f);
+                if (i == 0) tqMuc[m] = kq[3]; else if (i == 1) phaiMuc[m] = r; else traiMuc[m] = r;
+                yield return ChoIm(3f);
+            }
+            Ghi(string.Format("C2. Spread {0}: no giua tuong quan hai kenh {1:F3}; no phai: phai / trai {2:F2}; no trai: phai / trai {3:F2}",
+                cacMuc[m], tqMuc[m], phaiMuc[m], traiMuc[m]));
+        }
+        TiengViTri.DoRong = TiengViTri.DoRongMacDinh;
+        int chon = System.Array.IndexOf(cacMuc, TiengViTri.DoRongMacDinh);
+        Ghi(string.Format("   muc dang dung (DoRongMacDinh) {0}", TiengViTri.DoRongMacDinh));
+        Kiem(chon >= 0 && tqMuc[chon] < 0.6f, "tieng no giua o loa van gan mono (tuong quan >= 0,6) o muc Spread dang dung");
+        Kiem(chon >= 0 && phaiMuc[chon] > 1.3f && traiMuc[chon] < 1f / 1.3f, "o muc Spread dang dung khong con nghe ro ben trai / phai");
+
+        // ===== G. bien the + cao do =====
+        Ghi("");
+        var clipBan = new HashSet<string>(); var clipNo = new HashSet<string>();
+        float caoMin = 9f, caoMax = 0f;
+        for (int i = 0; i < 30; i++)
+        {
+            TiengViTri.QuaCauLuaBan(TrenDat(goc + truoc * 3f + phai * (i % 2 == 0 ? 6f : -6f)));
+            var gb = TiengViTri.GiongMoiNhat;
+            if (gb != null && gb.loai == TiengViTri.Loai.QuaCauLuaBan && gb.nguon.clip != null) { clipBan.Add(gb.nguon.clip.name); caoMin = Mathf.Min(caoMin, gb.nguon.pitch); caoMax = Mathf.Max(caoMax, gb.nguon.pitch); }
+            TiengViTri.QuaCauLuaNo(TrenDat(goc + truoc * 3f + phai * (i % 2 == 0 ? -6f : 6f) + truoc * (i % 3) * 5f));
+            var gn = TiengViTri.GiongMoiNhat;
+            if (gn != null && gn.loai == TiengViTri.Loai.QuaCauLuaNo && gn.nguon.clip != null) { clipNo.Add(gn.nguon.clip.name); caoMin = Mathf.Min(caoMin, gn.nguon.pitch); caoMax = Mathf.Max(caoMax, gn.nguon.pitch); }
+            yield return new WaitForSeconds(0.2f);
+        }
+        Ghi(string.Format("G. 30 lan ban + 30 lan no: bien the ban {0} ({1}), no {2} ({3}); cao do {4:F3} - {5:F3}", clipBan.Count,
+            string.Join(", ", clipBan), clipNo.Count, string.Join(", ", clipNo), caoMin, caoMax));
+        Kiem(clipBan.Count == 3 && clipNo.Count == 3, "khong du 3 bien the ban / no");
+        Kiem(caoMin >= 1f - TiengViTri.LechCaoDo - 1e-4f && caoMax <= 1f + TiengViTri.LechCaoDo + 1e-4f && caoMax - caoMin > 0.06f,
+             "cao do khong lech ngau nhien trong +-6%");
+        yield return ChoIm(5f);
+
         // ===== D. xa nho =====
         Ghi("");
         float[] kc = { 2f, 14f, 20f };
@@ -419,10 +477,11 @@ public static class ThuTiengQuaCauLua
         CaiDatAmThanh.BoXemTruoc();
         foreach (var f in muoi) if (f != null) Object.Destroy(f.gameObject);
         yield return new WaitForSeconds(0.4f);
-        int conSauXoa = 0; foreach (var g in TiengViTri.CacGiong) if (!g.Ranh) conSauXoa++;
+        // chi dem tieng BAY: tieng ban cua 10 qua (ban 3 dai 1,45 s, cu 0,8 s) con keu hop le luc nay
+        int conSauXoa = 0; foreach (var g in TiengViTri.CacGiong) if (!g.Ranh && g.loai == TiengViTri.Loai.QuaCauLuaBay) conSauXoa++;
         Ghi(string.Format("F. qua nay: yeu cau ban +{0}, bay +{1}; qua quai (Fireball.Spawn): yeu cau ban +{2}, giong ban {3}, bay {4}; Lua dia nguc: giong ban {5}, bay {6}",
             fBan, fBay, qYc, qBan, qBay, lBan, lBay));
-        Ghi(string.Format("   10 qua cung bay -> giong bay {0} (tran {1}); Hiệu ứng 0 -> am luong giong lon nhat {2:F3}, RMS loa {3:F5}; xoa 10 qua (khong no) -> giong con {4}",
+        Ghi(string.Format("   10 qua cung bay -> giong bay {0} (tran {1}); Hiệu ứng 0 -> am luong giong lon nhat {2:F3}, RMS loa {3:F5}; xoa 10 qua (khong no) -> giong bay con {4}",
             tran, TiengViTri.SoTiengBayToiDa, volMax, rms0, conSauXoa));
         Kiem(fBan == 0 && fBay == 1, "qua nay van keu tieng ban / khong co tieng bay");
         Kiem(qYc == 1 && qBan == 1 && qBay == 1, "qua cau cua quai khong co tieng ban + bay");
