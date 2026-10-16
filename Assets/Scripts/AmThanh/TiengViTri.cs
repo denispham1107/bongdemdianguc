@@ -298,7 +298,7 @@ public class TiengViTri : MonoBehaviour
     }
 
     // ================================================================
-    //  QUA CAU BANG (QuaCauBang) + BANG VO (TiengTangBang, TangBangNo, Damageable vo tan) + MUA BANG (FallingShard)
+    //  QUA CAU BANG (QuaCauBang) + BANG VO (TangBangNo cap 5, Damageable vo tan) + MUA BANG (FallingShard)
     // ================================================================
 
     /// <summary>He so cho vu no / vo gan nhau cung luc: trong 0,15 s va 4 m da co mot cai -> nho lai.</summary>
@@ -342,7 +342,9 @@ public class TiengViTri : MonoBehaviour
         b.Phat(Loai.CauBangNo, cho, null, false, heSo, CaoDoNgauNhien());
     }
 
-    /// <summary>Tieng KHOI BANG VO (het gio, moi cap - TiengTangBang) va ke bi dong bang chet VO TAN (<paramref name="voTan"/>, cao do thap hon).</summary>
+    /// <summary>Tieng BANG VO: ke bi dong bang chet VO TAN (<paramref name="voTan"/>, cao do thap hon). ⚠️ Khoi bang tren dat MO DAN bien mat thi
+    /// KHONG keu (16/10/2026 nguoi dung: "khi cac tang bang bien mat dan khong can am thanh, chi khi tang bang vo ra" - ban dau co TiengTangBang
+    /// keu luc cum gai dau tan, da xoa); khoi bang VO RA (cap 5 no tung) dung <see cref="BangVoNo"/>.</summary>
     public static void BangVo(Vector3 cho, bool voTan = false)
     {
         SoLan[(int)Loai.BangVo]++;

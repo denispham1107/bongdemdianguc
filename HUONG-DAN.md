@@ -14234,6 +14234,11 @@ gần nhau cùng lúc ×0,45 / ×0,5. `QuaCauBang`: bắn (một tiếng mỗi c
 | 200 Hz–1 kHz (bắn / bay / nổ) | — | — (bản 3: 11 / 7 / 25%) | 27 / 36 / 42% |
 | Tương quan hai kênh trong clip | có lúc âm | có lúc âm | 0,06–0,28, không âm |
 
+⚠️ **Cùng ngày người dùng đổi: "khi các tảng băng biến mất dần không cần âm thanh, chỉ khi nào tảng băng VỠ RA mới cần âm thanh vỡ"** — đã xoá
+`TiengTangBang` (kêu lúc cụm gai đầu tan); nay chỉ kêu vỡ khi khối băng cấp 5 NỔ TUNG (`BangVoNo`) và kẻ đang đóng băng chết VỠ TAN (`BangVo`, voTan).
+Menu 127 chạy lại (0 lỗi): Quả cầu băng 32 cụm gai tan hết sau 3,5 s → tiếng vỡ +0; Mưa băng 11 khối băng mờ dần → +0; cấp 5 hai khối vỡ ra → +2.
+Các dòng "4 khối băng → 4 tiếng vỡ / 14 khối → 14 tiếng vỡ" dưới đây là LỊCH SỬ.
+
 Menu **127** (0 lỗi, Act2 thật): 19 file trùng byte, stereo; tung thật 4 quả → 1 bắn / 4 bay / 4 nổ (1,00 / 0,45 / 0,45 / 0,45), loa tương quan
 0,37 (bay) / 0,57 (nổ); 4 khối băng → 4 tiếng vỡ ở 1,88 s sau vụ nổ (cụm đầu tan 1,93 s); cấp 5: 2 khối nổ → 2 tiếng nổ tung, 0 tiếng vỡ hết giờ;
 Mưa băng thật 34 quả → 34 rơi + 34 chạm, cùng lúc tối đa 3 / 6, 14 khối băng → 14 tiếng vỡ, loa giữa trận mưa tương quan 0,72 (mưa dày quanh một

@@ -1099,8 +1099,8 @@ hơn ×1,5 và mở xuống 1,8–4,3 m** (người dùng chọn sau menu 94 ch�
   lép"; chọn **B "Mưa đá" dày + một ít âm vang trong** — `CongCu/AmThanh/tieng_qua_cau_bang_4.py --trong`, 19 file `Resources/AmThanh/KyNang/{CauBangBan1–3,
   CauBangBay, CauBangNo1–3, BangVo1–3, BangVoNo1–3, MuaBangRoi1–3, MuaBangCham1–3}` chép nguyên byte từ `QuaCauBangThu4/B_mua_da_day_trong_*`):
   `TiengViTri` loại 6–12; `QuaCauBang` bắn / bay / nổ (`laQuaNay` không kêu bắn); `FallingShard` (Mưa băng) rơi + chạm đất, trần riêng 3 / 6 giọng
-  (`TranMotLan`); khối băng có cụm gai → `AmThanh/TiengTangBang.cs` kêu vỡ lúc cụm gai ĐẦU TIÊN tan (mọi cấp, cả Mưa băng), cấp 5 → `TangBangNo.No`
-  kêu `BangVoNo`; đóng băng chết → `BangVo(.., voTan)` cao độ ×0,88. Sương mù / xa nhỏ / spread 120 / ±6% như Quả cầu lửa. Menu 127: 0 lỗi; 68, 58,
+  (`TranMotLan`); ⚠️ khối băng MỜ DẦN biến mất thì KHÔNG kêu (người dùng cùng ngày: "chỉ khi tảng băng VỠ RA" — `TiengTangBang` đã xoá):
+  cấp 5 nổ tung → `TangBangNo.No` kêu `BangVoNo`; đóng băng chết vỡ tan → `BangVo(.., voTan)` cao độ ×0,88. Sương mù / xa nhỏ / spread 120 / ±6% như Quả cầu lửa. Menu 127: 0 lỗi; 68, 58,
   125, 126: 0 lỗi. Chưa nghe thử trên web.
 - ⚠️ **Ô KỸ NĂNG LƯU THEO TÀI KHOẢN + MẶC ĐỊNH CẢM ỨNG MỚI** (11/10/2026, người dùng khoanh 4 nút trên ảnh; chọn "lưu theo từng tài
   khoản" + "chỉ bản cảm ứng"): mặc định `SachPhep.MacDinhTron()` = [Cầu lửa, Mưa băng, Sấm sét, **Bình mana, Bình máu, Tốc biến**, Giựt sét,

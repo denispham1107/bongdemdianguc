@@ -13,10 +13,10 @@ using UnityEngine;
 /// + "trong" (ban 4, CongCu/AmThanh/tieng_qua_cau_bang_4.py --trong). Play Act2 that, tat GameDirector + xoa quai, BAT tam nhin + tieng.
 ///   A. (ngoai Play) 19 file trung tung byte ban goc QuaCauBangThu4/B_mua_da_day_trong_*.wav, STEREO, khong ForceToMono; tieng bay 3 s.
 ///   B. TUNG THAT Qua cau bang (CastAt 9) vao hop ~9 m: 1 tieng ban (ca chum), moi qua 1 tieng bay, trung hop -> bay tat, moi qua 1 tieng no
-///      (qua sau x0,45); loa co tieng, hai kenh khac nhau. Khoi bang tren dat: moi khoi 1 tieng VO dung luc cum gai dau tien tan (TiengTangBang.Moc).
-///   C. CAP 5 (SpawnChum capKyNang 5): khoi bang no tung -> tieng BangVoNo moi khoi, KHONG keu tieng vo het gio.
+///      (qua sau x0,45); loa co tieng, hai kenh khac nhau. Khoi bang tren dat MO DAN bien mat: KHONG keu (nguoi dung 16/10/2026 - chi khi VO RA).
+///   C. CAP 5 (SpawnChum capKyNang 5): khoi bang VO RA (no tung) -> tieng BangVoNo moi khoi.
 ///   D. MUA BANG THAT (CastAt 1) quanh mot bia: moi qua 1 yeu cau tieng roi (giong roi cung luc <= 3), moi qua cham dat 1 tieng cham (<= 6 cung luc);
-///      ke bi dong bang -> khoi bang -> tieng vo.
+///      khoi bang (ke bi dong bang) mo dan -> KHONG tieng vo.
 ///   E. KE BI DONG BANG CHET: FrozenEffect day du roi Die() -> 1 tieng vo tan (cao do x0,88).
 ///   F. SUONG MU: no / vo o 40 m -> bo (SoBiSuongChe), loa im; doi chung tat suong -> co giong.
 ///   G. BIEN THE: 30 lan moi loai (ban, no, vo, vo no, roi, cham) -> du 3 bien the, cao do +-6%.
@@ -209,8 +209,8 @@ public static class ThuTiengQuaCauBang
         Physics.SyncTransforms();
         CapDo.BatDauTranMoi(); CapDo.MoCaDuongChoPhepThu(CapDo.KyQuaCauBang);
         pc.mana = pc.maxMana;
-        int b0 = SL(TiengViTri.Loai.CauBangBan), y0 = SL(TiengViTri.Loai.CauBangBay), n0 = SL(TiengViTri.Loai.CauBangNo), v0 = SL(TiengViTri.Loai.BangVo);
-        int tv0 = TiengTangBang.SoLanVo;
+        int b0 = SL(TiengViTri.Loai.CauBangBan), y0 = SL(TiengViTri.Loai.CauBangBay), n0 = SL(TiengViTri.Loai.CauBangNo), v0 = SL(TiengViTri.Loai.BangVo),
+            vno0 = SL(TiengViTri.Loai.BangVoNo);
         float lucTung = Time.time;
         pc.CastAt(CapDo.KyQuaCauBang, goc + h * 9f);
         var qua = new List<QuaCauBang>();
@@ -232,32 +232,23 @@ public static class ThuTiengQuaCauBang
         var heSoNo = HeSo(TiengViTri.Loai.CauBangNo);
         float[] kqNo = new float[5];
         yield return Nghe(0.8f, kqNo);
-        // khoi bang tren dat: cho tieng vo (TiengTangBang.Moc ~1,6 s), ghi luc tung tieng vo
-        var tangs = new List<TiengTangBang>(Object.FindObjectsByType<TiengTangBang>(FindObjectsSortMode.None));
-        float mocMin = 9f, mocMax = 0f; foreach (var tg in tangs) if (tg.Moc > 0) { mocMin = Mathf.Min(mocMin, tg.Moc); mocMax = Mathf.Max(mocMax, tg.Moc); }
-        var lucVo = new List<float>(); int voTruoc = SL(TiengViTri.Loai.BangVo);
+        // khoi bang tren dat MO DAN bien mat: KHONG keu (nguoi dung 16/10/2026: chi keu khi tang bang VO RA) - cho het doi khoi bang (<= 2,6 s)
+        int soKhoi = 0; foreach (var ef in Object.FindObjectsByType<ExpandFade>(FindObjectsSortMode.None)) if (ef.name.StartsWith("CumGai")) soKhoi++;
         float hanV = Time.time + 3.5f;
-        while (Time.time < hanV)
-        {
-            int v = SL(TiengViTri.Loai.BangVo);
-            for (int k = voTruoc; k < v; k++) lucVo.Add(Time.time - lucNo);
-            voTruoc = v;
-            yield return null;
-        }
+        while (Time.time < hanV) yield return null;
+        int conCumGai = 0; foreach (var ef in Object.FindObjectsByType<ExpandFade>(FindObjectsSortMode.None)) if (ef.name.StartsWith("CumGai")) conCumGai++;
         Ghi(string.Format("B. tung that: {0} qua; yeu cau ban/bay/no +{1}/+{2}/+{3}; giong luc bay: ban {4}, bay {5}; no xong luc {6:F2} s; 0,15 s sau: bay con {7}, no {8} (he so {9})",
             qua.Count, SL(TiengViTri.Loai.CauBangBan) - b0, SL(TiengViTri.Loai.CauBangBay) - y0, SL(TiengViTri.Loai.CauBangNo) - n0, banB, bayB,
             lucNo - lucTung, bayConB, noB, string.Join(" / ", heSoNo.ConvertAll(x => x.ToString("F2")))));
         Ghi(string.Format("   loa: luc bay RMS {0:F4}, luc no RMS {1:F4} (dinh {2:F4}), tuong quan hai kenh {3:F3} / {4:F3}", kqBay[0], kqNo[0], kqNo[4], kqBay[3], kqNo[3]));
-        Ghi(string.Format("   khoi bang: {0} khoi (co TiengTangBang), moc cum gai dau tan {1:F2}-{2:F2} s; tieng vo +{3} (TiengTangBang {4}) luc {5} s sau vu no",
-            tangs.Count, mocMin, mocMax, SL(TiengViTri.Loai.BangVo) - v0, TiengTangBang.SoLanVo - tv0, string.Join(" / ", lucVo.ConvertAll(x => x.ToString("F2")))));
+        Ghi(string.Format("   khoi bang mo dan: {0} cum gai luc no xong, 3,5 s sau con {1}; tieng vo +{2}, tieng vo no +{3} (phai 0 - mo dan khong keu)",
+            soKhoi, conCumGai, SL(TiengViTri.Loai.BangVo) - v0, SL(TiengViTri.Loai.BangVoNo) - vno0));
         Kiem(qua.Count >= 4 && banB == 1 && bayB == qua.Count, "tung Qua cau bang khong ra 1 tieng ban + moi qua 1 tieng bay");
         Kiem(bayConB == 0 && noB == qua.Count && heSoNo.Count == qua.Count && Mathf.Approximately(heSoNo[0], 1f) && heSoNo[heSoNo.Count - 1] < 0.5f,
              "trung hop: tieng bay khong tat / khong du tieng no (qua sau nho lai)");
         Kiem(kqNo[0] > 1e-3f && kqNo[3] < 0.95f, "loa khong co tieng no / tieng no o loa gan mono");
-        Kiem(tangs.Count == qua.Count && lucVo.Count == qua.Count, "khong du tieng vo cho moi khoi bang");
-        bool dungMoc = lucVo.Count > 0;
-        foreach (var lv in lucVo) if (lv < mocMin - 0.25f || lv > mocMax + 0.25f) dungMoc = false;
-        Kiem(dungMoc, "tieng vo khong keu dung luc cum gai dau tien tan");
+        Kiem(soKhoi > 0 && conCumGai == 0 && SL(TiengViTri.Loai.BangVo) - v0 == 0 && SL(TiengViTri.Loai.BangVoNo) - vno0 == 0,
+             "khoi bang mo dan bien mat van keu tieng vo (hoac phep do khong co khoi bang de xet)");
         Object.Destroy(hop);
         yield return ChoIm(4f);
 
@@ -269,14 +260,14 @@ public static class ThuTiengQuaCauBang
         hop5.transform.localScale = new Vector3(7f, 5f, 1f);
         hop5.transform.rotation = Quaternion.LookRotation(h);
         Physics.SyncTransforms();
-        int vn0 = SL(TiengViTri.Loai.BangVoNo), vc0 = SL(TiengViTri.Loai.BangVo), bq0 = TiengTangBang.SoLanBoQuaCap5, tn0 = TangBangNo.SoLanNo;
+        int vn0 = SL(TiengViTri.Loai.BangVoNo), vc0 = SL(TiengViTri.Loai.BangVo), tn0 = TangBangNo.SoLanNo;
         QuaCauBang.SpawnChum(goc + Vector3.up * 1.2f + h, h, pc.MatNaVatCan, maskEnemy, toi, 2, 11f, 1f, 0f, 5);
         float hanC = Time.time + 5f;
         while (Time.time < hanC) yield return null;
-        Ghi(string.Format("C. cap 5 (2 qua): khoi bang no tung {0}; tieng vo no +{1}; tieng vo het gio +{2}; TiengTangBang bo qua vi cap 5 +{3}",
-            TangBangNo.SoLanNo - tn0, SL(TiengViTri.Loai.BangVoNo) - vn0, SL(TiengViTri.Loai.BangVo) - vc0, TiengTangBang.SoLanBoQuaCap5 - bq0));
-        Kiem(TangBangNo.SoLanNo - tn0 == 2 && SL(TiengViTri.Loai.BangVoNo) - vn0 == 2 && SL(TiengViTri.Loai.BangVo) - vc0 == 0 && TiengTangBang.SoLanBoQuaCap5 - bq0 == 2,
-             "cap 5: khong moi khoi mot tieng no tung / van keu tieng vo het gio");
+        Ghi(string.Format("C. cap 5 (2 qua): khoi bang VO RA (no tung) {0}; tieng vo no +{1}; tieng vo khac +{2}",
+            TangBangNo.SoLanNo - tn0, SL(TiengViTri.Loai.BangVoNo) - vn0, SL(TiengViTri.Loai.BangVo) - vc0));
+        Kiem(TangBangNo.SoLanNo - tn0 == 2 && SL(TiengViTri.Loai.BangVoNo) - vn0 == 2 && SL(TiengViTri.Loai.BangVo) - vc0 == 0,
+             "cap 5: khong moi khoi vo ra mot tieng no tung");
         Object.Destroy(hop5);
         yield return ChoIm(4f);
 
@@ -300,13 +291,13 @@ public static class ThuTiengQuaCauBang
             yield return null;
         }
         int soCham = FallingShard.SoLanCham - cham0, soGai = FallingShard.SoLanCoGai - gai0;
-        Ghi(string.Format("D. Mua bang that: {0} qua cham dat, yeu cau roi +{1}, cham +{2}; giong cung luc lon nhat roi {3} (tran {4}), cham {5} (tran {6}); khoi bang (dong bang) {7} -> tieng vo +{8}",
+        Ghi(string.Format("D. Mua bang that: {0} qua cham dat, yeu cau roi +{1}, cham +{2}; giong cung luc lon nhat roi {3} (tran {4}), cham {5} (tran {6}); khoi bang (dong bang, mo dan) {7} -> tieng vo +{8} (phai 0)",
             soCham, SL(TiengViTri.Loai.MuaBangRoi) - r0, SL(TiengViTri.Loai.MuaBangCham) - c0, roiMax, TiengViTri.SoMuaRoiToiDa, chamMax, TiengViTri.SoMuaChamToiDa,
             soGai, SL(TiengViTri.Loai.BangVo) - vd0));
         Ghi(string.Format("   loa giua tran mua: RMS {0:F4}, tuong quan hai kenh {1:F3}", kqMua[0], kqMua[3]));
         Kiem(soCham > 20 && SL(TiengViTri.Loai.MuaBangRoi) - r0 == soCham && SL(TiengViTri.Loai.MuaBangCham) - c0 == soCham, "Mua bang: khong moi qua 1 tieng roi + 1 tieng cham");
         Kiem(roiMax >= 1 && roiMax <= TiengViTri.SoMuaRoiToiDa && chamMax >= 1 && chamMax <= TiengViTri.SoMuaChamToiDa, "Mua bang vuot tran giong / khong keu");
-        Kiem(soGai == SL(TiengViTri.Loai.BangVo) - vd0, "khoi bang cua Mua bang khong keu tieng vo");
+        Kiem(soGai > 0 && SL(TiengViTri.Loai.BangVo) - vd0 == 0, "khoi bang cua Mua bang mo dan van keu tieng vo (hoac khong co khoi bang de xet)");
         Kiem(kqMua[0] > 1e-3f && kqMua[3] < 0.95f, "loa khong co tieng mua / gan mono");
         Object.Destroy(bia.gameObject);
         yield return ChoIm(5f);
