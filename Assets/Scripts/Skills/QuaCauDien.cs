@@ -119,6 +119,7 @@ public class QuaCauDien : MonoBehaviour
         hinh = VfxFactory.QuaCauDienHinh(transform.position, BanKinhCau, GiayChoToiDa + 1f);
         CameraShake.Shake(0.18f, 0.05f);
         nhip = 0.12f;      // luot dau ban gan nhu ngay khi cau hien ra
+        giongVong = TiengViTri.CauDienVong(transform);   // dien chay xet lien tuc trong qua cau (16/10/2026)
     }
 
     void Update()
@@ -176,6 +177,7 @@ public class QuaCauDien : MonoBehaviour
             // Dau tia bam qua cau, cuoi tia bam ke dich (kieu Giut set - ke dich chay thi tia chay theo)
             VfxFactory.TiaCauDien(transform.position, den, transform, d.transform);
             VfxFactory.ChamTiaDien(den);
+            TiengViTri.GiatSetTrung(den);
 
             // GhiKeDanh TRUOC TakeDamage - khong thi ke giet vo danh, mat kinh nghiem (menu 61)
             d.GhiKeDanh(boQua);
@@ -187,8 +189,12 @@ public class QuaCauDien : MonoBehaviour
             if (!d.IsDead && Random.value < XacSuatChoang)
                 StunnedEffect.Apply(d, giayChoang);
         }
+        // Tieng ban moi luot: tieng LAN ngan cua Giut set tai qua cau (nguoi dung nghe ghep B3 - tieng PHONG dai chong nhau moi 0,4 s thanh mot mo)
+        if (daBanRa > 0) TiengViTri.GiatSetLan(transform.position, TiengViTri.HeSoCauDienBan);
         return daBanRa;
     }
+
+    TiengViTri.Giong giongVong;
 
     int SoSanhTheoKhoangCach(Damageable a, Damageable b)
     {
@@ -201,6 +207,7 @@ public class QuaCauDien : MonoBehaviour
 
     void OnDestroy()
     {
+        TiengViTri.Dung(giongVong, transform);
         if (hinh != null) Destroy(hinh);
     }
 }

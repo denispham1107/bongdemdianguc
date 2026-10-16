@@ -185,6 +185,7 @@ public class GiatSet : MonoBehaviour
     {
         var daTrung = new HashSet<Damageable>();
         var dauTien = TimMayMucTieuDau(Mathf.Max(1, soTiaDau));
+        TiengViTri.GiatSetPhong(origin);       // tieng phong tia (16/10/2026) - ca khi ban vao khong khi
 
         if (dauTien.Count == 0)
         {
@@ -222,6 +223,7 @@ public class GiatSet : MonoBehaviour
             tuT = muc.transform;
             VfxFactory.SetChayDen(den, 1.25f);
             VfxFactory.NamChuongNgai(den, 2.2f, VfxFactory.LopChuongNgai);
+            if (nhip == 0) TiengViTri.GiatSetTrung(den); else TiengViTri.GiatSetLan(den);   // tieng trung / tieng lan (16/10/2026)
 
             // Khieng do tron don thi khong dinh choang (luat chung cua CombatUtil.AreaDamage)
             bool khiengDo = muc.khieng != null && muc.khieng.DangBat;

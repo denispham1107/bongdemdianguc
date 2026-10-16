@@ -14307,6 +14307,41 @@ Menu **73** thêm mục **X** (chạy trước mục B, trạng thái sạch): �
 bản (sau các mục mạng) ra "0 renderer thân" — trạng thái không sạch, không phải lỗi code. Menu 73 nay tắt chế độ tạm "mở sẵn mọi kỹ năng"
 (`CapDo.TatMoSanChoPhepThu`) vì mục B kiểm "kỹ năng khoá thì từ chối".
 
+## Tiếng Giựt sét + Quả cầu điện (16/10/2026)
+
+**Người dùng:** thêm tiếng stereo cho Giựt sét — lúc **phóng** tia, khi tia **đánh trúng** đối thủ, khi tia **lan** ra; tia điện của Quả cầu điện dùng
+chung; Quả cầu điện đang hiện thì có tiếng **điện chạy xẹt liên tục** bên trong; người chơi khác trong sương mù thì không nghe. Người dùng chọn **Quỷ
+cây dùng chung** tiếng phóng + trúng. Qua 4 vòng:
+1. bản 1 (`tieng_giat_set.py`, A Sét tự nhiên / B Điện cao thế / C Roi điện): "nghe như **tiếng súng** bắn ra đạn, không phải tiếng sét và tiếng điện chạy";
+2. bản 2 (`tieng_giat_set_2.py`, A Sét xé trời / B Hồ quang rè / C Dòng điện chạy): chọn **B** nhưng "**zzzzzzt nhiều hơn, kéo dài hơn, giảm hẳn tiếng rè**";
+3. B2 "zzzt": giữ phần Giựt sét (0–4 s của file ghép), phần Quả cầu điện "**mỏng, quá mono**";
+4. B3 (vòng lặp Quả cầu điện làm lại, `--cau3`) — **người dùng chọn**.
+
+**Vì sao từng bản bị chê (đo):**
+- *Tiếng súng:* mọi tiếng mở đầu bằng MỘT xung "TÁCH" bão hoà cực ngắn + "huỵch" trầm (`bum`) + rền — cấu trúc tiếng súng. Đo năng lượng 30 ms đầu / 300 ms
+  đầu: bản 1 0,38–0,62 (dồn vào cú nổ); bản 2 0,01–0,24 (điện chạy kéo dài, lên 10–30 ms, không cú nổ đơn, không "huỵch").
+- *Rè:* lớp "xèo" (phóng điện li ti — lao xao như radio mất sóng) + hồ quang GIẬT mạnh (sâu 0,75, 20–60 Hz) + bão hoà 2,0. B2: hồ quang là chính, đều và
+  tròn (sâu 0,3, giật 8–14 Hz, bão hoà 1,2), lớp xèo ~1/4; dài hơn (phóng 0,45–0,9 s, trúng 0,2–0,4, lan 0,12–0,25), "t" cuối = tắt gọn 15–25 ms.
+- *Mỏng + mono (vòng lặp B2):* chỉ dải 200 Hz–1 kHz (75%; 1–4 kHz 14%, > 4 kHz 0% — như qua điện thoại), 3 hồ quang sát nhau ở giữa (tương quan 0,37);
+  trong file ghép mỗi 0,4 s chồng một tiếng PHÓNG dài lên nhau. B3: 4 hồ quang LUÔN lệch một bên (trái/phải xen kẽ, đưa ±0,3), thân trầm hai nguồn
+  141 / 156 Hz trái / phải (khác cao độ → gộp mono không triệt tiêu), lớp "sss" điện sáng mịn rộng, vang tròn vòng; mỗi lượt bắn của quả cầu dùng tiếng
+  LAN ngắn. Đo: < 200 Hz 19% (B2 11%), 200 Hz–1 kHz 57%, 1–4 kHz 23% (14%), tương quan 0,25 (0,37).
+- ⚠️ Bẫy stereo: hồ quang = âm CÓ CAO ĐỘ. Một hồ quang chung hai kênh → tương quan 0,44–0,86; hai hồ quang khác cao độ đặt ±0,9 → clip ngắn ra −0,02.
+  Dùng 2–3 hồ quang khác cao độ 3–8% đặt ±0,82, lệch bằng âm lượng; vòng lặp: tổng số chu kỳ trong vòng phải NGUYÊN (không thì pha nhảy ở chỗ nối).
+
+**Trong game:** `TiengViTri` loại 17–20 (`GiatSetPhong`, `GiatSetTrung`, `GiatSetLan`, `CauDienVong`), 10 file `Resources/AmThanh/KyNang/GiatSet{Phong,Trung,Lan}1–3`
+(chép nguyên byte `GiatSetThu2/B2_zzzt_*`) + `CauDienVong` (`B3_cau`); chọn ngẫu nhiên + cao độ ±6%, spread 120, xa nhỏ + sương mù như Quả cầu lửa.
+`GiatSet.ChayTatCa`: tiếng phóng tại tay (cả khi bắn vào không khí — cả tia Quỷ cây `PhongCuaQuai`); `MotMach`: nhịp 0 → tiếng trúng, nhịp lan → tiếng lan,
+tại chỗ kẻ bị trúng. `QuaCauDien`: vòng lặp bám theo quả cầu từ `Start` tới `OnDestroy` (×0,7), mỗi lượt bắn 1 tiếng LAN tại quả cầu (×0,75) + mỗi tia 1
+tiếng trúng. Tiếng trúng / lan thứ hai trở đi trong 0,15 s ×0,6, tối đa 4 trúng / 5 lan cùng lúc.
+
+Menu **129** (0 lỗi, Act2 thật): 10 file trùng byte, stereo; tung thật vào 6 bia → 1 phóng, 4 mạch = 4 tiếng trúng (1,00 / 0,60 / 0,60 / 0,60) đúng chỗ bia
++ 2 tiếng lan (= 6 tia vẽ), loa tương quan 0,54; bắn vào không khí → 1 phóng, 0 trúng; Quả cầu điện thật 10 lượt / 50 tia → 1 vòng lặp bám theo, 10 tiếng
+bắn (×0,75), 50 tiếng trúng, tan thì vòng lặp tắt, loa 0,49; tia Quỷ cây → 1 phóng + 1 trúng; ở 40 m trong sương: 3 tiếng một lần bị bỏ, vòng lặp giữ
+giọng mức 0, loa im (đối chứng tắt sương có giọng); đủ 3 biến thể, cao độ 0,943–1,057. ⚠️ Lần chạy đầu phép thử mong 3 mạch — Giựt sét người chơi
+bắn tối đa 4 tia đầu (`GiatSet.SoTiaNguoiChoi`). Menu 69: 0 lỗi; 74: 0 lỗi (nay tắt chế độ tạm "mở sẵn mọi kỹ năng" trong lúc chạy — mục "khoá thì
+từ chối"). Chưa nghe thử trên web.
+
 ## Phần 4 — Menu công cụ "Diablo 2.5D"
 
 | Mục | Tác dụng |
