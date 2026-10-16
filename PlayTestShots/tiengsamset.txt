@@ -1,14 +1,14 @@
 [ban 1] tieng Sam set (B2 'Set xe troi' dai + day) + cach phat can bang
 A. 9/9 file trung ban goc, 2 kenh, khong ForceToMono
 
-B. tung that: 19 tia danh xuong; yeu cau danh +19, chay +19, ren +1; cung luc toi da danh 4 / chay 4 (tran 4); moi giong can bang (2D) True
-   loa giua tran set: RMS 0.1839 (dinh 0.2640), tuong quan 0.157
+B. tung that: 21 tia danh xuong; yeu cau danh +21, chay +21, ren +1; cung luc toi da danh 4 / chay 4 (tran 4); moi giong can bang (2D) True
+   loa giua tran set: RMS 0.1869 (dinh 0.2933), tuong quan 0.249
 
-C. o 40 m (MucThay 0.00): bi suong che +3, giong 0, RMS loa 0.00000
-C2. DOI CHUNG tat suong: danh o 40 m -> giong 1, bi suong che +0
+C. o 30 m (MucThay 0.00): bi suong che +3, giong 0, RMS loa 0.00000
+C2. DOI CHUNG tat suong: danh o 30 m -> giong 1, bi suong che +0
 
-D. 24 lan moi loai: so bien the SamSetDanh 3 (10 lan duoc giong), SamSetChay 3 (15 lan duoc giong), SamSetRen 3 (24 lan duoc giong); cao do 0.944 - 1.059
+D. 24 lan moi loai: so bien the SamSetDanh 3 (10 lan duoc giong), SamSetChay 3 (15 lan duoc giong), SamSetRen 3 (24 lan duoc giong); cao do 0.942 - 1.059
 
-E. loa (3 tieng chay xem): CAN BANG giua tuong quan 0.15, phai: phai/trai 4.30 tuong quan 0.13 | DOI CHUNG 3D spread 120: giua 0.39, phai: phai/trai 1.60 tuong quan 0.50
+E. loa (3 tieng chay xem): CAN BANG giua tuong quan 0.17, phai: phai/trai 4.23 tuong quan 0.14 | DOI CHUNG 3D spread 120: giua 0.40, phai: phai/trai 1.61 tuong quan 0.49
 
 so loi ghi nhan = 0

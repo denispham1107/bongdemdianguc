@@ -16,7 +16,8 @@ using UnityEngine;
 ///     <see cref="CapSanNguoi"/>: DANH TRA nguoi vua danh minh trong <see cref="GiayDanhTra"/> s (du xa), khong thi di giet
 ///     QUAI gan nhat ca ban do, het quai thi DI TUAN. Tu cap 7: quai ap sat trong 20 m thi giet truoc, roi SAN doi thu gan
 ///     nhat ca ban do, khong con doi thu thi quai. Chon lai theo nhip phan xa cua do kho (<see cref="NhipPhanXa"/>).
-///     10/10/2026 TAM NHIN 25 m (nguoi dung): moi thu tren chi tinh trong tam nhin (<see cref="TamNhin.NhinThay"/> - 25 m quanh BOT hoac
+///     10/10/2026 TAM NHIN 25 m (16/10/2026: 20 m = TamGiaoTranh - thay doi thu la giao tranh, nguoi dung chon giu 20) (nguoi dung): moi thu
+///     tren chi tinh trong tam nhin (<see cref="TamNhin.NhinThay"/> - TamNhin.BanKinh quanh BOT hoac
 ///     dong doi con song); "ca ban do" nay la "trong tam nhin". Khong thay ai -> DI TUAN KHAP BAN DO: luoi 8 x 8 o, toi o lau chua ghe
 ///     nhat (<see cref="ChonDiemTuan"/>).
 ///   - DUONG DI: A* tren luoi BanDoBot (dung mot lan luc vao tran), lam thang, tinh lai moi 1,2 s / khi dich doi cho. Toi gan
@@ -433,7 +434,7 @@ public class BotDieuKhien : MonoBehaviour
         for (int i = 0; i < quai.Count; i++)
         {
             var q = quai[i];
-            if (!HopLe(q) || !TamNhin.NhinThay(mau, q.transform.position)) continue;    // chi thay trong 25 m (10/10/2026)
+            if (!HopLe(q) || !TamNhin.NhinThay(mau, q.transform.position)) continue;    // chi thay trong tam nhin (TamNhin.BanKinh)
             float d = (q.transform.position - p).sqrMagnitude;
             if (d < dQuaiGan) { dQuaiGan = d; quaiGan = q; }
             if (d < dQuaiXa) { dQuaiXa = d; quaiXa = q; }

@@ -14,7 +14,7 @@ using UnityEngine;
 ///   A. (ngoai Play) 9 file trung tung byte ban goc SamSetThu/B2_*.wav, STEREO, khong ForceToMono.
 ///   B. TUNG THAT Sam set (CastAt 2) quanh 3 bia: 1 tieng sam ren; moi tia danh xuong 1 yeu cau tieng danh + 1 tieng chay xem; cung luc toi da 4 + 4;
 ///      moi giong phat CAN BANG (spatialBlend 0); loa co tieng, khong mono.
-///   C. SUONG MU: danh / chay / ren o 40 m -> bo, loa im; doi chung tat suong -> co giong.
+///   C. SUONG MU: danh / chay / ren o 30 m -> bo, loa im; doi chung tat suong -> co giong.
 ///   D. BIEN THE: 24 lan moi loai -> du 3 bien the, cao do +-6%.
 ///   E. CAN BANG vs DOI CHUNG 3D spread 120 (cung clip chay xem): giua stereo hon han, ben phai ro ben ma khong mono.
 /// Ket qua: PlayTestShots/tiengsamset.txt.
@@ -200,13 +200,13 @@ public static class ThuTiengSamSet
 
         // ===== C. suong mu =====
         Ghi("");
-        Vector3 xa = Dat(goc + truoc * 40f) + Vector3.up;
+        Vector3 xa = Dat(goc + truoc * (TamNhin.BanKinh + 10f)) + Vector3.up;
         int che0 = TiengViTri.SoBiSuongChe;
         TiengViTri.SamSetDanh(xa); TiengViTri.SamSetChay(xa); TiengViTri.SamSetRen(xa);
         yield return new WaitForSeconds(0.2f);
         yield return Nghe(0.6f, kq);
         int giongXa = Giong(TiengViTri.Loai.SamSetDanh).Count + Giong(TiengViTri.Loai.SamSetChay).Count + Giong(TiengViTri.Loai.SamSetRen).Count;
-        Ghi(string.Format("C. o 40 m (MucThay {0:F2}): bi suong che +{1}, giong {2}, RMS loa {3:F5}", TamNhin.MucThay(xa), TiengViTri.SoBiSuongChe - che0, giongXa, kq[0]));
+        Ghi(string.Format("C. o 30 m (MucThay {0:F2}): bi suong che +{1}, giong {2}, RMS loa {3:F5}", TamNhin.MucThay(xa), TiengViTri.SoBiSuongChe - che0, giongXa, kq[0]));
         Kiem(TiengViTri.SoBiSuongChe - che0 == 3 && giongXa == 0 && kq[0] < 1e-4f, "tieng sam set trong suong van nghe thay");
         TamNhin.BatTrongPhepThu = false;
         yield return null; yield return null;
@@ -214,7 +214,7 @@ public static class ThuTiengSamSet
         TiengViTri.SamSetDanh(xa);
         yield return null;
         int giongDc = Giong(TiengViTri.Loai.SamSetDanh).Count;
-        Ghi(string.Format("C2. DOI CHUNG tat suong: danh o 40 m -> giong {0}, bi suong che +{1}", giongDc, TiengViTri.SoBiSuongChe - che1));
+        Ghi(string.Format("C2. DOI CHUNG tat suong: danh o 30 m -> giong {0}, bi suong che +{1}", giongDc, TiengViTri.SoBiSuongChe - che1));
         Kiem(giongDc == 1 && TiengViTri.SoBiSuongChe - che1 == 0, "doi chung tat suong ma van bi bo");
         TamNhin.BatTrongPhepThu = true;
         yield return ChoIm(6f);

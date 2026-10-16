@@ -10,7 +10,7 @@ using UnityEngine.SceneManagement;
 ///     0,85 du clip 0,25-0,62 - nguoi dung: "van con qua mono"); tren WebGL Unity dung PannerNode
 ///     "equalpower" - nhan vao stereo thi giu hai kenh, chi doi can bang (WebGL KHONG co panStereo). Do nho theo khoang cach KHONG de
 ///     Unity tinh (camera cach nhan vat ~15-20 m): duong cong rolloff phang, am luong tu tinh theo khoang cach NGANG toi nhan vat cua
-///     may nay (<see cref="HeSoKhoangCach"/>: to nhat trong <see cref="GanDayDu"/> m, con <see cref="MucMepTamNhin"/> o mep tam nhin 25 m).
+///     may nay (<see cref="HeSoKhoangCach"/>: to nhat trong <see cref="GanDayDu"/> m, con <see cref="MucMepTamNhin"/> o mep tam nhin TamNhin.BanKinh - 20 m tu 16/10/2026).
 ///   - SUONG MU: nhan them <see cref="TamNhin.MucThay"/> theo VI TRI tieng, MOI KHUNG ("theo vi tri qua"): qua cua nguoi khac bay tu
 ///     suong vao tam thi bat dau nghe, qua cua minh bay ra ngoai 25 m thi tat dan, no trong suong thi im. Che do Doi chia se tam nhin
 ///     dong doi -> nghe ca quanh dong doi (nho theo khoang cach toi minh).

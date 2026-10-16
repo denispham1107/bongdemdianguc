@@ -16,7 +16,7 @@ using UnityEngine;
 ///   C. HET GIO: 3 bia trong 5 m + 1 bia o 7 m -> 1 tieng hien hinh + 1 tieng vong + 3 tieng trung (ke dau 1, ke sau x0,55), bia 7 m khong;
 ///      loa co tieng, khong mono.
 ///   D. DON DAU: dang tang hinh tung Qua cau lua -> tan tang hinh -> hien hinh + vong (moi thu MOT lan du Tat goi hai lan cung khung).
-///   E. SUONG MU: tang hinh / hien hinh / vong / trung cua mot "nguoi khac" o 40 m -> loa im (vong + trung bi bo, an + hien giu giong muc 0);
+///   E. SUONG MU: tang hinh / hien hinh / vong / trung cua mot "nguoi khac" o 30 m -> loa im (vong + trung bi bo, an + hien giu giong muc 0);
 ///      doi chung tat suong -> co tieng.
 ///   F. BIEN THE: 24 lan moi loai -> du 3 bien the, cao do +-6%.
 /// Ket qua: PlayTestShots/tiengtanghinh.txt.
@@ -246,9 +246,9 @@ public static class ThuTiengTangHinh
         yield return new WaitForSeconds(1.5f);
         yield return ChoIm(5f);
 
-        // ===== E. suong mu: "nguoi khac" o 40 m =====
+        // ===== E. suong mu: "nguoi khac" o 30 m =====
         Ghi("");
-        Vector3 xa = Dat(goc + truoc * 40f);
+        Vector3 xa = Dat(goc + truoc * (TamNhin.BanKinh + 10f));
         var khac = new GameObject("TAM_NguoiKhacXa");
         khac.transform.position = xa;
         var dk = khac.AddComponent<Damageable>(); dk.maxHealth = dk.health = 1e7f;
@@ -267,7 +267,7 @@ public static class ThuTiengTangHinh
         var gHienXa = Giong(TiengViTri.Loai.TangHinhHien);
         int vongTrungGiong = Giong(TiengViTri.Loai.TangHinhVong).Count + Giong(TiengViTri.Loai.TangHinhTrung).Count;
         yield return Nghe(0.6f, kq);
-        Ghi(string.Format("E. o 40 m (MucThay {0:F2}): trong suot +{1} (muc {2:F3}, loa RMS {3:F5}); hien hinh giong {4} muc {5:F3}; vong + trung (+{6} trung) giong {7}, bi suong che +{8}; loa RMS {9:F5}",
+        Ghi(string.Format("E. o 30 m (MucThay {0:F2}): trong suot +{1} (muc {2:F3}, loa RMS {3:F5}); hien hinh giong {4} muc {5:F3}; vong + trung (+{6} trung) giong {7}, bi suong che +{8}; loa RMS {9:F5}",
             TamNhin.MucThay(xa), SL(TiengViTri.Loai.TangHinhAn) - ea0, mucAn, rmsAn, gHienXa.Count, gHienXa.Count > 0 ? gHienXa[0].MucDangDat : -1f,
             SL(TiengViTri.Loai.TangHinhTrung) - et0, vongTrungGiong, TiengViTri.SoBiSuongChe - e0, kq[0]));
         Kiem(SL(TiengViTri.Loai.TangHinhAn) - ea0 == 1 && mucAn == 0f && rmsAn < 1e-4f, "tang hinh trong suong van nghe thay");

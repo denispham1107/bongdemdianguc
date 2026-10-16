@@ -14,7 +14,7 @@ using UnityEngine;
 ///   B. GIO LOC THAT (CastAt 10): moi con loc 1 gio thoi + 1 bui VONG LAP bam theo, can bang (2D); loc tan -> het tieng; loa co tieng, khong mono.
 ///   C. LOC XOAY THAT (CastAt 3): 1 tieng gio bam theo loc, can bang; moi nhip tia 1 tieng set (giong Sam set danh, he so 0,35); loc xoa -> tat.
 ///   C2. Tieng set NHO HON tieng gio: phat rieng tung tieng tai cung cho, do RMS loa.
-///   D. SUONG MU: o 40 m -> giong muc 0 / set bi bo, loa im; doi chung tat suong co tieng.
+///   D. SUONG MU: o 30 m -> giong muc 0 / set bi bo, loa im; doi chung tat suong co tieng.
 ///   E. BIEN THE Loc xoay: 3 clip, cao do +-6%.
 ///   F. (16/10/2026, nguoi dung: Loc xoay to them 25% + tieng NUT GAY BE khi but vat, vat RUNG NUT 0,3 s roi moi bay) Loc xoay that qua mot "cay" gia
 ///      (hop cao 7 m) va mot "bia" gia (hop 1,5 m): 1 tieng nut cay + 1 tieng nut da, can bang; trong 0,25 s dau vat o yen cho (lech <= 0,1 m) va
@@ -250,7 +250,7 @@ public static class ThuTiengGioLoc
 
         // ===== D. suong mu =====
         Ghi("");
-        Vector3 xa = Dat(goc + truoc * 40f) + Vector3.up;
+        Vector3 xa = Dat(goc + truoc * (TamNhin.BanKinh + 10f)) + Vector3.up;
         var vxa = new GameObject("TAM_LocXa").transform; vxa.position = xa;
         int che0 = TiengViTri.SoBiSuongChe;
         var a1 = TiengViTri.GioLocThoi(vxa); var a2 = TiengViTri.GioLocBui(vxa); var a3 = TiengViTri.LocXoayGio(vxa);
@@ -258,12 +258,12 @@ public static class ThuTiengGioLoc
         yield return new WaitForSeconds(0.3f);
         yield return Nghe(0.8f, kq);
         float mucMax = 0f; foreach (var a in new[] { a1, a2, a3 }) if (a != null) mucMax = Mathf.Max(mucMax, a.MucDangDat);
-        Ghi(string.Format("D. o 40 m (MucThay {0:F2}): muc giong lon nhat {1:F3}; set bi suong che +{2}; RMS loa {3:F5}", TamNhin.MucThay(xa), mucMax, TiengViTri.SoBiSuongChe - che0, kq[0]));
+        Ghi(string.Format("D. o 30 m (MucThay {0:F2}): muc giong lon nhat {1:F3}; set bi suong che +{2}; RMS loa {3:F5}", TamNhin.MucThay(xa), mucMax, TiengViTri.SoBiSuongChe - che0, kq[0]));
         Kiem(mucMax == 0f && TiengViTri.SoBiSuongChe - che0 == 1 && kq[0] < 1e-4f, "Gio loc / Loc xoay trong suong van nghe thay");
         TamNhin.BatTrongPhepThu = false;
         yield return new WaitForSeconds(0.3f);
         float mucDc = a1 != null ? a1.MucDangDat : -1f;
-        Ghi(string.Format("D2. DOI CHUNG tat suong: gio thoi o 40 m muc {0:F3}", mucDc));
+        Ghi(string.Format("D2. DOI CHUNG tat suong: gio thoi o 30 m muc {0:F3}", mucDc));
         Kiem(mucDc > 0.01f, "doi chung tat suong ma van im");
         TamNhin.BatTrongPhepThu = true;
         TiengViTri.Dung(a1, vxa); TiengViTri.Dung(a2, vxa); TiengViTri.Dung(a3, vxa);

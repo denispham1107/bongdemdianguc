@@ -6,7 +6,7 @@
 #define SUONG_CHIEN_TRANH_INCLUDED
 
 float4 _TN_Tam[4];          // xy = toa do (x, z) the gioi cua nguon nhin, w = 1 neu dang dung
-float _TN_BanKinh;          // 25 m
+float _TN_BanKinh;          // 20 m (TamNhin.BanKinh, 16/10/2026; truoc 25)
 float _TN_Mem;              // be rong mep mo dan (m)
 float _TN_Bat;              // 0 = tat
 float _TN_DoToi;            // phan sang con lai trong suong (0.3 = toi con 30%)

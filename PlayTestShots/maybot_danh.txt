@@ -1,24 +1,24 @@
-[ban 1] may BOT danh (buoc 4) - 10/10/2026 17:01
+[ban 1] may BOT danh (buoc 4) - 16/10/2026 16:54
 A0. he LỬA (0,4,11): cap 1 chieu co ban 1, cap 2 -> 2, cap 3 mo ky 2 True | cap 20: 0:5 4:5 5:1 7:3 8:3 11:5 22:1 | diem thua 0
 A1. he BĂNG (9,1,12): cap 1 chieu co ban 1, cap 2 -> 2, cap 3 mo ky 2 True | cap 20: 1:5 5:1 7:3 8:3 9:5 12:5 22:1 | diem thua 0
 A2. he SÉT (6,2,13): cap 1 chieu co ban 1, cap 2 -> 2, cap 3 mo ky 2 True | cap 20: 2:5 5:1 6:5 7:3 8:3 13:5 22:1 | diem thua 0
 A3. he PHONG (10,3,21): cap 1 chieu co ban 1, cap 2 -> 2, cap 3 mo ky 2 True | cap 20: 3:5 5:1 7:3 8:3 10:5 21:5 22:1 | diem thua 0
-B0. he LỬA (Kho, cap 12): 14 chieu - QUẢ CẦU LỬA x5, THIÊN THẠCH x2, LỬA ĐỊA NGỤC x7, sat thuong vao muc tieu 9388, binh mana uong 0
-B1. he BĂNG (Kho, cap 12): 10 chieu - MƯA BĂNG x1, QUẢ CẦU BĂNG x9, sat thuong vao muc tieu 4925, binh mana uong 0
-B2. he SÉT (Kho, cap 12): 13 chieu - SẤM SÉT x3, GIỰT SÉT x8, QUẢ CẦU ĐIỆN x2, sat thuong vao muc tieu 6228, binh mana uong 0
-B3. he PHONG (Kho, cap 12): 10 chieu - LỐC XOÁY x3, GIÓ LỐC x5, MÂY GIÔNG x2, sat thuong vao muc tieu 1117, binh mana uong 0
-C. DỄ (Lua cap 1, chi Qua cau lua): 10 chieu / 10 s, sai so ngam TB 1.60 m (dat 2.5), sat thuong 882
-C. KHÓ (Lua cap 1, chi Qua cau lua): 10 chieu / 10 s, sai so ngam TB 0.21 m (dat 0.3), sat thuong 823
+B0. he LỬA (Kho, cap 12): 14 chieu - QUẢ CẦU LỬA x4, THIÊN THẠCH x1, LỬA ĐỊA NGỤC x9, sat thuong vao muc tieu 9681, binh mana uong 0
+B1. he BĂNG (Kho, cap 12): 10 chieu - MƯA BĂNG x1, QUẢ CẦU BĂNG x9, sat thuong vao muc tieu 4912, binh mana uong 0
+B2. he SÉT (Kho, cap 12): 13 chieu - SẤM SÉT x3, GIỰT SÉT x8, QUẢ CẦU ĐIỆN x2, sat thuong vao muc tieu 5775, binh mana uong 0
+B3. he PHONG (Kho, cap 12): 10 chieu - LỐC XOÁY x3, GIÓ LỐC x5, MÂY GIÔNG x2, sat thuong vao muc tieu 1006, binh mana uong 0
+C. DỄ (Lua cap 1, chi Qua cau lua): 10 chieu / 10 s, sai so ngam TB 1.68 m (dat 2.5), sat thuong 950
+C. KHÓ (Lua cap 1, chi Qua cau lua): 10 chieu / 10 s, sai so ngam TB 0.18 m (dat 0.3), sat thuong 892
 D1. mau 20% + 2 binh mau: uong 2, binh 2 -> 0, mau 264 -> 664
 D2. nang luong 0 + 1 binh mana: uong 1, binh 1 -> 0, nang luong 84
-E. binh mau roi cach 3.1 m luc dau: binh cua BOT 0 -> 1 sau 1.0 s, binh cua may 0 -> 0
-F. mau 50%, doi thu cach 6 m: Khien da mo True, bat Khien 1 lan sau 0.1 s, khien con 0.00
-F2. Kho, doi thu ap sat 2.4 m: nhao lon 1 lan sau 1.2 s, xa doi thu nhat 7.4 m (ty le xet moi giay 85 %)
-G0. Bot_1_BOT 1 he LỬA: +7250 kinh nghiem (cap 12), 43 chieu (QUẢ CẦU LỬA x15, THIÊN THẠCH x19, LỬA ĐỊA NGỤC x9, ), binh mau / mana uong 0 / 9, lui 12, nhao lon 2, mau 4311/4652
-G1. Bot_2_BOT 2 he BĂNG: +5567 kinh nghiem (cap 11), 46 chieu (MƯA BĂNG x9, QUẢ CẦU BĂNG x37, ), binh mau / mana uong 0 / 5, lui 0, nhao lon 0, mau 3463/4046
-G2. Bot_3_BOT 3 he SÉT: +13405 kinh nghiem (cap 15), 42 chieu (SẤM SÉT x6, GIỰT SÉT x32, QUẢ CẦU ĐIỆN x4, ), binh mau / mana uong 0 / 4, lui 12, nhao lon 1, mau 6821/7076
+E. binh mau roi cach 2.2 m luc dau: binh cua BOT 0 -> 1 sau 0.9 s, binh cua may 0 -> 0
+F. mau 50%, doi thu cach 6 m: Khien da mo True, bat Khien 1 lan sau 0.2 s, khien con 0.00
+F2. Kho, doi thu ap sat 2.4 m: nhao lon 1 lan sau 2.6 s, xa doi thu nhat 10.4 m (ty le xet moi giay 85 %)
+G0. Bot_1_BOT 1 he LỬA: +7503 kinh nghiem (cap 12), 36 chieu (QUẢ CẦU LỬA x11, THIÊN THẠCH x18, LỬA ĐỊA NGỤC x7, ), binh mau / mana uong 0 / 6, lui 13, nhao lon 3, mau 3890/4652
+G1. Bot_2_BOT 2 he BĂNG: +6172 kinh nghiem (cap 11), 46 chieu (MƯA BĂNG x9, QUẢ CẦU BĂNG x37, ), binh mau / mana uong 0 / 6, lui 21, nhao lon 4, mau 3582/4046
+G2. Bot_3_BOT 3 he SÉT: +10903 kinh nghiem (cap 14), 47 chieu (SẤM SÉT x5, GIỰT SÉT x38, QUẢ CẦU ĐIỆN x4, ), binh mau / mana uong 0 / 5, lui 0, nhao lon 2, mau 5849/6153
 G. 4 dot quai, 3/3 BOT co kinh nghiem ha quai
    anh maybot_danh_tran.png
-don phong -P3_FaWc25qRGMUsubIJ: sach
+don phong -P437hPvQ8YfzQ2NFYOQ: sach
 
 so loi ghi nhan = 0

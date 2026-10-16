@@ -1,21 +1,21 @@
 [ban 1] tieng qua cau bang + bang vo + mua bang (mau 'Mua da' day + trong, 3 bien the)
 A. 19/19 file trung ban goc, 2 kenh, khong ForceToMono
 
-B. tung that: 4 qua; yeu cau ban/bay/no +4/+4/+4; giong luc bay: ban 1, bay 4; no xong luc 0.85 s; 0,15 s sau: bay con 0, no 4 (he so 1.00 / 0.45 / 0.45 / 0.45)
-   loa: luc bay RMS 0.0842, luc no RMS 0.0497 (dinh 0.1116), tuong quan hai kenh 0.347 / 0.589
+B. tung that: 4 qua; yeu cau ban/bay/no +4/+4/+4; giong luc bay: ban 1, bay 4; no xong luc 0.75 s; 0,15 s sau: bay con 0, no 4 (he so 1.00 / 0.45 / 0.45 / 0.45)
+   loa: luc bay RMS 0.0943, luc no RMS 0.0442 (dinh 0.0906), tuong quan hai kenh 0.304 / 0.602
    khoi bang mo dan: 32 cum gai luc no xong, 3,5 s sau con 0; tieng vo +0, tieng vo no +0 (phai 0 - mo dan khong keu)
 
 C. cap 5 (2 qua): khoi bang VO RA (no tung) 2; tieng vo no +2; tieng vo khac +0
 
 D. Mua bang that: 35 qua cham dat, yeu cau roi +35, cham +35; giong cung luc lon nhat roi 3 (tran 3), cham 6 (tran 6); khoi bang (dong bang, mo dan) 11 -> tieng vo +0 (phai 0)
-   loa giua tran mua: RMS 0.0338, tuong quan hai kenh 0.743
+   loa giua tran mua: RMS 0.0349, tuong quan hai kenh 0.721
 
-E. bia dong bang hoan toan True chet -> tieng vo +1, cao do 0.920 (x0.88 +-6%)
+E. bia dong bang hoan toan True chet -> tieng vo +1, cao do 0.921 (x0.88 +-6%)
 
-F. no / vo / cham o 40 m (MucThay 0.00): bi suong che +3, giong 0, RMS loa 0.00000
-F2. DOI CHUNG tat suong: no o 40 m -> giong 1, bi suong che +0
+F. no / vo / cham o 30 m (MucThay 0.00): bi suong che +3, giong o cho xa 0 (giong khac con keu: khong), RMS loa 0.00000
+F2. DOI CHUNG tat suong: no o 30 m -> giong 1, bi suong che +0
 
-G. 30 lan moi loai: so bien the CauBangBan 3 (24 lan duoc giong), CauBangNo 3 (24 lan duoc giong), BangVo 3 (24 lan duoc giong), BangVoNo 3 (24 lan duoc giong), MuaBangRoi 3 (24 lan duoc giong), MuaBangCham 3 (20 lan duoc giong); cao do 0.941 - 1.059
+G. 30 lan moi loai: so bien the CauBangBan 3 (24 lan duoc giong), CauBangNo 3 (24 lan duoc giong), BangVo 3 (24 lan duoc giong), BangVoNo 3 (24 lan duoc giong), MuaBangRoi 3 (24 lan duoc giong), MuaBangCham 3 (19 lan duoc giong); cao do 0.940 - 1.059
 
 H. qua nay: yeu cau ban +0, bay +1
 

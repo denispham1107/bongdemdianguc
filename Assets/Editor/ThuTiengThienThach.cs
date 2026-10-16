@@ -18,7 +18,7 @@ using UnityEngine;
 ///      Loa co tieng, hai kenh khac nhau.
 ///   C. CAY BI DOT (CayChay.Dot cay that gan nhan vat): tieng lua o giua than cay, to dan theo phan da chay, tat khi chay rui.
 ///   D. QUY DU (ThienThach.Spawn, khong vung lua): roi + no, 0 tieng lua.
-///   E. SUONG MU: thien thach o 40 m: tieng roi + lua muc 0 suot, tieng no bi bo, loa im; doi chung tat suong -> co tieng no.
+///   E. SUONG MU: thien thach o 30 m: tieng roi + lua muc 0 suot, tieng no bi bo, loa im; doi chung tat suong -> co tieng no.
 /// Ket qua: PlayTestShots/tiengthienthach.txt.
 /// </summary>
 public static class ThuTiengThienThach
@@ -310,7 +310,7 @@ public static class ThuTiengThienThach
         // ===== E. suong mu =====
         Ghi("");
         int che0 = TiengViTri.SoBiSuongChe;
-        Vector3 xa = TrenDat(goc + h * 40f);
+        Vector3 xa = TrenDat(goc + h * (TamNhin.BanKinh + 10f));
         var tx = ThienThach.Spawn(xa, 0, 0);
         float mucRoiXa = 0f, mucLuaXa = 0f, rmsXa = 0f; int khung = 0;
         float hanE = Time.time + 3.5f;
@@ -323,7 +323,7 @@ public static class ThuTiengThienThach
             float a = 0; foreach (var s in bl) a += s * s;
             rmsXa = Mathf.Max(rmsXa, Mathf.Sqrt(a / bl.Length)); khung++;
         }
-        Ghi(string.Format("E. thien thach o 40 m (suong): muc roi lon nhat {0:F3}, muc lua lon nhat {1:F3}, tieng no bi suong che +{2}; RMS loa lon nhat {3:F5} ({4} khung)",
+        Ghi(string.Format("E. thien thach o 30 m (suong): muc roi lon nhat {0:F3}, muc lua lon nhat {1:F3}, tieng no bi suong che +{2}; RMS loa lon nhat {3:F5} ({4} khung)",
             mucRoiXa, mucLuaXa, TiengViTri.SoBiSuongChe - che0, rmsXa, khung));
         Kiem(mucRoiXa <= 0.001f && mucLuaXa <= 0.001f && TiengViTri.SoBiSuongChe - che0 == 1 && rmsXa < 1e-4f, "thien thach trong suong van nghe thay");
         foreach (var v in Object.FindObjectsByType<VungLua>(FindObjectsSortMode.None)) Object.Destroy(v.gameObject);
@@ -336,7 +336,7 @@ public static class ThuTiengThienThach
         int noDc = 0;
         float hanDc = Time.time + 2.5f;
         while (Time.time < hanDc) { noDc = Mathf.Max(noDc, Dem(TiengViTri.Loai.ThienThachNo)); yield return null; }
-        Ghi(string.Format("E2. DOI CHUNG tat suong: thien thach o 40 m -> giong no {0}, bi suong che +{1}", noDc - dc0, TiengViTri.SoBiSuongChe - che1));
+        Ghi(string.Format("E2. DOI CHUNG tat suong: thien thach o 30 m -> giong no {0}, bi suong che +{1}", noDc - dc0, TiengViTri.SoBiSuongChe - che1));
         Kiem(noDc - dc0 == 1 && TiengViTri.SoBiSuongChe - che1 == 0, "doi chung: tat suong ma van bi bo (phep do khong phan biet)");
         TamNhin.BatTrongPhepThu = true;
         yield return ChoIm(4f);

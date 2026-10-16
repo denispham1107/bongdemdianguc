@@ -13,7 +13,7 @@ using UnityEngine;
 ///   A. (ngoai Play) 2 file vong lap trung tung byte ban goc MayGiongThu/C_giong_xa_*.wav, STEREO, giong 4 s / mua 3 s.
 ///   B. TUNG THAT May giong (CastAt 21) quanh 3 bia: 1 giong + 1 mua VONG LAP bam theo may (ca luc may TU BAY - vi tri tieng = vi tri may); moi tia
 ///      1 tieng danh + 1 chay xem (tieng Sam set); may het -> hai vong lap tat; moi giong can bang (2D); loa co tieng, khong mono.
-///   C. SUONG MU: may o 40 m -> giong + mua giu giong muc 0, tieng tia bi bo, loa im; doi chung tat suong -> co tieng.
+///   C. SUONG MU: may o 30 m -> giong + mua giu giong muc 0, tieng tia bi bo, loa im; doi chung tat suong -> co tieng.
 /// Ket qua: PlayTestShots/tiengmaygiong.txt.
 /// </summary>
 public static class ThuTiengMayGiong
@@ -207,21 +207,21 @@ public static class ThuTiengMayGiong
 
         // ===== C. suong mu =====
         Ghi("");
-        Vector3 xa = Dat(goc + truoc * 40f) + Vector3.up;
+        Vector3 xa = Dat(goc + truoc * (TamNhin.BanKinh + 10f)) + Vector3.up;
         var vat = new GameObject("TAM_MayXa").transform; vat.position = xa;
         int che0 = TiengViTri.SoBiSuongChe;
         var gx1 = TiengViTri.MayGiongGiong(vat); var gx2 = TiengViTri.MayGiongMua(vat);
         TiengViTri.SamSetDanh(xa); TiengViTri.SamSetChay(xa);
         yield return new WaitForSeconds(0.3f);
         yield return Nghe(0.8f, kq);
-        Ghi(string.Format("C. may o 40 m (MucThay {0:F2}): giong / mua muc {1:F3} / {2:F3}; tieng tia bi suong che +{3}; RMS loa {4:F5}",
+        Ghi(string.Format("C. may o 30 m (MucThay {0:F2}): giong / mua muc {1:F3} / {2:F3}; tieng tia bi suong che +{3}; RMS loa {4:F5}",
             TamNhin.MucThay(xa), gx1 != null ? gx1.MucDangDat : -1f, gx2 != null ? gx2.MucDangDat : -1f, TiengViTri.SoBiSuongChe - che0, kq[0]));
         Kiem((gx1 == null || gx1.MucDangDat == 0f) && (gx2 == null || gx2.MucDangDat == 0f) && TiengViTri.SoBiSuongChe - che0 == 2 && kq[0] < 1e-4f,
              "May giong trong suong van nghe thay");
         TamNhin.BatTrongPhepThu = false;
         yield return new WaitForSeconds(0.3f);
         float mucDc = gx2 != null ? gx2.MucDangDat : -1f;
-        Ghi(string.Format("C2. DOI CHUNG tat suong: mua o 40 m muc {0:F3}", mucDc));
+        Ghi(string.Format("C2. DOI CHUNG tat suong: mua o 30 m muc {0:F3}", mucDc));
         Kiem(mucDc > 0.01f, "doi chung tat suong ma van im");
         TamNhin.BatTrongPhepThu = true;
         TiengViTri.Dung(gx1, vat); TiengViTri.Dung(gx2, vat);

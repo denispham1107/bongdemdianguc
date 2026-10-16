@@ -7,19 +7,19 @@ A. ThienThachNo2.wav: trung ban goc True; 2 kenh 4.800 s; ForceToMono False
 A. ThienThachNo3.wav: trung ban goc True; 2 kenh 4.800 s; ForceToMono False
 A. LuaChay.wav: trung ban goc True; 2 kenh 3.000 s; ForceToMono False
 
-B. tung that: 3 thien thach; yeu cau roi/no/lua +3/+3/+4; giong roi bat dau 3; no luc 1.31 / 1.63 / 1.99 s; tieng roi con keu ngay truoc khi no 3/3
-   tu luc bat dau tieng roi toi luc no: 0.79 / 0.80 / 0.78 s (clip roi dai 1,40 s gom duoi vang, to nhat o 0,80-0,9 s)
-   tieng no cung luc toi da 3; tieng lua toi da 4 (tran 4); muc lua VUNG 1 s sau vu no cuoi 0.52, 4,5 s sau 0.11; het tieng lua 4.97 s sau vu no cuoi (lua chay 5 s)
-   loa: RMS dinh 0.2029, tuong quan hai kenh 0.347
+B. tung that: 3 thien thach; yeu cau roi/no/lua +3/+3/+4; giong roi bat dau 3; no luc 1.30 / 1.64 / 1.96 s; tieng roi con keu ngay truoc khi no 3/3
+   tu luc bat dau tieng roi toi luc no: 0.78 / 0.77 / 0.75 s (clip roi dai 1,40 s gom duoi vang, to nhat o 0,80-0,9 s)
+   tieng no cung luc toi da 3; tieng lua toi da 4 (tran 4); muc lua VUNG 1 s sau vu no cuoi 0.49, 4,5 s sau 0.12; het tieng lua 5.00 s sau vu no cuoi (lua chay 5 s)
+   loa: RMS dinh 0.1791, tuong quan hai kenh 0.385
    cay / bia / nha bi dot trong luot nay: 1
 
-C. dot cay TREE_dead_738 (cach 8.0 m, chay 7.1 s): giong lua True, o cao 3.1 m tren goc; he so luc dau 0.32, 2,5 s truoc rui 0.89, 0,4 s truoc rui 0.00; 7.6 s sau: giong da tra True
+C. dot cay TREE_dead_738 (cach 8.0 m, chay 7.1 s): giong lua True, o cao 3.1 m tren goc; he so luc dau 0.32, 2,5 s truoc rui 0.89, 0,4 s truoc rui 0.01; 7.6 s sau: giong da tra True
 
 D. thien thach Quy du (khong vung lua): yeu cau roi +1, no +1, lua +0
 
-E. thien thach o 40 m (suong): muc roi lon nhat 0.000, muc lua lon nhat 0.000, tieng no bi suong che +1; RMS loa lon nhat 0.00000 (132 khung)
-E2. DOI CHUNG tat suong: thien thach o 40 m -> giong no 1, bi suong che +0
+E. thien thach o 30 m (suong): muc roi lon nhat 0.000, muc lua lon nhat 0.000, tieng no bi suong che +1; RMS loa lon nhat 0.00000 (141 khung)
+E2. DOI CHUNG tat suong: thien thach o 30 m -> giong no 1, bi suong che +0
 
-G. 30 lan roi + 30 lan no: bien the roi 3 (ThienThachRoi3, ThienThachRoi2, ThienThachRoi1), no 3 (ThienThachNo2, ThienThachNo3, ThienThachNo1); cao do 0.941 - 1.059
+G. 30 lan roi + 30 lan no: bien the roi 3 (ThienThachRoi3, ThienThachRoi1, ThienThachRoi2), no 3 (ThienThachNo3, ThienThachNo2, ThienThachNo1); cao do 0.946 - 1.059
 
 so loi ghi nhan = 0

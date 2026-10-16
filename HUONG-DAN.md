@@ -14472,6 +14472,28 @@ Menu **132** (0 lỗi): 11 file trùng byte; đỉnh clip gió / nứt ×1,250; 
 rời chỗ cũ 5,5 / 6,1 m. ⚠️ Lần chạy đầu đo ĐỘ CAO — hộp 7 m có tâm ở giữa thân, độ cao mục tiêu ngẫu nhiên có thể thấp hơn → "lên −0,04 m" (cây thật tâm ở
 gốc); nay đo quãng rời chỗ. Menu 19 (hồi sinh sau lốc 10/10), 54c (lốc cuốn lò), 82: 0 lỗi. Chưa nghe thử trên web.
 
+## Tầm nhìn giảm còn 20 m (16/10/2026)
+
+**Người dùng:** "giảm tầm nhìn của nhân vật, chỉ cho nhìn thấy trong bán kính 20 m thôi". `TamNhin.BanKinh` 25 → **20** — mọi nơi đều đọc
+hằng này: phần hình (`_TN_BanKinh` cho shader, mép mờ 17–20 m), ẩn quái / người / BOT / hiệu ứng / đèn ngoài tầm, tên trên đầu + số sát thương, logic
+BOT (`TamNhin.NhinThay`), tiếng theo vị trí (`TamNhin.MucThay`: nghe đủ tới 17 m, im từ 20 m; đường cong xa nhỏ `HeSoKhoangCach` còn 0,25 ở 20 m).
+
+**Máy BOT:** tầm giao tranh `BotDieuKhien.TamGiaoTranh` cũng là 20 m. Tôi đã hỏi, người dùng chọn **giữ 20 m**. Hệ quả: hết vùng "thấy nhưng chưa
+đánh" (trước 20–25 m) — BOT thấy đối thủ là giao tranh; luật "dưới cấp 7 ưu tiên giết quái" chỉ còn khi không thấy đối thủ nào (hoặc thấy qua tầm
+nhìn đồng đội ở chế độ Đôi).
+
+**Phép thử sửa theo** (các số viết cứng 22–25 m nằm ở mép / ngoài tầm mới):
+- Menu 117: bán kính đọc `TamNhin.BanKinh`; vành "trong tầm" 6–15 m; quái 15 / 30 / 60 m. **0 lỗi**: trong tầm ×1,00, ngoài 31–45 m địa hình ×0,29 /
+  vật ×0,33; sương khoảng cách cũ k 0,836–0,860 (lý thuyết 0,838); quái 15 m hiện, 30 / 60 m ẩn; hạt 35 m ẩn, đèn 45 m tắt; chết giữ 10 m quanh xác.
+- Menu 114 D: khi tầm nhìn = tầm giao tranh, "vừa" = 17 m. **0 lỗi**: đối thủ 44,7 m không biết; 17,1 m bắn trúng → nhắm sau 0,27 s, còn 7,1 m; cấp 7
+  đối thủ 16,7 m → săn; cấp 1 quái 14,9 m + đối thủ ngoài tầm → quái; cấp 7 quái 15 m + đối thủ 17 m → đối thủ. Lần chạy đầu hỏng D3 ("BOT nhắm vào
+  đồng đội") — KHÔNG phải lỗi game: đi tuần 45 s ngẫu nhiên đi ngang BOT 2 (đối thủ) rồi `dungYen` giữ nguyên mục tiêu cũ; nay hai BOT kia cũng là
+  đồng đội khi đi tuần, và D3 cho BOT nghĩ lại (`dungYen = false`) trước khi đo.
+- Menu 125–132 (tiếng): chỗ "trong sương" 40 m → **tầm nhìn + 10 m = 30 m** — ở 40 m = 20 + `XaThem` 20 thì đường cong xa nhỏ đúng bằng 0, đối chứng
+  "tắt sương vẫn nghe" hỏng (menu 125 E1b: giọng 0). Menu 125 D đo xa nhỏ ở 2 / 14 / 17 m (×1,00 / 0,60 / 0,33); bắt đầu nghe quả bay vào ở 19,5 m. Menu
+  127 F nay chỉ đếm giọng ở chỗ xa (một lần chạy đếm nhầm một tiếng còn sót của mục trước, loa vẫn im 0,00000). Cả 8 menu: **0 lỗi**.
+- Menu 115: **0 lỗi** (tắt chế độ tạm "mở sẵn mọi kỹ năng" khi chạy — mục A cộng điểm theo hệ hỏng 4/4 vì mọi kỹ năng đều ở cấp 1).
+
 ## Phần 4 — Menu công cụ "Diablo 2.5D"
 
 | Mục | Tác dụng |

@@ -18,7 +18,7 @@ using UnityEngine;
 ///   D. MUA BANG THAT (CastAt 1) quanh mot bia: moi qua 1 yeu cau tieng roi (giong roi cung luc <= 3), moi qua cham dat 1 tieng cham (<= 6 cung luc);
 ///      khoi bang (ke bi dong bang) mo dan -> KHONG tieng vo.
 ///   E. KE BI DONG BANG CHET: FrozenEffect day du roi Die() -> 1 tieng vo tan (cao do x0,88).
-///   F. SUONG MU: no / vo o 40 m -> bo (SoBiSuongChe), loa im; doi chung tat suong -> co giong.
+///   F. SUONG MU: no / vo o 30 m -> bo (SoBiSuongChe), loa im; doi chung tat suong -> co giong.
 ///   G. BIEN THE: 30 lan moi loai (ban, no, vo, vo no, roi, cham) -> du 3 bien the, cao do +-6%.
 ///   H. QUA NAY: khong keu tieng ban, co tieng bay.
 /// Ket qua: PlayTestShots/tiengquacaubang.txt.
@@ -320,14 +320,16 @@ public static class ThuTiengQuaCauBang
 
         // ===== F. suong mu =====
         Ghi("");
-        Vector3 xa = TrenDat(goc + truoc * 40f);
+        Vector3 xa = TrenDat(goc + truoc * (TamNhin.BanKinh + 10f));
         int che0 = TiengViTri.SoBiSuongChe;
         TiengViTri.CauBangNo(xa); TiengViTri.BangVo(xa); TiengViTri.MuaBangCham(xa);
         yield return null;
-        int giongXa = 0; foreach (var g in TiengViTri.CacGiong) if (!g.Ranh) giongXa++;
+        // chi dem giong O CHO XA (16/10/2026: lan chay sau khi tam nhin 20 m dem nham 1 giong con lai cua muc truoc - loa van im 0,00000)
+        int giongXa = 0; var conLai = new List<string>();
+        foreach (var g in TiengViTri.CacGiong) if (!g.Ranh) { if ((g.viTri - xa).sqrMagnitude < 4f) giongXa++; else conLai.Add(g.loai.ToString()); }
         yield return Nghe(0.6f, kq);
         float rmsXa = kq[0];
-        Ghi(string.Format("F. no / vo / cham o 40 m (MucThay {0:F2}): bi suong che +{1}, giong {2}, RMS loa {3:F5}", TamNhin.MucThay(xa), TiengViTri.SoBiSuongChe - che0, giongXa, rmsXa));
+        Ghi(string.Format("F. no / vo / cham o 30 m (MucThay {0:F2}): bi suong che +{1}, giong o cho xa {2} (giong khac con keu: {4}), RMS loa {3:F5}", TamNhin.MucThay(xa), TiengViTri.SoBiSuongChe - che0, giongXa, rmsXa, conLai.Count == 0 ? "khong" : string.Join(", ", conLai)));
         Kiem(TiengViTri.SoBiSuongChe - che0 == 3 && giongXa == 0 && rmsXa < 1e-4f, "tieng bang trong suong van nghe thay");
         TamNhin.BatTrongPhepThu = false;
         yield return null; yield return null;
@@ -335,7 +337,7 @@ public static class ThuTiengQuaCauBang
         TiengViTri.CauBangNo(xa);
         yield return null;
         int giongDc = Dem(TiengViTri.Loai.CauBangNo);
-        Ghi(string.Format("F2. DOI CHUNG tat suong: no o 40 m -> giong {0}, bi suong che +{1}", giongDc, TiengViTri.SoBiSuongChe - che1));
+        Ghi(string.Format("F2. DOI CHUNG tat suong: no o 30 m -> giong {0}, bi suong che +{1}", giongDc, TiengViTri.SoBiSuongChe - che1));
         Kiem(giongDc == 1 && TiengViTri.SoBiSuongChe - che1 == 0, "doi chung tat suong ma van bi bo");
         TamNhin.BatTrongPhepThu = true;
         yield return ChoIm(4f);

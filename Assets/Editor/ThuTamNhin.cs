@@ -7,14 +7,14 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 
 /// <summary>
-/// MENU 117 - TAM NHIN 25 m + SUONG CHIEN TRANH (nguoi dung 10/10/2026, kieu StarCraft 2). Play Act2 that, bat phan hinh (TamNhin.BatTrongPhepThu).
+/// MENU 117 - TAM NHIN (TamNhin.BanKinh: 25 m tu 10/10/2026, 20 m tu 16/10/2026) + SUONG CHIEN TRANH (nguoi dung 10/10/2026, kieu StarCraft 2). Play Act2 that, bat phan hinh (TamNhin.BatTrongPhepThu).
 ///   A. Bien toan cuc: _TN_Bat = 1, nguon nhin = nhan vat; vat lieu Standard cua canh da doi sang ChuanSuong; co tam suong dia hinh.
 ///   B. ANH THAT (may quay truc giao nhin thang xuong, ve hai lan TRONG CUNG KHUNG: suong tat / bat): do sang dia hinh (lop Ground) va canh
-///      vat (Default) trong vanh 6-20 m (phai giu nguyen) va 31-45 m (phai toi han nhung KHONG den - kieu SC2 "thay dia hinh mo").
+///      vat (Default) trong vanh 6 m .. BanKinh - Mem - 2 (phai giu nguyen) va 31-45 m (phai toi han nhung KHONG den - kieu SC2 "thay dia hinh mo").
 ///   C. SUONG KHOANG CACH CU CON NGUYEN: shader co finalcolor thi Unity khong tu ap suong - tam phang dung shader DaMo / ChuanSuong / Standard
 ///      (doi chung, Unity tu ap) o 40 m, do he so suong k = (bat - mauSuong) / (tat - mauSuong) so voi exp(-(mat do x khoang cach)^2) viet tay:
 ///      khop = co suong dung mot lan (ap hai lan thi ra k^2).
-///   D. AN VAT DONG: quai o 20 / 30 / 60 m -> hien / an / an; hieu ung hat sinh luc chay o 10 / 35 m -> hien / an; den diem o 5 / 45 m.
+///   D. AN VAT DONG: quai o BanKinh - 5 / 30 / 60 m -> hien / an / an; hieu ung hat sinh luc chay o 10 / 35 m -> hien / an; den diem o 5 / 45 m.
 ///   E. DONG DOI (Doi): mot "dong doi" o 40 m -> quai canh no hien; NhinThay cho BOT.
 ///   F. CHET: giu tam nhin quanh xac.
 ///   G. Anh: may quay game keo xa het co (2.5D va 3D tu do) -> PlayTestShots/tamnhin_*.png.
@@ -28,7 +28,7 @@ public static class ThuTamNhin
     static bool truocBat;
     static EnterPlayModeOptions truocOpt;
 
-    [MenuItem("Diablo 2.5D/117. Chay thu TAM NHIN 25 m + suong chien tranh", false, 210)]
+    [MenuItem("Diablo 2.5D/117. Chay thu TAM NHIN 20 m + suong chien tranh", false, 210)]
     public static void Chay()
     {
         if (EditorSceneManager.GetActiveScene().isDirty)
@@ -38,7 +38,7 @@ public static class ThuTamNhin
         }
         Directory.CreateDirectory("PlayTestShots");
         bao.Length = 0; loi = 0; daBatDau = false;
-        Ghi("[ban 1] tam nhin 25 m + suong chien tranh");
+        Ghi("[ban 1] tam nhin " + TamNhin.BanKinh + " m + suong chien tranh");
         canhCu = EditorSceneManager.GetActiveScene().path;
         if (canhCu != "Assets/Scenes/Act2.unity") EditorSceneManager.OpenScene("Assets/Scenes/Act2.unity");
         truocBat = EditorSettings.enterPlayModeOptionsEnabled; truocOpt = EditorSettings.enterPlayModeOptions;
@@ -160,9 +160,9 @@ public static class ThuTamNhin
         Ghi(string.Format("A. _TN_Bat {0}, ban kinh {1}, mep {2}; vat lieu Standard da doi sang ChuanSuong: {3}; tam suong dia hinh: {4}; ThayDuoc(nhan vat) {5}",
             Shader.GetGlobalFloat("_TN_Bat"), Shader.GetGlobalFloat("_TN_BanKinh"), Shader.GetGlobalFloat("_TN_Mem"), TamNhin.SoVatLieuDaDoi,
             TamNhin.TamSuongDat != null, TamNhin.ThayDuoc(P)));
-        Kiem(Mathf.Approximately(Shader.GetGlobalFloat("_TN_Bat"), 1f) && Mathf.Approximately(Shader.GetGlobalFloat("_TN_BanKinh"), 25f), "bien toan cuc sai");
+        Kiem(Mathf.Approximately(Shader.GetGlobalFloat("_TN_Bat"), 1f) && Mathf.Approximately(Shader.GetGlobalFloat("_TN_BanKinh"), TamNhin.BanKinh), "bien toan cuc sai");
         Kiem(TamNhin.SoVatLieuDaDoi >= 4 && TamNhin.TamSuongDat != null, "chua doi vat lieu Standard / thieu tam suong dia hinh");
-        Kiem(TamNhin.ThayDuoc(P) && TamNhin.ThayDuoc(Cho(P, 0, 24f)) && !TamNhin.ThayDuoc(Cho(P, 0, 26f)), "ThayDuoc khong dung ban kinh 25 m");
+        Kiem(TamNhin.ThayDuoc(P) && TamNhin.ThayDuoc(Cho(P, 0, TamNhin.BanKinh - 1f)) && !TamNhin.ThayDuoc(Cho(P, 0, TamNhin.BanKinh + 1f)), "ThayDuoc khong dung ban kinh tam nhin");
 
         // ===== B: anh that =====
         var goCam = new GameObject("TAM_CamDo"); var cam = goCam.AddComponent<Camera>();
@@ -180,10 +180,11 @@ public static class ThuTamNhin
             Shader.SetGlobalFloat("_TN_Bat", 1f);
             var tBat = Ve(cam, rt);
             int n1, n2, n3, n4;
-            float trongTat = DoSangVanh(tTat, mpx, 6f, 20f, out n1), trongBat = DoSangVanh(tBat, mpx, 6f, 20f, out n2);
+            float rTrong = TamNhin.BanKinh - TamNhin.Mem - 2f;     // 15 m: con nguyen, chua toi mep mo
+            float trongTat = DoSangVanh(tTat, mpx, 6f, rTrong, out n1), trongBat = DoSangVanh(tBat, mpx, 6f, rTrong, out n2);
             float ngoaiTat = DoSangVanh(tTat, mpx, 31f, 45f, out n3), ngoaiBat = DoSangVanh(tBat, mpx, 31f, 45f, out n4);
             float kTrong = trongBat / Mathf.Max(1e-4f, trongTat), kNgoai = ngoaiBat / Mathf.Max(1e-4f, ngoaiTat);
-            Ghi(string.Format("B. lop {0}: vanh 6-20 m sang {1:F3} -> {2:F3} (x{3:F2}, {4} diem); vanh 31-45 m {5:F3} -> {6:F3} (x{7:F2}, {8} diem)",
+            Ghi(string.Format("B. lop {0}: vanh 6-" + rTrong + " m sang {1:F3} -> {2:F3} (x{3:F2}, {4} diem); vanh 31-45 m {5:F3} -> {6:F3} (x{7:F2}, {8} diem)",
                 tenLop, trongTat, trongBat, kTrong, n1, ngoaiTat, ngoaiBat, kNgoai, n3));
             Kiem(n1 > 200 && n3 > 200, "lop " + tenLop + ": qua it diem anh de do");
             Kiem(Mathf.Abs(kTrong - 1f) < 0.04f, "lop " + tenLop + ": trong tam nhin bi doi mau");
@@ -244,7 +245,7 @@ public static class ThuTamNhin
             ai.enabled = false; var d = ai.GetComponent<Damageable>(); d.maxHealth = d.health = 1e7f; quai.Add(d);
         }
         Kiem(quai.Count >= 4, "khong du quai thu");
-        float[] kcQ = { 20f, 30f, 60f };
+        float[] kcQ = { TamNhin.BanKinh - 5f, 30f, 60f };
         for (int i = 0; i < quai.Count; i++) DatCho(quai[i].transform, Cho(P, 37f * i, i < 3 ? kcQ[i] : 90f));
         var hat10 = new GameObject("TAM_Hat10").AddComponent<ParticleSystem>(); hat10.transform.position = Cho(P, 200, 10f) + Vector3.up;
         var hat35 = new GameObject("TAM_Hat35").AddComponent<ParticleSystem>(); hat35.transform.position = Cho(P, 200, 35f) + Vector3.up;
@@ -258,17 +259,17 @@ public static class ThuTamNhin
         int mn5 = den5.cullingMask, mn45 = den45.cullingMask;
         yield return new WaitForSeconds(0.5f);
         TamNhin.Hien.QuetNgay();
-        Ghi(string.Format("D. quai 20 / 30 / 60 m: an {0} / {1} / {2} (mong False / True / True); hat sinh luc chay 10 / 35 m: an {3} / {4}; den 5 / 45 m: mat na {5} / {6} (goc {7}); dang an {8} renderer, tat {9} den",
+        Ghi(string.Format("D. quai " + kcQ[0] + " / 30 / 60 m: an {0} / {1} / {2} (mong False / True / True); hat sinh luc chay 10 / 35 m: an {3} / {4}; den 5 / 45 m: mat na {5} / {6} (goc {7}); dang an {8} renderer, tat {9} den",
             DangAn(quai[0]), DangAn(quai[1]), DangAn(quai[2]), hat10.GetComponent<Renderer>().forceRenderingOff, hat35.GetComponent<Renderer>().forceRenderingOff,
             den5.cullingMask, den45.cullingMask, mn5, TamNhin.SoRendererDangAn, TamNhin.SoDenDangTat));
-        Kiem(!DangAn(quai[0]) && DangAn(quai[1]) && DangAn(quai[2]), "quai ngoai 25 m khong bi an / trong 25 m bi an");
+        Kiem(!DangAn(quai[0]) && DangAn(quai[1]) && DangAn(quai[2]), "quai ngoai tam nhin khong bi an / trong tam bi an");
         Kiem(!hat10.GetComponent<Renderer>().forceRenderingOff && hat35.GetComponent<Renderer>().forceRenderingOff, "hieu ung ngoai tam nhin khong bi an");
         // den 5 m: DenMatDat tu bo lop Ground khoi den goc (-1 -> -257) - chi can KHONG bi tat (0)
         Kiem(den5.cullingMask != 0 && den45.cullingMask == 0, "den ngoai tam nhin khong tat / den trong tam bi tat");
         Kiem(!TamNhin.ThayDuoc(quai[1].transform.position + Vector3.up * 2.1f), "so sat thuong / ten tren dau o 30 m van ve");
         // quai di vao tam nhin -> hien lai
-        DatCho(quai[1].transform, Cho(P, 37f, 15f)); TamNhin.Hien.QuetNgay();
-        Ghi("D2. quai 30 m di vao 15 m: an " + DangAn(quai[1]));
+        DatCho(quai[1].transform, Cho(P, 37f, 10f)); TamNhin.Hien.QuetNgay();
+        Ghi("D2. quai 30 m di vao 10 m: an " + DangAn(quai[1]));
         Kiem(!DangAn(quai[1]), "quai vao tam nhin khong hien lai");
 
         // D3. lua lo (hat cong sang cua canh vat - shader khong phu suong duoc): ngoai tam an, trong tam hien
@@ -280,7 +281,7 @@ public static class ThuTamNhin
                 if (d < dGan) { dGan = d; gan = lo; }
                 if (d > dXa) { dXa = d; xa = lo; }
             }
-            if (gan != null && dGan > 18f) { DatCho(dir.player, gan.transform.position + new Vector3(4f, 0f, 4f)); P = dir.player.position; dGan = Ngang(gan.transform.position, P); }
+            if (gan != null && dGan > TamNhin.BanKinh - 7f) { DatCho(dir.player, gan.transform.position + new Vector3(4f, 0f, 4f)); P = dir.player.position; dGan = Ngang(gan.transform.position, P); }
             yield return null; TamNhin.Hien.QuetNgay();
             int hatGanHien = 0, hatGan = 0, hatXaAn = 0, hatXa = 0;
             if (gan != null) foreach (var r in gan.GetComponentsInChildren<ParticleSystemRenderer>()) { hatGan++; if (!r.forceRenderingOff) hatGanHien++; }

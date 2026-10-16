@@ -20,8 +20,8 @@ using UnityEngine;
 ///      TiengViTri.DoRongMacDinh: giu stereo rong ma van nghe ro ben. Phat CUNG mot bien the (no 1, cao do 1) cho moi muc.
 ///   G. BIEN THE: 30 tieng ban + 30 tieng no -> du 3 bien the moi loai, cao do trong +-6%.
 ///   D. XA NHO: no o 2 / 14 / 20 m truoc mat -> muc dat va RMS loa giam dung duong cong TiengViTri.HeSoKhoangCach.
-///   E. SUONG MU: no o 40 m -> bo (SoBiSuongChe +1), loa im; DOI CHUNG tat suong (TamNhin.BatTrongPhepThu = false) -> co giong.
-///      Qua cua "nguoi khac" bay tu 40 m vao: tieng ban bi bo, tieng bay im ngoai 25 m, bat dau nghe khi vao tam.
+///   E. SUONG MU: no o 30 m -> bo (SoBiSuongChe +1), loa im; DOI CHUNG tat suong (TamNhin.BatTrongPhepThu = false) -> co giong.
+///      Qua cua "nguoi khac" bay tu 40 m vao: tieng ban bi bo, tieng bay im ngoai tam nhin, bat dau nghe khi vao tam.
 ///      Qua cua minh bay ra xa: tieng bay tat khi qua 25 m, no ngoai tam thi im.
 ///   F. QUA NAY khong keu tieng ban; Lua dia nguc (5 qua) 1 tieng ban + 5 tieng bay; qua quai (Fireball.Spawn) 1 + 1; tran 6 tieng bay;
 ///      qua bi xoa khong qua Explode -> tieng bay tat; thanh Hiệu ứng 0 -> moi giong am luong 0.
@@ -323,7 +323,7 @@ public static class ThuTiengQuaCauLua
 
         // ===== D. xa nho =====
         Ghi("");
-        float[] kc = { 2f, 14f, 20f };
+        float[] kc = { 2f, 14f, TamNhin.BanKinh - TamNhin.Mem };    // 16/10/2026: tam nhin 20 m -> 17 m (con nghe du, chua vao mep suong)
         // Moi khoang cach do HAI lan, lay lan lon hon (va ghi ca hai): lan chay 15/10 co mot lan 14 m ra x0,37 (thap hon ca 20 m) - mot
         // lan nghe lech khoi tieng; phep do mot lan khong phan biet duoc voi loi that.
         var rmsD = new float[3]; var mucD = new float[3];
@@ -353,7 +353,7 @@ public static class ThuTiengQuaCauLua
         // cho loa that su im (toi da 3 s) roi moi do
         for (int k = 0; k < 10; k++) { yield return Nghe(0.3f, kq); if (kq[4] < 1e-4f) break; }
         int che0 = TiengViTri.SoBiSuongChe;
-        Vector3 xa = TrenDat(goc + truoc * 40f);
+        Vector3 xa = TrenDat(goc + truoc * (TamNhin.BanKinh + 10f));
         TiengViTri.QuaCauLuaNo(xa);
         yield return null;
         int noXa = Dem(TiengViTri.Loai.QuaCauLuaNo);
@@ -364,7 +364,7 @@ public static class ThuTiengQuaCauLua
             if (a.isPlaying && a.clip != null && a.volume > 0f && !a.mute)
                 dangKeu.Add(a.name + ":" + a.clip.name + " vol " + a.volume.ToString("F2") + " t " + a.time.ToString("F2"));
         Ghi("   nguon dang keu luc do: " + (dangKeu.Count > 0 ? string.Join(" | ", dangKeu) : "khong"));
-        Ghi(string.Format("E1. no o 40 m (trong suong, MucThay {0:F2}): giong {1}, bi suong che +{2}, RMS loa {3:F5} (nen {4:F5}, khung dai nhat {5:F2} s)",
+        Ghi(string.Format("E1. no o 30 m (trong suong, MucThay {0:F2}): giong {1}, bi suong che +{2}, RMS loa {3:F5} (nen {4:F5}, khung dai nhat {5:F2} s)",
             TamNhin.MucThay(xa), noXa, TiengViTri.SoBiSuongChe - che0, rmsXa, nen, kq[5]));
         Kiem(noXa == 0 && TiengViTri.SoBiSuongChe - che0 == 1 && rmsXa < Mathf.Max(nen * 3f, rmsD[0] * 0.02f), "no trong suong van nghe thay");
         yield return ChoIm(2f);
@@ -373,8 +373,8 @@ public static class ThuTiengQuaCauLua
         TiengViTri.QuaCauLuaNo(xa);
         yield return null;
         int noXaDc = Dem(TiengViTri.Loai.QuaCauLuaNo);
-        Ghi(string.Format("E1b. DOI CHUNG tat suong: no o 40 m -> giong {0} (MucThay {1:F2})", noXaDc, TamNhin.MucThay(xa)));
-        Kiem(noXaDc == 1, "doi chung: tat suong ma no o 40 m van bi bo (phep do khong phan biet)");
+        Ghi(string.Format("E1b. DOI CHUNG tat suong: no o 30 m -> giong {0} (MucThay {1:F2})", noXaDc, TamNhin.MucThay(xa)));
+        Kiem(noXaDc == 1, "doi chung: tat suong ma no o 30 m van bi bo (phep do khong phan biet)");
         TamNhin.BatTrongPhepThu = true;
         yield return null; yield return null;
         yield return ChoIm(3f);
@@ -399,10 +399,10 @@ public static class ThuTiengQuaCauLua
             if (d < 6f) break;
             yield return null;
         }
-        Ghi(string.Format("E2. qua nguoi khac tu 40 m bay vao: tieng ban bi suong che +{0} (giong ban moi {1}); tieng bay muc lon nhat ngoai 25 m {2:F3} ({3} khung, RMS loa {4:F5}); bat dau nghe o {5:F1} m",
+        Ghi(string.Format("E2. qua nguoi khac tu 40 m bay vao: tieng ban bi suong che +{0} (giong ban moi {1}); tieng bay muc lon nhat ngoai tam nhin {2:F3} ({3} khung, RMS loa {4:F5}); bat dau nghe o {5:F1} m",
             TiengViTri.SoBiSuongChe - che1, Dem(TiengViTri.Loai.QuaCauLuaBan) - ban1, mucNgoai, mauNgoai, soNgoai > 0 ? rmsNgoai / soNgoai : 0f, dauNghe));
         Kiem(gVao != null && TiengViTri.SoBiSuongChe - che1 == 1 && mucNgoai <= 0.001f && mauNgoai > 10, "qua ngoai tam nhin van nghe tieng ban / bay");
-        Kiem(dauNghe > 19f && dauNghe <= TamNhin.BanKinh + 0.5f, "tieng bay khong bat dau nghe dung luc qua vao tam nhin");
+        Kiem(dauNghe > TamNhin.BanKinh - 6f && dauNghe <= TamNhin.BanKinh + 0.5f, "tieng bay khong bat dau nghe dung luc qua vao tam nhin");
         if (vao != null) Object.Destroy(vao.gameObject);
         yield return ChoIm(3f);
 
@@ -430,7 +430,7 @@ public static class ThuTiengQuaCauLua
         }
         yield return null;
         bool noNgoai = dNo > TamNhin.BanKinh + 0.5f;
-        Ghi(string.Format("E3. qua cua minh bay ra xa: tieng bay trong 15 m muc {0:F3}, ngoai 27,5 m muc lon nhat {1:F3} ({2} khung); no o {3:F1} m -> yeu cau no +{4}, bi suong che +{5}",
+        Ghi(string.Format("E3. qua cua minh bay ra xa: tieng bay trong 15 m muc {0:F3}, ngoai tam nhin + 2,5 m muc lon nhat {1:F3} ({2} khung); no o {3:F1} m -> yeu cau no +{4}, bi suong che +{5}",
             mucTrong, mucNgoaiRa, khungNgoai, dNo, TiengViTri.SoLan[2] - no2, TiengViTri.SoBiSuongChe - che2));
         Kiem(gRa != null && mucTrong > 0.3f && khungNgoai > 5 && mucNgoaiRa <= 0.001f, "tieng bay khong tat khi qua cua minh ra ngoai tam nhin");
         if (noNgoai) Kiem(TiengViTri.SoBiSuongChe - che2 == 1, "qua no ngoai tam nhin van keu");

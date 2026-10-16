@@ -132,6 +132,7 @@ public static class ThuMayBotDanh
     static IEnumerator KichBan()
     {
         Ghi("[ban 1] may BOT danh (buoc 4) - " + System.DateTime.Now.ToString("dd/MM/yyyy HH:mm"));
+        CapDo.TatMoSanChoPhepThu = true;   // che do tam "mo san moi ky nang" (16/10/2026) lam hong muc A (ky ngoai he phai o cap 0)
 
         // ---- A. Cong diem (ham thuan) ----
         string[] kyHe = { "0,4,11", "9,1,12", "6,2,13", "10,3,21" };
@@ -389,6 +390,7 @@ public static class ThuMayBotDanh
 
     static IEnumerator Ket()
     {
+        CapDo.TatMoSanChoPhepThu = false;
         KenhTrucTiep.Dong();
         if (!string.IsNullOrEmpty(maPhong))
         {

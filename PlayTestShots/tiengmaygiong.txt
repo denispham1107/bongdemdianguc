@@ -2,9 +2,9 @@
 A. 2/2 file trung ban goc, 2 kenh, dung do dai vong lap
 
 B. tung that: giong +1, mua +1 (bam theo may True, can bang 2D True); 36 tia -> danh +36, chay xem +36, sam ren +0
-   may tu bay 6.0 m, tieng mua lech may toi da 0.000 m; may het -> vong lap con 0; loa luc dang mua: RMS 0.1786, tuong quan 0.166
+   may tu bay 6.0 m, tieng mua lech may toi da 0.000 m; may het -> vong lap con 0; loa luc dang mua: RMS 0.1710, tuong quan 0.124
 
-C. may o 40 m (MucThay 0.00): giong / mua muc 0.000 / 0.000; tieng tia bi suong che +2; RMS loa 0.00000
-C2. DOI CHUNG tat suong: mua o 40 m muc 0.047
+C. may o 30 m (MucThay 0.00): giong / mua muc 0.000 / 0.000; tieng tia bi suong che +2; RMS loa 0.00000
+C2. DOI CHUNG tat suong: mua o 30 m muc 0.094
 
 so loi ghi nhan = 0

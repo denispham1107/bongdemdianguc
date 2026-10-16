@@ -5,6 +5,8 @@ using UnityEngine;
 /// TAM NHIN 25 m + SUONG CHIEN TRANH (nguoi dung 10/10/2026: "keo camera ra xa nhin tu dau map toi cuoi map - chinh tam nhin chi 25 m,
 /// vuot qua co suong mu bao phu nhu StarCraft 2"; chon kieu SC2 = canh vat ngoai tam van thay nhung TOI + mo, KHONG thay quai / nguoi /
 /// BOT / hieu ung; che do Doi CHIA SE tam nhin dong doi; chet roi giu 25 m quanh xac; may BOT cung chi thay trong 25 m).
+/// 16/10/2026 nguoi dung: "giam tam nhin, chi cho nhin thay trong ban kinh 20 m" -> BanKinh 25 -> 20 (moi cho deu doc hang nay: hinh,
+/// an vat dong, BOT, tieng theo vi tri). BOT giu TamGiaoTranh 20 m (nguoi dung chon) -> BOT thay doi thu la giao tranh.
 ///
 /// HINH (chi may nay, khong goi tin nao):
 ///   - Nguon nhin = nhan vat cua may nay (song hay da chet - quanh xac) + dong doi con song (Doi). Toi da 4 nguon -> bien toan cuc
@@ -21,7 +23,7 @@ using UnityEngine;
 [DefaultExecutionOrder(900)]
 public class TamNhin : MonoBehaviour
 {
-    public const float BanKinh = 25f;
+    public const float BanKinh = 20f;
     public const float Mem = 3f;
     /// <summary>Phan sang con lai trong suong, muc mat mau, mau may troi (a = do dam).</summary>
     public const float DoToi = 0.32f, NhatMau = 0.75f;

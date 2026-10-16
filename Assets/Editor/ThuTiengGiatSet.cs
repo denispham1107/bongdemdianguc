@@ -22,7 +22,7 @@ using UnityEngine;
 ///   D. QUA CAU DIEN THAT (CastAt 13) giua 3 bia: KHONG vong lap (nguoi dung bo 16/10/2026 - chi keu luc ban); moi luot 1 tieng lan (x0,75) + moi tia
 ///      1 tieng trung; loa luc dang ban co tieng, khong mono. D2. qua cau DUNG CHO (khong ai trong tam) 2,5 s -> 0 tieng, loa im.
 ///   E. QUY CAY: GiatSet.PhongCuaQuai vao bia -> 1 phong + 1 trung.
-///   F. SUONG MU: phong / trung / lan o 40 m -> bo, vong lap Qua cau dien o 40 m giu giong muc 0, loa im; doi chung tat suong -> co giong.
+///   F. SUONG MU: phong / trung / lan o 30 m -> bo, vong lap Qua cau dien o 30 m giu giong muc 0, loa im; doi chung tat suong -> co giong.
 ///   G. BIEN THE: 24 lan moi loai -> du 3 bien the, cao do +-6%.
 /// Ket qua: PlayTestShots/tienggiatset.txt.
 /// </summary>
@@ -327,7 +327,7 @@ public static class ThuTiengGiatSet
 
         // ===== F. suong mu =====
         Ghi("");
-        Vector3 xa = Dat(goc + h * 40f) + Vector3.up;
+        Vector3 xa = Dat(goc + h * (TamNhin.BanKinh + 10f)) + Vector3.up;
         int che0 = TiengViTri.SoBiSuongChe;
         TiengViTri.GiatSetPhong(xa, xa); TiengViTri.GiatSetTrung(xa); TiengViTri.GiatSetLan(xa);
         var vatXa = new GameObject("TAM_CauXa").transform; vatXa.position = xa;
@@ -335,7 +335,7 @@ public static class ThuTiengGiatSet
         yield return new WaitForSeconds(0.3f);
         yield return Nghe(0.6f, kq);
         int giongMotLan = Giong(TiengViTri.Loai.GiatSetPhong).Count + Giong(TiengViTri.Loai.GiatSetTrung).Count + Giong(TiengViTri.Loai.GiatSetLan).Count;
-        Ghi(string.Format("F. o 40 m (MucThay {0:F2}): bi suong che +{1}, giong mot lan {2}; vong lap giong {3} muc {4:F3}; RMS loa {5:F5}",
+        Ghi(string.Format("F. o 30 m (MucThay {0:F2}): bi suong che +{1}, giong mot lan {2}; vong lap giong {3} muc {4:F3}; RMS loa {5:F5}",
             TamNhin.MucThay(xa), TiengViTri.SoBiSuongChe - che0, giongMotLan, gXa != null ? 1 : 0, gXa != null ? gXa.MucDangDat : -1f, kq[0]));
         Kiem(TiengViTri.SoBiSuongChe - che0 == 3 && giongMotLan == 0 && (gXa == null || gXa.MucDangDat == 0f) && kq[0] < 1e-4f, "tieng dien trong suong van nghe thay");
         TiengViTri.Dung(gXa, vatXa);
@@ -345,7 +345,7 @@ public static class ThuTiengGiatSet
         TiengViTri.GiatSetTrung(xa);
         yield return null;
         int giongDc = Giong(TiengViTri.Loai.GiatSetTrung).Count;
-        Ghi(string.Format("F2. DOI CHUNG tat suong: trung o 40 m -> giong {0}, bi suong che +{1}", giongDc, TiengViTri.SoBiSuongChe - che1));
+        Ghi(string.Format("F2. DOI CHUNG tat suong: trung o 30 m -> giong {0}, bi suong che +{1}", giongDc, TiengViTri.SoBiSuongChe - che1));
         Kiem(giongDc == 1 && TiengViTri.SoBiSuongChe - che1 == 0, "doi chung tat suong ma van bi bo");
         TamNhin.BatTrongPhepThu = true;
         Object.Destroy(vatXa.gameObject);
