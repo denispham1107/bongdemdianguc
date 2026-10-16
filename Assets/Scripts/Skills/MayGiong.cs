@@ -181,6 +181,27 @@ public class MayGiong : MonoBehaviour
 
         Vector2 lech = Random.insideUnitCircle * (BanKinh * 0.45f);
         Vector3 tu = transform.position + new Vector3(lech.x, CaoMay, lech.y);
+
+        // KHIEN (16/10/2026, nguoi dung: set chi cham mat khien, khong xuyen vao trong): duong tia cham vom cua ai thi tia dung o
+        // mat vom - dien bo tren vom, khien nuot don, khong chay den / hat nga chu khien; ke NGOAI sat vom quanh cho cham van an.
+        Vector3 diemVom; float sVom;
+        var kChan = Khieng.DoanChamVom(tu, cho, damageMask, boQua, out diemVom, out sVom);
+        if (kChan != null)
+        {
+            SoChamVom++;
+            DiemTiaCuoi = diemVom;
+            VfxFactory.TiaMayGiong(tu, diemVom, false);
+            VfxFactory.DienBoTrenVom(kChan, diemVom, 1.25f);
+            TiengViTri.SamSetDanh(diemVom);
+            TiengViTri.SamSetChay(diemVom);
+            VfxFactory.MangSangTrongMay(tu + Vector3.up * 0.6f);
+            if (roiSang != null) roiSang.Chop(Random.Range(0.75f, 1f));
+            SoTiaDaDanh++;
+            kChan.TrungMatVom(satThuong, DamageType.Lightning, diemVom, boQua, HeSat.Phong);
+            TrungQuanh(diemVom, kChan.ChuNhan);
+            return;
+        }
+
         VfxFactory.TiaMayGiong(tu, cho);      // hinh y tia Sam set (28/09/2026)
         // tieng y tia Sam set (16/10/2026 nguoi dung): xe xuong + doang + ren ngan, chay xem tai cho danh
         TiengViTri.SamSetDanh(cho + Vector3.up);
@@ -194,12 +215,22 @@ public class MayGiong : MonoBehaviour
         if (roiSang != null) roiSang.Chop(Random.Range(0.75f, 1f));
         SoTiaDaDanh++;
 
+        TrungQuanh(cho + Vector3.up, null);
+    }
+
+    /// <summary>Dem cho phep thu (menu 136): so tia dung o mat vom khien.</summary>
+    public static int SoChamVom;
+
+    /// <summary>Sat thuong + chay den + hat nga cho moi ke trong BanKinhTia quanh <paramref name="tam"/> (tru <paramref name="boRa"/> -
+    /// chu khien vua an don qua mat vom).</summary>
+    void TrungQuanh(Vector3 tam, Damageable boRa)
+    {
         ds.Clear();
-        int n = Physics.OverlapSphereNonAlloc(cho + Vector3.up, BanKinhTia, bo, damageMask, QueryTriggerInteraction.Collide);
+        int n = Physics.OverlapSphereNonAlloc(tam, BanKinhTia, bo, damageMask, QueryTriggerInteraction.Collide);
         for (int i = 0; i < n; i++)
         {
             var d = bo[i].GetComponentInParent<Damageable>();
-            if (d == null || d.IsDead || ds.Contains(d)) continue;
+            if (d == null || d.IsDead || ds.Contains(d) || d == boRa) continue;
             if (CheDoTran.BoQua(boQua, d)) continue;
             ds.Add(d);
         }
@@ -211,12 +242,14 @@ public class MayGiong : MonoBehaviour
             // Ke dang UOT an them 50% (BiUot - nguoi dung chon ca tia May giong)
             float heSoUot = BiUot.HeSo(d);
             if (heSoUot > 1f) SoLanTrungUot++;
+            // Khieng do tron don thi khong chay den (16/10/2026)
+            bool khiengDo = d.khieng != null && d.khieng.DangBat;
             d.TakeDamage(satThuong * heSoUot, DamageType.Lightning, d.transform.position + Vector3.up);
             SoLanTrung++;
-            ChayDenToanThan.Apply(d, GiayChayDen);
+            if (!khiengDo) ChayDenToanThan.Apply(d, GiayChayDen);
         }
         // 45% hat nga - moi ke gieo rieng, bo qua nguoi tung / ke da chet / ke co khien (ThienThach.GieoDanhNga)
-        SoLanNga += ThienThach.GieoDanhNga(cho + Vector3.up, BanKinhTia, damageMask, boQua, XacSuatNga, giayNga);
+        SoLanNga += ThienThach.GieoDanhNga(tam, BanKinhTia, damageMask, boQua, XacSuatNga, giayNga);
     }
 
     /// <summary>Moi doi thu (tru nguoi tung) dung trong vung 6 m (tinh theo mat ngang) bi UOT them BiUot.GiayMacDinh giay.</summary>

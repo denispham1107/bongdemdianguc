@@ -45,6 +45,14 @@ public class FallingShard : MonoBehaviour
 
     TiengViTri.Giong giongRoi;
 
+    /// <summary>Dem cho phep thu (menu 136): so vien vo tren mat vom khien; diem vo gan nhat.</summary>
+    public static int SoVoTrenVom;
+    public static Vector3 DiemVoVomCuoi;
+
+    // Khien vien bang vua cham (hoi MOI KHUNG tren doan vua roi - nguoi co khien di chuyen trong luc vien dang roi)
+    Khieng khiengChan;
+    Vector3 diemVom;
+
     void Start()
     {
         start = transform.position;
@@ -61,7 +69,16 @@ public class FallingShard : MonoBehaviour
         float k = Mathf.Clamp01(t / travelTime);
         // Roi nhanh dan (gia toc)
         float e = k * k;
-        transform.position = Vector3.Lerp(start, target, e);
+        Vector3 moi = Vector3.Lerp(start, target, e);
+
+        // KHIEN (16/10/2026, nguoi dung: bang chi cham mat khien, khong xuyen vao trong): doan vua roi cham mat vom cua ai thi vo
+        // tung o do, khien nuot don
+        float sVom;
+        khiengChan = Khieng.DoanChamVom(transform.position, moi, damageMask, boQua, out diemVom, out sVom);
+        if (khiengChan == null) khiengChan = Khieng.TrongVom(moi, damageMask, boQua, out diemVom);   // vom chay toi trum len vien bang
+        if (khiengChan != null) { VoTrenVom(); return; }
+
+        transform.position = moi;
 
         if (k >= 1f)
         {
@@ -125,5 +142,29 @@ public class FallingShard : MonoBehaviour
             VfxFactory.ThaDuoiQuaCauBang(transform);
             Destroy(gameObject);
         }
+    }
+
+    /// <summary>
+    /// Vien bang cham mat vom: vo tung TAI MAT VOM (manh + suong toe ra ngoai), khien nuot don (TrungMatVom - khong lam cham / dong
+    /// bang chu khien). Ke dung NGOAI sat vom trong impactRadius quanh cho vo van an nhu thuong (tru chu khien). Khong cum bang,
+    /// khong vet suong gia, khong dap lo duoi dat - vien bang khong toi duoc dat.
+    /// </summary>
+    void VoTrenVom()
+    {
+        SoVoTrenVom++;
+        DiemVoVomCuoi = diemVom;
+        transform.position = diemVom;
+        TiengViTri.Dung(giongRoi, transform);
+        TiengViTri.MuaBangCham(diemVom);
+        VfxFactory.BangVoTrenVom(khiengChan, diemVom, VfxFactory.HeSoManhVoMuaBang);
+        if (damage > 0f)
+        {
+            khiengChan.TrungMatVom(damage, DamageType.Ice, diemVom, boQua);
+            int soDong;
+            CombatUtil.AreaFreeze(diemVom, impactRadius, damage, damageMask, chamTiLe, chamGiay,
+                                  freezeChance, freezeSeconds, boQua, out soDong, null, khiengChan.ChuNhan);
+        }
+        VfxFactory.ThaDuoiQuaCauBang(transform);
+        Destroy(gameObject);
     }
 }

@@ -83,6 +83,10 @@ public class GiatSet : MonoBehaviour
 
     /// <summary>Dem cho phep thu: so cu trung / so cu gay choang, tach nhip dau va nhip lan.</summary>
     public static int SoTrungDau, SoChoangDau, SoTrungLan, SoChoangLan;
+    /// <summary>Dem cho phep thu (menu 136): so tia dung o mat vom khien.</summary>
+    public static int SoChamVom;
+    /// <summary>Diem cuoi cua tia ve gan nhat (phep thu doc).</summary>
+    public static Vector3 DenTiaCuoi;
 
     [Tooltip("Moi nhip lan, sat thuong con lai bao nhieu phan")]
     [Range(0.3f, 1f)]
@@ -220,10 +224,21 @@ public class GiatSet : MonoBehaviour
         for (int nhip = 0; nhip <= maxChains && muc != null; nhip++)
         {
             Vector3 den = DiemTrung(muc);
+            // KHIEN: tia DUNG O MAT VOM, khong cham nguc nguoi ben trong (nguoi dung 16/10/2026); dien bo tren vom thay cho chay
+            // xem / nam den quanh cho trung. Tia lan tiep XUAT PHAT TU CHO CHAM VOM (nguoi dung chon). Dau tia bam muc.transform
+            // (tam vom) nen cho cham chay theo nguoi.
+            var kChan = Khieng.KhiengChan(muc, boQua);
+            Vector3 diemVom = Vector3.zero; float sVom;
+            bool chamVom = kChan != null && kChan.CatVom(tu, den, out diemVom, out sVom);
+            if (chamVom) { den = diemVom; SoChamVom++; Khieng.SoLanChanMatVom++; }
             VeTia(tu, den, nhip == 0 ? 1.15f : 0.9f, tuT, muc.transform);
             tuT = muc.transform;
-            VfxFactory.SetChayDen(den, 1.25f);
-            VfxFactory.NamChuongNgai(den, 2.2f, VfxFactory.LopChuongNgai);
+            if (chamVom) VfxFactory.DienBoTrenVom(kChan, den, 1f, cuaQuai ? (Color?)mauQuang : null);
+            else
+            {
+                VfxFactory.SetChayDen(den, 1.25f);
+                VfxFactory.NamChuongNgai(den, 2.2f, VfxFactory.LopChuongNgai);
+            }
             if (nhip == 0) TiengViTri.GiatSetTrung(den); else TiengViTri.GiatSetLan(den);   // tieng trung / tieng lan (16/10/2026)
 
             // Khieng do tron don thi khong dinh choang (luat chung cua CombatUtil.AreaDamage)
@@ -296,6 +311,7 @@ public class GiatSet : MonoBehaviour
     void VeTia(Vector3 tu, Vector3 den, float day, Transform bamDau, Transform bamCuoi)
     {
         SoTiaDaVe++;
+        DenTiaCuoi = den;
         var arc = LightningArc.Create(tu, den, day, GiayTiaHien);
         arc.coreColor = mauLoi;
         arc.glowColor = mauQuang;

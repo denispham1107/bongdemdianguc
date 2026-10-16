@@ -73,6 +73,12 @@ public class LightningStrike : MonoBehaviour
         Vector2 drift = Random.insideUnitCircle * height * 0.09f;
         from += new Vector3(drift.x, 0f, drift.y);
 
+        // KHIEN (16/10/2026, nguoi dung: set chi cham mat khien, khong xuyen vao trong): duong tia cham vom cua ai thi tia DUNG O MAT
+        // VOM - dien bo tren vom, khien nuot don (TrungMatVom), nhung ke dung NGOAI sat vom van an tia lan quanh cho cham.
+        Vector3 diemVom; float sVom;
+        var kChan = Khieng.DoanChamVom(from, target, damageMask, boQua, out diemVom, out sVom);
+        if (kChan != null) { DanhVaoVom(from, kChan, diemVom); return; }
+
         var arc = LightningArc.Create(from, target, 1f, 0.30f);
         arc.segments = 20;
         arc.branches = Random.Range(2, 4);
@@ -97,6 +103,32 @@ public class LightningStrike : MonoBehaviour
             CombatUtil.AreaShock(target, impactRadius, damage, damageMask,
                                  stunChance, stunSeconds, boQua);
 
+        CameraShake.Shake(0.18f, 0.075f);
+    }
+
+    /// <summary>Dem cho phep thu (menu 136): so tia Sam set dung o mat vom khien; diem cham gan nhat.</summary>
+    public static int SoChamVom;
+    public static Vector3 DiemChamVomCuoi;
+
+    /// <summary>Tia danh trung mat vom khien: tia tu troi toi mat vom, dien bo tren vom, khien nuot don; khong chay xem / vet nut /
+    /// tia bo DAT (dat nam trong vom). Ke khac dung ngoai sat vom trong impactRadius quanh cho cham van an tia (khong tinh chu khien).</summary>
+    void DanhVaoVom(Vector3 from, Khieng k, Vector3 diem)
+    {
+        SoChamVom++;
+        DiemChamVomCuoi = diem;
+        var arc = LightningArc.Create(from, diem, 1f, 0.30f);
+        arc.segments = 20;
+        arc.branches = Random.Range(2, 4);
+        VfxFactory.DienBoTrenVom(k, diem, 1.25f);
+        SoLanDanh++;
+        TiengViTri.SamSetDanh(diem);
+        TiengViTri.SamSetChay(diem);
+
+        if (damage > 0f)
+        {
+            k.TrungMatVom(damage, DamageType.Lightning, diem, boQua);
+            CombatUtil.AreaShock(diem, impactRadius, damage, damageMask, stunChance, stunSeconds, boQua, k.ChuNhan);
+        }
         CameraShake.Shake(0.18f, 0.075f);
     }
 }

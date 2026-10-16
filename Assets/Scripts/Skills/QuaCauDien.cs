@@ -55,7 +55,7 @@ public class QuaCauDien : MonoBehaviour
     public Damageable boQua;
 
     /// <summary>Dem cho phep thu (menu 74).</summary>
-    public static int SoLuotDaBan, SoTiaDaBan, SoLanTrung;
+    public static int SoLuotDaBan, SoTiaDaBan, SoLanTrung, SoChamVom;
 
     int daBan;          // so luot DA BAN RA THAT (co it nhat mot tia)
     float nhip;
@@ -104,7 +104,11 @@ public class QuaCauDien : MonoBehaviour
         if (gan != null)
         {
             // Lech sang mot ben cho khoi nam trong nguoi ke dich
-            Vector2 lech = Random.insideUnitCircle.normalized * 1.4f;
+            // Ke dich dang bat KHIEN (16/10/2026): cau hien NGOAI mat vom (ban kinh khien + 0,8 m) - lech 1,4 m la nam trong vom va tia
+            // xuat phat ben trong vom thi khong bi vom chan (luat chung Khieng.CatVom) -> tia cham nguc nguoi ben trong
+            var kChan = Khieng.KhiengChan(gan, boQua);
+            float lechXa = kChan != null ? Mathf.Max(1.4f, kChan.banKinh + 0.8f) : 1.4f;
+            Vector2 lech = Random.insideUnitCircle.normalized * lechXa;
             cho += new Vector3(lech.x, 0f, lech.y);
         }
         cho.y = VfxFactory.GroundY(cho) + CaoLoLung;
@@ -175,9 +179,16 @@ public class QuaCauDien : MonoBehaviour
             if (d == null || d.IsDead) continue;
 
             Vector3 den = d.transform.position + Vector3.up * 1.0f;
+            // KHIEN (nguoi dung 16/10/2026): tia dung o MAT VOM, dien bo tren vom; khien do tron don thi khong choang
+            var kChan = Khieng.KhiengChan(d, boQua);
+            Vector3 diemVom = Vector3.zero; float sVom;
+            bool chamVom = kChan != null && kChan.CatVom(transform.position, den, out diemVom, out sVom);
+            if (chamVom) { den = diemVom; SoChamVom++; Khieng.SoLanChanMatVom++; }
+            bool khiengDo = d.khieng != null && d.khieng.DangBat;
             // Dau tia bam qua cau, cuoi tia bam ke dich (kieu Giut set - ke dich chay thi tia chay theo)
             VfxFactory.TiaCauDien(transform.position, den, transform, d.transform);
-            VfxFactory.ChamTiaDien(den);
+            if (chamVom) VfxFactory.DienBoTrenVom(kChan, den);
+            else VfxFactory.ChamTiaDien(den);
             TiengViTri.GiatSetTrung(den);
 
             // GhiKeDanh TRUOC TakeDamage - khong thi ke giet vo danh, mat kinh nghiem (menu 61)
@@ -187,7 +198,7 @@ public class QuaCauDien : MonoBehaviour
             SoLanTrung++;
             daBanRa++;
 
-            if (!d.IsDead && Random.value < XacSuatChoang)
+            if (!d.IsDead && !khiengDo && Random.value < XacSuatChoang)
                 StunnedEffect.Apply(d, giayChoang);
         }
         // Tieng ban moi luot: tieng LAN ngan cua Giut set tai qua cau (nguoi dung nghe ghep B3 - tieng PHONG dai chong nhau moi 0,4 s thanh mot mo)

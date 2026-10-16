@@ -132,6 +132,17 @@ public class GioLoc : MonoBehaviour
     // ---- Dem cho phep thu (menu 71) ----
     public static int SoLanTrung, SoLanHat, SoLoDapTat;
 
+    /// <summary>Dem cho phep thu (menu 136): so con loc tan vi cham mat vom khien; cho tan gan nhat.</summary>
+    public static int SoTanVaoVom;
+    public static Vector3 ChoTanVaoVomCuoi;
+
+    /// <summary>Than loc ban kinh bao nhieu O CHAN (cho rong nhat so voi vom khien): vo chinh Loc xoay thu x0,318, them 5% cho dai gio
+    /// xoan luon +/-7% quanh vo.</summary>
+    public static float BanKinhThanChan { get { return VfxFactory.BanKinhLocXoay(0f, VfxFactory.HeSoHinhGioLoc) * 1.05f; } }
+
+    /// <summary>Vom khien da trum loc ngay luc sinh (dung trong vom cua nguoi khac ma tung ra) - khong chan.</summary>
+    readonly List<Khieng> vomLucSinh = new List<Khieng>();
+
     public static GioLoc Spawn(Vector3 pos, Vector3 huong, LayerMask damageMask)
     {
         huong.y = 0f;
@@ -181,6 +192,7 @@ public class GioLoc : MonoBehaviour
         // Tieng (16/10/2026, nguoi dung chon mau C "Loc cat"): gio thoi xoay + bui cat bi cuon - hai vong lap bam theo TUNG con loc
         giongThoi = TiengViTri.GioLocThoi(transform);
         giongBui = TiengViTri.GioLocBui(transform);
+        Khieng.VomTrumLoc(transform.position, BanKinhThanChan, damageMask, boQua, vomLucSinh);
     }
 
     void OnDestroy()
@@ -206,6 +218,20 @@ public class GioLoc : MonoBehaviour
         Vector3 truoc = transform.position;
         Vector3 sau = truoc + dir * TocDo * dt;
         sau.y = MatDatY(sau, truoc.y);
+
+        // KHIEN (16/10/2026, nguoi dung: gio loc chi cham mat khien, khong xuyen vao trong; chon "tan ngay tai mat khien"): than loc
+        // cham vom cua ai thi dung o do, khien an mot don, loc tan
+        Vector3 choCham;
+        var kChan = Khieng.LocChamVom(truoc, sau, BanKinhThanChan, damageMask, boQua, vomLucSinh, out choCham);
+        if (kChan != null)
+        {
+            choCham.y = MatDatY(choCham, truoc.y);
+            transform.position = choCham;
+            QuetTrung(truoc, choCham);
+            TanVaoVom(kChan, choCham);
+            return;
+        }
+
         transform.position = sau;
 
         QuetTrung(truoc, sau);
@@ -296,6 +322,24 @@ public class GioLoc : MonoBehaviour
             var lo = boDem[i].GetComponentInParent<LoLuaDa>();
             if (lo != null && lo.DangChay) { lo.DapTatRoiChayLai(GiayLoChayLai); SoLoDapTat++; }
         }
+    }
+
+    /// <summary>
+    /// Than loc cham mat vom khien: chu khien an MOT don cua loc (qua TakeDamage -> khien nuot, loe vom, keu "boong"; khien do nen
+    /// khong hat tung - TrungMot), roi loc TAN ngay tai do (co than 0,35 s nhu het gio).
+    /// </summary>
+    void TanVaoVom(Khieng k, Vector3 cho)
+    {
+        SoTanVaoVom++;
+        ChoTanVaoVomCuoi = cho;
+        Khieng.SoLanChanMatVom++;
+        var chu = k.ChuNhan;
+        if (chu != null && !chu.IsDead && !daTrung.Contains(chu))
+        {
+            daTrung.Add(chu);
+            TrungMot(chu);
+        }
+        Tan();
     }
 
     /// <summary>Het 3,5 giay: ngung phun, than loc co lai trong 0,35 giay, hat da phun tu tan.</summary>

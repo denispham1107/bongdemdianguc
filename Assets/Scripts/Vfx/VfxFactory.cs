@@ -3623,6 +3623,114 @@ public static partial class VfxFactory
         ad.lifetime = 2.2f;
     }
 
+    // ================= DON CHAM MAT VOM KHIEN (16/10/2026, xem Khieng.CatVom) =================
+
+    /// <summary>Phep thu (menu 136) doc: so tia con bo tren vom da sinh, so lan ve dien bo vom, so lan bang vo tren vom.</summary>
+    public static int SoTiaBoVom, SoLanDienBoVom, SoLanBangVoVom;
+    /// <summary>Ten tia con bo tren vom - phep thu dem tia chinh bo qua theo ten (nhu TiaBoDat.TenTia).</summary>
+    public const string TenTiaBoVom = "TiaBoVom";
+
+    /// <summary>
+    /// SET / DIEN CHAM MAT VOM KHIEN: dom sang o cho cham + 3-5 tia set con BO THEO MAT VOM toa ra quanh do (moi tia 2-3 khuc
+    /// ngan noi nhau, moi diem nam tren mat vom + 4 cm - khuc ngan nen day cung chi lun 4 cm), bam theo chu khien. Thay cho chay
+    /// xem / vet nut / tia bo DAT / dom sang tren nguc o cho tia cham - set khong toi duoc dat hay nguoi ben trong vom.
+    /// <paramref name="quang"/> khac null (tia xanh la cua Quy cay) thi to quang tia con theo mau ay va bo dom sang xanh.
+    /// </summary>
+    public static void DienBoTrenVom(Khieng k, Vector3 diem, float co = 1f, Color? quang = null)
+    {
+        if (k == null) return;
+        SoLanDienBoVom++;
+        if (!quang.HasValue) ChamTiaDien(diem);
+        Vector3 u0 = k.HuongNen(diem);
+        Vector3 vuong = Vector3.Cross(u0, Mathf.Abs(u0.y) < 0.9f ? Vector3.up : Vector3.right).normalized;
+        int soTia = Random.Range(3, 6);
+        float goc0 = Random.Range(0f, 360f);
+        for (int i = 0; i < soTia; i++)
+        {
+            // truc quay vuong goc u0 -> quay u0 quanh no la di theo DUONG TRON LON tren mat vom
+            Vector3 truc = Quaternion.AngleAxis(goc0 + i * 360f / soTia + Random.Range(-25f, 25f), u0) * vuong;
+            float dai = Random.Range(0.9f, 1.8f) * co;
+            int khuc = dai > 1.3f ? 3 : 2;
+            Vector3 truoc = diem + k.PhapTuyen(diem) * 0.04f;
+            for (int j = 1; j <= khuc; j++)
+            {
+                float gocRad = dai * j / khuc / Mathf.Max(0.5f, k.banKinh);
+                Vector3 u = Quaternion.AngleAxis(gocRad * Mathf.Rad2Deg, truc) * u0;
+                if (u.y < 0.03f) break;              // khong bo xuong duoi mat dat
+                Vector3 p = k.DiemTheoHuong(u);
+                p += k.PhapTuyen(p) * 0.04f;
+                VeTiaBoVom(truoc, p, Random.Range(0.20f, 0.34f), k.transform, quang);
+                truoc = p;
+            }
+        }
+    }
+
+    static void VeTiaBoVom(Vector3 a, Vector3 b, float song, Transform bamTheo, Color? quang)
+    {
+        SoTiaBoVom++;
+        float dai = Vector3.Distance(a, b);
+        var arc = LightningArc.Create(a, b, TiaBoDat.NgangTiaCon, song);
+        arc.name = TenTiaBoVom;
+        arc.segments = Mathf.Clamp(Mathf.RoundToInt(dai * 6f), 4, 10);
+        arc.jitter = 0.7f;
+        arc.branches = Random.Range(0, 2);
+        arc.branchLength = 0.35f;
+        if (quang.HasValue) arc.glowColor = quang.Value;
+        if (bamTheo != null) arc.BamTheo(bamTheo);
+    }
+
+    /// <summary>
+    /// VIEN BANG VO TREN MAT VOM (Mua bang): manh bang pha le + suong lanh toe RA NGOAI theo phap tuyen mat vom (non 70 do) roi roi
+    /// xuong - khong phun vao trong vom. Thay cho cum bang / vong lanh / vet suong gia duoi DAT (vien bang khong toi duoc dat).
+    /// </summary>
+    public static void BangVoTrenVom(Khieng k, Vector3 diem, float co = 1f)
+    {
+        SoLanBangVoVom++;
+        Vector3 n = k != null ? k.PhapTuyen(diem) : Vector3.up;
+        var root = new GameObject("BangVoTrenVom");
+        root.transform.position = diem + n * 0.05f;
+        root.transform.rotation = Quaternion.LookRotation(n);     // hinh non phun theo +Z cuc bo = phap tuyen
+        AutoDestroy.Add(root, 2.4f);
+
+        var manh = NewPS("ManhVoVom", root.transform, Vector3.zero, ManhBangMat, ParticleSystemRenderMode.Billboard);
+        var mm = manh.main;
+        mm.loop = false; mm.duration = 0.15f;
+        mm.startLifetime = new ParticleSystem.MinMaxCurve(0.45f, 0.9f);
+        mm.startSpeed = new ParticleSystem.MinMaxCurve(2.5f * co, 5.5f * co);
+        mm.startSize = new ParticleSystem.MinMaxCurve(0.12f * co, 0.32f * co);
+        mm.startRotation = new ParticleSystem.MinMaxCurve(0f, Mathf.PI * 2f);
+        mm.simulationSpace = ParticleSystemSimulationSpace.World;
+        mm.gravityModifier = 1.6f;
+        mm.maxParticles = 40;
+        var mem = manh.emission; mem.rateOverTime = 0f;
+        mem.SetBursts(new[] { new ParticleSystem.Burst(0f, 26) });
+        var msh = manh.shape; msh.shapeType = ParticleSystemShapeType.Cone; msh.angle = 70f; msh.radius = 0.15f;
+        var mcol = manh.colorOverLifetime; mcol.enabled = true;
+        mcol.color = new ParticleSystem.MinMaxGradient(Grad(Color.white, 0f, Color.white, 0.6f, Color.white, 1f, 1f, 1f, 0.8f, 0f));
+        var mrot = manh.rotationOverLifetime; mrot.enabled = true;
+        mrot.z = new ParticleSystem.MinMaxCurve(-8f, 8f);
+        DoiThanhManhBangPhaLe(manh, 1f);
+
+        var suong = NewPS("SuongVoVom", root.transform, Vector3.zero, SuongLanhMat, ParticleSystemRenderMode.Billboard);
+        var sm = suong.main;
+        sm.loop = false; sm.duration = 0.15f;
+        sm.startLifetime = new ParticleSystem.MinMaxCurve(0.5f, 0.9f);
+        sm.startSpeed = new ParticleSystem.MinMaxCurve(0.6f * co, 1.6f * co);
+        sm.startSize = new ParticleSystem.MinMaxCurve(0.5f * co, 1.0f * co);
+        sm.startRotation = new ParticleSystem.MinMaxCurve(0f, Mathf.PI * 2f);
+        sm.simulationSpace = ParticleSystemSimulationSpace.World;
+        sm.maxParticles = 12;
+        var sem = suong.emission; sem.rateOverTime = 0f;
+        sem.SetBursts(new[] { new ParticleSystem.Burst(0f, 8) });
+        var ssh = suong.shape; ssh.shapeType = ParticleSystemShapeType.Cone; ssh.angle = 60f; ssh.radius = 0.2f;
+        var scol = suong.colorOverLifetime; scol.enabled = true;
+        scol.color = new ParticleSystem.MinMaxGradient(Grad(
+            new Color(0.95f, 0.99f, 1f), 0f, new Color(0.62f, 0.82f, 1f), 0.5f, new Color(0.42f, 0.62f, 0.95f), 1f,
+            0f, 0.85f, 0.4f, 0f));
+        var ssol = suong.sizeOverLifetime; ssol.enabled = true;
+        ssol.size = new ParticleSystem.MinMaxCurve(1f, Curve(0.6f, 1.2f, 1.6f));
+    }
+
     /// <summary>Tim do cao mat dat ngay duoi mot diem.</summary>
     public static float GroundY(Vector3 pos)
     {

@@ -14607,6 +14607,57 @@ lượt; gốc cây cao 0,62 m CHẶN quái (chỗ chặn 0,64 m), người chơ
 chỗ gãy 0,44 m (đống gạch làm dốc) → leo qua, độ leo ≥ mảnh dưới đường đi; lúc lốc còn chạy: 40/40 dấu vết có va chạm, 0 bị cuốn; gọi `Xoa` → va chạm
 còn bật 0. Mục F (920 vật đúng tỉ lệ), B–E: 0 lỗi. Menu 19, 54c, 82: 0 lỗi.
 
+## Khiên: đòn chỉ chạm MẶT KHIÊN, không xuyên vào trong (16/10/2026)
+
+**Người dùng:** "tất cả tia sét, tia điện, băng, gió lốc (trừ Lốc xoáy) khi đánh vào người chơi đang bật khiên thì chỉ chạm vào khiên, không thể xuyên vào
+bên trong". Người dùng chọn: Gió lốc **tan ngay tại mặt khiên**; tia Giựt sét / Quả cầu điện **lan tiếp từ chỗ chạm khiên**; áp cả tia xanh lá của Quỷ cây.
+
+**Hiện tượng thật (đọc code):** SÁT THƯƠNG đã bị khiên nuốt (`Damageable.TakeDamage` → `Khieng.HapThu`) nhưng HÌNH đi xuyên: tia Giựt sét / Quả cầu điện /
+Quỷ cây chạm NGỰC người bên trong, sét Sấm sét / Mây giông đánh xuống ĐẤT dưới chân, viên Mưa băng rơi vào trong vòm, Gió lốc bay xuyên qua. Và có ba
+hiệu ứng LỌT QUA khiên: **Sấm sét vẫn làm choáng** người có khiên (`AreaShock` không hỏi khiên), **Mưa băng vẫn làm chậm / đóng băng** (`AreaFreeze`) và
+**khí lạnh** của vùng Mưa băng vẫn làm chậm, **Quả cầu điện vẫn choáng**, **Mây giông vẫn cháy đen** toàn thân. Quả cầu điện còn HIỆN cách mục tiêu 1,4 m —
+tức TRONG vòm (bán kính 3,04 m) — nên dù có cắt tia ở mặt vòm thì tia vẫn xuất phát từ bên trong.
+
+**Sửa** (`Khieng.cs`): vòm là bán cầu kéo cao (ngang 3,036 m, cao ×1,0957 = 3,327 m, tâm ở chân) — `CatVom(từ, đến)` nén trục y về hình cầu rồi giải
+giao điểm (tham số đoạn thẳng giữ nguyên); điểm đầu đã ở trong vòm thì KHÔNG chặn (đứng trong vòm đánh ra thì ra được — cùng luật `DanChamVom` của quả
+cầu lửa); `DoanChamVom` (đòn không nhắm một người: sét từ trời, viên băng), `TrongVom` (vòm chạy tới trùm lên viên băng đang rơi), `LocChamVom` (Gió lốc
+theo mặt ngang: tâm lốc cách tâm vòm = bán kính vòm + thân lốc ở chân 0,868 m — chân lốc là chỗ rộng nhất so với vòm), `TrungMatVom` (khiên ăn một đòn
+qua `TakeDamage` của chủ → nuốt hết, loé vòm, "boong"). Hình chạm vòm: `VfxFactory.DienBoTrenVom` — đốm sáng + 3–5 tia sét con BÒ THEO MẶT VÒM (đường
+tròn lớn, khúc ngắn ~0,5 m, +4 cm khỏi mặt), bám theo người; `BangVoTrenVom` — mảnh băng pha lê + sương lạnh phun RA NGOÀI theo pháp tuyến (nón 70°).
+- **Giựt sét + Quỷ cây** (`GiatSet.MotMach`): tia dừng ở mặt vòm, đầu tia bám người (vòm chạy theo), điện bò vòm thay cháy xém; tia lan đi tiếp TỪ chỗ
+  chạm vòm. Quỷ cây: tia bò vòm màu xanh lá.
+- **Quả cầu điện**: mục tiêu có khiên → cầu hiện NGOÀI vòm (bán kính khiên + 0,8 m); tia dừng ở mặt vòm; khiên đỡ thì không choáng.
+- **Sấm sét** (`LightningStrike.DanhVaoVom`) **+ Mây giông**: đường tia chạm vòm thì tia dừng ở đó, không cháy xém / vết nứt / tia bò đất; khiên ăn đòn;
+  kẻ khác đứng NGOÀI sát vòm trong bán kính quanh chỗ chạm vẫn ăn (trừ chủ khiên — tham số `boRaMot` mới của `AreaShock` / `AreaFreeze`, không tính hai lần).
+- **Mưa băng** (`FallingShard`, hỏi MỖI KHUNG trên đoạn vừa rơi — người có khiên đang chạy): viên băng vỡ tung trên mặt vòm, không cụm băng / vết sương
+  dưới đất; khí lạnh không lọt vào khiên.
+- **Gió lốc** (`GioLoc`): thân lốc chạm vòm → khiên ăn một đòn 75, lốc tan tại đó (co thân 0,35 s như hết giờ). Lốc sinh TRONG vòm (người tung đứng trong
+  vòm người khác) thì vòm ấy không chặn.
+- Luật chung thêm: `AreaShock` / `AreaFreeze` / Quả cầu điện / Mây giông — khiên đỡ đòn thì không choáng / chậm / đóng băng / cháy đen (như `AreaDamage`
+  vẫn làm). Lốc xoáy, Thiên thạch, mưa (bị ướt) của Mây giông không đổi.
+
+Menu **136** (Play Act2, bia T có khiên + E2 không khiên đứng ngoài vòm; "trên mặt vòm" đo ĐỘC LẬP với `CatVom`: MeshCollider tạm dựng từ CHÍNH lưới vòm
+đang hiển thị — kể cả nhịp thở phồng ±1,8% — bắn tia từ ngoài vào tâm, lấy khoảng hở):
+
+```
+khien T: ban kinh 3.036, cao vom 3.327; E2 cach tam T 3.90 m (ngoai vom)
+A. Giut set vao T: cham vom +1; diem cuoi ho 0.049 m (nguc T ho -2.275); dien bo vom +10 tia, ho 0.089..0.095; T mat mau 0, choang False, khien mat 75.0
+A. tia LAN sang E2: co True, diem dau ho 0.053 m; E2 mat mau 64.0, choang True; T di 1 m -> dau tia di 1.000 m, ho sau khi di 0.053
+A2. DOI CHUNG khong khien: cham vom +0, diem cuoi cach nguc 0.000 m, T choang True
+B. tia Quy cay vao T: cham vom +1, ho -0.039; tia bo vom 7 (mau xanh la 7); T choang False, mat mau 0
+C. Qua cau dien: cau cach tam T 3.84 m (vom 3.04); tia vao T 6, cham vom +6, |ho| lon nhat 0.069; tia vao nguc E2 6; T choang False, mat mau 0
+D. 8 tia Sam set vao T: cham vom +8, tren mat 8/8 (|ho| lon nhat 0.063); T choang False, mat mau 0; khien mat 208.0 (mong 208.0)
+D2. DOI CHUNG E2 (khong khien, ngoai vom): cham vom +0, E2 choang True, mat mau 26.0
+E. May giong tren T: cham vom +16 (|ho| lon nhat 0.061); T chay den False, nga False, mat mau 0; E2 (ngoai vom) chay den True
+F. Mua bang tren T: vo tren vom +19 (|ho| lon nhat 0.063); T dinh bang / cham False, mat mau 0; E2 (ngoai vom) bi cham True
+F2. vien bang sinh TRONG vom (1,8 m tren dat): vo +1, ho 0.010
+G. Gio loc vao T: tan vao vom +1; tam loc cach tam vom 3.904 m (ban kinh vom + than chan = 3.904); mep than loc ho -0.011 m so voi luoi vom; khien mat 75.0; T hat tung False, mat mau 0; 0,8 s sau loc di them 0.000 m
+G2. DOI CHUNG E2 (khong khien): tan vao vom +0, loc con bay True, E2 hat tung True, mat mau 75
+G3. loc sinh TRONG vom: tan vao vom +0, loc con bay True
+H. T (co khien) phong Giut set ra E2: cham vom +0, diem cuoi cach nguc E2 0.000 m
+so loi ghi nhan = 0
+```
+
 ## Phần 4 — Menu công cụ "Diablo 2.5D"
 
 | Mục | Tác dụng |

@@ -213,13 +213,14 @@ public static partial class VfxFactory
     /// (Truoc do 25/09/2026: "y tia Giut set" - anh Blender, quang xanh dam x1,2, bam theo ke dich.) Nhip, cho danh, sat thuong,
     /// hat nga, chay den, uot giu nguyen - nam o MayGiong.DanhMotTia.
     /// </summary>
-    public static LightningArc TiaMayGiong(Vector3 tu, Vector3 den)
+    /// <param name="chamDat">false = tia dung o mat vom khien (16/10/2026): khong ve cho cham DAT - noi goi ve dien bo tren vom.</param>
+    public static LightningArc TiaMayGiong(Vector3 tu, Vector3 den, bool chamDat = true)
     {
         var arc = LightningArc.Create(tu, den, 1f, GiayTiaSamSet);
         arc.name = "TiaMayGiong";
         arc.segments = 20;
         arc.branches = Random.Range(2, 4);
-        LightningImpact(den, MayGiong.BanKinhTia);
+        if (chamDat) LightningImpact(den, MayGiong.BanKinhTia);
         return arc;
     }
 

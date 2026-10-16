@@ -165,6 +165,208 @@ public class Khieng : MonoBehaviour
     }
 
     // ================================================================
+    // DON CHI CHAM MAT VOM, KHONG XUYEN VAO TRONG (16/10/2026, nguoi dung: "tat ca tia set, tia dien, bang, gio loc (tru Loc xoay)
+    // danh vao nguoi choi dang bat khien thi chi cham vao khien, khong the xuyen vao ben trong"). Truoc day sat thuong da bi khien
+    // nuot (HapThu) nhung HINH van di xuyen: tia Giut set / Qua cau dien / Quy cay cham NGUC nguoi ben trong, set Sam set / May
+    // giong danh xuong DAT duoi chan, vien bang Mua bang roi vao trong vom, Gio loc bay xuyen qua. Cac ham duoi day tra loi
+    // "duong di nay cham mat vom o dau" - noi goi dung o do va ve hieu ung tren mat vom.
+    //
+    // HINH VOM la ban cau KEO CAO theo VfxFactory.CaoVomKhieng (ngang banKinh, cao banKinh x 1,0957) dat o chan nhan vat - tinh
+    // giao diem tren DUNG hinh ay (nen truc y ve hinh cau ban kinh banKinh, tham so doan thang giu nguyen vi phep nen tuyen tinh).
+
+    /// <summary>Chu khien (nguoi dung trong vom).</summary>
+    public Damageable ChuNhan { get { if (chuNhan == null) chuNhan = GetComponent<Damageable>(); return chuNhan; } }
+
+    /// <summary>Chieu cao dinh vom (m) so voi chan.</summary>
+    public float CaoVom { get { return banKinh * VfxFactory.CaoVomKhieng; } }
+
+    /// <summary>Dem cho phep thu (menu 136): so lan mot don bi chan o mat vom (moi loai don dem o noi goi).</summary>
+    public static int SoLanChanMatVom;
+
+    /// <summary>
+    /// Khien cua <paramref name="d"/> co CHAN don cua <paramref name="boQua"/> khong: dang bat, va d khong phai nguoi tung / dong doi.
+    /// </summary>
+    public static Khieng KhiengChan(Damageable d, Damageable boQua)
+    {
+        if (d == null || d.khieng == null || !d.khieng.DangBat) return null;
+        if (CheDoTran.BoQua(boQua, d)) return null;
+        return d.khieng;
+    }
+
+    /// <summary>
+    /// Doan <paramref name="tu"/> -> <paramref name="den"/> di VAO mat vom o dau. <paramref name="s"/> = tham so 0..1 tren doan.
+    /// Tra ve false khi: diem dau da o trong vom (dung trong vom ma danh ra thi ra duoc - cung luat voi DanChamVom), doan khong
+    /// cham vom, hoac cham o nua DUOI mat dat (vom chi co nua tren).
+    /// </summary>
+    public bool CatVom(Vector3 tu, Vector3 den, out Vector3 diem, out float s)
+    {
+        diem = den; s = 1f;
+        if (!DangBat) return false;
+        Vector3 c = transform.position;
+        float R = banKinh;
+        float nen = 1f / VfxFactory.CaoVomKhieng;          // nen truc y: elipxoit -> cau ban kinh R
+        Vector3 a = tu - c; a.y *= nen;
+        Vector3 b = den - c; b.y *= nen;
+        float C = a.sqrMagnitude - R * R;
+        if (C <= 0f) return false;                          // xuat phat trong vom
+        Vector3 d = b - a;
+        float A = d.sqrMagnitude;
+        if (A < 1e-8f) return false;
+        float B = 2f * Vector3.Dot(a, d);
+        float delta = B * B - 4f * A * C;
+        if (delta < 0f) return false;                       // di truot ben canh
+        float t = (-B - Mathf.Sqrt(delta)) / (2f * A);
+        if (t < 0f || t > 1f) return false;
+        if (a.y + d.y * t < -0.02f) return false;           // vao qua nua duoi (duoi dat)
+        s = t;
+        diem = Vector3.Lerp(tu, den, t);
+        return true;
+    }
+
+    /// <summary>Huong tu tam vom toi <paramref name="p"/> trong khong gian DA NEN truc y (vecto don vi) - dung de bo tren mat vom.</summary>
+    public Vector3 HuongNen(Vector3 p)
+    {
+        Vector3 a = p - transform.position;
+        a.y /= VfxFactory.CaoVomKhieng;
+        return a.sqrMagnitude > 1e-8f ? a.normalized : Vector3.up;
+    }
+
+    /// <summary>Diem tren mat vom theo huong da nen <paramref name="u"/> (xem HuongNen).</summary>
+    public Vector3 DiemTheoHuong(Vector3 u)
+    {
+        u.Normalize();
+        return transform.position + new Vector3(u.x * banKinh, u.y * CaoVom, u.z * banKinh);
+    }
+
+    /// <summary>Phap tuyen mat vom (huong ra ngoai) tai diem <paramref name="p"/> tren mat.</summary>
+    public Vector3 PhapTuyen(Vector3 p)
+    {
+        Vector3 a = p - transform.position;
+        float H = CaoVom;
+        Vector3 n = new Vector3(a.x / (banKinh * banKinh), a.y / (H * H), a.z / (banKinh * banKinh));
+        return n.sqrMagnitude > 1e-10f ? n.normalized : Vector3.up;
+    }
+
+    /// <summary>
+    /// Doan <paramref name="tu"/> -> <paramref name="den"/> cham khien NAO dau tien (khien dang bat, chu nam trong
+    /// <paramref name="mask"/>, khong phai cua nguoi tung / dong doi). Dung cho don KHONG nham vao mot nguoi cu the: set tu troi
+    /// (Sam set, May giong), vien bang roi (Mua bang).
+    /// </summary>
+    public static Khieng DoanChamVom(Vector3 tu, Vector3 den, LayerMask mask, Damageable boQua, out Vector3 diem, out float s)
+    {
+        diem = den; s = 1f;
+        Khieng gan = null;
+        for (int i = dangBat.Count - 1; i >= 0; i--)
+        {
+            var k = dangBat[i];
+            if (k == null) { dangBat.RemoveAt(i); continue; }
+            if (!k.DangBat) continue;
+            if ((mask.value & (1 << k.gameObject.layer)) == 0) continue;
+            if (boQua != null && (k.gameObject == boQua.gameObject || CheDoTran.LaDongDoi(boQua, k.ChuNhan))) continue;
+            Vector3 p; float t;
+            if (k.CatVom(tu, den, out p, out t) && t < s) { s = t; diem = p; gan = k; }
+        }
+        return gan;
+    }
+
+    /// <summary>
+    /// Diem <paramref name="p"/> (tren mat dat) nam TRONG vom cua khien nao (cung bo loc nhu DoanChamVom) - vom chay toi trum len
+    /// mot vat dang roi (nguoi co khien chay vao duoi vien bang). <paramref name="diemMat"/> = diem tren mat vom theo huong tu tam ra p.
+    /// </summary>
+    public static Khieng TrongVom(Vector3 p, LayerMask mask, Damageable boQua, out Vector3 diemMat)
+    {
+        diemMat = p;
+        for (int i = dangBat.Count - 1; i >= 0; i--)
+        {
+            var k = dangBat[i];
+            if (k == null) { dangBat.RemoveAt(i); continue; }
+            if (!k.DangBat) continue;
+            if ((mask.value & (1 << k.gameObject.layer)) == 0) continue;
+            if (boQua != null && (k.gameObject == boQua.gameObject || CheDoTran.LaDongDoi(boQua, k.ChuNhan))) continue;
+            Vector3 a = p - k.transform.position;
+            if (a.y < 0f) continue;
+            a.y /= VfxFactory.CaoVomKhieng;
+            if (a.sqrMagnitude >= k.banKinh * k.banKinh) continue;
+            diemMat = k.DiemTheoHuong(k.HuongNen(p));
+            return k;
+        }
+        return null;
+    }
+
+    static bool LocKhien(Khieng k, LayerMask mask, Damageable boQua)
+    {
+        if (k == null || !k.DangBat) return false;
+        if ((mask.value & (1 << k.gameObject.layer)) == 0) return false;
+        if (boQua != null && (k.gameObject == boQua.gameObject || CheDoTran.LaDongDoi(boQua, k.ChuNhan))) return false;
+        return true;
+    }
+
+    /// <summary>
+    /// GIO LOC di tu <paramref name="tu"/> toi <paramref name="den"/> (mat ngang), CHAN than loc ban kinh <paramref name="r"/>: cham vom
+    /// khien nao dau tien - than loc cham vom khi tam loc cach tam vom banKinh + r (chan loc la cho rong nhat so voi vom: vom thon
+    /// dan len tren nhanh hon than loc loe ra). Bo qua khien trong <paramref name="boRa"/> (vom da trum loc ngay luc sinh - dung trong
+    /// vom ma tung ra thi ra duoc, cung luat DanChamVom). Tam loc da nam trong vong ay (vom chay toi trum len loc) = cham ngay o tu.
+    /// </summary>
+    public static Khieng LocChamVom(Vector3 tu, Vector3 den, float r, LayerMask mask, Damageable boQua,
+                                    ICollection<Khieng> boRa, out Vector3 cho)
+    {
+        cho = den;
+        Khieng gan = null;
+        float sMin = 2f;
+        Vector2 a = new Vector2(tu.x, tu.z), d = new Vector2(den.x - tu.x, den.z - tu.z);
+        for (int i = dangBat.Count - 1; i >= 0; i--)
+        {
+            var k = dangBat[i];
+            if (k == null) { dangBat.RemoveAt(i); continue; }
+            if (!LocKhien(k, mask, boQua)) continue;
+            if (boRa != null && boRa.Contains(k)) continue;
+            Vector2 ac = a - new Vector2(k.transform.position.x, k.transform.position.z);
+            float R = k.banKinh + r;
+            float C = ac.sqrMagnitude - R * R;
+            float t;
+            if (C <= 0f) t = 0f;
+            else
+            {
+                float A = d.sqrMagnitude;
+                if (A < 1e-8f) continue;
+                float B = 2f * Vector2.Dot(ac, d);
+                float delta = B * B - 4f * A * C;
+                if (delta < 0f) continue;
+                t = (-B - Mathf.Sqrt(delta)) / (2f * A);
+                if (t < 0f || t > 1f) continue;
+            }
+            if (t < sMin) { sMin = t; gan = k; }
+        }
+        if (gan != null) cho = Vector3.Lerp(tu, den, sMin);
+        return gan;
+    }
+
+    /// <summary>Moi khien (qua bo loc) co vong ngang banKinh + r trum diem <paramref name="p"/> - them vao <paramref name="ra"/>.</summary>
+    public static void VomTrumLoc(Vector3 p, float r, LayerMask mask, Damageable boQua, ICollection<Khieng> ra)
+    {
+        for (int i = dangBat.Count - 1; i >= 0; i--)
+        {
+            var k = dangBat[i];
+            if (!LocKhien(k, mask, boQua)) continue;
+            Vector3 v = p - k.transform.position; v.y = 0f;
+            if (v.magnitude <= k.banKinh + r) ra.Add(k);
+        }
+    }
+
+    /// <summary>
+    /// Danh SAT THUONG cua mot don vao khien (don da cham mat vom): di qua TakeDamage cua chu khien -> HapThu nuot het, loe vom,
+    /// keu "boong". Ghi ke danh truoc (luat chung, menu 61). Khong gay hieu ung gi - hieu ung khong lot qua vom.
+    /// </summary>
+    public void TrungMatVom(float satThuong, DamageType loai, Vector3 diem, Damageable boQua, HeSat? he = null)
+    {
+        var chu = ChuNhan;
+        SoLanChanMatVom++;
+        if (chu == null || chu.IsDead || satThuong <= 0f) { if (DangBat) HapThu(satThuong); return; }
+        if (he.HasValue) chu.GhiKeDanh(boQua, he.Value); else chu.GhiKeDanh(boQua);
+        chu.TakeDamage(satThuong, loai, diem);
+    }
+
+    // ================================================================
 
     /// <summary>
     /// Bat khieng len cho <paramref name="nguoi"/>. Dang co khieng thi NAP LAI

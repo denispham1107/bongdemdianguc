@@ -168,6 +168,9 @@ public class IceStorm : MonoBehaviour
                 // Ban sao lay lop bang tu goi tin - xem HieuUngQuaMang
                 if (d.mauDoMayKhacQuyet) continue;
 
+                // Khi lanh KHONG LOT vao trong khien (16/10/2026, nguoi dung: bang chi cham mat khien)
+                if (d.khieng != null && d.khieng.DangBat) continue;
+
                 var fr = d.GetComponent<FrozenEffect>();
                 if (fr == null)
                 {

@@ -273,6 +273,7 @@ public static class ThuQuaCauBang
         System.Action<int, Vector3, bool> dem = (s, a, d) => { soPhep++; kyVuaTung = s; };
         toi.DaTungPhep += dem;
 
+        CapDo.TatMoSanChoPhepThu = true;   // che do tam "mo san moi ky nang" (16/10/2026) lam hong muc C "con khoa -> tu choi"
         CapDo.BatDauTranMoi();
         int truocKhoa = soPhep;
         toi.CastAt(K, goc + huong * 8f);
@@ -1169,6 +1170,7 @@ public static class ThuQuaCauBang
 
     static void Ket()
     {
+        CapDo.TatMoSanChoPhepThu = false;
         TranHienTai.Xoa();
         KenhTrucTiep.guiSangBenKia = null;
         File.WriteAllText("PlayTestShots/quacaubang.txt", bao.ToString());

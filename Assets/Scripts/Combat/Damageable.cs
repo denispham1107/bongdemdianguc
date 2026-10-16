@@ -359,7 +359,8 @@ public static class CombatUtil
     public static int AreaFreeze(Vector3 center, float radius, float damage, LayerMask mask,
                                  float chamTiLe, float chamGiay,
                                  float freezeChance, float freezeSeconds, Damageable boQua,
-                                 out int soDongBang, System.Collections.Generic.List<Damageable> dsDongBang)
+                                 out int soDongBang, System.Collections.Generic.List<Damageable> dsDongBang,
+                                 Damageable boRaMot = null)
     {
         int n = Physics.OverlapSphereNonAlloc(center, radius, buffer, mask, QueryTriggerInteraction.Collide);
         int hits = 0;
@@ -370,9 +371,13 @@ public static class CombatUtil
             var d = buffer[i].GetComponentInParent<Damageable>();
             if (d == null || d.IsDead) continue;
             if (CheDoTran.BoQua(boQua, d)) continue;
+            if (boRaMot != null && d == boRaMot) continue;     // chu khien vua an don qua mat vom (Khieng.TrungMatVom) - khong tinh hai lan
 
             float dist = Vector3.Distance(center, d.transform.position);
             float falloff = Mathf.Lerp(1f, 0.55f, Mathf.Clamp01(dist / Mathf.Max(0.01f, radius)));
+
+            // Khieng do tron don thi KHONG lam cham / dong bang (16/10/2026, nguoi dung: bang chi cham mat vom, khong xuyen vao trong)
+            bool khiengDo = d.khieng != null && d.khieng.DangBat;
 
             // GHI KE DANH TRUOC KHI DANH. Thieu dong nay (13/09/2026) thi con nao
             // chet vi Mua bang cung thanh vo danh: khong ai duoc kinh nghiem,
@@ -381,7 +386,7 @@ public static class CombatUtil
             d.TakeDamage(damage * falloff, DamageType.Ice, d.transform.position + Vector3.up * 1f);
             hits++;
 
-            if (d.IsDead) continue;
+            if (d.IsDead || khiengDo) continue;
 
             // 1) Lam cham - CHAC CHAN, moi cu trung deu dinh
             if (chamGiay > 0f && chamTiLe > 0f)
@@ -403,7 +408,7 @@ public static class CombatUtil
     /// nen trong cung mot cu set co con dung im co con van xong toi.
     /// </summary>
     public static int AreaShock(Vector3 center, float radius, float damage, LayerMask mask,
-                                float stunChance, float stunSeconds, Damageable boQua = null)
+                                float stunChance, float stunSeconds, Damageable boQua = null, Damageable boRaMot = null)
     {
         int n = Physics.OverlapSphereNonAlloc(center, radius, buffer, mask, QueryTriggerInteraction.Collide);
         int hits = 0;
@@ -413,9 +418,13 @@ public static class CombatUtil
             var d = buffer[i].GetComponentInParent<Damageable>();
             if (d == null || d.IsDead) continue;
             if (CheDoTran.BoQua(boQua, d)) continue;
+            if (boRaMot != null && d == boRaMot) continue;     // chu khien vua an don qua mat vom (Khieng.TrungMatVom)
 
             float dist = Vector3.Distance(center, d.transform.position);
             float falloff = Mathf.Lerp(1f, 0.55f, Mathf.Clamp01(dist / Mathf.Max(0.01f, radius)));
+
+            // Khieng do tron don thi KHONG choang (16/10/2026: truoc day Sam set van choang nguoi dang bat khien)
+            bool khiengDo = d.khieng != null && d.khieng.DangBat;
 
             // Ghi ke danh truoc - xem ghi chu o AreaFreeze (Sam set cung sot dong nay)
             d.GhiKeDanh(boQua);
@@ -423,7 +432,7 @@ public static class CombatUtil
             d.TakeDamage(damage * falloff * BiUot.HeSo(d), DamageType.Lightning, d.transform.position + Vector3.up * 1f);
             hits++;
 
-            if (d.IsDead) continue;
+            if (d.IsDead || khiengDo) continue;
 
             if (Random.value < stunChance)
                 StunnedEffect.Apply(d, stunSeconds);
