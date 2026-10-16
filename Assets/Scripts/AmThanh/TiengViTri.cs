@@ -54,9 +54,9 @@ public class TiengViTri : MonoBehaviour
         // Tang hinh (16/10/2026, nguoi dung chon mau C "Hu khong" - CongCu/AmThanh/tieng_tang_hinh.py, TangHinhThu/C_hu_khong_*.wav): bien trong
         // suot (khong khi bi hut "vuuu" + "up"), hien hinh ("phup" ap suat bung ra), vong phep (song xung kich + khi cuon xoay quanh), trung ("phap").
         BienThe("TangHinhAn"), BienThe("TangHinhHien"), BienThe("TangHinhVong"), BienThe("TangHinhTrung"),
-        // Giut set + Qua cau dien (16/10/2026): nguoi dung che ban 1 "nhu tieng SUNG" -> ban 2 dien chay lien tuc; chon B "Ho quang" lam lai
-        // "zzzzt nhieu hon, dai hon, giam han tieng re" = B2 (CongCu/AmThanh/tieng_giat_set_2.py, GiatSetThu2/B2_zzzt_*.wav); vong lap Qua cau dien
-        // lam lai "day hon, stereo hon" = B3 (GiatSetThu2/B3_cau.wav).
+        // Giut set + Qua cau dien (16/10/2026): sau B2 "zzzt" / B3 nguoi dung vao game: "van con qua MONO" roi bo het, xin "hoan toan moi - XET XET,
+        // CHIU CHIU lazer, tieng CHAY khi trung" = ban 4 mau A "Laser dien" (CongCu/AmThanh/tieng_giat_set_4.py, GiatSetThu4/A_laser_dien_*.wav);
+        // vong lap Qua cau dien "giong 3,5 giay dau cua A" = A2 (GiatSetThu4/A2_cau.wav, --cau2). Phat bang CACH CAN BANG (xem PhatCanBang).
         BienThe("GiatSetPhong"), BienThe("GiatSetTrung"), BienThe("GiatSetLan"), new[] { "AmThanh/KyNang/CauDienVong" } };
     static string[] BienThe(string ten) { return new[] { "AmThanh/KyNang/" + ten + "1", "AmThanh/KyNang/" + ten + "2", "AmThanh/KyNang/" + ten + "3" }; }
     static readonly bool[] laVong = { false, true, false, false, false, true, false, true, false, false, false, false, false, false, false, false, false,
@@ -113,6 +113,37 @@ public class TiengViTri : MonoBehaviour
     /// <summary>Giut set / Qua cau dien: tieng trung / lan thu hai tro di trong 0,15 s nho lai; tieng ban moi luot cua Qua cau dien (dung tieng LAN
     /// ngan - nguoi dung nghe ghep B3); vong lap dien trong Qua cau dien.</summary>
     public const float HeSoSetKeSau = 0.6f, HeSoCauDienBan = 0.75f, HeSoCauDienVong = 0.7f;
+    /// <summary>Tieng PHONG Giut set chay doc tia tu tay toi muc tieu dau trong chung nay giay.</summary>
+    public const float GiayPhongChayDocTia = 0.2f;
+
+    /// <summary>
+    /// CACH PHAT CAN BANG (16/10/2026, nguoi dung: Giut set / Qua cau dien "van con qua mono" - CHI ap cho hai ky nang nay, nguoi dung chon):
+    /// Editor / ban may tinh: AudioSource 2D (spatialBlend 0) + panStereo = sin(goc ngang so voi camera) - giu NGUYEN hai kenh clip, chi ha kenh phia
+    /// xa. Mo phong (tieng_giat_set_3.py): 3D spread 120 bop clip 0,17 -> 0,38 o giua va ben phai chi x1,07; can bang giu 0,17 o moi goc va van ro ben.
+    /// WebGL KHONG co panStereo -> van 3D (PannerNode equalpower cua trinh duyet giu stereo o giua, gop kenh khi lech mot ben).
+    /// </summary>
+    public static bool PhatCanBang(Loai l)
+    {
+#if UNITY_WEBGL && !UNITY_EDITOR
+        return false;
+#else
+        if (TatCanBangChoPhepThu) return false;
+        return l == Loai.GiatSetPhong || l == Loai.GiatSetTrung || l == Loai.GiatSetLan || l == Loai.CauDienVong;
+#endif
+    }
+
+    /// <summary>Phep thu (menu 129) tat de do DOI CHUNG cach phat 3D cu.</summary>
+    public static bool TatCanBangChoPhepThu;
+
+    /// <summary>panStereo cho cach phat can bang: sin(goc ngang cua diem so voi huong nhin camera), -1..1.</summary>
+    public static float PanTheoCamera(Vector3 p)
+    {
+        var cam = Camera.main;
+        if (cam == null) return 0f;
+        Vector3 c = cam.transform.InverseTransformPoint(p);
+        float ngang = Mathf.Sqrt(c.x * c.x + c.z * c.z);
+        return ngang < 1e-4f ? 0f : Mathf.Clamp(c.x / ngang, -1f, 1f);
+    }
 
     /// <summary>Dem tieng da yeu cau theo loai (ke ca luc im trong phep thu / bi suong che) - phep thu doc / dat lai.</summary>
     public static readonly int[] SoLan = new int[21];
@@ -134,6 +165,10 @@ public class TiengViTri : MonoBehaviour
         public Vector3 viTri;
         public float heSo, muc;
         public bool dung, dangCho, dangPhat;
+        /// <summary>Tieng chay tu 'tu' toi 'den' trong 'giayDi' giay (tieng phong Giut set chay doc tia).</summary>
+        public bool diChuyen;
+        public Vector3 tu, den;
+        public float lucDi, giayDi;
         public float hanCho;
         public bool Ranh { get { return !dangPhat && !dangCho; } }
         /// <summary>Muc chua nhan thanh Hiệu ứng: heSo x khoang cach x tam nhin (phep thu doc).</summary>
@@ -455,11 +490,14 @@ public class TiengViTri : MonoBehaviour
         return h;
     }
 
-    /// <summary>Tieng PHONG tia (mot lan moi lan tung, ca khi khong trung ai) tai tay nguoi tung.</summary>
-    public static void GiatSetPhong(Vector3 cho)
+    /// <summary>Tieng PHONG tia (mot lan moi lan tung, ca khi khong trung ai): bat dau o tay nguoi tung roi CHAY doc tia toi <paramref name="dich"/>
+    /// trong <see cref="GiayPhongChayDocTia"/> (nguoi dung: "stereo chan that").</summary>
+    public static void GiatSetPhong(Vector3 cho, Vector3 dich)
     {
         SoLan[(int)Loai.GiatSetPhong]++;
-        DamBao().Phat(Loai.GiatSetPhong, cho, null, false, 1f, CaoDoNgauNhien());
+        var g = DamBao().Phat(Loai.GiatSetPhong, cho, null, false, 1f, CaoDoNgauNhien());
+        if (g == null) return;
+        g.diChuyen = true; g.tu = cho; g.den = dich; g.lucDi = Time.time; g.giayDi = GiayPhongChayDocTia;
     }
 
     /// <summary>Tieng tia TRUNG doi thu (nhip dau cua moi mach Giut set / moi tia Qua cau dien) tai cho ke bi trung.</summary>
@@ -556,9 +594,13 @@ public class TiengViTri : MonoBehaviour
         if (gg == null) return null;
 
         gg.loai = loai; gg.viTri = cho; gg.theo = chu; gg.coChu = chu != null; gg.bamTheo = bamTheo && chu != null;
-        gg.heSo = heSo; gg.dung = false;
+        gg.heSo = heSo; gg.dung = false; gg.diChuyen = false;
         var a = gg.nguon;
         a.transform.position = cho;
+        // Giut set / Qua cau dien: phat CAN BANG (2D + panStereo); loai khac 3D nhu cu (giong dung chung - phai dat lai moi lan)
+        bool canBang = PhatCanBang(loai);
+        a.spatialBlend = canBang ? 0f : 1f;
+        a.panStereo = canBang ? PanTheoCamera(cho) : 0f;
         a.clip = c;
         a.loop = vong;
         a.pitch = caoDo;
@@ -604,7 +646,7 @@ public class TiengViTri : MonoBehaviour
     static void TraVe(Giong g)
     {
         if (g.nguon != null) { g.nguon.Stop(); g.nguon.clip = null; g.nguon.volume = 0f; }
-        g.dangPhat = false; g.dangCho = false; g.dung = false; g.theo = null; g.coChu = false; g.bamTheo = false; g.muc = 0f;
+        g.dangPhat = false; g.dangCho = false; g.dung = false; g.theo = null; g.coChu = false; g.bamTheo = false; g.muc = 0f; g.diChuyen = false;
     }
 
     void Update()
@@ -626,7 +668,9 @@ public class TiengViTri : MonoBehaviour
             // Chu bi xoa (qua cau bi Destroy khong qua Explode, vung lua het, doi man...) -> tat dan
             if (g.coChu && g.theo == null) { g.dung = true; g.coChu = false; }
             if (g.bamTheo && g.theo != null) g.viTri = g.theo.position;
+            else if (g.diChuyen) g.viTri = Vector3.Lerp(g.tu, g.den, g.giayDi > 0f ? (Time.time - g.lucDi) / g.giayDi : 1f);
             g.nguon.transform.position = g.viTri;
+            if (g.nguon.spatialBlend < 0.5f) g.nguon.panStereo = PanTheoCamera(g.viTri);
             g.muc = Mathf.MoveTowards(g.muc, MucDich(g), buoc);
             g.nguon.volume = g.muc * hieuUng;
             if ((g.dung && g.muc <= 0f) || (!g.nguon.loop && !g.nguon.isPlaying)) TraVe(g);

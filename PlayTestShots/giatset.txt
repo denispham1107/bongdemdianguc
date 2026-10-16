@@ -5,24 +5,24 @@ A2. tam Giut set 20 m (vach ngam 20), tam Sam set (boltRange cua nhan vat) 12 m
 B. tung that vao 5 bia (vong cung 10 m, cach nhau 6,8 m): mat mau -80do:0.00 -40do:75.00 0do:75.00 40do:75.00 80do:75.00 -> mat dung 75: 4, khong mat: 1; so bia trung ngay khung dau tien: 4
 C. tam 20: bia tam 20.3 m (mat bia 19.9 m) trung True; bia tam 20.8 m (mat bia 20.4 m) trung False
 D. lan: bia A (18 m) mat 75.00, bia B (22 m, ngoai tam, cach A 4 m) mat 64.00 (mong 75 va 63,75)
-E. 160 lan phong: tia dau trung 640, choang 126 = 19.7%; tia lan trung 640, choang 128 = 20.0% (mong 20%); bo dem trong GiatSet: dau 126/642, lan 128/640
+E. 160 lan phong: tia dau trung 640, choang 120 = 18.8%; tia lan trung 640, choang 114 = 17.8% (mong 20%); bo dem trong GiatSet: dau 120/643, lan 114/640
 F. cap ky nang 3: choang 1.80 giay (mong 1,80), sat thuong 108.0 (mong 75 x 1,44 = 108)
 
-G0. cat ngang tia o anh can canh: phan TRANG rong 0.8 diem anh, phan XANH rong 24.2 diem anh (trung binh 15 lat cat)
-G1. tia tu tay: anh loi 'GiatSetLoi', anh quang 'GiatSetQuang', anhBlender True, song 0.60 giay, do sang o giay 0.32 = 1.00 (tia duy tri: con nguyen toi 65% doi = 0,39 s); doi chung (tia mac dinh): anhBlender False, anh 'BoltStrip', song 0.26
-G2. tay: day 1.00; canh tay chi ra truoc (tich vo huong) phai 0.99, trai 0.98 (mong > 0,85); giua hai tay truoc than 0.63 m, hai tay cach nhau 0.20 m; doi chung luc dung yen: phai 0.17, trai 0.04
-G3. dau tia cach diem giua hai tay 0.000 m (mong < 0,05); doi chung: diem phong phep cu (dau gay) cach 0.32 m
+G0. cat ngang tia o anh can canh: phan TRANG rong 1.1 diem anh, phan XANH rong 35.6 diem anh (trung binh 15 lat cat)
+G1. tia tu tay: anh loi 'GiatSetLoi', anh quang 'GiatSetQuang', anhBlender True, song 0.60 giay, do sang o giay 0.30 = 1.00 (tia duy tri: con nguyen toi 65% doi = 0,39 s); doi chung (tia mac dinh): anhBlender False, anh 'BoltStrip', song 0.26
+G2. tay: day 1.00; canh tay chi ra truoc (tich vo huong) phai 0.99, trai 0.98 (mong > 0,85); giua hai tay truoc than 0.63 m, hai tay cach nhau 0.22 m; doi chung luc dung yen: phai 0.17, trai 0.05
+G3. dau tia cach diem giua hai tay 0.000 m (mong < 0,05); doi chung: diem phong phep cu (dau gay) cach 0.31 m
 G4. bia chay 1,5 m: cuoi tia chay theo 1.50 m (mong 1,50); doi chung tia khong bam: 0.00 m
 G5. dang giu tay (day 1.00) thi buoc di: day con 0.00 (mong 0 - bo tay xuong, khong truot nhu tuong)
 G6. Giut set cua quai: anh 'GiatSetQuang', mau quang (RGBA(0.40, 1.00, 0.35, 1.00))
    so tia da ve trong muc G: 8
 
-H. cat ngang tia (ngay, trung binh 5 lan tung x 5 lat cat): phan TRANG rong 9.5 diem anh, phan XANH rong 43.8 diem anh, tong do sang xanh 36.7
-H. goc choi that (ngay, may quay '3D tu do', cach 16.0 m, fov 55): vung tia 96928 diem anh - chui trang 796 (0.82%), xanh sang 3866 (3.99%)
-H. cat ngang tia (dem, trung binh 5 lan tung x 5 lat cat): phan TRANG rong 10.4 diem anh, phan XANH rong 52.4 diem anh, tong do sang xanh 41.2
-H. goc choi that (dem, may quay '3D tu do', cach 16.0 m, fov 55): vung tia 96928 diem anh - chui trang 912 (0.94%), xanh sang 3987 (4.11%)
+H. cat ngang tia (ngay, trung binh 5 lan tung x 5 lat cat): phan TRANG rong 16.4 diem anh, phan XANH rong 56.9 diem anh, tong do sang xanh 51.1
+H. goc choi that (ngay, may quay '3D tu do', cach 11.9 m, fov 55): vung tia 110660 diem anh - chui trang 1927 (1.74%), xanh sang 7290 (6.59%)
+H. cat ngang tia (dem, trung binh 5 lan tung x 5 lat cat): phan TRANG rong 17.9 diem anh, phan XANH rong 68.7 diem anh, tong do sang xanh 56.6
+H. goc choi that (dem, may quay '3D tu do', cach 11.9 m, fov 55): vung tia 110660 diem anh - chui trang 2110 (1.91%), xanh sang 9669 (8.74%)
 
 I1. Quy cay sinh tu kho quai: attackRange 9.60 (mong 9.60, truoc 8), tamTiaSet 12.00 (mong 12.00, truoc attackRange+2 = 10)
-I2. Quy cay phong o cach nguoi choi 9.52 m (dung lai o tam danh 9.60); vat Giut set cua no tam 12.00 m; mau vien RGBA(0.25, 1.00, 0.30, 1.00); tia dung anh 'GiatSetLoi', song 0.60 giay
+I2. Quy cay phong o cach nguoi choi 9.50 m (dung lai o tam danh 9.60); vat Giut set cua no tam 12.00 m; mau vien RGBA(0.25, 1.00, 0.30, 1.00); tia dung anh 'GiatSetLoi', song 0.60 giay
 
 so loi ghi nhan = 0

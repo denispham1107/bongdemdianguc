@@ -14342,6 +14342,38 @@ giọng mức 0, loa im (đối chứng tắt sương có giọng); đủ 3 bi�
 bắn tối đa 4 tia đầu (`GiatSet.SoTiaNguoiChoi`). Menu 69: 0 lỗi; 74: 0 lỗi (nay tắt chế độ tạm "mở sẵn mọi kỹ năng" trong lúc chạy — mục "khoá thì
 từ chối"). Chưa nghe thử trên web.
 
+## Tiếng Giựt sét + Quả cầu điện làm lại: "chíu chíu" laser + cách phát cân bằng (16/10/2026)
+
+**Người dùng:** vào game test bản B2 "zzzt" / B3: "vẫn còn quá **mono**, không phải dạng stereo chân thật — tạo lại toàn bộ". Tôi đưa 3 mẫu S1–S3 (giữ
+chất zzzt, `tieng_giat_set_3.py`) kèm đối chứng → người dùng bỏ hết: "làm lại **hoàn toàn mới**, nghe rõ tiếng **xẹt xẹt, chíu chíu lazer** của sét điện,
+tiếng **cháy** khi bị sét đánh trúng". Bản 4 (`tieng_giat_set_4.py`): chọn **A "Laser điện"**, vòng lặp Quả cầu điện "giống 3,5 giây đầu của A" (= chuỗi
+phóng / trúng / lan) → **A2** (`--cau2`). Cách phát mới — người dùng chọn **chỉ Giựt sét + Quả cầu điện**.
+
+**Vì sao trong game nghe mono (đo + mô phỏng):** clip B2 / B3 tương quan chỉ 0,17–0,25, nhưng menu 129 đo ở loa 0,54 / 0,49. Unity phát tiếng 3D
+(spatialBlend 1) với spread 120 đặt hai kênh clip ở ±60° rồi chia cả hai về hai loa → mô phỏng `unity()` khớp số đo: 0,17 → 0,38, 0,25 → 0,44; và tiếng
+ở bên phải chỉ to bên phải ×1,07. Trên web (PannerNode "equalpower" của trình duyệt, đầu vào stereo) ở giữa giữ nguyên stereo nhưng lệch +40° thì gộp
+kênh trái vào phải → 0,75. **Cách phát cân bằng** (`TiengViTri.PhatCanBang`, Editor / máy tính): AudioSource **2D + panStereo = sin(góc ngang so với
+camera)** — giữ nguyên hai kênh clip, chỉ hạ kênh phía xa. WebGL không có panStereo nên vẫn 3D. ⚠️ Âm có cao độ (hồ quang "zzz") hai bên gần cùng cao
+độ vẫn hoà thành một điểm giữa dù tương quan thấp — một lý do nữa để đổi chất tiếng.
+
+**Bản 4 A "Laser điện":** CHÍU = cao độ trượt xuống 1,9–2,9 kHz → 190–380 Hz trong 50–160 ms, giàu điều hoà (FM nhẹ), mỗi chíu là một CẶP: tiếng chính
+một bên + bản nhân đôi (cao độ ×1,05–1,12, trượt khác 10–20%, trễ 8–16 ms) bên kia; XẸT = chùm phóng điện 15–60 ms (xèo dày + chớp hồ quang) rải trái /
+phải; CHÁY = xèo li ti rất dày (chiên mỡ) + hơi xì + lép bép, 0,35–0,6 s. Phóng = 2–4 chíu nối nhau + xẹt; trúng = chíu + xẹt + cháy; lan = chíu + xẹt (+
+cháy nhẹ 50%); A2 vòng lặp = cụm 2–4 chíu nghỉ 0,1–0,35 s + xẹt + nền cháy nhẹ, nối tròn vòng. Lần đo đầu: chíu MONO đặt gần giữa → phóng / lan 0,44–0,70,
+200 Hz–1 kHz chỉ 12–33% (sweep cao 2,4–3,4 kHz → 300–600) — sửa bằng cặp chíu hai bên + sweep thấp hơn, tắt chậm hơn.
+
+**Số đo mô phỏng file ghép "như trong game"** (người chơi giữa, kẻ địch −40 / 0 / +40°, Quả cầu điện +25°): tiếng cũ phát như Editor hiện giờ **0,50**; tiếng
+cũ + cách phát mới 0,21; A 0,18; A2 0,18.
+
+**Trong game:** 10 file `Resources/AmThanh/KyNang/GiatSet{Phong,Trung,Lan}1–3` + `CauDienVong` thay bằng `GiatSetThu4/A_laser_dien_*`, `A2_cau` (giữ GUID);
+tiếng PHÓNG **chạy dọc tia** từ tay tới mục tiêu đầu trong 0,2 s (`Giong.diChuyen`; không trúng ai → tới điểm tia tắt); voice dùng chung nên `Phat` đặt
+lại spatialBlend / panStereo mỗi lần, panStereo cập nhật mỗi khung theo vị trí.
+
+Menu **129** (0 lỗi, Act2 thật): 10 file trùng byte bản gốc mới; tung thật → loa tương quan **0,25** (bản trước 0,54); tiếng phóng lúc vang ở tay (0,00 m),
+0,25 s sau ở mục tiêu đầu (0,00 m, cách tay 8,4 m), 2D; Quả cầu điện loa **0,21** (0,49); **H** (4 tiếng trúng, cùng clip): cân bằng giữa 0,17 / bên phải
+phải-trái ×3,64 tương quan 0,15 — ĐỐI CHỨNG 3D spread 120 giữa 0,40 / bên phải ×1,49 tương quan 0,53; tiếng Quả cầu lửa vẫn 3D. Menu 69, 74: 0 lỗi.
+Chưa nghe thử trên web.
+
 ## Phần 4 — Menu công cụ "Diablo 2.5D"
 
 | Mục | Tác dụng |

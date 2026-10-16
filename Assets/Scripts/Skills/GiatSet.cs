@@ -185,7 +185,8 @@ public class GiatSet : MonoBehaviour
     {
         var daTrung = new HashSet<Damageable>();
         var dauTien = TimMayMucTieuDau(Mathf.Max(1, soTiaDau));
-        TiengViTri.GiatSetPhong(origin);       // tieng phong tia (16/10/2026) - ca khi ban vao khong khi
+        // tieng phong tia (16/10/2026) - ca khi ban vao khong khi; CHAY doc tia tu tay toi muc tieu dau (hoac diem tia tat)
+        TiengViTri.GiatSetPhong(origin, dauTien.Count > 0 ? DiemTrung(dauTien[0]) : origin + huong * range * 0.62f);
 
         if (dauTien.Count == 0)
         {

@@ -10,8 +10,12 @@ using UnityEngine;
 /// <summary>
 /// MENU 129 - TIENG GIUT SET + QUA CAU DIEN (16/10/2026, nguoi dung: phong tia · tia trung doi thu · tia lan; tia dien cua Qua cau dien dung
 /// chung; Qua cau dien hien dien thi dien xet lien tuc ben trong; Quy cay dung chung (nguoi dung chon); trong suong thi khong nghe).
-/// Mau B2 "zzzt" (Giut set) + B3 (vong lap Qua cau dien) - CongCu/AmThanh/tieng_giat_set_2.py. Play Act2 that, tat GameDirector + xoa quai.
-///   A. (ngoai Play) 10 file trung tung byte ban goc GiatSetThu2, STEREO, khong ForceToMono; vong lap 3 s.
+/// Ban 4 mau A "Laser dien" + vong lap A2 (CongCu/AmThanh/tieng_giat_set_4.py; nguoi dung bo B2 / B3 vi "van qua mono") + CACH PHAT CAN BANG.
+/// Play Act2 that, tat GameDirector + xoa quai.
+///   A. (ngoai Play) 10 file trung tung byte ban goc GiatSetThu4, STEREO, khong ForceToMono; vong lap 3 s.
+///   B2. tieng phong CHAY doc tia: luc dau o tay, sau 0,25 s o muc tieu dau.
+///   H. CACH PHAT CAN BANG: giong Giut set spatialBlend 0, tieng khac 3D; loa: trung o GIUA giu stereo (tuong quan thap hon han DOI CHUNG 3D spread
+///      120 cung clip), trung o BEN PHAI camera -> nang luong phai / trai lon (ro ben) ma van khong mono.
 ///   B. TUNG THAT Giut set (CastAt 6) vao 6 bia (4 mach dau + nhip lan): 1 tieng phong; moi mach 1 tieng trung (ke dau 1, ke sau x0,6) tai cho bia; moi nhip lan
 ///      1 tieng lan (so tieng trung + lan = so tia ve); loa co tieng, khong mono.
 ///   C. BAN VAO KHONG KHI: khong ai trong tam -> van 1 tieng phong, 0 trung.
@@ -31,7 +35,7 @@ public static class ThuTiengGiatSet
     static bool truocBat, tatTiengGoc;
     static EnterPlayModeOptions truocOpt;
     const string Ten = "TAM_TiengGiatSet";
-    const string Goc = "CongCu/AmThanh/GiatSetThu2/";
+    const string Goc = "CongCu/AmThanh/GiatSetThu4/";
 
     [MenuItem("Diablo 2.5D/129. Chay thu TIENG GIUT SET + QUA CAU DIEN (phong · trung · lan · dien xet, suong mu)", false, 218)]
     public static void Chay()
@@ -40,11 +44,11 @@ public static class ThuTiengGiatSet
         if (EditorSceneManager.GetActiveScene().isDirty) { Debug.LogWarning("[TiengGiatSet] scene dang mo co thay doi chua luu"); return; }
         Directory.CreateDirectory("PlayTestShots");
         bao.Length = 0; loi = 0; daBatDau = false;
-        Ghi("[ban 1] tieng Giut set (B2 'zzzt') + Qua cau dien (vong lap B3)");
+        Ghi("[ban 2] tieng Giut set (ban 4 mau A 'Laser dien') + Qua cau dien (vong lap A2) + cach phat can bang");
         var ds = new List<KeyValuePair<string, string>>();
-        foreach (var kv in new[] { new[] { "GiatSetPhong", "B2_zzzt_phong" }, new[] { "GiatSetTrung", "B2_zzzt_trung" }, new[] { "GiatSetLan", "B2_zzzt_lan" } })
+        foreach (var kv in new[] { new[] { "GiatSetPhong", "A_laser_dien_phong" }, new[] { "GiatSetTrung", "A_laser_dien_trung" }, new[] { "GiatSetLan", "A_laser_dien_lan" } })
             for (int i = 1; i <= 3; i++) ds.Add(new KeyValuePair<string, string>(kv[0] + i, kv[1] + i));
-        ds.Add(new KeyValuePair<string, string>("CauDienVong", "B3_cau"));
+        ds.Add(new KeyValuePair<string, string>("CauDienVong", "A2_cau"));
         int dung = 0;
         foreach (var kv in ds)
         {
@@ -196,10 +200,27 @@ public static class ThuTiengGiatSet
         int p0 = SL(TiengViTri.Loai.GiatSetPhong), t0 = SL(TiengViTri.Loai.GiatSetTrung), l0 = SL(TiengViTri.Loai.GiatSetLan), v0 = GiatSet.SoTiaDaVe;
         pc.CastAt(6, goc + h * 9f);
         var heSoTrung = new List<float>(); bool trungDungCho = true; int phongGiong = 0;
+        // B2. tieng phong chay doc tia: o tay ngay luc tung, toi muc tieu dau sau 0,25 s
+        var gp = new List<TiengViTri.Giong>();
+        Vector3 phongDau = Vector3.zero, phongTu = Vector3.zero, phongDen = Vector3.zero;
+        float lucCast = -1f;      // luc tieng phong vang len (sau thoi gian niem)
+        bool daDocPhong = false; Vector3 phongSau = Vector3.zero; float canBangPhong = -1f;
         float hanB = Time.time + 2f;
         bool daDoc = false;
         while (Time.time < hanB)
         {
+            if (lucCast < 0f && SL(TiengViTri.Loai.GiatSetPhong) > p0)
+            {
+                lucCast = Time.time;
+                gp = Giong(TiengViTri.Loai.GiatSetPhong);
+                if (gp.Count > 0) { phongDau = gp[0].viTri; phongTu = gp[0].tu; phongDen = gp[0].den; }
+            }
+            if (!daDocPhong && lucCast >= 0f && Time.time - lucCast > 0.25f)
+            {
+                daDocPhong = true;
+                var gp2 = Giong(TiengViTri.Loai.GiatSetPhong);
+                if (gp2.Count > 0) { phongSau = gp2[0].viTri; canBangPhong = gp2[0].nguon.spatialBlend; }
+            }
             if (!daDoc && SL(TiengViTri.Loai.GiatSetTrung) > t0)
             {
                 daDoc = true;
@@ -222,6 +243,11 @@ public static class ThuTiengGiatSet
             SL(TiengViTri.Loai.GiatSetPhong) - p0, phongGiong, soTia, soTrung, soLan, string.Join(" / ", heSoTrung.ConvertAll(x => x.ToString("F2"))), trungDungCho));
         Ghi(string.Format("   loa: RMS {0:F4} (dinh {1:F4}), tuong quan {2:F3}", kq[0], kq[4], kq[3]));
         Kiem(SL(TiengViTri.Loai.GiatSetPhong) - p0 == 1 && phongGiong == 1, "tung Giut set khong ra dung 1 tieng phong");
+        Ghi(string.Format("B2. tieng phong chay doc tia: luc tung o {0:F2} m tu tay, 0,25 s sau cach muc tieu dau {1:F2} m (tay -> muc tieu {2:F1} m); spatialBlend {3}",
+            (phongDau - phongTu).magnitude, (phongSau - phongDen).magnitude, (phongDen - phongTu).magnitude, canBangPhong));
+        Kiem(gp.Count == 1 && (phongDau - phongTu).magnitude < 0.5f && (phongSau - phongDen).magnitude < 0.3f && (phongDen - phongTu).magnitude > 3f,
+             "tieng phong khong chay doc tia tu tay toi muc tieu");
+        Kiem(canBangPhong == 0f, "tieng phong Giut set khong phat can bang (2D)");
         // (lan chay 1 mong 3 mach: Giut set nguoi choi ban toi da GiatSet.SoTiaNguoiChoi = 4 tia dau - 6 bia phia truoc -> 4 mach + 2 nhip lan)
         Kiem(soTrung == Mathf.Min(GiatSet.SoTiaNguoiChoi, bias.Count) && soLan >= 1 && soTrung + soLan == soTia && trungDungCho,
              "khong dung moi mach 1 tieng trung + moi nhip lan 1 tieng lan");
@@ -292,7 +318,7 @@ public static class ThuTiengGiatSet
         Ghi("");
         Vector3 xa = Dat(goc + h * 40f) + Vector3.up;
         int che0 = TiengViTri.SoBiSuongChe;
-        TiengViTri.GiatSetPhong(xa); TiengViTri.GiatSetTrung(xa); TiengViTri.GiatSetLan(xa);
+        TiengViTri.GiatSetPhong(xa, xa); TiengViTri.GiatSetTrung(xa); TiengViTri.GiatSetLan(xa);
         var vatXa = new GameObject("TAM_CauXa").transform; vatXa.position = xa;
         var gXa = TiengViTri.CauDienVong(vatXa);
         yield return new WaitForSeconds(0.3f);
@@ -325,7 +351,7 @@ public static class ThuTiengGiatSet
             {
                 Vector3 p = Dat(goc + h * (3f + (i % 4) * 3f) + ngang * ((i % 5) - 2f) * 2f) + Vector3.up;
                 int truocPhat = TiengViTri.SoLanDuocGiong;
-                if (l == TiengViTri.Loai.GiatSetPhong) TiengViTri.GiatSetPhong(p);
+                if (l == TiengViTri.Loai.GiatSetPhong) TiengViTri.GiatSetPhong(p, p);
                 else if (l == TiengViTri.Loai.GiatSetTrung) TiengViTri.GiatSetTrung(p);
                 else TiengViTri.GiatSetLan(p);
                 var gm = TiengViTri.GiongMoiNhat;
@@ -344,6 +370,47 @@ public static class ThuTiengGiatSet
         Kiem(du, "khong du 3 bien the moi loai");
         Kiem(caoMin >= 1f - TiengViTri.LechCaoDo - 1e-4f && caoMax <= 1f + TiengViTri.LechCaoDo + 1e-4f && caoMax - caoMin > 0.06f, "cao do khong lech ngau nhien trong +-6%");
         yield return ChoIm(4f);
+
+        // ===== H. cach phat can bang vs DOI CHUNG 3D spread 120 =====
+        Ghi("");
+        var camT = Camera.main.transform;
+        Vector3 phaiCam = camT.right; phaiCam.y = 0; phaiCam.Normalize();
+        Vector3 truocCam = camT.forward; truocCam.y = 0; truocCam.Normalize();
+        Vector3 giua = Dat(goc + truocCam * 3f) + Vector3.up, benPhai = Dat(goc + truocCam * 3f + phaiCam * 6f) + Vector3.up;
+        var kqH = new Dictionary<string, float[]>();
+        foreach (bool tat in new[] { false, true })
+        {
+            TiengViTri.TatCanBangChoPhepThu = tat;
+            foreach (var cho in new[] { "giua", "phai" })
+            {
+                // 4 tieng trung noi nhau (moi tieng mot bien the ngau nhien) - nghe 1,4 s
+                var tong = new float[5]; int so = 0;
+                for (int i = 0; i < 4; i++)
+                {
+                    TiengViTri.GiatSetTrung(cho == "giua" ? giua : benPhai);
+                    var gm = TiengViTri.GiongMoiNhat;
+                    if (i == 0 && gm != null) Ghi(string.Format("   {0} {1}: spatialBlend {2}, panStereo {3:F2}", tat ? "DOI CHUNG 3D" : "can bang", cho, gm.nguon.spatialBlend, gm.nguon.panStereo));
+                    var k1 = new float[5];
+                    yield return Nghe(0.35f, k1);
+                    tong[1] += k1[1]; tong[2] += k1[2]; tong[3] += k1[3] * (k1[1] + k1[2]); tong[0] += k1[0]; so++;
+                }
+                kqH[(tat ? "3d_" : "cb_") + cho] = new float[] { tong[0] / so, tong[2] / Mathf.Max(1e-9f, tong[1]), tong[3] / Mathf.Max(1e-9f, tong[1] + tong[2]) };
+                yield return ChoIm(3f);
+            }
+        }
+        TiengViTri.TatCanBangChoPhepThu = false;
+        Ghi(string.Format("H. loa (4 tieng trung): CAN BANG giua tuong quan {0:F2}, phai: phai/trai {1:F2} tuong quan {2:F2} | DOI CHUNG 3D spread 120: giua {3:F2}, phai: phai/trai {4:F2} tuong quan {5:F2}",
+            kqH["cb_giua"][2], kqH["cb_phai"][1], kqH["cb_phai"][2], kqH["3d_giua"][2], kqH["3d_phai"][1], kqH["3d_phai"][2]));
+        Kiem(kqH["cb_giua"][0] > 1e-3f && kqH["cb_giua"][2] < kqH["3d_giua"][2] - 0.1f, "can bang khong stereo hon 3D o giua");
+        Kiem(kqH["cb_phai"][1] > 1.5f && kqH["cb_phai"][1] > kqH["3d_phai"][1], "can bang khong ro ben phai");
+        Kiem(kqH["cb_phai"][2] < 0.6f, "can bang o ben phai bi gop gan mono");
+        var gLua = new GameObject("TAM_KiemLua").transform; gLua.position = giua;
+        TiengViTri.QuaCauLuaNo(giua);
+        var gmL = TiengViTri.GiongMoiNhat;
+        Ghi(string.Format("H2. tieng Qua cau lua (khong ap can bang - nguoi dung chon chi Giut set + Qua cau dien): spatialBlend {0}", gmL != null ? gmL.nguon.spatialBlend : -1f));
+        Kiem(gmL != null && gmL.loai == TiengViTri.Loai.QuaCauLuaNo && gmL.nguon.spatialBlend == 1f, "tieng ky nang khac cung bi doi cach phat");
+        Object.Destroy(gLua.gameObject);
+        yield return ChoIm(4f);
         Ket();
     }
 
@@ -354,6 +421,7 @@ public static class ThuTiengGiatSet
         File.WriteAllText("PlayTestShots/tienggiatset.txt", bao.ToString());
         NhacNen.BatTrongPhepThu = false;
         TamNhin.BatTrongPhepThu = false;
+        TiengViTri.TatCanBangChoPhepThu = false;
         TranHienTai.Xoa();
         foreach (var d0 in Object.FindObjectsByType<Damageable>(FindObjectsInactive.Include, FindObjectsSortMode.None)) if (d0 != null && d0.name.StartsWith("TAM_")) Object.DestroyImmediate(d0.gameObject);
         var rac = GameObject.Find(Ten);

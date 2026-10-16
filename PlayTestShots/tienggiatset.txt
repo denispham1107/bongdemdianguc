@@ -1,19 +1,27 @@
-[ban 1] tieng Giut set (B2 'zzzt') + Qua cau dien (vong lap B3)
+[ban 2] tieng Giut set (ban 4 mau A 'Laser dien') + Qua cau dien (vong lap A2) + cach phat can bang
 A. 10/10 file trung ban goc, 2 kenh, khong ForceToMono
 
 B. tung that: phong +1 (giong 1); tia ve 6 = trung +4 + lan +2; he so trung 1.00 / 0.60 / 0.60 / 0.60; trung dung cho bia True
-   loa: RMS 0.1593 (dinh 0.2284), tuong quan 0.542
+   loa: RMS 0.0855 (dinh 0.1615), tuong quan 0.252
+B2. tieng phong chay doc tia: luc tung o 0.00 m tu tay, 0,25 s sau cach muc tieu dau 0.00 m (tay -> muc tieu 8.4 m); spatialBlend 0
 
 C. ban vao khong khi: phong +1, trung +0
 
 D. Qua cau dien: vong lap +1 (bam theo qua cau True); 10 luot, 50 tia -> tieng lan (ban) +10, trung +50; he so tieng ban 0.75 / 0.75; qua cau tan -> vong lap con 0
-   loa luc qua cau xet: RMS 0.0946 (dinh 0.1647), tuong quan 0.485
+   loa luc qua cau xet: RMS 0.0667 (dinh 0.1401), tuong quan 0.209
 
 E. tia Quy cay (PhongCuaQuai): phong +1, trung +1
 
 F. o 40 m (MucThay 0.00): bi suong che +3, giong mot lan 0; vong lap giong 1 muc 0.000; RMS loa 0.00000
 F2. DOI CHUNG tat suong: trung o 40 m -> giong 1, bi suong che +0
 
-G. 24 lan moi loai: so bien the GiatSetPhong 3 (24 lan duoc giong), GiatSetTrung 3 (23 lan duoc giong), GiatSetLan 3 (24 lan duoc giong); cao do 0.941 - 1.059
+G. 24 lan moi loai: so bien the GiatSetPhong 3 (24 lan duoc giong), GiatSetTrung 3 (21 lan duoc giong), GiatSetLan 3 (24 lan duoc giong); cao do 0.943 - 1.060
+
+   can bang giua: spatialBlend 0, panStereo 0.00
+   can bang phai: spatialBlend 0, panStereo 0.50
+   DOI CHUNG 3D giua: spatialBlend 1, panStereo 0.00
+   DOI CHUNG 3D phai: spatialBlend 1, panStereo 0.00
+H. loa (4 tieng trung): CAN BANG giua tuong quan 0.17, phai: phai/trai 3.64 tuong quan 0.15 | DOI CHUNG 3D spread 120: giua 0.40, phai: phai/trai 1.49 tuong quan 0.53
+H2. tieng Qua cau lua (khong ap can bang - nguoi dung chon chi Giut set + Qua cau dien): spatialBlend 1
 
 so loi ghi nhan = 0

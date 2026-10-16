@@ -1115,6 +1115,11 @@ hơn ×1,5 và mở xuống 1,8–4,3 m** (người dùng chọn sau menu 94 ch�
   `Resources/AmThanh/KyNang/GiatSet{Phong,Trung,Lan}1–3` + `CauDienVong` chép nguyên byte từ `GiatSetThu2/B2_zzzt_*`, `B3_cau`): `TiengViTri` loại 17–20;
   `GiatSet` phóng (cả Quỷ cây — người dùng chọn) · nhịp 0 trúng · nhịp lan; `QuaCauDien` vòng lặp bám theo + mỗi lượt tiếng LAN ×0,75 + mỗi tia trúng.
   Menu 129, 69, 74: 0 lỗi. Chưa nghe thử trên web.
+  ⚠️⚠️ **Cùng ngày LÀM LẠI HOÀN TOÀN** (người dùng vào game: "vẫn quá mono" → bỏ hết, xin "xẹt xẹt, chíu chíu lazer, tiếng cháy khi trúng"): **bản 4 mẫu A
+  "Laser điện"** (`tieng_giat_set_4.py`, `GiatSetThu4/A_laser_dien_*`) + vòng lặp Quả cầu điện **A2** (`--cau2`, "giống 3,5 s đầu của A"); tiếng phóng
+  CHẠY DỌC TIA tay → mục tiêu (0,2 s). ⚠️ **CÁCH PHÁT CÂN BẰNG** chỉ cho Giựt sét + Quả cầu điện (người dùng chọn): Editor / máy tính 2D + panStereo
+  (`TiengViTri.PhatCanBang`) — Unity 3D spread 120 bóp stereo clip (0,17 → 0,38 ở loa), WebGL không có panStereo nên vẫn 3D. Menu 129 H: giữa 0,17 (3D 0,40),
+  bên phải ×3,64 (3D ×1,49). Các dòng B2 / B3 ở trên là LỊCH SỬ. Menu 129, 69, 74: 0 lỗi.
 - ⚠️ **Ô KỸ NĂNG LƯU THEO TÀI KHOẢN + MẶC ĐỊNH CẢM ỨNG MỚI** (11/10/2026, người dùng khoanh 4 nút trên ảnh; chọn "lưu theo từng tài
   khoản" + "chỉ bản cảm ứng"): mặc định `SachPhep.MacDinhTron()` = [Cầu lửa, Mưa băng, Sấm sét, **Bình mana, Bình máu, Tốc biến**, Giựt sét,
   **Nhào lộn**] (nút tròn 4, 5, 6, 8); máy tính `MacDinhVuong()` giữ [0..6, Nhào lộn]. Khoá lưu = khoá gốc + "." + uid (`SachPhep.KhoaCua`; chưa
