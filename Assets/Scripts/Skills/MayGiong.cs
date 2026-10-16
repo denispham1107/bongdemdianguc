@@ -110,7 +110,12 @@ public class MayGiong : MonoBehaviour
         roiSang = hinh != null ? hinh.GetComponent<LoeSangMay>() : null;
         CameraShake.Shake(0.2f, 0.05f);
         nhipNgang = 0.2f;
+        // Tieng (16/10/2026): giong + mua VONG LAP bam theo may (ca luc may tu bay); tat khi may het (OnDestroy)
+        giongGiong = TiengViTri.MayGiongGiong(transform);
+        giongMua = TiengViTri.MayGiongMua(transform);
     }
+
+    TiengViTri.Giong giongGiong, giongMua;
 
     void Update()
     {
@@ -155,6 +160,8 @@ public class MayGiong : MonoBehaviour
     /// con roi tiep toi het gio o cho cu (phep thu menu 83 muc K xoa may som, mua roi quanh nhan vat trong anh sau).</summary>
     void OnDestroy()
     {
+        TiengViTri.Dung(giongGiong, transform);
+        TiengViTri.Dung(giongMua, transform);
         if (hinh != null && dongHo < GiayHetMay - 0.05f) Destroy(hinh);
     }
 
@@ -175,6 +182,9 @@ public class MayGiong : MonoBehaviour
         Vector2 lech = Random.insideUnitCircle * (BanKinh * 0.45f);
         Vector3 tu = transform.position + new Vector3(lech.x, CaoMay, lech.y);
         VfxFactory.TiaMayGiong(tu, cho);      // hinh y tia Sam set (28/09/2026)
+        // tieng y tia Sam set (16/10/2026 nguoi dung): xe xuong + doang + ren ngan, chay xem tai cho danh
+        TiengViTri.SamSetDanh(cho + Vector3.up);
+        TiengViTri.SamSetChay(cho + Vector3.up * 0.5f);
         // Cho set cham dat CHAY XEM + boc khoi, NAM DEN vat quanh do - dung y nhu tia Sam set (LightningStrike.Strike,
         // nguoi dung 25/09/2026 khuya "giong nhu cac tia set trong skill Sam set")
         VfxFactory.SetChayDen(cho, BanKinhTia * 0.72f, 0.45f);

@@ -14407,6 +14407,28 @@ giọng 2D; loa giữa trận sét tương quan **0,16**; 40 m trong sương: 3 
 cháy xém, cùng clip): cân bằng giữa 0,15 / bên phải ×4,30 tương quan 0,13 — ĐỐI CHỨNG 3D giữa 0,39 / bên phải ×1,60 tương quan 0,50. Menu 58: lần 1 hỏng
 F1 (Mưa băng người khác 35% đóng cứng — 4 giây không trúng lần nào, may rủi, phần không đụng tới), chạy lại 0 lỗi. Chưa nghe thử trên web.
 
+## Tiếng Mây giông (16/10/2026)
+
+**Người dùng:** thêm tiếng stereo cho Mây giông — chỉ cần **tiếng giông** và **tiếng mưa rơi**, tiếng các tia sét thì **giống Sấm sét**; trong sương mù
+thì không nghe. Ba mẫu (`CongCu/AmThanh/tieng_may_giong.py`): A Giông bão / B Mưa rào / C Giông xa → người dùng chọn **C "Giông xa"**.
+
+**Thành phần (hai VÒNG LẶP bám theo đám mây, cả lúc mây tự bay 4 s):** giông 4 s = sấm rền trầm xa cuộn LIÊN TỤC (nhiều đợt `tieng_sam_set.ren` nối nhau +
+nền trầm rung rinh — không tiếng nổ, tiếng nổ là của từng tia) + gió hú nhẹ (ồn dải tâm trôi chậm, từng cơn giật lệch nhau hai kênh); mưa 3 s = hạt li ti
+~800 / giây (xung ồn 1–4 ms, mỗi hạt một chỗ trái / phải) + hạt to "lộp" + màn "shhh" + nước chảy. Nối liền mạch: sự kiện đặt theo modulo, lọc FFT tròn vòng,
+lớp ồn không tuần hoàn sinh dài gấp đôi rồi ghép nửa sau vào nửa đầu bằng cross-fade equal-power. Tia sét: đúng tiếng Sấm sét (`SamSetDanh` + `SamSetChay`
+— tiếng đánh + cháy xém), không thêm sấm rền trận (giông đã có rền). ⚠️ Lần đo đầu mưa thêm phần giữa 0,25 → tương quan 0,33–0,37: bỏ (hạt mưa đã rải
+hai bên) → 0,21–0,26.
+
+**Trong game:** `TiengViTri` loại 24–25 (`MayGiongGiong` ×0,8, `MayGiongMua` ×0,75), file `Resources/AmThanh/KyNang/MayGiongGiong.wav` / `MayGiongMua.wav`
+chép nguyên byte `MayGiongThu/C_giong_xa_*`; phát CÂN BẰNG như Sấm sét; `MayGiong.Start` bật hai vòng lặp, `OnDestroy` tắt; `DanhMotTia` kêu tiếng Sấm sét
+tại chỗ đánh.
+
+Menu **131** (0 lỗi, Act2 thật): 2 file trùng byte; tung thật → 1 giông + 1 mưa bám theo mây (2D), 36 tia → 36 tiếng đánh + 36 cháy xém, 0 sấm rền trận;
+mây tự bay 6,0 m, tiếng mưa lệch mây 0,000 m; mây hết → vòng lặp tắt; loa lúc đang mưa tương quan **0,17**; mây ở 40 m trong sương: giông / mưa mức 0,
+tiếng tia bị bỏ, loa im (đối chứng tắt sương có tiếng). Menu 83 (Mây giông): lần đầu 2 lỗi KHÔNG do tiếng — mục "cần Lốc xoáy cấp 5" hỏng vì chế độ tạm
+"mở sẵn mọi kỹ năng" (nay tắt chế độ tạm trong lúc chạy) và mục "so ky nang == 22" hỏng từ 10/10 (thêm Nhào lộn = 23, nay bỏ số cứng); chạy lại 0 lỗi.
+Chưa nghe thử trên web.
+
 ## Phần 4 — Menu công cụ "Diablo 2.5D"
 
 | Mục | Tác dụng |

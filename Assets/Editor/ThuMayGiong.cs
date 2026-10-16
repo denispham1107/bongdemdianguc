@@ -161,6 +161,7 @@ public static class ThuMayGiong
         }
         Directory.CreateDirectory("PlayTestShots");
         bao.Length = 0; loi = 0; daBatDau = false; kieuMayGiong = null; nhanhMayGiong.Clear();
+        CapDo.TatMoSanChoPhepThu = true;   // che do tam "mo san moi ky nang" (16/10/2026) lam hong muc "can Loc xoay cap 5"
         Ghi("[ban 1] May giong");
         canhCu = EditorSceneManager.GetActiveScene().path;
         if (canhCu != "Assets/Scenes/Act2.unity") EditorSceneManager.OpenScene("Assets/Scenes/Act2.unity");
@@ -283,7 +284,8 @@ public static class ThuMayGiong
         Kiem(chanDauTran && chanCap4 && moCap5 && nhac != null && nhac.Contains("LỐC XOÁY") && nhac.Contains("cấp 5"),
              "May giong khong doi Loc xoay cap 5 moi mo khoa");
         CapDo.BatDauTranMoi();
-        Kiem(K == 21 && CapDo.SoKyNang == 22 && SachPhep.SoKyNangCoTen() == CapDo.SoKyNang, "so hieu / so ky nang sai");
+        // (16/10/2026: bo so cung 22 - tu 10/10/2026 co Nhao lon = 23 ky nang, muc nay hong tu do)
+        Kiem(K == 21 && CapDo.SoKyNang > K && SachPhep.SoKyNangCoTen() == CapDo.SoKyNang, "so hieu / so ky nang sai");
         Kiem(SachPhep.Ten(K) == "MÂY GIÔNG" && trongPhong, "ten / nhom PHONG sai");
         Kiem(mt.Contains("125") && mt.Contains("45%") && mt.Contains("0,85") && mt.Contains("3 giây") && mt.Contains("20 tia") && mt.Contains("5 giây") && mt.Contains("ƯỚT") && mt.Contains("50%"), "mo ta Sach phep thieu con so / thieu mua uot");
         Kiem(bo != null && bo.Length == CapDo.SoKyNang && bo[K] != null, "thieu icon May giong");
@@ -1004,6 +1006,7 @@ public static class ThuMayGiong
         Ghi("so loi ghi nhan = " + loi);
         TranHienTai.Xoa();
         File.WriteAllText("PlayTestShots/maygiong.txt", bao.ToString());
+        CapDo.TatMoSanChoPhepThu = false;
         var rac = GameObject.Find("TAM_MayGiong");
         if (rac != null) Object.DestroyImmediate(rac);
         EditorApplication.update -= Nhip;

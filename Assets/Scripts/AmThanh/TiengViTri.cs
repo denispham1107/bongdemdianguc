@@ -31,7 +31,7 @@ public class TiengViTri : MonoBehaviour
                        CauBangBan = 6, CauBangBay = 7, CauBangNo = 8, BangVo = 9, BangVoNo = 10, MuaBangRoi = 11, MuaBangCham = 12,
                        TangHinhAn = 13, TangHinhHien = 14, TangHinhVong = 15, TangHinhTrung = 16,
                        GiatSetPhong = 17, GiatSetTrung = 18, GiatSetLan = 19, CauDienVong = 20,
-                       SamSetDanh = 21, SamSetChay = 22, SamSetRen = 23 }
+                       SamSetDanh = 21, SamSetChay = 22, SamSetRen = 23, MayGiongGiong = 24, MayGiongMua = 25 }
 
     // Qua cau lua: ban 3 "B - Khoi lua lon" (15/10/2026, CongCu/AmThanh/tieng_qua_cau_lua_3.py, QuaCauLuaThu3/B_khoi_lua_lon_*.wav -
     // mo hinh lua that: liem lua / xi hoi / lach tach ngau nhien khong deu). BA BIEN THE tieng ban + BA bien the tieng no, moi lan chon
@@ -61,10 +61,13 @@ public class TiengViTri : MonoBehaviour
         BienThe("GiatSetPhong"), BienThe("GiatSetTrung"), BienThe("GiatSetLan"), new[] { "AmThanh/KyNang/CauDienVong" },
         // Sam set (16/10/2026): mau B "Set xe troi" lam DAI + DAY = B2 (CongCu/AmThanh/tieng_sam_set.py --b2, SamSetThu/B2_*.wav): moi tia "ret" xe
         // xuong + "doang" + ren ngan; chay xem tai cho danh; sam ren 5 s moi lan tung. Phat CAN BANG.
-        BienThe("SamSetDanh"), BienThe("SamSetChay"), BienThe("SamSetRen") };
+        BienThe("SamSetDanh"), BienThe("SamSetChay"), BienThe("SamSetRen"),
+        // May giong (16/10/2026): mau C "Giong xa" (CongCu/AmThanh/tieng_may_giong.py, MayGiongThu/C_giong_xa_*.wav) - hai VONG LAP bam theo may:
+        // giong (sam ren tram xa cuon + gio hu nhe, 4 s) va mua (3 s). Tia set dung tieng Sam set (SamSetDanh + SamSetChay).
+        new[] { "AmThanh/KyNang/MayGiongGiong" }, new[] { "AmThanh/KyNang/MayGiongMua" } };
     static string[] BienThe(string ten) { return new[] { "AmThanh/KyNang/" + ten + "1", "AmThanh/KyNang/" + ten + "2", "AmThanh/KyNang/" + ten + "3" }; }
     static readonly bool[] laVong = { false, true, false, false, false, true, false, true, false, false, false, false, false, false, false, false, false,
-                                      false, false, false, true, false, false, false };
+                                      false, false, false, true, false, false, false, true, true };
     static readonly AudioClip[][] clip = TaoKhoClip();
     static AudioClip[][] TaoKhoClip() { var k = new AudioClip[duong.Length][]; for (int i = 0; i < k.Length; i++) k[i] = new AudioClip[duong[i].Length]; return k; }
     /// <summary>Lech cao do toi da cua tieng ban / no Qua cau lua va roi / no Thien thach (+-6%, nguoi dung chon).</summary>
@@ -89,6 +92,8 @@ public class TiengViTri : MonoBehaviour
     public const int SoSetTrungToiDa = 4, SoSetLanToiDa = 5;
     /// <summary>Sam set: 22 tia trong 2,4 s - toi da 4 tieng danh + 4 tieng chay xem cung luc (tia sau trong 0,15 s x0,6).</summary>
     public const int SoSamSetToiDa = 4;
+    /// <summary>May giong: am luong vong lap giong / mua.</summary>
+    public const float HeSoMayGiong = 0.8f, HeSoMayGiongMua = 0.75f;
     public const float GanDayDu = 4f;
     public const float MucMepTamNhin = 0.25f;
     /// <summary>Ngoai 25 m (chi nghe duoc nho tam nhin dong doi): tiep tuc nho dan ve 0 trong chung nay met.</summary>
@@ -136,7 +141,8 @@ public class TiengViTri : MonoBehaviour
 #else
         if (TatCanBangChoPhepThu) return false;
         return l == Loai.GiatSetPhong || l == Loai.GiatSetTrung || l == Loai.GiatSetLan || l == Loai.CauDienVong
-            || l == Loai.SamSetDanh || l == Loai.SamSetChay || l == Loai.SamSetRen;     // Sam set: nguoi dung "bao dam khong bi Unity bop"
+            || l == Loai.SamSetDanh || l == Loai.SamSetChay || l == Loai.SamSetRen     // Sam set: nguoi dung "bao dam khong bi Unity bop"
+            || l == Loai.MayGiongGiong || l == Loai.MayGiongMua;
 #endif
     }
 
@@ -154,7 +160,7 @@ public class TiengViTri : MonoBehaviour
     }
 
     /// <summary>Dem tieng da yeu cau theo loai (ke ca luc im trong phep thu / bi suong che) - phep thu doc / dat lai.</summary>
-    public static readonly int[] SoLan = new int[24];
+    public static readonly int[] SoLan = new int[26];
     /// <summary>Tieng mot lan bi BO vi luc phat nam trong suong (MucThay = 0).</summary>
     public static int SoBiSuongChe;
     /// <summary>Giong vua phat gan nhat (phep thu doc clip / cao do bien the).</summary>
@@ -559,6 +565,26 @@ public class TiengViTri : MonoBehaviour
     {
         SoLan[(int)Loai.SamSetRen]++;
         DamBao().Phat(Loai.SamSetRen, cho, null, false, 1f, CaoDoNgauNhien());
+    }
+
+    // ================================================================
+    //  MAY GIONG (tia set dung SamSetDanh + SamSetChay nhu Sam set - nguoi dung)
+    // ================================================================
+
+    /// <summary>Tieng GIONG (sam ren xa cuon + gio) vong lap bam theo dam may - goi <see cref="Dung"/> khi may het.</summary>
+    public static Giong MayGiongGiong(Transform may)
+    {
+        SoLan[(int)Loai.MayGiongGiong]++;
+        if (may == null) return null;
+        return DamBao().Phat(Loai.MayGiongGiong, may.position + Vector3.up, may, true, HeSoMayGiong, Random.Range(0.97f, 1.03f));
+    }
+
+    /// <summary>Tieng MUA ROI vong lap bam theo dam may.</summary>
+    public static Giong MayGiongMua(Transform may)
+    {
+        SoLan[(int)Loai.MayGiongMua]++;
+        if (may == null) return null;
+        return DamBao().Phat(Loai.MayGiongMua, may.position + Vector3.up, may, true, HeSoMayGiongMua, Random.Range(0.97f, 1.03f));
     }
 
     // ================================================================
