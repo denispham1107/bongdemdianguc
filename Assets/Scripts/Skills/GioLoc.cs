@@ -174,6 +174,21 @@ public class GioLoc : MonoBehaviour
         CameraShake.Shake(0.14f, 0.05f);
     }
 
+    TiengViTri.Giong giongThoi, giongBui;
+
+    void Start()
+    {
+        // Tieng (16/10/2026, nguoi dung chon mau C "Loc cat"): gio thoi xoay + bui cat bi cuon - hai vong lap bam theo TUNG con loc
+        giongThoi = TiengViTri.GioLocThoi(transform);
+        giongBui = TiengViTri.GioLocBui(transform);
+    }
+
+    void OnDestroy()
+    {
+        TiengViTri.Dung(giongThoi, transform);
+        TiengViTri.Dung(giongBui, transform);
+    }
+
     void Update()
     {
         if (daTan) return;
@@ -287,6 +302,8 @@ public class GioLoc : MonoBehaviour
     void Tan()
     {
         daTan = true;
+        TiengViTri.Dung(giongThoi, transform);      // than loc co lai: tieng tat dan cung luc
+        TiengViTri.Dung(giongBui, transform);
         if (visual == null) { Destroy(gameObject); return; }
 
         // Den chop cua Loc xoay thu nho (01/10/2026) tat cung luc than co lai - khong thi con sang them doi hat bui (~3,6 s)

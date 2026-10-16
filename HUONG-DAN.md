@@ -14429,6 +14429,30 @@ tiếng tia bị bỏ, loa im (đối chứng tắt sương có tiếng). Menu 8
 "mở sẵn mọi kỹ năng" (nay tắt chế độ tạm trong lúc chạy) và mục "so ky nang == 22" hỏng từ 10/10 (thêm Nhào lộn = 23, nay bỏ số cứng); chạy lại 0 lỗi.
 Chưa nghe thử trên web.
 
+## Tiếng Gió lốc + Lốc xoáy (16/10/2026)
+
+**Người dùng:** thêm tiếng stereo cho Gió lốc — **gió lốc thổi** và **bụi bị cuốn theo**, chân thật như gió lốc thổi mạnh ngoài đời, không bị Unity bóp;
+trong sương thì không nghe. Qua ba bản:
+1. bản 1 (`tieng_gio_loc.py`: A Lốc gầm / B Lốc rít / C Lốc cát — ồn lọc dải trôi + đảo trái / phải, vòng lặp 3 s);
+2. bản 2 (`tieng_gio_loc_2.py`: "vù" xoáy lướt qua lại / gầm tàu hoả / gió hú) — "vẫn còn quá tệ, thêm nhiều tiếng gió hú, gió thổi, quá giả tạo";
+3. bản 3 (`tieng_gio_loc_3.py`, cách tổng hợp gió của Farnell): TỐC ĐỘ GIÓ w(t) (lên nhanh, 2–4 cơn giật, nhiễu loạn, tắt dần) điều khiển mọi lớp — gió hú
+   = 4–8 dải cộng hưởng HẸP (Q 12–25), tâm = gốc × (0,65 + 0,7 w) → hú cao lên khi gió mạnh (trôi từ từ, không trượt nhanh); gió thổi = thông thấp
+   250 + 2600 w; đập gió trầm 120–320 Hz × w²; bụi × w^1,5; MỘT clip trọn đời lốc, không vòng lặp (vòng lặp 3 s trong cơn lốc 4,5 s nghe rõ đoạn lặp = giả).
+   Người dùng chọn A "Hú lớn" → **A2** (hú nhiều 6–8 dải, hú theo w làm mượt 0,6 s, to theo w^1,1 → kéo dài đều; ngân thêm ~1,3 s sau khi lốc tan; gió
+   thổi / đập / bụi ×0,75).
+
+**Người dùng quyết định:** A2 dùng cho **LỐC XOÁY** (không phải Gió lốc), "độ dài nhiều hơn" → clip **7,6 s** (6 s lốc + hú ngân 1,5 s,
+`--locxoay`, 3 biến thể) + **tiếng sét Sấm sét NHỎ HƠN tiếng gió hú**; **Gió lốc** dùng **bản 1 C "Lốc cát"** (file ghép người dùng chỉ định).
+
+**Trong game:** `TiengViTri` loại 26–28 (`GioLocThoi`, `GioLocBui` vòng lặp 3 s; `LocXoayGio` 3 biến thể 7,6 s) + `LocXoaySet` (dùng tiếng
+`SamSetDanh` ×0,35). `GioLoc.Start` bật gió thổi (×0,7) + bụi (×0,6) bám theo TỪNG cơn lốc, `Tan` / `OnDestroy` tắt; `Tornado.Start` bật gió hú bám theo
+lốc (lốc tan rồi còn 2,5 s mới xoá → tiếng hú ngân hết), `Tornado.Zap` (0,45 s / nhịp) kêu tiếng sét. Phát CÂN BẰNG.
+
+Menu **132** (0 lỗi, Act2 thật): 5 file trùng byte, đúng độ dài; Gió lốc thật 2 cơn → 2 gió thổi + 2 bụi bám đúng từng cơn, 2D, tan thì tắt, loa tương quan
+**0,19**; Lốc xoáy thật → 1 gió bám theo (2D), 14 tiếng sét (hệ số 0,35), xoá thì tắt, loa **0,14**; **C2** phát riêng tại cùng chỗ: sét / gió (RMS loa) =
+**0,24**; 40 m trong sương: mức 0, sét bị bỏ, loa im (đối chứng có); 3 biến thể Lốc xoáy, cao độ 0,956–1,053. Menu 71: lần đầu 3 lỗi do chế độ tạm
+"mở sẵn mọi kỹ năng" (mục khoá → từ chối, kéo theo mana / hồi chiêu) — nay tắt chế độ tạm trong lúc chạy, 0 lỗi; menu 82: 0 lỗi. Chưa nghe thử trên web.
+
 ## Phần 4 — Menu công cụ "Diablo 2.5D"
 
 | Mục | Tác dụng |

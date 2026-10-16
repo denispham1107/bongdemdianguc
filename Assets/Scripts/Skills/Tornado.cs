@@ -138,9 +138,13 @@ public class Tornado : MonoBehaviour
         return t;
     }
 
+    TiengViTri.Giong giongGio;
+
     void Start()
     {
         wanderSeed = Random.Range(0f, 100f);
+        // Tieng (16/10/2026, nguoi dung): gio hu + gio cuon MOT clip 7,6 s bam theo loc (6 s loc + hu ngan sau khi tan - loc con 2,5 s nua moi xoa)
+        giongGio = TiengViTri.LocXoayGio(transform);
 
         // Neu chua co san hinh (vd dung tu prefab tron) thi dung bang code
         if (transform.childCount == 0)
@@ -392,6 +396,7 @@ public class Tornado : MonoBehaviour
     void Zap()
     {
         VfxFactory.TornadoBolt(transform, scale);
+        TiengViTri.LocXoaySet(transform.position + Vector3.up * 2f);   // tieng set Sam set, NHO HON gio (nguoi dung 16/10/2026)
 
         // Thinh thoang giat thang vao mot ke dang bi cuon
         CleanCaught();

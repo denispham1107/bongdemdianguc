@@ -93,6 +93,7 @@ public static class ThuGioLoc
         }
         Directory.CreateDirectory("PlayTestShots");
         bao.Length = 0; loi = 0; daBatDau = false;
+        CapDo.TatMoSanChoPhepThu = true;   // che do tam "mo san moi ky nang" (16/10/2026) lam hong muc "khoa -> tu choi"
         Ghi("[ban 1] Gio loc");
         DoDaiXoanNgoaiPlay();
         canhCu = EditorSceneManager.GetActiveScene().path;
@@ -1808,6 +1809,7 @@ public static class ThuGioLoc
         TranHienTai.Xoa();
         KenhTrucTiep.guiSangBenKia = null;
         File.WriteAllText("PlayTestShots/gioloc.txt", bao.ToString());
+        CapDo.TatMoSanChoPhepThu = false;
         foreach (var ten in new[] { "TAM_GioLoc", "TAM_DongBoGioLoc" })
         {
             var rac = GameObject.Find(ten);
