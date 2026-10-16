@@ -35,6 +35,11 @@ public class DauVetLocCuon : MonoBehaviour
     public const string DuongFbx = "KyNang/LocXoay/DauVetLoc";
     public const string DuongDat = "KyNang/LocXoay/DatXoi";
     public const string DuongVetMau = "KyNang/LocXoay/VetMauPhu";
+    /// <summary>Lop phu THAN CHAY (shader Diablo25D/ThanChayPhu, anh ChayDen cua May giong) cho dau vet THIEN THACH dot rui.</summary>
+    public const string DuongThanChay = "KyNang/LocXoay/ThanChayPhu";
+    /// <summary>Dau vet chay: than hong am i bao lau roi nguoi (nguoi dung chon ~10 giay), mau ho tro chay, do toi cua manh (nhan _Color goc).</summary>
+    public const float GiayAmI = 10f, ToiManhChay = 0.16f;
+    public static readonly Color MauTroChay = new Color(0.17f, 0.15f, 0.14f);
     public const string DuongBang = "KyNang/LocXoay/KichThuocGoc";
     /// <summary>Lun xuong bao lau khi vat moc lai.</summary>
     public const float GiayLun = 0.5f;
@@ -85,6 +90,23 @@ public class DauVetLocCuon : MonoBehaviour
     // vat lieu tao luc chay / nap tu Resources bi xoa khi thoat Play - kiem bang null cua Unity (memory vat-lieu-static-bi-xoa-khi-thoat-play)
     static Material VatLieuDat() { if (vlDat == null) vlDat = Resources.Load<Material>(DuongDat); return vlDat; }
     static Material VatLieuVetMau() { if (vlVetMau == null) vlVetMau = Resources.Load<Material>(DuongVetMau); return vlVetMau; }
+    static Material vlThanChay;
+    static Material VatLieuThanChay() { if (vlThanChay == null) vlThanChay = Resources.Load<Material>(DuongThanChay); return vlThanChay; }
+
+    // ---- DAU VET CHAY (Thien thach dot rui - CayChay.ChayRui) ----
+    /// <summary>Dau vet nay do Thien thach dot rui (tan tich chay den + tro), khong phai Loc xoay cuon.</summary>
+    public bool chayDen;
+    float tuoiChay;
+    ParticleSystem khoiChay;
+    float tocKhoiGoc;
+    readonly List<Renderer> manhChay = new List<Renderer>();
+    static readonly int idAmI = Shader.PropertyToID("_AmI");
+    /// <summary>Lop phu dang dung khi TaoManh (Tao dat truoc khi dung cac manh: vet mau cho Loc xoay, than chay cho Thien thach).</summary>
+    static bool dangTaoChay;
+    /// <summary>Dem cho phep thu (menu 138): so dau vet chay da tao.</summary>
+    public static int SoLanTaoChay;
+    /// <summary>Muc than hong hien tai (1 luc vua chay rui -> 0 sau GiayAmI) - phep thu doc.</summary>
+    public float AmIHienTai { get; private set; }
 
     public static string Khoa(string ten, Vector3 p) { return ten + "@" + Mathf.RoundToInt(p.x * 10f) + "," + Mathf.RoundToInt(p.z * 10f); }
 
@@ -147,19 +169,22 @@ public class DauVetLocCuon : MonoBehaviour
     }
 
     /// <summary>Dung dau vet tai cho cu cua vat (goi luc vat bat khoi dat).</summary>
-    public static DauVetLocCuon Tao(GameObject vat, Vector3 choCu, Quaternion huongCu, Bounds baoHinh, Material vlVat)
+    /// <param name="chayDen">true = THIEN THACH dot rui (16/10/2026, nguoi dung): cung hinh tan tich (goc gay / chan bia / nen nha) nhung CHAY DEN -
+    /// manh toi x<see cref="ToiManhChay"/> + lop phu than co vet nut hong am i <see cref="GiayAmI"/> giay roi nguoi, khoi mong, ho dat thanh mang TRO.</param>
+    public static DauVetLocCuon Tao(GameObject vat, Vector3 choCu, Quaternion huongCu, Bounds baoHinh, Material vlVat, bool chayDen = false)
     {
         if (vat == null || Luoi("HoDat0") == null) return null;
+        dangTaoChay = chayDen;
         var sd = LaySoDo(vat, choCu, baoHinh, out bool coBang);
         var k = sd.kieu;
         var rnd = new System.Random(Mathf.RoundToInt(choCu.x * 131f) ^ Mathf.RoundToInt(choCu.z * 977f));
 
-        var go = new GameObject("DauVetLocCuon_" + k);
+        var go = new GameObject((chayDen ? "DauVetChay_" : "DauVetLocCuon_") + k);
         Vector3 tam = new Vector3(sd.tam.x, choCu.y, sd.tam.y);
         tam.y = MatDatY(tam, sd.dayY);
         go.transform.position = tam;
         var dv = go.AddComponent<DauVetLocCuon>();
-        dv.kieu = k; dv.viTriGoc = tam; dv.coSoDo = coBang;
+        dv.kieu = k; dv.viTriGoc = tam; dv.coSoDo = coBang; dv.chayDen = chayDen;
         if (coBang) SoLanCoSoDo++;
         float dai = Mathf.Max(sd.rong, sd.day);
         dv.kichThuoc = k == Kieu.Cay ? new Vector2(sd.banKinhThan, sd.banKinhThan) : new Vector2(sd.rong, sd.day);
@@ -175,6 +200,7 @@ public class DauVetLocCuon : MonoBehaviour
             case Kieu.NhaMo: banKinhHo = dai * HoNha; break;
             default: banKinhHo = dai * HoLo + 0.1f; mauHo = MauTro; break;
         }
+        if (chayDen) mauHo = MauTroChay;       // dat chay xem phu tro thay cho dat vua xoi
         dv.ho = TaoHoDat(go.transform, "HoDat" + rnd.Next(3), Mathf.Max(0.25f, banKinhHo), rnd.Next(360), mauHo);
 
         // ---- phan rieng tung loai: vat lieu CUA VAT + lop phu vet mau ----
@@ -208,7 +234,59 @@ public class DauVetLocCuon : MonoBehaviour
         dv.goc = tren;
         SoLanTao++;
         DangCo.Add(dv);
+        dangTaoChay = false;
+        if (chayDen) dv.LamChayDen(vlVat);
         return dv;
+    }
+
+    /// <summary>Toi moi manh (MaterialPropertyBlock nhan _Color goc), gom renderer de dat than hong, them khoi mong am i.</summary>
+    void LamChayDen(Material vlVat)
+    {
+        SoLanTaoChay++;
+        if (mpb == null) mpb = new MaterialPropertyBlock();
+        Color goc = vlVat != null && vlVat.HasProperty("_Color") ? vlVat.GetColor("_Color") : Color.white;
+        foreach (var r in GetComponentsInChildren<MeshRenderer>())
+        {
+            if (ho != null && r.transform == ho) continue;
+            manhChay.Add(r);
+            r.GetPropertyBlock(mpb);
+            mpb.SetColor("_Color", new Color(goc.r * ToiManhChay, goc.g * ToiManhChay, goc.b * ToiManhChay, goc.a));
+            mpb.SetFloat(idAmI, 1f);
+            r.SetPropertyBlock(mpb);
+        }
+        AmIHienTai = 1f;
+        var k = VfxFactory.KhoiChayDen(transform);
+        if (k != null)
+        {
+            k.transform.localPosition = new Vector3(0f, 0.3f, 0f);
+            khoiChay = k.GetComponent<ParticleSystem>();
+            if (khoiChay != null)
+            {
+                var sh = khoiChay.shape; sh.radius = Mathf.Clamp(Mathf.Max(kichThuoc.x, kichThuoc.y) * 0.5f, 0.3f, 2f);
+                tocKhoiGoc = 10f;
+                var em = khoiChay.emission; em.rateOverTime = tocKhoiGoc;
+            }
+        }
+    }
+
+    /// <summary>Than hong nguoi dan + khoi thua dan trong <see cref="GiayAmI"/> giay (chi dau vet chay).</summary>
+    void CapNhatChay()
+    {
+        if (!chayDen || tuoiChay > GiayAmI + 0.5f) return;
+        tuoiChay += Time.deltaTime;
+        float con = Mathf.Clamp01(1f - tuoiChay / GiayAmI);
+        AmIHienTai = con * con;
+        foreach (var r in manhChay)
+        {
+            if (r == null) continue;
+            r.GetPropertyBlock(mpb);
+            mpb.SetFloat(idAmI, AmIHienTai);
+            r.SetPropertyBlock(mpb);
+        }
+        if (khoiChay != null)
+        {
+            var em = khoiChay.emission; em.rateOverTime = tocKhoiGoc * con;
+        }
     }
 
     static Transform TaoManh(Transform cha, string ten, Material vl, Vector3 scale, float yaw, float hz)
@@ -224,7 +302,7 @@ public class DauVetLocCuon : MonoBehaviour
         // va cham DUNG HINH (luoi FBX doc duoc): manh cao chan, manh thap buoc len (stepOffset) - nguoi dung 16/10/2026
         if (m.isReadable) go.AddComponent<MeshCollider>().sharedMesh = m;
         var mr = go.AddComponent<MeshRenderer>();
-        var vm = VatLieuVetMau();
+        var vm = dangTaoChay ? VatLieuThanChay() : VatLieuVetMau();
         mr.sharedMaterials = vm != null ? new[] { vl, vm } : new[] { vl };      // vat lieu thu hai ve CHONG len cung luoi
         mr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.On;
         return go.transform;
@@ -283,6 +361,7 @@ public class DauVetLocCuon : MonoBehaviour
 
     void Update()
     {
+        CapNhatChay();
         if (lun < 0f) return;
         lun += Time.deltaTime;
         float k = Mathf.Clamp01(lun / GiayLun);

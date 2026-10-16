@@ -14713,10 +14713,51 @@ kỹ năng và 8 ô); các mục rơi / nhặt / uống / mạng đều đạt. 
 
 ## Tỉ lệ rơi bình: 25% ra MỘT bình, ưu tiên máu (16/10/2026)
 
+⚠️ **Cùng ngày (lần hai): 25% → 35%**, giữ 60 / 40 (= 21% máu, 14% mana). Menu 65 A: 3000 con → 33,5% = 20,0% máu + 13,5% mana, 0 con ra hai.
+
 **Người dùng:** "khi người chơi giết chết quái vật, có 25% rơi ra bình máu hoặc bình mana". Trước đó (27/09) gieo ĐỘC LẬP 25% máu + 15% mana (có thể ra cả hai,
 ~36% con quái ra ít nhất một bình). Người dùng chọn: **25% rơi đúng MỘT bình — 60% là máu, 40% là mana** (= 15% máu, 10% mana; không bao giờ ra hai):
 `QuanLyBinhRoi.TiLeRoiBinh` 0,25, `TiLeLaBinhMau` 0,6 (chỉ máy trọng tài quái gieo, như cũ). Menu 65 mục A (số viết tay, không đọc hằng): 3000 con chết → 24,4% ra
 bình = 14,6% máu + 9,8% mana, 0 con ra hai; giết thật 12 con → 5 bình nằm đúng chỗ quái chết. (Menu 65 còn 1 lỗi CŨ về cỡ chữ Sách phép — không liên quan.)
+
+## Dấu vết cháy của Thiên thạch — tàn tích cháy đen + tro tới khi vật mọc lại (16/10/2026)
+
+**Người dùng:** "Thiên thạch khi đốt cháy tất cả đồ vật, cây cối xong cũng để lại dấu vết cháy đến khi tất cả đồ vật và cây cối xuất hiện lại". Người dùng chọn:
+**tàn tích cháy đen + tro** (dùng lại hình dấu vết Lốc xoáy — gốc cây gãy / chân bia gãy / nền nhà đổ nát, có va chạm), **than hồng âm ỉ ~10 giây rồi nguội**.
+
+**Làm:** `DauVetLocCuon.Tao(..., chayDen: true)` gọi trong `CayChay.ChayRui` (lấy khung + vật liệu TRƯỚC khi tắt hình); `MocLai` → `Xoa` (lún, tắt va chạm
+ngay). Khác dấu vết Lốc xoáy: mảnh tối ×0,16 (MaterialPropertyBlock `_Color`), lớp phủ thứ hai **`Diablo25D/ThanChayPhu`** (shader mới, vật liệu
+`Resources/KyNang/LocXoay/ThanChayPhu.mat` — ảnh than `KyNang/MayGiong/ChayDen.png` của Mây giông chiếu ba phía theo toạ độ thế giới; vết nứt hồng (đỏ >
+lục) phát sáng theo `_AmI` 1 → 0 bình phương trong `GiayAmI` 10 s, nhấp nháy nhẹ, nguội thành khe đen) thay cho lớp vết máu; hố đất thành mảng **tro** (`MauTroChay`);
+khói đen mỏng (`VfxFactory.KhoiChayDen`) thưa dần rồi tắt cùng than. Cây đang cháy / đã cháy rụi không bị Lốc xoáy cuốn (luật cũ) → không chồng hai dấu vết.
+
+Menu **138** (đốt THẬT bằng `CayChay.Dot` — đường Thiên thạch — một cây, một bia, một nhà mồ; than hồng đo trên ẢNH, độc lập với `_AmI`; lần 1 đếm cả ảnh thì
+ánh lửa tàn trên đất của cây ở mép ảnh tính nhầm 676 điểm → chỉ đếm vùng tàn tích):
+
+```
+[ban 1] dau vet chay Thien thach
+dot Cay TREE_dead_738: bat lua
+dot BiaMo TS_slab_207: bat lua
+dot NhaMo MAUS_A_001_682: bat lua
+A. Cay (TREE_dead_738): dau vet chay 'DauVetChay_Cay' kieu Cay (mong Cay), vat an hinh True
+B. Cay: 1 manh, lop than chay 1, lop vet mau 0, mau manh / goc lon nhat 0.16, ho mau (0.17 0.15 0.14) so dat xoi 1,0; manh co va cham 1
+A. BiaMo (TS_slab_207): dau vet chay 'DauVetChay_Bia' kieu Bia (mong Bia), vat an hinh True
+B. BiaMo: 2 manh, lop than chay 2, lop vet mau 0, mau manh / goc lon nhat 0.16, ho mau (0.17 0.15 0.14) so dat xoi 1,0; manh co va cham 2
+A. NhaMo (MAUS_A_001_682): dau vet chay 'DauVetChay_NhaMo' kieu NhaMo (mong NhaMo), vat an hinh True
+B. NhaMo: 1 manh, lop than chay 1, lop vet mau 0, mau manh / goc lon nhat 0.16, ho mau (0.17 0.15 0.14) so dat xoi 1,0; manh co va cham 1
+C. Cay: diem anh DO RUC luc 0,5 s 94, luc 11 s 0; AmI luc 11 s 0.00
+C. BiaMo: diem anh DO RUC luc 0,5 s 256, luc 11 s 0; AmI luc 11 s 0.00
+C. NhaMo: diem anh DO RUC luc 0,5 s 86, luc 11 s 0; AmI luc 11 s 0.00
+C. khoi: 25 hat luc dau, 0 hat luc 13,5 s
+D. DOI CHUNG dau vet Loc xoay cung vat: chayDen False, lop vet mau 1, lop than 0, diem anh do ruc 0
+E. Cay: moc lai sau 30.1 s, hien hinh True; va cham dau vet con bat 0; dau vet bien mat True
+E. BiaMo: moc lai sau 30.1 s, hien hinh True; va cham dau vet con bat 0; dau vet bien mat True
+E. NhaMo: moc lai sau 30.1 s, hien hinh True; va cham dau vet con bat 0; dau vet bien mat True
+tong dau vet chay da tao: 3
+so loi ghi nhan = 0
+```
+
+Ảnh `PlayTestShots/dauvetchay_*_[0_truoc|1_am_i|2_nguoi].png`. Menu 81, 135: 0 lỗi.
 
 ## Phần 4 — Menu công cụ "Diablo 2.5D"
 

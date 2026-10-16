@@ -1,0 +1,25 @@
+[ban 1] dau vet chay Thien thach
+dot Cay TREE_dead_738: bat lua
+dot BiaMo TS_slab_207: bat lua
+dot NhaMo MAUS_A_001_682: bat lua
+
+A. Cay (TREE_dead_738): dau vet chay 'DauVetChay_Cay' kieu Cay (mong Cay), vat an hinh True
+B. Cay: 1 manh, lop than chay 1, lop vet mau 0, mau manh / goc lon nhat 0.16, ho mau (0.17 0.15 0.14) so dat xoi 1,0; manh co va cham 1
+A. BiaMo (TS_slab_207): dau vet chay 'DauVetChay_Bia' kieu Bia (mong Bia), vat an hinh True
+B. BiaMo: 2 manh, lop than chay 2, lop vet mau 0, mau manh / goc lon nhat 0.16, ho mau (0.17 0.15 0.14) so dat xoi 1,0; manh co va cham 2
+A. NhaMo (MAUS_A_001_682): dau vet chay 'DauVetChay_NhaMo' kieu NhaMo (mong NhaMo), vat an hinh True
+B. NhaMo: 1 manh, lop than chay 1, lop vet mau 0, mau manh / goc lon nhat 0.16, ho mau (0.17 0.15 0.14) so dat xoi 1,0; manh co va cham 1
+
+C. Cay: diem anh DO RUC luc 0,5 s 94, luc 11 s 0; AmI luc 11 s 0.00
+C. BiaMo: diem anh DO RUC luc 0,5 s 256, luc 11 s 0; AmI luc 11 s 0.00
+C. NhaMo: diem anh DO RUC luc 0,5 s 86, luc 11 s 0; AmI luc 11 s 0.00
+C. khoi: 25 hat luc dau, 0 hat luc 13,5 s
+
+D. DOI CHUNG dau vet Loc xoay cung vat: chayDen False, lop vet mau 1, lop than 0, diem anh do ruc 0
+
+E. Cay: moc lai sau 30.1 s, hien hinh True; va cham dau vet con bat 0; dau vet bien mat True
+E. BiaMo: moc lai sau 30.1 s, hien hinh True; va cham dau vet con bat 0; dau vet bien mat True
+E. NhaMo: moc lai sau 30.1 s, hien hinh True; va cham dau vet con bat 0; dau vet bien mat True
+tong dau vet chay da tao: 3
+
+so loi ghi nhan = 0

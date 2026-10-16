@@ -27,9 +27,10 @@ using UnityEngine.SceneManagement;
 /// </summary>
 public static class QuanLyBinhRoi
 {
-    // 16/10/2026 nguoi dung: "25% roi ra binh mau HOAC binh mana" - chon: moi con quai chet 25% roi DUNG MOT binh, uu tien mau 60% / mana 40%
-    // (= 15% mau, 10% mana; khong bao gio ra ca hai). Truoc do (27/09/2026) gieo doc lap 25% mau + 15% mana (co the ra ca hai).
-    public const float TiLeRoiBinh = 0.25f;
+    // 16/10/2026 nguoi dung: "25% roi ra binh mau HOAC binh mana" - chon: moi con quai chet roi DUNG MOT binh, uu tien mau 60% / mana 40%
+    // (khong bao gio ra ca hai). Cung ngay (lan hai): 25% -> 35% (giu 60/40 = 21% mau, 14% mana). Truoc do (27/09/2026) gieo doc lap
+    // 25% mau + 15% mana (co the ra ca hai).
+    public const float TiLeRoiBinh = 0.35f;
     public const float TiLeLaBinhMau = 0.6f;
 
     /// <summary>Nhan vat vao trong ban kinh nay (met, tinh ngang) thi binh tu bay vao.</summary>

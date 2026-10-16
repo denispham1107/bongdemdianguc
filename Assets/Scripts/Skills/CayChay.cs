@@ -665,6 +665,13 @@ public class CayChay : MonoBehaviour
         // Vai manh cuoi cung rot xuong theo - cai cay do sap chu khong bay hoi
         for (int i = 0; i < 3; i++) RotMotManh();
 
+        // DAU VET CHAY (16/10/2026, nguoi dung: "dot chay xong cung de lai dau vet chay den khi xuat hien lai"): tan tich chay den + tro, cung hinh
+        // dau vet Loc xoay (goc cay gay / chan bia / nen nha do nat, co va cham), than hong am i ~10 giay roi nguoi. Lay khung + vat lieu TRUOC khi tat hinh.
+        Material vlVat = null;
+        for (int i = 0; i < hinh.Count && vlVat == null; i++)
+            if (hinh[i] is MeshRenderer && hinh[i].sharedMaterial != null) vlVat = hinh[i].sharedMaterial;
+        dauVet = DauVetLocCuon.Tao(gameObject, transform.position, transform.rotation, KhoiBao(), vlVat, true);
+
         for (int i = 0; i < hinh.Count; i++)
             if (hinh[i] != null && !(hinh[i] is ParticleSystemRenderer)) hinh[i].enabled = false;
         for (int i = 0; i < vaCham.Count; i++)
@@ -674,8 +681,12 @@ public class CayChay : MonoBehaviour
         // con lai chinh la cai cay vua chay rui con am duoi dat.
     }
 
+    /// <summary>Tan tich chay de lai luc chay rui - lun xuong khi vat moc lai.</summary>
+    DauVetLocCuon dauVet;
+
     void MocLai()
     {
+        if (dauVet != null) { dauVet.Xoa(); dauVet = null; }
         for (int i = 0; i < hinh.Count; i++)
         {
             var r = hinh[i];
@@ -709,6 +720,7 @@ public class CayChay : MonoBehaviour
             if (vaCham[i] != null) vaCham[i].enabled = true;
 
         if (bo.goc != null) Destroy(bo.goc);
+        if (dauVet != null) Destroy(dauVet.gameObject);     // bi xoa giua chung (doi man): vat hien lai ngay - khong de tan tich chong len
     }
 
     void OnDrawGizmosSelected()
