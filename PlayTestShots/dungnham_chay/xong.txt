@@ -1,0 +1,8 @@
+buoc 0.0 0.0800
+Muc cu: 30 khung x 2 goc
+buoc 0.8 0.0833
+Muc 0.8 m/s: 30 khung x 2 goc
+buoc 1.5 0.0889
+Muc 1.5 m/s: 30 khung x 2 goc
+buoc 2.5 0.0800
+Muc 2.5 m/s: 30 khung x 2 goc

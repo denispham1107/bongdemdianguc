@@ -35,7 +35,8 @@ public class TiengViTri : MonoBehaviour
                        GioLocThoi = 26, GioLocBui = 27, LocXoayGio = 28, LocXoayNutCay = 29, LocXoayNutDa = 30,
                        TocBienMat = 31, TocBienHien = 32, NhaoLonVut = 33, NhaoLonLan = 34, NhaoLonDap = 35,
                        KhiengBat = 36, KhiengTrung = 37, KhiengVo = 38,
-                       BinhUongMau = 39, BinhUongMana = 40, BinhHut = 41, BinhNhat = 42 }
+                       BinhUongMau = 39, BinhUongMana = 40, BinhHut = 41, BinhNhat = 42,
+                       BuocDatTrai = 43, BuocDatPhai = 44, BuocNuocTrai = 45, BuocNuocPhai = 46 }
 
     // Qua cau lua: ban 3 "B - Khoi lua lon" (15/10/2026, CongCu/AmThanh/tieng_qua_cau_lua_3.py, QuaCauLuaThu3/B_khoi_lua_lon_*.wav -
     // mo hinh lua that: liem lua / xi hoi / lach tach ngau nhien khong deu). BA BIEN THE tieng ban + BA bien the tieng no, moi lan chon
@@ -84,11 +85,16 @@ public class TiengViTri : MonoBehaviour
         BienThe("KhiengBat"), BienThe("KhiengTrung"), BienThe("KhiengVo"),
         // Binh mau / mana (16/10/2026, nguoi dung chon mau A "Chan that" - CongCu/AmThanh/tieng_binh.py, BinhThu/A_that_*): UONG (rot oc oc + nuot "uc"
         // + tho ra; mau dac hon, mana loang hon) · HUT (binh bay vao nguoi: gio vut sang dan + nuoc oc ach) · NHAT (tui da + "canh" thuy tinh).
-        BienThe("BinhUongMau"), BienThe("BinhUongMana"), BienThe("BinhHut"), BienThe("BinhNhat") };
+        BienThe("BinhUongMau"), BienThe("BinhUongMana"), BienThe("BinhHut"), BienThe("BinhNhat"),
+        // Buoc chan (17/10/2026, nguoi dung chon mau A ban 2 "dat soi kho, day + stereo hon" - CongCu/AmThanh/tieng_buoc_chan.py, BuocChanThu/A2_*):
+        // 6 bien the moi mat dat; chan TRAI lech nhe trai (1-6), chan PHAI = ban LAT (7-12).
+        SauBienThe("BuocDat", 1), SauBienThe("BuocDat", 7), SauBienThe("BuocNuoc", 1), SauBienThe("BuocNuoc", 7) };
+    static string[] SauBienThe(string ten, int tu) { var a = new string[6]; for (int i = 0; i < 6; i++) a[i] = "AmThanh/KyNang/" + ten + (tu + i); return a; }
     static string[] BienThe(string ten) { return new[] { "AmThanh/KyNang/" + ten + "1", "AmThanh/KyNang/" + ten + "2", "AmThanh/KyNang/" + ten + "3" }; }
     static readonly bool[] laVong = { false, true, false, false, false, true, false, true, false, false, false, false, false, false, false, false, false,
                                       false, false, false, true, false, false, false, true, true, true, true, false, false, false,
                                       false, false, false, false, false, false, false, false,
+                                      false, false, false, false,
                                       false, false, false, false };
     static readonly AudioClip[][] clip = TaoKhoClip();
     static AudioClip[][] TaoKhoClip() { var k = new AudioClip[duong.Length][]; for (int i = 0; i < k.Length; i++) k[i] = new AudioClip[duong[i].Length]; return k; }
@@ -107,11 +113,16 @@ public class TiengViTri : MonoBehaviour
              : l == Loai.GiatSetTrung ? SoSetTrungToiDa : l == Loai.GiatSetLan ? SoSetLanToiDa
              : l == Loai.SamSetDanh || l == Loai.SamSetChay ? SoSamSetToiDa
              : l == Loai.LocXoayNutCay || l == Loai.LocXoayNutDa ? SoNutToiDa
-             : l == Loai.KhiengTrung ? SoKhiengTrungToiDa : 0;
+             : l == Loai.KhiengTrung ? SoKhiengTrungToiDa
+             : l == Loai.BuocDatTrai || l == Loai.BuocDatPhai || l == Loai.BuocNuocTrai || l == Loai.BuocNuocPhai ? SoBuocToiDa : 0;
     }
     public const int SoMuaRoiToiDa = 3, SoMuaChamToiDa = 6;
     /// <summary>Khien bi quai vay danh lien tuc: toi da 4 tieng "boong" cung luc, tieng trong 0,15 s sau tieng truoc x0,6 (<see cref="HeSoSetKeSau"/>).</summary>
     public const int SoKhiengTrungToiDa = 4;
+    /// <summary>Buoc chan: toi da 4 tieng cung luc moi loai (dat / nuoc x trai / phai) - nhieu nguoi di cung luc thi giong nho nhat nhuong cho tieng gan.</summary>
+    public const int SoBuocToiDa = 4;
+    /// <summary>Buoc chan nho hon 25% so voi clip (nguoi dung 17/10/2026: "dat, tuy nhien cho am luong nho hon 25%").</summary>
+    public const float HeSoBuocChan = 0.75f;
     /// <summary>Vong phep Tang hinh trung nhieu ke cung luc: toi da 6 tieng trung cung luc (nguoi dung chon "moi ke mot tieng").</summary>
     public const int SoTrungVongToiDa = 6;
     /// <summary>Giut set: 4 tia x 6 nhip trong ~0,35 s; Qua cau dien 5 tia moi 0,4 s - toi da 4 tieng trung / 5 tieng lan cung luc.</summary>
@@ -181,7 +192,8 @@ public class TiengViTri : MonoBehaviour
             || l == Loai.TocBienMat || l == Loai.TocBienHien                            // Toc bien + Nhao lon (16/10/2026): nhu cac ky nang truoc
             || l == Loai.NhaoLonVut || l == Loai.NhaoLonLan || l == Loai.NhaoLonDap
             || l == Loai.KhiengBat || l == Loai.KhiengTrung || l == Loai.KhiengVo       // Khien (16/10/2026)
-            || l == Loai.BinhUongMau || l == Loai.BinhUongMana || l == Loai.BinhHut || l == Loai.BinhNhat;   // Binh (16/10/2026)
+            || l == Loai.BinhUongMau || l == Loai.BinhUongMana || l == Loai.BinhHut || l == Loai.BinhNhat   // Binh (16/10/2026)
+            || l == Loai.BuocDatTrai || l == Loai.BuocDatPhai || l == Loai.BuocNuocTrai || l == Loai.BuocNuocPhai;   // Buoc chan (17/10/2026)
 #endif
     }
 
@@ -199,7 +211,7 @@ public class TiengViTri : MonoBehaviour
     }
 
     /// <summary>Dem tieng da yeu cau theo loai (ke ca luc im trong phep thu / bi suong che) - phep thu doc / dat lai.</summary>
-    public static readonly int[] SoLan = new int[43];
+    public static readonly int[] SoLan = new int[47];
     /// <summary>Tieng mot lan bi BO vi luc phat nam trong suong (MucThay = 0).</summary>
     public static int SoBiSuongChe;
     /// <summary>Giong vua phat gan nhat (phep thu doc clip / cao do bien the).</summary>
@@ -762,6 +774,14 @@ public class TiengViTri : MonoBehaviour
         SoLan[(int)Loai.BinhNhat]++;
         if (nguoi == null) return;
         DamBao().Phat(Loai.BinhNhat, nguoi.position + Vector3.up * 1.1f, nguoi, true, 1f, CaoDoNgauNhien());
+    }
+
+    /// <summary>Tieng BUOC CHAN tai ban chan <paramref name="cho"/> (khong chu, khong bam: tieng ngan) - chan trai / phai, dat / loi nuoc; heSo x HeSoBuocChan.</summary>
+    public static void BuocChan(Vector3 cho, bool chanPhai, bool nuoc, float heSo = 1f)
+    {
+        var l = nuoc ? (chanPhai ? Loai.BuocNuocPhai : Loai.BuocNuocTrai) : (chanPhai ? Loai.BuocDatPhai : Loai.BuocDatTrai);
+        SoLan[(int)l]++;
+        DamBao().Phat(l, cho + Vector3.up * 0.1f, null, false, HeSoBuocChan * heSo, CaoDoNgauNhien());
     }
 
     /// <summary>Giong <paramref name="g"/> dang bam <paramref name="cu"/> thi chuyen sang bam <paramref name="moi"/> (binh toi tay bi xoa: duoi

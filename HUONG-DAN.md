@@ -14797,6 +14797,57 @@ so loi ghi nhan = 0
 
 Chưa nghe thử trên web.
 
+## Tiếng bước chân — người chơi, người khác, BOT (17/10/2026)
+
+**Người dùng:** "khi người chơi và tất cả nhân vật có trong phòng di chuyển đều cho có âm thanh stereo là tiếng bước chân". Người dùng chọn: **người chơi +
+BOT** (quái không), mặt đất **đất sỏi + lội nước**.
+
+**Hai bản** (`CongCu/AmThanh/tieng_buoc_chan.py`, mẫu nghe ở `CongCu/AmThanh/BuocChanThu/`):
+- Bản 1, người dùng chọn mẫu A "Đất sỏi khô" nhưng chê "hơi mỏng, còn nghe mono quá": sỏi mỗi hạt gần như cùng một chỗ ở hai kênh (tương quan 0,55–0,69).
+- Bản 2 (`A2_dat_soi_kho_day_*`): sỏi rải rộng hai bên + tốc riêng từng kênh, **thân đất** trầm dày (chỉ 40% dùng chung hai kênh — dùng chung hết thì mono
+  lại, tách hết thì tương quan 0,01 nghe "rời"), phản xạ sớm, chân lệch nhẹ một bên. Đo: tương quan clip đất 0,19–0,42 · nước 0,13–0,46; < 200 Hz 3–13% / 0–1%;
+  > 4 kHz ≤ 4%; dài 0,72–0,81 s / 0,85–0,98 s. Người dùng: "Đạt, tuy nhiên cho âm lượng **nhỏ hơn 25%**".
+
+**Trong game:**
+- `Resources/AmThanh/KyNang/BuocDat1–12`, `BuocNuoc1–12` chép nguyên byte: 1–6 chân TRÁI, 7–12 = bản LẬT cho chân PHẢI; mỗi bước chọn ngẫu nhiên 1 trong 6, cao độ ±6%.
+- `TiengViTri.BuocChan` (loại 43–46, phát CÂN BẰNG như Giựt sét, tối đa 4 tiếng cùng lúc, im trong sương, nhỏ theo khoảng cách); hệ số **`HeSoBuocChan` 0,75** ×
+  (0,55 + 0,45 × mức đi) — đi chậm nhỏ hơn.
+- `NguoiChoiHoatHinh.XetBuocChan`: tiếng phát khi clip đi "diBo" chạy QUA pha chạm đất — **chân trái 0,20, chân phải 0,70** (đo từ độ cao bàn chân của chính
+  clip ngoài Play, 60 mẫu). Mọi nhân vật có `NguoiChoiHoatHinh` đều kêu: mình, người chơi khác (bản sao lấy `tocDo01` từ mạng — 0 byte thêm), BOT. Quái dùng
+  `ModelHoatHinh` → không kêu. Đang lội nước (`LoiNuoc.DoNgap` > 0,02 m) → tiếng lội nước.
+- ⚠️ **Bẫy đã vấp: Animation của nhân vật là `cullingType = BasedOnRenderers`** — ngoài khung máy quay, hoặc bị sương chiến tranh ẩn renderer, clip đi
+  ĐỨNG YÊN (`normalizedTime` không chạy) → người đứng gần mà sau lưng máy quay đi KHÔNG có tiếng bước (lần chạy đầu menu 140: 0 tiếng trong 2,5 s). Sửa:
+  clip đang chạy mà thời gian không đổi thì tự đếm pha bằng tốc clip và ghi lại vào clip (`SoLanTuDemPha`) — prefab giữ cull để không tốn thêm.
+
+Menu **140** (đi THẬT bằng bơm input trên đường phẳng 18 m tự dò; độ cao bàn chân đo trên mặt đất lúc tiếng phát, chuẩn hoá theo thấp nhất / cao nhất
+của chính chân ấy):
+
+```
+[ban 1] buoc chan mau A ban 2 (dat soi kho day), 6 bien the moi mat dat, chan phai = ban lat, he so 0.75
+A. 24/24 file trung ban goc, 2 kenh, khong ForceToMono
+B. duong thu: tu (0.0, 0.1, -10.5) huong (0.38, -0.92)
+B. di that 20.9 m trong 4 s (toc clip 1.25): 10 tieng buoc (chan trai 5, phai 5), mong doi 2 x 4.82 chu ky clip = 9.6; xen ke sai 0
+B. do cao ban chan tren dat luc tieng (0 = thap nhat, 1 = cao nhat cua chinh chan ay; chan trai 0.135-0.310 m, phai 0.133-0.341 m): trung vi 0.01, lon nhat 0.15
+B. giong: 10 lan, can bang 2D 10, bam theo 0; he so 0.579 - 0.750 (HeSoBuocChan 0.75); loa RMS TB 0.0207, tuong quan 0.269
+B2. dung lai: 1,5 s sau them 0 tieng buoc
+C. dung trong nuoc (ngap tai cho 0.10 m, LoiNuoc.DoNgap 0.10), di tai cho 3 s: tieng NUOC trai 4 phai 3, tieng DAT 0; loa RMS 0.0337 tuong quan 0.294
+C2. ra cho kho di tai cho 2 s: tieng DAT 5, tieng NUOC 0
+D. nguoi khac o 30 m (MucThay 0.00) di 2,5 s: 6 tieng buoc, bi suong che 6; loa RMS 0.00000; khung clip bi cull tu dem pha 104
+D2. DOI CHUNG tat suong: 7 tieng buoc, bi che 0, duoc giong 7
+D1. nguoi khac NGOAI KHUNG HINH cach nhan vat 9.0 m (MucThay 1.00, renderer hien False) di 2,5 s: 6 tieng buoc, duoc giong 6, khung tu dem pha 89; loa RMS 0.0180
+D3. nguoi khac 8 m ben PHAI di 2,5 s: loa phai / trai 4.57, RMS 0.0132, tuong quan 0.271
+D4. he so khoang cach (muc / heSo): 2 m 1.00, 14 m 0.55
+E. BuocDatTrai: 6 (BuocDat1 BuocDat2 BuocDat3 BuocDat4 BuocDat5 BuocDat6)
+E. BuocDatPhai: 6 (BuocDat10 BuocDat11 BuocDat12 BuocDat7 BuocDat8 BuocDat9)
+E. BuocNuocTrai: 6 (BuocNuoc1 BuocNuoc2 BuocNuoc3 BuocNuoc4 BuocNuoc5 BuocNuoc6)
+E. BuocNuocPhai: 6 (BuocNuoc10 BuocNuoc11 BuocNuoc12 BuocNuoc7 BuocNuoc8 BuocNuoc9)
+E. cao do 0.940 - 1.060
+so loi ghi nhan = 0
+```
+
+⚠️ Lần chạy đầu đường thử ra ngoài đoạn đã kiểm (dốc) → 3/9 tiếng lúc chân cao ~0,5 m trên đất; trên đường phẳng 10/10 tiếng đúng lúc chạm đất. Menu 109,
+119, 125, 113: 0 lỗi. Chưa nghe thử trên web.
+
 ## Phần 4 — Menu công cụ "Diablo 2.5D"
 
 | Mục | Tác dụng |

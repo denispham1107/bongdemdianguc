@@ -339,6 +339,51 @@ public class NguoiChoiHoatHinh : MonoBehaviour
         PhatClipDi();
     }
 
+    // ---------------- TIENG BUOC CHAN (17/10/2026, nguoi dung: "nguoi choi va tat ca nhan vat trong phong di chuyen deu co tieng buoc chan") ----------------
+    /// <summary>Pha clip "diBo" luc moi ban chan CHAM DAT - do tu do cao xuong ban chan cua chinh clip (ngoai Play, 60 mau): chan trai dinh vung 0,90 roi
+    /// cham dat ~0,20 (nam phang 0,23-0,45), chan phai dinh vung 0,40 roi cham ~0,70 (phang 0,70-0,85) - cach deu nua chu ky.</summary>
+    public const float PhaChamTrai = 0.20f, PhaChamPhai = 0.70f;
+    float phaBuocTruoc = -1f;
+    LoiNuoc loiNuocCache;
+    bool daTimLoiNuoc;
+    /// <summary>Dem cho phep thu (menu 140): so buoc da phat tren may nay.</summary>
+    public static int SoBuocDaPhat;
+    /// <summary>Dem cho phep thu: so khung clip di bi cull ma tu dem pha.</summary>
+    public static int SoLanTuDemPha;
+
+    /// <summary>Clip di vua chay QUA pha cham dat cua chan nao thi phat tieng buoc chan tai ban chan ay (moi nhan vat co NguoiChoiHoatHinh:
+    /// minh, nguoi choi khac, BOT - quai khong co). Dang loi nuoc (LoiNuoc.DoNgap > 0) thi tieng loi nuoc. To theo muc di (di cham nho hon).</summary>
+    void XetBuocChan(AnimationState trang)
+    {
+        float u = trang.normalizedTime - Mathf.Floor(trang.normalizedTime);
+        // Clip DUNG YEN du dang chay = Animation bi cull (cullingType BasedOnRenderers: ngoai khung may quay, hoac bi suong chien tranh an
+        // renderer) -> tu dem pha bang toc clip, ghi lai vao clip de khi hien lai van lien mach. Khong thi nguoi dung gan ma ngoai khung hinh
+        // di khong co tieng buoc (menu 140 D: 0 tieng trong 2,5 s).
+        float buocPha = Time.deltaTime * trang.speed / Mathf.Max(0.01f, trang.length);
+        if (phaBuocTruoc >= 0f && buocPha > 0f && Mathf.Abs(u - phaBuocTruoc) < 1e-6f)
+        {
+            u = phaBuocTruoc + buocPha;
+            u -= Mathf.Floor(u);
+            trang.normalizedTime = u;
+            SoLanTuDemPha++;
+        }
+        if (phaBuocTruoc >= 0f)
+        {
+            for (int ben = 0; ben < 2; ben++)
+            {
+                float p = ben == 0 ? PhaChamTrai : PhaChamPhai;
+                bool qua = phaBuocTruoc <= u ? (phaBuocTruoc < p && u >= p) : (phaBuocTruoc < p || u >= p);
+                if (!qua) continue;
+                if (!daTimLoiNuoc) { daTimLoiNuoc = true; loiNuocCache = GetComponentInParent<LoiNuoc>(); }
+                bool nuoc = loiNuocCache != null && loiNuocCache.DoNgap > 0.02f;
+                Vector3 cho = banChan[ben] != null ? banChan[ben].position : transform.position;
+                SoBuocDaPhat++;
+                TiengViTri.BuocChan(cho, ben == 1, nuoc, 0.55f + 0.45f * Mathf.Clamp01(mucDi));
+            }
+        }
+        phaBuocTruoc = u;
+    }
+
     /// <summary>Muc di bo 0..1 (toc do ep tu mang, hoac van toc that cua CharacterController).</summary>
     float TocDoDi()
     {
@@ -368,11 +413,13 @@ public class NguoiChoiHoatHinh : MonoBehaviour
 
         if (nenChay)
         {
-            if (!boPhat.IsPlaying(tenClipDi)) boPhat.Play(tenClipDi);
+            if (!boPhat.IsPlaying(tenClipDi)) { boPhat.Play(tenClipDi); phaBuocTruoc = -1f; }
             trang.speed = Mathf.Lerp(0.7f, 1.25f, mucDi);
             clipDangLai = true;
+            XetBuocChan(trang);
             return;
         }
+        phaBuocTruoc = -1f;
 
         if (clipDangLai)
         {

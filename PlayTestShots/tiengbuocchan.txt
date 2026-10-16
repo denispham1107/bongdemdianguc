@@ -1,0 +1,35 @@
+[ban 1] buoc chan mau A ban 2 (dat soi kho day), 6 bien the moi mat dat, chan phai = ban lat, he so 0.75
+A. 24/24 file trung ban goc, 2 kenh, khong ForceToMono
+
+B. duong thu: tu (0.0, 0.1, -10.5) huong (0.38, -0.92)
+B. (chi tiet) tieng chan phai luc 0.12 s: chan cao 0.154 m = 0.10; goc nhan vat tren dat 0.086 m
+B. (chi tiet) tieng chan trai luc 0.55 s: chan cao 0.135 m = 0.00; goc nhan vat tren dat 0.080 m
+B. (chi tiet) tieng chan phai luc 0.98 s: chan cao 0.165 m = 0.15; goc nhan vat tren dat 0.083 m
+B. (chi tiet) tieng chan trai luc 1.39 s: chan cao 0.135 m = 0.00; goc nhan vat tren dat 0.080 m
+B. (chi tiet) tieng chan phai luc 1.79 s: chan cao 0.135 m = 0.01; goc nhan vat tren dat 0.080 m
+B. (chi tiet) tieng chan trai luc 2.20 s: chan cao 0.135 m = 0.00; goc nhan vat tren dat 0.080 m
+B. (chi tiet) tieng chan phai luc 2.62 s: chan cao 0.135 m = 0.01; goc nhan vat tren dat 0.080 m
+B. (chi tiet) tieng chan trai luc 3.03 s: chan cao 0.135 m = 0.00; goc nhan vat tren dat 0.080 m
+B. (chi tiet) tieng chan phai luc 3.45 s: chan cao 0.135 m = 0.01; goc nhan vat tren dat 0.080 m
+B. (chi tiet) tieng chan trai luc 3.86 s: chan cao 0.135 m = 0.00; goc nhan vat tren dat 0.080 m
+B. di that 20.9 m trong 4 s (toc clip 1.25): 10 tieng buoc (chan trai 5, phai 5), mong doi 2 x 4.82 chu ky clip = 9.6; xen ke sai 0
+B. do cao ban chan tren dat luc tieng (0 = thap nhat, 1 = cao nhat cua chinh chan ay; chan trai 0.135-0.310 m, phai 0.133-0.341 m): trung vi 0.01, lon nhat 0.15
+B. giong: 10 lan, can bang 2D 10, bam theo 0; he so 0.579 - 0.750 (HeSoBuocChan 0.75); loa RMS TB 0.0207, tuong quan 0.269
+B2. dung lai: 1,5 s sau them 0 tieng buoc
+
+C. dung trong nuoc (ngap tai cho 0.10 m, LoiNuoc.DoNgap 0.10), di tai cho 3 s: tieng NUOC trai 4 phai 3, tieng DAT 0; loa RMS 0.0337 tuong quan 0.294
+C2. ra cho kho di tai cho 2 s: tieng DAT 5, tieng NUOC 0
+
+D. nguoi khac o 30 m (MucThay 0.00) di 2,5 s: 6 tieng buoc, bi suong che 6; loa RMS 0.00000; khung clip bi cull tu dem pha 104
+D2. DOI CHUNG tat suong: 7 tieng buoc, bi che 0, duoc giong 7
+D1. nguoi khac NGOAI KHUNG HINH cach nhan vat 9.0 m (MucThay 1.00, renderer hien False) di 2,5 s: 6 tieng buoc, duoc giong 6, khung tu dem pha 89; loa RMS 0.0180
+D3. nguoi khac 8 m ben PHAI di 2,5 s: loa phai / trai 4.57, RMS 0.0132, tuong quan 0.271
+D4. he so khoang cach (muc / heSo): 2 m 1.00, 14 m 0.55
+
+E. BuocDatTrai: 6 (BuocDat1 BuocDat2 BuocDat3 BuocDat4 BuocDat5 BuocDat6)
+E. BuocDatPhai: 6 (BuocDat10 BuocDat11 BuocDat12 BuocDat7 BuocDat8 BuocDat9)
+E. BuocNuocTrai: 6 (BuocNuoc1 BuocNuoc2 BuocNuoc3 BuocNuoc4 BuocNuoc5 BuocNuoc6)
+E. BuocNuocPhai: 6 (BuocNuoc10 BuocNuoc11 BuocNuoc12 BuocNuoc7 BuocNuoc8 BuocNuoc9)
+E. cao do 0.940 - 1.060
+
+so loi ghi nhan = 0

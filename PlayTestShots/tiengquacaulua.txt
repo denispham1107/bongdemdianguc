@@ -9,31 +9,31 @@ A. QuaCauLuaNo3.wav: trung ban goc True; 2 kenh 4.000 s; ForceToMono False; nap 
 TamNhin.Bat True; giong toi da 24; nghe nen (im) ...
    RMS nen 0.00000
 
-B. tung that: 3 qua; yeu cau ban/bay/no +3/+3/+3; giong luc bay: ban 1, bay 3 (muc 0.45); no sau 0.38 s; 0,2 s sau: bay con 0, no 3 (he so 1.00 / 0.45 / 0.45)
-   loa: luc bay RMS 0.0761, luc no RMS 0.0525 (dinh 0.1316), tuong quan hai kenh 0.516 / 0.663
-   cho no tung qua (so voi nhan vat) + luc no: (7.2; 0.9; -4.2) luc 0.354 | (6.5; 0.9; -5.5) luc 0.376 | (8.0; 0.9; -2.9) luc 0.376
+B. tung that: 3 qua; yeu cau ban/bay/no +3/+3/+3; giong luc bay: ban 1, bay 3 (muc 0.45); no sau 0.42 s; 0,2 s sau: bay con 0, no 3 (he so 1.00 / 0.45 / 0.45)
+   loa: luc bay RMS 0.0711, luc no RMS 0.0599 (dinh 0.1437), tuong quan hai kenh 0.503 / 0.694
+   cho no tung qua (so voi nhan vat) + luc no: (7.2; 0.9; -4.2) luc 0.385 | (6.5; 0.9; -5.5) luc 0.417 | (8.0; 0.9; -2.9) luc 0.417
 
-C. no ben giua: nang luong phai / trai = 1.13; tuong quan 0.424
-C. no ben phai: nang luong phai / trai = 1.99; tuong quan 0.566
-C. no ben trai: nang luong phai / trai = 0.56; tuong quan 0.579
+C. no ben giua: nang luong phai / trai = 1.06; tuong quan 0.424
+C. no ben phai: nang luong phai / trai = 2.05; tuong quan 0.529
+C. no ben trai: nang luong phai / trai = 0.54; tuong quan 0.594
 
-C2. Spread 90: no giua tuong quan hai kenh 0.642; no phai: phai / trai 3.04; no trai: phai / trai 0.40
-C2. Spread 120: no giua tuong quan hai kenh 0.433; no phai: phai / trai 1.99; no trai: phai / trai 0.55
-C2. Spread 150: no giua tuong quan hai kenh 0.253; no phai: phai / trai 1.46; no trai: phai / trai 0.80
-C2. Spread 180: no giua tuong quan hai kenh 0.210; no phai: phai / trai 1.07; no trai: phai / trai 1.06
+C2. Spread 90: no giua tuong quan hai kenh 0.627; no phai: phai / trai 2.96; no trai: phai / trai 0.37
+C2. Spread 120: no giua tuong quan hai kenh 0.425; no phai: phai / trai 2.08; no trai: phai / trai 0.55
+C2. Spread 150: no giua tuong quan hai kenh 0.268; no phai: phai / trai 1.42; no trai: phai / trai 0.81
+C2. Spread 180: no giua tuong quan hai kenh 0.200; no phai: phai / trai 1.08; no trai: phai / trai 1.11
    muc dang dung (DoRongMacDinh) 120
 
-G. 30 lan ban + 30 lan no: bien the ban 3 (QuaCauLuaBan2, QuaCauLuaBan1, QuaCauLuaBan3), no 3 (QuaCauLuaNo3, QuaCauLuaNo2, QuaCauLuaNo1); cao do 0.941 - 1.059
+G. 30 lan ban + 30 lan no: bien the ban 3 (QuaCauLuaBan1, QuaCauLuaBan3, QuaCauLuaBan2), no 3 (QuaCauLuaNo2, QuaCauLuaNo1, QuaCauLuaNo3); cao do 0.943 - 1.060
 
-D. no o 2 m: muc dat 1.000 (duong cong 1.000), RMS loa 0.0526 / 0.0555 (khung dai nhat 0.03 / 0.03 s) -> x1.00 so voi 2 m
-D. no o 14 m: muc dat 0.531 (duong cong 0.531), RMS loa 0.0315 / 0.0335 (khung dai nhat 0.05 / 0.03 s) -> x0.60 so voi 2 m
-D. no o 17 m: muc dat 0.391 (duong cong 0.391), RMS loa 0.0240 / 0.0258 (khung dai nhat 0.05 / 0.03 s) -> x0.46 so voi 2 m
+D. no o 2 m: muc dat 1.000 (duong cong 1.000), RMS loa 0.0551 / 0.0574 (khung dai nhat 0.04 / 0.04 s) -> x1.00 so voi 2 m
+D. no o 14 m: muc dat 0.531 (duong cong 0.531), RMS loa 0.0335 / 0.0284 (khung dai nhat 0.04 / 0.03 s) -> x0.58 so voi 2 m
+D. no o 17 m: muc dat 0.391 (duong cong 0.391), RMS loa 0.0198 / 0.0250 (khung dai nhat 0.04 / 0.03 s) -> x0.44 so voi 2 m
 
    nguon dang keu luc do: khong
 E1. no o 30 m (trong suong, MucThay 0.00): giong 0, bi suong che +1, RMS loa 0.00000 (nen 0.00000, khung dai nhat 0.03 s)
 E1b. DOI CHUNG tat suong: no o 30 m -> giong 1 (MucThay 1.00)
-E2. qua nguoi khac tu 40 m bay vao: tieng ban bi suong che +1 (giong ban moi 0); tieng bay muc lon nhat ngoai tam nhin 0.000 (46 khung, RMS loa 0.00000); bat dau nghe o 19.1 m
-E3. qua cua minh bay ra xa: tieng bay trong 15 m muc 0.450, ngoai tam nhin + 2,5 m muc lon nhat 0.000 (118 khung); no o 69.3 m -> yeu cau no +1, bi suong che +1
+E2. qua nguoi khac tu 40 m bay vao: tieng ban bi suong che +1 (giong ban moi 0); tieng bay muc lon nhat ngoai tam nhin 0.000 (45 khung, RMS loa 0.00000); bat dau nghe o 19.3 m
+E3. qua cua minh bay ra xa: tieng bay trong 15 m muc 0.450, ngoai tam nhin + 2,5 m muc lon nhat 0.000 (118 khung); no o 69.1 m -> yeu cau no +1, bi suong che +1
 
 F. qua nay: yeu cau ban +0, bay +1; qua quai (Fireball.Spawn): yeu cau ban +1, giong ban 1, bay 1; Lua dia nguc: giong ban 1, bay 5
    10 qua cung bay -> giong bay 6 (tran 6); Hiệu ứng 0 -> am luong giong lon nhat 0.000, RMS loa 0.00000; xoa 10 qua (khong no) -> giong bay con 0
