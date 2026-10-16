@@ -5,17 +5,24 @@ using UnityEngine;
 /// DAU VET VAT BI LOC XOAY CUON (16/10/2026, nguoi dung: "khi Loc xoay cuon bay len het moi do vat nhu bia mo, da, nha, cay coi thi de lai DAU VET
 /// cua cac do vat da cuon bay len chu khong de mat dat trong tron"). Nguoi dung chon: RIENG TUNG LOAI, ton tai DEN KHI VAT MOC LAI (30 s).
 ///
-/// Hinh dung bang Blender MCP (CongCu/Blender/dau_vet_loc_cuon.py -> Resources/KyNang/LocXoay/DauVetLoc.fbx, luoi CHUAN HOA):
-///   CAY    - goc cay GAY lom chom + dam go + re troi (GocCay0-2, scale = ban kinh than) tren ho dat xoi rong.
-///   BIA MO - chan bia GAY (ChanBia0-2, scale theo be ngang / day bia) + da vun (VunDa0-2) + ho dat xoi.
+/// Hinh dung bang Blender MCP (CongCu/Blender/dau_vet_loc_cuon.py -> Resources/KyNang/LocXoay/DauVetLoc.fbx, luoi CHUAN HOA, LAM SAN SUI):
+///   CAY    - goc cay GAY lom chom + dam go + re ngan (GocCay0-2, ban kinh 1 = ban kinh than) tren ho dat xoi.
+///   BIA MO - chan bia GAY (ChanBia0-2, 1 x 1 = chan bia) + da vun (VunDa0-2) + ho dat xoi.
 ///   DA     - ho dat lom + da vun nho.
-///   NHA MO - nen do nat: chan tuong gay quanh mep + nen lat nut + dong gach (NenNha0-1, scale theo nen nha) + dat xoi.
+///   NHA MO - nen do nat: be nen nut + chan tuong gay + dong gach (NenNha0-1, 1 x 1 = nen nha) + dat xoi.
 ///   LO LUA - vong da vo (NenLo0-1) tren nen TRO DEN.
-/// Goc gay / chan bia / nen nha dung CHINH vat lieu cua vat (vo cay, da bia triplanar - khop mau tuyet doi). Ho dat: anh dat dia hinh Act2
-/// (Anh_Act2_DatTroc, lap 3,7 m nhu dia hinh) toi hon (dat vua xoi am) - vat lieu Resources/KyNang/LocXoay/DatXoi.mat.
-/// HO DAT BAM DIA HINH: moi dinh ban tia xuong lop Ground (dat goc trong tam - dat doc thi vanh khong lo lung / chim).
-/// Vong doi: hien ra luc vat BAT KHOI DAT (het pha rung nut 0,3 s - VatTheBiCuon), vat moc lai thi LUN xuong 0,5 s roi xoa.
-/// Chi hinh (khong va cham) - nguoi / quai di qua duoc. Moi may tu dung (Loc xoay phat lai tren moi may), 0 byte mang.
+///
+/// ⚠️ TI LE THAT (16/10/2026 lan 2, nguoi dung: "goc cay to gap doi cay luc binh thuong, bia mo cung vay"): ban dau lay kich thuoc tu VA CHAM - capsule
+/// cay co cai rong 3,94 m trong khi than ~1 m; BoxCollider bia: luoi FBX xoay san nen truc Z cuc bo la chieu DUNG (be day ra 1,7 m); tam nen nha lech
+/// pivot 0,8-1,3 m; va cham da to x1,4; goc cay Blender loe chan x1,35 + re dai 2,7 ban kinh. Nay doc SO DO NUONG SAN tu CHINH LUOI cua tung vat
+/// (menu 135b NuongKichThuocGoc -> KichThuocGoc.txt: tam + huong (PCA) + rong / day CHAN (0-0,3 m) + cao + ban kinh THAN o 0,3-1 m) - luc choi luoi
+/// Read/Write tat nen khong do duoc. Vat khong co trong bang (khong thuoc Act2) thi uoc theo khung hinh.
+///
+/// ⚠️ SAN SUI + VET MAU (nguoi dung lan 2: "dau vet phai san sui, nham, co vet mau chu khong tron bong"): luoi lam san (chia canh + doi dinh), moi manh
+/// ve THEM lop phu Diablo25D/VetMauPhu (vet mau + bui ban, chieu ba phia theo toa do the gioi) tren vat lieu cua chinh vat; ho dat dung anh rieng
+/// DatXoi_Mau (dat xoi von cuc, ke nut, mau kho loang) + normal map DatXoi_Phap, do bong 0.
+/// HO DAT BAM DIA HINH: moi dinh ban tia xuong lop Ground. Vong doi: hien luc vat BAT KHOI DAT (het pha rung nut 0,3 s - VatTheBiCuon), vat moc lai thi
+/// LUN xuong 0,5 s roi xoa. Chi hinh (khong va cham); moi may tu dung, 0 byte mang; ngoai tam nhin TamNhin an.
 /// </summary>
 public class DauVetLocCuon : MonoBehaviour
 {
@@ -23,27 +30,35 @@ public class DauVetLocCuon : MonoBehaviour
 
     public const string DuongFbx = "KyNang/LocXoay/DauVetLoc";
     public const string DuongDat = "KyNang/LocXoay/DatXoi";
+    public const string DuongVetMau = "KyNang/LocXoay/VetMauPhu";
+    public const string DuongBang = "KyNang/LocXoay/KichThuocGoc";
     /// <summary>Lun xuong bao lau khi vat moc lai.</summary>
     public const float GiayLun = 0.5f;
-    /// <summary>Mau nhan cho ho dat: dat vua xoi (am, toi) / tro den (lo lua).</summary>
-    public static readonly Color MauDatXoi = new Color(0.62f, 0.55f, 0.5f), MauTro = new Color(0.16f, 0.145f, 0.135f);
-    /// <summary>Ti le ho dat so voi kich thuoc vat (ban kinh ho / ban kinh than cay, / nua be ngang bia...).</summary>
-    public const float HoCay = 3.0f, HoBia = 0.85f, HoDa = 0.8f, HoNha = 0.62f, HoLo = 0.75f;
+    /// <summary>Mau nhan cho ho dat: dat vua xoi / tro den (lo lua).</summary>
+    public static readonly Color MauDatXoi = Color.white, MauTro = new Color(0.22f, 0.2f, 0.19f);
+    /// <summary>Ban kinh ho dat theo kich thuoc vat: cay = x ban kinh than; con lai = x canh dai cua chan + them.</summary>
+    public const float HoCay = 2.4f, HoBia = 0.55f, HoDa = 0.6f, HoNha = 0.55f, HoLo = 0.75f;
+    public const float TiLeNenLo = 0.78f;
 
     // ---- thong ke cho phep thu ----
-    public static int SoLanTao, SoLanXoa;
+    public static int SoLanTao, SoLanXoa, SoLanCoSoDo;
     public static readonly List<DauVetLocCuon> DangCo = new List<DauVetLocCuon>();
 
     public Kieu kieu;
-    /// <summary>Kich thuoc do duoc (m): Cay = ban kinh than; con lai = be ngang (x) / day (z) nen vat.</summary>
+    /// <summary>Kich thuoc dung (m): Cay = (ban kinh than, ban kinh than); con lai = (rong, day) CHAN vat theo truc dai / ngan.</summary>
     public Vector2 kichThuoc;
+    public bool coSoDo;
     public Transform goc, ho;
 
     float lun = -1f;
     Vector3 viTriGoc;
 
+    /// <summary>So do nuong san cua mot vat (menu 135b).</summary>
+    public struct SoDo { public Kieu kieu; public Vector2 tam; public float huong, rong, day, cao, banKinhThan, dayY; }
+
     static readonly Dictionary<string, Mesh> luoi = new Dictionary<string, Mesh>();
-    static Material vlDat;
+    static Dictionary<string, SoDo> bang;
+    static Material vlDat, vlVetMau;
     static int lopDat = -1;
     static MaterialPropertyBlock mpb;
 
@@ -58,11 +73,34 @@ public class DauVetLocCuon : MonoBehaviour
         return m1;
     }
 
-    static Material VatLieuDat()
+    // vat lieu tao luc chay / nap tu Resources bi xoa khi thoat Play - kiem bang null cua Unity (memory vat-lieu-static-bi-xoa-khi-thoat-play)
+    static Material VatLieuDat() { if (vlDat == null) vlDat = Resources.Load<Material>(DuongDat); return vlDat; }
+    static Material VatLieuVetMau() { if (vlVetMau == null) vlVetMau = Resources.Load<Material>(DuongVetMau); return vlVetMau; }
+
+    public static string Khoa(string ten, Vector3 p) { return ten + "@" + Mathf.RoundToInt(p.x * 10f) + "," + Mathf.RoundToInt(p.z * 10f); }
+
+    /// <summary>Bang so do nuong san (KichThuocGoc.txt): khoa = ten@x,z (lam tron 0,1 m).</summary>
+    public static Dictionary<string, SoDo> Bang()
     {
-        // vat lieu tao luc chay bi xoa khi thoat Play - kiem bang null cua Unity (memory vat-lieu-static-bi-xoa-khi-thoat-play)
-        if (vlDat == null) vlDat = Resources.Load<Material>(DuongDat);
-        return vlDat;
+        if (bang != null && bang.Count > 0) return bang;     // (rong thi nap lai - vua nuong menu 135b khi Play khong nap lai domain)
+        bang = new Dictionary<string, SoDo>();
+        var ta = Resources.Load<TextAsset>(DuongBang);
+        if (ta == null) return bang;
+        var ci = System.Globalization.CultureInfo.InvariantCulture;
+        foreach (var dong in ta.text.Split('\n'))
+        {
+            if (dong.Length < 5 || dong[0] == '#') continue;
+            var c = dong.Trim().Split('|');
+            if (c.Length < 10) continue;
+            Kieu k;
+            switch (c[1]) { case "Cay": k = Kieu.Cay; break; case "Bia": k = Kieu.Bia; break; case "Da": k = Kieu.Da; break; case "NhaMo": k = Kieu.NhaMo; break; default: k = Kieu.Lo; break; }
+            bang[c[0]] = new SoDo
+            {
+                kieu = k, tam = new Vector2(float.Parse(c[2], ci), float.Parse(c[3], ci)), huong = float.Parse(c[4], ci),
+                rong = float.Parse(c[5], ci), day = float.Parse(c[6], ci), cao = float.Parse(c[7], ci), banKinhThan = float.Parse(c[8], ci), dayY = float.Parse(c[9], ci)
+            };
+        }
+        return bang;
     }
 
     /// <summary>Phan loai vat bi cuon: theo NHOM CHA trong canh (Cay / BiaMo / Da / NhaMo) va LoLuaDa; vat khac theo kich thuoc.</summary>
@@ -80,25 +118,15 @@ public class DauVetLocCuon : MonoBehaviour
         return Kieu.Bia;
     }
 
-    /// <summary>Kich thuoc nen (m) trong khung CUC BO cua vat (khong dung AABB the gioi - bia xoay 45 do se ra rong gap 1,4).</summary>
-    static Vector2 DoNen(GameObject vat, Kieu k, Bounds baoTheGioi)
+    /// <summary>So do cua vat: tu bang nuong san; khong co thi UOC theo khung hinh (AABB the gioi - chi la du phong).</summary>
+    public static SoDo LaySoDo(GameObject vat, Vector3 choCu, Bounds baoHinh, out bool coBang)
     {
-        Vector3 ls = vat.transform.lossyScale;
-        if (k == Kieu.Cay)
-        {
-            var cap = vat.GetComponent<CapsuleCollider>();
-            if (cap != null) { float r = cap.radius * Mathf.Max(Mathf.Abs(ls.x), Mathf.Abs(ls.z)); return new Vector2(r, r); }
-            float r2 = Mathf.Min(baoTheGioi.size.x, baoTheGioi.size.z) * 0.5f; return new Vector2(r2, r2);
-        }
-        var box = vat.GetComponent<BoxCollider>();
-        if (box != null) return new Vector2(Mathf.Abs(box.size.x * ls.x), Mathf.Abs(box.size.z * ls.z));
-        var mf = vat.GetComponentInChildren<MeshFilter>();
-        if (mf != null && mf.sharedMesh != null)
-        {
-            Vector3 s = mf.sharedMesh.bounds.size; Vector3 l2 = mf.transform.lossyScale;
-            return new Vector2(Mathf.Abs(s.x * l2.x), Mathf.Abs(s.z * l2.z));
-        }
-        return new Vector2(baoTheGioi.size.x, baoTheGioi.size.z);
+        coBang = Bang().TryGetValue(Khoa(vat.name, choCu), out var sd);
+        if (coBang) return sd;
+        var k = PhanLoai(vat, baoHinh);
+        sd = new SoDo { kieu = k, tam = new Vector2(choCu.x, choCu.z), huong = vat.transform.eulerAngles.y, rong = baoHinh.size.x, day = baoHinh.size.z, cao = baoHinh.size.y, dayY = baoHinh.min.y };
+        sd.banKinhThan = Mathf.Min(baoHinh.size.x, baoHinh.size.z) * (k == Kieu.Cay ? 0.12f : 0.5f);
+        return sd;
     }
 
     public static float MatDatY(Vector3 p, float neuKhong)
@@ -110,53 +138,56 @@ public class DauVetLocCuon : MonoBehaviour
     }
 
     /// <summary>Dung dau vet tai cho cu cua vat (goi luc vat bat khoi dat).</summary>
-    public static DauVetLocCuon Tao(GameObject vat, Vector3 choCu, Quaternion huongCu, Bounds bao, Material vlVat)
+    public static DauVetLocCuon Tao(GameObject vat, Vector3 choCu, Quaternion huongCu, Bounds baoHinh, Material vlVat)
     {
         if (vat == null || Luoi("HoDat0") == null) return null;
-        var k = PhanLoai(vat, bao);
-        Vector2 kt = DoNen(vat, k, bao);
+        var sd = LaySoDo(vat, choCu, baoHinh, out bool coBang);
+        var k = sd.kieu;
         var rnd = new System.Random(Mathf.RoundToInt(choCu.x * 131f) ^ Mathf.RoundToInt(choCu.z * 977f));
 
         var go = new GameObject("DauVetLocCuon_" + k);
-        float y = MatDatY(choCu, choCu.y);
-        go.transform.position = new Vector3(choCu.x, y, choCu.z);
-        float yaw = huongCu.eulerAngles.y;
+        Vector3 tam = new Vector3(sd.tam.x, choCu.y, sd.tam.y);
+        tam.y = MatDatY(tam, sd.dayY);
+        go.transform.position = tam;
         var dv = go.AddComponent<DauVetLocCuon>();
-        dv.kieu = k; dv.kichThuoc = kt; dv.viTriGoc = go.transform.position;
+        dv.kieu = k; dv.viTriGoc = tam; dv.coSoDo = coBang;
+        if (coBang) SoLanCoSoDo++;
+        float dai = Mathf.Max(sd.rong, sd.day);
+        dv.kichThuoc = k == Kieu.Cay ? new Vector2(sd.banKinhThan, sd.banKinhThan) : new Vector2(sd.rong, sd.day);
 
-        // ---- ho dat (moi loai) ----
+        // ---- ho dat ----
         float banKinhHo;
         Color mauHo = MauDatXoi;
         switch (k)
         {
-            case Kieu.Cay: banKinhHo = kt.x * HoCay; break;
-            case Kieu.Bia: banKinhHo = Mathf.Max(kt.x, kt.y) * HoBia; break;
-            case Kieu.Da: banKinhHo = Mathf.Max(kt.x, kt.y) * HoDa; break;
-            case Kieu.NhaMo: banKinhHo = Mathf.Max(kt.x, kt.y) * HoNha; break;
-            default: banKinhHo = Mathf.Max(kt.x, kt.y) * HoLo; mauHo = MauTro; break;
+            case Kieu.Cay: banKinhHo = sd.banKinhThan * HoCay; break;
+            case Kieu.Bia: banKinhHo = dai * HoBia + 0.12f; break;
+            case Kieu.Da: banKinhHo = dai * HoDa + 0.08f; break;
+            case Kieu.NhaMo: banKinhHo = dai * HoNha; break;
+            default: banKinhHo = dai * HoLo + 0.1f; mauHo = MauTro; break;
         }
-        banKinhHo = Mathf.Max(0.35f, banKinhHo);
-        dv.ho = TaoHoDat(go.transform, "HoDat" + rnd.Next(3), banKinhHo, rnd.Next(360), mauHo);
+        dv.ho = TaoHoDat(go.transform, "HoDat" + rnd.Next(3), Mathf.Max(0.25f, banKinhHo), rnd.Next(360), mauHo);
 
-        // ---- phan rieng tung loai (vat lieu cua chinh vat) ----
+        // ---- phan rieng tung loai: vat lieu CUA VAT + lop phu vet mau ----
         Transform tren = null;
         switch (k)
         {
             case Kieu.Cay:
-                tren = TaoManh(go.transform, "GocCay" + rnd.Next(3), vlVat, new Vector3(kt.x, kt.x, kt.x), rnd.Next(360), -0.04f);
+                tren = TaoManh(go.transform, "GocCay" + rnd.Next(3), vlVat, Vector3.one * sd.banKinhThan, rnd.Next(360), -0.03f);
                 break;
             case Kieu.Bia:
-                tren = TaoManh(go.transform, "ChanBia" + rnd.Next(3), vlVat, new Vector3(kt.x, kt.x * 0.8f, Mathf.Max(0.12f, kt.y)), yaw, 0f);
-                TaoManh(go.transform, "VunDa" + rnd.Next(3), vlVat, Vector3.one * Mathf.Max(kt.x, kt.y) * 0.9f, rnd.Next(360), 0f);
+                tren = TaoManh(go.transform, "ChanBia" + rnd.Next(3), vlVat, new Vector3(sd.rong, Mathf.Clamp(sd.cao * 0.55f, 0.12f, 1.2f), sd.day), sd.huong, 0f);
+                TaoManh(go.transform, "VunDa" + rnd.Next(3), vlVat, Vector3.one * dai * 0.55f, rnd.Next(360), 0f);
                 break;
             case Kieu.Da:
-                tren = TaoManh(go.transform, "VunDa" + rnd.Next(3), vlVat, Vector3.one * Mathf.Max(0.35f, Mathf.Max(kt.x, kt.y) * 0.75f), rnd.Next(360), 0f);
+                tren = TaoManh(go.transform, "VunDa" + rnd.Next(3), vlVat, Vector3.one * Mathf.Max(0.08f, dai * 0.5f), rnd.Next(360), 0f);   // (lan 2: kep 0,18 -> da nho x1,5)
                 break;
             case Kieu.NhaMo:
-                tren = TaoManh(go.transform, "NenNha" + rnd.Next(2), vlVat, new Vector3(kt.x, 1.2f, kt.y), yaw, 0f);
+                tren = TaoManh(go.transform, "NenNha" + rnd.Next(2), vlVat, new Vector3(sd.rong, 1.2f, sd.day), sd.huong, 0f);
                 break;
             case Kieu.Lo:
-                tren = TaoManh(go.transform, "NenLo" + rnd.Next(2), vlVat, Vector3.one * Mathf.Max(kt.x, kt.y), rnd.Next(360), 0f);
+                // vong da NenLo ban kinh ngoai ~0,64 (luoi) -> x0,78 cho vong = chan lo (lan 2: x1 -> vong to x1,62 chan lo, menu 135 F)
+                tren = TaoManh(go.transform, "NenLo" + rnd.Next(2), vlVat, Vector3.one * dai * TiLeNenLo, rnd.Next(360), 0f);
                 break;
         }
         dv.goc = tren;
@@ -176,7 +207,8 @@ public class DauVetLocCuon : MonoBehaviour
         go.transform.localScale = scale;
         go.AddComponent<MeshFilter>().sharedMesh = m;
         var mr = go.AddComponent<MeshRenderer>();
-        mr.sharedMaterial = vl;
+        var vm = VatLieuVetMau();
+        mr.sharedMaterials = vm != null ? new[] { vl, vm } : new[] { vl };      // vat lieu thu hai ve CHONG len cung luoi
         mr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.On;
         return go.transform;
     }
@@ -206,6 +238,7 @@ public class DauVetLocCuon : MonoBehaviour
             }
             m.vertices = v;
             m.RecalculateNormals();
+            m.RecalculateTangents();
             m.RecalculateBounds();
         }
         go.AddComponent<MeshFilter>().sharedMesh = m;

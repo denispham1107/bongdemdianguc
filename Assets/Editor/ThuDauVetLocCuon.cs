@@ -15,6 +15,10 @@ using UnityEngine;
 ///   C. Anh SAU (loc da tan, cung goc) -> PlayTestShots/dauvet_[loai]_truoc|sau.png.
 ///   D. NGOAI TAM NHIN: dua nhan vat ra xa > tam nhin + 5 m -> moi renderer dau vet bi an (TamNhin), ve lai gan -> hien.
 ///   E. VAT MOC LAI (30 s): dau vet lun roi xoa het (con 0), SoLanXoa tang dung so.
+///   F. TI LE THAT - TOAN BO 924 VAT (16/10/2026 lan 2, nguoi dung: "goc cay to gap doi cay, bia mo cung vay"): NGOAI Play do kich thuoc THAT cua tung vat
+///      tu luoi (cay: duong kinh THAN o 0,2-0,45 m tren day; con lai: 2 x phan vi 90 ban kinh CHAN 0-0,3 m quanh tam chan) - code rieng cua phep thu, khong
+///      dung bang nuong; trong Play dung dau vet cho TUNG vat (DauVetLocCuon.Tao) roi do CHINH hinh hoc manh tren cung cach (goc cay: dai 0,2-0,45 m; chan
+///      bia / nen nha / nen lo: 0-0,12 m tren dat) -> ti le dau vet / that moi loai; doi chung: cach cu (theo va cham + goc loe 1,35).
 /// Ket qua: PlayTestShots/dauvetloccuon.txt.
 /// </summary>
 public static class ThuDauVetLocCuon
@@ -37,6 +41,8 @@ public static class ThuDauVetLocCuon
         Ghi("[ban 1] dau vet vat bi Loc xoay cuon - " + System.DateTime.Now.ToString("dd/MM/yyyy HH:mm"));
         canhCu = EditorSceneManager.GetActiveScene().path;
         if (canhCu != "Assets/Scenes/Act2.unity") EditorSceneManager.OpenScene("Assets/Scenes/Act2.unity");
+        DoThatTeNgoaiPlay();
+        Ghi("do that te ngoai Play: " + thatTe.Count + " vat");
         truocBat = EditorSettings.enterPlayModeOptionsEnabled; truocOpt = EditorSettings.enterPlayModeOptions;
         EditorSettings.enterPlayModeOptionsEnabled = true;
         EditorSettings.enterPlayModeOptions = EnterPlayModeOptions.DisableDomainReload;
@@ -67,6 +73,77 @@ public static class ThuDauVetLocCuon
         t.position = p;
         if (cc != null) cc.enabled = true;
         Physics.SyncTransforms();
+    }
+
+    /// <summary>Kich thuoc THAT do ngoai Play (khoa ten@x,z): [0] duong kinh do (than cay / chan), [1] duong kinh theo cach CU (va cham, cay x1,35 loe).</summary>
+    static readonly Dictionary<string, float[]> thatTe = new Dictionary<string, float[]>();
+
+    /// <summary>2 x phan vi 90 khoang cach ngang toi tam (tam = trung binh) - "duong kinh" ben vung voi vai manh vang xa.</summary>
+    static float DuongKinh(List<Vector3> ds)
+    {
+        if (ds.Count < 3) return 0f;
+        Vector3 t = Vector3.zero; foreach (var p in ds) t += p; t /= ds.Count;
+        var r = new List<float>(); foreach (var p in ds) r.Add(new Vector2(p.x - t.x, p.z - t.z).magnitude);
+        r.Sort();
+        return 2f * r[Mathf.Min(r.Count - 1, (int)(r.Count * 0.9f))];
+    }
+
+    /// <summary>Duong cheo HINH CHU NHAT BAO NHO NHAT (quay 0-90 do moi 1 do, lay goc dien tich nho nhat) - khong le thuoc mat do dinh (lan chay 2: phan vi 90
+    /// lech theo mat do dinh -> 32 bia "sai"; lan 3: PCA tren hop co dinh don o 4 goc chon truc CHEO 45 do -> duong cheo ra w + d thay vi can(w2 + d2):
+    /// 10 bia chu thap "x1,39" gia).</summary>
+    static float CheoTruc(List<Vector3> ds)
+    {
+        if (ds.Count < 3) return 0f;
+        float tot = 1e9f, cheo = 0f;
+        for (int g = 0; g < 90; g++)
+        {
+            float r = g * Mathf.Deg2Rad, c = Mathf.Cos(r), sn = Mathf.Sin(r);
+            float a0 = 1e9f, a1 = -1e9f, b0 = 1e9f, b1 = -1e9f;
+            foreach (var p in ds) { float u = p.x * c + p.z * sn, v = -p.x * sn + p.z * c; a0 = Mathf.Min(a0, u); a1 = Mathf.Max(a1, u); b0 = Mathf.Min(b0, v); b1 = Mathf.Max(b1, v); }
+            float dt = (a1 - a0) * (b1 - b0);
+            if (dt < tot) { tot = dt; cheo = Mathf.Sqrt((a1 - a0) * (a1 - a0) + (b1 - b0) * (b1 - b0)); }
+        }
+        return cheo;
+    }
+
+    static void DoThatTeNgoaiPlay()
+    {
+        thatTe.Clear();
+        foreach (var ten in new[] { "World/Cay", "World/BiaMo", "World/Da", "World/NhaMo", "LoLua_Act2" })
+        {
+            var cha = GameObject.Find(ten);
+            if (cha == null) continue;
+            var dsVat = new List<GameObject>();
+            if (ten == "LoLua_Act2") { foreach (var lo in cha.GetComponentsInChildren<LoLuaDa>(true)) dsVat.Add(lo.gameObject); }
+            else foreach (Transform c in cha.transform) dsVat.Add(c.gameObject);
+            foreach (var g in dsVat)
+            {
+                var ws = new List<Vector3>();
+                foreach (var mf in g.GetComponentsInChildren<MeshFilter>(true))
+                {
+                    if (mf.sharedMesh == null) continue;
+                    Vector3[] v; try { v = mf.sharedMesh.vertices; } catch { continue; }
+                    var m = mf.transform.localToWorldMatrix;
+                    foreach (var q in v) ws.Add(m.MultiplyPoint3x4(q));
+                }
+                if (ws.Count < 4) continue;
+                float minY = 1e9f, maxY = -1e9f; foreach (var w in ws) { minY = Mathf.Min(minY, w.y); maxY = Mathf.Max(maxY, w.y); }
+                bool laCay = ten == "World/Cay", laDa = ten == "World/Da";
+                var dai = new List<Vector3>();
+                float lo0 = laCay ? minY + 0.2f : minY, hi0 = laCay ? minY + 0.45f : (laDa ? maxY + 1f : minY + Mathf.Min(0.3f, 0.3f * (maxY - minY)));
+                foreach (var w in ws) if (w.y >= lo0 && w.y <= hi0) dai.Add(w);
+                // cay, da: duong kinh (than tron / dong vun); bia, nha, lo: duong cheo theo hai truc chinh
+                float dk = (laCay || laDa) ? DuongKinh(dai) : CheoTruc(dai);
+                // cach CU: cay = capsule.radius x scale x 2 x 1,35 (goc loe); bia / da / nha / lo = canh dai cua va cham (BoxCollider size.x, size.z x scale)
+                float cu = 0f;
+                var col = g.GetComponent<Collider>();
+                var ls = g.transform.lossyScale;
+                if (col is CapsuleCollider cap) cu = cap.radius * Mathf.Max(Mathf.Abs(ls.x), Mathf.Abs(ls.z)) * 2f * (laCay ? 1.35f : 1f);
+                else if (col is BoxCollider box) cu = Mathf.Max(Mathf.Abs(box.size.x * ls.x), Mathf.Abs(box.size.z * ls.z));
+                else if (col != null) cu = Mathf.Max(col.bounds.size.x, col.bounds.size.z);
+                thatTe[DauVetLocCuon.Khoa(g.name, g.transform.position)] = new[] { dk, cu };
+            }
+        }
     }
 
     class MucTieu { public string ten; public DauVetLocCuon.Kieu kieu; public GameObject vat; public Vector3 cho; public Material vl; public Vector3 camPos, camNhin; }
@@ -100,6 +177,62 @@ public static class ThuDauVetLocCuon
         // chup BAN NGAY (lan chay 1 ban dem toi qua khong thay ro)
         var csd = Object.FindAnyObjectByType<ChuyenChieuSangDem>();
         if (csd != null) { csd.enabled = false; csd.ApGiay(ChuyenChieuSangDem.GiayGiuaNgay); }
+
+        // ===== F. ti le that - toan bo =====
+        {
+            int truocTao = DauVetLocCuon.SoLanTao;
+            var tiLe = new Dictionary<DauVetLocCuon.Kieu, List<float>>(); var tiLeCu = new Dictionary<DauVetLocCuon.Kieu, List<float>>();
+            var xauNhat = new Dictionary<DauVetLocCuon.Kieu, string>();
+            int soDo = 0, coSoDo = 0;
+            var vatF = new List<GameObject>();
+            foreach (var ten in new[] { "World/Cay", "World/BiaMo", "World/Da", "World/NhaMo" }) { var cha = GameObject.Find(ten); if (cha != null) foreach (Transform c in cha.transform) vatF.Add(c.gameObject); }
+            foreach (var lo in Object.FindObjectsByType<LoLuaDa>(FindObjectsSortMode.None)) vatF.Add(lo.gameObject);
+            foreach (var g in vatF)
+            {
+                if (!thatTe.TryGetValue(DauVetLocCuon.Khoa(g.name, g.transform.position), out var tt) || tt[0] <= 0f) continue;
+                Bounds bh = new Bounds(g.transform.position, Vector3.zero); bool co = false; Material vl = null;
+                foreach (var r in g.GetComponentsInChildren<Renderer>()) { if (!co) { bh = r.bounds; co = true; } else bh.Encapsulate(r.bounds); if (vl == null && r is MeshRenderer && r.sharedMaterial != null) vl = r.sharedMaterial; }
+                var dv = DauVetLocCuon.Tao(g, g.transform.position, g.transform.rotation, bh, vl);
+                if (dv == null || dv.goc == null) continue;
+                soDo++; if (dv.coSoDo) coSoDo++;
+                // do CHINH hinh hoc manh tren
+                var mfT = dv.goc.GetComponent<MeshFilter>(); var vT = mfT.sharedMesh.vertices; var mT = dv.goc.localToWorldMatrix;
+                float y0 = dv.transform.position.y;
+                bool laCay = dv.kieu == DauVetLocCuon.Kieu.Cay, laDa = dv.kieu == DauVetLocCuon.Kieu.Da, laLo = dv.kieu == DauVetLocCuon.Kieu.Lo;
+                var dai = new List<Vector3>();
+                foreach (var q in vT)
+                {
+                    if (laLo && new Vector2(q.x, q.z).magnitude > 0.62f) continue;        // lo: chi vong da chinh (bo da vang ra ngoai)
+                    var w = mT.MultiplyPoint3x4(q);
+                    float h = w.y - y0;
+                    if (laCay ? (h >= 0.2f && h <= 0.45f) : (h >= -0.02f && h <= 0.12f)) dai.Add(w);
+                }
+                float dkT = (laCay || laDa) ? DuongKinh(dai) : CheoTruc(dai);
+                Object.DestroyImmediate(dv.gameObject);
+                if (dkT <= 0f) continue;
+                float tl = dkT / tt[0], tlCu = tt[1] > 0f ? tt[1] / tt[0] : 0f;
+                if (!tiLe.ContainsKey(dv.kieu)) { tiLe[dv.kieu] = new List<float>(); tiLeCu[dv.kieu] = new List<float>(); }
+                tiLe[dv.kieu].Add(tl); if (tlCu > 0f) tiLeCu[dv.kieu].Add(tlCu);
+                float lech = Mathf.Abs(Mathf.Log(tl));
+                if (!xauNhat.ContainsKey(dv.kieu) || lech > float.Parse(xauNhat[dv.kieu].Split('|')[0], System.Globalization.CultureInfo.InvariantCulture))
+                    xauNhat[dv.kieu] = lech.ToString(System.Globalization.CultureInfo.InvariantCulture) + "|" + g.name + string.Format(" ({0:F2} m that, {1:F2} m dau vet)", tt[0], dkT);
+                if (soDo % 60 == 0) yield return null;
+            }
+            Ghi(string.Format("F. dung + do dau vet cho {0} vat ({1} co so do nuong san); tao them {2}", soDo, coSoDo, DauVetLocCuon.SoLanTao - truocTao));
+            var gioiHan = new Dictionary<DauVetLocCuon.Kieu, Vector2> {
+                { DauVetLocCuon.Kieu.Cay, new Vector2(0.8f, 1.25f) }, { DauVetLocCuon.Kieu.Bia, new Vector2(0.85f, 1.25f) }, { DauVetLocCuon.Kieu.Da, new Vector2(0.5f, 1.3f) },
+                { DauVetLocCuon.Kieu.NhaMo, new Vector2(0.85f, 1.2f) }, { DauVetLocCuon.Kieu.Lo, new Vector2(0.8f, 1.4f) } };
+            foreach (var kv in tiLe)
+            {
+                var a = kv.Value; a.Sort(); var c = tiLeCu[kv.Key]; c.Sort();
+                int ngoai = 0; var gh = gioiHan[kv.Key]; foreach (var x in a) if (x < gh.x || x > gh.y) ngoai++;
+                Ghi(string.Format("F. {0}: {1} vat, ti le dau vet / that min {2:F2} · trung vi {3:F2} · max {4:F2} (gioi han {5:F2}-{6:F2}, ngoai {7}); CACH CU trung vi {8:F2} · max {9:F2}; xau nhat {10}",
+                    kv.Key, a.Count, a[0], a[a.Count / 2], a[a.Count - 1], gh.x, gh.y, ngoai, c.Count > 0 ? c[c.Count / 2] : 0f, c.Count > 0 ? c[c.Count - 1] : 0f, xauNhat[kv.Key].Split('|')[1]));
+                Kiem(ngoai == 0, kv.Key + ": co dau vet sai ti le that");
+            }
+            Kiem(soDo > 900 && coSoDo == soDo, "khong do du 924 vat / co vat khong co so do nuong san");
+        }
+        Ghi("");
 
         // ===== A. chon vat =====
         var nhom = new Dictionary<string, DauVetLocCuon.Kieu> { { "Cay", DauVetLocCuon.Kieu.Cay }, { "BiaMo", DauVetLocCuon.Kieu.Bia }, { "Da", DauVetLocCuon.Kieu.Da }, { "NhaMo", DauVetLocCuon.Kieu.NhaMo } };
@@ -170,7 +303,10 @@ public static class ThuDauVetLocCuon
         foreach (var m in ds)
         {
             DauVetLocCuon dv = null; float dGan = 1e9f;
-            foreach (var d in DauVetLocCuon.DangCo) { float dd = Ngang(d.transform.position, m.cho); if (dd < dGan) { dGan = dd; dv = d; } }
+            // tam dung = TAM THAT cua vat (so do nuong - than cay / chan bia / nen nha), khong phai pivot (lan chay 2: cay lech pivot 0,07 m -> loi gia)
+            Vector3 tamDung = m.cho;
+            if (DauVetLocCuon.Bang().TryGetValue(DauVetLocCuon.Khoa(m.vat.name, m.cho), out var sdB)) tamDung = new Vector3(sdB.tam.x, m.cho.y, sdB.tam.y);
+            foreach (var d in DauVetLocCuon.DangCo) { float dd = Ngang(d.transform.position, tamDung); if (dd < dGan) { dGan = dd; dv = d; } }
             bool coVet = dv != null && dGan < 0.05f;
             bool bay = m.vat.GetComponent<VatTheBiCuon>() != null;
             string vlManh = dv != null && dv.goc != null ? dv.goc.GetComponent<MeshRenderer>().sharedMaterial.name : "khong";

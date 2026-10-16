@@ -4,8 +4,9 @@
 # Chay TRONG Blender (MCP): exec(open(r'.../CongCu/Blender/dau_vet_loc_cuon.py', encoding='utf-8').read())  -> scene 'DauVetLoc', collection 'DVL'.
 #
 # Moi luoi CHUAN HOA (Unity scale luc chay theo kich thuoc vat that), truc Blender Z len (xuat FBX Y len):
-#   GocCay0-2  - goc cay GAY: than loe chan ban kinh 1, dinh gay lom chom + dam go, 5-7 re bo sat dat roi cam xuong (scale = ban kinh than).
-#   ChanBia0-2 - chan bia GAY: khoi chan dung 1 x 1 (x rong, y day), dinh vo lom chom cao 0,2-0,5, vai mieng vo nghieng (scale x/y theo be bia).
+#   GocCay0-2  - goc cay GAY: than ban kinh 1 (KHONG loe - dung ban kinh than that), dinh gay lom chom + dam go, 3-5 re NGAN 0,4-0,9 bo sat dat
+#                roi cam xuong (scale = ban kinh than do tu luoi cay). Moi manh LAM SAN (chia canh + doi dinh ngau nhien).
+#   ChanBia0-2 - chan bia GAY: khoi chan DUNG 1 x 1 (x rong, y day), dinh vo lom chom cao 0,2-0,5 (scale x/y = chan bia that do tu luoi).
 #   VunDa0-2   - dong da VUN: 6-12 cuc da gay canh sac trong ban kinh 1 (scale deu).
 #   NenNha0-1  - nen NHA MO do nat: 1 x 1, BE NEN da 4 x 4 o nut, chan tuong gay quanh mep (day 0,08) cao 0,08-0,53, dong gach + manh tuong do
 #                (scale x/y theo nen nha, z = 1,2 m).
@@ -23,6 +24,18 @@ if col.name not in [c.name for c in sc.collection.children]:
     sc.collection.children.link(col)
 for o in list(col.objects):
     bpy.data.objects.remove(o, do_unlink=True)
+
+
+def lam_san(bm, bien, rnd, cuts=1, giu_day=True):
+    """LAM SAN SUI (16/10/2026, nguoi dung: "dau vet phai san sui, nham, khong duoc tron bong"): chia nho moi canh 'cuts' lan roi doi tung dinh
+    ngau nhien +-bien (dinh chung giu chung -> luoi van kin); dinh duoi day (z < -0,05) chi doi ngang."""
+    if cuts > 0:
+        bmesh.ops.subdivide_edges(bm, edges=list(bm.edges), cuts=cuts, use_grid_fill=True)
+    for v in bm.verts:
+        d = Vector((rnd.uniform(-1, 1), rnd.uniform(-1, 1), rnd.uniform(-1, 1))) * bien
+        if giu_day and v.co.z < -0.05:
+            d.z = 0
+        v.co += d
 
 
 def tao_obj(ten, bm, uv_xy=False):
@@ -100,7 +113,7 @@ def goc_cay(ten, hat):
     rings = []
     lech = [rnd.uniform(-0.08, 0.08) for _ in range(seg)]
     for z in zs:
-        loe = 1.0 + 0.35 * math.exp(-max(z, 0) / 0.2)
+        loe = 1.0 + 0.06 * math.exp(-max(z, 0) / 0.15)      # (lan 1 loe 1,35 -> goc to hon than that) than THAT o 0-0,3 m ~ bang 0,3-1 m
         ring = []
         for k in range(seg):
             g = 2 * math.pi * k / seg
@@ -136,18 +149,19 @@ def goc_cay(ten, hat):
         for i in range(4):
             bm.faces.new((v[i], v[(i + 1) % 4], v[4]))
         bm.faces.new((v[3], v[2], v[1], v[0]))
-    so = rnd.randint(5, 7)                                  # RE: to o goc, bo sat dat, cam xuong o mut
+    so = rnd.randint(3, 5)                                  # RE NGAN (lan 1: 5-7 re dai 1-2 ban kinh -> dau vet to gap doi cay): bo sat dat, cam xuong
     for i in range(so):
-        g = 2 * math.pi * i / so + rnd.uniform(-0.3, 0.3)
-        dai = rnd.uniform(1.0, 2.0)
+        g = 2 * math.pi * i / so + rnd.uniform(-0.4, 0.4)
+        dai = rnd.uniform(0.4, 0.9)
         pts = []
-        for j in range(9):
-            t = j / 8
-            d = 0.75 + dai * t
-            z = 0.32 * (1 - t) ** 2 + 0.06 * math.sin(math.pi * t * 1.2) - 0.16 * t ** 1.5 + rnd.uniform(-0.025, 0.025)
+        for j in range(7):
+            t = j / 6
+            d = 0.8 + dai * t
+            z = 0.22 * (1 - t) ** 2 + 0.04 * math.sin(math.pi * t) - 0.14 * t ** 1.5 + rnd.uniform(-0.02, 0.02)
             g2 = g + 0.22 * math.sin(2.5 * t + i) + rnd.uniform(-0.04, 0.04)
             pts.append(Vector((d * math.cos(g2), d * math.sin(g2), z)))
-        ong(bm, pts, rnd.uniform(0.28, 0.4), 0.05, 8, rnd)
+        ong(bm, pts, rnd.uniform(0.15, 0.22), 0.04, 7, rnd)
+    lam_san(bm, 0.035, rnd, 1)
     return tao_obj(ten, bm)
 
 
@@ -175,11 +189,8 @@ def chan_bia(ten, hat):
         bm.faces.new((duoi_s[i], duoi_s[i + 1], duoi_t[i + 1], duoi_t[i]))       # day
     bm.faces.new((duoi_s[0], duoi_t[0], tren_t[0], tren_s[0]))
     bm.faces.new((duoi_t[-1], duoi_s[-1], tren_s[-1], tren_t[-1]))
-    # vai MIENG VO nam nghieng sat chan (manh bia gay roi xuong)
-    for _ in range(rnd.randint(2, 4)):
-        g = rnd.uniform(0, 6.28)
-        tam = Vector((math.cos(g) * rnd.uniform(0.6, 1.0), math.sin(g) * rnd.uniform(0.5, 0.8), 0.02))
-        khoi_vo(bm, tam, (rnd.uniform(0.12, 0.3), rnd.uniform(0.05, 0.12), rnd.uniform(0.04, 0.08)), rnd)
+    # (lan 1 co mieng vo roi toi ban kinh 1 -> khung luoi 1,6 x 1,1 thay vi 1 x 1: vun da nay o luoi VunDa rieng, dat theo co that)
+    lam_san(bm, 0.022, rnd, 2)
     return tao_obj(ten, bm)
 
 
@@ -192,6 +203,7 @@ def vun_da(ten, hat):
         rr = rnd.uniform(0.1, 1.0) ** 0.7
         s = rnd.uniform(0.06, 0.2) * (1.2 - 0.6 * rr)
         khoi_vo(bm, Vector((rr * math.cos(g), rr * math.sin(g), s * 0.3)), (s, s * rnd.uniform(0.6, 1.0), s * rnd.uniform(0.4, 0.8)), rnd)
+    lam_san(bm, 0.01, rnd, 1, False)
     return tao_obj(ten, bm)
 
 
@@ -228,14 +240,15 @@ def nen_nha(ten, hat):
     # DONG GACH DA do: 3-4 dong o goc / giua canh + vai khoi lon nghieng (manh tuong do)
     for _ in range(rnd.randint(3, 4)):
         g = rnd.uniform(0, 6.28)
-        cx, cy = 0.45 * math.cos(g), 0.45 * math.sin(g)
+        cx, cy = 0.36 * math.cos(g), 0.36 * math.sin(g)      # (lan 2: 0,45 +-0,15 -> vun vang toi 0,75: dau vet to x1,3 nen nha that)
         for _ in range(rnd.randint(8, 14)):
             s = rnd.uniform(0.025, 0.07)
-            khoi_vo(bm, Vector((cx + rnd.uniform(-0.15, 0.15), cy + rnd.uniform(-0.15, 0.15), s * 0.5 + rnd.uniform(0, 0.08))), (s, s * 0.7, s * 0.5), rnd)
+            khoi_vo(bm, Vector((cx + rnd.uniform(-0.1, 0.1), cy + rnd.uniform(-0.1, 0.1), s * 0.5 + rnd.uniform(0, 0.08))), (s, s * 0.7, s * 0.5), rnd)
     for _ in range(rnd.randint(2, 3)):
         g = rnd.uniform(0, 6.28)
-        r = rnd.uniform(0.55, 0.75)
-        khoi_vo(bm, Vector((r * math.cos(g), r * math.sin(g), 0.03)), (rnd.uniform(0.12, 0.2), rnd.uniform(0.04, 0.06), rnd.uniform(0.08, 0.14)), rnd)
+        r = rnd.uniform(0.3, 0.42)
+        khoi_vo(bm, Vector((r * math.cos(g), r * math.sin(g), 0.03)), (rnd.uniform(0.1, 0.16), rnd.uniform(0.04, 0.06), rnd.uniform(0.08, 0.14)), rnd)
+    lam_san(bm, 0.006, rnd, 1, False)
     return tao_obj(ten, bm)
 
 
@@ -256,6 +269,7 @@ def nen_lo(ten, hat):
         r = rnd.uniform(0.6, 0.9)
         s = rnd.uniform(0.04, 0.09)
         khoi_vo(bm, Vector((r * math.cos(g), r * math.sin(g), s * 0.4)), (s, s * 0.8, s * 0.6), rnd)
+    lam_san(bm, 0.012, rnd, 1, False)
     return tao_obj(ten, bm)
 
 
@@ -287,10 +301,10 @@ def ho_dat(ten, hat):
         for k in range(ns):
             bm.faces.new((rings[i][k], rings[i + 1][k], rings[i + 1][(k + 1) % ns], rings[i][(k + 1) % ns]))
     # CUC DAT bi boc len rai tren vanh
-    for _ in range(rnd.randint(10, 18)):
+    for _ in range(rnd.randint(28, 42)):                   # (lan 1: 10-18 - tron) cuc dat von day
         g = rnd.uniform(0, 6.28)
-        rr = rnd.uniform(0.35, 1.05)
-        s = rnd.uniform(0.025, 0.07)
+        rr = rnd.uniform(0.25, 1.05)
+        s = rnd.uniform(0.018, 0.06)
         khoi_vo(bm, Vector((rr * math.cos(g), rr * math.sin(g), 0.03 + s * 0.3)), (s, s * 0.8, s * 0.6), rnd)
     return tao_obj(ten, bm, uv_xy=True)
 

@@ -14572,6 +14572,27 @@ Menu **135** (0 lỗi, Lốc xoáy THẬT tại 1 vật mỗi loại): cây / bi
 `PlayTestShots/dauvet_truoc_sau.png`. ⚠️ Lần chạy 1 chốt số "đã tạo" lúc 1,6 s trong khi lốc còn cuốn thêm → lỗi giả 38 / 65; ảnh ban đêm tối không
 thấy → chụp ban ngày, tự chọn hướng máy quay ít vật che. Menu 19, 54c, 82: 0 lỗi.
 
+### Lần 2 — đúng tỉ lệ thật, sần sùi, có vết máu (16/10/2026)
+
+**Người dùng:** "kiểm tra toàn bộ và sửa lại — nhiều cây có gốc bình thường, khi lốc cuốn đi để lại gốc cây TO GẤP ĐÔI cây lúc bình thường, bia mộ cũng
+vậy; dấu vết phải sần sùi, nhám, có vết máu chứ không được trơn bóng".
+
+**Nguyên nhân đo được (từ chính lưới của vật):** (1) kích thước lấy từ VA CHẠM: capsule cây có cái rộng **3,94 m** trong khi thân thật ~1 m
+(`TREE_oakC_727`), và gốc Blender còn loe chân ×1,35 + rễ dài 2,7 bán kính; (2) lưới bia FBX xoay sẵn — trục Z cục bộ của `BoxCollider` là chiều
+ĐỨNG → "bề dày" bia lấy ra 1,7 m; (3) tâm nền nhà mồ lệch điểm gốc; (4) va chạm đá to hơn hình ×1,4; (5) vòng đá lò rộng 1,28 lần cỡ được giao.
+
+**Sửa:** menu **135b** (`NuongKichThuocGoc`) NƯỚNG SẴN số đo của 924 vật Act2 từ LƯỚI (lúc chơi lưới Read/Write tắt) → `KichThuocGoc.txt`: chân 0–0,3 m →
+**hình chữ nhật bao nhỏ nhất** (tâm, hướng, rộng, dày — ⚠️ bản đầu dùng PCA: hộp có đỉnh dồn ở 4 góc thì PCA chọn trục CHÉO 45°, đường chéo ra w + d thay
+vì √(w² + d²): 10 bia chữ thập "×1,39"), thân cây = phân vị 85 bán kính ở 0,3–1 m. Gốc cây Blender không loe, rễ ngắn 0,4–0,9; chân bia không kèm mảnh rời;
+đống gạch nhà mồ thu vào ≤ 0,55; vòng lò ×0,78. **Sần sùi:** mọi mảnh chia cạnh + dời đỉnh ngẫu nhiên (`lam_san`). **Vết máu:** lớp phủ `Diablo25D/VetMauPhu`
+(ảnh `VetMau.png` Blender MCP: máu loang + giọt bắn + vệt chảy + bẩn nâu đen, chiếu ba phía theo toạ độ thế giới, không bóng) vẽ chồng lên vật liệu của
+vật; hố đất ảnh riêng `DatXoi_Mau` (đất xới vón cục, nứt mảnh đứt quãng, máu khô loang) + normal map `DatXoi_Phap`, độ bóng 0 (`dau_vet_loc_anh.py`).
+⚠️ Ảnh 8 bit trong Blender: `pixels` là giá trị sRGB lưu thẳng — đổi màu sang tuyến tính là ảnh tối đen (bản đầu).
+
+**Menu 135 mục F — kiểm TOÀN BỘ** (đo độc lập ngoài Play từ lưới, trong Play dựng dấu vết cho từng vật rồi đo chính hình học dấu vết; 920 vật):
+cây 0,82–1,17 (trung vị 1,06; cách cũ tới **4,85**), bia 1,02–1,04 (cũ tới 1,99), đá 0,63–1,02 (đống vụn nhỏ hơn hòn đá), nhà mồ 1,05–1,07, lò 0,84–0,87.
+Mục B–E giữ nguyên: 0 lỗi (tâm dấu vết = tâm thật 0,000 m, hố bám đất, ngoài tầm nhìn ẩn 163/163, mọc lại xoá 63/63).
+
 ## Phần 4 — Menu công cụ "Diablo 2.5D"
 
 | Mục | Tác dụng |
