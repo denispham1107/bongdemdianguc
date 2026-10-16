@@ -1,15 +1,20 @@
 [ban 1] tieng Gio loc (mau C 'Loc cat') + Loc xoay (A2 'hu lon' 7,6 s + set Sam set nho hon)
-A. 5/5 file trung ban goc, 2 kenh, dung do dai
+A. 11/11 file trung ban goc, 2 kenh, dung do dai
+A2. LocXoay_hu_1_to25.wav: dinh 0.708 -> 0.885 (x1.250)
+A2. cay1_to25.wav: dinh 0.708 -> 0.885 (x1.250)
 
-B. Gio loc that: 2 con loc; gio thoi +2, bui +2; giong bam dung loc 4; can bang True; loc tan -> giong con 0; loa RMS 0.0468, tuong quan 0.187
+B. Gio loc that: 2 con loc; gio thoi +2, bui +2; giong bam dung loc 4; can bang True; loc tan -> giong con 0; loa RMS 0.0557, tuong quan 0.167
 
-C. Loc xoay that: gio +1 (bam theo loc, 2D True); tieng set +14 (he so lon nhat 0.35); loc xoa -> gio con 0; loa RMS 0.0728, tuong quan 0.144
+C. Loc xoay that: gio +1 (bam theo loc, 2D True); tieng set +13 (he so lon nhat 0.44); loc xoa -> gio con 0; loa RMS 0.0842, tuong quan 0.172
 
-C2. loa: tieng gio Loc xoay RMS 0.0605 | tieng set Loc xoay (0,6 s dau moi tieng) RMS 0.0144 -> set / gio 0.24
+C2. loa: tieng gio Loc xoay RMS 0.0778 | tieng set Loc xoay (0,6 s dau moi tieng) RMS 0.0206 -> set / gio 0.26
 
 D. o 40 m (MucThay 0.00): muc giong lon nhat 0.000; set bi suong che +1; RMS loa 0.00000
 D2. DOI CHUNG tat suong: gio thoi o 40 m muc 0.044
 
-E. 18 lan Loc xoay: 3 bien the; cao do 0.956 - 1.053
+E. 18 lan Loc xoay: 3 bien the; cao do 0.945 - 1.059
+
+F. Loc xoay but: cay gia True (laCay True), bia gia True (laCay False); tieng nut cay +2 / da +5 (dem VatTheBiCuon +2 / +5); can bang True
+   0,22 s dau: cay lech 0.039 m (nghieng toi da 2.1 do), bia lech 0.038 m; 1 s sau: cay roi cho cu 5.49 m, bia 6.09 m
 
 so loi ghi nhan = 0

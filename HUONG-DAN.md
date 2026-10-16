@@ -14453,6 +14453,25 @@ Menu **132** (0 lỗi, Act2 thật): 5 file trùng byte, đúng độ dài; Gió
 **0,24**; 40 m trong sương: mức 0, sét bị bỏ, loa im (đối chứng có); 3 biến thể Lốc xoáy, cao độ 0,956–1,053. Menu 71: lần đầu 3 lỗi do chế độ tạm
 "mở sẵn mọi kỹ năng" (mục khoá → từ chối, kéo theo mana / hồi chiêu) — nay tắt chế độ tạm trong lúc chạy, 0 lỗi; menu 82: 0 lỗi. Chưa nghe thử trên web.
 
+## Lốc xoáy to thêm 25% + tiếng nứt gãy bể khi bứt vật (16/10/2026)
+
+**Người dùng:** "âm lượng toàn bộ âm thanh của Lốc xoáy to thêm 25%; khi Lốc xoáy cuốn đồ vật, nhổ cây dưới đất lên cho thêm âm thanh **nứt gãy bể** để
+thể hiện rõ các đồ vật và cây cối **bị phá rồi mới cuốn lên**". Người dùng chọn: vật **RUNG NỨT tại chỗ ~0,3 s rồi mới bay**; tiếng chia **hai loại**.
+
+**To thêm 25%:** clip gió hú `LocXoayGio1–3` và tiếng nứt = bản gốc × 1,25 (đỉnh −3 dB → −1,06 dB — tăng trong CLIP vì `AudioSource.volume` kẹp ở 1: hệ số
+1,25 × thanh Hiệu ứng 80% đã chạm trần); tiếng sét dùng chung clip với Sấm sét nên tăng bằng hệ số 0,35 → 0,4375. Bản gốc mới `*_to25.wav` (bản cũ giữ).
+
+**Tiếng nứt gãy bể** (`CongCu/AmThanh/tieng_loc_xoay_nut.py`, clip ~1,9–2,1 s, 0–0,3 s rung → gãy / vỡ đúng lúc vật bật khỏi đất): **cây** = gỗ kẽo kẹt +
+nứt lách tách tăng dần (xung kích cộng hưởng gỗ 250–1600 Hz Q 4–8) → "RẮC" (chùm 5–10 nứt chồng nhau, bão hoà) → rễ bật khỏi đất (ồn trầm xé + đất vụn
+rơi); **đá / bia / lò / vật khác** = đá cọt kẹt → "CHOANG" vỡ → tảng đá rơi nảy (lệch chỉ bằng âm lượng) + sỏi vụn + bụi đất. Phân loại: khung hình vật
+cao ≥ 4,5 m = cây (cây Act2 6,5–17 m; bia ≤ 3,2, lò 2,3). `VatTheBiCuon.Start` kêu tiếng (tối đa 4 cùng lúc, vật sau trong 0,15 s ×0,6), `Update` RUNG
+0,3 s tại chỗ (lắc ≤ 4 cm + nghiêng 2,5° cây / 4° vật khác, mạnh dần) rồi mới vào quỹ đạo cuốn. Phát cân bằng như Lốc xoáy.
+
+Menu **132** (0 lỗi): 11 file trùng byte; đỉnh clip gió / nứt ×1,250; Lốc xoáy thật hệ số sét 0,44, loa 0,17; **F** lốc thật qua "cây" giả (hộp cao 7 m) +
+"bia" giả (1,5 m): phân loại đúng, tiếng nứt cây +2 / đá +5 (cả bia thật cạnh đó), cân bằng; 0,22 s đầu lệch chỗ 0,039 / 0,038 m, nghiêng 2,1°; 1 s sau
+rời chỗ cũ 5,5 / 6,1 m. ⚠️ Lần chạy đầu đo ĐỘ CAO — hộp 7 m có tâm ở giữa thân, độ cao mục tiêu ngẫu nhiên có thể thấp hơn → "lên −0,04 m" (cây thật tâm ở
+gốc); nay đo quãng rời chỗ. Menu 19 (hồi sinh sau lốc 10/10), 54c (lốc cuốn lò), 82: 0 lỗi. Chưa nghe thử trên web.
+
 ## Phần 4 — Menu công cụ "Diablo 2.5D"
 
 | Mục | Tác dụng |

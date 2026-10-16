@@ -47,6 +47,16 @@ public class VatTheBiCuon : MonoBehaviour
     float dongHo = -1f;              // < 0 = chua bien mat
     bool daAn;
 
+    /// <summary>RUNG NUT tai cho truoc khi bi cuon len (16/10/2026 nguoi dung: "the hien ro cac do vat va cay coi bi PHA roi moi cuon len") - khop
+    /// tieng nut gay (gay / vo o giay 0,3 cua clip).</summary>
+    public const float GiayRung = 0.3f;
+    /// <summary>Vat cao hon chung nay met (khung hinh) la CAY - tieng go nut + re bat dat; thap hon (bia 0,2-3,2 m, da, lo 2,3 m) = da vo.</summary>
+    public const float CaoLaCay = 4.5f;
+    float tuoiRung;
+    public bool laCay;
+    /// <summary>Dem cho phep thu.</summary>
+    public static int SoLanNutCay, SoLanNutDa;
+
     readonly List<Renderer> hinh = new List<Renderer>();
     readonly List<Collider> vaCham = new List<Collider>();
 
@@ -153,6 +163,14 @@ public class VatTheBiCuon : MonoBehaviour
             if (vaCham[i] != null) vaCham[i].enabled = false;
 
         GetComponentsInChildren(true, hinh);
+
+        // Tieng NUT GAY BE (nguoi dung 16/10/2026): cay (khung hinh cao >= 4,5 m) hay da / bia / lo
+        Bounds bao = new Bounds(transform.position, Vector3.zero); bool coBao = false;
+        for (int i = 0; i < hinh.Count; i++)
+            if (hinh[i] != null) { if (!coBao) { bao = hinh[i].bounds; coBao = true; } else bao.Encapsulate(hinh[i].bounds); }
+        laCay = coBao && bao.size.y >= CaoLaCay;
+        if (laCay) SoLanNutCay++; else SoLanNutDa++;
+        TiengViTri.LocXoayNut(choCu + Vector3.up * 1f, laCay);
     }
 
     void Update()
@@ -169,6 +187,17 @@ public class VatTheBiCuon : MonoBehaviour
 
         // Loc tan (bi xoa) ma chua kip goi TanBien
         if (tornado == null) { TanBien(); return; }
+
+        // RUNG NUT tai cho 0,3 s (rung manh dan) roi moi bi cuon len
+        if (tuoiRung < GiayRung)
+        {
+            tuoiRung += dt;
+            float k = Mathf.Clamp01(tuoiRung / GiayRung);
+            float bien = (laCay ? 2.5f : 4f) * (0.4f + 0.6f * k);
+            transform.position = choCu + new Vector3(Random.Range(-1f, 1f), 0f, Random.Range(-1f, 1f)) * 0.04f * (0.4f + 0.6f * k);
+            transform.rotation = Quaternion.Euler(Random.Range(-bien, bien), 0f, Random.Range(-bien, bien)) * huongCu;
+            return;
+        }
 
         angle += tornado.spinDegreesPerSecond * dt;
         height = Mathf.MoveTowards(height, targetHeight, riseSpeed * dt);

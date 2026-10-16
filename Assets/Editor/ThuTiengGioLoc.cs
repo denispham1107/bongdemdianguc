@@ -16,6 +16,9 @@ using UnityEngine;
 ///   C2. Tieng set NHO HON tieng gio: phat rieng tung tieng tai cung cho, do RMS loa.
 ///   D. SUONG MU: o 40 m -> giong muc 0 / set bi bo, loa im; doi chung tat suong co tieng.
 ///   E. BIEN THE Loc xoay: 3 clip, cao do +-6%.
+///   F. (16/10/2026, nguoi dung: Loc xoay to them 25% + tieng NUT GAY BE khi but vat, vat RUNG NUT 0,3 s roi moi bay) Loc xoay that qua mot "cay" gia
+///      (hop cao 7 m) va mot "bia" gia (hop 1,5 m): 1 tieng nut cay + 1 tieng nut da, can bang; trong 0,25 s dau vat o yen cho (lech <= 0,1 m) va
+///      nghieng rung; 0,8 s sau da roi cho cu > 0,5 m (bi cuon). Loc xoay x1,25: dinh clip gio / nut = 1,25 x ban goc (doc mau).
 /// Ket qua: PlayTestShots/tienggioloc.txt.
 /// </summary>
 public static class ThuTiengGioLoc
@@ -38,8 +41,11 @@ public static class ThuTiengGioLoc
         Ghi("[ban 1] tieng Gio loc (mau C 'Loc cat') + Loc xoay (A2 'hu lon' 7,6 s + set Sam set nho hon)");
         var ds = new[] {
             new[] { "GioLocThoi", "CongCu/AmThanh/GioLocThu/C_loc_cat_thoi.wav", "3" }, new[] { "GioLocBui", "CongCu/AmThanh/GioLocThu/C_loc_cat_bui.wav", "3" },
-            new[] { "LocXoayGio1", "CongCu/AmThanh/GioLocThu3/LocXoay_hu_1.wav", "7.6" }, new[] { "LocXoayGio2", "CongCu/AmThanh/GioLocThu3/LocXoay_hu_2.wav", "7.6" },
-            new[] { "LocXoayGio3", "CongCu/AmThanh/GioLocThu3/LocXoay_hu_3.wav", "7.6" } };
+            new[] { "LocXoayGio1", "CongCu/AmThanh/GioLocThu3/LocXoay_hu_1_to25.wav", "7.6" }, new[] { "LocXoayGio2", "CongCu/AmThanh/GioLocThu3/LocXoay_hu_2_to25.wav", "7.6" },
+            new[] { "LocXoayGio3", "CongCu/AmThanh/GioLocThu3/LocXoay_hu_3_to25.wav", "7.6" },
+            new[] { "LocXoayNutCay1", "CongCu/AmThanh/LocXoayNutThu/cay1_to25.wav", "1.94" }, new[] { "LocXoayNutCay2", "CongCu/AmThanh/LocXoayNutThu/cay2_to25.wav", "1.99" },
+            new[] { "LocXoayNutCay3", "CongCu/AmThanh/LocXoayNutThu/cay3_to25.wav", "1.99" }, new[] { "LocXoayNutDa1", "CongCu/AmThanh/LocXoayNutThu/da1_to25.wav", "1.89" },
+            new[] { "LocXoayNutDa2", "CongCu/AmThanh/LocXoayNutThu/da2_to25.wav", "2.05" }, new[] { "LocXoayNutDa3", "CongCu/AmThanh/LocXoayNutThu/da3_to25.wav", "2.10" } };
         int dung = 0;
         foreach (var kv in ds)
         {
@@ -51,6 +57,14 @@ public static class ThuTiengGioLoc
             else Ghi(string.Format("A. {0}: trung ban goc {1}; {2} kenh; dai {3}", kv[0], trung, c != null ? c.channels : 0, c != null ? c.length : 0));
         }
         Ghi(string.Format("A. {0}/{1} file trung ban goc, 2 kenh, dung do dai", dung, ds.Length));
+        // Loc xoay to them 25%: dinh ban trong game / dinh ban goc chua tang
+        foreach (var kv in new[] { new[] { "CongCu/AmThanh/GioLocThu3/LocXoay_hu_1.wav", "CongCu/AmThanh/GioLocThu3/LocXoay_hu_1_to25.wav" },
+                                   new[] { "CongCu/AmThanh/LocXoayNutThu/cay1.wav", "CongCu/AmThanh/LocXoayNutThu/cay1_to25.wav" } })
+        {
+            float d0 = DinhWav(kv[0]), d1 = DinhWav(kv[1]);
+            Ghi(string.Format("A2. {0}: dinh {1:F3} -> {2:F3} (x{3:F3})", Path.GetFileName(kv[1]), d0, d1, d1 / Mathf.Max(1e-6f, d0)));
+            Kiem(Mathf.Abs(d1 / Mathf.Max(1e-6f, d0) - 1.25f) < 0.01f, "tieng Loc xoay khong to them dung 25%");
+        }
         Kiem(dung == ds.Length, "co file khong dung ban goc / khong STEREO / sai do dai");
         canhCu = EditorSceneManager.GetActiveScene().path;
         if (canhCu != "Assets/Scenes/Act2.unity") EditorSceneManager.OpenScene("Assets/Scenes/Act2.unity");
@@ -62,6 +76,15 @@ public static class ThuTiengGioLoc
         EditorApplication.update -= Nhip;
         EditorApplication.update += Nhip;
         EditorApplication.EnterPlaymode();
+    }
+
+    static float DinhWav(string p)
+    {
+        var b = File.ReadAllBytes(p);
+        int i = 12; int dataOff = -1, dataLen = 0;
+        while (i + 8 <= b.Length) { string id = Encoding.ASCII.GetString(b, i, 4); int len = System.BitConverter.ToInt32(b, i + 4); if (id == "data") { dataOff = i + 8; dataLen = len; break; } i += 8 + len; }
+        int m = 0; for (int k = dataOff; k + 1 < dataOff + dataLen && k + 1 < b.Length; k += 2) m = Mathf.Max(m, Mathf.Abs((int)System.BitConverter.ToInt16(b, k)));
+        return m / 32768f;
     }
 
     static string Md5(string d) { using (var m = MD5.Create()) using (var f = File.OpenRead(d)) return System.BitConverter.ToString(m.ComputeHash(f)); }
@@ -264,6 +287,60 @@ public static class ThuTiengGioLoc
         Ghi(string.Format("E. 18 lan Loc xoay: {0} bien the; cao do {1:F3} - {2:F3}", clips.Count, caoMin, caoMax));
         Kiem(clips.Count == 3 && caoMin >= 0.94f - 1e-4f && caoMax <= 1.06f + 1e-4f && caoMax - caoMin > 0.05f, "khong du 3 bien the / cao do sai");
         yield return ChoIm(4f);
+
+        // ===== F. Loc xoay but vat: rung nut roi bay + tieng nut gay =====
+        Ghi("");
+        Vector3 diem = Dat(goc + truoc * 9f);
+        Vector3 ngang = Vector3.Cross(Vector3.up, truoc);
+        var cay = GameObject.CreatePrimitive(PrimitiveType.Cube); cay.name = "TAM_CayGia";
+        cay.transform.localScale = new Vector3(0.8f, 7f, 0.8f); cay.transform.position = Dat(diem + ngang * 1.6f) + Vector3.up * 3.5f;
+        var bia = GameObject.CreatePrimitive(PrimitiveType.Cube); bia.name = "TAM_BiaGia";
+        bia.transform.localScale = new Vector3(1f, 1.5f, 0.4f); bia.transform.position = Dat(diem - ngang * 1.6f) + Vector3.up * 0.75f;
+        Physics.SyncTransforms();
+        Vector3 cayGoc = cay.transform.position, biaGoc = bia.transform.position;
+        int nc0 = VatTheBiCuon.SoLanNutCay, nd0 = VatTheBiCuon.SoLanNutDa, lc0 = SL(TiengViTri.Loai.LocXoayNutCay), ld0 = SL(TiengViTri.Loai.LocXoayNutDa);
+        yield return new WaitForSeconds(5.5f);      // hoi chieu Loc xoay
+        pc.mana = pc.maxMana;
+        pc.CastAt(3, diem);
+        float hanF = Time.time + 4f;
+        VatTheBiCuon vc = null, vb = null;
+        while ((vc == null || vb == null) && Time.time < hanF)
+        {
+            if (vc == null) vc = cay.GetComponent<VatTheBiCuon>();
+            if (vb == null) vb = bia.GetComponent<VatTheBiCuon>();
+            yield return null;
+        }
+        float lucBat = Time.time;
+        float lechCay = 0f, lechBia = 0f, ngheng = 0f;
+        bool canBangNut = true;
+        foreach (var g in Giong(TiengViTri.Loai.LocXoayNutCay)) if (g.nguon.spatialBlend != 0f) canBangNut = false;
+        foreach (var g in Giong(TiengViTri.Loai.LocXoayNutDa)) if (g.nguon.spatialBlend != 0f) canBangNut = false;
+        while (Time.time - lucBat < 0.22f)
+        {
+            Vector3 dc = cay.transform.position - cayGoc; dc.y = 0; Vector3 db = bia.transform.position - biaGoc; db.y = 0;
+            lechCay = Mathf.Max(lechCay, dc.magnitude + Mathf.Abs(cay.transform.position.y - cayGoc.y));
+            lechBia = Mathf.Max(lechBia, db.magnitude + Mathf.Abs(bia.transform.position.y - biaGoc.y));
+            ngheng = Mathf.Max(ngheng, Quaternion.Angle(cay.transform.rotation, Quaternion.identity));
+            yield return null;
+        }
+        yield return new WaitForSeconds(0.8f);
+        // (lan chay 1 do do CAO: hop 'cay' 7 m tam o giua than (3,5 m) - do cao muc tieu ngau nhien 2,45-8 m nen co the HA xuong; cay that tam o goc.
+        // Nay do QUANG ROI CHO CU)
+        float lenCay = (cay.transform.position - cayGoc).magnitude, lenBia = (bia.transform.position - biaGoc).magnitude;
+        Ghi(string.Format("F. Loc xoay but: cay gia {0} (laCay {1}), bia gia {2} (laCay {3}); tieng nut cay +{4} / da +{5} (dem VatTheBiCuon +{6} / +{7}); can bang {8}",
+            vc != null, vc != null && vc.laCay, vb != null, vb != null && vb.laCay, SL(TiengViTri.Loai.LocXoayNutCay) - lc0, SL(TiengViTri.Loai.LocXoayNutDa) - ld0,
+            VatTheBiCuon.SoLanNutCay - nc0, VatTheBiCuon.SoLanNutDa - nd0, canBangNut));
+        Ghi(string.Format("   0,22 s dau: cay lech {0:F3} m (nghieng toi da {1:F1} do), bia lech {2:F3} m; 1 s sau: cay roi cho cu {3:F2} m, bia {4:F2} m",
+            lechCay, ngheng, lechBia, lenCay, lenBia));
+        Kiem(vc != null && vb != null && vc.laCay && !vb.laCay, "Loc xoay khong but / phan loai sai cay - bia");
+        Kiem(SL(TiengViTri.Loai.LocXoayNutCay) - lc0 >= 1 && SL(TiengViTri.Loai.LocXoayNutDa) - ld0 >= 1 && canBangNut, "thieu tieng nut gay cay / da (hoac khong can bang)");
+        Kiem(lechCay <= 0.1f && lechBia <= 0.1f && ngheng > 0.5f, "vat khong RUNG tai cho truoc khi bay");
+        Kiem(lenCay > 0.5f && lenBia > 0.5f, "rung xong vat khong bi cuon di");
+        if (cay != null) Object.Destroy(cay);
+        if (bia != null) Object.Destroy(bia);
+        var t2 = Object.FindAnyObjectByType<Tornado>(); float hanT = Time.time + 10f;
+        while (t2 != null && Time.time < hanT) yield return null;
+        yield return ChoIm(5f);
         Ket();
     }
 

@@ -1132,6 +1132,9 @@ hơn ×1,5 và mở xuống 1,8–4,3 m** (người dùng chọn sau menu 94 ch�
   (`tieng_gio_loc.py`, `GioLoc{Thoi,Bui}.wav` vòng lặp bám theo TỪNG cơn lốc); **Lốc xoáy** = bản 3 A2 "hú lớn" (`tieng_gio_loc_3.py --locxoay`,
   `LocXoayGio1–3` 7,6 s — tốc độ gió điều khiển hú / thổi) + tiếng sét Sấm sét ×0,35 mỗi nhịp tia (`TiengViTri.LocXoaySet`, người dùng: nhỏ hơn gió).
   Phát CÂN BẰNG. Menu 132, 71, 82: 0 lỗi (menu 71 nay tắt chế độ tạm khi chạy). Chưa nghe thử trên web.
+  ⚠️ **Cùng ngày: Lốc xoáy TO THÊM 25%** (clip gió / nứt × 1,25 — `*_to25.wav`; sét hệ số 0,4375) + **tiếng NỨT GÃY BỂ khi bứt vật** (cây ≥ 4,5 m: gỗ nứt + RẮC +
+  rễ bật; vật khác: đá vỡ — `tieng_loc_xoay_nut.py`, `LocXoayNut{Cay,Da}1–3`) và vật **RUNG 0,3 s tại chỗ rồi mới bị cuốn** (`VatTheBiCuon.GiayRung`). Menu 132,
+  19, 54c, 82: 0 lỗi.
 - ⚠️ **Ô KỸ NĂNG LƯU THEO TÀI KHOẢN + MẶC ĐỊNH CẢM ỨNG MỚI** (11/10/2026, người dùng khoanh 4 nút trên ảnh; chọn "lưu theo từng tài
   khoản" + "chỉ bản cảm ứng"): mặc định `SachPhep.MacDinhTron()` = [Cầu lửa, Mưa băng, Sấm sét, **Bình mana, Bình máu, Tốc biến**, Giựt sét,
   **Nhào lộn**] (nút tròn 4, 5, 6, 8); máy tính `MacDinhVuong()` giữ [0..6, Nhào lộn]. Khoá lưu = khoá gốc + "." + uid (`SachPhep.KhoaCua`; chưa

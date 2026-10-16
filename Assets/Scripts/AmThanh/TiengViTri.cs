@@ -32,7 +32,7 @@ public class TiengViTri : MonoBehaviour
                        TangHinhAn = 13, TangHinhHien = 14, TangHinhVong = 15, TangHinhTrung = 16,
                        GiatSetPhong = 17, GiatSetTrung = 18, GiatSetLan = 19, CauDienVong = 20,
                        SamSetDanh = 21, SamSetChay = 22, SamSetRen = 23, MayGiongGiong = 24, MayGiongMua = 25,
-                       GioLocThoi = 26, GioLocBui = 27, LocXoayGio = 28 }
+                       GioLocThoi = 26, GioLocBui = 27, LocXoayGio = 28, LocXoayNutCay = 29, LocXoayNutDa = 30 }
 
     // Qua cau lua: ban 3 "B - Khoi lua lon" (15/10/2026, CongCu/AmThanh/tieng_qua_cau_lua_3.py, QuaCauLuaThu3/B_khoi_lua_lon_*.wav -
     // mo hinh lua that: liem lua / xi hoi / lach tach ngau nhien khong deu). BA BIEN THE tieng ban + BA bien the tieng no, moi lan chon
@@ -69,10 +69,13 @@ public class TiengViTri : MonoBehaviour
         // Gio loc (16/10/2026): nguoi dung chon ban 1 mau C "Loc cat" (CongCu/AmThanh/tieng_gio_loc.py, GioLocThu/C_loc_cat_*.wav) - hai VONG LAP 3 s bam
         // theo TUNG con loc: gio thoi xoay + bui cat bi cuon. Loc xoay: ban 3 A2 "hu lon" keo dai 7,6 s (tieng_gio_loc_3.py --locxoay, GioLocThu3/
         // LocXoay_hu_*.wav - nguoi dung: "dung ban nay cho Loc xoay, do dai nhieu hon") + tieng set Sam set NHO HON gio (LocXoaySet).
-        new[] { "AmThanh/KyNang/GioLocThoi" }, new[] { "AmThanh/KyNang/GioLocBui" }, BienThe("LocXoayGio") };
+        new[] { "AmThanh/KyNang/GioLocThoi" }, new[] { "AmThanh/KyNang/GioLocBui" }, BienThe("LocXoayGio"),
+        // Loc xoay but vat (16/10/2026, nguoi dung): NUT GAY BE - cay bat goc / da-bia-lo vo (CongCu/AmThanh/tieng_loc_xoay_nut.py). Ca tieng gio Loc xoay
+        // lan tieng nut deu la ban goc x1,25 (nguoi dung: "am luong toan bo am thanh Loc xoay to them 25%" - *_to25.wav).
+        BienThe("LocXoayNutCay"), BienThe("LocXoayNutDa") };
     static string[] BienThe(string ten) { return new[] { "AmThanh/KyNang/" + ten + "1", "AmThanh/KyNang/" + ten + "2", "AmThanh/KyNang/" + ten + "3" }; }
     static readonly bool[] laVong = { false, true, false, false, false, true, false, true, false, false, false, false, false, false, false, false, false,
-                                      false, false, false, true, false, false, false, true, true, true, true, false };
+                                      false, false, false, true, false, false, false, true, true, true, true, false, false, false };
     static readonly AudioClip[][] clip = TaoKhoClip();
     static AudioClip[][] TaoKhoClip() { var k = new AudioClip[duong.Length][]; for (int i = 0; i < k.Length; i++) k[i] = new AudioClip[duong[i].Length]; return k; }
     /// <summary>Lech cao do toi da cua tieng ban / no Qua cau lua va roi / no Thien thach (+-6%, nguoi dung chon).</summary>
@@ -88,7 +91,8 @@ public class TiengViTri : MonoBehaviour
     {
         return l == Loai.MuaBangRoi ? SoMuaRoiToiDa : l == Loai.MuaBangCham ? SoMuaChamToiDa : l == Loai.TangHinhTrung ? SoTrungVongToiDa
              : l == Loai.GiatSetTrung ? SoSetTrungToiDa : l == Loai.GiatSetLan ? SoSetLanToiDa
-             : l == Loai.SamSetDanh || l == Loai.SamSetChay ? SoSamSetToiDa : 0;
+             : l == Loai.SamSetDanh || l == Loai.SamSetChay ? SoSamSetToiDa
+             : l == Loai.LocXoayNutCay || l == Loai.LocXoayNutDa ? SoNutToiDa : 0;
     }
     public const int SoMuaRoiToiDa = 3, SoMuaChamToiDa = 6;
     /// <summary>Vong phep Tang hinh trung nhieu ke cung luc: toi da 6 tieng trung cung luc (nguoi dung chon "moi ke mot tieng").</summary>
@@ -100,7 +104,10 @@ public class TiengViTri : MonoBehaviour
     /// <summary>May giong: am luong vong lap giong / mua.</summary>
     public const float HeSoMayGiong = 0.8f, HeSoMayGiongMua = 0.75f;
     /// <summary>Gio loc: gio thoi / bui moi con loc (2-3 con cung luc). Loc xoay: tieng set (Sam set) NHO HON gio hu (nguoi dung).</summary>
-    public const float HeSoGioLocThoi = 0.7f, HeSoGioLocBui = 0.6f, HeSoSetLocXoay = 0.35f;
+    // Loc xoay to them 25% (16/10/2026): set 0,35 -> 0,4375 (clip set dung chung voi Sam set nen tang bang he so; gio + nut tang trong clip)
+    public const float HeSoGioLocThoi = 0.7f, HeSoGioLocBui = 0.6f, HeSoSetLocXoay = 0.35f * 1.25f;
+    /// <summary>Loc xoay but vat: toi da 4 tieng nut gay cung luc (loc qua bai bia), vat sau trong 0,15 s x0,6.</summary>
+    public const int SoNutToiDa = 4;
     /// <summary>Dem cho phep thu: so tieng set cua Loc xoay da yeu cau.</summary>
     public static int SoLanSetLocXoay;
     public const float GanDayDu = 4f;
@@ -152,7 +159,8 @@ public class TiengViTri : MonoBehaviour
         return l == Loai.GiatSetPhong || l == Loai.GiatSetTrung || l == Loai.GiatSetLan || l == Loai.CauDienVong
             || l == Loai.SamSetDanh || l == Loai.SamSetChay || l == Loai.SamSetRen     // Sam set: nguoi dung "bao dam khong bi Unity bop"
             || l == Loai.MayGiongGiong || l == Loai.MayGiongMua
-            || l == Loai.GioLocThoi || l == Loai.GioLocBui || l == Loai.LocXoayGio;       // Gio loc / Loc xoay: "khong bi Unity bop"
+            || l == Loai.GioLocThoi || l == Loai.GioLocBui || l == Loai.LocXoayGio       // Gio loc / Loc xoay: "khong bi Unity bop"
+            || l == Loai.LocXoayNutCay || l == Loai.LocXoayNutDa;
 #endif
     }
 
@@ -170,7 +178,7 @@ public class TiengViTri : MonoBehaviour
     }
 
     /// <summary>Dem tieng da yeu cau theo loai (ke ca luc im trong phep thu / bi suong che) - phep thu doc / dat lai.</summary>
-    public static readonly int[] SoLan = new int[29];
+    public static readonly int[] SoLan = new int[31];
     /// <summary>Tieng mot lan bi BO vi luc phat nam trong suong (MucThay = 0).</summary>
     public static int SoBiSuongChe;
     /// <summary>Giong vua phat gan nhat (phep thu doc clip / cao do bien the).</summary>
@@ -213,6 +221,7 @@ public class TiengViTri : MonoBehaviour
     readonly List<float> trungGanDay = new List<float>();       // luc tieng trung vong phep Tang hinh
     readonly List<float> setTrungGanDay = new List<float>(), setLanGanDay = new List<float>();   // Giut set / Qua cau dien
     readonly List<float> samDanhGanDay = new List<float>(), samChayGanDay = new List<float>();   // Sam set
+    readonly List<float> nutGanDay = new List<float>();   // Loc xoay but vat
     static AnimationCurve duongPhang;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
@@ -264,7 +273,7 @@ public class TiengViTri : MonoBehaviour
     {
         if (kieu != LoadSceneMode.Single) return;
         foreach (var g in giong) TraVe(g);
-        noGanDay.Clear(); noBangGanDay.Clear(); voGanDay.Clear(); trungGanDay.Clear(); setTrungGanDay.Clear(); setLanGanDay.Clear(); samDanhGanDay.Clear(); samChayGanDay.Clear();
+        noGanDay.Clear(); noBangGanDay.Clear(); voGanDay.Clear(); trungGanDay.Clear(); setTrungGanDay.Clear(); setLanGanDay.Clear(); samDanhGanDay.Clear(); samChayGanDay.Clear(); nutGanDay.Clear();
         KiemPhepThu();
     }
 
@@ -632,6 +641,16 @@ public class TiengViTri : MonoBehaviour
         SoLan[(int)Loai.SamSetDanh]++;
         var b = DamBao();
         b.Phat(Loai.SamSetDanh, cho, null, false, HeSoSetLocXoay * HeSoKeSau(b.samDanhGanDay), CaoDoNgauNhien());
+    }
+
+    /// <summary>Tieng NUT GAY BE luc Loc xoay BUT mot vat (VatTheBiCuon.Start): cay = go nut + RAC + re bat dat; khac (bia / da / lo...) = da vo.
+    /// Clip: 0-0,3 s rung nut (vat rung tai cho) roi gay / vo dung luc vat bat khoi dat.</summary>
+    public static void LocXoayNut(Vector3 cho, bool laCay)
+    {
+        var l = laCay ? Loai.LocXoayNutCay : Loai.LocXoayNutDa;
+        SoLan[(int)l]++;
+        var b = DamBao();
+        b.Phat(l, cho, null, false, HeSoKeSau(b.nutGanDay), CaoDoNgauNhien());
     }
 
     // ================================================================
