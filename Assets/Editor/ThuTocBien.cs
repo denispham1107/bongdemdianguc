@@ -45,6 +45,7 @@ public static class ThuTocBien
         }
         Directory.CreateDirectory("PlayTestShots");
         bao.Length = 0; loi = 0; daBatDau = false;
+        CapDo.TatMoSanChoPhepThu = true;   // che do tam "mo san moi ky nang" (16/10/2026) lam hong muc B "khoa -> tu choi"
         Ghi("[ban 1] Toc bien");
         canhCu = EditorSceneManager.GetActiveScene().path;
         if (canhCu != "Assets/Scenes/Act2.unity") EditorSceneManager.OpenScene("Assets/Scenes/Act2.unity");
@@ -407,6 +408,7 @@ public static class ThuTocBien
 
     static void Ket()
     {
+        CapDo.TatMoSanChoPhepThu = false;
         TranHienTai.Xoa();
         File.WriteAllText("PlayTestShots/tocbien.txt", bao.ToString());
         var rac = GameObject.Find("TAM_TocBien");

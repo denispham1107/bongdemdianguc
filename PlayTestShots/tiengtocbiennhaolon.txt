@@ -1,0 +1,18 @@
+[ban 1] tieng Toc bien (mau C 'Khoi no') + Nhao lon (mau A 'Dat soi'), 3 bien the moi tieng
+A. 15/15 file trung ban goc, 2 kenh, khong ForceToMono
+
+B. tung that Toc bien: nhay 1 (10.0 m); bien mat +1 (o cho cu True), hien ra +1 (bam theo nguoi True); can bang 2D True; loa RMS 0.0399 (dinh 0.1291), tuong quan 0.321
+
+C. nhao lon 8 m (vong 0.76 s, bat 1): VUT/LAN/DAP so 1/1/1, luc 0.000/0.272/0.497 s (mong 0 / 0.262 / 0.488); bam theo nguoi True/True/True; loa RMS 0.0637 tuong quan 0.317
+C. nhao lon 2 m (vong 0.44 s, bat 1): VUT/LAN/DAP so 1/1/1, luc 0.000/0.176/0.290 s (mong 0 / 0.154 / 0.287); bam theo nguoi True/True/True; loa RMS 0.0590 tuong quan 0.362
+
+D. huy o goc 2 do (truoc 80): VUT +1, LAN +0, DAP +0
+
+E. ban sao (laChu false): VUT/LAN/DAP so 1/1/1, luc 0.000/0.194/0.267 s
+
+F. o 30 m (MucThay 0.00): bien mat bi suong che +1 (giong 0); hien ra / vut / dap giong 3 muc lon nhat 0.000; loa RMS 0.00000
+F2. DOI CHUNG tat suong: bien mat o 30 m -> giong 1, bi suong che +0
+
+G. 24 lan moi loai: so bien the TocBienMat 3 (24 lan duoc giong), TocBienHien 3 (24 lan duoc giong), NhaoLonVut 3 (24 lan duoc giong), NhaoLonLan 3 (24 lan duoc giong), NhaoLonDap 3 (24 lan duoc giong); cao do 0.942 - 1.059
+
+so loi ghi nhan = 0

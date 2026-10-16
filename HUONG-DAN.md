@@ -14494,6 +14494,33 @@ nhìn đồng đội ở chế độ Đôi).
   127 F nay chỉ đếm giọng ở chỗ xa (một lần chạy đếm nhầm một tiếng còn sót của mục trước, loa vẫn im 0,00000). Cả 8 menu: **0 lỗi**.
 - Menu 115: **0 lỗi** (tắt chế độ tạm "mở sẵn mọi kỹ năng" khi chạy — mục A cộng điểm theo hệ hỏng 4/4 vì mọi kỹ năng đều ở cấp 1).
 
+## Tiếng Tốc biến + Nhào lộn (16/10/2026)
+
+**Người dùng:** "thêm âm thanh stereo cho Tốc biến — khi nhân vật biến mất và khi xuất hiện ở chỗ mới; cho Nhào lộn — trong suốt thời gian cuộn người
+nhào lộn về phía trước, làm tiếng động chân thật; người chơi khác bị sương mù che thì không nghe". Gửi 3 mẫu mỗi kỹ năng + file ghép "như trong game"
+(phát cân bằng, mình ở giữa, người khác hai bên); người dùng chọn **Tốc biến C "Khói nổ"** và **Nhào lộn A "Đất sỏi"**.
+
+**Tốc biến** (`CongCu/AmThanh/tieng_toc_bien.py`, file `TocBienMat1–3`, `TocBienHien1–3`): "bụp" khói nén bật ra (thân trầm hai kênh cùng pha + luồng khí
+cực ngắn + "tóc") + khói xì tan dần, lúc hiện ra thêm bụi đất + bước chân + áo. Biến mất kêu TẠI CHỖ CŨ (không chủ — chỗ cũ trong sương thì bỏ), hiện ra kêu
+ở chỗ mới và bám theo người. Gắn ở `TocBien.Nhay` (máy điều khiển) và nhánh bản sao trong `PlayerController` (máy khác chỉ chạy hiệu ứng).
+
+**Nhào lộn** (`tieng_nhao_lon.py`, file `NhaoLonVut1–3`, `NhaoLonLan1–3`, `NhaoLonDap1–3`): nhào lộn thật là CHUỖI VA CHẠM của cơ thể với đất, không phải một
+tiếng "vụt" kéo dài — nên tách ba tiếng phát theo **GÓC LẬT** của vòng lộn (`NhaoLon.GocLat`), không theo giây: **VỤT** lúc bắt đầu (luồng gió thân +
+áo choàng phạch), **LĂN** khi lật qua 80° (vai / lưng chạm đất: "huỵch" + sỏi lạo xạo + áo chà đất), **ĐÁP** khi lật qua 300° (hai chân đáp cách nhau
+50–120 ms + trượt dừng lại + áo rũ). Vòng 8 m (0,76 s) hay 0,8 m (0,38 s) đều khớp; bị đánh ngã / hất tung / chết giữa vòng thì không còn tiếng sau. Mọi máy
+(bản sao cũng vẽ tư thế) tự phát.
+
+**Đo trước khi gửi mẫu (quy trình tiếng kỹ năng):** bản đầu Nhào lộn dưới 200 Hz 45–60% (loa điện thoại không phát), tương quan 0,35–0,63 → thân "huỵch"
+dồn lên 250–1 100 Hz, phần chung giữa hai kênh 0,3–0,35; lần hai 1–4 kHz chỉ 8–14% (đục, mất tiếng sỏi) → sỏi ×1,8. Tốc biến bản đầu có clip tương quan
+ÂM −0,06…−0,21: `b2.bum_chung` lệch cao độ hai kênh 1,5% — thân dài 0,1 s trôi pha thành NGƯỢC → dùng `um_chung` lệch 0,3%. Bản gửi: ghép Nhào lộn A
+tương quan 0,27, < 200 Hz 6%, > 4 kHz 3%; Tốc biến C 0,31, 4% / 2%; biến thể chênh 2–19 dB.
+
+Phát CÂN BẰNG như các kỹ năng trước (Editor / máy tính 2D + panStereo; web vẫn 3D). Menu **133** (0 lỗi, Play Act2 thật): 15 file trùng byte bản gốc,
+STEREO; Tốc biến thật 10 m: biến mất +1 đúng chỗ cũ, hiện ra +1 bám người, loa tương quan 0,32; Nhào lộn thật 8 m: VỤT / LĂN / ĐÁP lúc 0 / 0,272 / 0,497 s
+(tính từ góc lật: 0 / 0,262 / 0,488), 2 m: 0 / 0,176 / 0,290 (0 / 0,154 / 0,287), loa 0,32 / 0,36; huỷ ở 2° → chỉ VỤT; bản sao đủ 3 tiếng; trong sương
+(30 m) biến mất bị bỏ, hiện ra / vụt / đáp giữ giọng mức 0, loa im — đối chứng tắt sương có giọng; 24 lần mỗi loại đủ 3 biến thể, cao độ 0,942–1,059.
+Menu 119, 76: 0 lỗi (menu 76 nay tắt chế độ tạm "mở sẵn mọi kỹ năng" khi chạy — mục B "khoá → từ chối" hỏng 4 lỗi dây chuyền). Chưa nghe thử trên web.
+
 ## Phần 4 — Menu công cụ "Diablo 2.5D"
 
 | Mục | Tác dụng |

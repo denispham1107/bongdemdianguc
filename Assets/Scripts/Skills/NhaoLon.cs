@@ -109,6 +109,12 @@ public class NhaoLon : MonoBehaviour
     /// <summary>So lan nhao lon da bat (moi may) - phep thu doc.</summary>
     public static int SoLanBat;
 
+    /// <summary>TIENG (16/10/2026, nguoi dung chon mau A "Dat soi"): VUT luc bat dau, LAN khi goc lat qua <see cref="GocTiengLan"/> (vai / lung
+    /// cham dat), DAP khi qua <see cref="GocTiengDap"/> (hai chan dap + truot dung lai). Theo GOC (khong theo giay) -> lan 0,8 m hay 8 m deu khop;
+    /// moi may (ban sao cung ve tu the) tu phat. Bi huy giua chung (nga, hat tung, chet) thi khong con tieng sau.</summary>
+    public const float GocTiengLan = 80f, GocTiengDap = 300f;
+    bool daKeuLan, daKeuDap;
+
     public static bool Dang(GameObject g)
     {
         if (g == null) return false;
@@ -137,6 +143,7 @@ public class NhaoLon : MonoBehaviour
         if (cu != null) { cu.TraHinh(); DestroyImmediate(cu); }
         var n = pc.gameObject.AddComponent<NhaoLon>();
         n.huong = h; n.quang = d; n.tong = ThoiGianLan(d); n.daTroi = 0f; n.laChu = laChu;
+        TiengViTri.NhaoLonTieng(pc.transform, TiengViTri.Loai.NhaoLonVut);
         if (laChu) pc.transform.rotation = Quaternion.LookRotation(h);
         SoLanBat++;
         return n;
@@ -239,6 +246,10 @@ public class NhaoLon : MonoBehaviour
         if (dm != null && dm.IsDead) { Huy(false); return; }
         var pc = GetComponent<PlayerController>();
         if (laChu && pc != null && (pc.DangBiKhoaCung || GetComponent<WhirledEffect>() != null)) { Huy(true); return; }
+        // Tieng theo goc lat (truoc khi het vong - khung cuoi dai van keu du LAN + DAP)
+        float gocTieng = GocLat(TiLeThoiGian);
+        if (!daKeuLan && gocTieng >= GocTiengLan) { daKeuLan = true; TiengViTri.NhaoLonTieng(transform, TiengViTri.Loai.NhaoLonLan); }
+        if (!daKeuDap && gocTieng >= GocTiengDap) { daKeuDap = true; TiengViTri.NhaoLonTieng(transform, TiengViTri.Loai.NhaoLonDap); }
         if (daTroi >= tong) { Huy(true); return; }
 
         VeTuThe(TiLeThoiGian);

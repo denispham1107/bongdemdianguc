@@ -142,6 +142,7 @@ public static class TocBien
 
         Vector3 choCu = pc.transform.position;
         VfxFactory.TocBienBienMat(choCu);
+        TiengViTri.TocBienMat(choCu);           // tieng "bup" khoi o cho cu (16/10/2026)
 
         // CharacterController giu vi tri rieng: doi transform ma khong tat no thi khung sau
         // no keo nguoi ve cho cu (cai bay quen thuoc cua Unity).
@@ -152,6 +153,7 @@ public static class TocBien
         Physics.SyncTransforms();
 
         VfxFactory.TocBienHienRa(choDen);
+        TiengViTri.TocBienHien(pc.transform, choDen);
 
         // CAP 5: nhay xong thi sach moi trang thai bat loi
         if (pc.Cap.CapCuaKyNang(CapDo.KyTocBien) >= CapGoTroiBuoc) GoSachTrangThai(pc.gameObject);

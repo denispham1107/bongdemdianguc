@@ -1492,6 +1492,8 @@ public class PlayerController : MonoBehaviour
             {
                 VfxFactory.TocBienBienMat(transform.position);
                 VfxFactory.TocBienHienRa(castAim);
+                TiengViTri.TocBienMat(transform.position);
+                TiengViTri.TocBienHien(transform, castAim);
             }
         }
         else if (castingSkill == CapDo.KyHoaLocXoay)
