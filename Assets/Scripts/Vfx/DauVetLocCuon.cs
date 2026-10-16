@@ -43,6 +43,11 @@ public class DauVetLocCuon : MonoBehaviour
     /// <summary>Ban kinh ho dat theo kich thuoc vat: cay = x ban kinh than; con lai = x canh dai cua chan + them.</summary>
     public const float HoCay = 2.4f, HoBia = 0.55f, HoDa = 0.6f, HoNha = 0.55f, HoLo = 0.75f;
     public const float TiLeNenLo = 0.78f;
+    /// <summary>Luoi GocCay0-2 (Blender) "ban kinh 1 = than" nhung DO RA: 15% dinh ngoai cung o 1,23-1,29, re toi 1,64-1,75, cao 1,63-1,99
+    /// (16/10/2026 lan 4, nguoi dung: "goc cay van qua to") -> chia ngang cho NgoaiGocCay va ep cao cho dinh = CaoGocTheoThan x ban kinh than.
+    /// NgoaiGocCay 1,02 (khong phai 1,26): 1,26 tinh ca dinh re nam SAT DAT; menu 135 F do phan goc TREN mat dat (> 5 cm) so voi MEP NGOAI than o
+    /// 1 m: chia 1,26 -> goc chi x0,68-0,83 than (nho hon than) -> 1,26 x 0,81 = 1,02.</summary>
+    public const float NgoaiGocCay = 1.02f, CaoGocTheoThan = 1.0f;
 
     // ---- thong ke cho phep thu ----
     public static int SoLanTao, SoLanXoa, SoLanCoSoDo;
@@ -177,7 +182,13 @@ public class DauVetLocCuon : MonoBehaviour
         switch (k)
         {
             case Kieu.Cay:
-                tren = TaoManh(go.transform, "GocCay" + rnd.Next(3), vlVat, Vector3.one * sd.banKinhThan, rnd.Next(360), -0.03f);
+                {
+                    string tenGoc = "GocCay" + rnd.Next(3);
+                    var lg = Luoi(tenGoc);
+                    float kn = sd.banKinhThan / NgoaiGocCay;
+                    float kc = lg != null ? sd.banKinhThan * CaoGocTheoThan / Mathf.Max(0.3f, lg.bounds.max.y) : kn;
+                    tren = TaoManh(go.transform, tenGoc, vlVat, new Vector3(kn, kc, kn), rnd.Next(360), -0.03f);
+                }
                 break;
             case Kieu.Bia:
                 tren = TaoManh(go.transform, "ChanBia" + rnd.Next(3), vlVat, new Vector3(sd.rong, Mathf.Clamp(sd.cao * 0.55f, 0.12f, 1.2f), sd.day), sd.huong, 0f);

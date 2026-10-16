@@ -14607,6 +14607,19 @@ lượt; gốc cây cao 0,62 m CHẶN quái (chỗ chặn 0,64 m), người chơ
 chỗ gãy 0,44 m (đống gạch làm dốc) → leo qua, độ leo ≥ mảnh dưới đường đi; lúc lốc còn chạy: 40/40 dấu vết có va chạm, 0 bị cuốn; gọi `Xoa` → va chạm
 còn bật 0. Mục F (920 vật đúng tỉ lệ), B–E: 0 lỗi. Menu 19, 54c, 82: 0 lỗi.
 
+### Lần 4 — gốc cây vẫn quá to (16/10/2026)
+
+**Người dùng** (ảnh trong trận): "một số cây khi Lốc xoáy cuốn bay đi vẫn để lại gốc cây quá to so với thực tế". Đo lại: (1) lưới Blender `GocCay0–2`
+coi "bán kính 1 = thân" nhưng thật ra 15% đỉnh ngoài cùng ở 1,23–1,29, rễ tới 1,64–1,75, cao 1,63–1,99; (2) số nướng lấy P85 ở 0,3–1 m = chỗ LOE gốc
+(oakB 1,0 m ở 0,4 m so với 0,88 m ở 1 m) → cây oakB để lại gốc rộng ~3,9 m, cao ~2,2 m (khối "đá" trong ảnh). Mục F lần 2 chỉ so dải 0,2–0,45 m của gốc với
+chỗ loe của cây nên không bắt được (phép kiểm không đo cái người dùng nhìn thấy: TOÀN BỘ khối gốc).
+
+**Sửa:** nướng (menu 135b) bán kính thân ở **0,8–1,2 m, trung vị** (oakB 1,106 → 0,878); gốc cây chia ngang cho `NgoaiGocCay` **1,02** (độ rộng phần gốc TRÊN
+mặt đất của lưới — lần thử 1,26 tính cả đỉnh rễ sát đất ra gốc ×0,68–0,83 thân, nhỏ hơn thân), cao đỉnh = `CaoGocTheoThan` ×1 bán kính thân. Mục F thêm phép
+đo TOÀN BỘ gốc (mọi đỉnh trên 5 cm) so với mép ngoài thân ở 1 m (nửa đường kính dải 0,8–1,2 m — đo khác cách nướng): **ngang P85 ×0,84–1,02 (trung vị
+1,00), rễ xa nhất ×0,92–1,13, cao ×0,75–0,95** trên 66 cây (giới hạn 0,7–1,25 / ≤ 1,6 / ≤ 1,3). Ảnh `PlayTestShots/dauvet_Cay_truoc|sau.png`: gốc rộng bằng thân.
+Mục G: gốc cây nay thấp (0,27 m dưới đường đi) → cả người lẫn quái bước qua. Menu 135: 0 lỗi.
+
 ## Khiên: đòn chỉ chạm MẶT KHIÊN, không xuyên vào trong (16/10/2026)
 
 **Người dùng:** "tất cả tia sét, tia điện, băng, gió lốc (trừ Lốc xoáy) khi đánh vào người chơi đang bật khiên thì chỉ chạm vào khiên, không thể xuyên vào

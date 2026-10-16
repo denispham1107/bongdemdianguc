@@ -145,7 +145,15 @@ public static class ThuDauVetLocCuon
                 if (col is CapsuleCollider cap) cu = cap.radius * Mathf.Max(Mathf.Abs(ls.x), Mathf.Abs(ls.z)) * 2f * (laCay ? 1.35f : 1f);
                 else if (col is BoxCollider box) cu = Mathf.Max(Mathf.Abs(box.size.x * ls.x), Mathf.Abs(box.size.z * ls.z));
                 else if (col != null) cu = Mathf.Max(col.bounds.size.x, col.bounds.size.z);
-                thatTe[DauVetLocCuon.Khoa(g.name, g.transform.position)] = new[] { dk, cu };
+                // cay: them BAN KINH THAN o 1 m (0,8-1,2 m) - do DOC LAP voi cach nuong (nuong = trung vi khoang cach toi tam; day = nua DuongKinh dai)
+                float r1 = 0f;
+                if (laCay)
+                {
+                    var dai1 = new List<Vector3>();
+                    foreach (var w in ws) if (w.y >= minY + 0.8f && w.y <= minY + 1.2f) dai1.Add(w);
+                    r1 = dai1.Count >= 4 ? DuongKinh(dai1) * 0.5f : 0f;
+                }
+                thatTe[DauVetLocCuon.Khoa(g.name, g.transform.position)] = new[] { dk, cu, r1 };
             }
         }
     }
@@ -188,6 +196,7 @@ public static class ThuDauVetLocCuon
             var tiLe = new Dictionary<DauVetLocCuon.Kieu, List<float>>(); var tiLeCu = new Dictionary<DauVetLocCuon.Kieu, List<float>>();
             var xauNhat = new Dictionary<DauVetLocCuon.Kieu, string>();
             int soDo = 0, coSoDo = 0;
+            var cayNgang = new List<float>(); var cayRe = new List<float>(); var cayCao = new List<float>(); var cayXau = new List<string>();
             var vatF = new List<GameObject>();
             foreach (var ten in new[] { "World/Cay", "World/BiaMo", "World/Da", "World/NhaMo" }) { var cha = GameObject.Find(ten); if (cha != null) foreach (Transform c in cha.transform) vatF.Add(c.gameObject); }
             foreach (var lo in Object.FindObjectsByType<LoLuaDa>(FindObjectsSortMode.None)) vatF.Add(lo.gameObject);
@@ -204,8 +213,14 @@ public static class ThuDauVetLocCuon
                 float y0 = dv.transform.position.y;
                 bool laCay = dv.kieu == DauVetLocCuon.Kieu.Cay, laDa = dv.kieu == DauVetLocCuon.Kieu.Da, laLo = dv.kieu == DauVetLocCuon.Kieu.Lo;
                 var dai = new List<Vector3>();
+                var rGoc = new List<float>(); float caoGoc = 0f;     // cay: TOAN BO goc (lan 4) - ban kinh moi dinh tren dat + dinh cao nhat
                 foreach (var q in vT)
                 {
+                    if (laCay)
+                    {
+                        var w0 = mT.MultiplyPoint3x4(q);
+                        if (w0.y - y0 > 0.05f) { rGoc.Add(new Vector2(w0.x - dv.transform.position.x, w0.z - dv.transform.position.z).magnitude); caoGoc = Mathf.Max(caoGoc, w0.y - y0); }
+                    }
                     if (laLo && new Vector2(q.x, q.z).magnitude > 0.62f) continue;        // lo: chi vong da chinh (bo da vang ra ngoai)
                     var w = mT.MultiplyPoint3x4(q);
                     float h = w.y - y0;
@@ -215,6 +230,15 @@ public static class ThuDauVetLocCuon
                 Object.DestroyImmediate(dv.gameObject);
                 if (dkT <= 0f) continue;
                 float tl = dkT / tt[0], tlCu = tt[1] > 0f ? tt[1] / tt[0] : 0f;
+                if (laCay && tt.Length > 2 && tt[2] > 0f && rGoc.Count > 10)
+                {
+                    // cay (lan 4): so TOAN BO goc voi THAN o 1 m: ngang P85, re xa nhat, dinh cao nhat
+                    rGoc.Sort();
+                    float ngang = rGoc[(int)(rGoc.Count * 0.85f)] / tt[2], re = rGoc[rGoc.Count - 1] / tt[2], cao = caoGoc / tt[2];
+                    cayNgang.Add(ngang); cayRe.Add(re); cayCao.Add(cao);
+                    if (ngang > 1.25f || re > 1.6f || cao > 1.3f || ngang < 0.7f) cayXau.Add(string.Format("{0} (than {1:F2} m: ngang x{2:F2}, re x{3:F2}, cao x{4:F2})", g.name, tt[2], ngang, re, cao));
+                    tl = ngang;      // ti le cay = ngang P85 / than 1 m
+                }
                 if (!tiLe.ContainsKey(dv.kieu)) { tiLe[dv.kieu] = new List<float>(); tiLeCu[dv.kieu] = new List<float>(); }
                 tiLe[dv.kieu].Add(tl); if (tlCu > 0f) tiLeCu[dv.kieu].Add(tlCu);
                 float lech = Mathf.Abs(Mathf.Log(tl));
@@ -224,7 +248,7 @@ public static class ThuDauVetLocCuon
             }
             Ghi(string.Format("F. dung + do dau vet cho {0} vat ({1} co so do nuong san); tao them {2}", soDo, coSoDo, DauVetLocCuon.SoLanTao - truocTao));
             var gioiHan = new Dictionary<DauVetLocCuon.Kieu, Vector2> {
-                { DauVetLocCuon.Kieu.Cay, new Vector2(0.8f, 1.25f) }, { DauVetLocCuon.Kieu.Bia, new Vector2(0.85f, 1.25f) }, { DauVetLocCuon.Kieu.Da, new Vector2(0.5f, 1.3f) },
+                { DauVetLocCuon.Kieu.Cay, new Vector2(0.7f, 1.25f) }, { DauVetLocCuon.Kieu.Bia, new Vector2(0.85f, 1.25f) }, { DauVetLocCuon.Kieu.Da, new Vector2(0.5f, 1.3f) },
                 { DauVetLocCuon.Kieu.NhaMo, new Vector2(0.85f, 1.2f) }, { DauVetLocCuon.Kieu.Lo, new Vector2(0.8f, 1.4f) } };
             foreach (var kv in tiLe)
             {
@@ -235,6 +259,14 @@ public static class ThuDauVetLocCuon
                 Kiem(ngoai == 0, kv.Key + ": co dau vet sai ti le that");
             }
             Kiem(soDo > 900 && coSoDo == soDo, "khong do du 924 vat / co vat khong co so do nuong san");
+            if (cayNgang.Count > 0)
+            {
+                cayNgang.Sort(); cayRe.Sort(); cayCao.Sort();
+                Ghi(string.Format("F. CAY - toan bo goc so voi THAN o 1 m ({0} cay): ngang P85 x{1:F2}-{2:F2} (trung vi {3:F2}), re xa nhat x{4:F2}-{5:F2}, cao x{6:F2}-{7:F2}; vuot (ngang 0,7-1,25 / re <= 1,6 / cao <= 1,3): {8}",
+                    cayNgang.Count, cayNgang[0], cayNgang[cayNgang.Count - 1], cayNgang[cayNgang.Count / 2], cayRe[0], cayRe[cayRe.Count - 1], cayCao[0], cayCao[cayCao.Count - 1], cayXau.Count));
+                foreach (var x in cayXau) Ghi("F.    " + x);
+                Kiem(cayXau.Count == 0, "goc cay to / cao hon than cay that");
+            }
         }
         Ghi("");
 

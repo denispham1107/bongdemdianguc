@@ -512,6 +512,9 @@ hơn ×1,5 và mở xuống 1,8–4,3 m** (người dùng chọn sau menu 94 ch�
   ⚠️ **Lần 3: dấu vết có VA CHẠM** (người dùng: không đi xuyên; thấp thì leo lên rồi xuống): MeshCollider đúng hình trên mọi mảnh nổi (lớp Default) →
   CharacterController (người 0,55 m, quái 0,4 m) bị chặn / bước lên; hố đất không va chạm; Lốc xoáy không cuốn dấu vết; vật mọc lại tắt va chạm ngay.
   Menu 135 G: 0 lần lọt vào trong.
+  ⚠️ **Lần 4: gốc cây vẫn quá to** (người dùng): lưới GocCay rộng / cao hơn "bán kính 1" + số nướng lấy chỗ loe gốc → oakB để lại gốc ~3,9 m. Nay
+  bán kính thân ở 0,8–1,2 m (trung vị), gốc chia ngang `NgoaiGocCay` 1,02, cao = 1× bán kính thân. Menu 135 F đo TOÀN BỘ gốc so với thân ở 1 m:
+  ngang ×0,84–1,02, rễ ≤ ×1,13, cao ≤ ×0,95 (66 cây). Menu 135: 0 lỗi.
   ⚠️ **KHÔNG CÓ DẤU VẾT TRÊN MẶT ĐẤT**: 29/09/2026 đã thêm (dải đất cày + vết cháy xém, `VetLocDat`, shader nhân màu `VetDatNhan`,
   ảnh Blender MCP) rồi cùng ngày người dùng bảo **xoá hết** ("xoá các vết di chuyển của lốc ở cả 2 skill", chọn xoá cả vết cháy) — đã
   gỡ code, shader, ảnh, vật liệu, file Blender (còn trong git `d2d6da0`). Menu 82 B6 kiểm lốc thật chạy 3 s sinh 0 vật thể dấu vết.

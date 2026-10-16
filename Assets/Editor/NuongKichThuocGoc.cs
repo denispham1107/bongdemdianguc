@@ -94,15 +94,18 @@ public static class NuongKichThuocGoc
         float bk = 0f;
         if (kieu == "Cay")
         {
+            // Ban kinh than o 0,8-1,2 m, TRUNG VI (16/10/2026 lan 4, nguoi dung van thay "goc cay qua to"): truoc lay P85 cua 0,3-1 m = cho LOE
+            // goc (oakB 1,0 o 0,4 m so voi 0,88 o 1 m) -> goc to them ~25%. Tam truc van lay tu dai 0,3-1 m (it nhanh).
             Vector2 t2 = Vector2.zero; int n = 0;
             foreach (var w in ws) if (w.y > minY + 0.3f && w.y < minY + 1.0f) { t2 += new Vector2(w.x, w.z); n++; }
             if (n >= 6)
             {
                 t2 /= n;
                 var ds = new List<float>();
-                foreach (var w in ws) if (w.y > minY + 0.3f && w.y < minY + 1.0f) ds.Add((new Vector2(w.x, w.z) - t2).magnitude);
+                foreach (var w in ws) if (w.y > minY + 0.8f && w.y < minY + 1.2f) ds.Add((new Vector2(w.x, w.z) - t2).magnitude);
+                if (ds.Count < 4) foreach (var w in ws) if (w.y > minY + 0.3f && w.y < minY + 1.0f) ds.Add((new Vector2(w.x, w.z) - t2).magnitude);
                 ds.Sort();
-                bk = ds[Mathf.Min(ds.Count - 1, (int)(ds.Count * 0.85f))];
+                bk = ds[ds.Count / 2];
                 tam = t2;
             }
             else bk = Mathf.Min(rong, day) * 0.5f;
