@@ -89,6 +89,9 @@ public class VatTheBiCuon : MonoBehaviour
         // Dia hinh: cuon ca qua doi len troi.
         if (go.GetComponent<Terrain>() != null) return false;
 
+        // Dau vet de lai cua vat da bi cuon (co va cham tu 16/10/2026) - cuon no di thi mat dat lai trong tron
+        if (go.GetComponentInParent<DauVetLocCuon>() != null) return false;
+
         // Chinh con loc, hoac mot bo phan cua no.
         if (go.transform.IsChildOf(loc.transform)) return false;
 

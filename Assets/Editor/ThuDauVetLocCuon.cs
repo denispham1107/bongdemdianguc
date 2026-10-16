@@ -15,6 +15,10 @@ using UnityEngine;
 ///   C. Anh SAU (loc da tan, cung goc) -> PlayTestShots/dauvet_[loai]_truoc|sau.png.
 ///   D. NGOAI TAM NHIN: dua nhan vat ra xa > tam nhin + 5 m -> moi renderer dau vet bi an (TamNhin), ve lai gan -> hien.
 ///   E. VAT MOC LAI (30 s): dau vet lun roi xoa het (con 0), SoLanXoa tang dung so.
+///   G. VA CHAM (16/10/2026, nguoi dung: "nhan vat va quai khong the di xuyen qua dau vet; neu thap thi leo len roi leo xuong"): sau khi loc tan, mot
+///      CharacterController bac 0,55 m (nguoi choi) va 0,4 m (quai) di thang qua tam tung dau vet (5 m/s, trong luc): KHONG luc nao lot vao trong va cham
+///      dau vet (OverlapCapsule thu nho 4 cm); di qua duoc thi phai da LEO LEN cao bang manh duoi duong di (-8 cm); bi chan thi bao cho chan cao bao nhieu.
+///      Trong luc loc con chay: 0 dau vet bi loc cuon. Vat moc lai: va cham dau vet tat ngay khi bat dau lun.
 ///   F. TI LE THAT - TOAN BO 924 VAT (16/10/2026 lan 2, nguoi dung: "goc cay to gap doi cay, bia mo cung vay"): NGOAI Play do kich thuoc THAT cua tung vat
 ///      tu luoi (cay: duong kinh THAN o 0,2-0,45 m tren day; con lai: 2 x phan vi 90 ban kinh CHAN 0-0,3 m quanh tam chan) - code rieng cua phep thu, khong
 ///      dung bang nuong; trong Play dung dau vet cho TUNG vat (DauVetLocCuon.Tao) roi do CHINH hinh hoc manh tren cung cach (goc cay: dai 0,2-0,45 m; chan
@@ -337,6 +341,10 @@ public static class ThuDauVetLocCuon
             Kiem(soDinh > 100 && lechVanh < 0.06f && loLung == 0, m.ten + ": ho dat khong bam mat dat");
         }
         int soTao = DauVetLocCuon.SoLanTao - tao0;
+        int biCuon = 0, coVaCham = 0;
+        foreach (var d in DauVetLocCuon.DangCo) { if (d.GetComponentInParent<VatTheBiCuon>() != null || d.GetComponentInChildren<VatTheBiCuon>() != null) biCuon++; if (d.GetComponentInChildren<MeshCollider>() != null) coVaCham++; }
+        Ghi(string.Format("B. trong luc loc con chay: dau vet co va cham {0}/{1}, dau vet bi loc cuon {2}", coVaCham, DauVetLocCuon.DangCo.Count, biCuon));
+        Kiem(coVaCham == DauVetLocCuon.DangCo.Count && biCuon == 0, "dau vet khong co va cham / bi Loc xoay cuon di");
         Ghi(string.Format("B. tong dau vet tao trong luc nay {0} (gom ca vat quanh do bi cuon theo)", soTao));
 
         // ===== C. anh sau =====
@@ -350,6 +358,83 @@ public static class ThuDauVetLocCuon
             File.WriteAllBytes("PlayTestShots/dauvet_" + m.ten + "_sau.png", Chup(cam, rt).EncodeToPNG());
         }
         Ghi("C. anh PlayTestShots/dauvet_[Cay|BiaMo|Da|NhaMo|Lo]_truoc|sau.png");
+
+        // ===== G. va cham: di qua tung dau vet =====
+        Ghi("");
+        {
+            var goCC = new GameObject("TAM_ThuVaCham");
+            var cc = goCC.AddComponent<CharacterController>();
+            cc.radius = 0.35f; cc.height = 1.8f; cc.center = new Vector3(0f, 0.9f, 0f); cc.slopeLimit = 55f; cc.skinWidth = 0.05f;
+            int soChan = 0, soQua = 0;
+            foreach (var m in ds)
+            {
+                Vector3 tamDung = m.cho;
+                if (DauVetLocCuon.Bang().TryGetValue(DauVetLocCuon.Khoa(m.vat.name, m.cho), out var sdG)) tamDung = new Vector3(sdG.tam.x, m.cho.y, sdG.tam.y);
+                DauVetLocCuon dv = null; float dg = 1e9f;
+                foreach (var d in DauVetLocCuon.DangCo) { float dd = Ngang(d.transform.position, tamDung); if (dd < dg) { dg = dd; dv = d; } }
+                if (dv == null || dg > 0.1f) { Ghi("G. " + m.ten + ": khong thay dau vet"); loi++; continue; }
+                var vc = new List<Collider>(dv.GetComponentsInChildren<MeshCollider>());
+                float R = 0f; foreach (var c in vc) R = Mathf.Max(R, Ngang(c.bounds.center, dv.transform.position) + Mathf.Max(c.bounds.extents.x, c.bounds.extents.z));
+                // huong di: chon huong ma hai dau duong (ngoai dau vet) khong vuong vat khac
+                Vector3 huong = Vector3.forward;
+                for (int h = 0; h < 8; h++)
+                {
+                    Vector3 dthu = Quaternion.Euler(0, h * 45f, 0) * Vector3.forward;
+                    Vector3 a0 = dv.transform.position - dthu * (R + 1.5f), a1 = dv.transform.position + dthu * (R + 1.5f);
+                    a0.y = DauVetLocCuon.MatDatY(a0, a0.y); a1.y = DauVetLocCuon.MatDatY(a1, a1.y);
+                    if (!Physics.CheckCapsule(a0 + Vector3.up * 0.4f, a0 + Vector3.up * 1.5f, 0.4f, ~LayerMask.GetMask("Ground"), QueryTriggerInteraction.Ignore)
+                        && !Physics.CheckCapsule(a1 + Vector3.up * 0.4f, a1 + Vector3.up * 1.5f, 0.4f, ~LayerMask.GetMask("Ground"), QueryTriggerInteraction.Ignore)) { huong = dthu; break; }
+                }
+                foreach (float buoc in new[] { 0.55f, 0.4f })
+                {
+                    cc.stepOffset = buoc;
+                    Vector3 batDau = dv.transform.position - huong * (R + 1.5f);
+                    batDau.y = DauVetLocCuon.MatDatY(batDau, batDau.y) + 0.06f;
+                    cc.enabled = false; goCC.transform.position = batDau; cc.enabled = true; Physics.SyncTransforms();
+                    float vy = 0f, leoMax = 0f, duoiDuong = 0f, xaNhat = -1e9f; int lot = 0;
+                    for (int i = 0; i < 200; i++)          // 4 s, buoc 0,02 s (khong yield - mo phong co dinh)
+                    {
+                        vy = cc.isGrounded ? -1f : vy - 9.8f * 0.02f;
+                        cc.Move(huong * 5f * 0.02f + Vector3.up * vy * 0.02f);
+                        Vector3 p = goCC.transform.position;
+                        float dat = DauVetLocCuon.MatDatY(p, p.y);
+                        leoMax = Mathf.Max(leoMax, p.y - dat);
+                        // manh dau vet ngay duoi duong di (tia xuong chi trung va cham dau vet)
+                        foreach (var c in vc) { RaycastHit hit; if (c.Raycast(new Ray(p + Vector3.up * 3f, Vector3.down), out hit, 6f)) duoiDuong = Mathf.Max(duoiDuong, hit.point.y - dat); }
+                        // lot vao trong?
+                        foreach (var c in Physics.OverlapCapsule(p + Vector3.up * (0.35f + 0.04f), p + Vector3.up * (1.8f - 0.35f - 0.04f), 0.35f - 0.04f, ~0, QueryTriggerInteraction.Ignore))
+                            if (vc.Contains(c)) lot++;
+                        xaNhat = Mathf.Max(xaNhat, Vector3.Dot(p - dv.transform.position, huong));
+                        if (xaNhat > R + 1.2f) break;
+                    }
+                    bool qua = xaNhat > R + 0.4f;
+                    float caoChan = 0f;
+                    if (!qua)
+                    {
+                        Vector3 p = goCC.transform.position + huong * (cc.radius + 0.12f);
+                        foreach (var c in vc) { RaycastHit hit; if (c.Raycast(new Ray(p + Vector3.up * 3f, Vector3.down), out hit, 6f)) caoChan = Mathf.Max(caoChan, hit.point.y - DauVetLocCuon.MatDatY(p, p.y)); }
+                        soChan++;
+                    }
+                    else soQua++;
+                    Ghi(string.Format("G. {0} (bac {1:F2} m): {2}; manh duoi duong cao nhat {3:F2} m, leo cao nhat {4:F2} m; lot vao trong {5} lan{6}",
+                        m.ten, buoc, qua ? "DI QUA" : "BI CHAN", duoiDuong, leoMax, lot, qua ? "" : string.Format("; cho chan cao {0:F2} m", caoChan)));
+                    Kiem(lot == 0, m.ten + ": nhan vat lot vao trong dau vet");
+                    Kiem(!qua || leoMax >= duoiDuong - 0.08f, m.ten + ": di qua ma khong leo len (xuyen qua dau vet)");
+                    Kiem(qua || caoChan > buoc - 0.1f, m.ten + ": bi chan boi manh thap hon bac");
+                }
+            }
+            Ghi(string.Format("G. tong: di qua {0}, bi chan {1}", soQua, soChan));
+            // vat moc lai -> va cham tat ngay
+            DauVetLocCuon dx = null; foreach (var d in DauVetLocCuon.DangCo) { dx = d; break; }
+            if (dx != null)
+            {
+                dx.Xoa();
+                int conBat = 0; foreach (var c in dx.GetComponentsInChildren<Collider>()) if (c.enabled) conBat++;
+                Ghi("G. goi Xoa (vat moc lai): va cham dau vet con bat " + conBat);
+                Kiem(conBat == 0, "vat moc lai ma va cham dau vet van bat");
+            }
+            Object.Destroy(goCC);
+        }
 
         // ===== D. ngoai tam nhin =====
         Ghi("");

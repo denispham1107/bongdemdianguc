@@ -509,6 +509,9 @@ hơn ×1,5 và mở xuống 1,8–4,3 m** (người dùng chọn sau menu 94 ch�
   Menu 135: 0 lỗi. ⚠️ **Lần 2 (người dùng: "gốc to gấp đôi cây", "sần sùi, có vết máu")**: kích thước từ SỐ ĐO NƯỚNG từ lưới (menu **135b**
   `NuongKichThuocGoc` → `KichThuocGoc.txt`, hình chữ nhật bao nhỏ nhất — KHÔNG dùng va chạm: capsule cây rộng tới 3,94 m, BoxCollider bia có trục Z là
   chiều đứng), mảnh làm sần + lớp phủ `Diablo25D/VetMauPhu`, hố đất ảnh riêng có máu. Thêm / dời vật Act2 → chạy lại 135b. Menu 135 F: 920 vật đúng tỉ lệ.
+  ⚠️ **Lần 3: dấu vết có VA CHẠM** (người dùng: không đi xuyên; thấp thì leo lên rồi xuống): MeshCollider đúng hình trên mọi mảnh nổi (lớp Default) →
+  CharacterController (người 0,55 m, quái 0,4 m) bị chặn / bước lên; hố đất không va chạm; Lốc xoáy không cuốn dấu vết; vật mọc lại tắt va chạm ngay.
+  Menu 135 G: 0 lần lọt vào trong.
   ⚠️ **KHÔNG CÓ DẤU VẾT TRÊN MẶT ĐẤT**: 29/09/2026 đã thêm (dải đất cày + vết cháy xém, `VetLocDat`, shader nhân màu `VetDatNhan`,
   ảnh Blender MCP) rồi cùng ngày người dùng bảo **xoá hết** ("xoá các vết di chuyển của lốc ở cả 2 skill", chọn xoá cả vết cháy) — đã
   gỡ code, shader, ảnh, vật liệu, file Blender (còn trong git `d2d6da0`). Menu 82 B6 kiểm lốc thật chạy 3 s sinh 0 vật thể dấu vết.

@@ -22,7 +22,11 @@ using UnityEngine;
 /// ve THEM lop phu Diablo25D/VetMauPhu (vet mau + bui ban, chieu ba phia theo toa do the gioi) tren vat lieu cua chinh vat; ho dat dung anh rieng
 /// DatXoi_Mau (dat xoi von cuc, ke nut, mau kho loang) + normal map DatXoi_Phap, do bong 0.
 /// HO DAT BAM DIA HINH: moi dinh ban tia xuong lop Ground. Vong doi: hien luc vat BAT KHOI DAT (het pha rung nut 0,3 s - VatTheBiCuon), vat moc lai thi
-/// LUN xuong 0,5 s roi xoa. Chi hinh (khong va cham); moi may tu dung, 0 byte mang; ngoai tam nhin TamNhin an.
+/// LUN xuong 0,5 s roi xoa. Moi may tu dung, 0 byte mang; ngoai tam nhin TamNhin an.
+/// ⚠️ VA CHAM (16/10/2026, nguoi dung: "nhan vat va quai khong the di xuyen qua dau vet; neu thap thi leo len roi leo xuong"): moi manh noi (goc cay, chan
+/// bia, da vun, nen nha, vong lo) co MeshCollider dung hinh, lop Default nhu canh vat -> CharacterController (nguoi choi stepOffset 0,55 m, quai 0,4 m) bi
+/// CHAN boi manh cao, BUOC LEN roi xuong manh thap. Ho dat (noi 5-7 cm, sat mat dat) KHONG va cham - di tren dia hinh nhu cu. Loc xoay KHONG cuon dau
+/// vet (VatTheBiCuon.CuonDuoc). Vat moc lai: tat va cham NGAY khi bat dau lun.
 /// </summary>
 public class DauVetLocCuon : MonoBehaviour
 {
@@ -206,6 +210,8 @@ public class DauVetLocCuon : MonoBehaviour
         go.transform.localRotation = Quaternion.Euler(0f, yaw, 0f);
         go.transform.localScale = scale;
         go.AddComponent<MeshFilter>().sharedMesh = m;
+        // va cham DUNG HINH (luoi FBX doc duoc): manh cao chan, manh thap buoc len (stepOffset) - nguoi dung 16/10/2026
+        if (m.isReadable) go.AddComponent<MeshCollider>().sharedMesh = m;
         var mr = go.AddComponent<MeshRenderer>();
         var vm = VatLieuVetMau();
         mr.sharedMaterials = vm != null ? new[] { vl, vm } : new[] { vl };      // vat lieu thu hai ve CHONG len cung luoi
@@ -261,6 +267,7 @@ public class DauVetLocCuon : MonoBehaviour
         if (lun >= 0f) return;
         lun = 0f;
         SoLanXoa++;
+        foreach (var c in GetComponentsInChildren<Collider>()) c.enabled = false;     // vat moc lai dung dung cho nay - khong chong va cham
     }
 
     void Update()

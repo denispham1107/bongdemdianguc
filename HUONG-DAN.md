@@ -14593,6 +14593,20 @@ vật; hố đất ảnh riêng `DatXoi_Mau` (đất xới vón cục, nứt m�
 cây 0,82–1,17 (trung vị 1,06; cách cũ tới **4,85**), bia 1,02–1,04 (cũ tới 1,99), đá 0,63–1,02 (đống vụn nhỏ hơn hòn đá), nhà mồ 1,05–1,07, lò 0,84–0,87.
 Mục B–E giữ nguyên: 0 lỗi (tâm dấu vết = tâm thật 0,000 m, hố bám đất, ngoài tầm nhìn ẩn 163/163, mọc lại xoá 63/63).
 
+### Lần 3 — dấu vết có VA CHẠM (16/10/2026)
+
+**Người dùng:** "các dấu vết hình thành khi Lốc xoáy đi qua, nhân vật và quái vật không thể đi xuyên qua được; nếu chiều cao thấp thì có thể leo lên rồi
+leo xuống". Nhân vật và quái đều đi bằng `CharacterController` (người chơi `stepOffset` 0,55 m, quái 0,4 m, dốc tối đa 55°) → mỗi mảnh nổi (gốc cây, chân
+bia, đá vụn, nền nhà, vòng lò) có **MeshCollider đúng hình** (lưới FBX Read/Write bật), lớp Default như cảnh vật: mảnh cao CHẶN, mảnh thấp / dốc thoải
+BƯỚC LÊN rồi xuống. Hố đất (nổi 5–7 cm, sát mặt đất) không va chạm — đi trên địa hình như cũ (có va chạm thì chân lơ lửng trên lòng hố). Lốc xoáy KHÔNG
+cuốn chính dấu vết (`VatTheBiCuon.CuonDuoc` bỏ `DauVetLocCuon` — có va chạm rồi thì lốc coi nó là vật). Vật mọc lại → tắt va chạm dấu vết ngay khi bắt
+đầu lún (không chồng lên va chạm của vật).
+
+Menu 135 **G** (con nhộng CharacterController bậc 0,55 / 0,4 đi thẳng qua tâm từng dấu vết, 5 m/s, có trọng lực): lọt vào trong va chạm 0 lần ở cả 10
+lượt; gốc cây cao 0,62 m CHẶN quái (chỗ chặn 0,64 m), người chơi trèo theo rễ + mặt dốc lên 0,85 m rồi xuống; chân bia 0,11 m / vòng lò 0,10 m / nền nhà
+chỗ gãy 0,44 m (đống gạch làm dốc) → leo qua, độ leo ≥ mảnh dưới đường đi; lúc lốc còn chạy: 40/40 dấu vết có va chạm, 0 bị cuốn; gọi `Xoa` → va chạm
+còn bật 0. Mục F (920 vật đúng tỉ lệ), B–E: 0 lỗi. Menu 19, 54c, 82: 0 lỗi.
+
 ## Phần 4 — Menu công cụ "Diablo 2.5D"
 
 | Mục | Tác dụng |
