@@ -111,6 +111,7 @@ public class TangBangNo : MonoBehaviour
         daNo = true;
         Vector3 cho = transform.position;
         VfxFactory.NoTangBang(cho, BanKinh);
+        TiengViTri.BangVoNo(cho);
         CameraShake.Shake(0.14f, 0.05f);
         SoLanNo++;
 

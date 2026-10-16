@@ -43,11 +43,17 @@ public class FallingShard : MonoBehaviour
 
     static readonly List<Damageable> dsDongBang = new List<Damageable>();
 
+    TiengViTri.Giong giongRoi;
+
     void Start()
     {
         start = transform.position;
         if (travelTime <= 0.01f) travelTime = 0.4f;
+        // Tieng qua bang ROI (16/10/2026): bam theo qua, to nhat luc cham dat (clip 0,96 s = IceStorm.fallTime)
+        giongRoi = TiengViTri.MuaBangRoi(transform);
     }
+
+    void OnDestroy() { TiengViTri.Dung(giongRoi, transform); }
 
     void Update()
     {
@@ -60,6 +66,8 @@ public class FallingShard : MonoBehaviour
         if (k >= 1f)
         {
             SoLanCham++;
+            TiengViTri.Dung(giongRoi, transform);
+            TiengViTri.MuaBangCham(target);
 
             // ⚠️ GAY SAT THUONG TRUOC, DUNG HINH SAU (doi thu tu tu 19/09/2026).
             // Nguoi dung: "chi khi nao lam Dong Bang doi thu thanh cong thi moi cho xuat hien tang bang

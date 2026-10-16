@@ -14191,6 +14191,56 @@ Menu 126 (0 lỗi): 7 file trùng từng byte bản gốc `ThienThachThu3/A_dien
 (đối chứng có); G: 30 rơi + 30 nổ ra đủ 3 + 3 biến thể, cao độ 0,941–1,059. Menu 62, 81, 18, 125: 0 lỗi. Mẫu nghe thử ở `CongCu/AmThanh/ThienThachThu2/`,
 `ThienThachThu3/`. Chưa nghe thử trên web.
 
+## Tiếng Quả cầu băng + băng vỡ + Mưa băng (16/10/2026)
+
+**Người dùng:** thêm tiếng stereo cho Quả cầu băng — bắn ra, bay, va chạm và nổ; khối băng trên mặt đất vỡ thì có tiếng băng vỡ; người chơi khác
+trong sương thì không nghe. Chọn: tiếng vỡ ở **cả ba lúc** (khối băng hết giờ ở mọi cấp · cấp 5 khối băng nổ tung · kẻ đang bị đóng băng chết vỡ tan);
+phạm vi thêm **khối băng của Mưa băng** và **quả băng rơi của Mưa băng** (rơi + chạm đất). Qua 4 vòng mẫu:
+1. bản 1 (`tieng_qua_cau_bang.py`, A Pha lê / B Băng đá): "giống y chang tiếng **thủy tinh** bể, không phải tiếng băng";
+2. bản 2 (`tieng_qua_cau_bang_2.py`, A Băng tảng / B Băng tuyết): "Quả cầu băng **quá giống Quả cầu lửa**; Mưa băng như **súng bắn laser**";
+3. bản 3 (`tieng_qua_cau_bang_3.py`): chọn **B "Mưa đá"** cho cả hai nhưng "còn **mỏng, hơi lép** — stereo vang dày hơn";
+4. bản 4 (`tieng_qua_cau_bang_4.py`): dày + "thêm một ít **âm vang trong suốt** của băng" (`--trong`) — **người dùng chọn bản này**.
+
+**Vì sao từng bản bị chê (đo + soi lại):**
+- *Thủy tinh:* mảnh băng = 5 phân âm không điều hoà ngân 20–250 ms + lớp "ngân tinh thể" — đúng dấu hiệu thủy tinh. Độ phẳng phổ dải 1–4 kHz
+  ở PHẦN ĐUÔI (sau cú đập): bản 1 chỉ 0,03–0,16 (đỉnh nhọn, có cao độ). Băng thật: đục, tắt 3–30 ms, lạo xạo.
+- *Giống lửa:* bản 2 dùng lại lớp "liếm lửa" làm khí lạnh cuộn, gió xé y Quả cầu lửa, "ụm / bùm" trầm + gió toả hai bên khi nổ.
+- *Laser:* tiếng nứt "piu" (cao độ trượt xuống nhanh) = tiếng súng laser; Mưa băng ~8 quả / giây mỗi quả một "piu" + tiếng rít khi rơi.
+  Độ phẳng 150 ms ĐẦU của tiếng rơi: 0,05–0,12 (có cao độ).
+- *Mỏng:* bản 3 tiếng bay 7%, tiếng bắn 11% năng lượng 200 Hz–1 kHz; vang 0,25–0,5 s ở mức 0,15–0,25.
+- ⚠️ *Ngược pha (tương quan âm, tới −0,23):* (1) mảnh băng CÓ CAO ĐỘ đặt vị trí bằng trễ giữa hai kênh (`tb.dat_vi_tri` trễ tới 0,6 ms → lệch
+  pha > 180° ở 1–3 kHz); (2) "ụm / bùm" mỗi kênh một pha ngẫu nhiên. Loa điện thoại gộp mono sẽ triệt tiêu. Sửa: lệch trái/phải chỉ bằng âm
+  lượng; âm trầm cùng pha hai kênh (`um_chung`, `bum_chung`).
+
+**Bản dùng (B "Mưa đá" dày + trong):** hơi lạnh "xì" xoáy dải 1,2–2,7 kHz + lớp dải giữa 350–1100 Hz (mượt, không cắt / bùng như lửa); băng
+NGHIỀN "rắc rắc" (hàng trăm hạt va chạm nhỏ dày đặc, hai dải); tảng băng rơi "cốc" đục nảy 2–4 lần; "tốc" va chạm khô; kẽo kẹt trước khi vỡ;
+nước đóng băng lách tách mịn; một ít ngân tinh thể khẽ (2–3 phân âm, 60–150 ms) + vang sáng 1,5–3,5 kHz ~0,8 s; vang stereo dày 1–1,8 s; nhân đôi
+lớp chính lệch hai bên. Mưa băng = mưa đá: tiếng rơi là "vút" nhẹ to dần (không rít), chạm đất "tốc + rắc + lộp độp". 3 biến thể mỗi tiếng.
+
+**Trong game:** `TiengViTri` thêm 7 loại (`CauBangBan/Bay/No`, `BangVo`, `BangVoNo`, `MuaBangRoi`, `MuaBangCham`), 19 file
+`Resources/AmThanh/KyNang/` (chép nguyên byte từ `CongCu/AmThanh/QuaCauBangThu4/B_mua_da_day_trong_*`), chọn ngẫu nhiên + cao độ ±6%, spread 120,
+sương mù / xa nhỏ như Quả cầu lửa. Trần RIÊNG cho tiếng một lần dày đặc (`TranMotLan`): tiếng rơi Mưa băng ≤ 3, chạm đất ≤ 6 cùng lúc; nổ / vỡ
+gần nhau cùng lúc ×0,45 / ×0,5. `QuaCauBang`: bắn (một tiếng mỗi chùm, quả nảy `laQuaNay` không kêu) + bay bám quả, `Explode` tắt bay + nổ.
+`FallingShard`: rơi bám quả, chạm đất tắt rơi + tiếng chạm. Khối băng: `VfxFactory.IceImpact` (khi có cụm gai) gắn `AmThanh/TiengTangBang.cs`
+— kêu vỡ lúc CỤM GAI ĐẦU TIÊN tan (cụm băng mờ dần đều 1,6–2,6 s), khối cấp 5 bỏ qua (`TangBangNo.No` kêu `BangVoNo`). `Damageable.Die` khi
+đang đóng băng hoàn toàn: `BangVo(..., voTan)` cao độ ×0,88.
+
+**Số đo:**
+
+| | Bản 1 (thủy tinh) | Bản 2 (lửa / laser) | Bản dùng |
+|---|---|---|---|
+| Độ phẳng đuôi 1–4 kHz (nổ / vỡ / chạm) | 0,09–0,16 / 0,03–0,10 / 0,04 | 0,40–0,51 / 0,33–0,47 / 0,47–0,52 | 0,37–0,41 / 0,26–0,37 / 0,34–0,40 |
+| Độ phẳng 150 ms đầu tiếng rơi Mưa băng | — | 0,05–0,12 | 0,40–0,47 (bản 3) |
+| 200 Hz–1 kHz (bắn / bay / nổ) | — | — (bản 3: 11 / 7 / 25%) | 27 / 36 / 42% |
+| Tương quan hai kênh trong clip | có lúc âm | có lúc âm | 0,06–0,28, không âm |
+
+Menu **127** (0 lỗi, Act2 thật): 19 file trùng byte, stereo; tung thật 4 quả → 1 bắn / 4 bay / 4 nổ (1,00 / 0,45 / 0,45 / 0,45), loa tương quan
+0,37 (bay) / 0,57 (nổ); 4 khối băng → 4 tiếng vỡ ở 1,88 s sau vụ nổ (cụm đầu tan 1,93 s); cấp 5: 2 khối nổ → 2 tiếng nổ tung, 0 tiếng vỡ hết giờ;
+Mưa băng thật 34 quả → 34 rơi + 34 chạm, cùng lúc tối đa 3 / 6, 14 khối băng → 14 tiếng vỡ, loa giữa trận mưa tương quan 0,72 (mưa dày quanh một
+chỗ — bản đầu 0,78 khi tiếng rơi còn 30% mono); kẻ đóng băng chết → 1 tiếng vỡ tan cao độ 0,903; 40 m trong sương: 3 tiếng bị bỏ, loa im (đối chứng
+có); đủ 3 biến thể mỗi loại, cao độ 0,941–1,059; quả nảy không kêu tiếng bắn. ⚠️ Lần chạy đầu mục G (biến thể) báo thiếu vì gọi dày 0,2 s làm đầy
+trần giọng, đọc nhầm giọng cũ — nay chỉ đếm lần được giọng (`TiengViTri.SoLanDuocGiong`). Menu 68, 58, 125, 126: 0 lỗi. Chưa nghe thử trên web.
+
 ## Phần 4 — Menu công cụ "Diablo 2.5D"
 
 | Mục | Tác dụng |

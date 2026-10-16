@@ -250,6 +250,7 @@ public class Damageable : MonoBehaviour
         {
             VfxFactory.FrozenShatter(transform.position + Vector3.up * (rig != null ? rig.bodyHeight * 0.5f : 0.9f),
                                      rig != null ? rig.bodyHeight / 1.8f : 1f);
+            TiengViTri.BangVo(transform.position + Vector3.up * 0.9f, true);     // tieng vo tan (16/10/2026)
             if (onDeath != null) onDeath(this);
             Destroy(gameObject);
             return;

@@ -95,6 +95,18 @@ public class QuaCauBang : MonoBehaviour
     /// <summary>So lan no va so muc tieu bi lam cham tu khi vao Play - cho phep thu doc.</summary>
     public static int SoLanNo, SoLanTrung, SoLanCham, SoLanDongBang;
 
+    /// <summary>Qua NAY (sinh trong Explode) - khong keu tieng ban (16/10/2026, nhu Qua cau lua).</summary>
+    public bool laQuaNay;
+    TiengViTri.Giong giongBay;
+
+    void Start()
+    {
+        if (!laQuaNay) TiengViTri.CauBangBan(transform.position);
+        giongBay = TiengViTri.CauBangBay(transform);
+    }
+
+    void OnDestroy() { TiengViTri.Dung(giongBay, transform); }
+
     static readonly Collider[] buffer = new Collider[64];
 
     public static QuaCauBang Spawn(Vector3 pos, Vector3 direction, LayerMask hitMask, LayerMask damageMask)
@@ -186,6 +198,8 @@ public class QuaCauBang : MonoBehaviour
         if (exploded) return;
         exploded = true;
         SoLanNo++;
+        TiengViTri.Dung(giongBay, transform);
+        TiengViTri.CauBangNo(transform.position);
 
         VfxFactory.ThaDuoiQuaCauBang(transform);
         var daTrungNo = soLanNay > 0 ? Fireball.KeTrongVung(transform.position, blastRadius, damageMask, boQua) : null;
@@ -215,6 +229,7 @@ public class QuaCauBang : MonoBehaviour
                 q.speed = speed; q.lifetime = 1.2f;
                 q.mucTieu = ke;
                 q.soLanNay = soLanNay - 1;
+                q.laQuaNay = true;
                 q.khongCham = daTrungNo;
                 SoLanNay++;
             }

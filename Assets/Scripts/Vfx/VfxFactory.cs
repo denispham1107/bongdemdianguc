@@ -1385,6 +1385,8 @@ public static partial class VfxFactory
                 if (con.name.StartsWith("CumGai") || con.name.StartsWith("HaoQuang"))
                     con.gameObject.SetActive(false);
         }
+        // Khoi bang tren dat VO khi het gio (16/10/2026, nguoi dung) - Qua cau bang + Mua bang; cap 5 do TangBangNo keu rieng
+        if (coGai) TiengTangBang.Gan(go);
 
         // Chi mot phan nho de lai vet bang cho do roi mat
         if (Random.value < 0.35f)
