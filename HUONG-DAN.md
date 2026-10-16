@@ -14246,6 +14246,45 @@ chỗ — bản đầu 0,78 khi tiếng rơi còn 30% mono); kẻ đóng băng c
 có); đủ 3 biến thể mỗi loại, cao độ 0,941–1,059; quả nảy không kêu tiếng bắn. ⚠️ Lần chạy đầu mục G (biến thể) báo thiếu vì gọi dày 0,2 s làm đầy
 trần giọng, đọc nhầm giọng cũ — nay chỉ đếm lần được giọng (`TiengViTri.SoLanDuocGiong`). Menu 68, 58, 125, 126: 0 lỗi. Chưa nghe thử trên web.
 
+## Tiếng Tàng hình (16/10/2026)
+
+**Người dùng:** thêm tiếng stereo cho Tàng hình — lúc cơ thể chuyển sang **trong suốt**, lúc từ tàng hình **hiện hình** lại, lúc **vòng tròn
+sát thương** xuất hiện, và **trúng kẻ địch** thì có tiếng gây sát thương; người chơi khác trong sương mù thì không nghe. Ba mẫu
+(`CongCu/AmThanh/tieng_tang_hinh.py`, thư mục `CongCu/AmThanh/TangHinhThu/`): A "Bóng ma" (hơi thở hút vào, thì thầm, thân tan thành bụi sáng;
+vòng = "ommm" nghi lễ), B "Băng sương" (sương giá bò phủ thân, vỏ sương nứt bong; gần chất Quả cầu băng), C "Hư không". Người dùng chọn **C "Hư
+không"** và **mỗi kẻ trúng một tiếng** tại chỗ kẻ ấy.
+
+**Mẫu C:** trong suốt = không khí bị HÚT (ồn qua khí xoay pha — trễ 0,6 → 7–10 ms — + thông thấp đóng dần 3,8 kHz → 450 Hz, to dần rồi cắt) + "ụp"
+trầm + dư âm hư không; hiện hình = (có / không) đoạn hút ngược ngắn rồi "phụp" áp suất bung ra (thông thấp mở 400 Hz → 3,5 kHz rồi đóng); vòng phép
+= sóng xung kích + "bùm" + luồng khí cuộn XOAY quanh (trái ↔ phải theo vòng phép xoay chậm) + 1–3 đợt dập mạnh ngẫu nhiên, tắt hết ~1,9 s như hình;
+trúng = "phập" áp suất + vệt khí. Không lớp nào có cao độ trượt (laser) hay ngân kim loại (thủy tinh); khí xoay pha là trên ỒN nên không có cao độ.
+
+**Hai lỗi stereo bắt được bằng số đo (trước khi gửi mẫu):**
+- Khí xoay pha (flanger) cho mỗi kênh một độ trễ khác nhau (±7,5%) → răng lược hai kênh lệch nhau → **tương quan ÂM** −0,05 … −0,14 (loa điện
+  thoại gộp mono sẽ triệt tiêu). Nay cùng một trễ cho hai kênh, độ rộng lấy từ phần ồn riêng.
+- Viết `loc(on2(...)[:, k])` trong vòng lặp TỪNG KÊNH: mỗi kênh gọi bộ sinh ồn MỚI → hai nguồn độc lập, tương quan ~0 (vòng phép 0,03 — "loãng").
+  Nay `loc2(on2(...))` lọc cùng một cặp ồn.
+
+**Số đo bản dùng (C):**
+
+| | Trong suốt | Hiện hình | Vòng phép | Trúng |
+|---|---|---|---|---|
+| Tương quan hai kênh trong clip | 0,05–0,12 | 0,10–0,14 | 0,11–0,15 | 0,23–0,28 |
+| < 200 Hz / 200 Hz–1 kHz / > 4 kHz | 12–16 / 65–71 / 0% | 5–7 / 34–37 / 5–6% | 3–6 / 33–37 / 3% | 6–17 / 41–51 / 2–4% |
+| Chênh đường bao giữa 3 biến thể | 3,2–5,9 dB | 4,2–7,9 dB | 3,6–6,9 dB | 2,1–5,3 dB |
+
+**Trong game:** `TiengViTri` thêm 4 loại (`TangHinhAn`, `TangHinhHien`, `TangHinhVong`, `TangHinhTrung`), 12 file `Resources/AmThanh/KyNang/TangHinh{An,
+Hien,Vong,Trung}1–3.wav` chép nguyên byte từ `TangHinhThu/C_hu_khong_*`; chọn ngẫu nhiên 1 trong 3 + cao độ ±6%, spread 120, xa nhỏ + sương mù như Quả
+cầu lửa. `TangHinh.Start` kêu tiếng trong suốt **bám theo người** (mọi máy — cả bản sao người khác, BOT); `TangHinh.NoVong` (hết giờ hoặc tan do
+đòn đầu) kêu hiện hình (×0,8, bám theo người) + vòng phép tại chân + **mỗi kẻ bị trúng một tiếng tại chỗ kẻ ấy** (kẻ thứ hai trở đi trong 0,15 s
+×0,55, tối đa 6 cùng lúc). Chết khi đang tàng hình: không vòng, không tiếng (như cũ).
+
+Menu **128** (0 lỗi, Act2 thật): 12 file trùng byte, stereo; tung thật → 1 tiếng trong suốt bám theo người, loa tương quan 0,46; hết giờ với 3 bia
+trong 5 m + 1 bia ở 7 m → 1 hiện hình + 1 vòng + 3 tiếng trúng đúng chỗ từng bia (1,00 / 0,55 / 0,55), bia 7 m không; loa 0,35; đòn đầu (Quả cầu lửa)
+tan tàng hình → 1 hiện hình + 1 vòng; "người khác" tàng hình ở 40 m trong sương: loa im (trong suốt / hiện hình giữ giọng mức 0, vòng + trúng bị bỏ),
+đối chứng tắt sương → có giọng; đủ 3 biến thể mỗi loại, cao độ 0,942–1,057. ⚠️ Lần chạy đầu mục D báo lỗi giả: kiểm biến component SAU khi `Tat()`
+đã huỷ nó (null của Unity). Menu 73: 0 lỗi. Chưa nghe thử trên web.
+
 ## Phần 4 — Menu công cụ "Diablo 2.5D"
 
 | Mục | Tác dụng |

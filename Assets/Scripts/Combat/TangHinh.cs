@@ -16,6 +16,9 @@ using UnityEngine;
 /// Qua mang: phep Tang hinh duoc phat lai tren may kia kem CAP nguoi tung (capKyNang) -> ban sao cung het gio / tan do don dau
 /// -> vong no tren moi may, moi may tinh sat thuong theo luat trong tai nhu cac phep khac.
 ///
+/// TIENG (16/10/2026, nguoi dung - mau C "Hu khong", <see cref="TiengViTri"/>): Start = bien trong suot (moi may - ca ban sao); vong phep = hien
+/// hinh + vong phep + moi ke trung mot tieng tai cho ke ay. Nguoi / ke trong suong mu: im (TiengViTri nhan TamNhin.MucThay).
+///
 /// Hinh: thay TOAN BO vat lieu cua model bang <see cref="Mats.TangHinhShader"/> (giu ban goc de tra lai) - khac
 /// <see cref="FrozenEffect"/> (chi PHU THEM mot lop vo bang). Phu them thi than nguoi van hien nguyen, khong the "trong suot".
 /// </summary>
@@ -156,6 +159,8 @@ public class TangHinh : MonoBehaviour
         SoLanNoVong++;
         lucNoVong[toi] = Time.time;
         VfxFactory.VongPhepTangHinh(tam, BanKinhVong);
+        TiengViTri.TangHinhHien(transform);
+        TiengViTri.TangHinhVong(tam + Vector3.up * 0.3f);
         CameraShake.Shake(0.18f, 0.06f);
 
         int n = Physics.OverlapSphereNonAlloc(tam + Vector3.up, BanKinhVong + 2f, boVong, mask, QueryTriggerInteraction.Collide);
@@ -169,6 +174,7 @@ public class TangHinh : MonoBehaviour
             dsVong.Add(d);
             d.GhiKeDanh(toi, HeSat.Bang);          // TRUOC TakeDamage (kinh nghiem, bang diem); he BANG: Khang Bang giam
             d.TakeDamage(SatThuongVong(d.maxHealth, capKyNang), DamageType.Physical, d.transform.position + Vector3.up);
+            TiengViTri.TangHinhTrung(d.transform.position + Vector3.up);
             SoKeTrungVong++;
         }
     }
@@ -195,6 +201,7 @@ public class TangHinh : MonoBehaviour
         var pc = GetComponent<PlayerController>();
         laCuaMinh = pc != null && pc.tuDocInput;
         choTruoc = transform.position;
+        TiengViTri.TangHinhAn(transform);
 
         matTang = new Material(Mats.TangHinhShader);
         foreach (var r in GetComponentsInChildren<Renderer>())
