@@ -1,0 +1,20 @@
+[ban 1] dau vet vat bi Loc xoay cuon - 16/10/2026 20:27
+A. Cay: TREE_dead_738 cach nhan vat 7.7 m, vat lieu Act2_VoCay_SanSui
+A. BiaMo: TS_foot_144 cach nhan vat 7.0 m, vat lieu Act2_DaBia
+A. Da: PR_rockC_616 cach nhan vat 16.5 m, vat lieu Act2_DaTang
+A. NhaMo: MAUS_B_685 cach nhan vat 30.3 m, vat lieu Act2_DaBia
+A. Lo: LoLua_05 cach nhan vat 20.5 m, vat lieu LoLuaDa_Da_Suong
+
+B. Cay: vat dang bay True; dau vet True kieu Cay (mong Cay), lech cho cu 0.000 m, kich thuoc do (0.54, 0.54); manh tren vat lieu Act2_VoCay_SanSui (vat: Act2_VoCay_SanSui); ho dat 2553 dinh, vanh lech mat dat 0.000 m, lo lung > 0,15 m 0
+B. BiaMo: vat dang bay True; dau vet True kieu Bia (mong Bia), lech cho cu 0.000 m, kich thuoc do (0.65, 0.54); manh tren vat lieu Act2_DaBia (vat: Act2_DaBia); ho dat 2553 dinh, vanh lech mat dat 0.000 m, lo lung > 0,15 m 0
+B. Da: vat dang bay True; dau vet True kieu Da (mong Da), lech cho cu 0.000 m, kich thuoc do (0.66, 0.24); manh tren vat lieu Act2_DaTang (vat: Act2_DaTang); ho dat 2553 dinh, vanh lech mat dat 0.000 m, lo lung > 0,15 m 0
+B. NhaMo: vat dang bay True; dau vet True kieu NhaMo (mong NhaMo), lech cho cu 0.000 m, kich thuoc do (3.80, 4.44); manh tren vat lieu Act2_DaBia (vat: Act2_DaBia); ho dat 2740 dinh, vanh lech mat dat 0.000 m, lo lung > 0,15 m 0
+B. Lo: vat dang bay True; dau vet True kieu Lo (mong Lo), lech cho cu 0.000 m, kich thuoc do (1.09, 1.08); manh tren vat lieu LoLuaDa_Da_Suong (vat: LoLuaDa_Da_Suong); ho dat 2732 dinh, vanh lech mat dat 0.000 m, lo lung > 0,15 m 0
+B. tong dau vet tao trong luc nay 38 (gom ca vat quanh do bi cuon theo)
+C. anh PlayTestShots/dauvet_[Cay|BiaMo|Da|NhaMo|Lo]_truoc|sau.png
+
+D. nhan vat o xa (dau vet gan nhat 35 m): renderer dau vet bi an 163/163; ve cho cu: renderer dau vet trong tam nhin hien 78/78
+
+E. sau 30 s: vat con dang an 0/5; dau vet con 0, da xoa 64 (tao 64)
+
+so loi ghi nhan = 0

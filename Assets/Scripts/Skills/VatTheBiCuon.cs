@@ -58,6 +58,13 @@ public class VatTheBiCuon : MonoBehaviour
     public static int SoLanNutCay, SoLanNutDa;
 
     readonly List<Renderer> hinh = new List<Renderer>();
+
+    /// <summary>DAU VET de lai tren mat dat (16/10/2026, nguoi dung): goc cay gay / chan bia gay / nen nha do nat / nen lo + ho dat xoi - hien luc vat
+    /// bat khoi dat, lun mat khi vat moc lai (<see cref="DauVetLocCuon"/>).</summary>
+    DauVetLocCuon dauVet;
+    bool daTaoVet;
+    Bounds baoHinh;
+    Material vlVat;
     readonly List<Collider> vaCham = new List<Collider>();
 
     // ================================================================
@@ -169,6 +176,9 @@ public class VatTheBiCuon : MonoBehaviour
         for (int i = 0; i < hinh.Count; i++)
             if (hinh[i] != null) { if (!coBao) { bao = hinh[i].bounds; coBao = true; } else bao.Encapsulate(hinh[i].bounds); }
         laCay = coBao && bao.size.y >= CaoLaCay;
+        baoHinh = bao;
+        for (int i = 0; i < hinh.Count && vlVat == null; i++)
+            if (hinh[i] is MeshRenderer && hinh[i].sharedMaterial != null) vlVat = hinh[i].sharedMaterial;
         if (laCay) SoLanNutCay++; else SoLanNutDa++;
         TiengViTri.LocXoayNut(choCu + Vector3.up * 1f, laCay);
     }
@@ -198,6 +208,7 @@ public class VatTheBiCuon : MonoBehaviour
             transform.rotation = Quaternion.Euler(Random.Range(-bien, bien), 0f, Random.Range(-bien, bien)) * huongCu;
             return;
         }
+        TaoDauVet();     // vua BAT KHOI DAT -> de lai dau vet o cho cu
 
         angle += tornado.spinDegreesPerSecond * dt;
         height = Mathf.MoveTowards(height, targetHeight, riseSpeed * dt);
@@ -216,10 +227,18 @@ public class VatTheBiCuon : MonoBehaviour
     /// <summary>
     /// Tan bien cung con loc: an vat the di va bat dau dem 30 giay.
     /// </summary>
+    void TaoDauVet()
+    {
+        if (daTaoVet) return;
+        daTaoVet = true;
+        dauVet = DauVetLocCuon.Tao(gameObject, choCu, huongCu, baoHinh, vlVat);
+    }
+
     public void TanBien()
     {
         if (daAn) return;
         daAn = true;
+        TaoDauVet();     // loc tan khi vat con dang rung nut
         dongHo = GiayHoiSinh;
 
         // Mot nhum bui bay ra dung cho no vua bien mat, cho khoi "tat den" dot ngot
@@ -249,6 +268,7 @@ public class VatTheBiCuon : MonoBehaviour
 
         VfxFactory.HitBurst(transform.position + Vector3.up * 0.4f,
                             new Color(0.72f, 0.66f, 0.52f));
+        if (dauVet != null) dauVet.Xoa();     // vat moc lai: dau vet lun mat
 
         // Lo lua moc lai thi chay tiep - loc xoay da dap tat no truoc khi cuon
         var lo = GetComponent<LoLuaDa>();
@@ -259,6 +279,7 @@ public class VatTheBiCuon : MonoBehaviour
 
     void OnDestroy()
     {
+        if (dauVet != null) dauVet.Xoa();
         // Phong khi bi xoa giua chung (doi man chang han): tra lai hinh va va
         // cham, khong de mot goc cay vo hinh dung chan duong mai mai.
         for (int i = 0; i < hinh.Count; i++)

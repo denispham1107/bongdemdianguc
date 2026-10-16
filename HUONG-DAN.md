@@ -14546,6 +14546,32 @@ người không mất máu; 2 đòn cùng khung → 1; đòn sau 0,1 s ×0,60; s
 bản sao: bật / tụt 75 → trúng / tụt 1,5 → không / vỡ; trong sương (30 m) bật + trúng mức 0, nổ bị bỏ, loa im — đối chứng tắt sương có giọng; đủ 3
 biến thể, cao độ 0,943–1,058. Menu 49 (cầu lửa trúng người · khiên): 0 lỗi. Chưa nghe thử trên web.
 
+## Dấu vết vật bị Lốc xoáy cuốn — gốc cây gãy, chân bia gãy, nền nhà đổ nát, hố đất xới (16/10/2026)
+
+**Người dùng:** "khi Lốc xoáy cuốn bay lên hết mọi đồ vật như bia mộ, đá, nhà, cây cối thì để lại DẤU VẾT của các đồ vật đã cuốn bay lên chứ không để
+mặt đất trống trơn". Người dùng chọn: **riêng từng loại**, tồn tại **đến khi vật mọc lại** (30 s), dựng bằng **Blender MCP**.
+
+(Khác hẳn chuyện 29/09/2026 "Lốc xoáy KHÔNG để dấu vết di chuyển trên mặt đất" — đó là vệt đường lốc đi, vẫn không có; đây là chỗ vật bị nhổ lên.)
+
+**Hình** (Blender MCP, `CongCu/Blender/dau_vet_loc_cuon.py` + `.blend`, scene `DauVetLoc` → `Resources/KyNang/LocXoay/DauVetLoc.fbx`, 16 lưới CHUẨN HOÁ,
+mặt phẳng như cảnh Act2): `GocCay0–2` (thân loe chân bán kính 1, đỉnh gãy lởm chởm + dằm gỗ, 5–7 rễ bò sát đất rồi cắm xuống), `ChanBia0–2` (chân bia
+1 × 1 đỉnh vỡ + miếng vỡ), `VunDa0–2` (6–12 cục đá cạnh sắc), `NenNha0–1` (bệ nền 4 × 4 ô nứt + chân tường gãy 0,08–0,53 + đống gạch + mảnh tường đổ),
+`NenLo0–1` (vòng đá vỡ), `HoDat0–2` (đĩa bán kính 1: tâm lõm −0,1, vành đội lởm chởm +0,07, cục đất; UV = toạ độ). Bản đầu nền nhà mồ chỉ là vòng gạch
+thấp — ảnh trong game mỏng manh so với nhà 4 m → thêm bệ nền và tường cao hơn.
+
+**Trong game** (`Vfx/DauVetLocCuon.cs`, gọi từ `VatTheBiCuon` lúc vật BẬT KHỎI ĐẤT — hết pha rung nứt 0,3 s — hoặc khi lốc tan sớm): phân loại theo NHÓM CHA
+trong cảnh (`Cay` / `BiaMo` / `Da` / `NhaMo`, `LoLuaDa`); đo kích thước trong khung CỤC BỘ (bán kính `CapsuleCollider` của cây, `BoxCollider` của bia,
+lưới nhà mồ — AABB thế giới của bia xoay 45° rộng gấp 1,4); mảnh trên dùng **CHÍNH vật liệu của vật** (vỏ cây, đá bia triplanar — khớp màu tuyệt đối);
+hố đất = ảnh đất của địa hình (`Anh_Act2_DatTroc`, lặp 3,7 m như địa hình) ×0,62 (đất vừa xới ẩm) — lò lửa: TRO ĐEN ×0,16 (`DatXoi.mat`); hố **BÁM ĐỊA
+HÌNH** (mỗi đỉnh bắn tia xuống lớp Ground). Vật mọc lại → dấu vết LÚN xuống 0,5 s rồi xoá. Chỉ hình (không va chạm), mỗi máy tự dựng, 0 byte mạng; ngoài
+tầm nhìn bị `TamNhin` ẩn như mọi vật sinh trong trận.
+
+Menu **135** (0 lỗi, Lốc xoáy THẬT tại 1 vật mỗi loại): cây / bia / đá / nhà mồ / lò → đúng kiểu, lệch chỗ cũ 0,000 m, mảnh trên đúng vật liệu của vật
+(`Act2_VoCay_SanSui`, `Act2_DaBia`, `Act2_DaTang`, `LoLuaDa_Da_Suong`), hố đất 2 553–2 740 đỉnh, vành lệch mặt đất 0,000 m, lơ lửng 0; ngoài tầm nhìn
+(nhân vật xa 35 m) ẩn 163/163 renderer, về chỗ cũ hiện 78/78; sau 30 s vật mọc lại hết, dấu vết tạo 64 / xoá 64, còn 0. Ảnh trước / sau ban ngày:
+`PlayTestShots/dauvet_truoc_sau.png`. ⚠️ Lần chạy 1 chốt số "đã tạo" lúc 1,6 s trong khi lốc còn cuốn thêm → lỗi giả 38 / 65; ảnh ban đêm tối không
+thấy → chụp ban ngày, tự chọn hướng máy quay ít vật che. Menu 19, 54c, 82: 0 lỗi.
+
 ## Phần 4 — Menu công cụ "Diablo 2.5D"
 
 | Mục | Tác dụng |
