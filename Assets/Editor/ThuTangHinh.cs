@@ -40,6 +40,9 @@ using UnityEngine;
 ///      (Qua cau lua) cung no vong; het tang hinh -> hoi chieu 10 giay bat dau dem.
 ///   W. Ban sao nguoi khac: het tang hinh -> vong no tren may nay; bit "tang hinh" CU con tre trong goi tin ngay sau do khong
 ///      tao lai tang hinh (khong co vong thu hai).
+///   X. (16/10/2026, nguoi dung: "nhieu luc da tang hinh nhung co the khong chuyen qua trong suot") tang hinh khi DANG CHAY / BI UOT / CHAY
+///      DEN (lop phu trong suot tren than): moi renderer than phai doi sang shader tang hinh; hien hinh -> o goc tra dung, khong o null,
+///      khong con lop phu. (Ban cu: dang chay -> than giu vat lieu thuong suot 90 s - tai hien tay 16/10/2026.)
 ///   I. Qua mang: minh tang hinh -> goi trang thai mang bit CoTangHinh (mat na goi len 0x3F); ban sao nhan bit -> co TangHinh,
 ///      dung yen thi renderer tat, di chuyen thi bat lai.
 ///
@@ -66,6 +69,7 @@ public static class ThuTangHinh
         Directory.CreateDirectory("PlayTestShots");
         bao.Length = 0; loi = 0; daBatDau = false;
         Ghi("[ban 1] Tang hinh");
+        CapDo.TatMoSanChoPhepThu = true;   // che do tam "mo san moi ky nang" (16/10/2026) lam hong muc B "khoa -> tu choi"
         canhCu = EditorSceneManager.GetActiveScene().path;
         if (canhCu != "Assets/Scenes/Act2.unity") EditorSceneManager.OpenScene("Assets/Scenes/Act2.unity");
         truocBat = EditorSettings.enterPlayModeOptionsEnabled; truocOpt = EditorSettings.enterPlayModeOptions;
@@ -221,6 +225,52 @@ public static class ThuTangHinh
         Kiem(SachPhep.MoTa(K).Contains("90 giây") && SachPhep.MoTa(K).Contains("VÒNG PHÉP") && SachPhep.MoTa(K).Contains("10 giây"), "Sach phep chua ghi 90 giay / vong phep / hoi chieu 10");
         Kiem(bo != null && bo.Length == CapDo.SoKyNang && bo[K] != null && tIcon != null, "thieu icon Tang hinh");
         Kiem(SachPhep.Ten(K) == "TÀNG HÌNH" && SachPhep.MoTa(K).Length > 100, "Sach phep thieu chu Tang hinh");
+
+        // ================= X. TANG HINH KHI DANG CO LOP PHU (chay / uot / chay den) =================
+        Ghi("");
+        {
+            var dX = toi.GetComponent<Damageable>();
+            float mauX = dX.health; dX.health = dX.maxHealth;
+            var than = new List<Renderer>(); var gocX = new List<Material>();
+            foreach (var r in toi.GetComponentsInChildren<Renderer>())
+            {
+                if (!(r is MeshRenderer) && !(r is SkinnedMeshRenderer) || !r.enabled) continue;
+                var ms = r.sharedMaterials;
+                if (ms.Length == 0 || ms[0] == null || ms[0].renderQueue >= 3000) continue;
+                than.Add(r); gocX.Add(ms[0]);
+            }
+            foreach (var kieu in new[] { "chay", "uot", "chay den" })
+            {
+                if (kieu == "chay") BurningEffect.Apply(dX, 1f, 6f);
+                else if (kieu == "uot") BiUot.Apply(dX, 5f);
+                else ChayDenToanThan.Apply(dX, 3f);
+                for (int f = 0; f < 4; f++) yield return null;
+                int coPhu = 0; foreach (var r in than) if (r.sharedMaterials.Length > 1) coPhu++;
+                TangHinh.Bat(dX, 90f);
+                yield return new WaitForSeconds(0.4f);
+                int tang = 0; foreach (var r in than) { var m0 = r.sharedMaterials[0]; if (m0 != null && m0.shader == Mats.TangHinhShader) tang++; }
+                var tX = toi.GetComponent<TangHinh>();
+                if (tX != null) tX.Tat();
+                yield return null; yield return null;
+                int traDung = 0, conNull = 0, conPhu = 0;
+                for (int i = 0; i < than.Count; i++)
+                {
+                    var ms = than[i].sharedMaterials;
+                    if (ms[0] == gocX[i]) traDung++;
+                    foreach (var m in ms) { if (m == null) conNull++; else if (m.shader == Mats.TangHinhShader || m.renderQueue >= 3000) conPhu++; }
+                }
+                Ghi(string.Format("X. tang hinh khi {0}: renderer than {1}, co lop phu luc bat {2}; sau 0,4 s shader tang hinh {3}/{1}; hien hinh: o goc tra dung {4}/{1}, o null {5}, con lop phu / tang hinh {6}",
+                    kieu, than.Count, coPhu, tang, traDung, conNull, conPhu));
+                Kiem(coPhu > 0, "muc X (" + kieu + "): khong dung duoc lop phu de thu");
+                Kiem(than.Count > 0 && tang == than.Count, "tang hinh khi " + kieu + " ma than KHONG chuyen trong suot");
+                Kiem(traDung == than.Count && conNull == 0 && conPhu == 0, "hien hinh sau khi " + kieu + ": vat lieu khong tra dung / con o null / lop phu");
+                yield return new WaitForSeconds(1.6f);   // vong phep + hoi lai truoc kieu sau
+            }
+            dX.health = Mathf.Min(mauX, dX.maxHealth);
+        }
+        // (lan chay 1 dat muc X o CUOI kich ban: "renderer than 0" - trang thai sau cac muc mang khong sach; nay chay truoc B)
+        // hien hinh xong hoi chieu Tang hinh dem 10 s -> cho het de muc B tung that duoc
+        yield return new WaitForSeconds(10.6f);
 
         // ================= B + C. TUNG THAT VA HINH =================
         Ghi("");
@@ -1012,6 +1062,7 @@ public static class ThuTangHinh
 
         var tCuoi = toi.GetComponent<TangHinh>(); if (tCuoi != null) tCuoi.Tat();
         foreach (var d0 in Object.FindObjectsByType<Damageable>(FindObjectsInactive.Exclude)) if (d0.name.StartsWith("TAM_")) Object.Destroy(d0.gameObject);
+        yield return new WaitForSeconds(0.3f);
         toi.DaTungPhep -= dem;
         Ghi("");
         Ghi("so loi ghi nhan = " + loi);
@@ -1032,6 +1083,7 @@ public static class ThuTangHinh
         TranHienTai.Xoa();
         KenhTrucTiep.guiSangBenKia = null;
         File.WriteAllText("PlayTestShots/tanghinh.txt", bao.ToString());
+        CapDo.TatMoSanChoPhepThu = false;
         foreach (var ten in new[] { "TAM_TangHinh", "TAM_DongBoTangHinh" })
         {
             var rac = GameObject.Find(ten);

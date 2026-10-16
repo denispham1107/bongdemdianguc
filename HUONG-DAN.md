@@ -14285,6 +14285,28 @@ tan tàng hình → 1 hiện hình + 1 vòng; "người khác" tàng hình ở 4
 đối chứng tắt sương → có giọng; đủ 3 biến thể mỗi loại, cao độ 0,942–1,057. ⚠️ Lần chạy đầu mục D báo lỗi giả: kiểm biến component SAU khi `Tat()`
 đã huỷ nó (null của Unity). Menu 73: 0 lỗi. Chưa nghe thử trên web.
 
+## Tàng hình: thân không chuyển trong suốt khi đang dính lớp phủ (16/10/2026)
+
+**Người dùng (kèm ảnh):** "nhiều lúc đã tàng hình nhưng cơ thể không chuyển qua trong suốt" — ô kỹ năng đang giữ hồi chiêu 10 (đang tàng hình) mà
+nhân vật vẫn hiện nguyên màu áo.
+
+**Nguyên nhân (tái hiện trong Play):** `TangHinh.Start` bỏ qua CẢ renderer nếu có BẤT KỲ ô vật liệu nào trong suốt (renderQueue ≥ 3000) — ý định
+cũ là bỏ qua hình hiệu ứng (vòm khiên). Nhưng các hiệu ứng phủ lên thân (lửa cháy `LuaPhuThan` — Transparent 3000, ướt `UotBong`, cháy đen của Mây
+giông) đều là một Ô THÊM trên chính renderer thân. Bấm Tàng hình khi đang cháy: `BurningEffect` bị xoá ngay, nhưng lớp lửa nằm trên vật thể hình
+và chỉ gỡ ở cuối khung SAU `Start` → renderer thân bị bỏ qua → thân giữ vật liệu thường suốt 90 giây. Đo tay: trước khi bật `PhuThuyDoiMau(2000),
+LuaPhuThan(3000)`; sau khi bật vẫn `PhuThuyDoiMau`, không có shader tàng hình. Bị quái Phù thủy / Quỷ dữ đốt, đi qua mưa Mây giông là chuyện thường
+khi chơi nên lỗi "nhiều lúc".
+
+**Sửa (`Combat/TangHinh.cs`):** chỉ xét ô ĐẦU (vật liệu gốc) để biết renderer là thân hay hình hiệu ứng; thay từng ô ĐỤC bằng vật liệu tàng hình, GIỮ
+các lớp phủ để chủ của chúng tự gỡ; hiện hình thì trả từng ô tàng hình về vật liệu gốc theo thứ tự (trả cả mảng cũ sẽ đưa lại lớp phủ ĐÃ HUỶ → ô null);
+4 lần / giây kiểm lại, hiệu ứng nào trả mảng vật liệu cũ đè lên thì đổi lại. Thêm `ChayDenToanThan` vào danh sách hiệu ứng bị xoá khi tàng hình
+(trước sót — thân cháy đen vẫn hiện).
+
+Menu **73** thêm mục **X** (chạy trước mục B, trạng thái sạch): đang cháy / ướt / cháy đen rồi tàng hình → 1/1 renderer thân đổi shader tàng hình
+(có lớp phủ lúc bật 1/1); hiện hình → ô gốc trả đúng 1/1, 0 ô null, 0 lớp phủ sót. Menu 73: 0 lỗi; 128: 0 lỗi. ⚠️ Lần chạy đầu đặt mục X ở cuối kịch
+bản (sau các mục mạng) ra "0 renderer thân" — trạng thái không sạch, không phải lỗi code. Menu 73 nay tắt chế độ tạm "mở sẵn mọi kỹ năng"
+(`CapDo.TatMoSanChoPhepThu`) vì mục B kiểm "kỹ năng khoá thì từ chối".
+
 ## Phần 4 — Menu công cụ "Diablo 2.5D"
 
 | Mục | Tác dụng |

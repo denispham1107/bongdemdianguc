@@ -582,7 +582,8 @@ hơn ×1,5 và mở xuống 1,8–4,3 m** (người dùng chọn sau menu 94 ch�
   tạo component MỚI mang `conLai` mặc định = `ThoiGian` rồi `Max` → người khác hiện hình rồi vẫn tàng hình trên máy mình 20 s (nay 90 s).
   Menu 73 mục V, W.
 - **Tàng hình** (`Combat/TangHinh.cs`, shader `S_TangHinh`, 18/09/2026): thay TOÀN BỘ vật liệu model bằng shader viền fresnel (khác
-  `FrozenEffect` chỉ phủ thêm lớp); 20 giây, hồi chiêu 30 s, 30 năng lượng; **quái không thấy** (`GameDirector.GanNhat` bỏ qua, `EnemyAI`
+  `FrozenEffect` chỉ phủ thêm lớp; ⚠️ 16/10/2026: chỉ thay ô ĐỤC, GIỮ lớp phủ cháy / ướt / cháy đen — bản cũ bỏ qua cả renderer có lớp phủ → tàng hình
+  lúc đang cháy thì thân KHÔNG trong suốt; menu 73 mục X); 20 giây, hồi chiêu 30 s, 30 năng lượng; **quái không thấy** (`GameDirector.GanNhat` bỏ qua, `EnemyAI`
   chọn lại ngay), **miễn mọi hiệu ứng** (`TangHinh.ChanHieuUng` chặn ở đầu mỗi `Apply`, và xoá hiệu ứng đang dính) nhưng **vẫn ăn sát thương**;
   đi nhanh +20%; **đòn đầu tiên bằng kỹ năng gây sát thương nhân đôi TOÀN BỘ sát thương của kỹ năng ấy** (mọi vệt Mưa băng, mọi quả trong chùm,
   cả sát thương cháy — vì nhân vào `manhHon`) rồi tan (Khiên / bình không tính); **hai giây cuối thân NHẤP NHÁY** (0,22 s, độ hiện 1 ↔ 0,12) và

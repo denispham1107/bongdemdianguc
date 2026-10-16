@@ -194,6 +194,7 @@ public class TangHinh : MonoBehaviour
         var ht = go.GetComponent<BiHatTung>(); if (ht != null) Destroy(ht);
         var ch = go.GetComponent<BurningEffect>(); if (ch != null) Destroy(ch);
         var uot = go.GetComponent<BiUot>(); if (uot != null) Destroy(uot);
+        var den = go.GetComponent<ChayDenToanThan>(); if (den != null) Destroy(den);   // (16/10/2026: truoc sot - than cay den van hien)
     }
 
     void Start()
@@ -201,28 +202,54 @@ public class TangHinh : MonoBehaviour
         var pc = GetComponent<PlayerController>();
         laCuaMinh = pc != null && pc.tuDocInput;
         choTruoc = transform.position;
-        TiengViTri.TangHinhAn(transform);
 
         matTang = new Material(Mats.TangHinhShader);
         foreach (var r in GetComponentsInChildren<Renderer>())
         {
             if (r == null || !r.enabled) continue;
             if (!(r is MeshRenderer) && !(r is SkinnedMeshRenderer)) continue;
-            var mats = r.sharedMaterials;
-            if (mats == null || mats.Length == 0) continue;
-            // Bo qua thu da trong suot (hieu ung, vom khieng) - thay vat lieu cua chung chi lam hinh la
-            bool trongSuot = false;
-            for (int k = 0; k < mats.Length; k++) if (mats[k] == null || mats[k].renderQueue >= 3000) trongSuot = true;
-            if (trongSuot) continue;
-
-            daDoi.Add(r);
-            vatLieuGoc.Add(mats);
-            var thay = new Material[mats.Length];
-            for (int k = 0; k < mats.Length; k++) thay[k] = matTang;
-            r.materials = thay;
-            r.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+            if (DoiVatLieu(r)) { daDoi.Add(r); r.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off; }
         }
+        TiengViTri.TangHinhAn(transform);
     }
+
+    /// <summary>
+    /// Thay cac o vat lieu DUC (renderQueue &lt; 3000) cua renderer bang matTang, giu cac LOP PHU trong suot (lua chay LuaPhuThan, uot, than
+    /// den...) de chu cua chung tu go. Renderer ma o DAU (vat lieu goc) da trong suot = hinh hieu ung (vom khieng) -> bo qua.
+    /// ⚠️ Loi 16/10/2026 (nguoi dung: "nhieu luc da tang hinh nhung co the khong chuyen qua trong suot"): ban cu bo qua CA renderer neu co
+    /// BAT KY o nao trong suot. Dang chay ma tang hinh: BurningEffect bi xoa nhung lop lua LuaPhuThan (Transparent 3000) chi go o cuoi khung
+    /// SAU Start -> than giu nguyen vat lieu thuong suot 90 s (menu 73 muc X tai hien).
+    /// </summary>
+    bool DoiVatLieu(Renderer r)
+    {
+        var mats = r.sharedMaterials;
+        if (mats == null || mats.Length == 0 || mats[0] == null || mats[0].renderQueue >= 3000) return false;
+        var goc = new List<Material>();
+        bool doi = false;
+        for (int k = 0; k < mats.Length; k++)
+        {
+            if (mats[k] == matTang) continue;
+            if (mats[k] == null || mats[k].renderQueue >= 3000) continue;   // lop phu: de nguyen
+            goc.Add(mats[k]);
+            mats[k] = matTang;
+            doi = true;
+        }
+        if (!doi) return false;
+        int i = daDoi.IndexOf(r);
+        if (i >= 0) vatLieuGoc[i] = goc.ToArray(); else vatLieuGoc.Add(goc.ToArray());
+        r.sharedMaterials = mats;
+        return true;
+    }
+
+    /// <summary>Con o nao cua renderer dang la matTang khong (hieu ung khac co the tra mang vat lieu cu de len).</summary>
+    bool ConTang(Renderer r)
+    {
+        var mats = r.sharedMaterials;
+        for (int k = 0; k < mats.Length; k++) if (mats[k] == matTang) return true;
+        return false;
+    }
+
+    float lucKiemVatLieu;
 
     void Update()
     {
@@ -247,6 +274,13 @@ public class TangHinh : MonoBehaviour
         mucHien = hien;
 
         if (matTang != null) matTang.SetFloat("_Amount", hien);
+        // Hieu ung khac (FrozenEffect.Restore...) tra NGUYEN mang vat lieu cu de len -> than hien lai: kiem 4 lan / giay, doi lai
+        if (Time.time >= lucKiemVatLieu)
+        {
+            lucKiemVatLieu = Time.time + 0.25f;
+            for (int i = 0; i < daDoi.Count; i++)
+                if (daDoi[i] != null && !ConTang(daDoi[i])) DoiVatLieu(daDoi[i]);
+        }
         // Bat/tat renderer van theo "muc" chu khong theo "hien": nhap nhay bang do sang, khong tat han hinh.
         for (int i = 0; i < daDoi.Count; i++)
             if (daDoi[i] != null) daDoi[i].enabled = muc > 0.01f;
@@ -261,7 +295,13 @@ public class TangHinh : MonoBehaviour
         for (int i = 0; i < daDoi.Count; i++)
         {
             if (daDoi[i] == null) continue;
-            daDoi[i].materials = vatLieuGoc[i];
+            // Tra tung o matTang ve vat lieu goc theo thu tu; lop phu (con hay da go) de nguyen - tra ca mang cu se dua lai lop phu DA HUY
+            var mats = daDoi[i].sharedMaterials;
+            var goc = vatLieuGoc[i];
+            int j = 0;
+            for (int k = 0; k < mats.Length; k++)
+                if (mats[k] == matTang) mats[k] = j < goc.Length ? goc[j++] : null;
+            daDoi[i].sharedMaterials = mats;
             daDoi[i].enabled = true;
             daDoi[i].shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.On;
         }
