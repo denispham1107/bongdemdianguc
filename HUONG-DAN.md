@@ -14759,6 +14759,44 @@ so loi ghi nhan = 0
 
 Ảnh `PlayTestShots/dauvetchay_*_[0_truoc|1_am_i|2_nguoi].png`. Menu 81, 135: 0 lỗi.
 
+## Tiếng quạ kêu mỗi phút + bầy dơi bay 30 giây sau (17/10/2026)
+
+**Người dùng:** "cứ mỗi 1 phút thêm âm thanh stereo tiếng quạ kêu thảm thiết, sau khi quạ kêu 30 giây thêm tiếng bầy dơi đập cánh bay". Người dùng chọn: **chỉ
+trong trận Act2**, quạ kêu từ **hướng ngẫu nhiên** xa xa, dơi **bay vụt ngang** qua đầu, âm lượng theo thanh **Hiệu ứng**.
+
+**Ba bản** (`CongCu/AmThanh/tieng_qua_doi.py` → `_2` → `_3`):
+- Bản 1 bị chê "chưa giống quạ, chưa giống dơi vỗ cánh, mỏng, đơn điệu, mono": quạ = chuỗi xung răng cưa qua 3 formant (còi điện tử), dơi = mỗi cú vỗ một
+  "tách" ồn 12–28 ms, không gian = một chỗ + một lớp vang.
+- Bản 2: **quạ đạt** ("hơi ngắn") — chuỗi hoạ âm theo đường cao độ + hoạ âm PHỤ (vỡ giọng) + đoạn hỗn loạn + ồn khàn qua cùng formant, âm bật "K" + F2 trượt
+  ("k-aaa"), cuối tiếng giọng khàn đứt quãng (vocal fry), 8–14 PHẢN XẠ SỚM (bia, cây — mỗi cái một bên, trễ 8–90 ms) + vang dài. Dơi bị chê "như súng bắn liên
+  thanh": mỗi cú vỗ lên gắt 3 ms + "thụp" trầm, nhịp đều 9–14/giây.
+- Bản 3: quạ dài thêm ×1,35 + 1–2 tiếng mỗi đợt; dơi = MÂY tiếng phành phạch sột soạt — mỗi cú lên MỀM 12–20 ms, hai nhịp (đập xuống + nhấc lên 45%), bên
+  trong màng da rung (điều biên 60–120 Hz), thân thụp chỉ 12%; nhịp lệch ±15%, biên độ ±40%; lớp mây sột soạt của con ở xa. ⚠️ Đo "súng" trên đường bao
+  phải CHIA cho bản làm mượt 300 ms (bỏ vòm bay qua) — không thì vòm chậm chiếm hết tự tương quan, bản 2 và 3 đo như nhau. Đã bỏ vòm: nhịp đều 0,13–0,24 →
+  0,05–0,13, độ gắt 1,57–1,95 → 1,53–1,83, 1–4 kHz 23–29% → 63–68%.
+Người dùng chọn **quạ mẫu A "Quạ đen thảm thiết"**, **dơi mẫu C**.
+
+**Trong game** (`AmThanh/TiengMoiTruong.cs`, gắn trong `GameBootstrap.Awake` — chỉ Act2 có GameBootstrap): đồng hồ trận, quạ ở 60, 120, 180… giây, dơi ở quạ
++ 30 giây. HƯỚNG NƯỚNG SẴN trong clip (WebGL không có panStereo): `Resources/AmThanh/MoiTruong/QuaKeu1–3` con chính bên phải, 4–6 bản LẬT; `DoiBay1–3` trái
+→ phải, 4–6 phải → trái; phát 2D giữa, ngẫu nhiên không trùng lần trước, cao độ ±3%, ×thanh Hiệu ứng; phép thử khác đang chạy thì im (trừ `BatTrongPhepThu`).
+
+Menu **139**:
+
+```
+[ban 3] qua mau A + doi mau C, 3 bien the + 3 ban lat moi loai
+A. 12/12 file trung ban goc, 2 kenh, khong ForceToMono
+B. so bo phat TiengMoiTruong trong Act2: 1; GameBootstrap trong MainMenu.unity: khong (chi Act2 tao bo phat)
+C1. dat dong ho 57 s -> qua keu luc dong ho 60.01 s (clip QuaKeu1), doi phat som False; loa RMS 0.0597 tuong quan 0.23, lech (P-T)/(P+T) 0.76 (clip 1-3 ben phai, 4-6 ben trai)
+C2. dat 88,5 s -> doi bay luc 90.01 s (clip DoiBay1); lech nua dau -0.51 -> nua cuoi 0.70 (clip 1-3 trai -> phai, 4-6 phai -> trai); RMS 0.0460 tuong quan 0.42
+C3. qua tiep luc 120.01 s, doi tiep luc 150.02 s; trong 149,5-150,1 s qua them 0
+D. Hieu ung 40% -> RMS 0.0349, 80% -> 0.0721: ti le 0.48 (mong 0,50)
+E. co ChayThuMang, khong bat: qua van dem lich (1), am luong nguon 0.000
+F. 16 lan: qua 6 clip khac nhau (trung lien truoc 0), doi 5 clip (trung 0)
+so loi ghi nhan = 0
+```
+
+Chưa nghe thử trên web.
+
 ## Phần 4 — Menu công cụ "Diablo 2.5D"
 
 | Mục | Tác dụng |

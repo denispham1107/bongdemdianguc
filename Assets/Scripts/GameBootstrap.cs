@@ -50,6 +50,8 @@ public class GameBootstrap : MonoBehaviour
         EnsureDirector(playerGo.transform);
         // Tam nhin 25 m + suong chien tranh kieu StarCraft 2 (nguoi dung 10/10/2026)
         TamNhin.Gan(gameObject);
+        // Tieng qua keu moi phut + bay doi bay 30 s sau (nguoi dung 17/10/2026, chi trong tran)
+        TiengMoiTruong.Gan(gameObject);
         EnsureHud();
     }
 
