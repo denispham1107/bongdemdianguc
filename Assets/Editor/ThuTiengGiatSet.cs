@@ -19,8 +19,8 @@ using UnityEngine;
 ///   B. TUNG THAT Giut set (CastAt 6) vao 6 bia (4 mach dau + nhip lan): 1 tieng phong; moi mach 1 tieng trung (ke dau 1, ke sau x0,6) tai cho bia; moi nhip lan
 ///      1 tieng lan (so tieng trung + lan = so tia ve); loa co tieng, khong mono.
 ///   C. BAN VAO KHONG KHI: khong ai trong tam -> van 1 tieng phong, 0 trung.
-///   D. QUA CAU DIEN THAT (CastAt 13) giua 3 bia: 1 vong lap bam theo qua cau suot doi; moi luot 1 tieng lan (x0,75) + moi tia 1 tieng trung; qua cau tan
-///      -> vong lap tat; loa luc qua cau dang xet co tieng, khong mono.
+///   D. QUA CAU DIEN THAT (CastAt 13) giua 3 bia: KHONG vong lap (nguoi dung bo 16/10/2026 - chi keu luc ban); moi luot 1 tieng lan (x0,75) + moi tia
+///      1 tieng trung; loa luc dang ban co tieng, khong mono. D2. qua cau DUNG CHO (khong ai trong tam) 2,5 s -> 0 tieng, loa im.
 ///   E. QUY CAY: GiatSet.PhongCuaQuai vao bia -> 1 phong + 1 trung.
 ///   F. SUONG MU: phong / trung / lan o 40 m -> bo, vong lap Qua cau dien o 40 m giu giong muc 0, loa im; doi chung tat suong -> co giong.
 ///   G. BIEN THE: 24 lan moi loai -> du 3 bien the, cao do +-6%.
@@ -280,8 +280,6 @@ public static class ThuTiengGiatSet
         float hanD = Time.time + 2f;
         while (cau == null && Time.time < hanD) { cau = Object.FindAnyObjectByType<QuaCauDien>(); yield return null; }
         yield return new WaitForSeconds(0.6f);
-        var gv = Giong(TiengViTri.Loai.CauDienVong);
-        bool vongBam = gv.Count == 1 && cau != null && gv[0].theo == cau.transform && gv[0].bamTheo;
         var heSoBan = new List<float>();
         foreach (var g in Giong(TiengViTri.Loai.GiatSetLan)) heSoBan.Add(g.heSo);
         yield return Nghe(1.0f, kq);
@@ -290,17 +288,30 @@ public static class ThuTiengGiatSet
         yield return new WaitForSeconds(0.3f);
         int vongCon = Giong(TiengViTri.Loai.CauDienVong).Count;
         int luot = QuaCauDien.SoLuotDaBan - luot0, tia = QuaCauDien.SoTiaDaBan - tia0;
-        Ghi(string.Format("D. Qua cau dien: vong lap +{0} (bam theo qua cau {1}); {2} luot, {3} tia -> tieng lan (ban) +{4}, trung +{5}; he so tieng ban {6}; qua cau tan -> vong lap con {7}",
-            SL(TiengViTri.Loai.CauDienVong) - dv0, vongBam, luot, tia, SL(TiengViTri.Loai.GiatSetLan) - dl0, SL(TiengViTri.Loai.GiatSetTrung) - dt0,
+        Ghi(string.Format("D. Qua cau dien: vong lap +{0} (phai 0); {1} luot, {2} tia -> tieng lan (ban) +{3}, trung +{4}; he so tieng ban {5}; qua cau tan -> vong lap con {6}",
+            SL(TiengViTri.Loai.CauDienVong) - dv0, luot, tia, SL(TiengViTri.Loai.GiatSetLan) - dl0, SL(TiengViTri.Loai.GiatSetTrung) - dt0,
             string.Join(" / ", heSoBan.ConvertAll(x => x.ToString("F2"))), vongCon));
         Ghi(string.Format("   loa luc qua cau xet: RMS {0:F4} (dinh {1:F4}), tuong quan {2:F3}", kq[0], kq[4], kq[3]));
-        Kiem(SL(TiengViTri.Loai.CauDienVong) - dv0 == 1 && vongBam, "Qua cau dien khong co dung 1 vong lap bam theo");
+        Kiem(SL(TiengViTri.Loai.CauDienVong) - dv0 == 0, "Qua cau dien van co tieng vong lap lien tuc");
         Kiem(luot == QuaCauDien.SoLuot && SL(TiengViTri.Loai.GiatSetLan) - dl0 == luot && SL(TiengViTri.Loai.GiatSetTrung) - dt0 == tia, "moi luot khong 1 tieng ban + moi tia 1 tieng trung");
         Kiem(heSoBan.Count >= 1 && heSoBan[0] <= TiengViTri.HeSoCauDienBan + 1e-4f, "tieng ban cua qua cau khong nho lai x0,75");
         Kiem(vongCon == 0, "qua cau tan ma vong lap van keu");
         Kiem(kq[0] > 1e-3f && kq[3] < 0.95f, "loa luc qua cau xet khong co tieng / gan mono");
         foreach (var b in bias) Object.Destroy(b.gameObject);
         yield return ChoIm(4f);
+
+        // D2. qua cau DUNG CHO (khong ai trong 9 m) -> im
+        int e0v = SL(TiengViTri.Loai.CauDienVong), e0l = SL(TiengViTri.Loai.GiatSetLan), e0t = SL(TiengViTri.Loai.GiatSetTrung);
+        var cauCho = QuaCauDien.Spawn(goc + h * 10.5f, LayerMask.GetMask("Enemy"), toi);
+        yield return new WaitForSeconds(0.5f);
+        int giongCho = 0; foreach (var g in TiengViTri.CacGiong) if (!g.Ranh) giongCho++;
+        yield return Nghe(2.0f, kq);
+        Ghi(string.Format("D2. qua cau dung cho 2,5 s (khong ai trong tam): vong lap +{0}, ban +{1}, trung +{2}, giong dang keu {3}, loa RMS {4:F5}",
+            SL(TiengViTri.Loai.CauDienVong) - e0v, SL(TiengViTri.Loai.GiatSetLan) - e0l, SL(TiengViTri.Loai.GiatSetTrung) - e0t, giongCho, kq[0]));
+        Kiem(SL(TiengViTri.Loai.CauDienVong) - e0v == 0 && SL(TiengViTri.Loai.GiatSetLan) - e0l == 0 && SL(TiengViTri.Loai.GiatSetTrung) - e0t == 0
+             && giongCho == 0 && kq[0] < 1e-4f, "qua cau dien dung cho ma van keu");
+        if (cauCho != null) Object.Destroy(cauCho.gameObject);
+        yield return ChoIm(3f);
 
         // ===== E. Quy cay =====
         Ghi("");

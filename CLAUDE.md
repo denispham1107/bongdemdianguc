@@ -1120,6 +1120,7 @@ hơn ×1,5 và mở xuống 1,8–4,3 m** (người dùng chọn sau menu 94 ch�
   CHẠY DỌC TIA tay → mục tiêu (0,2 s). ⚠️ **CÁCH PHÁT CÂN BẰNG** chỉ cho Giựt sét + Quả cầu điện (người dùng chọn): Editor / máy tính 2D + panStereo
   (`TiengViTri.PhatCanBang`) — Unity 3D spread 120 bóp stereo clip (0,17 → 0,38 ở loa), WebGL không có panStereo nên vẫn 3D. Menu 129 H: giữa 0,17 (3D 0,40),
   bên phải ×3,64 (3D ×1,49). Các dòng B2 / B3 ở trên là LỊCH SỬ. Menu 129, 69, 74: 0 lỗi.
+  ⚠️ **Quả cầu điện KHÔNG còn tiếng xẹt liên tục** (người dùng cùng ngày: chỉ kêu khi đánh ra tia) — đứng chờ thì im; menu 129 D2.
 - ⚠️ **Ô KỸ NĂNG LƯU THEO TÀI KHOẢN + MẶC ĐỊNH CẢM ỨNG MỚI** (11/10/2026, người dùng khoanh 4 nút trên ảnh; chọn "lưu theo từng tài
   khoản" + "chỉ bản cảm ứng"): mặc định `SachPhep.MacDinhTron()` = [Cầu lửa, Mưa băng, Sấm sét, **Bình mana, Bình máu, Tốc biến**, Giựt sét,
   **Nhào lộn**] (nút tròn 4, 5, 6, 8); máy tính `MacDinhVuong()` giữ [0..6, Nhào lộn]. Khoá lưu = khoá gốc + "." + uid (`SachPhep.KhoaCua`; chưa

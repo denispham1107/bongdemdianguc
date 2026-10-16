@@ -14374,6 +14374,11 @@ Menu **129** (0 lỗi, Act2 thật): 10 file trùng byte bản gốc mới; tung
 phải-trái ×3,64 tương quan 0,15 — ĐỐI CHỨNG 3D spread 120 giữa 0,40 / bên phải ×1,49 tương quan 0,53; tiếng Quả cầu lửa vẫn 3D. Menu 69, 74: 0 lỗi.
 Chưa nghe thử trên web.
 
+⚠️ **Cùng ngày người dùng sửa: Quả cầu điện "bình thường chưa đánh ra tia thì không cần âm thanh, chỉ khi đánh ra tia"** — chọn BỎ HẲN tiếng điện xẹt
+liên tục: `QuaCauDien` không gọi `TiengViTri.CauDienVong` nữa (giữ hàm + file `CauDienVong.wav` để bật lại nếu cần); quả cầu chỉ kêu lúc bắn (tiếng "chíu"
+×0,75 tại quả cầu + tiếng trúng ở từng kẻ). Menu 129 (0 lỗi): Quả cầu điện thật 10 lượt / 50 tia → vòng lặp +0, 10 tiếng bắn, 50 tiếng trúng, loa 0,14;
+**D2** quả cầu đứng chờ 2,5 s không ai trong tầm → 0 tiếng, loa RMS 0,00000.
+
 ## Phần 4 — Menu công cụ "Diablo 2.5D"
 
 | Mục | Tác dụng |

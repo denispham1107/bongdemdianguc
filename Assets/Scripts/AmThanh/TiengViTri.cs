@@ -516,7 +516,8 @@ public class TiengViTri : MonoBehaviour
         b.Phat(Loai.GiatSetLan, cho, null, false, heSo * HeSoKeSau(b.setLanGanDay), CaoDoNgauNhien());
     }
 
-    /// <summary>Tieng dien chay XET LIEN TUC trong Qua cau dien (vong lap) bam theo qua cau - goi <see cref="Dung"/> khi qua cau tan.</summary>
+    /// <summary>Tieng dien chay XET LIEN TUC trong Qua cau dien (vong lap) bam theo qua cau - goi <see cref="Dung"/> khi qua cau tan.
+    /// ⚠️ 16/10/2026 nguoi dung BO (Qua cau dien chi keu luc ban) - QuaCauDien khong goi nua; giu ham + file de bat lai neu can.</summary>
     public static Giong CauDienVong(Transform cau)
     {
         SoLan[(int)Loai.CauDienVong]++;

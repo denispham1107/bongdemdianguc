@@ -119,7 +119,8 @@ public class QuaCauDien : MonoBehaviour
         hinh = VfxFactory.QuaCauDienHinh(transform.position, BanKinhCau, GiayChoToiDa + 1f);
         CameraShake.Shake(0.18f, 0.05f);
         nhip = 0.12f;      // luot dau ban gan nhu ngay khi cau hien ra
-        giongVong = TiengViTri.CauDienVong(transform);   // dien chay xet lien tuc trong qua cau (16/10/2026)
+        // ⚠️ KHONG co tieng dien xet lien tuc nua (16/10/2026 nguoi dung: "binh thuong chua danh ra tia thi khong can am thanh, chi khi danh ra
+        // tia" - chon bo han vong lap CauDienVong): qua cau dung cho thi IM, chi keu luc ban (BanMotLuot).
     }
 
     void Update()
@@ -194,8 +195,6 @@ public class QuaCauDien : MonoBehaviour
         return daBanRa;
     }
 
-    TiengViTri.Giong giongVong;
-
     int SoSanhTheoKhoangCach(Damageable a, Damageable b)
     {
         if (a == null) return 1;
@@ -207,7 +206,6 @@ public class QuaCauDien : MonoBehaviour
 
     void OnDestroy()
     {
-        TiengViTri.Dung(giongVong, transform);
         if (hinh != null) Destroy(hinh);
     }
 }
