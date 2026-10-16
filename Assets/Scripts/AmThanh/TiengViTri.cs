@@ -34,7 +34,8 @@ public class TiengViTri : MonoBehaviour
                        SamSetDanh = 21, SamSetChay = 22, SamSetRen = 23, MayGiongGiong = 24, MayGiongMua = 25,
                        GioLocThoi = 26, GioLocBui = 27, LocXoayGio = 28, LocXoayNutCay = 29, LocXoayNutDa = 30,
                        TocBienMat = 31, TocBienHien = 32, NhaoLonVut = 33, NhaoLonLan = 34, NhaoLonDap = 35,
-                       KhiengBat = 36, KhiengTrung = 37, KhiengVo = 38 }
+                       KhiengBat = 36, KhiengTrung = 37, KhiengVo = 38,
+                       BinhUongMau = 39, BinhUongMana = 40, BinhHut = 41, BinhNhat = 42 }
 
     // Qua cau lua: ban 3 "B - Khoi lua lon" (15/10/2026, CongCu/AmThanh/tieng_qua_cau_lua_3.py, QuaCauLuaThu3/B_khoi_lua_lon_*.wav -
     // mo hinh lua that: liem lua / xi hoi / lach tach ngau nhien khong deu). BA BIEN THE tieng ban + BA bien the tieng no, moi lan chon
@@ -80,11 +81,15 @@ public class TiengViTri : MonoBehaviour
         BienThe("TocBienMat"), BienThe("TocBienHien"), BienThe("NhaoLonVut"), BienThe("NhaoLonLan"), BienThe("NhaoLonDap"),
         // Khien (16/10/2026, ban 2 mau A "Thep duc" - CongCu/AmThanh/tieng_khieng_2.py, KhiengThu2/A_thep_duc_*; ban 1 bi che "gia tao, don gian"):
         // kim loai THAT (40-90 mode cong huong kich bang cu va cham) - BAT (ngan len + khep vom), TRUNG ("boong" + doi lai), VO (no tung + manh vo).
-        BienThe("KhiengBat"), BienThe("KhiengTrung"), BienThe("KhiengVo") };
+        BienThe("KhiengBat"), BienThe("KhiengTrung"), BienThe("KhiengVo"),
+        // Binh mau / mana (16/10/2026, nguoi dung chon mau A "Chan that" - CongCu/AmThanh/tieng_binh.py, BinhThu/A_that_*): UONG (rot oc oc + nuot "uc"
+        // + tho ra; mau dac hon, mana loang hon) · HUT (binh bay vao nguoi: gio vut sang dan + nuoc oc ach) · NHAT (tui da + "canh" thuy tinh).
+        BienThe("BinhUongMau"), BienThe("BinhUongMana"), BienThe("BinhHut"), BienThe("BinhNhat") };
     static string[] BienThe(string ten) { return new[] { "AmThanh/KyNang/" + ten + "1", "AmThanh/KyNang/" + ten + "2", "AmThanh/KyNang/" + ten + "3" }; }
     static readonly bool[] laVong = { false, true, false, false, false, true, false, true, false, false, false, false, false, false, false, false, false,
                                       false, false, false, true, false, false, false, true, true, true, true, false, false, false,
-                                      false, false, false, false, false, false, false, false };
+                                      false, false, false, false, false, false, false, false,
+                                      false, false, false, false };
     static readonly AudioClip[][] clip = TaoKhoClip();
     static AudioClip[][] TaoKhoClip() { var k = new AudioClip[duong.Length][]; for (int i = 0; i < k.Length; i++) k[i] = new AudioClip[duong[i].Length]; return k; }
     /// <summary>Lech cao do toi da cua tieng ban / no Qua cau lua va roi / no Thien thach (+-6%, nguoi dung chon).</summary>
@@ -175,7 +180,8 @@ public class TiengViTri : MonoBehaviour
             || l == Loai.LocXoayNutCay || l == Loai.LocXoayNutDa
             || l == Loai.TocBienMat || l == Loai.TocBienHien                            // Toc bien + Nhao lon (16/10/2026): nhu cac ky nang truoc
             || l == Loai.NhaoLonVut || l == Loai.NhaoLonLan || l == Loai.NhaoLonDap
-            || l == Loai.KhiengBat || l == Loai.KhiengTrung || l == Loai.KhiengVo;      // Khien (16/10/2026)
+            || l == Loai.KhiengBat || l == Loai.KhiengTrung || l == Loai.KhiengVo       // Khien (16/10/2026)
+            || l == Loai.BinhUongMau || l == Loai.BinhUongMana || l == Loai.BinhHut || l == Loai.BinhNhat;   // Binh (16/10/2026)
 #endif
     }
 
@@ -193,7 +199,7 @@ public class TiengViTri : MonoBehaviour
     }
 
     /// <summary>Dem tieng da yeu cau theo loai (ke ca luc im trong phep thu / bi suong che) - phep thu doc / dat lai.</summary>
-    public static readonly int[] SoLan = new int[39];
+    public static readonly int[] SoLan = new int[43];
     /// <summary>Tieng mot lan bi BO vi luc phat nam trong suong (MucThay = 0).</summary>
     public static int SoBiSuongChe;
     /// <summary>Giong vua phat gan nhat (phep thu doc clip / cao do bien the).</summary>
@@ -726,6 +732,44 @@ public class TiengViTri : MonoBehaviour
     {
         SoLan[(int)Loai.KhiengVo]++;
         DamBao().Phat(Loai.KhiengVo, tam, null, false, 1f, CaoDoNgauNhien());
+    }
+
+    // ================================================================
+    //  BINH MAU / BINH MANA: UONG (PlayerController.UongBinh - chi may nguoi uong, nguoi dung chon khong qua mang) · HUT (BinhRoi bay vao
+    //  nguoi - moi may) · NHAT (binh toi noi - moi may)
+    // ================================================================
+
+    /// <summary>Tieng UONG binh - bam theo nguoi uong (mau: long dac, mana: long loang).</summary>
+    public static Giong BinhUong(Transform nguoi, bool laMau)
+    {
+        var l = laMau ? Loai.BinhUongMau : Loai.BinhUongMana;
+        SoLan[(int)l]++;
+        if (nguoi == null) return null;
+        return DamBao().Phat(l, nguoi.position + Vector3.up * 1.5f, nguoi, true, 1f, CaoDoNgauNhien());
+    }
+
+    /// <summary>Tieng binh BI HUT - bam theo BINH dang bay vao nguoi (to + sang dan nam san trong clip, dinh luc toi noi ~0,42 s).</summary>
+    public static Giong BinhHut(Transform binh)
+    {
+        SoLan[(int)Loai.BinhHut]++;
+        if (binh == null) return null;
+        return DamBao().Phat(Loai.BinhHut, binh.position, binh, true, 1f, CaoDoNgauNhien());
+    }
+
+    /// <summary>Tieng NHAT duoc binh - bam theo nguoi vua nhat.</summary>
+    public static void BinhNhat(Transform nguoi)
+    {
+        SoLan[(int)Loai.BinhNhat]++;
+        if (nguoi == null) return;
+        DamBao().Phat(Loai.BinhNhat, nguoi.position + Vector3.up * 1.1f, nguoi, true, 1f, CaoDoNgauNhien());
+    }
+
+    /// <summary>Giong <paramref name="g"/> dang bam <paramref name="cu"/> thi chuyen sang bam <paramref name="moi"/> (binh toi tay bi xoa: duoi
+    /// tieng hut di theo nguoi thay vi tat dan). Giong da tra ve / doi chu thi thoi.</summary>
+    public static void DoiChu(Giong g, Transform cu, Transform moi)
+    {
+        if (g == null || g.Ranh || g.dung || g.theo != cu || moi == null) return;
+        g.theo = moi;
     }
 
     // ================================================================

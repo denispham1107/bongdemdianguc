@@ -1,0 +1,16 @@
+[ban 1] tieng binh mau A Chan that, 3 bien the moi tieng
+A. 12/12 file trung ban goc, 2 kenh, khong ForceToMono
+
+B. uong binh MAU: hoi 200; tieng uong +1 (loai kia +0), giong 1 (bam theo nguoi + can bang 2D True); loa RMS 0.0824 (dinh 0.1367), tuong quan 0.291
+B2. mau DAY: hoi 0, tieng uong +0
+B. uong binh MANA: hoi 75; tieng uong +1 (loai kia +0), giong 1 (bam theo nguoi + can bang 2D True); loa RMS 0.0705 (dinh 0.1342), tuong quan 0.307
+B2. mana DAY: hoi 0, tieng uong +0
+
+C. binh mau cach 3 m bay vao: tieng hut +1 (bam theo BINH True), bay 0.26 s, loa RMS lon nhat luc bay 0.0815; toi noi: tieng nhat +1 (bam theo nguoi True), duoi tieng hut chuyen sang bam nguoi True; so binh mau +1; loa sau khi nhat RMS 0.0470 tuong quan 0.307
+
+D. binh bay vao nguoi khac o 30 m (MucThay 0.00): giong hut / nhat thay 73 lan, muc lon nhat 0.000; loa RMS 0.00000
+D2. DOI CHUNG tat suong: muc lon nhat 0.125
+
+E. 24 lan moi loai: so bien the BinhUongMau 3 (24 lan duoc giong), BinhUongMana 3 (24 lan duoc giong), BinhHut 3 (24 lan duoc giong), BinhNhat 3 (24 lan duoc giong); cao do 0.940 - 1.059
+
+so loi ghi nhan = 0

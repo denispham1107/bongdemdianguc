@@ -116,7 +116,11 @@ public class BinhRoi : MonoBehaviour
         GheChu = ghe;
         LaCuaToi = laCuaToi;
         giayBay = 0f;
+        // Tieng binh BI HUT (16/10/2026, nguoi dung): bam theo binh dang bay - moi may (binh bay vao ai thi may nao cung thay)
+        giongHut = TiengViTri.BinhHut(transform);
     }
+
+    TiengViTri.Giong giongHut;
 
     void Update()
     {
@@ -182,6 +186,12 @@ public class BinhRoi : MonoBehaviour
     {
         if (daXong) return;
         daXong = true;
+        // Toi noi: duoi tieng hut di theo NGUOI (binh sap bi xoa) + tieng NHAT tai nguoi ay (16/10/2026)
+        if (dich != null)
+        {
+            TiengViTri.DoiChu(giongHut, transform, dich);
+            TiengViTri.BinhNhat(dich);
+        }
         QuanLyBinhRoi.DaToiNoi(this);
         Destroy(gameObject);
     }

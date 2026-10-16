@@ -14658,6 +14658,46 @@ H. T (co khien) phong Giut set ra E2: cham vom +0, diem cuoi cach nguc E2 0.000 
 so loi ghi nhan = 0
 ```
 
+## Tiếng bình máu / bình mana — uống · bị hút · nhặt được (16/10/2026)
+
+**Người dùng:** "âm thanh stereo khi dùng bình máu và bình mana, nghe như tiếng NƯỚC CHẢY người chơi đang uống"; "âm thanh khi bình bị HÚT về phía người chơi, và
+âm thanh người chơi đã LẤY ĐƯỢC bình"; "người chơi khác trong sương mù thì không nghe". Người dùng chọn mẫu **A "Chân thật"** trong 3 mẫu
+(`CongCu/AmThanh/tieng_binh.py`, nghe thử `CongCu/AmThanh/BinhThu/*_ghep_nhu_trong_game.wav`; B "Thuốc phép" có bọt sủi lấp lánh, C "Đặc, nặng") và chọn
+**tiếng uống chỉ máy người uống nghe** (uống bình không đi qua gói tin — không thêm gói).
+
+**Cách làm tiếng nước thật:** nước = BỌT KHÍ — mỗi bọt một tiếng cộng hưởng Minnaert (sin tắt 3–30 ms, cao độ nhích lên khi bọt nổi); dòng rót = hàng trăm
+bọt nhỏ ngẫu nhiên + tiếng xối (ồn dải trung, nhiễu loạn). Uống: (mở nút) → rót, "ọc ọc" khi khí chui vào cổ bình (bọt to, xen kẽ hai bên) + 2–4 ngụm nuốt
+"ực" (tóc cổ họng + ụm trầm cùng pha + tách lưỡi) → (thở ra "haa"); máu đặc hơn (bọt trầm), mana loãng hơn. Hút: gió vút to + sáng dần theo 1/khoảng cách
+(đỉnh lúc bình tới nơi ~0,42 s) + nước óc ách trong bình 2–3 lần lắc + thủy tinh lách cách. Nhặt: túi da + 1–2 tiếng "cạnh" thủy tinh (mode không điều hoà,
+kích chung) + óc ách. ⚠️ **Bẫy đo được:** lệch trái/phải chỉ bằng âm lượng thì MỘT nguồn lệch 0,6 tự nó đã tương quan 0,6 — bọt rải đều ±0,75 cho tương quan
+0,73 (gần mono), "ọc" ±0,25 cho 0,97; phải để ~75% bọt nằm GẦN HẲN một kênh (|lệch| 0,85–1), "ọc" xen kẽ hai bên, mode thủy tinh xen kẽ → 0,19–0,43. Lần 1 tiếng
+nhặt 93–97% ở 1–4 kHz (chỉ còn thủy tinh, mỏng) → thân túi ×2,5, thủy tinh ×0,45 → 1–4 kHz 35–64%. 3 biến thể khác CẤU TRÚC (số ngụm, có/không mở nút, thở ra,
+số lần lắc, 1–2 tiếng cạnh), chênh 2,4–18 dB.
+
+**Trong game** (loại `TiengViTri` 39–42, phát CÂN BẰNG như các kỹ năng gần đây, chọn ngẫu nhiên 1/3 biến thể + cao độ ±6%): `PlayerController.UongBinh` uống
+được → `TiengViTri.BinhUong(người, laMau)` bám người (chỉ máy người uống — BOT uống trên máy chủ phòng thì chủ phòng nghe nếu trong tầm nhìn);
+`BinhRoi.BayVao` → `BinhHut` bám theo BÌNH đang bay (mọi máy); `BinhRoi.Xong` → `BinhNhat` bám người nhặt + `TiengViTri.DoiChu` chuyển đuôi tiếng hút sang
+bám người (bình bị xoá — không thì tiếng tắt dần giữa chừng). Sương mù / xa nhỏ như mọi tiếng theo vị trí.
+
+Menu **137** (Play Act2 thật):
+
+```
+[ban 1] tieng binh mau A Chan that, 3 bien the moi tieng
+A. 12/12 file trung ban goc, 2 kenh, khong ForceToMono
+B. uong binh MAU: hoi 200; tieng uong +1 (loai kia +0), giong 1 (bam theo nguoi + can bang 2D True); loa RMS 0.0824 (dinh 0.1367), tuong quan 0.291
+B2. mau DAY: hoi 0, tieng uong +0
+B. uong binh MANA: hoi 75; tieng uong +1 (loai kia +0), giong 1 (bam theo nguoi + can bang 2D True); loa RMS 0.0705 (dinh 0.1342), tuong quan 0.307
+B2. mana DAY: hoi 0, tieng uong +0
+C. binh mau cach 3 m bay vao: tieng hut +1 (bam theo BINH True), bay 0.26 s, loa RMS lon nhat luc bay 0.0815; toi noi: tieng nhat +1 (bam theo nguoi True), duoi tieng hut chuyen sang bam nguoi True; so binh mau +1; loa sau khi nhat RMS 0.0470 tuong quan 0.307
+D. binh bay vao nguoi khac o 30 m (MucThay 0.00): giong hut / nhat thay 73 lan, muc lon nhat 0.000; loa RMS 0.00000
+D2. DOI CHUNG tat suong: muc lon nhat 0.125
+E. 24 lan moi loai: so bien the BinhUongMau 3 (24 lan duoc giong), BinhUongMana 3 (24 lan duoc giong), BinhHut 3 (24 lan duoc giong), BinhNhat 3 (24 lan duoc giong); cao do 0.940 - 1.059
+so loi ghi nhan = 0
+```
+
+Menu 65 (bình): 1 lỗi CŨ không liên quan — E2 đo số điểm chữ dòng cấp Sách phép (393 so với mức 185), lần sạch cuối là f033f5c (09/10, trước chế độ tạm mở sẵn
+kỹ năng và 8 ô); các mục rơi / nhặt / uống / mạng đều đạt. Chưa nghe thử trên web.
+
 ## Phần 4 — Menu công cụ "Diablo 2.5D"
 
 | Mục | Tác dụng |

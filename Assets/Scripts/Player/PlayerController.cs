@@ -1193,6 +1193,8 @@ public class PlayerController : MonoBehaviour
         if (!Cap.BotBinh(ky)) return 0f;
         if (laMau) { health.Heal(hoi); binhMauTimer = HoiChieuBinh; }
         else { mana = Mathf.Min(maxMana, mana + hoi); binhManaTimer = HoiChieuBinh; }
+        // Tieng UONG (16/10/2026, nguoi dung chon mau A "Chan that"): chi may cua nguoi uong (khong qua mang - nguoi dung chon)
+        TiengViTri.BinhUong(transform, laMau);
 
         DamagePopup.SpawnText(transform.position + Vector3.up * 2.3f, "+" + Mathf.RoundToInt(hoi),
                               laMau ? new Color(1f, 0.30f, 0.25f) : new Color(0.45f, 0.72f, 1f));
