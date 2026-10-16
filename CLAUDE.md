@@ -116,6 +116,9 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
 
 ## Trạng thái hiện tại
 
+- ⚠️⚠️ **CHẾ ĐỘ TẠM: MỌI KỸ NĂNG MỞ SẴN CẤP 1** (16/10/2026, người dùng đang làm âm thanh cho tất cả kỹ năng: "không cần điểm để mở khoá, không bắt buộc
+  skill này đủ điểm mới mở skill khác — khi nào cần chuyển về bình thường tôi sẽ nói"): `CapDo.MoSanMoiKyNang = true` → `BangCap.BatDauTranMoi`
+  mở cấp 1 mọi kỹ năng TUNG ĐƯỢC (cả BOT), vẫn nâng cấp bằng điểm; KHÔNG mở nhóm BỊ ĐỘNG và Hoá lốc xoáy (vẫn ẩn — người dùng chọn). **Về bình thường: đặt false.** Phép thử cần "đầu trận còn khoá" (60, 66, 85 D...) sẽ báo lỗi khi chế độ bật — đặt `CapDo.TatMoSanChoPhepThu`.
 - Act2 sạch: **1011 vật thể** (trước khi mở rộng), 0 ô vật liệu hỏng, camera `near = 1.50`.
 - ⚠️ **ACT2 ĐÃ RỘNG THÊM 50%** (người dùng 27/09/2026, **menu 86** `Act2MoRong.cs`, chạy MỘT lần): rào mới dựng lại bằng Blender MCP
   (`hang_rao_rong.fbx`, nửa cạnh 53,7 → **66,41 m**, diện tích ×1,53, vẫn một cổng mở), terrain 109,2 → **134,63 m** (vùng |x|,|z| ≤ 51

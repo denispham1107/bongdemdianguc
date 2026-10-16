@@ -63,6 +63,18 @@ public static class CapDo
     public static bool ChoPhepKyAnChoPhepThu;
     public static bool KyAn(int ky) { return AnHoaLocXoay && ky == KyHoaLocXoay && !ChoPhepKyAnChoPhepThu; }
 
+    /// <summary>
+    /// ⚠️ CHE DO TAM - MO SAN MOI KY NANG (nguoi dung 16/10/2026, dang lam am thanh cho tat ca ky nang: "cho tat ca ky nang deu dung duoc,
+    /// khong can dung diem de mo khoa hoac bat buoc skill nay du diem roi moi mo skill khac - khi nao can chuyen ve binh thuong toi se noi").
+    /// Bat: vao tran (BangCap.BatDauTranMoi - ca nhan vat minh lan BOT) MOI ky nang TUNG DUOC da mo san CAP 1 (nguoi dung chon), van nang
+    /// cap bang diem nhu cu; KHONG mo nhom BI DONG (khong tung duoc, khong co tieng) va ky dang AN (Hoa loc xoay - nguoi dung chon van an).
+    /// VE BINH THUONG: dat false.
+    /// </summary>
+    public const bool MoSanMoiKyNang = true;
+    /// <summary>Phep thu can trang thai "dau tran moi khoa" (menu 60, 66...) dat true de tat che do tam.</summary>
+    public static bool TatMoSanChoPhepThu;
+    public static bool DangMoSanMoiKyNang { get { return MoSanMoiKyNang && !TatMoSanChoPhepThu; } }
+
     /// <summary>Toc bien (them 18/09/2026) - so 15, THEM O CUOI.</summary>
     public const int KyTocBien = 15;
 
@@ -394,6 +406,10 @@ public class BangCap
         capKyNang[CapDo.KyBinhMana] = 1;
         // Nhao lon CO SAN cap 1 - va chi co mot cap (nguoi dung 10/10/2026)
         capKyNang[CapDo.KyNhaoLon] = 1;
+        // ⚠️ CHE DO TAM thu am thanh (CapDo.MoSanMoiKyNang): moi ky nang tung duoc mo san cap 1
+        if (CapDo.DangMoSanMoiKyNang)
+            for (int i = 0; i < capKyNang.Length; i++)
+                if (capKyNang[i] == 0 && !CapDo.LaKyBiDong(i) && !CapDo.KyAn(i)) capKyNang[i] = 1;
         BaoDoi();
     }
 
