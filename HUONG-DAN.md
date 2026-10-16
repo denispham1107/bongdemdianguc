@@ -14521,6 +14521,31 @@ STEREO; Tốc biến thật 10 m: biến mất +1 đúng chỗ cũ, hiện ra +1
 (30 m) biến mất bị bỏ, hiện ra / vụt / đáp giữ giọng mức 0, loa im — đối chứng tắt sương có giọng; 24 lần mỗi loại đủ 3 biến thể, cao độ 0,942–1,059.
 Menu 119, 76: 0 lỗi (menu 76 nay tắt chế độ tạm "mở sẵn mọi kỹ năng" khi chạy — mục B "khoá → từ chối" hỏng 4 lỗi dây chuyền). Chưa nghe thử trên web.
 
+## Tiếng Khiên — bật · đòn trúng "boong boong" · nổ tung (16/10/2026)
+
+**Người dùng:** "âm thanh lúc bật khiên, khi khiên nổ tung, và khi các đòn đánh của kẻ thù đánh trúng khiên nghe tiếng dội ra BOONG BOONG; người chơi
+khác bị sương mù che thì không nghe". **Bản 1** (`CongCu/AmThanh/tieng_khieng.py`: 5–8 sóng sin sạch cộng lại + tiếng dội) — người dùng: "**giả tạo và
+đơn giản quá**". Sin sạch + bao mũ đều = tiếng điện tử.
+
+**Bản 2** (`tieng_khieng_2.py`, người dùng chọn **A "Thép đúc"**): kim loại THẬT = IR của 40–90 MODE cộng hưởng không điều hoà (mật độ dày dần lên
+cao, mode cao tắt nhanh, > 2 kHz tắt < 0,22 s để không thành "thủy tinh"), cao độ CHÙNG nhẹ 0,4–0,8% lúc đầu (phi tuyến), mỗi mode một vị trí trên mặt
+khiên (lệch bằng âm lượng) + 50% mode trên 600 Hz lệch tần số riêng từng kênh → TÍCH CHẬP với cú kích (ồn lọc 3–14 ms: đòn cứng / nặng / nổ). Lớp
+phủ: tiếng đòn đập vào ("tóc" + thân), tiếng **DỘI** lại trong nghĩa địa (2 phản xạ 0,12–0,4 s lệch hai bên + vang). Bật = mode NGÂN LÊN (cọ bằng ồn
+to dần) + gió cuộn + "boong" khép vòm; Vỡ = kêu căng → nứt toác + "BOONG" méo + xả năng lượng + bùm trầm + 6–12 MẢNH VỠ (mỗi mảnh một bộ mode nhỏ) rơi
+nảy. ⚠️ Ba bẫy đo được khi làm: (1) mode chính rơi vào nhóm lệch riêng → tương quan ÂM −0,10; (2) cú kích hai kênh khác ồn → cùng một mode lệch pha
+ngẫu nhiên giữa hai kênh → −0,16 — dùng MỘT cú kích chung; (3) 1–4 kHz chỉ 3–10% (thiếu "keng") → mode 1–2 kHz to hơn, ngân lâu hơn. Bản gửi: 1–4 kHz
+17–42%, < 200 Hz ≤ 21%, > 4 kHz ≤ 1%, tương quan 0,16–0,57 (ghép 0,43), không clip âm.
+
+**Trong game** (`Khieng.cs`, loại `TiengViTri` 36–38, phát CÂN BẰNG): `Bat` → tiếng bật bám người (bản sao cũng gọi `Bat` qua `HieuUngQuaMang.ApKhieng`);
+`HapThu` → "boong" bám người — **bỏ qua sát thương RỈ** (`Damageable.LaSatThuongRi`: nhịp cháy, lốc cuốn… không phải "đòn đánh"), hai đòn trong 0,06 s
+chỉ một tiếng, đòn trong 0,15 s sau đòn trước ×0,6, tối đa 4 cùng lúc; bản sao: `DatMauTuMang` tụt ≥ 5 máu mà máy này không thấy đòn nào trong 0,35 s →
+kêu; `Vo` → tiếng nổ TẠI CHỖ VÒM (không chủ — chỗ ấy trong sương: bỏ).
+
+Menu **134** (0 lỗi): 9 file trùng byte bản gốc, STEREO; tung Khiên thật: bật +1 bám người cân bằng, loa tương quan 0,12; 3 đòn → 3 "boong" (loa 0,40–0,52),
+người không mất máu; 2 đòn cùng khung → 1; đòn sau 0,1 s ×0,60; sát thương rỉ 6 → khiên mất 6, không kêu; đòn 200 phá khiên → 1 nổ tại vòm + 1 trúng;
+bản sao: bật / tụt 75 → trúng / tụt 1,5 → không / vỡ; trong sương (30 m) bật + trúng mức 0, nổ bị bỏ, loa im — đối chứng tắt sương có giọng; đủ 3
+biến thể, cao độ 0,943–1,058. Menu 49 (cầu lửa trúng người · khiên): 0 lỗi. Chưa nghe thử trên web.
+
 ## Phần 4 — Menu công cụ "Diablo 2.5D"
 
 | Mục | Tác dụng |

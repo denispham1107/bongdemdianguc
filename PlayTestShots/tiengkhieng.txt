@@ -1,0 +1,17 @@
+[ban 1] tieng Khien (ban 2 mau A Thep duc), 3 bien the moi tieng
+A. 9/9 file trung ban goc, 2 kenh, khong ForceToMono
+
+B. tung that Khien: dang bat True (mau 150); tieng bat +1, giong 1 (bam theo nguoi + can bang 2D True); loa RMS 0.0501 (dinh 0.1282), tuong quan 0.124
+
+C. 3 don cach 0,4 s: tieng trung +3 (bam theo nguoi True), loa RMS/tuong quan 0.0950/0.40 0.1141/0.45 0.1124/0.52; nguoi khong mat mau True; 2 don cung khung +1; don sau 0,1 s he so 0.60; sat thuong ri +0 (khien mat 6 mau)
+
+D. don 200 pha khien (con 40): khien bat False, nguoi mat mau 0; tieng vo +1 (tai cho vom, khong chu True), trung +1; loa RMS 0.1202 tuong quan 0.513
+
+E. ban sao: bat +1; tut 75 mau -> trung +1; tut 1,5 -> trung tong +1; VoTuMang -> vo +1
+
+F. o 30 m (MucThay 0.00): bat + trung (+2) giong 2 muc lon nhat 0.000, loa RMS 0.00000; vo +1 giong 0, bi suong che +1
+F2. DOI CHUNG tat suong: vo o 30 m -> giong 1, bi suong che +0
+
+G. 24 lan moi loai: so bien the KhiengBat 3 (24 lan duoc giong), KhiengTrung 3 (11 lan duoc giong), KhiengVo 3 (24 lan duoc giong); cao do 0.943 - 1.058
+
+so loi ghi nhan = 0

@@ -180,6 +180,7 @@ public class Khieng : MonoBehaviour
         k.banKinh = banKinh;
         k.enabled = true;
         k.Dung();
+        TiengViTri.KhiengBat(nguoi.transform);     // tieng bat khien (16/10/2026) - ca ban sao (HieuUngQuaMang.ApKhieng goi Bat)
         return k;
     }
 
@@ -284,6 +285,7 @@ public class Khieng : MonoBehaviour
         // goi tin. Tru o day nua thi khieng vo tren may nay trong khi ben kia
         // con nua mau - dung loi nguoi choi thay.
         if (chuNhan == null) chuNhan = GetComponent<Damageable>();
+        KeuTrung();
         if (chuNhan != null && chuNhan.mauDoMayKhacQuyet) { loe = 1f; return 0f; }
 
         mau -= amount;
@@ -297,6 +299,25 @@ public class Khieng : MonoBehaviour
         else CapNhatVatLieu();
 
         return 0f;
+    }
+
+    // ---------------- TIENG "BOONG" khi don danh trung khien (16/10/2026, nguoi dung) ----------------
+    /// <summary>Hai don cung khung (vd mot vu no + vien dan) chi mot tieng.</summary>
+    const float GiayGiuaHaiTieng = 0.06f;
+    /// <summary>Ban sao: khien tut mau theo goi tin ma may nay KHONG thay don nao vua dap vao (don o may kia) thi keu - neu tut it nhat chung nay mau
+    /// (nhip chay / loc cuon ri rat nho thi khong keu "boong" lien tuc).</summary>
+    const float MauTutDeKeu = 5f;
+    float lucKeuTrung = -10f;
+    public static int SoLanKeuTrung;
+
+    void KeuTrung()
+    {
+        // Sat thuong RI (nhip chay, vung lua, loc cuon...) khong phai "don danh trung khien"
+        if (Damageable.LaSatThuongRi) return;
+        if (Time.time - lucKeuTrung < GiayGiuaHaiTieng) return;
+        lucKeuTrung = Time.time;
+        SoLanKeuTrung++;
+        TiengViTri.KhiengTrung(transform);
     }
 
     void Update()
@@ -327,6 +348,7 @@ public class Khieng : MonoBehaviour
     {
         Vector3 tam = transform.position + Vector3.up * banKinh * 0.55f;
         VfxFactory.KhiengVo(tam, banKinh);
+        TiengViTri.KhiengVo(tam);
         CameraShake.Shake(0.22f, 0.10f);
 
         Tat();
@@ -340,6 +362,8 @@ public class Khieng : MonoBehaviour
         if (!DangBat) return;
         float moi = Mathf.Clamp01(mau01) * mauToiDa;
         if (moi < mau - 0.5f) loe = 1f;        // vua an don ben kia - loe len cho thay
+        // tieng "boong": don dap vao o MAY KIA (may nay khong thay - HapThu chua keu trong 0,35 s qua), tut du nhieu (khong phai nhip ri)
+        if (moi < mau - MauTutDeKeu && Time.time - lucKeuTrung > 0.35f) KeuTrung();
         mau = Mathf.Max(0.01f, moi);
         CapNhatVatLieu();
     }

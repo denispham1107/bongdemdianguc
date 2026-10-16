@@ -33,7 +33,8 @@ public class TiengViTri : MonoBehaviour
                        GiatSetPhong = 17, GiatSetTrung = 18, GiatSetLan = 19, CauDienVong = 20,
                        SamSetDanh = 21, SamSetChay = 22, SamSetRen = 23, MayGiongGiong = 24, MayGiongMua = 25,
                        GioLocThoi = 26, GioLocBui = 27, LocXoayGio = 28, LocXoayNutCay = 29, LocXoayNutDa = 30,
-                       TocBienMat = 31, TocBienHien = 32, NhaoLonVut = 33, NhaoLonLan = 34, NhaoLonDap = 35 }
+                       TocBienMat = 31, TocBienHien = 32, NhaoLonVut = 33, NhaoLonLan = 34, NhaoLonDap = 35,
+                       KhiengBat = 36, KhiengTrung = 37, KhiengVo = 38 }
 
     // Qua cau lua: ban 3 "B - Khoi lua lon" (15/10/2026, CongCu/AmThanh/tieng_qua_cau_lua_3.py, QuaCauLuaThu3/B_khoi_lua_lon_*.wav -
     // mo hinh lua that: liem lua / xi hoi / lach tach ngau nhien khong deu). BA BIEN THE tieng ban + BA bien the tieng no, moi lan chon
@@ -76,11 +77,14 @@ public class TiengViTri : MonoBehaviour
         BienThe("LocXoayNutCay"), BienThe("LocXoayNutDa"),
         // Toc bien (16/10/2026, nguoi dung chon mau C "Khoi no" - CongCu/AmThanh/tieng_toc_bien.py, TocBienThu/C_khoi_no_*): BIEN MAT o cho cu + HIEN RA
         // o cho moi. Nhao lon (mau A "Dat soi" - tieng_nhao_lon.py, NhaoLonThu/A_dat_soi_*): VUT (bat dau) · LAN (vai / lung cham dat) · DAP (chan dap).
-        BienThe("TocBienMat"), BienThe("TocBienHien"), BienThe("NhaoLonVut"), BienThe("NhaoLonLan"), BienThe("NhaoLonDap") };
+        BienThe("TocBienMat"), BienThe("TocBienHien"), BienThe("NhaoLonVut"), BienThe("NhaoLonLan"), BienThe("NhaoLonDap"),
+        // Khien (16/10/2026, ban 2 mau A "Thep duc" - CongCu/AmThanh/tieng_khieng_2.py, KhiengThu2/A_thep_duc_*; ban 1 bi che "gia tao, don gian"):
+        // kim loai THAT (40-90 mode cong huong kich bang cu va cham) - BAT (ngan len + khep vom), TRUNG ("boong" + doi lai), VO (no tung + manh vo).
+        BienThe("KhiengBat"), BienThe("KhiengTrung"), BienThe("KhiengVo") };
     static string[] BienThe(string ten) { return new[] { "AmThanh/KyNang/" + ten + "1", "AmThanh/KyNang/" + ten + "2", "AmThanh/KyNang/" + ten + "3" }; }
     static readonly bool[] laVong = { false, true, false, false, false, true, false, true, false, false, false, false, false, false, false, false, false,
                                       false, false, false, true, false, false, false, true, true, true, true, false, false, false,
-                                      false, false, false, false, false };
+                                      false, false, false, false, false, false, false, false };
     static readonly AudioClip[][] clip = TaoKhoClip();
     static AudioClip[][] TaoKhoClip() { var k = new AudioClip[duong.Length][]; for (int i = 0; i < k.Length; i++) k[i] = new AudioClip[duong[i].Length]; return k; }
     /// <summary>Lech cao do toi da cua tieng ban / no Qua cau lua va roi / no Thien thach (+-6%, nguoi dung chon).</summary>
@@ -97,9 +101,12 @@ public class TiengViTri : MonoBehaviour
         return l == Loai.MuaBangRoi ? SoMuaRoiToiDa : l == Loai.MuaBangCham ? SoMuaChamToiDa : l == Loai.TangHinhTrung ? SoTrungVongToiDa
              : l == Loai.GiatSetTrung ? SoSetTrungToiDa : l == Loai.GiatSetLan ? SoSetLanToiDa
              : l == Loai.SamSetDanh || l == Loai.SamSetChay ? SoSamSetToiDa
-             : l == Loai.LocXoayNutCay || l == Loai.LocXoayNutDa ? SoNutToiDa : 0;
+             : l == Loai.LocXoayNutCay || l == Loai.LocXoayNutDa ? SoNutToiDa
+             : l == Loai.KhiengTrung ? SoKhiengTrungToiDa : 0;
     }
     public const int SoMuaRoiToiDa = 3, SoMuaChamToiDa = 6;
+    /// <summary>Khien bi quai vay danh lien tuc: toi da 4 tieng "boong" cung luc, tieng trong 0,15 s sau tieng truoc x0,6 (<see cref="HeSoSetKeSau"/>).</summary>
+    public const int SoKhiengTrungToiDa = 4;
     /// <summary>Vong phep Tang hinh trung nhieu ke cung luc: toi da 6 tieng trung cung luc (nguoi dung chon "moi ke mot tieng").</summary>
     public const int SoTrungVongToiDa = 6;
     /// <summary>Giut set: 4 tia x 6 nhip trong ~0,35 s; Qua cau dien 5 tia moi 0,4 s - toi da 4 tieng trung / 5 tieng lan cung luc.</summary>
@@ -167,7 +174,8 @@ public class TiengViTri : MonoBehaviour
             || l == Loai.GioLocThoi || l == Loai.GioLocBui || l == Loai.LocXoayGio       // Gio loc / Loc xoay: "khong bi Unity bop"
             || l == Loai.LocXoayNutCay || l == Loai.LocXoayNutDa
             || l == Loai.TocBienMat || l == Loai.TocBienHien                            // Toc bien + Nhao lon (16/10/2026): nhu cac ky nang truoc
-            || l == Loai.NhaoLonVut || l == Loai.NhaoLonLan || l == Loai.NhaoLonDap;
+            || l == Loai.NhaoLonVut || l == Loai.NhaoLonLan || l == Loai.NhaoLonDap
+            || l == Loai.KhiengBat || l == Loai.KhiengTrung || l == Loai.KhiengVo;      // Khien (16/10/2026)
 #endif
     }
 
@@ -185,7 +193,7 @@ public class TiengViTri : MonoBehaviour
     }
 
     /// <summary>Dem tieng da yeu cau theo loai (ke ca luc im trong phep thu / bi suong che) - phep thu doc / dat lai.</summary>
-    public static readonly int[] SoLan = new int[36];
+    public static readonly int[] SoLan = new int[39];
     /// <summary>Tieng mot lan bi BO vi luc phat nam trong suong (MucThay = 0).</summary>
     public static int SoBiSuongChe;
     /// <summary>Giong vua phat gan nhat (phep thu doc clip / cao do bien the).</summary>
@@ -229,6 +237,7 @@ public class TiengViTri : MonoBehaviour
     readonly List<float> setTrungGanDay = new List<float>(), setLanGanDay = new List<float>();   // Giut set / Qua cau dien
     readonly List<float> samDanhGanDay = new List<float>(), samChayGanDay = new List<float>();   // Sam set
     readonly List<float> nutGanDay = new List<float>();   // Loc xoay but vat
+    readonly List<float> khiengGanDay = new List<float>();   // Khien bi danh
     static AnimationCurve duongPhang;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
@@ -280,7 +289,7 @@ public class TiengViTri : MonoBehaviour
     {
         if (kieu != LoadSceneMode.Single) return;
         foreach (var g in giong) TraVe(g);
-        noGanDay.Clear(); noBangGanDay.Clear(); voGanDay.Clear(); trungGanDay.Clear(); setTrungGanDay.Clear(); setLanGanDay.Clear(); samDanhGanDay.Clear(); samChayGanDay.Clear(); nutGanDay.Clear();
+        noGanDay.Clear(); noBangGanDay.Clear(); voGanDay.Clear(); trungGanDay.Clear(); setTrungGanDay.Clear(); setLanGanDay.Clear(); samDanhGanDay.Clear(); samChayGanDay.Clear(); nutGanDay.Clear(); khiengGanDay.Clear();
         KiemPhepThu();
     }
 
@@ -688,6 +697,35 @@ public class TiengViTri : MonoBehaviour
         SoLan[(int)l]++;
         if (nguoi == null) return;
         DamBao().Phat(l, nguoi.position + Vector3.up * 0.6f, nguoi, true, 1f, CaoDoNgauNhien());
+    }
+
+    // ================================================================
+    //  KHIEN (Khieng - may chu nhan lan ban sao): BAT · TRUNG ("boong" moi don danh vao vom) · VO (no tung)
+    // ================================================================
+
+    /// <summary>Tieng BAT khien - bam theo nguoi (vom di theo nguoi).</summary>
+    public static void KhiengBat(Transform nguoi)
+    {
+        SoLan[(int)Loai.KhiengBat]++;
+        if (nguoi == null) return;
+        DamBao().Phat(Loai.KhiengBat, nguoi.position + Vector3.up * 1.2f, nguoi, true, 1f, CaoDoNgauNhien());
+    }
+
+    /// <summary>Tieng DON TRUNG KHIEN ("boong" + doi lai) - bam theo nguoi; don trong 0,15 s sau don truoc x0,6, toi da
+    /// <see cref="SoKhiengTrungToiDa"/> cung luc.</summary>
+    public static void KhiengTrung(Transform nguoi)
+    {
+        SoLan[(int)Loai.KhiengTrung]++;
+        if (nguoi == null) return;
+        var b = DamBao();
+        b.Phat(Loai.KhiengTrung, nguoi.position + Vector3.up * 1.2f, nguoi, true, HeSoKeSau(b.khiengGanDay), CaoDoNgauNhien());
+    }
+
+    /// <summary>Tieng KHIEN NO TUNG tai cho vom (khong chu - cho ay trong suong: bo).</summary>
+    public static void KhiengVo(Vector3 tam)
+    {
+        SoLan[(int)Loai.KhiengVo]++;
+        DamBao().Phat(Loai.KhiengVo, tam, null, false, 1f, CaoDoNgauNhien());
     }
 
     // ================================================================
