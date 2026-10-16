@@ -71,6 +71,7 @@ public class LightningStorm : MonoBehaviour
     {
         VfxFactory.LightningStormField(transform.position, radius, duration);
         CameraShake.Shake(0.35f, 0.05f);
+        TiengViTri.SamSetRen(transform.position + Vector3.up);    // sam ren cuon ca tran set (16/10/2026)
 
         // Cu set dau tien danh ngay giua tam cho da mat
         Strike(transform.position, 0f);

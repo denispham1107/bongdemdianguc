@@ -30,6 +30,9 @@ public class LightningStrike : MonoBehaviour
     bool fired;
     float t;
 
+    /// <summary>Dem cho phep thu (menu 130): so tia da danh xuong.</summary>
+    public static int SoLanDanh;
+
     /// <summary>Goi mot cu set danh xuong diem chi dinh.</summary>
     public static LightningStrike Spawn(Vector3 target, float height, float delay)
     {
@@ -75,6 +78,10 @@ public class LightningStrike : MonoBehaviour
         arc.branches = Random.Range(2, 4);
 
         VfxFactory.LightningImpact(target, impactRadius);
+        // Tieng (16/10/2026): set xe xuong + no + ren ngan, va chay xem tai cho danh (mat dat hoac ke dich)
+        SoLanDanh++;
+        TiengViTri.SamSetDanh(target + Vector3.up);
+        TiengViTri.SamSetChay(target + Vector3.up * 0.5f);
 
         // CHO NAO SET DANH XUONG THI CHO DO CHAY, khong can co quai hay khong.
         //

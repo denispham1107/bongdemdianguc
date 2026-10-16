@@ -14379,6 +14379,34 @@ liên tục: `QuaCauDien` không gọi `TiengViTri.CauDienVong` nữa (giữ hà
 ×0,75 tại quả cầu + tiếng trúng ở từng kẻ). Menu 129 (0 lỗi): Quả cầu điện thật 10 lượt / 50 tia → vòng lặp +0, 10 tiếng bắn, 50 tiếng trúng, loa 0,14;
 **D2** quả cầu đứng chờ 2,5 s không ai trong tầm → 0 tiếng, loa RMS 0,00000.
 
+## Tiếng Sấm sét (16/10/2026)
+
+**Người dùng:** thêm tiếng stereo cho Sấm sét — lúc tia sét **phóng từ trên cao xuống**, khi tia sét đánh trúng **mặt đất hoặc kẻ địch** nghe tiếng **cháy
+xém**; "chân thật stereo như tiếng sét ngoài đời và bảo đảm **không bị Unity bóp** mất âm thanh"; trong sương mù thì không nghe. Người dùng chọn: chỉ
+Sấm sét (Mây giông làm riêng sau), **có thêm sấm rền** cho cả trận sét. Ba mẫu (`CongCu/AmThanh/tieng_sam_set.py`): A Sét gần / B Sét xé trời / C Bão sét
+→ chọn **B** nhưng "còn **ngắn và mỏng**, chưa có độ dày nên vẫn giống mono" → **B2** (`--b2`) — người dùng chọn.
+
+**Thành phần:** "RẸT" xé toạc (xèo dày hai dải, to dần + SÁNG dần — thông thấp mở 900 Hz → 3,4 kHz theo hình mũ: tia lao xuống gần dần) → "ĐOÀNG" (15–40
+phóng điện cực ngắn chồng nhau trong 20–60 ms, mỗi cái một chỗ, bão hoà + thân ồn 150–600 Hz — KHÔNG một xung + "huỵch" như tiếng súng của Giựt sét
+bản 1) → sấm rền (ồn trầm đổi ĐỢT không đều, mỗi đợt lăn từ bên này sang bên kia + lớp hạt 350–1100 Hz). Cháy xém = xèo li ti rất dày (chiên mỡ) +
+lép bép trung + khói xì.
+**B → B2 (dài, dày):** xé 0,4–0,75 s (B 0,2–0,45) có thân 200–600 Hz; đoàng thân tắt 0,25–0,5 s; MỖI TIA kèm sấm rền ngắn 1,2–2 s; thân trầm 120–260 Hz
+(< 200 Hz 10–15%, B 2–5%); vang stereo dày 1,6–2,4 s + NHÂN ĐÔI lệch hai bên; sấm rền trận 5 s, 5–9 đợt. Đo: thời gian trên −20 dB của tiếng đánh
+1,5–2,1 s (B 0,5–0,6), RMS / đỉnh 0,10–0,11 (B 0,05–0,07). ⚠️ Bản B lần đầu: các lớp riêng từng kênh cho tương quan 0,01–0,14 (một clip −0,01) — loãng,
+mất tâm; thêm phần giữa (`tam`, k 0,3) → 0,14–0,26.
+
+**Không bị Unity bóp:** Sấm sét phát **CÂN BẰNG** (`TiengViTri.PhatCanBang` thêm 3 loại — Editor / máy tính 2D + panStereo). Mô phỏng file ghép như
+trong game: cân bằng 0,17 · 3D spread 120 cũ 0,46–0,48.
+
+**Trong game:** `TiengViTri` loại 21–23 (`SamSetDanh`, `SamSetChay`, `SamSetRen`), 9 file `Resources/AmThanh/KyNang/SamSet{Danh,Chay,Ren}1–3` chép
+nguyên byte `SamSetThu/B2_*`; `LightningStorm.Start` → sấm rền tại tâm vùng; `LightningStrike.Strike` → tiếng đánh + cháy xém tại chỗ đánh (mỗi tia);
+tối đa 4 + 4 cùng lúc, tia sau trong 0,15 s ×0,6; chọn ngẫu nhiên + cao độ ±6%; xa nhỏ + sương mù như các kỹ năng khác.
+
+Menu **130** (0 lỗi, Act2 thật): 9 file trùng byte, stereo; tung thật 19 tia → 19 tiếng đánh + 19 cháy xém + 1 sấm rền, cùng lúc tối đa 4 / 4, mọi
+giọng 2D; loa giữa trận sét tương quan **0,16**; 40 m trong sương: 3 tiếng bị bỏ, loa im (đối chứng có); đủ 3 biến thể, cao độ 0,944–1,059; **E** (3 tiếng
+cháy xém, cùng clip): cân bằng giữa 0,15 / bên phải ×4,30 tương quan 0,13 — ĐỐI CHỨNG 3D giữa 0,39 / bên phải ×1,60 tương quan 0,50. Menu 58: lần 1 hỏng
+F1 (Mưa băng người khác 35% đóng cứng — 4 giây không trúng lần nào, may rủi, phần không đụng tới), chạy lại 0 lỗi. Chưa nghe thử trên web.
+
 ## Phần 4 — Menu công cụ "Diablo 2.5D"
 
 | Mục | Tác dụng |
