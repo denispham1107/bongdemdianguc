@@ -27,9 +27,10 @@ using UnityEngine.SceneManagement;
 /// </summary>
 public static class QuanLyBinhRoi
 {
-    // 27/09/2026 nguoi dung: binh mau 25%, binh mana 15% (truoc 10% / 10%). Hai lan gieo DOC LAP - mot con co the rot ca hai.
-    public const float TiLeRoiBinhMau = 0.25f;
-    public const float TiLeRoiBinhMana = 0.15f;
+    // 16/10/2026 nguoi dung: "25% roi ra binh mau HOAC binh mana" - chon: moi con quai chet 25% roi DUNG MOT binh, uu tien mau 60% / mana 40%
+    // (= 15% mau, 10% mana; khong bao gio ra ca hai). Truoc do (27/09/2026) gieo doc lap 25% mau + 15% mana (co the ra ca hai).
+    public const float TiLeRoiBinh = 0.25f;
+    public const float TiLeLaBinhMau = 0.6f;
 
     /// <summary>Nhan vat vao trong ban kinh nay (met, tinh ngang) thi binh tu bay vao.</summary>
     public const float BanKinhHut = 3.5f;
@@ -91,15 +92,13 @@ public static class QuanLyBinhRoi
     //  1. GIEO (chi may trong tai quai)
     // ================================================================
 
-    /// <summary>Mot con quai vua chet o <paramref name="viTri"/>: gieo <see cref="TiLeRoiBinhMau"/> binh mau, <see cref="TiLeRoiBinhMana"/> binh mana.</summary>
+    /// <summary>Mot con quai vua chet o <paramref name="viTri"/>: <see cref="TiLeRoiBinh"/> roi MOT binh - mau voi xac suat
+    /// <see cref="TiLeLaBinhMau"/>, con lai mana.</summary>
     public static void GieoKhiQuaiChet(Vector3 viTri)
     {
         if (!GameDirector.LaTrongTaiCuaQuai) return;
-        bool mau = Random.value < TiLeRoiBinhMau;
-        bool mana = Random.value < TiLeRoiBinhMana;
-        // Ra ca hai thi dat lech nhau, khong chong len nhau thanh mot hinh
-        if (mau) Roi(CapDo.KyBinhMau, viTri + (mana ? new Vector3(-0.45f, 0f, 0f) : Vector3.zero));
-        if (mana) Roi(CapDo.KyBinhMana, viTri + (mau ? new Vector3(0.45f, 0f, 0f) : Vector3.zero));
+        if (Random.value >= TiLeRoiBinh) return;
+        Roi(Random.value < TiLeLaBinhMau ? CapDo.KyBinhMau : CapDo.KyBinhMana, viTri);
     }
 
     /// <summary>Tha mot binh xuong dat va bao ca phong. Tra ve so hieu binh.</summary>

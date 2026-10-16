@@ -14711,6 +14711,13 @@ so loi ghi nhan = 0
 Menu 65 (bình): 1 lỗi CŨ không liên quan — E2 đo số điểm chữ dòng cấp Sách phép (393 so với mức 185), lần sạch cuối là f033f5c (09/10, trước chế độ tạm mở sẵn
 kỹ năng và 8 ô); các mục rơi / nhặt / uống / mạng đều đạt. Chưa nghe thử trên web.
 
+## Tỉ lệ rơi bình: 25% ra MỘT bình, ưu tiên máu (16/10/2026)
+
+**Người dùng:** "khi người chơi giết chết quái vật, có 25% rơi ra bình máu hoặc bình mana". Trước đó (27/09) gieo ĐỘC LẬP 25% máu + 15% mana (có thể ra cả hai,
+~36% con quái ra ít nhất một bình). Người dùng chọn: **25% rơi đúng MỘT bình — 60% là máu, 40% là mana** (= 15% máu, 10% mana; không bao giờ ra hai):
+`QuanLyBinhRoi.TiLeRoiBinh` 0,25, `TiLeLaBinhMau` 0,6 (chỉ máy trọng tài quái gieo, như cũ). Menu 65 mục A (số viết tay, không đọc hằng): 3000 con chết → 24,4% ra
+bình = 14,6% máu + 9,8% mana, 0 con ra hai; giết thật 12 con → 5 bình nằm đúng chỗ quái chết. (Menu 65 còn 1 lỗi CŨ về cỡ chữ Sách phép — không liên quan.)
+
 ## Phần 4 — Menu công cụ "Diablo 2.5D"
 
 | Mục | Tác dụng |

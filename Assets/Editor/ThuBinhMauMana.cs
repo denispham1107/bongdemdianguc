@@ -14,7 +14,7 @@ using UnityEngine;
 ///     cuon len xuong duoc.
 ///   - Them hai ky nang Binh mau / Binh mana (25/09/2026: CO SAN cap 1, nang toi cap 3, +75 mau / +45 mana
 ///     moi cap - truoc do mo khoa 1 diem, cap toi da 1); chi dung
-///     khi da nhat binh; giet quai 25% ra binh mau, 15% ra binh mana (27/09/2026, truoc 10%/10%); toi gan thi binh
+///     khi da nhat binh; giet quai 25% ra MOT binh - mau 60% / mana 40% (16/10/2026; truoc 25% mau + 15% mana doc lap); toi gan thi binh
 ///     tu bay vao nguoi; so binh hien tren o ky nang; 1 binh hoi toi da MauMoiBinh mau / ManaMoiBinh
 ///     nang luong; cho 0,5 giay. Choi nhieu nguoi binh la CUA CHUNG ca phong.
 ///
@@ -178,14 +178,23 @@ public static class ThuBinhMauMana
         Random.InitState(13092026);
         const int SoLan = 3000;
         Vector3 xa = pc.transform.position + new Vector3(0f, 0f, 45f);
-        for (int i = 0; i < SoLan; i++) QuanLyBinhRoi.GieoKhiQuaiChet(xa);
+        int raHai = 0;
+        for (int i = 0; i < SoLan; i++)
+        {
+            int gieoTruoc = QuanLyBinhRoi.SoDaGieo;
+            QuanLyBinhRoi.GieoKhiQuaiChet(xa);
+            if (QuanLyBinhRoi.SoDaGieo - gieoTruoc > 1) raHai++;
+        }
         int nMau = DemBinh(CapDo.KyBinhMau), nMana = DemBinh(CapDo.KyBinhMana);
-        Ghi("A1. " + SoLan + " con quai chet: " + nMau + " binh mau (" + (100f * nMau / SoLan).ToString("F1") + "%), "
-            + nMana + " binh mana (" + (100f * nMana / SoLan).ToString("F1") + "%) - mong binh mau 25%, binh mana 15%");
-        // So cua nguoi dung (27/09/2026) viet thang o day, KHONG doc hang QuanLyBinhRoi.TiLe* - doc hang thi sua sai hang van xanh.
-        // Bien +-3 do lech chuan cua 3000 lan gieo: 25% +-2,4; 15% +-2,0.
-        Kiem(nMau > SoLan * 0.226f && nMau < SoLan * 0.274f, "ti le binh mau lech khoi 25%");
-        Kiem(nMana > SoLan * 0.130f && nMana < SoLan * 0.170f, "ti le binh mana lech khoi 15%");
+        Ghi("A1. " + SoLan + " con quai chet: " + (nMau + nMana) + " con ra binh (" + (100f * (nMau + nMana) / SoLan).ToString("F1") + "%) = "
+            + nMau + " binh mau (" + (100f * nMau / SoLan).ToString("F1") + "%) + " + nMana + " binh mana (" + (100f * nMana / SoLan).ToString("F1")
+            + "%), ra CA HAI " + raHai + " con - mong 25% mot binh = mau 15% + mana 10%, 0 con ra hai");
+        // So cua nguoi dung (16/10/2026: 25% roi MOT binh, uu tien mau 60/40) viet thang o day, KHONG doc hang QuanLyBinhRoi.TiLe* - doc hang thi
+        // sua sai hang van xanh. Bien +-3 do lech chuan cua 3000 lan gieo: 25% +-2,4; 15% +-2,0; 10% +-1,6.
+        Kiem(nMau + nMana > SoLan * 0.226f && nMau + nMana < SoLan * 0.274f, "ti le ra binh lech khoi 25%");
+        Kiem(nMau > SoLan * 0.130f && nMau < SoLan * 0.170f, "ti le binh mau lech khoi 15% (60% cua 25%)");
+        Kiem(nMana > SoLan * 0.084f && nMana < SoLan * 0.116f, "ti le binh mana lech khoi 10% (40% cua 25%)");
+        Kiem(raHai == 0, "co con quai ra ca hai binh");
         QuanLyBinhRoi.DonSach();
         yield return null;
 
