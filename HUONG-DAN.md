@@ -14851,6 +14851,87 @@ so loi ghi nhan = 0
 ⚠️ **Cùng ngày người dùng: "nhỏ thêm 25% nữa"** (chọn tính trên mức đang có): `HeSoBuocChan` 0,75 → **0,5625** (0,75 × 0,75). Menu 140 (0 lỗi, kiểm hằng bằng
 số viết tay): hệ số giọng 0,483–0,563; tiếng thật ở loa đi thật RMS 0,0207 → 0,0153 (×0,74), lội nước 0,0337 → 0,0236 (×0,70); mọi mục khác như trên.
 
+## Mặt đất sần sùi: ổ gà, ổ voi, rãnh nứt, đất vụn ngổn ngang — Act2 + Màn chính (17/10/2026)
+
+**Người dùng:** "mặt đất vẫn còn trơn bóng nhìn giả tạo quá, dựng lại cho sần sùi, nhiều ổ gà ổ voi, nhiều chỗ nứt vỡ đất cát ngổn ngang tum lum" + "chú ý không
+được để xảy ra lỗi như lần trước, làm xuất hiện nhiều ô vuông ô chữ nhật trong suốt thấy rõ ghép từng mảng đất". Người dùng chọn: **cả ba lớp** (độ cao + ảnh
+đất mới + mảnh đất vụn 3D), lưới độ cao **513 → 1025**, dựng bằng **script trên API Terrain**, áp **cả Màn chính**; cho tải ảnh đất chụp thật Poly Haven (CC0).
+
+### Vì sao trơn
+
+Đo ảnh 4 lớp cũ (`Anh_Act2_*.png`, vẽ bằng nhiễu): độ lệch sáng chỉ **0,009–0,016** (ảnh chụp đất thật 0,03–0,11) — gần như một màu phẳng, và **không lớp nào có
+normal map**: ánh sáng không bắt được vết sần nào. Mặt đất 513×513 (0,26 m / điểm) không chứa nổi ổ gà dưới 1 m.
+
+### Lớp 1 — ảnh đất (Blender MCP `CongCu/Blender/anh_dat_moi.py`)
+
+Ảnh chụp thật Poly Haven CC0 tải về `CongCu/AnhDat/Goc/` (6 bộ 2k, md5 khớp 30/30, không vào git): màu × AO^0,8 (nướng khe tối), **ép màu trung bình đúng
+từng lớp cũ** (giữ tông người dùng đã duyệt), tương phản ×1,6, alpha = độ bóng 0,04–0,14 (bài học cũ: alpha cao → đất bóng như gương), normal map OpenGL, 1024.
+`CoChet` ← dry_ground_rocks (đất khô nứt lẫn đá — lớp phủ nhiều nhất; grass_ground thử trước quá phẳng: lệch 0,016), `DatTroc` ← dry_ground_01 (đất nứt nẻ),
+`SoiDa` ← brown_mud_rocks_01 (sỏi đá vụn), `Bun` ← brown_mud_03 (bùn có vết chân). Độ lệch sáng 0,037–0,148 (cũ 0,009–0,016); normal ×1,6. Giữ đúng 4 lớp
+(một lượt vẽ trên điện thoại).
+
+### Lớp 2 — độ cao (menu **141**, `Assets/Editor/MatDatSanSui.cs`)
+
+Lần đầu lưu độ cao + nét tô gốc ra `{Act2|ManChinh}_DoCaoTruocSanSui.bytes` / `_ToMauTruocSanSui.bytes`; lần sau dựng lại từ đó (không cộng dồn); menu
+**141b** trả về. Nâng 513 → 1025 bằng **chính hàm nội suy của Unity** trên đất cũ. Act2 / Màn chính: **110 / 89 ổ voi** (r 0,8–1,7 m, sâu 0,20–0,45, thành dốc,
+vành méo), **502 / 403 ổ gà** (r 0,22–0,55, sâu 0,06–0,16), **251 / 202 chùm vết nứt** (rãnh chữ V rộng 0,12–0,26, sâu 3–7 cm, rẽ nhánh), gồ ghề ±4,5 cm.
+Tô lại: lòng ổ = bùn tối, mép ổ = đất nứt khô sáng (×1,7 nền), lòng vết nứt = bùn; mảng đất nứt / sỏi loang theo nhiễu.
+
+### Lớp 3 — đất vụn ngổn ngang (Blender MCP `CongCu/Blender/dat_vun.py` → `Assets/Terrain/DatVun/DatVun.fbx`)
+
+13 lưới mẫu: 6 cục đất méo mặt cắt góc cạnh (80 tam giác), 4 đá vụn (18–24), 3 mảng đất nứt vỡ (28–36). Rải **5 412 / 4 525 mảnh** (dày theo cụm nhiễu + quanh ổ voi,
+541 / 381 cụm 6–12 mảnh chồng nhau). ⚠️ Lần đầu gộp lưới theo ô 16 m: **572 nghìn đỉnh** (mặt cắt phẳng → đỉnh riêng mỗi tam giác) ~20 MB — nay vẽ bằng **GPU
+instancing** (`Vfx/DatVunVe.cs`: 13 lưới + 40 byte / mảnh, chỉ ô trong khung máy quay; đo: 1 766 mảnh / 13 lần gọi mỗi khung). Vật liệu shader `ChuanSuong`
+(sương chiến tranh như cảnh vật). Không va chạm (cục 0,1–0,35 m đi qua được). "Đống đất" tròn thử đầu trông như quả trứng — bỏ, thay bằng cụm.
+
+### "Ô vuông ô chữ nhật" — những gì đã làm để không lặp lại
+
+Lần trước (mục "Ô vuông đen dưới mặt đất") là **z-fighting**: mặt nước / đế bia nằm sát song song đất mới vài mm, điện thoại (độ sâu 16 bit) vẽ đè nhấp nháy.
+1. **Đất dưới chân mọi vật GIỮ NGUYÊN**: mặt nạ theo **hình thật** của vật (khung lưới XOAY theo vật, cây hình tròn) + lề 0,3 m + chuyển tiếp 0,45 m, tính
+   bằng **khoảng cách thật** (chamfer). Ba lần đi sai trước khi đúng:
+   - lề 0,12 m < một ô lưới (0,131 m) → điểm lưới ngay mép khung đã vào vùng chuyển tiếp, mép ổ gà kéo góc khung lệch 2,6 cm;
+   - nâng 513 → 1025 bằng song tuyến trong khi Unity nội suy theo TAM GIÁC → giữa mỗi ô cũ lệch tới 8 mm chỗ đất bị vặn (tâm phiến đá −8 mm);
+   - mặt nạ theo **khung bao thẳng trục**: lưới nước đầm lầy rộng tới 13 × 8 m (phần lớn chìm dưới đất) → bản đồ độ lệch có nhiều **mảng phẳng HÌNH CHỮ NHẬT
+     10–15 m** giữa nền sần sùi — chính loại hình người dùng dặn tránh. Nay chỉ giữ quanh phần nước LỘ RA (đất cũ < mặt nước + 10 cm); phần lưới nước chìm
+     thì đất mới không bao giờ xuống dưới mặt nước + 5 cm (ổ không làm lộ nước, không mặt nào sát song song nước).
+2. Ổ / vết nứt đều **lõm**; mép chỉ gồ ≤ 3 cm. Mảng đất vụn đặt **nghiêng 8–25°**, cục / đá chôn 25–35%; mảnh nào có mặt lệch < 12° so với đất mà cách < 2,5 cm
+   thì bỏ (1 539 chỗ bị bỏ).
+3. **Tấm sương chiến tranh** (`TamNhin`, ô 1 m nhấc 0,12 m) lấy độ cao giữa ô thì gò / mép ổ ĐÂM XUYÊN → mảng sáng loang lổ ngoài tầm nhìn (đối chứng cách cũ:
+   3 348 điểm xuyên) — nay mỗi đỉnh = **cao nhất** trong ô: 0 điểm.
+4. **Đĩa bám đất** (`GroundRing.BuildDisc`: vũng máu, vết nứt sét, vòng kỹ năng) lưới dày ≤ 0,25 m / 0,3 m, độ cao đọc thẳng Terrain (rẻ hơn tia vật lý): đối
+   chứng lưới thưa cũ 271 xuyên / 177 lơ lửng → 2 / 5.
+5. Bàn chân (`NguoiChoiHoatHinh`): chỗ tựa = cao hơn trong cổ chân / mũi chân (vết nứt hẹp hơn bàn chân không làm thân tụt vào khe). Menu 109 đo khe NHỎ NHẤT vùng
+   đế giày (điểm tiếp xúc) — đo ở đỉnh thấp nhất thì bàn chân bắc qua vết nứt bị báo "hở 6 cm".
+6. Menu 14 (đếm mặt đồng phẳng) bỏ qua đất vụn (đã kiểm theo tam giác).
+
+Menu **142** (`ThuMatDatSanSui.cs`, đối chứng = đất cũ dựng lại từ file gốc):
+
+```
+===== ManChinh =====
+A. terrain 1025x1025, 4/4 lop co normal map; DatVunVe 4525 manh, 13 luoi mau, vat lieu Diablo25D/ChuanSuong
+B. 268 vat cham dat: mang dong phang (< 7 mm, >= 3 diem) dat CU 2 -> dat MOI 2; vat MOI bi 0; do cao dat trong chan vat (khung luoi xoay theo vat) doi TB 0.0000 m, lon nhat 0.0001 m
+C. 5 mat nuoc, 10405 diem (dinh + tam tam giac luoi nuoc): dat sat song song mat nuoc (|khe| < 7 mm) dat CU 305 -> MOI 306; khe nho nhat cu -1.099 / moi -1.099 m; diem SAI (nuoc lo ma dat doi > 1 mm, hoac nuoc chim ma dat xuong < 5 cm tren nuoc) 0
+D. dat vun 4525 manh: manh co mat song song sat dat (< 12 do, < 2,5 cm) 0
+E. tam suong o 1 m nhac 0.12: diem dat cao hon tam (dam xuyen) cach MOI 0 (vuot nhieu nhat -0.087 m) · DOI CHUNG cach CU (do cao giua o) 4473
+F. 60 dia r 1,5 m nhac 0,05: diem dat dam xuyen dia MOI 25 / lo lung > 10 cm 20 · DOI CHUNG luoi thua cu 322 / 311
+===== Act2 =====
+A. terrain 1025x1025, 4/4 lop co normal map; DatVunVe 5412 manh, 13 luoi mau, vat lieu Diablo25D/ChuanSuong
+B. 936 vat cham dat: mang dong phang (< 7 mm, >= 3 diem) dat CU 19 -> dat MOI 19; vat MOI bi 0; do cao dat trong chan vat (khung luoi xoay theo vat) doi TB 0.0000 m, lon nhat 0.0001 m
+C. 17 mat nuoc, 35377 diem (dinh + tam tam giac luoi nuoc): dat sat song song mat nuoc (|khe| < 7 mm) dat CU 835 -> MOI 831; khe nho nhat cu -1.100 / moi -1.100 m; diem SAI (nuoc lo ma dat doi > 1 mm, hoac nuoc chim ma dat xuong < 5 cm tren nuoc) 0
+D. dat vun 5412 manh: manh co mat song song sat dat (< 12 do, < 2,5 cm) 0
+E. tam suong o 1 m nhac 0.12: diem dat cao hon tam (dam xuyen) cach MOI 0 (vuot nhieu nhat -0.105 m) · DOI CHUNG cach CU (do cao giua o) 3348
+F. 60 dia r 1,5 m nhac 0,05: diem dat dam xuyen dia MOI 2 / lo lung > 10 cm 5 · DOI CHUNG luoi thua cu 271 / 177
+===== Act2 trong Play =====
+G. di that 5 s huong co do doc tong 715: 26.0 m (5.20 m/s), cham dat 167/167 khung, goc cach dat lon nhat 0.198 m
+H. dat vun moi khung: 1766 manh trong khung may quay, 13 lan goi ve (tren 5412 manh)
+H. o voi khoet sau thu 1: (-55.3, -31.3) sau 0.48 m duoi dat cu
+H. o voi khoet sau thu 2: (43.1, -0.9) sau 0.46 m duoi dat cu
+so loi ghi nhan = 0
+```
+
+Menu 109, 117, 106, 114, 110, 101c, 135: 0 lỗi; 85: chỉ lỗi cũ mục B + 3 lỗi dấu "+" / Sách phép do chế độ tạm mở sẵn kỹ năng (đã ghi từ trước). Ảnh
+`PlayTestShots/matdat_play_{dem|ngay}_0-5.png` (4–5 cạnh ổ voi). ⚠️ Thêm / dời đồ vật, vũng nước → chạy lại menu 141 rồi 142. Chưa thử trên điện thoại / web.
+
 ## Phần 4 — Menu công cụ "Diablo 2.5D"
 
 | Mục | Tác dụng |

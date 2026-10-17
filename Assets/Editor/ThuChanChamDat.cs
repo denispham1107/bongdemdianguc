@@ -81,8 +81,24 @@ public static class ThuChanChamDat
                 if (p.y < thap[i].y) thap[i] = p;
             }
         }
+        // khe moi ben = khe NHO NHAT cua vung de giay (dinh trong 8 cm duoi cung) - diem TIEP XUC. Lan dau lay khe tai dinh thap nhat: dat
+        // san sui (17/10/2026, o ga / vet nut 0,12-0,26 m) ban chan bac qua ranh thi dinh thap nhat nam tren khe -> bao "ho 6 cm" du got / mui
+        // dang tua tren hai mep. Dat phang: hai cach ra cung so.
+        float[] khe = { 1e6f, 1e6f };
+        foreach (var smr in nv.GetComponentsInChildren<SkinnedMeshRenderer>())
+        {
+            if (!smr.enabled) continue;
+            smr.BakeMesh(luoi, true); luoi.GetVertices(dinh);
+            foreach (var v in dinh)
+            {
+                Vector3 p = smr.transform.position + smr.transform.rotation * v;
+                int i = Vector3.Dot(p - giua, phai) >= 0f ? 1 : 0;
+                if (p.y > thap[i].y + 0.08f) continue;
+                khe[i] = Mathf.Min(khe[i], p.y - dat(p));
+            }
+        }
         Object.Destroy(luoi);
-        float a = thap[0].y - dat(thap[0]), b = thap[1].y - dat(thap[1]);
+        float a = khe[0], b = khe[1];
         s.deThap = Mathf.Min(a, b); s.deCao = Mathf.Max(a, b);
         return s;
     }

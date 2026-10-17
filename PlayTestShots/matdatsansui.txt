@@ -1,0 +1,18 @@
+
+===== Act2: Assets/Terrain/Act2_MatDat.asset ((134.63, 5.82, 134.63)) =====
+lop terrain: Act2_CoChet, Act2_DatTroc, Act2_SoiDa, Act2_Bun
+mat na: 1019 vat giu nguyen chan; dien tich duoc lam 10031 m2 / 18125 m2
+o voi 110 (r 0,8-1,7 m, sau 0,20-0,45) · o ga 502 (r 0,22-0,55, sau 0,06-0,16) · vet nut 251 chum (rong 0,12-0,26, sau 0,03-0,07) · gon san +-0.045
+do lech so voi dat cu: -0.492 .. +0.063 m; dat the gioi -1.63 .. 2.87; diem kep tren mat nuoc chim + 5 cm: 0
+terrain: 513 -> 1025, goc y -2.901 -> -2.901, cao 5.770 -> 5.820
+to mau (ti le phu truoc -> sau): Act2_CoChet 55 % -> 41 %; Act2_DatTroc 31 % -> 39 %; Act2_SoiDa 12 % -> 14 %; Act2_Bun 3 % -> 6 %;
+dat vun: 5412 manh (cuc dat 1922 · da vun 2650 · mang dat 840; 541 cum ngon ngang); bo 1539 cho do vi nam song song sat dat; 80 o 16 m, 235746 tam giac (ve bang instancing, chi o trong khung may quay)
+
+===== ManChinh: Assets/Terrain/ManChinh_MatDat.asset ((109.20, 4.76, 109.20)) =====
+lop terrain: Act2_CoChet, Act2_DatTroc, Act2_SoiDa, Act2_Bun
+mat na: 291 vat giu nguyen chan; dien tich duoc lam 8070 m2 / 11925 m2
+o voi 89 (r 0,8-1,7 m, sau 0,20-0,45) · o ga 403 (r 0,22-0,55, sau 0,06-0,16) · vet nut 202 chum (rong 0,12-0,26, sau 0,03-0,07) · gon san +-0.045
+do lech so voi dat cu: -0.494 .. +0.066 m; dat the gioi -1.88 .. 2.87; diem kep tren mat nuoc chim + 5 cm: 0
+terrain: 513 -> 1025, goc y -1.631 -> -1.926, cao 4.500 -> 4.845
+to mau (ti le phu truoc -> sau): Act2_CoChet 70 % -> 52 %; Act2_DatTroc 11 % -> 22 %; Act2_SoiDa 16 % -> 18 %; Act2_Bun 3 % -> 8 %;
+dat vun: 4525 manh (cuc dat 1698 · da vun 2174 · mang dat 653; 381 cum ngon ngang); bo 1412 cho do vi nam song song sat dat; 49 o 16 m, 202076 tam giac (ve bang instancing, chi o trong khung may quay)

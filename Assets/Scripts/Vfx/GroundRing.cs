@@ -171,6 +171,8 @@ public class GroundRing : MonoBehaviour
     /// Dung mot cai dia OM SAT MAT DAT quanh mot diem, tra ve trong he toa do
     /// cuc bo cua diem do. Dung chung cho vong phep va cho ca vet in tren dat.
     /// </summary>
+    public const float KhoangDinhDia = 0.25f;
+
     public static void BuildDisc(Mesh mesh, Vector3 worldCenter, float radius,
                                  int segments, int rings, float lift)
     {
@@ -191,6 +193,10 @@ public class GroundRing : MonoBehaviour
 
         if (segments < 8) segments = 8;
         if (rings < 1) rings = 1;
+        // 17/10/2026 mat dat san sui (o ga / ranh nut / gon san o luoi 0,13 m): dinh cach nhau <= ~0,25 m doc ban kinh, <= ~0,3 m quanh vong
+        // - luoi thua thi dia bay lo lung tren o / bi go dat dam xuyen giua hai dinh.
+        rings = Mathf.Clamp(Mathf.Max(rings, Mathf.CeilToInt(radius / KhoangDinhDia)), 1, 24);
+        segments = Mathf.Clamp(Mathf.Max(segments, Mathf.CeilToInt(radius * Mathf.PI * 2f / 0.3f)), 8, 72);
 
         verts.Clear(); uvs.Clear(); cols.Clear(); tris.Clear();
 
@@ -242,6 +248,14 @@ public class GroundRing : MonoBehaviour
     /// <summary>Do cao mat dat ngay duoi mot diem (khong trung gi thi giu nguyen do cao tam).</summary>
     static float SampleGround(float x, float z, float fallback)
     {
+        // Trong Terrain: doc thang do cao (lop Ground chi co Terrain + day vuc) - re hon tia vat ly nhieu, ma dia nay nay co toi vai tram dinh
+        var ter = Terrain.activeTerrain;
+        if (ter != null)
+        {
+            Vector3 g = ter.transform.position, k = ter.terrainData.size;
+            if (x >= g.x && z >= g.z && x <= g.x + k.x && z <= g.z + k.z)
+                return ter.SampleHeight(new Vector3(x, 0f, z)) + g.y;
+        }
         RaycastHit hit;
         if (Physics.Raycast(new Vector3(x, fallback + 12f, z), Vector3.down, out hit, 40f,
                             groundMask, QueryTriggerInteraction.Ignore))

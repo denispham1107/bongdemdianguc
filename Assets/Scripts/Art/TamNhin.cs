@@ -327,7 +327,11 @@ public class TamNhin : MonoBehaviour
         SoVatLieuDaDoi = banSao.Count;
     }
 
-    /// <summary>Tam luoi bam dia hinh (o 1 m, nhac 0,12 m) ve suong len dat.</summary>
+    /// <summary>Tam luoi bam dia hinh (o 1 m, nhac 0,12 m TREN CHO CAO NHAT trong o) ve suong len dat.
+    /// (17/10/2026 mat dat san sui: o ga / mep o / gon san o luoi 0,13 m - lay do cao giua o thi go dat dam xuyen tam suong thanh mang sang
+    /// loang lo ngoai tam nhin; nay moi dinh = cao nhat cac diem luoi do cao trong +-NuaO.)</summary>
+    public const float NhacSuongDat = 0.12f;
+
     void DungTamSuongDat()
     {
         var ter = Terrain.activeTerrain;
@@ -336,13 +340,25 @@ public class TamNhin : MonoBehaviour
         var td = ter.terrainData;
         Vector3 goc = ter.transform.position, kich = td.size;
         int n = Mathf.Clamp(Mathf.CeilToInt(Mathf.Max(kich.x, kich.z) / 1.0f), 16, 250);
+        int R = td.heightmapResolution;
+        var hm = td.GetHeights(0, 0, R, R);
+        float oX = kich.x / (n * 1f), nuaO = oX * 0.6f;
+        int bk = Mathf.CeilToInt(nuaO / (kich.x / (R - 1)));
         var vs = new Vector3[(n + 1) * (n + 1)];
         for (int z = 0; z <= n; z++)
             for (int x = 0; x <= n; x++)
             {
                 float u = x / (float)n, v = z / (float)n;
-                float h = td.GetInterpolatedHeight(u, v);
-                vs[z * (n + 1) + x] = new Vector3(u * kich.x, h + 0.12f, v * kich.z);
+                int cx = Mathf.RoundToInt(u * (R - 1)), cz = Mathf.RoundToInt(v * (R - 1));
+                float cao = 0f;
+                for (int dz = -bk; dz <= bk; dz++)
+                    for (int dx = -bk; dx <= bk; dx++)
+                    {
+                        int ix = cx + dx, iz = cz + dz;
+                        if (ix < 0 || iz < 0 || ix >= R || iz >= R) continue;
+                        if (hm[iz, ix] > cao) cao = hm[iz, ix];
+                    }
+                vs[z * (n + 1) + x] = new Vector3(u * kich.x, cao * kich.y + NhacSuongDat, v * kich.z);
             }
         var tris = new int[n * n * 6]; int k = 0;
         for (int z = 0; z < n; z++)

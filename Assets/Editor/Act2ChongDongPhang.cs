@@ -330,6 +330,9 @@ public static class Act2ChongDongPhang
         if (g.GetComponent<Terrain>() != null) return true;
         if (g.GetComponentInParent<Damageable>() != null) return true;
         if (LaMatPhang(r)) return true;
+        // DAT VUN (menu 141): luoi GOP ca o 16 m - khung bao vo nghia de dem dong phang (day khung o 16 m luon cham dat vai diem);
+        // tung manh da duoc kiem theo TAM GIAC luc rai (MatDatSanSui.DongPhang) va menu 142. Dich ca o len la lam bay ca tram manh.
+        for (var t = g.transform; t != null; t = t.parent) if (t.name == MatDatSanSui.TenGocDatVun) return true;
         return false;
     }
 

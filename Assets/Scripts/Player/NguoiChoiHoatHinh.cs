@@ -480,6 +480,10 @@ public class NguoiChoiHoatHinh : MonoBehaviour
             float dat; Vector3 phap;
             if (MatDatDuoi(banChan[i].position, out dat, out phap))
             {
+                // cho TUA cua ban chan = cao hon trong hai diem co chan / mui chan (17/10/2026 dat san sui: ranh nut / o ga hep hon ban chan
+                // nam ngay duoi co chan -> than ha tut vao khe du got / mui tua tren mep)
+                float datMui; Vector3 phapMui;
+                if (MatDatDuoi(muiChan[i].position, out datMui, out phapMui) && datMui > dat) { dat = datMui; phap = phapMui; }
                 Vector3 nw = thichNghiDoc ? Vector3.RotateTowards(Vector3.up, phap, GocNghiengBanChan * Mathf.Deg2Rad * w, 0f) : Vector3.up;
                 phapDat[i] = nw;
                 float deDi = Mathf.Min(banChan[i].position.y - DeDuoiCoChan, muiChan[i].position.y - DeDuoiMuiChan);
