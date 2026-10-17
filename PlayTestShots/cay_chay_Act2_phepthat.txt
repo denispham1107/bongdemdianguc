@@ -1,16 +1,16 @@
-cay = TREE_oakC_bare_724  chan = (8.58, -0.81, -32.34)  bao = 8.9 x 9.1 x 13.4  renderer = 1
+cay = TREE_oakC_724  chan = (8.45, -0.81, -32.53)  bao = 14.0 x 10.8 x 18.4  renderer = 1
 quai thu nghiem: mau dau = 70.0
-t=1.62s  nguoi choi TUNG PHEP Thien thach vao (8.58, -0.81, -32.34) (ky nang cap 1, loi nhac: (khong co))
-t=2.61s  CAY BAT LUA (sau 1.01s ke tu luc tha)
-MOI BEN: 340 diem moi lua, lan het mat 3.7s, ban kinh lua goc 3.01m
-         he hat=4 den=1, tien do lan = 17 %, dang chay 3/340 diem
-giua doan lan (tien do 61 %): manh dang roi = 14   dang chay 147/340 diem   mau quai = 0.0
-           mau than: goc RGBA(0.88, 0.86, 0.82, 1.00) -> hien RGBA(0.53, 0.52, 0.49, 1.00)  (con 60 % do sang)
-LAN HET sau 3.7s (du tinh 3.7s): dang chay 340/340 diem
+t=1.63s  nguoi choi TUNG PHEP Thien thach vao (8.45, -0.81, -32.53) (ky nang cap 1, loi nhac: (khong co))
+t=2.86s  CAY BAT LUA (sau 1.26s ke tu luc tha)
+MOI BEN: 340 diem moi lua, lan het mat 4.2s, ban kinh lua goc 3.60m
+         he hat=4 den=2, tien do lan = 17 %, dang chay 2/340 diem
+giua doan lan (tien do 61 %): manh dang roi = 17   dang chay 88/340 diem   mau quai = 0.0
+           mau than: goc RGBA(1.00, 1.00, 1.00, 1.00) -> hien RGBA(0.58, 0.58, 0.58, 1.00)  (con 58 % do sang)
+LAN HET sau 4.2s (du tinh 4.2s): dang chay 340/340 diem
         cay VAN CON: renderer bat = 1/1   hat lua bam canh = 396
-DA RUI sau 7.4s: renderer bat = 0/1  collider bat = 0/1
-        mau quai = -1.0 / 70.0  (mat 71.0)
-giua doan cho (20.9s ke tu luc bat lua): renderer bat = 0/1 (phai la 0)
-MOC LAI sau 37.4s ke tu luc bat lua: renderer bat = 1/1  collider bat = 1/1
+DA RUI sau 8.0s: renderer bat = 0/1  collider bat = 0/1
+        mau quai = 0.0 / 70.0  (mat 70.0)
+giua doan cho (21.4s ke tu luc bat lua): renderer bat = 0/1 (phai la 0)
+MOC LAI sau 37.9s ke tu luc bat lua: renderer bat = 1/1  collider bat = 1/1
          component CayChay con = False (phai False), con de mau chay den = False (phai False)
 so loi ghi nhan = 0

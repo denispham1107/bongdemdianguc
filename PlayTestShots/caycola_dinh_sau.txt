@@ -1,0 +1,3 @@
+sau: 71 cay, tong dinh luoi cay ca man 3,405,851 (xa may quay 220 m)
+  3D tu do: dinh cay trong khung TB 1,252,446 lon nhat 3,390,231; so cay TB 25.1 (100 khung)
+  2.5D: dinh cay trong khung TB 374,048 lon nhat 649,307; so cay TB 6.6 (100 khung)

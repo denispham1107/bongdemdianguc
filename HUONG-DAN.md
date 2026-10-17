@@ -2702,6 +2702,35 @@ ban ngay (Play) TB 14 anh  -           0,0912
 phải sau; hàng cuối: cận đêm / cận ngày) cho thấy khác biệt thật. Phép thử 18 (cây cháy: thân còn 62% độ sáng → đen dần), 135, 138: 0 lỗi.
 Màn chính dùng chung vật liệu (17 cây). Bản build: +4 ảnh 1024 (2 ảnh vỏ cũ thôi vào build). Chưa thử trên điện thoại / web (12 lần đọc ảnh mỗi điểm trên thân cây).
 
+## Thêm lá cho 30% cây trơ cành — Act2 (17/10/2026)
+
+**Người dùng:** "các cây không có lá nhiều quá, cho 30% số cây không có lá đổi thành cây có lá". Người dùng chọn: **17 cây, đúng giống, rải đều**;
+**chỉ Act2** (Màn chính giữ nguyên).
+
+Act2 có 71 cây: 15 có lá (lưới `TREE_*_conhanh`: chính giống cây đó trong file Blender kèm tán lá khô `Act2_La` + nhánh con) và 56 trơ cành
+(`LIB_0xx_TREE_*_bare` của thư viện). 30% × 56 = 17. Sáu cây chết `LIB_023_TREE_dead` không có bản có lá → giữ. Chia 17 theo giống bằng **phần dư lớn nhất**
+trên 50 cây còn lại: sồi C 8 / 22 · sồi A 6 / 19 · sồi B 3 / 8 · cây mảnh 0 / 1.
+
+**Rải đều:** mỗi bước chọn cây (trong giống còn suất) **xa nhất** so với mọi cây có lá (15 sẵn + cây vừa chọn). Từ một chỗ bất kỳ (lưới 4 m) tới cây có lá
+gần nhất: trung bình **15,6 → 9,9 m**, xa nhất **41,2 → 31,1 m**.
+
+**Đổi** (menu **144** `CayCoLa.cs`, chạy một lần, tự chặn khi đã đủ 32): lưới → `TREE_<giống>_conhanh` (cùng chân thân — đáy khung lưới bằng nhau), vật liệu
+[vỏ, lá], `CapsuleCollider` chép từ cây có lá sẵn cùng giống (toạ độ cục bộ lưới), tên bỏ `_bare`; giữ chỗ, hướng, tỉ lệ. Cây cao hơn vì có tán (3 cây sồi B
+15,5–19,8 m; bản trơ ~12,4 m). Đã có sẵn điểm mồi lửa cho lưới có lá (menu 20). **Menu 135b chạy lại** (bảng gốc cây khoá theo tên): 17 dòng cây đổi.
+
+**Tải đồ hoạ** (đỉnh lưới cây trong khung hình máy quay game, 25 chỗ × 4 hướng):
+
+```
+                         truoc        sau
+ca man                 2 151 478    3 405 851   (+58%)
+3D tu do  TB / lon nhat  768 329 / 2 135 858   1 252 446 / 3 390 231   (+63%)
+2.5D      TB / lon nhat  198 250 /   428 514     374 048 /   649 307   (+89%)
+```
+
+Chưa tính lượt bóng đổ (cũng chừng ấy đỉnh). Chưa đo khung hình trên điện thoại — nếu tụt, hướng giảm là LOD cho tán lá xa.
+Phép thử 135 (0 lỗi, 66 cây gốc đúng tỉ lệ), 18d (cây cháy bằng phép thật trên `TREE_oakC_724` vừa đổi: 340 điểm mồi, rụi, mọc lại), 114 (BOT đi lại): 0 lỗi.
+Ảnh `PlayTestShots/caycola_toan_canh.png`, `caycola_[0-2]_*.png`.
+
 ## Vũng nước lơ lửng trên không trung
 
 Người chơi gửi ảnh: một vũng nước ở góc phải bản đồ **bay lên khỏi mặt đất**, thấy rõ cạnh

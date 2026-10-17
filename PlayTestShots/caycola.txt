@@ -1,0 +1,24 @@
+truoc: co la 15, tro co ban co la 50
+truoc: co la 15, tro 56; tu moi cho toi cay co la gan nhat TB 15.6 m, xa nhat 41.2 m
+  suat oakC: 8 / 22
+  suat oakA: 6 / 19
+  suat oakB: 3 / 8
+  suat thin: 0 / 1
+  TREE_oakB_bare_732 -> TREE_oakB_732 (-17.5, 49.0), cao 19.78 m
+  TREE_oakA_bare_V010 -> TREE_oakA_V010 (-48.4, -57.7), cao 15.24 m
+  TREE_oakB_bare_733 -> TREE_oakB_733 (38.9, -5.2), cao 17.85 m
+  TREE_oakC_bare_708 -> TREE_oakC_708 (17.1, 47.5), cao 10.87 m
+  TREE_oakC_bare_724 -> TREE_oakC_724 (6.7, -32.2), cao 10.81 m
+  TREE_oakC_bare_718 -> TREE_oakC_718 (27.7, 12.0), cao 11.58 m
+  TREE_oakB_bare_730 -> TREE_oakB_730 (16.6, -49.1), cao 15.46 m
+  TREE_oakC_bare_V012 -> TREE_oakC_V012 (56.0, 9.1), cao 11.26 m
+  TREE_oakC_bare_710 -> TREE_oakC_710 (-34.3, -47.6), cao 10.44 m
+  TREE_oakA_bare_693 -> TREE_oakA_693 (-38.7, 33.7), cao 15.67 m
+  TREE_oakC_bare_V003 -> TREE_oakC_V003 (56.9, -61.1), cao 12.50 m
+  TREE_oakC_bare_V006 -> TREE_oakC_V006 (29.0, 57.5), cao 10.44 m
+  TREE_oakC_bare_715 -> TREE_oakC_715 (4.4, 39.9), cao 12.50 m
+  TREE_oakA_bare_702 -> TREE_oakA_702 (-21.3, 27.6), cao 11.66 m
+  TREE_oakA_bare_700 -> TREE_oakA_700 (38.1, -21.6), cao 13.74 m
+  TREE_oakA_bare_687 -> TREE_oakA_687 (48.9, -42.4), cao 11.66 m
+  TREE_oakA_bare_690 -> TREE_oakA_690 (-7.3, 41.8), cao 13.06 m
+sau: co la 32, tro 39; tu moi cho toi cay co la gan nhat TB 9.9 m, xa nhat 31.1 m

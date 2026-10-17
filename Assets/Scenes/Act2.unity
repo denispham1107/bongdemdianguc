@@ -902,7 +902,7 @@ GameObject:
   - component: {fileID: 37599278}
   - component: {fileID: 37599277}
   m_Layer: 0
-  m_Name: TREE_oakC_bare_718
+  m_Name: TREE_oakC_718
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -942,10 +942,10 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.0049930275
-  m_Height: 0.086270936
+  m_Radius: 0.01836894
+  m_Height: 0.10204966
   m_Direction: 2
-  m_Center: {x: 0.00023422476, y: 0.00031663908, z: 0.043660898}
+  m_Center: {x: 0.00037633453, y: 0.004449269, z: 0.05155026}
 --- !u!23 &37599278
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -972,6 +972,7 @@ MeshRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: 55cfb18a96524bd46a7978f9fca2bc45, type: 2}
+  - {fileID: 2100000, guid: 65585da855486bc479fa6e2d032a1562, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1002,7 +1003,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 37599275}
-  m_Mesh: {fileID: 7845727740487439208, guid: 0a406a39241869445918943f324f20ff, type: 3}
+  m_Mesh: {fileID: 4300000, guid: 31b5459e8ea5e0e49b0d561077824343, type: 2}
 --- !u!1 &38033091
 GameObject:
   m_ObjectHideFlags: 0
@@ -4323,7 +4324,7 @@ GameObject:
   - component: {fileID: 105613100}
   - component: {fileID: 105613099}
   m_Layer: 0
-  m_Name: TREE_oakC_bare_710
+  m_Name: TREE_oakC_710
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4363,10 +4364,10 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.0049930275
-  m_Height: 0.086270936
+  m_Radius: 0.01836894
+  m_Height: 0.10204966
   m_Direction: 2
-  m_Center: {x: 0.00023422476, y: 0.00031663908, z: 0.043660898}
+  m_Center: {x: 0.00037633453, y: 0.004449269, z: 0.05155026}
 --- !u!23 &105613100
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -4393,6 +4394,7 @@ MeshRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: 55cfb18a96524bd46a7978f9fca2bc45, type: 2}
+  - {fileID: 2100000, guid: 65585da855486bc479fa6e2d032a1562, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -4423,7 +4425,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 105613097}
-  m_Mesh: {fileID: 7845727740487439208, guid: 0a406a39241869445918943f324f20ff, type: 3}
+  m_Mesh: {fileID: 4300000, guid: 31b5459e8ea5e0e49b0d561077824343, type: 2}
 --- !u!1 &108590271
 GameObject:
   m_ObjectHideFlags: 0
@@ -61988,11 +61990,11 @@ GameObject:
   - component: {fileID: 794077313}
   - component: {fileID: 794077312}
   m_Layer: 0
-  m_Name: TREE_oakB_bare_730
+  m_Name: TREE_oakB_730
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 22
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &794077311
 Transform:
@@ -62028,10 +62030,10 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.008238995
-  m_Height: 0.15232843
+  m_Radius: 0.008173891
+  m_Height: 0.17248222
   m_Direction: 2
-  m_Center: {x: -0.000048228496, y: -0.00026225884, z: 0.076974034}
+  m_Center: {x: -0.00009659249, y: -0.00030589392, z: 0.08705093}
 --- !u!23 &794077313
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -62058,6 +62060,7 @@ MeshRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: 55cfb18a96524bd46a7978f9fca2bc45, type: 2}
+  - {fileID: 2100000, guid: 65585da855486bc479fa6e2d032a1562, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -62088,7 +62091,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 794077310}
-  m_Mesh: {fileID: 6968765343214504777, guid: 0a406a39241869445918943f324f20ff, type: 3}
+  m_Mesh: {fileID: 4300000, guid: 9625ccba58d712944ad024be30bc3412, type: 2}
 --- !u!1 &796157803
 GameObject:
   m_ObjectHideFlags: 0
@@ -71060,11 +71063,11 @@ GameObject:
   - component: {fileID: 950513113}
   - component: {fileID: 950513112}
   m_Layer: 0
-  m_Name: TREE_oakB_bare_732
+  m_Name: TREE_oakB_732
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 22
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &950513111
 Transform:
@@ -71100,10 +71103,10 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.008238995
-  m_Height: 0.15232843
+  m_Radius: 0.008173891
+  m_Height: 0.17248222
   m_Direction: 2
-  m_Center: {x: -0.000048228496, y: -0.00026225884, z: 0.076974034}
+  m_Center: {x: -0.00009659249, y: -0.00030589392, z: 0.08705093}
 --- !u!23 &950513113
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -71130,6 +71133,7 @@ MeshRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: 55cfb18a96524bd46a7978f9fca2bc45, type: 2}
+  - {fileID: 2100000, guid: 65585da855486bc479fa6e2d032a1562, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -71160,7 +71164,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 950513110}
-  m_Mesh: {fileID: 6968765343214504777, guid: 0a406a39241869445918943f324f20ff, type: 3}
+  m_Mesh: {fileID: 4300000, guid: 9625ccba58d712944ad024be30bc3412, type: 2}
 --- !u!1 &951798911
 GameObject:
   m_ObjectHideFlags: 0
@@ -72170,7 +72174,7 @@ GameObject:
   - component: {fileID: 967142700}
   - component: {fileID: 967142699}
   m_Layer: 0
-  m_Name: TREE_oakA_bare_690
+  m_Name: TREE_oakA_690
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -72211,9 +72215,9 @@ CapsuleCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Radius: 0.0068269973
-  m_Height: 0.12193796
+  m_Height: 0.14223891
   m_Direction: 2
-  m_Center: {x: -0.0003973561, y: 0.00021188844, z: 0.06165672}
+  m_Center: {x: -0.0003973562, y: 0.00021188825, z: 0.071807206}
 --- !u!23 &967142700
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -72240,6 +72244,7 @@ MeshRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: 55cfb18a96524bd46a7978f9fca2bc45, type: 2}
+  - {fileID: 2100000, guid: 65585da855486bc479fa6e2d032a1562, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -72270,7 +72275,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 967142697}
-  m_Mesh: {fileID: 2727385880347832543, guid: 0a406a39241869445918943f324f20ff, type: 3}
+  m_Mesh: {fileID: 4300000, guid: c40ea271de89fec47a4a0134d4efec7a, type: 2}
 --- !u!1 &973135077
 GameObject:
   m_ObjectHideFlags: 0
@@ -72732,7 +72737,7 @@ GameObject:
   - component: {fileID: 976500326}
   - component: {fileID: 976500325}
   m_Layer: 0
-  m_Name: TREE_oakA_bare_700
+  m_Name: TREE_oakA_700
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -72773,9 +72778,9 @@ CapsuleCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Radius: 0.0068269973
-  m_Height: 0.12193796
+  m_Height: 0.14223891
   m_Direction: 2
-  m_Center: {x: -0.0003973561, y: 0.00021188844, z: 0.06165672}
+  m_Center: {x: -0.0003973562, y: 0.00021188825, z: 0.071807206}
 --- !u!23 &976500326
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -72802,6 +72807,7 @@ MeshRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: 55cfb18a96524bd46a7978f9fca2bc45, type: 2}
+  - {fileID: 2100000, guid: 65585da855486bc479fa6e2d032a1562, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -72832,7 +72838,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 976500323}
-  m_Mesh: {fileID: 2727385880347832543, guid: 0a406a39241869445918943f324f20ff, type: 3}
+  m_Mesh: {fileID: 4300000, guid: c40ea271de89fec47a4a0134d4efec7a, type: 2}
 --- !u!1 &976817675
 GameObject:
   m_ObjectHideFlags: 0
@@ -73704,11 +73710,11 @@ GameObject:
   - component: {fileID: 990516557}
   - component: {fileID: 990516556}
   m_Layer: 0
-  m_Name: TREE_oakC_bare_V006
+  m_Name: TREE_oakC_V006
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 2147483647
+  m_StaticEditorFlags: 22
   m_IsActive: 1
 --- !u!4 &990516555
 Transform:
@@ -73744,10 +73750,10 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.0049930275
-  m_Height: 0.086270936
+  m_Radius: 0.01836894
+  m_Height: 0.10204966
   m_Direction: 2
-  m_Center: {x: 0.00023422476, y: 0.00031663908, z: 0.043660898}
+  m_Center: {x: 0.00037633453, y: 0.004449269, z: 0.05155026}
 --- !u!23 &990516557
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -73774,6 +73780,7 @@ MeshRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: 55cfb18a96524bd46a7978f9fca2bc45, type: 2}
+  - {fileID: 2100000, guid: 65585da855486bc479fa6e2d032a1562, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -73804,7 +73811,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 990516554}
-  m_Mesh: {fileID: 7845727740487439208, guid: 0a406a39241869445918943f324f20ff, type: 3}
+  m_Mesh: {fileID: 4300000, guid: 31b5459e8ea5e0e49b0d561077824343, type: 2}
 --- !u!1 &991235432
 GameObject:
   m_ObjectHideFlags: 0
@@ -74605,7 +74612,7 @@ GameObject:
   - component: {fileID: 1018946597}
   - component: {fileID: 1018946596}
   m_Layer: 0
-  m_Name: TREE_oakA_bare_687
+  m_Name: TREE_oakA_687
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -74646,9 +74653,9 @@ CapsuleCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Radius: 0.0068269973
-  m_Height: 0.12193796
+  m_Height: 0.14223891
   m_Direction: 2
-  m_Center: {x: -0.0003973561, y: 0.00021188844, z: 0.06165672}
+  m_Center: {x: -0.0003973562, y: 0.00021188825, z: 0.071807206}
 --- !u!23 &1018946597
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -74675,6 +74682,7 @@ MeshRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: 55cfb18a96524bd46a7978f9fca2bc45, type: 2}
+  - {fileID: 2100000, guid: 65585da855486bc479fa6e2d032a1562, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -74705,7 +74713,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1018946594}
-  m_Mesh: {fileID: 2727385880347832543, guid: 0a406a39241869445918943f324f20ff, type: 3}
+  m_Mesh: {fileID: 4300000, guid: c40ea271de89fec47a4a0134d4efec7a, type: 2}
 --- !u!1 &1022124674
 GameObject:
   m_ObjectHideFlags: 0
@@ -76109,7 +76117,7 @@ GameObject:
   - component: {fileID: 1048952745}
   - component: {fileID: 1048952744}
   m_Layer: 0
-  m_Name: TREE_oakC_bare_708
+  m_Name: TREE_oakC_708
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -76149,10 +76157,10 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.0049930275
-  m_Height: 0.086270936
+  m_Radius: 0.01836894
+  m_Height: 0.10204966
   m_Direction: 2
-  m_Center: {x: 0.00023422476, y: 0.00031663908, z: 0.043660898}
+  m_Center: {x: 0.00037633453, y: 0.004449269, z: 0.05155026}
 --- !u!23 &1048952745
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -76179,6 +76187,7 @@ MeshRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: 55cfb18a96524bd46a7978f9fca2bc45, type: 2}
+  - {fileID: 2100000, guid: 65585da855486bc479fa6e2d032a1562, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -76209,7 +76218,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1048952742}
-  m_Mesh: {fileID: 7845727740487439208, guid: 0a406a39241869445918943f324f20ff, type: 3}
+  m_Mesh: {fileID: 4300000, guid: 31b5459e8ea5e0e49b0d561077824343, type: 2}
 --- !u!1 &1052717053
 GameObject:
   m_ObjectHideFlags: 0
@@ -76559,11 +76568,11 @@ GameObject:
   - component: {fileID: 1055293305}
   - component: {fileID: 1055293304}
   m_Layer: 0
-  m_Name: TREE_oakA_bare_V010
+  m_Name: TREE_oakA_V010
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 2147483647
+  m_StaticEditorFlags: 22
   m_IsActive: 1
 --- !u!4 &1055293303
 Transform:
@@ -76600,9 +76609,9 @@ CapsuleCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Radius: 0.0068269973
-  m_Height: 0.12193796
+  m_Height: 0.14223891
   m_Direction: 2
-  m_Center: {x: -0.0003973561, y: 0.00021188844, z: 0.06165672}
+  m_Center: {x: -0.0003973562, y: 0.00021188825, z: 0.071807206}
 --- !u!23 &1055293305
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -76629,6 +76638,7 @@ MeshRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: 55cfb18a96524bd46a7978f9fca2bc45, type: 2}
+  - {fileID: 2100000, guid: 65585da855486bc479fa6e2d032a1562, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -76659,7 +76669,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1055293302}
-  m_Mesh: {fileID: 2727385880347832543, guid: 0a406a39241869445918943f324f20ff, type: 3}
+  m_Mesh: {fileID: 4300000, guid: c40ea271de89fec47a4a0134d4efec7a, type: 2}
 --- !u!1 &1064225503
 GameObject:
   m_ObjectHideFlags: 0
@@ -80791,7 +80801,7 @@ GameObject:
   - component: {fileID: 1132125162}
   - component: {fileID: 1132125161}
   m_Layer: 0
-  m_Name: TREE_oakC_bare_715
+  m_Name: TREE_oakC_715
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -80831,10 +80841,10 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.0049930275
-  m_Height: 0.086270936
+  m_Radius: 0.01836894
+  m_Height: 0.10204966
   m_Direction: 2
-  m_Center: {x: 0.00023422476, y: 0.00031663908, z: 0.043660898}
+  m_Center: {x: 0.00037633453, y: 0.004449269, z: 0.05155026}
 --- !u!23 &1132125162
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -80861,6 +80871,7 @@ MeshRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: 55cfb18a96524bd46a7978f9fca2bc45, type: 2}
+  - {fileID: 2100000, guid: 65585da855486bc479fa6e2d032a1562, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -80891,7 +80902,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1132125159}
-  m_Mesh: {fileID: 7845727740487439208, guid: 0a406a39241869445918943f324f20ff, type: 3}
+  m_Mesh: {fileID: 4300000, guid: 31b5459e8ea5e0e49b0d561077824343, type: 2}
 --- !u!1 &1133074375
 GameObject:
   m_ObjectHideFlags: 0
@@ -84452,7 +84463,7 @@ GameObject:
   - component: {fileID: 1226191891}
   - component: {fileID: 1226191890}
   m_Layer: 0
-  m_Name: TREE_oakC_bare_724
+  m_Name: TREE_oakC_724
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -84492,10 +84503,10 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.0049930275
-  m_Height: 0.086270936
+  m_Radius: 0.01836894
+  m_Height: 0.10204966
   m_Direction: 2
-  m_Center: {x: 0.00023422476, y: 0.00031663908, z: 0.043660898}
+  m_Center: {x: 0.00037633453, y: 0.004449269, z: 0.05155026}
 --- !u!23 &1226191891
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -84522,6 +84533,7 @@ MeshRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: 55cfb18a96524bd46a7978f9fca2bc45, type: 2}
+  - {fileID: 2100000, guid: 65585da855486bc479fa6e2d032a1562, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -84552,7 +84564,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1226191888}
-  m_Mesh: {fileID: 7845727740487439208, guid: 0a406a39241869445918943f324f20ff, type: 3}
+  m_Mesh: {fileID: 4300000, guid: 31b5459e8ea5e0e49b0d561077824343, type: 2}
 --- !u!1 &1229117952
 GameObject:
   m_ObjectHideFlags: 0
@@ -90561,11 +90573,11 @@ GameObject:
   - component: {fileID: 1348302991}
   - component: {fileID: 1348302990}
   m_Layer: 0
-  m_Name: TREE_oakC_bare_V012
+  m_Name: TREE_oakC_V012
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 2147483647
+  m_StaticEditorFlags: 22
   m_IsActive: 1
 --- !u!4 &1348302989
 Transform:
@@ -90601,10 +90613,10 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.0049930275
-  m_Height: 0.086270936
+  m_Radius: 0.01836894
+  m_Height: 0.10204966
   m_Direction: 2
-  m_Center: {x: 0.00023422476, y: 0.00031663908, z: 0.043660898}
+  m_Center: {x: 0.00037633453, y: 0.004449269, z: 0.05155026}
 --- !u!23 &1348302991
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -90631,6 +90643,7 @@ MeshRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: 55cfb18a96524bd46a7978f9fca2bc45, type: 2}
+  - {fileID: 2100000, guid: 65585da855486bc479fa6e2d032a1562, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -90661,7 +90674,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1348302988}
-  m_Mesh: {fileID: 7845727740487439208, guid: 0a406a39241869445918943f324f20ff, type: 3}
+  m_Mesh: {fileID: 4300000, guid: 31b5459e8ea5e0e49b0d561077824343, type: 2}
 --- !u!1 &1348367532
 GameObject:
   m_ObjectHideFlags: 0
@@ -120499,11 +120512,11 @@ GameObject:
   - component: {fileID: 1962655023}
   - component: {fileID: 1962655022}
   m_Layer: 0
-  m_Name: TREE_oakC_bare_V003
+  m_Name: TREE_oakC_V003
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 2147483647
+  m_StaticEditorFlags: 22
   m_IsActive: 1
 --- !u!4 &1962655021
 Transform:
@@ -120539,10 +120552,10 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.0049930275
-  m_Height: 0.086270936
+  m_Radius: 0.01836894
+  m_Height: 0.10204966
   m_Direction: 2
-  m_Center: {x: 0.00023422476, y: 0.00031663908, z: 0.043660898}
+  m_Center: {x: 0.00037633453, y: 0.004449269, z: 0.05155026}
 --- !u!23 &1962655023
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -120569,6 +120582,7 @@ MeshRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: 55cfb18a96524bd46a7978f9fca2bc45, type: 2}
+  - {fileID: 2100000, guid: 65585da855486bc479fa6e2d032a1562, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -120599,7 +120613,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1962655020}
-  m_Mesh: {fileID: 7845727740487439208, guid: 0a406a39241869445918943f324f20ff, type: 3}
+  m_Mesh: {fileID: 4300000, guid: 31b5459e8ea5e0e49b0d561077824343, type: 2}
 --- !u!1 &1963039973
 GameObject:
   m_ObjectHideFlags: 0
@@ -122446,7 +122460,7 @@ GameObject:
   - component: {fileID: 1984971425}
   - component: {fileID: 1984971424}
   m_Layer: 0
-  m_Name: TREE_oakA_bare_702
+  m_Name: TREE_oakA_702
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -122487,9 +122501,9 @@ CapsuleCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Radius: 0.0068269973
-  m_Height: 0.12193796
+  m_Height: 0.14223891
   m_Direction: 2
-  m_Center: {x: -0.0003973561, y: 0.00021188844, z: 0.06165672}
+  m_Center: {x: -0.0003973562, y: 0.00021188825, z: 0.071807206}
 --- !u!23 &1984971425
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -122516,6 +122530,7 @@ MeshRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: 55cfb18a96524bd46a7978f9fca2bc45, type: 2}
+  - {fileID: 2100000, guid: 65585da855486bc479fa6e2d032a1562, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -122546,7 +122561,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1984971422}
-  m_Mesh: {fileID: 2727385880347832543, guid: 0a406a39241869445918943f324f20ff, type: 3}
+  m_Mesh: {fileID: 4300000, guid: c40ea271de89fec47a4a0134d4efec7a, type: 2}
 --- !u!1 &1985083773
 GameObject:
   m_ObjectHideFlags: 0
@@ -124002,7 +124017,7 @@ GameObject:
   - component: {fileID: 2015074882}
   - component: {fileID: 2015074881}
   m_Layer: 0
-  m_Name: TREE_oakA_bare_693
+  m_Name: TREE_oakA_693
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -124043,9 +124058,9 @@ CapsuleCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Radius: 0.0068269973
-  m_Height: 0.12193796
+  m_Height: 0.14223891
   m_Direction: 2
-  m_Center: {x: -0.0003973561, y: 0.00021188844, z: 0.06165672}
+  m_Center: {x: -0.0003973562, y: 0.00021188825, z: 0.071807206}
 --- !u!23 &2015074882
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -124072,6 +124087,7 @@ MeshRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: 55cfb18a96524bd46a7978f9fca2bc45, type: 2}
+  - {fileID: 2100000, guid: 65585da855486bc479fa6e2d032a1562, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -124102,7 +124118,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2015074879}
-  m_Mesh: {fileID: 2727385880347832543, guid: 0a406a39241869445918943f324f20ff, type: 3}
+  m_Mesh: {fileID: 4300000, guid: c40ea271de89fec47a4a0134d4efec7a, type: 2}
 --- !u!1 &2017106887
 GameObject:
   m_ObjectHideFlags: 0
@@ -130449,11 +130465,11 @@ GameObject:
   - component: {fileID: 2119761602}
   - component: {fileID: 2119761601}
   m_Layer: 0
-  m_Name: TREE_oakB_bare_733
+  m_Name: TREE_oakB_733
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 22
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &2119761600
 Transform:
@@ -130489,10 +130505,10 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.008238995
-  m_Height: 0.15232843
+  m_Radius: 0.008173891
+  m_Height: 0.17248222
   m_Direction: 2
-  m_Center: {x: -0.000048228496, y: -0.00026225884, z: 0.076974034}
+  m_Center: {x: -0.00009659249, y: -0.00030589392, z: 0.08705093}
 --- !u!23 &2119761602
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -130519,6 +130535,7 @@ MeshRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: 55cfb18a96524bd46a7978f9fca2bc45, type: 2}
+  - {fileID: 2100000, guid: 65585da855486bc479fa6e2d032a1562, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -130549,7 +130566,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2119761599}
-  m_Mesh: {fileID: 6968765343214504777, guid: 0a406a39241869445918943f324f20ff, type: 3}
+  m_Mesh: {fileID: 4300000, guid: 9625ccba58d712944ad024be30bc3412, type: 2}
 --- !u!1001 &2119792395
 PrefabInstance:
   m_ObjectHideFlags: 0

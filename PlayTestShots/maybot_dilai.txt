@@ -1,13 +1,13 @@
-[ban 1] may BOT di lai (buoc 3) - 17/10/2026 11:31
-A1. luoi 175x175 o 0.8 m, dung 0.46 s: di duoc 24429, vat can 3442, vuc + sat vuc 2754
+[ban 1] may BOT di lai (buoc 3) - 17/10/2026 12:49
+A1. luoi 175x175 o 0.8 m, dung 0.36 s: di duoc 24241, vat can 3630, vuc + sat vuc 2754
 A2. 4 khe rao sap: diem 8 m NGOAI la vuc 4/4, co o di duoc trong 7 m (+-2,5) 4/4
 A3. bia mo to (cao > 0,8 m, ngang > 0,5 m): 434/434 o tam bia KHONG di duoc
 B0. vong nha mo (5.6x4.6 m): toi True sau 2.7 s, di 13.5 m (duong chim bay 12.8), ket 0, vong 0
    anh maybot_dilai_nhamo.png
    doi chung lai thang cung cho: toi False trong 10 s
-B1. vong nha mo (5.1x6.2 m): toi True sau 3.3 s, di 13.8 m (duong chim bay 13.6), ket 0, vong 0
+B1. vong nha mo (5.1x6.2 m): toi True sau 3.3 s, di 14.0 m (duong chim bay 13.6), ket 0, vong 0
    doi chung lai thang cung cho: toi False trong 10 s
-B2. vong nha mo (4.1x5.0 m): toi True sau 2.4 s, di 12.2 m (duong chim bay 12.0), ket 0, vong 0
+B2. vong nha mo (4.1x5.0 m): toi True sau 2.4 s, di 12.1 m (duong chim bay 12.0), ket 0, vong 0
    doi chung lai thang cung cho: toi False trong 10 s
 C0. khe 0: dich giua vuc, 8 s -> y thap nhat 2.63, dung vuc 0 lan, dung cach khe 6.4 m
    chi chong vuc (lai thang ra mep): y thap nhat 2.53
@@ -18,20 +18,20 @@ C2. khe 2: dich giua vuc, 8 s -> y thap nhat 1.66, dung vuc 0 lan, dung cach khe
 C3. khe 3: dich giua vuc, 8 s -> y thap nhat 2.13, dung vuc 0 lan, dung cach khe 7.2 m
    chi chong vuc (lai thang ra mep): y thap nhat 2.11
 C4. doi chung tat tim duong + tat chong vuc, lai thang ra khe 0: y thap nhat -26.42 (nguong dia nguc -6)
-D1. doi thu cach 14.4 m: muc tieu la doi thu True, toi gan 9.0 m sau 1.1 s, 1,5 s sau van 7.1 m (dung lai, TamGiu 9)
+D1. doi thu cach 14.4 m: muc tieu la doi thu True, toi gan 8.8 m sau 1.4 s, 1,5 s sau van 7.0 m (dung lai, TamGiu 9)
     cho thu: xa 44.8 m, vua 16.8 m, quai vua 14.9 m, quai gan 11.1 m (tam nhin 20, giao tranh 20)
-D2. cap 1, doi thu cach 44.6 m (ngoai tam nhin), khong quai: 6 s nham doi thu False, con cach 53.7 m
-D2b. cap 1, doi thu cach 16.8 m ban trung BOT: nham sau 0.04 s, 6 s sau con 7.2 m; doi chung ban tu ngoai tam nhin (45 m): nham False
-D2c. cap 7, doi thu cach 16.7 m: 6 s sau con 7.0 m; doi thu 45 m: nham False
+D2. cap 1, doi thu cach 44.9 m (ngoai tam nhin), khong quai: 6 s nham doi thu False, con cach 61.8 m
+D2b. cap 1, doi thu cach 16.9 m ban trung BOT: nham sau 0.28 s, 6 s sau con 6.2 m; doi chung ban tu ngoai tam nhin (45 m): nham False
+D2c. cap 7, doi thu cach 16.7 m: 6 s sau con 7.1 m; doi thu 45 m: nham False
 D2d. cap 1, 28 quai cach 14.9 m, doi thu cach 16.8 m: muc tieu quai
 D2e. cap 7, quai cach ~10 m + doi thu 23 m: muc tieu quai; D2f. quai cach ~15 m: muc tieu nguoi choi
-D2g. di tuan 45 s (khong thay ai): o da ghe 29 -> 45 / 64, quang duong 226 m, xa cho xuat phat nhat 83 m, muc tieu khong ai
+D2g. di tuan 45 s (khong thay ai): o da ghe 28 -> 42 / 64, quang duong 228 m, xa cho xuat phat nhat 82 m, muc tieu khong ai
 D3. cung doi voi moi nguoi: muc tieu khong ai (di tuan)
-E0. Bot_1_BOT 1: di 83 m, ket 0, vong 0, dung vuc 0, y thap nhat -0.40, dung im lau nhat khi muon di 0 s, mau 0/1000 (DA CHET)
-E1. Bot_2_BOT 2: di 76 m, ket 0, vong 0, dung vuc 0, y thap nhat -1.11, dung im lau nhat khi muon di 0 s, mau 0/1000 (DA CHET)
+E0. Bot_1_BOT 1: di 81 m, ket 0, vong 0, dung vuc 0, y thap nhat -0.60, dung im lau nhat khi muon di 0 s, mau 0/1000 (DA CHET)
+E1. Bot_2_BOT 2: di 77 m, ket 0, vong 0, dung vuc 0, y thap nhat -1.01, dung im lau nhat khi muon di 0 s, mau 0/1000 (DA CHET)
 E2. Bot_3_BOT 3: di 0 m, ket 0, vong 0, dung vuc 0, y thap nhat 0.00, dung im lau nhat khi muon di 0 s, mau 0/1000 (DA CHET)
 E. 3 dot quai trong 60 s; BOT roi xuong vuc: 0 (phai 0)
    anh maybot_dilai_tran.png
-don phong -P477DYfwEjRVKH42ycc: sach
+don phong -P47P3821lyzGXyobuMF: sach
 
 so loi ghi nhan = 0
