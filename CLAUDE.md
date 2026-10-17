@@ -1174,7 +1174,7 @@ hơn ×1,5 và mở xuống 1,8–4,3 m** (người dùng chọn sau menu 94 ch�
   (`CongCu/AnhVoCay/Goc/`, không vào git) xử lý trong Blender MCP `anh_vo_cay_moi.py` → `VoCay3_Mau/Phap/Trong/Troc`; shader `BarkTriplanar` viết lại
   (vỏ lặp 1,8 m, mặt nạ tróc lặp 2,2 m có bậc vỏ + vành tối; 12 lần đọc ảnh). Menu **15** = `VoCaySanSui.Dung` (gán lại), **143 / 143b** chụp đo trước / sau.
   ⚠️ Vỏ lặp 1 m thì ở góc máy quay game mip trộn mất rãnh — thân lại phẳng.
-- ⚠️ **ACT2: 81 CÂY — 42 CÓ LÁ / 39 TRƠ CÀNH** (cùng ngày +10 cây có lá theo chỗ người dùng đánh dấu — menu **145** `CayCoLaThem.cs`; trước đó 32 / 39) (17/10/2026, người dùng "30% cây không lá thành có lá"; menu **144** `CayCoLa.cs`, chạy một lần): 17 cây trơ đổi sang
+- ⚠️ **ACT2: 61 CÂY — 40 CÓ LÁ / 21 TRƠ CÀNH** (cùng tối người dùng TỰ XOÁ 20 cây trong Unity — 18 trơ gồm 3 cây chết + 2 có lá; trước đó 81 = 42 / 39 sau +10 cây có lá menu **145** `CayCoLaThem.cs`; trước nữa 32 / 39) (17/10/2026, người dùng "30% cây không lá thành có lá"; menu **144** `CayCoLa.cs`, chạy một lần): 17 cây trơ đổi sang
   lưới `TREE_*_conhanh` đúng giống, rải đều (sồi C 8 · A 6 · B 3; cây chết giữ), tên bỏ `_bare`; Màn chính giữ nguyên. Đỉnh lưới cây trong khung 2.5D +89%
   (chưa đo điện thoại). Đổi / dời cây → chạy lại 135b.
 - ⚠️ **10 / 33 BIA THÁNH GIÁ NỨT BỂ** (17/10/2026, người dùng "30% còn 1/2 hoặc 2/3 thân"; menu **146** `ThanhGiaVo.cs`): lưới gãy Blender MCP

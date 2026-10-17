@@ -2740,6 +2740,8 @@ cây có lá sẵn (giữ vật liệu vỏ + lá, va chạm), xen kẽ sồi C 
 **chấm 2 (59,2; −8,8) nằm giữa đầm `DamLay_11`** 6×6 m → cây ở bờ, lệch 6,5 m. Chạy lại menu **141** (đất dưới chân cây mới giữ nguyên, đất vụn tránh thân),
 đặt lại chân cây = đất thấp nhất trong 0,8 m − 5 cm; menu 142 (0 lỗi), 135b + 135 (0 lỗi, 76 cây gốc đúng tỉ lệ). Act2 nay **81 cây: 42 có lá / 39 trơ**.
 Đỉnh lưới cây trong khung 2.5D TB 374 → 445 nghìn. Ảnh `PlayTestShots/caycola_them_toancanh.png` (vàng = cây mới, + đỏ = chỗ đánh dấu).
+Cùng tối người dùng **tự xoá 20 cây** trong Unity (18 trơ cành gồm 3 cây chết, 2 có lá `TREE_oakA_690`, `TREE_oakC_708`) → **61 cây: 40 có lá / 21 trơ**; đã chạy lại
+menu 141 (đất chỗ cây cũ làm sần lại), 142 (0 lỗi), 135b + 135 (0 lỗi, 61 cây trong bảng gốc).
 
 ## Bia thánh giá nứt bể — 30% còn 1/2 hoặc 2/3, phần gãy nằm cạnh bệ (17/10/2026)
 

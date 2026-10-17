@@ -8,17 +8,17 @@ E. tam suong o 1 m nhac 0.12: diem dat cao hon tam (dam xuyen) cach MOI 0 (vuot 
 F. 60 dia r 1,5 m nhac 0,05: diem dat dam xuyen dia MOI 27 / lo lung > 10 cm 20 · DOI CHUNG luoi thua cu 314 / 327
 
 ===== Act2 =====
-A. terrain 1025x1025, 4/4 lop co normal map; DatVunVe 5369 manh, 13 luoi mau, vat lieu Diablo25D/ChuanSuong
+A. terrain 1025x1025, 4/4 lop co normal map; DatVunVe 5442 manh, 13 luoi mau, vat lieu Diablo25D/ChuanSuong
 B. 991 vat cham dat: mang dong phang (< 7 mm, >= 3 diem) dat CU 26 -> dat MOI 26; vat MOI bi 0; do cao dat trong chan vat (khung luoi xoay theo vat) doi TB 0.0000 m, lon nhat 0.0001 m (TS_round_49 @(50.9, 1.7, -9.6))
 C. 17 mat nuoc, 35377 diem (dinh + tam tam giac luoi nuoc): dat sat song song mat nuoc (|khe| < 7 mm) dat CU 835 -> MOI 831; khe nho nhat cu -1.100 / moi -1.100 m; diem SAI (nuoc lo ma dat doi > 1 mm, hoac nuoc chim ma dat xuong < 5 cm tren nuoc) 0
-D. dat vun 5369 manh: manh co mat song song sat dat (< 12 do, < 2,5 cm) 0
-E. tam suong o 1 m nhac 0.12: diem dat cao hon tam (dam xuyen) cach MOI 0 (vuot nhieu nhat -0.105 m) · DOI CHUNG cach CU (do cao giua o) 3358
-F. 60 dia r 1,5 m nhac 0,05: diem dat dam xuyen dia MOI 1 / lo lung > 10 cm 7 · DOI CHUNG luoi thua cu 261 / 166
+D. dat vun 5442 manh: manh co mat song song sat dat (< 12 do, < 2,5 cm) 0
+E. tam suong o 1 m nhac 0.12: diem dat cao hon tam (dam xuyen) cach MOI 0 (vuot nhieu nhat -0.105 m) · DOI CHUNG cach CU (do cao giua o) 3322
+F. 60 dia r 1,5 m nhac 0,05: diem dat dam xuyen dia MOI 2 / lo lung > 10 cm 5 · DOI CHUNG luoi thua cu 317 / 193
 
 ===== Act2 trong Play =====
-G. di that 5 s huong co do doc tong 722: 25.9 m (5.19 m/s), cham dat 122/122 khung, goc cach dat lon nhat 0.127 m
-H. dat vun moi khung: 1733 manh trong khung may quay, 13 lan goi ve (tren 5369 manh)
-H. o voi khoet sau thu 1: (-55.3, -31.3) sau 0.47 m duoi dat cu
-H. o voi khoet sau thu 2: (47.1, -1.3) sau 0.47 m duoi dat cu
+G. di that 5 s huong co do doc tong 728: 25.9 m (5.18 m/s), cham dat 118/118 khung, goc cach dat lon nhat 0.172 m
+H. dat vun moi khung: 1811 manh trong khung may quay, 13 lan goi ve (tren 5442 manh)
+H. o voi khoet sau thu 1: (47.1, -0.9) sau 0.47 m duoi dat cu
+H. o voi khoet sau thu 2: (-55.3, -31.3) sau 0.47 m duoi dat cu
 
 so loi ghi nhan = 0
