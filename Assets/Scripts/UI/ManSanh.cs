@@ -1094,7 +1094,8 @@ public class ManSanh : MonoBehaviour
         "Cảnh 100% · bóng mềm · khử răng cưa",
         "Cảnh 75% · bóng cứng · tắt khử răng cưa",
         "Cảnh 62% · bóng cứng gần · giảm chi tiết xa",
-        "Cảnh 50% · tắt bóng · cho máy rất yếu",
+        "Cảnh 50% · chỉ bóng nhân vật · cho máy rất yếu",
+        "Cảnh 35% · tắt bóng · cho máy cực yếu",
     };
 
     /// <summary>Mo bang cai dat - nut CAI DAT goi, phep thu (menu 48) cung goi.</summary>
@@ -1179,7 +1180,7 @@ public class ManSanh : MonoBehaviour
         GiaoDien.To(new Rect(0, 0, Screen.width, Screen.height), new Color(0f, 0f, 0f, 0.4f));
 
         float rong = Mathf.Min(Screen.width - 30f * s, 880f * s);
-        float cao = Mathf.Min(Screen.height - 30f * s, 700f * s);   // bon hang muc do hoa
+        float cao = Mathf.Min(Screen.height - 30f * s, 772f * s);   // nam hang muc do hoa (Cuc yeu them 17/10/2026: 700 -> 772)
         float x = (Screen.width - rong) * 0.5f;
         float y = (Screen.height - cao) * 0.5f;
         float le = 34f * s;
@@ -1202,7 +1203,7 @@ public class ManSanh : MonoBehaviour
         GiaoDien.To(new Rect(xt, yt + 47f * s, x + rong - le - xt, 1f), new Color(0.35f, 0.22f, 0.2f, 0.7f));
 
         float yn = yt + 70f * s;
-        if (tabCaiDat == 0) VeTabGiaoDien(x + le, yn, rong - 2f * le, s);
+        if (tabCaiDat == 0) VeTabGiaoDien(x + le, yn, rong - 2f * le, s, y + cao - 34f * s - 58f * s - 50f * s);
         else if (tabCaiDat == 1) VeTabAmThanh(x + le, yn, rong - 2f * le, s);
 
         // ---- Nut duoi cung ----
@@ -1286,12 +1287,13 @@ public class ManSanh : MonoBehaviour
         return pt;
     }
 
-    void VeTabGiaoDien(float x, float y, float rong, float s)
+    void VeTabGiaoDien(float x, float y, float rong, float s, float day)
     {
         GiaoDien.Chu(new Rect(x, y, rong, 30f * s), "Chất lượng cảnh 3D · chữ và nút luôn giữ nguyên độ nét", GiaoDien.KieuChuMo);
         y += 42f * s;
 
-        float caoHang = 64f * s;
+        // Man thap (bang bi kep theo chieu cao man) thi co hang lai de hang cuoi khong de len dong ghi chu tren nut OK
+        float caoHang = Mathf.Min(64f * s, (day - y) / CaiDatDoHoa.SoMuc - 8f * s);
         float rongTen = 310f * s;          // du cho "Trung binh (hien gio)" khong phai thu nho
         for (int i = 0; i < CaiDatDoHoa.SoMuc; i++)
         {

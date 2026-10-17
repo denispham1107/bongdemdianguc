@@ -402,5 +402,8 @@ public class GameBootstrap : MonoBehaviour
         hud.cameraRig = camRig;
         hud.director = GameDirector.Instance;
         if (hud.director == null) hud.director = FindAnyObjectByType<GameDirector>();
+
+        // Muc do hoa "Rat yeu": chi nhan vat cua may nay do bong (nguoi dung 17/10/2026)
+        if (player != null) BongChiNhanVat.Ap(player.transform);
     }
 }

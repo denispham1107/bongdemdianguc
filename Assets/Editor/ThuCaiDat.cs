@@ -386,12 +386,13 @@ public static class ThuCaiDat
         Kiem(conSanhCu && !sanh.DangMoCaiDat, "OK khi khong doi gi phai chi dong bang");
 
         // ---- 6. Ba muc ----
-        MucDoHoa[] thuTu = { MucDoHoa.TrungBinh, MucDoHoa.Yeu, MucDoHoa.RatYeu, MucDoHoa.Cao };
-        string[] mongMucUnity = { "High", "Medium", "Low", "Low" };
-        float[] mongBong = { 60f, 40f, 25f, 20f };
+        MucDoHoa[] thuTu = { MucDoHoa.TrungBinh, MucDoHoa.Yeu, MucDoHoa.RatYeu, MucDoHoa.CucYeu, MucDoHoa.Cao };
+        string[] mongMucUnity = { "High", "Medium", "Low", "Low", "Low" };
+        float[] mongBong = { 60f, 40f, 25f, 20f, 20f };
         // Viet thang so, khong lay tu bang cua CaiDatDoHoa (phep kiem doc lap)
-        float[] mongChiTietXa = { 1f, 0.7f, 0.55f, 0.4f };
-        string[] mongKieuBong = { "All", "HardOnly", "HardOnly", "Disable" };
+        float[] mongChiTietXa = { 1f, 0.7f, 0.55f, 0.4f, 0.4f };
+        // 17/10/2026: Rat yeu van tat bong Unity, nhan vat cua may nay co BONG CHIEU PHANG (BongChiNhanVat); Cuc yeu (35%) tat bong
+        string[] mongKieuBong = { "All", "HardOnly", "HardOnly", "Disable", "Disable" };
         var sangMuc = new float[CaiDatDoHoa.SoMuc];
 
         foreach (var m in thuTu)
@@ -404,7 +405,7 @@ public static class ThuCaiDat
             sanh.MoCaiDat();
             sanh.ChonMucDoHoa(m);
             yield return new WaitForSecondsRealtime(0.4f);
-            if (m == MucDoHoa.RatYeu) yield return Chup("caidat_3_chon_ratyeu");
+            if (m == MucDoHoa.CucYeu) yield return Chup("caidat_3_chon_cucyeu");
 
             float truoc = Time.realtimeSinceStartup;
             sanh.BamOKCaiDat();
@@ -443,14 +444,14 @@ public static class ThuCaiDat
 
             yield return VaoSanh();
 
-            if (m == MucDoHoa.RatYeu)
+            if (m == MucDoHoa.CucYeu)
             {
-                // Anh bang sau khi tai lai - chu "(hien gio)" phai chuyen sang Rat yeu;
+                // Anh bang sau khi tai lai - chu "(hien gio)" phai chuyen sang Cuc yeu (hang thu 5);
                 // chu va khung phai net y het muc Cao (chi canh 3D thu nho)
                 sanhMoi = Object.FindAnyObjectByType<ManSanh>();
                 sanhMoi.MoCaiDat();
                 yield return new WaitForSecondsRealtime(0.4f);
-                yield return Chup("caidat_4_ratyeu_hiengio");
+                yield return Chup("caidat_4_cucyeu_hiengio");
                 sanhMoi.BamOKCaiDat();      // khong doi gi -> chi dong
                 yield return null;
             }
@@ -471,13 +472,24 @@ public static class ThuCaiDat
             yield return new WaitForEndOfFrame();
             int boBong = UnityStats.shadowCasters;
             float tamGiac = UnityStats.triangles / 1000f;
+            int setPass = UnityStats.setPassCalls, loVe = UnityStats.drawCalls;
+            // renderer HINH cua nhan vat may nay (doc lap voi BongChiNhanVat: dem tu cay nhan vat, bo vat co va cham / hat)
+            int hinhNv = 0;
+            if (pc != null) foreach (var r in pc.GetComponentsInChildren<Renderer>(true))
+                    if (!(r is ParticleSystemRenderer) && !(r is TrailRenderer) && !(r is LineRenderer) && r.GetComponent<Collider>() == null && r.enabled) hinhNv++;
 
-            Ghi(string.Format("   Act2: khoang bong = {0} m (mong {1}), vat do bong = {2}, tam giac = {3:F0}k",
-                QualitySettings.shadowDistance, mongBong[im], boBong, tamGiac));
+            Ghi(string.Format("   Act2: khoang bong = {0} m (mong {1}), vat do bong = {2} (renderer hinh nhan vat minh {5}), tam giac = {3:F0}k, setpass {4}, lo ve {6}",
+                QualitySettings.shadowDistance, mongBong[im], boBong, tamGiac, setPass, hinhNv, loVe));
             Kiem(Mathf.Abs(QualitySettings.shadowDistance - mongBong[im]) < 0.01f,
                  "khoang bong o Act2 sai");
-            if (m == MucDoHoa.RatYeu) Kiem(boBong == 0, "muc Rat yeu van ve bong");
-            else Kiem(boBong > 0, "muc " + CaiDatDoHoa.Ten[im] + " mat bong");
+            // bong chieu phang: dem o vat lieu "BongPhang" tren renderer nhan vat minh (doc lap voi bien cua BongChiNhanVat)
+            int oBong = 0;
+            if (pc != null) foreach (var r in pc.GetComponentsInChildren<Renderer>(true))
+                    foreach (var vl in r.sharedMaterials) if (vl != null && vl.shader != null && vl.shader.name == "Diablo25D/BongPhang") oBong++;
+            Ghi("   o vat lieu bong chieu phang tren nhan vat minh: " + oBong);
+            if (m == MucDoHoa.RatYeu) { Kiem(boBong == 0, "muc Rat yeu van ve bong Unity"); Kiem(oBong == hinhNv && hinhNv > 0, "muc Rat yeu: nhan vat minh thieu bong chieu phang"); }
+            else if (m == MucDoHoa.CucYeu) { Kiem(boBong == 0, "muc Cuc yeu van ve bong"); Kiem(oBong == 0, "muc Cuc yeu van co bong chieu phang"); }
+            else { Kiem(boBong > hinhNv, "muc " + CaiDatDoHoa.Ten[im] + " mat bong canh vat"); Kiem(oBong == 0, "muc " + CaiDatDoHoa.Ten[im] + " co bong chieu phang thua"); }
 
             // ---- Anh dem canh 3D ----
             yield return new WaitForSecondsRealtime(0.3f);   // TheoDoiCamera gan o LateUpdate
@@ -519,7 +531,7 @@ public static class ThuCaiDat
             }
 
             string tenAnh = "caidat_act2_" + (m == MucDoHoa.Cao ? "cao" : m == MucDoHoa.TrungBinh ? "trungbinh"
-                                            : m == MucDoHoa.Yeu ? "yeu" : "ratyeu");
+                                            : m == MucDoHoa.Yeu ? "yeu" : m == MucDoHoa.RatYeu ? "ratyeu" : "cucyeu");
             yield return Chup(tenAnh);
             // Canh phai hien that (khong den, khong trong): do sang trung binh anh chup
             var anh = new Texture2D(2, 2);

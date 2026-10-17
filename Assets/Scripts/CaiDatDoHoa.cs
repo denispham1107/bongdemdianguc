@@ -2,8 +2,8 @@ using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-/// <summary>Bon muc do hoa nguoi choi chon trong CAI DAT &gt; Giao dien.</summary>
-public enum MucDoHoa { Cao = 0, TrungBinh = 1, Yeu = 2, RatYeu = 3 }
+/// <summary>Nam muc do hoa nguoi choi chon trong CAI DAT &gt; Giao dien (Cuc yeu them 17/10/2026 - so thu tu luu trong kho, chi them o CUOI).</summary>
+public enum MucDoHoa { Cao = 0, TrungBinh = 1, Yeu = 2, RatYeu = 3, CucYeu = 4 }
 
 /// <summary>
 /// CAI DAT DO HOA: DO PHAN GIAI CANH 3D + CHAT LUONG HINH.
@@ -24,8 +24,10 @@ public enum MucDoHoa { Cao = 0, TrungBinh = 1, Yeu = 2, RatYeu = 3 }
 /// | Cao         | 100 %   | High      | mem, 2 tang, xa 60 m  |
 /// | Trung binh  | 75 %    | Medium    | cung, 1 tang, xa 40 m |
 /// | Yeu         | 62 %    | Low (+)   | cung, phan giai thap, xa 25 m; chi tiet xa 0,55 |
-/// | Rat yeu     | 50 %    | Low       | tat                   |
+/// | Rat yeu     | 50 %    | Low       | tat bong Unity; CHI nhan vat cua nguoi dang choi co BONG CHIEU PHANG (BongChiNhanVat) |
+/// | Cuc yeu     | 35 %    | Low       | tat                   |
 ///
+/// 17/10/2026 (nguoi dung): them "Cuc yeu" (canh 35%, tat bong, cho may cuc yeu); "Rat yeu" tu tat bong -> chi bong nhan vat chinh.
 /// "Rat yeu" chinh la muc "Yeu" cu. "Yeu" moi (12/09/2026) nam giua.
 ///
 /// LUU O DAU: tren WebGL la localStorage cua trinh duyet (xem
@@ -45,32 +47,32 @@ public static class CaiDatDoHoa
     /// <summary>Khoa cu (ba muc) - chi doc mot lan de chuyen sang khoa moi.</summary>
     public const string KhoaCu = "diablo25d.mucDoHoa";
 
-    public const int SoMuc = 4;
+    public const int SoMuc = 5;
 
     /// <summary>Muc cho nguoi CHUA TUNG CHON (khong co khoa nao trong kho).</summary>
     public const MucDoHoa MacDinh = MucDoHoa.Yeu;
 
     /// <summary>Ten hien len giao dien, dung thu tu MucDoHoa.</summary>
-    public static readonly string[] Ten = { "Cao", "Trung bình", "Yếu", "Rất yếu" };
+    public static readonly string[] Ten = { "Cao", "Trung bình", "Yếu", "Rất yếu", "Cực yếu" };
 
     /// <summary>Ten muc chat luong trong Project Settings &gt; Quality. Tra theo
     /// TEN chu khong theo so thu tu: them bot mot muc la so thu tu truot het.</summary>
-    public static readonly string[] TenMucUnity = { "High", "Medium", "Low", "Low" };
+    public static readonly string[] TenMucUnity = { "High", "Medium", "Low", "Low", "Low" };
 
     /// <summary>Ti le moi chieu cua canh 3D so voi man hinh.</summary>
-    public static readonly float[] heSoPhanGiai = { 1f, 0.75f, 0.62f, 0.5f };
+    public static readonly float[] heSoPhanGiai = { 1f, 0.75f, 0.62f, 0.5f, 0.35f };
 
-    // Muc Rat yeu tat bong nen con so cua no khong dung den
-    static readonly float[] khoangBong = { 60f, 40f, 25f, 20f };
+    // Rat yeu / Cuc yeu tat bong Unity nen so cua chung khong dung den (bong nhan vat cua Rat yeu la bong chieu phang - BongChiNhanVat)
+    static readonly float[] khoangBong = { 60f, 40f, 25f, 20f, 20f };
 
     // Bon gia tri moi muc tu dat (xem ApDung). Cao/Trung binh/Rat yeu = bo goc
     // cua High/Medium/Low trong ProjectSettings; Yeu = Low + bong cung, chi tiet xa 0,55
     public static readonly ShadowQuality[] BongTheoMuc =
-        { ShadowQuality.All, ShadowQuality.HardOnly, ShadowQuality.HardOnly, ShadowQuality.Disable };
+        { ShadowQuality.All, ShadowQuality.HardOnly, ShadowQuality.HardOnly, ShadowQuality.Disable, ShadowQuality.Disable };
     static readonly ShadowResolution[] PhanGiaiBongTheoMuc =
-        { ShadowResolution.Medium, ShadowResolution.Low, ShadowResolution.Low, ShadowResolution.Low };
-    static readonly int[] TangBongTheoMuc = { 2, 1, 1, 1 };
-    public static readonly float[] ChiTietXaTheoMuc = { 1f, 0.7f, 0.55f, 0.4f };
+        { ShadowResolution.Medium, ShadowResolution.Low, ShadowResolution.Low, ShadowResolution.Low, ShadowResolution.Low };
+    static readonly int[] TangBongTheoMuc = { 2, 1, 1, 1, 1 };
+    public static readonly float[] ChiTietXaTheoMuc = { 1f, 0.7f, 0.55f, 0.4f, 0.4f };
 
     /// <summary>
     /// So den DIEM ANH (pixel light) moi vat duoc nhan - moi muc tu dat (27/09/2026), bang dung bo goc cua High / Medium /
@@ -78,7 +80,7 @@ public static class CaiDatDoHoa
     /// lo "o vuong chap va"; nay mat dat duoc den sinh doi luon diem anh (<see cref="DenMatDat"/>), con vat nho thi van
     /// theo suat nay. Da thu nang len 8 cho moi muc: het o vuong nhung muc Yeu 455 -> 922 SetPass (menu 89) - khong dung.
     /// </summary>
-    public static readonly int[] DenDiemAnhTheoMuc = { 2, 1, 0, 0 };
+    public static readonly int[] DenDiemAnhTheoMuc = { 2, 1, 0, 0, 0 };
 
     static int daDoc = -1;
 

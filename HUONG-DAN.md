@@ -2773,6 +2773,33 @@ tránh vật khác; 3–5 đá vụn (con của bia, không va chạm, không đ
 sát song song đất; 135 (562 bia, dấu vết đúng tỉ lệ), 81 (562 bia đốt được, 50 kiểu lưới đủ điểm mồi lửa — menu 20 nướng lại): 0 lỗi. Ảnh
 `PlayTestShots/thanhgiavo_can.png` (6 bia cận, ban ngày), `thanhgiavo_game.png` (góc máy quay 2.5D).
 
+## Đồ hoạ: thêm mức "Cực yếu", mức "Rất yếu" chỉ còn bóng nhân vật mình (17/10/2026)
+
+**Người dùng:** "Cài đặt → Giao diện: thêm chế độ Cực yếu: cảnh 35%, tắt bóng, cho máy cực yếu; chế độ Rất yếu: tắt bóng vẫn giữ nguyên, chỉ cho hiển thị
+bóng nhân vật chính của người đang chơi". Người dùng chọn **bóng chiếu phẳng** sau khi xem số đo.
+
+- **Cực yếu** = `MucDoHoa.CucYeu` (số 4 — thêm ở CUỐI vì số thứ tự nằm trong kho localStorage): cảnh 35% (`KetXuatThuNho`), mức Unity Low, tắt bóng, chi tiết
+  xa 0,4, 0 đèn điểm ảnh. Bảng Cài đặt cao 700 → 772 đơn vị (5 hàng); màn thấp thì hàng tự co để hàng cuối không đè dòng ghi chú trên nút OK.
+- **Rất yếu — vì sao KHÔNG dùng bóng thật của Unity cho riêng nhân vật:** đã làm thử (bật bóng cứng + đèn chính chỉ đổ bóng một lớp riêng chứa nhân vật mình,
+  `Light.layerShadowCullDistances`). Đo trong Play cùng cảnh:
+
+```
+                                     lan ve bong   luot ve   tam giac
+bat bong, chi nhan vat do bong            6         1 013    5,0 trieu
+bat bong, tat ca bong nhan vat            5         1 007    5,0 trieu   <- van lot 5 lan ve bong cua vat khac
+tat han bong (Rat yeu cu)                 0           662    2,5 trieu
+```
+
+  Đèn chính (Directional) đổ bóng là Unity vẽ thêm **một lượt độ sâu cả cảnh** → +53% lượt vẽ, tam giác ×2 dù chỉ một vật đổ bóng — mất ý nghĩa "máy rất yếu".
+- **Bóng chiếu phẳng** (`Art/BongChiNhanVat.cs`, shader `S_BongPhang.shader`, vật liệu `Resources/DoHoa/BongPhang.mat`): thêm MỘT ô vật liệu vào renderer hình của
+  nhân vật máy này (Unity vẽ lại ô thừa trên lưới con cuối, cùng skinning) → shader ép dẹt mọi đỉnh xuống mặt phẳng đất dưới chân (tia lớp Ground + pháp tuyến,
+  nhấc 3 cm) theo hướng đèn Directional sáng nhất (ngày / chiều / đêm), stencil cho mỗi điểm ảnh tô một lần, độ đậm theo cường độ × shadowStrength. Tàng hình
+  thay cả mảng vật liệu → bóng tự mất (đúng ý). Gắn ở `GameBootstrap` (Act2) và `MainMenuUI` (phù thuỷ trưng bày). Đo: +1 lượt vẽ, +14 nghìn tam giác (chính
+  nhân vật); ảnh `PlayTestShots/bongphang_dem.png` (trái không / phải có), `bongphang_ngay.png`. Giới hạn: đất gồ ghề / ổ gà bóng là mặt phẳng nên có thể chìm
+  hoặc nổi vài cm; không in lên bia / cây.
+- **Menu 48** (5 mức, kiểm bằng số viết tay): Rất yếu 0 vật đổ bóng Unity + 1 ô vật liệu bóng phẳng trên nhân vật, 753 lượt vẽ (Cực yếu 744); Cực yếu ảnh đệm
+  573×223; mức khác 0 ô bóng phẳng và còn bóng cảnh vật: **0 lỗi**.
+
 ## Vũng nước lơ lửng trên không trung
 
 Người chơi gửi ảnh: một vũng nước ở góc phải bản đồ **bay lên khỏi mặt đất**, thấy rõ cạnh
