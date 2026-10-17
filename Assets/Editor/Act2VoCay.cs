@@ -134,7 +134,7 @@ public static class Act2VoCay
     //  DIEM VAO
     // ================================================================
 
-    [MenuItem("Diablo 2.5D/15. Dung lai anh vo cay Act2", false, 96)]
+    // 17/10/2026: menu 15 nay la VoCaySanSui.Dung (anh chup that + mang troc). Ham nay giu lai de doi chung - chay se DE vat lieu ve bo anh cu.
     public static void Dung()
     {
         var cao = new float[DoMin * DoMin];

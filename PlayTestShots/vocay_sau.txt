@@ -1,0 +1,17 @@
+Vo cay - sau (2026-10-17 12:13), den: Moonlight 0.88
+  0 LIB_018_TREE_oakA_bare   can : diem than 128643  san 0.0224  lech 0.0480  sang 0.174
+  0 LIB_018_TREE_oakA_bare   gan : diem than 154422  san 0.0485  lech 0.0710  sang 0.230
+  0 LIB_018_TREE_oakA_bare   game: diem than  51199  san 0.0381  lech 0.0573  sang 0.233
+  1 LIB_020_TREE_oakC_bare   can : diem than      0  san 0.0000  lech 0.0000  sang 0.000
+  1 LIB_020_TREE_oakC_bare   gan : diem than  75888  san 0.0329  lech 0.0588  sang 0.227
+  1 LIB_020_TREE_oakC_bare   game: diem than  40901  san 0.0455  lech 0.0625  sang 0.270
+  2 LIB_022_TREE_oakB_bare   can : diem than  38925  san 0.0353  lech 0.0567  sang 0.171
+  2 LIB_022_TREE_oakB_bare   gan : diem than 107603  san 0.0460  lech 0.0707  sang 0.250
+  2 LIB_022_TREE_oakB_bare   game: diem than  40857  san 0.0394  lech 0.0712  sang 0.250
+  3 LIB_023_TREE_dead        can : diem than 225221  san 0.0481  lech 0.0811  sang 0.265
+  3 LIB_023_TREE_dead        gan : diem than 111219  san 0.0480  lech 0.0703  sang 0.259
+  3 LIB_023_TREE_dead        game: diem than  41047  san 0.0426  lech 0.0634  sang 0.272
+  4 LIB_026_TREE_thin_bare   can : diem than  78340  san 0.0457  lech 0.0690  sang 0.224
+  4 LIB_026_TREE_thin_bare   gan : diem than  51125  san 0.0407  lech 0.0626  sang 0.215
+  4 LIB_026_TREE_thin_bare   game: diem than   4722  san 0.0405  lech 0.0537  sang 0.250
+TRUNG BINH (14 anh): san 0.0410  lech 0.0640

@@ -2652,6 +2652,56 @@ _DoSanSui = 0  so voi  2,8 :  22 516 / 682 000 diem khac (3,30%), lech toi da 14
 | `_XanhReu` | 0,20 — hạ từ 0,45: rêu xanh phủ lên cả chỗ gỗ mới tróc |
 | `_Color` | (0,88 0,86 0,82) — gần trắng; bản cũ để 0,115 làm dập hết tương phản |
 
+## Vỏ cây sần sùi bằng ảnh chụp thật + mảng tróc có bậc vỏ — mọi cây Act2 + Màn chính (17/10/2026)
+
+**Người dùng:** "vỏ cây sần sùi nhiều hơn nữa, hiện giờ toàn bộ thân cây và cành cây còn trơn bóng giả tạo quá. Cho sần sùi, một vài chỗ vỏ thân
+cây bị nứt tróc ra cho giống thật". Người dùng chọn: **ảnh vỏ cây chụp thật** (như lần làm mặt đất), **chỉ bề mặt** (không đẩy đỉnh lưới), tải
+**3 bộ** Poly Haven CC0. Mục "Vỏ cây Act2: sần sùi, nám và tróc từng mảng" ở trên là bản CŨ (ảnh nhiễu sinh bằng code, menu 15 cũ).
+
+### Vì sao bản cũ trơn
+
+Ảnh cũ là nhiễu tần số thấp: mảng sáng / tối to bằng nửa thân, chi tiết nhỏ chỉ là hạt lấm tấm → ở mọi cự ly nhìn như **vải rằn ri** phủ lên một ống
+trơn. Không có khe nứt nào đủ sâu và tối để ánh sáng bắt vào.
+
+### Ảnh mới (Blender MCP `CongCu/Blender/anh_vo_cay_moi.py`)
+
+Nguồn `CongCu/AnhVoCay/Goc/` (2k, md5 khớp 15/15, không vào git — `.gitignore`): `bark_willow_02` → **vỏ chính** (vỏ khô nứt sâu, rãnh dọc), `bark_platanus`
+→ **lớp vỏ trong** lộ ra chỗ tróc (ép sáng nâu vàng nhạt), `jolcham_oak_bark_01` tải về nhưng chưa dùng (rêu xanh nhiều, lạc tông nghĩa địa).
+- `VoCay3_Mau`: màu × AO × **khe nứt nướng từ bản đồ độ cao** (0,22 ở đáy khe → 1 trên mặt vảy), ép màu trung bình, tương phản ×1,5; alpha = độ bóng 0,05–0,06.
+- `VoCay3_Phap`: normal map GL. `VoCay3_Trong`: lớp trong.
+- `VoCay3_Troc` (mặt nạ sinh bằng FFT — lặp liền mạch): **A** = chỗ tróc (mảng dọc mép rách, 17% diện tích) + 9 vết nứt dài thon hai đầu; **B** = độ tối
+  (bóng đổ vào lòng mảng tróc + **vành vỏ dày** tối ~1,5 cm bên ngoài mép + lòng vết nứt); **RG** = pháp tuyến từ độ cao "độ dày vỏ" (vỏ 1, lòng tróc 0,
+  mép vỏ quăn lên 0,25) → mép tróc có BẬC thật dưới ánh sáng.
+
+### Shader `Diablo25D/BarkTriplanar` viết lại
+
+Vẫn chiếu ba trục (lưới cây không có UV) + trộn pháp tuyến trong không gian thế giới. Mỗi hướng chiếu đọc 4 ảnh (vỏ, gân, lớp trong, mặt nạ — mặt nạ lặp nhịp
+RIÊNG `_TiLeTroc` 0,45 /m), **trộn trong từng hướng trước** rồi mới trộn ba hướng. Trong lòng tróc giảm sần ×0,3 (lớp trong mịn hơn), cộng pháp tuyến bậc vỏ.
+Bỏ nhựa cây + sắc rêu của bản cũ. 12 lần đọc ảnh / điểm (cũ 6). `_Color` mặc định trắng — `CayChay` vẫn tô đen qua `_Color` bằng MaterialPropertyBlock.
+Menu **15** nay là `VoCaySanSui.Dung` (đặt kiểu nhập + gán vật liệu; hàm sinh ảnh cũ `Act2VoCay.Dung` vẫn còn nhưng không có menu — chạy nó là đè về bộ cũ).
+
+### Hai lần đi sai
+
+1. **Vỏ lặp mỗi 1 m** (ảnh chụp thật phủ 2,15 m → rãnh nhỏ gấp đôi thật): ở góc máy quay game mip trộn mất rãnh, thân cây lại gần như phẳng — độ sần
+   ở góc game còn **thấp hơn** bản cũ (cây đầu: 0,0256 so với 0,0368). Nay lặp mỗi 1,8 m (gần cỡ thật) + nướng khe tối từ bản đồ độ cao.
+2. **Mảng tróc chỉ có bóng trong lòng** → nhìn như vết loang nhạt / địa y. Thêm vành vỏ dày tối bên ngoài mép + bậc vỏ dốc hơn (k 6 → 14, `_DoSauTroc` 1,6).
+
+### Số đo (menu **143** / **143b** `ThuVoCay.cs`, cùng 5 cây cố định, cùng ánh trăng; đo trên ẢNH trong bóng thân trắng đặc vẽ riêng)
+
+"sần" = độ lệch chuẩn của (sáng − sáng làm mờ 4 điểm ảnh) trong bóng thân:
+
+```
+                    truoc (anh nhieu)   sau
+gan (4 m)  TB 5 cay      0,0227        0,0432   (x1,9)
+goc game (14 m)          0,0419        0,0412   (bang - ban cu "san" nho mang ran ri to, ban moi la ranh nut)
+can 1,9 m (moi, 4 cay)     -           0,0379
+ban ngay (Play) TB 14 anh  -           0,0912
+```
+
+Ở góc game số "sần" không tăng vì bản cũ có tương phản lớn ở mảng rằn ri chứ không phải ở chi tiết vỏ — ảnh `PlayTestShots/vocay_so_sanh.jpg` (trái trước,
+phải sau; hàng cuối: cận đêm / cận ngày) cho thấy khác biệt thật. Phép thử 18 (cây cháy: thân còn 62% độ sáng → đen dần), 135, 138: 0 lỗi.
+Màn chính dùng chung vật liệu (17 cây). Bản build: +4 ảnh 1024 (2 ảnh vỏ cũ thôi vào build). Chưa thử trên điện thoại / web (12 lần đọc ảnh mỗi điểm trên thân cây).
+
 ## Vũng nước lơ lửng trên không trung
 
 Người chơi gửi ảnh: một vũng nước ở góc phải bản đồ **bay lên khỏi mặt đất**, thấy rõ cạnh

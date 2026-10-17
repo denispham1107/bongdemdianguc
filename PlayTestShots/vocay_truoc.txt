@@ -1,0 +1,12 @@
+Vo cay - truoc (2026-10-17 12:06), den: Moonlight 0.88
+  0 LIB_018_TREE_oakA_bare   gan : diem than 154422  san 0.0221  lech 0.0784  sang 0.259
+  0 LIB_018_TREE_oakA_bare   game: diem than  51199  san 0.0368  lech 0.0748  sang 0.239
+  1 LIB_020_TREE_oakC_bare   gan : diem than  75888  san 0.0165  lech 0.0660  sang 0.231
+  1 LIB_020_TREE_oakC_bare   game: diem than  40901  san 0.0470  lech 0.0833  sang 0.283
+  2 LIB_022_TREE_oakB_bare   gan : diem than 107603  san 0.0255  lech 0.0831  sang 0.263
+  2 LIB_022_TREE_oakB_bare   game: diem than  40857  san 0.0343  lech 0.0753  sang 0.240
+  3 LIB_023_TREE_dead        gan : diem than 111219  san 0.0245  lech 0.0826  sang 0.266
+  3 LIB_023_TREE_dead        game: diem than  41047  san 0.0413  lech 0.0842  sang 0.285
+  4 LIB_026_TREE_thin_bare   gan : diem than  51125  san 0.0248  lech 0.0761  sang 0.229
+  4 LIB_026_TREE_thin_bare   game: diem than   4722  san 0.0499  lech 0.0754  sang 0.254
+TRUNG BINH (10 anh): san 0.0323  lech 0.0779

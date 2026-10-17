@@ -24,23 +24,35 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _BumpMap:
-        m_Texture: {fileID: 2800000, guid: 294f6602e8bc84d47b73253f1abb81cb, type: 3}
+        m_Texture: {fileID: 2800000, guid: 5854a24028a2a2646b7de6062113ebac, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: b82519ebaada7f646800df47513e069d, type: 3}
+        m_Texture: {fileID: 2800000, guid: 7b8495bab77f74745b8a295d586abcb4, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _TrocTex:
+        m_Texture: {fileID: 2800000, guid: 9aca332b63f556a42aabe9576a5b0349, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _TrongTex:
+        m_Texture: {fileID: 2800000, guid: e02c59860f1e3464e96c40c3a669912d, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _DoSanSui: 2.8
-    - _Glossiness: 0.055
-    - _KeoDoc: 2.3
+    - _DoSanSui: 2.4
+    - _DoSauTroc: 1.6
+    - _Glossiness: 1
+    - _KeoDoc: 1
+    - _MucTroc: 1
     - _NhuaMuc: 0.3
-    - _TiLe: 1.9
+    - _TiLe: 0.55
+    - _TiLeTroc: 0.45
+    - _ToiTroc: 0.8
     - _XanhReu: 0.2
     m_Colors:
-    - _Color: {r: 0.88, g: 0.86, b: 0.82, a: 1}
+    - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _NhuaColor: {r: 0.42, g: 0.27, b: 0.07, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
