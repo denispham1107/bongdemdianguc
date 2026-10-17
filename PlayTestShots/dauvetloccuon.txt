@@ -1,12 +1,12 @@
-[ban 1] dau vet vat bi Loc xoay cuon - 17/10/2026 12:38
-do that te ngoai Play: 924 vat
-F. dung + do dau vet cho 920 vat (920 co so do nuong san); tao them 920
-F. Cay: 66 vat, ti le dau vet / that min 0.84 · trung vi 1.00 · max 1.02 (gioi han 0.70-1.25, ngoai 0); CACH CU trung vi 1.32 · max 4.85; xau nhat TREE_oakC_bare_713 (0.96 m that, 0.63 m dau vet)
+[ban 1] dau vet vat bi Loc xoay cuon - 17/10/2026 17:30
+do that te ngoai Play: 934 vat
+F. dung + do dau vet cho 930 vat (930 co so do nuong san); tao them 930
+F. Cay: 76 vat, ti le dau vet / that min 0.84 · trung vi 1.00 · max 1.02 (gioi han 0.70-1.25, ngoai 0); CACH CU trung vi 1.32 · max 4.85; xau nhat TREE_oakC_bare_713 (0.96 m that, 0.63 m dau vet)
 F. Bia: 552 vat, ti le dau vet / that min 1.02 · trung vi 1.04 · max 1.04 (gioi han 0.85-1.25, ngoai 0); CACH CU trung vi 1.12 · max 1.99; xau nhat TS_ledger_394 (2.51 m that, 2.62 m dau vet)
 F. Da: 280 vat, ti le dau vet / that min 0.63 · trung vi 0.77 · max 1.02 (gioi han 0.50-1.30, ngoai 0); CACH CU trung vi 1.05 · max 1.17; xau nhat PR_rockA_639 (0.81 m that, 0.51 m dau vet)
 F. NhaMo: 7 vat, ti le dau vet / that min 1.05 · trung vi 1.07 · max 1.07 (gioi han 0.85-1.20, ngoai 0); CACH CU trung vi 0.77 · max 0.77; xau nhat MAUS_B_685 (5.79 m that, 6.17 m dau vet)
 F. Lo: 14 vat, ti le dau vet / that min 0.84 · trung vi 0.87 · max 0.87 (gioi han 0.80-1.40, ngoai 0); CACH CU trung vi 0.81 · max 0.81; xau nhat LoLua_01 (1.24 m that, 1.05 m dau vet)
-F. CAY - toan bo goc so voi THAN o 1 m (66 cay): ngang P85 x0.84-1.02 (trung vi 1.00), re xa nhat x0.92-1.13, cao x0.75-0.95; vuot (ngang 0,7-1,25 / re <= 1,6 / cao <= 1,3): 0
+F. CAY - toan bo goc so voi THAN o 1 m (76 cay): ngang P85 x0.84-1.02 (trung vi 1.00), re xa nhat x0.92-1.13, cao x0.75-0.96; vuot (ngang 0,7-1,25 / re <= 1,6 / cao <= 1,3): 0
 
 A. Cay: TREE_dead_738 cach nhan vat 7.7 m, vat lieu Act2_VoCay_SanSui
 A. BiaMo: TS_foot_144 cach nhan vat 7.0 m, vat lieu Act2_DaBia
@@ -36,8 +36,8 @@ G. Lo (bac 0.40 m): DI QUA; manh duoi duong cao nhat 0.10 m, leo cao nhat 0.16 m
 G. tong: di qua 10, bi chan 0
 G. goi Xoa (vat moc lai): va cham dau vet con bat 0
 
-D. nhan vat o xa (dau vet gan nhat 35 m): renderer dau vet bi an 166/166; ve cho cu: renderer dau vet trong tam nhin hien 77/77
+D. nhan vat o xa (dau vet gan nhat 35 m): renderer dau vet bi an 169/169; ve cho cu: renderer dau vet trong tam nhin hien 81/81
 
-E. sau 30 s: vat con dang an 0/5; dau vet con 0, da xoa 64 (tao 64)
+E. sau 30 s: vat con dang an 0/5; dau vet con 0, da xoa 66 (tao 66)
 
 so loi ghi nhan = 0

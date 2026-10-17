@@ -1,0 +1,2 @@
+vat can 867, bui co 140, mat nuoc 17, cay san 80
+  dau 1 (59.2, -8.8) -> TREE_oakA_T02 (54.6, -13.4) lech 6.5 m, cao 12.6 m, ti le 88.3

@@ -2731,6 +2731,16 @@ Chưa tính lượt bóng đổ (cũng chừng ấy đỉnh). Chưa đo khung h�
 Phép thử 135 (0 lỗi, 66 cây gốc đúng tỉ lệ), 18d (cây cháy bằng phép thật trên `TREE_oakC_724` vừa đổi: 340 điểm mồi, rụi, mọc lại), 114 (BOT đi lại): 0 lỗi.
 Ảnh `PlayTestShots/caycola_toan_canh.png`, `caycola_[0-2]_*.png`.
 
+### Thêm 10 cây có lá theo chỗ người dùng đánh dấu (17/10/2026)
+
+Người dùng gửi ảnh Scene view có 10 chấm đỏ ("gần đúng tọa độ là được"). Đổi chấm → tọa độ bằng **chính máy quay Scene view** lúc ấy (khung 1637×567;
+chiếu 4 góc mặt đất lên lệch ảnh ≤ 2 điểm ảnh), tia chiếu cắt `TerrainCollider`. Menu **145** `CayCoLaThem.cs`: mỗi chấm tìm chỗ trống gần nhất (xoắn ốc
+0–9 m: trong rào, cách bia / đá / nhà mồ / lò ≥ 2,2 m, bụi cỏ ≥ 1 m, mặt nước ≥ 2,5 m, thân cây khác ≥ 5 m, đất dưới thân chênh ≤ 0,25 m), cây = bản sao một
+cây có lá sẵn (giữ vật liệu vỏ + lá, va chạm), xen kẽ sồi C · A · B · cây mảnh, xoay / tỉ lệ ngẫu nhiên trong khoảng cây cùng giống. 9 chấm lệch 0–2,5 m;
+**chấm 2 (59,2; −8,8) nằm giữa đầm `DamLay_11`** 6×6 m → cây ở bờ, lệch 6,5 m. Chạy lại menu **141** (đất dưới chân cây mới giữ nguyên, đất vụn tránh thân),
+đặt lại chân cây = đất thấp nhất trong 0,8 m − 5 cm; menu 142 (0 lỗi), 135b + 135 (0 lỗi, 76 cây gốc đúng tỉ lệ). Act2 nay **81 cây: 42 có lá / 39 trơ**.
+Đỉnh lưới cây trong khung 2.5D TB 374 → 445 nghìn. Ảnh `PlayTestShots/caycola_them_toancanh.png` (vàng = cây mới, + đỏ = chỗ đánh dấu).
+
 ## Vũng nước lơ lửng trên không trung
 
 Người chơi gửi ảnh: một vũng nước ở góc phải bản đồ **bay lên khỏi mặt đất**, thấy rõ cạnh
