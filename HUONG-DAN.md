@@ -2801,6 +2801,8 @@ tat han bong (Rat yeu cu)                 0           662    2,5 trieu
   hoặc nổi vài cm; không in lên bia / cây.
 - **Menu 48** (5 mức, kiểm bằng số viết tay): Rất yếu 0 vật đổ bóng Unity + 1 ô vật liệu bóng phẳng trên nhân vật, 753 lượt vẽ (Cực yếu 744); Cực yếu ảnh đệm
   573×223; mức khác 0 ô bóng phẳng và còn bóng cảnh vật: **0 lỗi**.
+- ⚠️ **Cùng tối người dùng bảo "Rất yếu trả về như ban đầu"** → đã GỠ bóng chiếu phẳng (script, shader, vật liệu; còn trong git `5d59bbd`): Rất yếu lại tắt bóng
+  hoàn toàn, mô tả "Cảnh 50% · tắt bóng · cho máy rất yếu"; Cực yếu giữ. Menu 48 (5 mức): Rất yếu 0 vật đổ bóng, 0 ô bóng phẳng, 754 lượt vẽ — **0 lỗi**.
 
 ## Vũng nước lơ lửng trên không trung
 

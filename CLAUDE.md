@@ -927,7 +927,7 @@ hơn ×1,5 và mở xuống 1,8–4,3 m** (người dùng chọn sau menu 94 ch�
   hết ô nhưng mức Yếu 455 → 922 SetPass (mọi bia/cây thành đèn điểm ảnh) — KHÔNG dùng; đèn sinh đôi: 457 → 607. Số suất mỗi mức
   nay đặt rõ ở `CaiDatDoHoa.DenDiemAnhTheoMuc`. Đếm đèn con trong phép thử nhớ là có thêm đèn `DenMatDat`. Menu 89 kiểm (3 điểm
   cố định × 4 mức × 1/6 đèn, đối chứng tắt đèn sinh đôi, đo "đường nối" trên D/A để khử vân đất).
-- **Cài đặt đồ hoạ** (nút CÀI ĐẶT ở đầu trang sảnh, `CaiDatDoHoa.cs`): ⚠️ **5 mức** Cao / Trung bình / Yếu / Rất yếu / **Cực yếu** (17/10/2026: Cực yếu cảnh 35%, tắt bóng; **Rất yếu** tắt bóng Unity nhưng nhân vật CỦA MÁY NÀY có **bóng chiếu phẳng** `BongChiNhanVat` + shader `Diablo25D/BongPhang` — thêm một ô vật liệu ép dẹt lưới xuống đất theo hướng đèn, +1 lượt vẽ; bóng thật Unity cho riêng nhân vật đã thử: +350 lượt vẽ / tam giác ×2 vì đèn chính vẽ thêm lượt độ sâu cả cảnh — bỏ; menu 48: 0 lỗi), lưu trong
+- **Cài đặt đồ hoạ** (nút CÀI ĐẶT ở đầu trang sảnh, `CaiDatDoHoa.cs`): ⚠️ **5 mức** Cao / Trung bình / Yếu / Rất yếu / **Cực yếu** (17/10/2026: **Cực yếu** cảnh 35%, tắt bóng; **Rất yếu** GIỮ NHƯ BAN ĐẦU — tắt bóng: cùng tối từng thêm bóng chiếu phẳng riêng cho nhân vật mình rồi người dùng bảo trả về, đã gỡ — còn trong git `5d59bbd`; menu 48: 0 lỗi), lưu trong
   `localStorage` khoá `diablo25d.mucDoHoa2`; **người chưa từng chọn khởi động ở Yếu** (`CaiDatDoHoa.MacDinh`, 13/09/2026 — trước là Cao), ai đã chọn thì giữ (khoá cũ `diablo25d.mucDoHoa` 3 mức tự chuyển: 2 cũ = Rất yếu). Mức
   thấp **chỉ thu nhỏ cảnh 3D** (`KetXuatThuNho` trên camera chính, 100/75/62/50%, gắn bởi `TheoDoiCamera`) —
   khung game luôn đủ độ phân giải nên chữ/nút OnGUI sắc nét; `index.html` **không** được đặt `devicePixelRatio`.

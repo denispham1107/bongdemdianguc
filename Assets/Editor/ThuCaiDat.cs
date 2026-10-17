@@ -391,7 +391,7 @@ public static class ThuCaiDat
         float[] mongBong = { 60f, 40f, 25f, 20f, 20f };
         // Viet thang so, khong lay tu bang cua CaiDatDoHoa (phep kiem doc lap)
         float[] mongChiTietXa = { 1f, 0.7f, 0.55f, 0.4f, 0.4f };
-        // 17/10/2026: Rat yeu van tat bong Unity, nhan vat cua may nay co BONG CHIEU PHANG (BongChiNhanVat); Cuc yeu (35%) tat bong
+        // 17/10/2026: them Cuc yeu (35%) tat bong; Rat yeu tat bong nhu ban dau (bong chieu phang nhan vat da go theo nguoi dung)
         string[] mongKieuBong = { "All", "HardOnly", "HardOnly", "Disable", "Disable" };
         var sangMuc = new float[CaiDatDoHoa.SoMuc];
 
@@ -482,13 +482,12 @@ public static class ThuCaiDat
                 QualitySettings.shadowDistance, mongBong[im], boBong, tamGiac, setPass, hinhNv, loVe));
             Kiem(Mathf.Abs(QualitySettings.shadowDistance - mongBong[im]) < 0.01f,
                  "khoang bong o Act2 sai");
-            // bong chieu phang: dem o vat lieu "BongPhang" tren renderer nhan vat minh (doc lap voi bien cua BongChiNhanVat)
+            // bong chieu phang (da go): khong muc nao con o vat lieu "BongPhang" tren nhan vat
             int oBong = 0;
             if (pc != null) foreach (var r in pc.GetComponentsInChildren<Renderer>(true))
                     foreach (var vl in r.sharedMaterials) if (vl != null && vl.shader != null && vl.shader.name == "Diablo25D/BongPhang") oBong++;
             Ghi("   o vat lieu bong chieu phang tren nhan vat minh: " + oBong);
-            if (m == MucDoHoa.RatYeu) { Kiem(boBong == 0, "muc Rat yeu van ve bong Unity"); Kiem(oBong == hinhNv && hinhNv > 0, "muc Rat yeu: nhan vat minh thieu bong chieu phang"); }
-            else if (m == MucDoHoa.CucYeu) { Kiem(boBong == 0, "muc Cuc yeu van ve bong"); Kiem(oBong == 0, "muc Cuc yeu van co bong chieu phang"); }
+            if (m == MucDoHoa.RatYeu || m == MucDoHoa.CucYeu) { Kiem(boBong == 0, "muc " + CaiDatDoHoa.Ten[im] + " van ve bong"); Kiem(oBong == 0, "muc " + CaiDatDoHoa.Ten[im] + " co bong chieu phang thua"); }
             else { Kiem(boBong > hinhNv, "muc " + CaiDatDoHoa.Ten[im] + " mat bong canh vat"); Kiem(oBong == 0, "muc " + CaiDatDoHoa.Ten[im] + " co bong chieu phang thua"); }
 
             // ---- Anh dem canh 3D ----

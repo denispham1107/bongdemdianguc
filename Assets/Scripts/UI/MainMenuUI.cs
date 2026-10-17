@@ -37,8 +37,6 @@ public class MainMenuUI : MonoBehaviour
 
         // Tu the trung bay: hai tay ngua nang qua cau lua / qua cau bang (nguoi dung 04/10/2026) - gan luc chay, khong sua scene
         if (showcase != null && showcase.GetComponent<TuTheTrungBay>() == null) showcase.gameObject.AddComponent<TuTheTrungBay>();
-        // Muc do hoa "Rat yeu": chi phu thuy trung bay (nhan vat cua nguoi choi) do bong
-        if (showcase != null) BongChiNhanVat.Ap(showcase.transform);
 
         if (!batChoiMang) return;
 

@@ -24,10 +24,11 @@ public enum MucDoHoa { Cao = 0, TrungBinh = 1, Yeu = 2, RatYeu = 3, CucYeu = 4 }
 /// | Cao         | 100 %   | High      | mem, 2 tang, xa 60 m  |
 /// | Trung binh  | 75 %    | Medium    | cung, 1 tang, xa 40 m |
 /// | Yeu         | 62 %    | Low (+)   | cung, phan giai thap, xa 25 m; chi tiet xa 0,55 |
-/// | Rat yeu     | 50 %    | Low       | tat bong Unity; CHI nhan vat cua nguoi dang choi co BONG CHIEU PHANG (BongChiNhanVat) |
+/// | Rat yeu     | 50 %    | Low       | tat                   |
 /// | Cuc yeu     | 35 %    | Low       | tat                   |
 ///
-/// 17/10/2026 (nguoi dung): them "Cuc yeu" (canh 35%, tat bong, cho may cuc yeu); "Rat yeu" tu tat bong -> chi bong nhan vat chinh.
+/// 17/10/2026 (nguoi dung): them "Cuc yeu" (canh 35%, tat bong, cho may cuc yeu). Cung toi "Rat yeu" tung co bong chieu phang rieng cho
+/// nhan vat minh (BongChiNhanVat + shader BongPhang, +1 luot ve) - nguoi dung bao TRA VE NHU BAN DAU: da go (con trong git 5d59bbd).
 /// "Rat yeu" chinh la muc "Yeu" cu. "Yeu" moi (12/09/2026) nam giua.
 ///
 /// LUU O DAU: tren WebGL la localStorage cua trinh duyet (xem
@@ -62,7 +63,7 @@ public static class CaiDatDoHoa
     /// <summary>Ti le moi chieu cua canh 3D so voi man hinh.</summary>
     public static readonly float[] heSoPhanGiai = { 1f, 0.75f, 0.62f, 0.5f, 0.35f };
 
-    // Rat yeu / Cuc yeu tat bong Unity nen so cua chung khong dung den (bong nhan vat cua Rat yeu la bong chieu phang - BongChiNhanVat)
+    // Rat yeu / Cuc yeu tat bong nen so cua chung khong dung den
     static readonly float[] khoangBong = { 60f, 40f, 25f, 20f, 20f };
 
     // Bon gia tri moi muc tu dat (xem ApDung). Cao/Trung binh/Rat yeu = bo goc
