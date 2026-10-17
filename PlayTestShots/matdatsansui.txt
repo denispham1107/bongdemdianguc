@@ -1,18 +1,18 @@
 
 ===== Act2: Assets/Terrain/Act2_MatDat.asset ((134.63, 5.82, 134.63)) =====
 lop terrain: Act2_CoChet, Act2_DatTroc, Act2_SoiDa, Act2_Bun
-mat na: 1017 vat giu nguyen chan; dien tich duoc lam 10045 m2 / 18125 m2
-o voi 110 (r 0,8-1,7 m, sau 0,20-0,45) · o ga 502 (r 0,22-0,55, sau 0,06-0,16) · vet nut 251 chum (rong 0,12-0,26, sau 0,03-0,07) · gon san +-0.045
-do lech so voi dat cu: -0.478 .. +0.067 m; dat the gioi -1.63 .. 2.87; diem kep tren mat nuoc chim + 5 cm: 0
+mat na: 1072 vat giu nguyen chan; dien tich duoc lam 10000 m2 / 18125 m2
+o voi 110 (r 0,8-1,7 m, sau 0,20-0,45) · o ga 500 (r 0,22-0,55, sau 0,06-0,16) · vet nut 250 chum (rong 0,12-0,26, sau 0,03-0,07) · gon san +-0.045
+do lech so voi dat cu: -0.494 .. +0.066 m; dat the gioi -1.63 .. 2.87; diem kep tren mat nuoc chim + 5 cm: 0
 terrain: 513 -> 1025, goc y -2.901 -> -2.901, cao 5.770 -> 5.820
-to mau (ti le phu truoc -> sau): Act2_CoChet 55 % -> 40 %; Act2_DatTroc 31 % -> 40 %; Act2_SoiDa 12 % -> 14 %; Act2_Bun 3 % -> 6 %;
-dat vun: 5403 manh (cuc dat 2001 · da vun 2571 · mang dat 831; 497 cum ngon ngang); bo 1598 cho do vi nam song song sat dat; 78 o 16 m, 240174 tam giac (ve bang instancing, chi o trong khung may quay)
+to mau (ti le phu truoc -> sau): Act2_CoChet 55 % -> 41 %; Act2_DatTroc 31 % -> 38 %; Act2_SoiDa 12 % -> 14 %; Act2_Bun 3 % -> 6 %;
+dat vun: 5369 manh (cuc dat 1964 · da vun 2611 · mang dat 794; 539 cum ngon ngang); bo 1663 cho do vi nam song song sat dat; 80 o 16 m, 237024 tam giac (ve bang instancing, chi o trong khung may quay)
 
-===== ManChinh: Assets/Terrain/ManChinh_MatDat.asset ((109.20, 4.85, 109.20)) =====
+===== ManChinh: Assets/Terrain/ManChinh_MatDat.asset ((109.20, 4.87, 109.20)) =====
 lop terrain: Act2_CoChet, Act2_DatTroc, Act2_SoiDa, Act2_Bun
-mat na: 291 vat giu nguyen chan; dien tich duoc lam 8070 m2 / 11925 m2
+mat na: 291 vat giu nguyen chan; dien tich duoc lam 8064 m2 / 11925 m2
 o voi 89 (r 0,8-1,7 m, sau 0,20-0,45) · o ga 403 (r 0,22-0,55, sau 0,06-0,16) · vet nut 202 chum (rong 0,12-0,26, sau 0,03-0,07) · gon san +-0.045
-do lech so voi dat cu: -0.494 .. +0.066 m; dat the gioi -1.88 .. 2.87; diem kep tren mat nuoc chim + 5 cm: 0
-terrain: 513 -> 1025, goc y -1.631 -> -1.926, cao 4.500 -> 4.845
-to mau (ti le phu truoc -> sau): Act2_CoChet 70 % -> 52 %; Act2_DatTroc 11 % -> 22 %; Act2_SoiDa 16 % -> 18 %; Act2_Bun 3 % -> 8 %;
-dat vun: 4525 manh (cuc dat 1698 · da vun 2174 · mang dat 653; 381 cum ngon ngang); bo 1412 cho do vi nam song song sat dat; 49 o 16 m, 202076 tam giac (ve bang instancing, chi o trong khung may quay)
+do lech so voi dat cu: -0.510 .. +0.065 m; dat the gioi -1.90 .. 2.87; diem kep tren mat nuoc chim + 5 cm: 0
+terrain: 513 -> 1025, goc y -1.631 -> -1.954, cao 4.500 -> 4.873
+to mau (ti le phu truoc -> sau): Act2_CoChet 70 % -> 51 %; Act2_DatTroc 11 % -> 23 %; Act2_SoiDa 16 % -> 19 %; Act2_Bun 3 % -> 8 %;
+dat vun: 4467 manh (cuc dat 1615 · da vun 2234 · mang dat 618; 372 cum ngon ngang); bo 1367 cho do vi nam song song sat dat; 49 o 16 m, 195840 tam giac (ve bang instancing, chi o trong khung may quay)

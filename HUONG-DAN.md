@@ -2741,6 +2741,38 @@ cây có lá sẵn (giữ vật liệu vỏ + lá, va chạm), xen kẽ sồi C 
 đặt lại chân cây = đất thấp nhất trong 0,8 m − 5 cm; menu 142 (0 lỗi), 135b + 135 (0 lỗi, 76 cây gốc đúng tỉ lệ). Act2 nay **81 cây: 42 có lá / 39 trơ**.
 Đỉnh lưới cây trong khung 2.5D TB 374 → 445 nghìn. Ảnh `PlayTestShots/caycola_them_toancanh.png` (vàng = cây mới, + đỏ = chỗ đánh dấu).
 
+## Bia thánh giá nứt bể — 30% còn 1/2 hoặc 2/3, phần gãy nằm cạnh bệ (17/10/2026)
+
+**Người dùng:** "cho 30% các bia mộ cây thánh giá bị nứt bể chỉ còn ngẫu nhiên 1/2 và 2/3 phần thân". Người dùng chọn: phần gãy **nằm dưới đất cạnh bệ**
+(kèm đá vụn), mặt gãy dựng bằng **Blender MCP**.
+
+**Chọn bia** (`Assets/Editor/ThanhGiaVo.cs`): Act2 có 33 thánh giá (`LIB_005_TS_cross` + 3 bản sứt mẻ `_vo0/1/2` của menu 17) → 10 bia, **rải đều** (mỗi bước lấy bia
+xa nhất các bia đã chọn), gieo 1/2 hoặc 2/3 → 3 bia còn 1/2, 7 bia còn 2/3 (`PlayTestShots/thanhgiavo_chon.txt`). "1/2" / "2/3" tính theo **chiều cao cả bia**:
+thánh giá cao 1,52 (đơn vị lưới ×100) — bệ 0–0,20 · bậc 0,20–0,38 · trụ 0,38–1,52 · hai cánh tay 0,92–1,15 → gãy ~0,76 (chỉ còn trụ) / ~1,01 (gãy ngang giữa
+hai cánh tay, cánh tay gãy dở).
+
+**Blender MCP** (`CongCu/Blender/thanh_gia_vo.py`, scene `ThanhGiaVo`, bản lưu `thanh_gia_vo.blend`): lưới Unity xuất OBJ giữ nguyên trục; khối cắt có đáy **lưới lởm
+chởm** (nhiễu 3 tầng ~10 cm + răng cưa sâu, nghiêng 10–22°, một **bậc gãy so le** 5–10 cm) → boolean EXACT: DIFFERENCE = phần còn đứng, INTERSECT = mảnh gãy
+(hai mặt gãy khớp nhau), thêm 1–2 miếng mẻ ở mép; 2 kiểu 1/2 + 3 kiểu 2/3; 3 mẩu đá vụn (khối 20 mặt bóp méo 4–9 cm). Xuất `CongCu/ThanhGiaVo/Ra/*.txt` (mỗi góc
+tam giác vị trí + pháp tuyến phẳng) → Unity dựng `.asset`, **tangent vuông góc pháp tuyến** (shader `DaMoTriplanar` đổi gân qua `WorldNormalVector`).
+Bốn lần đi sai trong Blender:
+1. Thánh giá là 3 **vỏ lưới chồng nhau** (bệ, bậc, trụ + cánh tay) → boolean exact tính sai, phần còn đứng **mất cả bệ** → tách khối rời, chỉ cắt khối nằm ngang
+   mức gãy.
+2. Mặt gãy lần đầu chỉ lởm chởm ~4 cm trên cánh tay rộng 0,88 m → nhìn như cắt thẳng → biên độ ×2,5 + nghiêng + bậc so le.
+3. Cắt từ bản **sứt mẻ** `_vo0/_vo1` (lưới HỞ do menu 17 khoét) → dằm mỏng + gai chĩa ngang ở chỗ gãy → mọi bia vỡ cắt từ thánh giá **nguyên** (kín).
+4. Mặt cắt lởm chởm tách rời một đoạn cánh tay → **lơ lửng** cạnh trụ → phần còn đứng chỉ giữ khối chạm từ thân xuống, mảnh gãy chỉ giữ khối lớn nhất; boolean
+   miếng mẻ hỏng (mất > 30% mặt) thì bỏ qua.
+
+**Unity** (menu **146** `ThanhGiaVo.ApVaoAct2`, chạy lại được — trả bia về nguyên vẹn trước): thay lưới + `BoxCollider` cao theo phần còn đứng; mảnh gãy `<tên>_Gay`
+(con của `BiaMo` → cháy / bị lốc cuốn như bia) nằm cạnh bệ 0,36–0,48 m, **lăn nghiêng 15–28°** tựa trên mép cánh tay (nằm áp mặt xuống đất là z-fighting),
+tránh vật khác; 3–5 đá vụn (con của bia, không va chạm, không đổ bóng). `DatLaiChoDat`: mảnh gãy lún 3 cm, đá vụn lún 35% bề cao — gọi lại sau mỗi lần menu 141.
+⚠️ **Menu 141 sửa**: chỉ đánh dấu ô lưới có TÂM nằm trong hình chiếu vật → đá vụn 4–9 cm (nhỏ hơn ô 0,131 m) không chứa tâm ô nào → đất dưới nó đổi 1,33 cm
+(menu 142 bắt được) → nay mọi vật đánh dấu thêm ô gần tâm nhất.
+
+**Đo:** menu 142 0 lỗi (đất dưới chân 991 vật lệch ≤ 0,1 mm, nước 0 điểm sai, đất vụn / tấm sương / đi lại đạt); theo từng tam giác: 10 mảnh gãy + 45 đá vụn **0** mặt
+sát song song đất; 135 (562 bia, dấu vết đúng tỉ lệ), 81 (562 bia đốt được, 50 kiểu lưới đủ điểm mồi lửa — menu 20 nướng lại): 0 lỗi. Ảnh
+`PlayTestShots/thanhgiavo_can.png` (6 bia cận, ban ngày), `thanhgiavo_game.png` (góc máy quay 2.5D).
+
 ## Vũng nước lơ lửng trên không trung
 
 Người chơi gửi ảnh: một vũng nước ở góc phải bản đồ **bay lên khỏi mặt đất**, thấy rõ cạnh

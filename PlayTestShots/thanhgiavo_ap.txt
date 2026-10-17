@@ -1,0 +1,11 @@
+  TS_cross_325: LIB_005_TS_cross -> ThanhGiaVo_con1_2_a (cao 1.50 -> 0.83 m), manh gay huong 326 do, lan -23 do, 4 da vun
+  TS_cross_320: LIB_005_TS_cross_vo0 -> ThanhGiaVo_con1_2_b (cao 1.79 -> 1.02 m), manh gay huong 288 do, lan -23 do, 5 da vun
+  TS_cross_V073: LIB_005_TS_cross_vo0 -> ThanhGiaVo_con2_3_a (cao 1.51 -> 1.12 m), manh gay huong 137 do, lan -17 do, 5 da vun
+  TS_cross_315: LIB_005_TS_cross -> ThanhGiaVo_con2_3_b (cao 1.70 -> 1.20 m), manh gay huong 203 do, lan -23 do, 5 da vun
+  TS_cross_301: LIB_005_TS_cross -> ThanhGiaVo_con2_3_c (cao 1.65 -> 1.26 m), manh gay huong 129 do, lan 16 do, 4 da vun
+  TS_cross_318: LIB_005_TS_cross -> ThanhGiaVo_con2_3_a (cao 1.35 -> 1.00 m), manh gay huong 327 do, lan -15 do, 5 da vun
+  TS_cross_V072: LIB_005_TS_cross -> ThanhGiaVo_con1_2_a (cao 1.61 -> 0.88 m), manh gay huong 338 do, lan 19 do, 4 da vun
+  TS_cross_304: LIB_005_TS_cross_vo1 -> ThanhGiaVo_con2_3_b (cao 1.52 -> 1.08 m), manh gay huong 9 do, lan -27 do, 4 da vun
+  TS_cross_326: LIB_005_TS_cross_vo1 -> ThanhGiaVo_con2_3_c (cao 1.49 -> 1.13 m), manh gay huong 178 do, lan 16 do, 4 da vun
+  TS_cross_319: LIB_005_TS_cross_vo1 -> ThanhGiaVo_con2_3_a (cao 1.41 -> 1.06 m), manh gay huong 67 do, lan 17 do, 5 da vun
+dat lai cho dat: 55 vat, dich lon nhat 0.422 m

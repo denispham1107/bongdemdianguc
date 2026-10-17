@@ -126,7 +126,7 @@ public static class ThuMatDatSanSui
         if (cu == null) { Ghi("[LOI] thieu do cao goc"); loi++; return; }
 
         // B
-        int datCu = 0, datMoi = 0, moiBi = 0; float lechChanMax = 0f, lechChanTong = 0f; int soVat = 0; var dsMoi = new List<string>();
+        int datCu = 0, datMoi = 0, moiBi = 0; float lechChanMax = 0f, lechChanTong = 0f; string vatLechMax = ""; int soVat = 0; var dsMoi = new List<string>();
         foreach (var r in Object.FindObjectsByType<Renderer>(FindObjectsInactive.Include, FindObjectsSortMode.None))
         {
             if (BoQua(r)) continue;
@@ -146,11 +146,12 @@ public static class ThuMatDatSanSui
                 {
                     var w = M.MultiplyPoint3x4(new Vector3(Mathf.Lerp(lb.min.x, lb.max.x, ix / 4f), lb.min.y, Mathf.Lerp(lb.min.z, lb.max.z, iz / 4f)));
                     float d = Mathf.Abs(Cao(td, goc, w.x, w.z) - Cao(cu, gocCu, w.x, w.z));
-                    lechChanMax = Mathf.Max(lechChanMax, d); lechChanTong += d;
+                    if (d > lechChanMax) { lechChanMax = d; vatLechMax = r.name + " @" + w.ToString("F1"); }
+                    lechChanTong += d;
                 }
         }
         Ghi(string.Format("B. {0} vat cham dat: mang dong phang (< 7 mm, >= 3 diem) dat CU {1} -> dat MOI {2}; vat MOI bi {3}{4}; do cao dat trong chan vat (khung luoi xoay theo vat) doi TB {5:F4} m, lon nhat {6:F4} m",
-            soVat, datCu, datMoi, moiBi, dsMoi.Count > 0 ? " (" + string.Join("; ", dsMoi) + ")" : "", lechChanTong / Mathf.Max(1, soVat * 25), lechChanMax));
+            soVat, datCu, datMoi, moiBi, dsMoi.Count > 0 ? " (" + string.Join("; ", dsMoi) + ")" : "", lechChanTong / Mathf.Max(1, soVat * 25), lechChanMax) + " (" + vatLechMax + ")");
         Kiem(moiBi == 0, "co vat MOI bi z-fighting voi mat dat moi");
         Kiem(lechChanMax < 0.01f, "dat duoi chan vat doi qua 1 cm");
 

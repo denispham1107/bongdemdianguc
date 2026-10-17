@@ -313,6 +313,8 @@ public static class MatDatSanSui
                 ToDaGiac(nuoc ? nuocO : vat, pos, buoc, N, BaoLoi(g8));
             }
             else ToDaGiac(nuoc ? nuocO : vat, pos, buoc, N, new[] { new Vector2(b.min.x, b.min.z), new Vector2(b.max.x, b.min.z), new Vector2(b.max.x, b.max.z), new Vector2(b.min.x, b.max.z) });
+            // vat NHO hon mot o luoi (da vun canh bia thanh gia vo 4-9 cm) co the khong chua tam o nao -> dat duoi no van bi doi (menu 142 do 1,3 cm)
+            if (!nuoc) ToTron(vat, pos, buoc, N, XZ(b.center), buoc * 0.75f);
             soVat++;
         }
         var pl = GameObject.Find("Player");                              // cho xuat phat nguoi choi
