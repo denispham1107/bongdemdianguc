@@ -14848,6 +14848,9 @@ so loi ghi nhan = 0
 ⚠️ Lần chạy đầu đường thử ra ngoài đoạn đã kiểm (dốc) → 3/9 tiếng lúc chân cao ~0,5 m trên đất; trên đường phẳng 10/10 tiếng đúng lúc chạm đất. Menu 109,
 119, 125, 113: 0 lỗi. Chưa nghe thử trên web.
 
+⚠️ **Cùng ngày người dùng: "nhỏ thêm 25% nữa"** (chọn tính trên mức đang có): `HeSoBuocChan` 0,75 → **0,5625** (0,75 × 0,75). Menu 140 (0 lỗi, kiểm hằng bằng
+số viết tay): hệ số giọng 0,483–0,563; tiếng thật ở loa đi thật RMS 0,0207 → 0,0153 (×0,74), lội nước 0,0337 → 0,0236 (×0,70); mọi mục khác như trên.
+
 ## Phần 4 — Menu công cụ "Diablo 2.5D"
 
 | Mục | Tác dụng |

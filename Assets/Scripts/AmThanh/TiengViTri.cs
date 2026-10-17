@@ -121,8 +121,9 @@ public class TiengViTri : MonoBehaviour
     public const int SoKhiengTrungToiDa = 4;
     /// <summary>Buoc chan: toi da 4 tieng cung luc moi loai (dat / nuoc x trai / phai) - nhieu nguoi di cung luc thi giong nho nhat nhuong cho tieng gan.</summary>
     public const int SoBuocToiDa = 4;
-    /// <summary>Buoc chan nho hon 25% so voi clip (nguoi dung 17/10/2026: "dat, tuy nhien cho am luong nho hon 25%").</summary>
-    public const float HeSoBuocChan = 0.75f;
+    /// <summary>Buoc chan: 0,75 x 0,75 so voi clip (nguoi dung 17/10/2026: "dat, tuy nhien cho am luong nho hon 25%" roi "nho them 25% nua" -
+    /// chon tinh tren muc dang co).</summary>
+    public const float HeSoBuocChan = 0.5625f;
     /// <summary>Vong phep Tang hinh trung nhieu ke cung luc: toi da 6 tieng trung cung luc (nguoi dung chon "moi ke mot tieng").</summary>
     public const int SoTrungVongToiDa = 6;
     /// <summary>Giut set: 4 tia x 6 nhip trong ~0,35 s; Qua cau dien 5 tia moi 0,4 s - toi da 4 tieng trung / 5 tieng lan cung luc.</summary>

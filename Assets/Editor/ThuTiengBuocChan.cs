@@ -14,7 +14,7 @@ using UnityEngine;
 ///   A. (ngoai Play) 24 file trung tung byte ban goc (7-12 = ban LAT), STEREO, khong ForceToMono.
 ///   B. DI THAT (bom input) 4 s: tieng chan trai / phai XEN KE, so buoc = 2 x so chu ky clip di (doc toc do clip that); luc moi tieng ban chan
 ///      ay o SAT DAT (do cao chan tren mat dat, chuan hoa theo thap nhat / cao nhat cua chinh chan ay); giong can bang (2D), khong bam theo;
-///      he so <= 0,75 (nho hon 25%); loa co tieng, khong mono; dung lai -> im.
+///      he so <= 0,5625 (0,75 x 0,75 - nho hon 25% roi nho them 25%, so viet tay); loa co tieng, khong mono; dung lai -> im.
 ///   C. LOI NUOC: dung trong vung nuoc (VungNuoc.DoNgap 0,1-0,45 m), di tai cho -> chi tieng NUOC; ra cho kho -> chi tieng DAT.
 ///   D. NGUOI CHOI KHAC (ban sao that NguoiChoiKhac.Sinh, di tai cho nhu tocDo01 tu mang): o tam nhin + 10 m -> bi suong che, loa im; doi chung
 ///      tat suong -> co giong; o 8 m ben PHAI -> loa phai to hon; 2 m to hon 14 m.
@@ -39,7 +39,7 @@ public static class ThuTiengBuocChan
         if (EditorSceneManager.GetActiveScene().isDirty) { Debug.LogWarning("[TiengBuocChan] scene dang mo co thay doi chua luu"); return; }
         Directory.CreateDirectory("PlayTestShots");
         bao.Length = 0; loi = 0; daBatDau = false;
-        Ghi("[ban 1] buoc chan mau A ban 2 (dat soi kho day), 6 bien the moi mat dat, chan phai = ban lat, he so " + TiengViTri.HeSoBuocChan);
+        Ghi("[ban 2 - nho them 25%] buoc chan mau A ban 2 (dat soi kho day), 6 bien the moi mat dat, chan phai = ban lat, he so " + TiengViTri.HeSoBuocChan);
         int dung = 0, tong = 0;
         foreach (var ten in new[] { "Dat", "Nuoc" })
             for (int i = 1; i <= 12; i++)
@@ -286,7 +286,8 @@ public static class ThuTiengBuocChan
             Kiem(xenKeSai == 0, "tieng chan trai / phai khong xen ke");
             Kiem(trungVi <= 0.15f && lonNhat <= 0.35f, "tieng buoc khong roi vao luc ban chan cham dat");
             Kiem(soGiong == soBuoc && canBang == soGiong && bamTheo == 0, "giong buoc chan khong can bang / bi bam theo");
-            Kiem(heSo.Count > 0 && heSo[heSo.Count - 1] <= TiengViTri.HeSoBuocChan + 1e-4f && heSo[0] >= TiengViTri.HeSoBuocChan * 0.55f - 1e-4f, "he so am luong buoc chan sai (phai <= 0,75)");
+            Kiem(heSo.Count > 0 && heSo[heSo.Count - 1] <= TiengViTri.HeSoBuocChan + 1e-4f && heSo[0] >= TiengViTri.HeSoBuocChan * 0.55f - 1e-4f, "he so am luong buoc chan sai (phai <= 0,5625)");
+            Kiem(Mathf.Abs(TiengViTri.HeSoBuocChan - 0.5625f) < 1e-4f, "HeSoBuocChan khong bang 0,75 x 0,75 = 0,5625 (so viet tay)");
             Kiem(soRms > 0 && tongRms / soRms > 1e-3f && tq < 0.9f, "loa khong co tieng buoc / gan mono");
             // dung lai -> im
             yield return new WaitForSeconds(0.6f);

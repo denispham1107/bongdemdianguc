@@ -1162,8 +1162,8 @@ hơn ×1,5 và mở xuống 1,8–4,3 m** (người dùng chọn sau menu 94 ch�
   quạ mẫu A + dơi mẫu C của `tieng_qua_doi_3.py`; hướng NƯỚNG trong clip (`Resources/AmThanh/MoiTruong/QuaKeu1–6`, `DoiBay1–6`, 4–6 bản lật), phát 2D.
   Menu 139: 0 lỗi. Chưa nghe thử trên web.
 - ⚠️ **TIẾNG BƯỚC CHÂN** (17/10/2026, người dùng; người chơi + người khác + BOT, quái không; đất sỏi + lội nước; mẫu A bản 2 "dày + stereo hơn",
-  nhỏ hơn 25%): `tieng_buoc_chan.py` → `BuocDat1–12` / `BuocNuoc1–12` (7–12 bản lật = chân phải); `NguoiChoiHoatHinh.XetBuocChan` phát khi clip "diBo" qua pha
-  chạm đất 0,20 / 0,70 (đo từ clip) → `TiengViTri.BuocChan` (loại 43–46, CÂN BẰNG, hệ số 0,75 × mức đi, im trong sương). ⚠️ Animation nhân vật cull
+  nhỏ hơn 25%, rồi "nhỏ thêm 25% nữa" → 0,75 × 0,75): `tieng_buoc_chan.py` → `BuocDat1–12` / `BuocNuoc1–12` (7–12 bản lật = chân phải); `NguoiChoiHoatHinh.XetBuocChan` phát khi clip "diBo" qua pha
+  chạm đất 0,20 / 0,70 (đo từ clip) → `TiengViTri.BuocChan` (loại 43–46, CÂN BẰNG, hệ số **0,5625** × mức đi, im trong sương). ⚠️ Animation nhân vật cull
   `BasedOnRenderers`: ngoài khung / trong sương clip ĐỨNG YÊN → tự đếm pha (không thì người gần sau lưng máy quay đi im lặng). Menu 140: 0 lỗi.
 - ⚠️ **TIẾNG BÌNH MÁU / MANA** (16/10/2026, người dùng chọn mẫu A "Chân thật" — `tieng_binh.py`, nước = bọt khí Minnaert): UỐNG (rót ọc ọc + nuốt "ực"
   + thở ra; máu đặc / mana loãng) CHỈ máy người uống (người dùng chọn — không gói tin) · HÚT bám theo bình đang bay · NHẶT bám người, đuôi tiếng hút chuyển
