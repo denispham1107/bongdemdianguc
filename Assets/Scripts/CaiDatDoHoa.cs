@@ -25,9 +25,9 @@ public enum MucDoHoa { Cao = 0, TrungBinh = 1, Yeu = 2, RatYeu = 3, CucYeu = 4 }
 /// | Trung binh  | 75 %    | Medium    | cung, 1 tang, xa 40 m |
 /// | Yeu         | 62 %    | Low (+)   | cung, phan giai thap, xa 25 m; chi tiet xa 0,55 |
 /// | Rat yeu     | 50 %    | Low       | tat                   |
-/// | Cuc yeu     | 35 %    | Low       | tat                   |
+/// | Cuc yeu     | 40 %    | Low       | tat                   |
 ///
-/// 17/10/2026 (nguoi dung): them "Cuc yeu" (canh 35%, tat bong, cho may cuc yeu). Cung toi "Rat yeu" tung co bong chieu phang rieng cho
+/// 17/10/2026 (nguoi dung): them "Cuc yeu" (canh 35%, tat bong, cho may cuc yeu; 21/10/2026 nguoi dung doi 40%). Cung toi "Rat yeu" tung co bong chieu phang rieng cho
 /// nhan vat minh (BongChiNhanVat + shader BongPhang, +1 luot ve) - nguoi dung bao TRA VE NHU BAN DAU: da go (con trong git 5d59bbd).
 /// "Rat yeu" chinh la muc "Yeu" cu. "Yeu" moi (12/09/2026) nam giua.
 ///
@@ -61,7 +61,7 @@ public static class CaiDatDoHoa
     public static readonly string[] TenMucUnity = { "High", "Medium", "Low", "Low", "Low" };
 
     /// <summary>Ti le moi chieu cua canh 3D so voi man hinh.</summary>
-    public static readonly float[] heSoPhanGiai = { 1f, 0.75f, 0.62f, 0.5f, 0.35f };
+    public static readonly float[] heSoPhanGiai = { 1f, 0.75f, 0.62f, 0.5f, 0.4f };
 
     // Rat yeu / Cuc yeu tat bong nen so cua chung khong dung den
     static readonly float[] khoangBong = { 60f, 40f, 25f, 20f, 20f };

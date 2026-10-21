@@ -391,6 +391,8 @@ public static class ThuCaiDat
         float[] mongBong = { 60f, 40f, 25f, 20f, 20f };
         // Viet thang so, khong lay tu bang cua CaiDatDoHoa (phep kiem doc lap)
         float[] mongChiTietXa = { 1f, 0.7f, 0.55f, 0.4f, 0.4f };
+        // Ti le canh 3D viet tay (doc lap voi bang heSoPhanGiai) - 21/10/2026 Cuc yeu 35% -> 40% (nguoi dung)
+        float[] mongPhanGiai = { 1f, 0.75f, 0.62f, 0.5f, 0.4f };
         // 17/10/2026: them Cuc yeu (35%) tat bong; Rat yeu tat bong nhu ban dau (bong chieu phang nhan vat da go theo nguoi dung)
         string[] mongKieuBong = { "All", "HardOnly", "HardOnly", "Disable", "Disable" };
         var sangMuc = new float[CaiDatDoHoa.SoMuc];
@@ -495,6 +497,7 @@ public static class ThuCaiDat
             var cam = Camera.main;
             var kx = cam != null ? cam.GetComponent<KetXuatThuNho>() : null;
             float heSo = CaiDatDoHoa.heSoPhanGiai[im];
+            Kiem(Mathf.Abs(heSo - mongPhanGiai[im]) < 0.001f, "ti le canh muc " + CaiDatDoHoa.Ten[im] + " = " + heSo + ", mong " + mongPhanGiai[im]);
             if (heSo >= 0.999f)
             {
                 Ghi("   canh 3D 100%: KetXuatThuNho " + (kx == null ? "khong gan" : kx.enabled ? "DANG BAT" : "tat"));

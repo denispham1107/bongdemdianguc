@@ -1095,7 +1095,7 @@ public class ManSanh : MonoBehaviour
         "Cảnh 75% · bóng cứng · tắt khử răng cưa",
         "Cảnh 62% · bóng cứng gần · giảm chi tiết xa",
         "Cảnh 50% · tắt bóng · cho máy rất yếu",
-        "Cảnh 35% · tắt bóng · cho máy cực yếu",
+        "Cảnh 40% · tắt bóng · cho máy cực yếu",
     };
 
     /// <summary>Mo bang cai dat - nut CAI DAT goi, phep thu (menu 48) cung goi.</summary>

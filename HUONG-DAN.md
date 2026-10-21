@@ -2803,6 +2803,9 @@ tat han bong (Rat yeu cu)                 0           662    2,5 trieu
   573×223; mức khác 0 ô bóng phẳng và còn bóng cảnh vật: **0 lỗi**.
 - ⚠️ **Cùng tối người dùng bảo "Rất yếu trả về như ban đầu"** → đã GỠ bóng chiếu phẳng (script, shader, vật liệu; còn trong git `5d59bbd`): Rất yếu lại tắt bóng
   hoàn toàn, mô tả "Cảnh 50% · tắt bóng · cho máy rất yếu"; Cực yếu giữ. Menu 48 (5 mức): Rất yếu 0 vật đổ bóng, 0 ô bóng phẳng, 754 lượt vẽ — **0 lỗi**.
+- ⚠️ **21/10/2026: Cực yếu 35% → 40%** (người dùng: "Cảnh 40% · tắt bóng · cho máy cực yếu"): `CaiDatDoHoa.heSoPhanGiai[4]` 0,4 + mô tả ở sảnh.
+  Menu 48 nay kiểm tỉ lệ cảnh từng mức bằng số VIẾT TAY (`mongPhanGiai` — trước đó chỉ so ảnh đệm với chính bảng `heSoPhanGiai`). Đo: Cực yếu ảnh đệm
+  655×254 trên màn 1638 (cũ 573×223), 749 lượt vẽ, 0 vật đổ bóng — **0 lỗi**.
 
 ## Vũng nước lơ lửng trên không trung
 
