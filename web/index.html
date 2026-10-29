@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <!-- TRANG CHU (29/10/2026, nguoi dung): mo acquytrolai.web.app la vao trang nay, khong vao game ngay.
+       Game nam o /choi/ (nut CHOI NGAY). Dang ky / dang nhap ngay tren trang - phien dung chung voi game
+       (localStorage "diablo25d_refresh", xem trangchu/trangchu.js). Anh ky nang chup bang menu 147 trong Unity. -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Ác Quỷ Trở Lại — Game nhập vai hành động kinh dị trên trình duyệt</title>
+  <meta name="description" content="Ác Quỷ Trở Lại: game nhập vai hành động kiểu Diablo trong nghĩa địa đêm. Phép thuật lửa, băng, sét, gió — chơi đơn hoặc theo đội, người sống sót cuối cùng chiến thắng. Chơi ngay trên trình duyệt, điện thoại và máy tính.">
+  <meta name="theme-color" content="#120706">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16.png">
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+  <meta property="og:title" content="Ác Quỷ Trở Lại">
+  <meta property="og:description" content="Nghĩa địa đêm. Phép thuật. Chỉ một kẻ sống sót.">
+  <meta property="og:image" content="/icons/anh-chia-se.png">
+  <link rel="preload" href="trangchu/CormorantSC-Bold.ttf" as="font" type="font/ttf" crossorigin>
+  <link rel="preload" href="trangchu/Inter-Regular.ttf" as="font" type="font/ttf" crossorigin>
+  <link rel="stylesheet" href="trangchu/trangchu.css?v=2">
+</head>
+<body>
+
+<header class="thanh-tren">
+  <a class="logo" href="#dau-trang" aria-label="Ác Quỷ Trở Lại — về đầu trang">
+    <img src="trangchu/tieude.png" alt="Ác Quỷ Trở Lại" width="1620" height="443">
+  </a>
+  <nav class="menu-giua" aria-label="Mục lục">
+    <a href="#cach-choi">Cách chơi</a>
+    <a href="#ky-nang">Kỹ năng</a>
+  </nav>
+  <div class="menu-phai">
+    <a class="nut-nho nut-choi-nho" href="/choi/">Chơi ngay</a>
+    <span class="chua-dang-nhap">
+      <button type="button" class="nut-chu" data-mo="dangnhap">Đăng nhập</button>
+      <button type="button" class="nut-vien" data-mo="dangky">Đăng ký</button>
+    </span>
+    <span class="co-dang-nhap">
+      <span class="ten-goc" id="ten-nguoi-choi"></span>
+      <button type="button" class="nut-chu" data-dang-xuat>Đăng xuất</button>
+    </span>
+  </div>
+</header>
+
+<main id="dau-trang">
+
+  <!-- ============== MAN DAU ============== -->
+  <section class="man-dau">
+    <canvas id="tan-lua" aria-hidden="true"></canvas>
+    <div class="suong" aria-hidden="true"></div>
+    <div class="noi-dung-dau">
+      <h1 class="ten-game"><img src="trangchu/tieude.png" alt="Ác Quỷ Trở Lại" width="1620" height="443"></h1>
+      <p class="khau-hieu">Nghĩa địa đêm. Phép thuật. Chỉ một kẻ sống sót.</p>
+      <a id="choi-ngay" class="nut-choi" href="/choi/">
+        <span class="chu-choi">CHƠI NGAY</span>
+        <span class="chu-phu">Miễn phí · ngay trên trình duyệt</span>
+      </a>
+      <p class="chao co-dang-nhap">
+        Chào mừng trở lại, <b id="ten-chao"></b> — <span id="so-tran"></span>
+      </p>
+      <p class="chao chua-dang-nhap">
+        <button type="button" class="nut-chu-gach" data-mo="dangky">Tạo tài khoản</button> hoặc
+        <button type="button" class="nut-chu-gach" data-mo="dangnhap">đăng nhập</button> trước để vào thẳng sảnh.
+      </p>
+      <ul class="the-nho">
+        <li>Điện thoại cảm ứng &amp; máy tính</li>
+        <li>Tối đa 6 người một phòng</li>
+        <li>23 kỹ năng · 5 hệ phép</li>
+      </ul>
+    </div>
+    <a class="cuon-xuong" href="#cach-choi" aria-label="Xem cách chơi"></a>
+  </section>
+
+  <!-- ============== CACH CHOI ============== -->
+  <section id="cach-choi" class="muc">
+    <h2 class="tieu-de-muc"><span>Cách chơi</span></h2>
+    <p class="dan-muc">Bạn là phù thuỷ lạc giữa nghĩa địa bị nguyền rủa. Lũ quỷ kéo đến từng đợt — và những phù thuỷ khác cũng muốn bạn chết.</p>
+
+    <ol class="buoc">
+      <li>
+        <span class="so">I</span>
+        <h3>Tạo phòng</h3>
+        <p>Đăng nhập, vào sảnh rồi bấm <b>TẠO PHÒNG</b> — chọn <b>Đơn</b> hoặc <b>Đôi</b>. Bạn bè vào từ danh sách <b>Phòng đang chờ</b> hoặc bấm <b>Vào phòng nhanh</b>.</p>
+      </li>
+      <li>
+        <span class="so">II</span>
+        <h3>Sẵn sàng</h3>
+        <p>Mỗi phòng tối đa <b>6 người</b>. Chủ phòng có thể thêm <b>máy BOT</b> (Dễ · Thường · Khó) vào ghế trống. Khi mọi người <b>SẴN SÀNG</b>, đồng hồ ma đếm ngược 5 giây.</p>
+      </li>
+      <li>
+        <span class="so">III</span>
+        <h3>Sống sót</h3>
+        <p>Giết quái từng đợt để lên cấp (tối đa <b>cấp 20</b>), dùng điểm kỹ năng trong <b>Sách phép</b> để mở khoá và nâng cấp phép thuật. Bình máu, bình mana rơi ra từ quái.</p>
+      </li>
+    </ol>
+
+    <div class="che-do">
+      <article class="the-che-do">
+        <div class="bieu-tuong" aria-hidden="true">✠</div>
+        <h3>Chế độ Đơn</h3>
+        <p>Mỗi người một phe. Quái vật vây lấy tất cả, còn các phù thuỷ thì săn lẫn nhau — <b>người sống sót cuối cùng chiến thắng</b>.</p>
+      </article>
+      <article class="the-che-do">
+        <div class="bieu-tuong" aria-hidden="true">⚔</div>
+        <h3>Chế độ Đôi</h3>
+        <p><b>Đội A</b> đối đầu <b>Đội B</b>, tối đa 3 người mỗi đội. Đồng đội không làm hại nhau và nhìn chung tầm nhìn — <b>đội còn người sống cuối cùng thắng</b>.</p>
+      </article>
+    </div>
+
+    <ul class="dac-diem">
+      <li><b>Sương chiến tranh</b> — chỉ thấy rõ 20 m quanh mình, kẻ thù ẩn trong bóng tối.</li>
+      <li><b>Đêm – ngày – chiều</b> luân phiên; lò lửa chỉ cháy khi trời tối.</li>
+      <li><b>Rơi khỏi bản đồ</b> là rơi xuống vực dung nham của địa ngục.</li>
+      <li>Cây, bia mộ, nhà mồ bị <b>đốt cháy</b>, bị <b>lốc cuốn bay</b> — rồi mọc lại sau 30 giây.</li>
+    </ul>
+  </section>
+
+  <!-- ============== KY NANG ============== -->
+  <section id="ky-nang" class="muc">
+    <h2 class="tieu-de-muc"><span>Kỹ năng</span></h2>
+    <p class="dan-muc">Năm hệ phép: <i class="he lua">Lửa</i> <i class="he bang">Băng</i> <i class="he set">Sét</i> <i class="he phong">Phong</i> <i class="he ho-tro">Hỗ trợ</i>. Dưới đây là vài phép tiêu biểu — ảnh chụp ngay trong game.</p>
+
+    <article class="ky">
+      <header><h3>Lốc xoáy</h3><i class="he phong">Phong</i></header>
+      <figure class="anh-ky-nang">
+        <img src="trangchu/anh/locxoay.jpg" alt="Lốc xoáy cuốn quái vật, cây và bia mộ lên cao" loading="lazy" width="1638" height="636">
+        <figcaption>Lốc xoáy cuốn quái vật, cây cối và bia mộ từ dưới đất lên cao.</figcaption>
+      </figure>
+      <p>Một cột lốc xoáy bùng lên <b>ngay tại chỗ đối thủ</b> gần điểm ngắm nhất trong tầm 18 m, rồi bám đuổi theo đối thủ ấy, cuốn theo mọi thứ nó đi qua. Kẻ địch bị nhấc bổng lên trời, quay tròn giữa những tia sét rồi rơi xuống — và <b>không dùng được kỹ năng</b> khi đang bị cuốn. Cây cối, bia mộ, cả lò lửa cũng bị nhổ bật khỏi mặt đất, để lại gốc gãy và hố đất; 30 giây sau mọi thứ trở về chỗ cũ.</p>
+      <ul class="chi-so"><li>Năng lượng <b>50</b></li><li>Tầm <b>18 m</b></li><li>Hồi chiêu <b>2 giây</b></li></ul>
+    </article>
+
+    <article class="ky">
+      <header><h3>Thiên thạch</h3><i class="he lua">Lửa</i></header>
+      <div class="hai-anh">
+        <figure class="anh-ky-nang">
+          <img src="trangchu/anh/thienthach_roi.jpg" alt="Thiên thạch rực lửa đang rơi xuống" loading="lazy" width="1638" height="636">
+          <figcaption>Những khối đá lửa nối đuôi nhau rơi xuống.</figcaption>
+        </figure>
+        <figure class="anh-ky-nang">
+          <img src="trangchu/anh/thienthach_chay.jpg" alt="Cây bị thiên thạch thiêu cháy toàn thân" loading="lazy" width="1638" height="636">
+          <figcaption>Cây trúng thiên thạch bốc cháy từ gốc tới ngọn.</figcaption>
+        </figure>
+      </div>
+      <p>Ba khối đá lửa nối đuôi nhau rơi từ trời xuống, tầm ngắm 23 m. Mỗi khối <b>tự tìm kẻ địch</b> trong 5 m quanh điểm ngắm để giáng trúng, nổ ra một vùng lửa rộng, làm rung màn hình, có thể <b>đánh ngã</b> đối thủ và để lại vũng lửa cháy trên mặt đất. Cây, bia mộ, nhà mồ trúng thiên thạch sẽ <b>bắt lửa, lửa lan khắp thân</b> rồi cháy rụi thành tro. Lên cấp 5: rơi <b>năm khối</b>.</p>
+      <ul class="chi-so"><li>Năng lượng <b>45</b></li><li>Tầm <b>23 m</b></li><li>Hồi chiêu <b>2 giây</b></li></ul>
+    </article>
+
+    <article class="ky">
+      <header><h3>Quả cầu băng</h3><i class="he bang">Băng</i></header>
+      <div class="hai-anh">
+        <figure class="anh-ky-nang">
+          <img src="trangchu/anh/caubang_phong.jpg" alt="Phù thuỷ phóng ra những quả cầu băng pha lê" loading="lazy" width="1638" height="636">
+          <figcaption>Bốn quả cầu băng pha lê toả hình quạt.</figcaption>
+        </figure>
+        <figure class="anh-ky-nang">
+          <img src="trangchu/anh/caubang_no.jpg" alt="Quả cầu băng nổ thành những tảng băng" loading="lazy" width="1638" height="636">
+          <figcaption>Va chạm là vỡ tung, mọc lên những tảng băng.</figcaption>
+        </figure>
+      </div>
+      <p>Bốn quả cầu băng pha lê cùng phóng ra, kéo theo luồng khí lạnh buốt. Chạm kẻ địch là <b>vỡ tung thành tảng băng</b>: mọi kẻ trong vùng nổ bị <b>làm chậm</b> một nửa tốc độ và có thể bị <b>đóng băng</b> đứng cứng tại chỗ. Quả nổ trúng kẻ địch còn <b>nảy</b> sang kẻ địch kế bên. Bay xuyên qua bia mộ, dập tắt lò lửa. Lên cấp 5: <b>sáu quả</b>, và tảng băng đến lúc tan thì <b>nổ tung</b> thêm lần nữa.</p>
+      <ul class="chi-so"><li>Năng lượng <b>25</b></li><li>Sát thương <b>65</b> mỗi quả</li><li>Hồi chiêu <b>0,9 giây</b></li></ul>
+    </article>
+
+    <article class="ky">
+      <header><h3>Giựt sét</h3><i class="he set">Sét</i></header>
+      <figure class="anh-ky-nang">
+        <img src="trangchu/anh/giatset.jpg" alt="Tia sét phóng từ tay phù thuỷ lan qua nhiều quái vật" loading="lazy" width="1638" height="636">
+        <figcaption>Bốn tia sét cùng phóng ra, nhảy từ quái này sang quái khác.</figcaption>
+      </figure>
+      <p>Tia sét phóng thẳng từ hai bàn tay tới kẻ địch phía trước trong tầm 20 m — có đủ kẻ địch thì <b>bốn tia cùng lúc</b>, mỗi tia một kẻ. Chạm mục tiêu rồi mỗi tia lại <b>nhảy tiếp</b> sang những kẻ đứng gần, tới 5 lần. Mỗi cú trúng có 20% khả năng làm kẻ địch <b>bị choáng</b>. Kẻ bị ướt mưa (Mây giông) ăn thêm 50% sát thương. Rẻ, hồi nhanh — hợp lúc bị vây.</p>
+      <ul class="chi-so"><li>Năng lượng <b>25</b></li><li>Sát thương <b>75</b></li><li>Tầm <b>20 m</b></li><li>Hồi chiêu <b>0,9 giây</b></li></ul>
+    </article>
+
+    <article class="ky">
+      <header><h3>Sấm sét</h3><i class="he set">Sét</i></header>
+      <figure class="anh-ky-nang">
+        <img src="trangchu/anh/samset.jpg" alt="Hàng loạt tia sét đánh xuống nghĩa địa" loading="lazy" width="1638" height="636">
+        <figcaption>Hàng loạt tia sét từ trên cao giáng xuống.</figcaption>
+      </figure>
+      <p>Mây đen kéo tới, không khí tích điện, rồi <b>hàng loạt tia sét</b> từ trên cao liên tiếp giáng xuống khu vực đã chọn, tự tìm kẻ địch trong vùng. Mỗi tia nổ ra một vùng sáng trắng, tia điện bò lan trên mặt đất và để lại vết nứt cháy đỏ; 35% khả năng làm kẻ địch <b>bị choáng</b> — đứng im, không đánh, không tung phép được.</p>
+      <ul class="chi-so"><li>Năng lượng <b>45</b></li><li>Tầm <b>12 m</b></li><li>Hồi chiêu <b>4 giây</b></li></ul>
+    </article>
+
+    <div class="cuoi-ky-nang">
+      <p>Còn Quả cầu lửa, Lửa địa ngục, Mưa băng, Tàng hình, Quả cầu điện, Gió lốc, Mây giông, Khiên, Tốc biến, Nhào lộn… — mở Sách phép trong game để khám phá.</p>
+      <a class="nut-choi nut-choi-vua" href="/choi/"><span class="chu-choi">CHƠI NGAY</span></a>
+    </div>
+  </section>
+</main>
+
+<footer class="chan-trang">
+  <img src="trangchu/tieude.png" alt="" width="1620" height="443" aria-hidden="true">
+  <p>Tác giả: <b>Phạm Minh Quân</b></p>
+  <p class="nho">© 2026 Ác Quỷ Trở Lại</p>
+</footer>
+
+<!-- ============== BANG DANG NHAP / DANG KY ============== -->
+<dialog id="bang-tai-khoan" class="bang-tk" aria-labelledby="tieu-de-bang">
+  <form id="form-tai-khoan" novalidate>
+    <button type="button" id="dong-bang" class="dong" aria-label="Đóng">×</button>
+    <h2 id="tieu-de-bang" class="an-di">Tài khoản</h2>
+    <div class="tab" role="tablist">
+      <button type="button" id="tab-dang-nhap" role="tab" class="chon" aria-selected="true">Đăng nhập</button>
+      <button type="button" id="tab-dang-ky" role="tab" aria-selected="false">Tạo tài khoản</button>
+    </div>
+    <label class="chi-dang-ky">Tên nhân vật
+      <input id="o-ten" type="text" maxlength="16" autocomplete="nickname" placeholder="Tên người khác sẽ thấy">
+    </label>
+    <label>Email
+      <input id="o-email" type="email" maxlength="64" autocomplete="email" inputmode="email" placeholder="ten@email.com">
+    </label>
+    <label>Mật khẩu
+      <input id="o-mat-khau" type="password" maxlength="64" autocomplete="current-password" placeholder="Ít nhất 6 ký tự">
+    </label>
+    <p id="bao-loi" class="bao" role="status" aria-live="polite"></p>
+    <button type="submit" id="nut-gui" class="nut-choi nut-gui"><span>ĐĂNG NHẬP</span></button>
+    <p class="nho">Tài khoản dùng chung với game — đăng nhập ở đây rồi bấm <b>Chơi ngay</b> là vào thẳng sảnh.</p>
+  </form>
+</dialog>
+
+<dialog id="xem-anh" class="xem-anh" aria-label="Xem ảnh lớn">
+  <img id="xem-anh-img" alt="">
+</dialog>
+
+<script src="trangchu/trangchu.js?v=1"></script>
+</body>
+</html>

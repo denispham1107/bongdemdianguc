@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Text;
+using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -63,16 +64,72 @@ public static class FirebaseMang
     {
         Uid = null; Email = null; IdToken = null; refreshToken = null;
         TenHienThi = null; hetHanLuc = 0f;
-        PlayerPrefs.DeleteKey(KhoaLuuToken);
-        PlayerPrefs.Save();
+        XoaPhien();
     }
 
     const string KhoaLuuToken = "diablo25d_refresh";
 
+    // ================================================================
+    //  CHO GIU PHIEN - DUNG CHUNG VOI TRANG CHU WEB (29/10/2026)
+    // ================================================================
+    //
+    // Nguoi dung: dang ky / dang nhap ngay tren trang chu acquytrolai.web.app roi bam "Choi ngay" (/choi/) la vao thang sanh,
+    // khong go lai mat khau. Trang chu va game CUNG MOT goc (origin) nen dung chung localStorage - trang chu giu refresh token
+    // o khoa "diablo25d_refresh" (web/trangchu/trangchu.js). Tren WebGL PlayerPrefs lai nam trong IndexedDB cua Unity, trang
+    // web khong doc duoc -> tren WebGL token nam o localStorage (CauNoiCaiDat.jslib). Ban cu da luu o PlayerPrefs thi doc
+    // mot lan roi chuyen sang. Dang xuat o mot noi (ghi chuoi rong) thi noi kia cung ra. Editor / PC van dung PlayerPrefs
+    // (cac phep thu mang cat / tra lai khoa nay trong PlayerPrefs).
+
+#if UNITY_WEBGL && !UNITY_EDITOR
+    [DllImport("__Internal")] static extern string CD_DocChuoi(string khoa);
+    [DllImport("__Internal")] static extern int CD_GhiChuoi(string khoa, string giaTri);
+#endif
+
+    static string DocPhien()
+    {
+#if UNITY_WEBGL && !UNITY_EDITOR
+        try
+        {
+            string v = CD_DocChuoi(KhoaLuuToken);
+            if (!string.IsNullOrEmpty(v)) return v;
+        }
+        catch (Exception) { }
+        // Ban truoc 29/10/2026 luu o PlayerPrefs - chuyen sang localStorage mot lan
+        string cu = PlayerPrefs.GetString(KhoaLuuToken, "");
+        if (!string.IsNullOrEmpty(cu))
+        {
+            try { CD_GhiChuoi(KhoaLuuToken, cu); } catch (Exception) { }
+            PlayerPrefs.DeleteKey(KhoaLuuToken); PlayerPrefs.Save();
+        }
+        return cu;
+#else
+        return PlayerPrefs.GetString(KhoaLuuToken, "");
+#endif
+    }
+
+    static void GhiPhien(string token)
+    {
+#if UNITY_WEBGL && !UNITY_EDITOR
+        try { CD_GhiChuoi(KhoaLuuToken, token ?? ""); } catch (Exception) { }
+#else
+        PlayerPrefs.SetString(KhoaLuuToken, token ?? "");
+        PlayerPrefs.Save();
+#endif
+    }
+
+    static void XoaPhien()
+    {
+#if UNITY_WEBGL && !UNITY_EDITOR
+        try { CD_GhiChuoi(KhoaLuuToken, ""); } catch (Exception) { }
+#endif
+        PlayerPrefs.DeleteKey(KhoaLuuToken);
+        PlayerPrefs.Save();
+    }
+
     /// <summary>Co the dang nhap lai tu lan truoc khong.</summary>
     public static bool CoTheTuDangNhapLai
     {
-        get { return !string.IsNullOrEmpty(PlayerPrefs.GetString(KhoaLuuToken, "")); }
+        get { return !string.IsNullOrEmpty(DocPhien()); }
     }
 
     // ================================================================
@@ -99,7 +156,7 @@ public static class FirebaseMang
     /// <summary>Dang nhap lai bang refresh token da luu tu lan truoc.</summary>
     public static IEnumerator TuDangNhapLai(Action<bool, string> xong)
     {
-        string luu = PlayerPrefs.GetString(KhoaLuuToken, "");
+        string luu = DocPhien();
         if (string.IsNullOrEmpty(luu)) { xong(false, "Chưa từng đăng nhập."); yield break; }
 
         refreshToken = luu;
@@ -128,8 +185,7 @@ public static class FirebaseMang
             if (!int.TryParse(d.expiresIn, out giay)) giay = 3600;
             hetHanLuc = Time.realtimeSinceStartup + giay - 60f;   // lam moi som mot phut
 
-            PlayerPrefs.SetString(KhoaLuuToken, refreshToken);
-            PlayerPrefs.Save();
+            GhiPhien(refreshToken);
             xong(true, null);
         }
     }
@@ -146,7 +202,7 @@ public static class FirebaseMang
 
             if (yc.result != UnityWebRequest.Result.Success)
             {
-                PlayerPrefs.DeleteKey(KhoaLuuToken);
+                XoaPhien();
                 xong(false, "Phiên đăng nhập đã hết hạn, hãy đăng nhập lại.");
                 yield break;
             }
@@ -160,8 +216,7 @@ public static class FirebaseMang
             if (!int.TryParse(d.expires_in, out giay)) giay = 3600;
             hetHanLuc = Time.realtimeSinceStartup + giay - 60f;
 
-            PlayerPrefs.SetString(KhoaLuuToken, refreshToken);
-            PlayerPrefs.Save();
+            GhiPhien(refreshToken);
             xong(true, null);
         }
     }

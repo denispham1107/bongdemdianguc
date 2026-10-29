@@ -1,0 +1,27 @@
+   ky 2 cap 5
+   ky 3 cap 5
+   ky 4 cap 5
+   ky 6 cap 5
+   ky 9 cap 5
+man hinh 1638x636, goc 2.5D (Diablo), F (0.71, 0.00, 0.71)
+== Loc xoay
+   cay TREE_oakC_bare_713 (-43.4, 0.1, 15.2), bia trong 6 m: 6
+   cum quai: 3/3 con quanh (-44.5, 0.1, 16.2)
+   khung 0: vat bi cuon 0, quai bi cuon 0
+   khung 4: vat bi cuon 10, quai bi cuon 3
+   khung 8: vat bi cuon 12, quai bi cuon 3
+   khung 12: vat bi cuon 13, quai bi cuon 3
+   khung 16: vat bi cuon 14, quai bi cuon 3
+   khung 20: vat bi cuon 14, quai bi cuon 3
+   khung 24: vat bi cuon 14, quai bi cuon 3
+== Thien thach roi
+   cum quai: 4/4 con quanh (26.9, 0.0, -15.1)
+== Cay chay
+   cay TREE_oakC_726 cao 9.5 m
+   lua lan toi 0.99, thoi gian chay 5.9
+== Qua cau bang
+   cum quai: 4/5 con quanh (1.9, 0.0, 32.1)
+== Giut set
+   quai: 6
+== Sam set
+   cum quai: 5/5 con quanh (28.7, 0.0, -14.1)

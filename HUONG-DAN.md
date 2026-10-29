@@ -2807,6 +2807,43 @@ tat han bong (Rat yeu cu)                 0           662    2,5 trieu
   Menu 48 nay kiểm tỉ lệ cảnh từng mức bằng số VIẾT TAY (`mongPhanGiai` — trước đó chỉ so ảnh đệm với chính bảng `heSoPhanGiai`). Đo: Cực yếu ảnh đệm
   655×254 trên màn 1638 (cũ 573×223), 749 lượt vẽ, 0 vật đổ bóng — **0 lỗi**.
 
+## Trang chủ web — đăng ký / đăng nhập trên web, game dời sang /choi/ (29/10/2026)
+
+**Người dùng:** mở https://acquytrolai.web.app không vào game ngay mà ra **trang chủ** kinh dị như trong game, chạy được trên máy tính và điện thoại
+(dọc + ngang): nút **"Chơi ngay"** nổi bật trên cùng, menu **đăng ký / đăng nhập** ngay trên web, rồi phần giới thiệu cách chơi (tạo phòng, Đơn, Đôi)
+và 5 kỹ năng có ảnh chụp: Lốc xoáy (cuốn quái + cây + bia), Thiên thạch (2 tấm: đang rơi · cây cháy toàn thân), Quả cầu băng (2 tấm: phóng ra · nổ
+thành tảng băng), Giựt sét (6 quái, tia lan), Sấm sét (tia đánh xuống). Người dùng chọn: game ở **/choi/**, đăng nhập web xong vào game **đã đăng nhập
+sẵn**, ảnh chụp **ban đêm**, **đúng góc máy quay game 2.5D + giao diện cảm ứng** (gửi ảnh mẫu — lúc đầu chọn "góc điện ảnh gần" rồi đổi).
+
+**Trang** (`web/index.html`, `web/trangchu/trangchu.css|js`, font Cormorant SC + Inter, ảnh tên game + nền vực dung nham chép từ trang tải game):
+thanh trên cố định (logo · Cách chơi · Kỹ năng · Đăng nhập / Đăng ký hoặc tên người chơi + Đăng xuất; nút "Chơi ngay" nhỏ hiện khi đã cuộn qua nút
+lớn), màn đầu có tàn lửa bay (canvas nhẹ, tắt khi máy xin giảm chuyển động), nút CHƠI NGAY khối máu đập nhịp; bảng đăng nhập là `<dialog>`.
+Đo (máy chủ cục bộ): 1366×800 / 375×812 / 844×390 — không cuộn ngang; điện thoại ngang nút CHƠI NGAY nằm y 241–318 / 390; font kiểm bằng
+`document.fonts.check` cả hai đúng; bấm "Tạo tài khoản" khi ô trống → "Tên phải từ 2 ký tự trở lên."; phiên giả trong localStorage → bị xoá, giao diện
+về chưa đăng nhập. ⚠️ Bẫy: lớp `.bang` của bảng đăng nhập trùng lớp màu hệ **Băng** (`.he.bang`) → nhãn "Băng" giãn 420 px — đổi bảng thành `.bang-tk`.
+
+**Đăng ký / đăng nhập** (`trangchu.js`): gọi Firebase **REST** y game (`signUp`, `signInWithPassword`, `securetoken`), hồ sơ Firestore `nguoichoi/{uid}`
+tạo y `HoSoMang.TaiHoacTao` (thành tích = 0, `biKhoa` false — luật Firestore bắt buộc); hồ sơ bị khoá → xoá phiên, báo lỗi. Không nạp Firebase JS SDK.
+**Phiên dùng chung**: refresh token ở `localStorage["diablo25d_refresh"]`. Game trên WebGL trước đây giữ khoá này trong **PlayerPrefs** = IndexedDB
+của Unity → trang web không đọc được. Nay `FirebaseMang` trên WebGL đọc / ghi localStorage qua `CauNoiCaiDat.jslib` (`DocPhien`, `GhiPhien`,
+`XoaPhien`; ai còn phiên cũ ở PlayerPrefs thì chuyển sang một lần) — cùng gốc (origin) nên game ở `/choi/` thấy phiên của trang chủ.
+
+**Game dời sang `/choi/`**: bản build chép vào `web/choi/` (manifest / sw.js / icons vẫn ở gốc, template dùng đường dẫn tuyệt đối nên không phải sửa),
+`web/index.html` thành trang chủ và vào git; PWA `start_url` = `/choi/` (ứng dụng đã cài mở thẳng game như cũ). Trang cũ `diablo25d-game.web.app`
+vẫn 301 về gốc → ra trang chủ.
+
+**Ảnh kỹ năng — menu 147** (`ChupAnhTrangChu.cs`): Play Act2, tắt GameDirector, bật tầm nhìn + sương chiến tranh (`TamNhin.BatTrongPhepThu`), HUD cảm
+ứng (`hud.epCamUng`), máy quay 2.5D thật; quái thật từ kho quái (AI tắt, máu 100 000), người chơi tung kỹ năng THẬT cấp 5 bằng `CastAt`; chụp cả màn
+Game kèm HUD (`ScreenCapture.CaptureScreenshotAsTexture`, 1638×636) theo loạt khung rồi chọn. Bốn lần đi sai:
+1. Góc điện ảnh (máy quay riêng) — người dùng đổi sang góc game + cảm ứng.
+2. Máy quay 2.5D ở sau-trên nhân vật ~8,7 m → **tán cây** giữa máy quay và nhân vật phủ kín ảnh (Quả cầu băng, Lốc xoáy) → `KhongChe`: không cây có lá
+   trong 10 m quanh chỗ đứng, 8 m quanh chân máy quay và điểm giữa.
+3. Cảnh đặt TRƯỚC mặt 5–7 m → nằm sát mép trên khung; đặt sang PHẢI → nút kỹ năng cảm ứng (góc dưới-phải) che quái → cảnh ở phải-giữa / phải-trên.
+4. Thiên thạch rơi từ trên cao ra ngoài khung → cụm quái đặt DƯỚI nhân vật trên màn (thấy cả đường rơi); chụp mỗi 0,03 s.
+Ảnh chọn (`PlayTestShots/trangchu_chon/`): Lốc xoáy 3 quái + cây + bia "BỊ CUỐN!" (14 vật bị cuốn); thiên thạch đang rơi; cây có lá cháy toàn tán
+(lửa lan 0,99); 4+ quả cầu băng đang bay · vụ nổ thành tảng băng; Giựt sét 4 tia + tia lan trúng 6 quái, "CHOÁNG!"; Sấm sét nhiều tia cùng đánh.
+Menu 147b chụp lại riêng Giựt sét.
+
 ## Vũng nước lơ lửng trên không trung
 
 Người chơi gửi ảnh: một vũng nước ở góc phải bản đồ **bay lên khỏi mặt đất**, thấy rõ cạnh
