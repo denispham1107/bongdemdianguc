@@ -1,0 +1,19 @@
+MENU 148 - mau ao Phu thuy: 0 loi
+  OK   A vat lieu: _MainTex = PhuThuy_Mau
+  OK   A vat lieu: _Color = RGBA(1.000, 1.000, 1.000, 1.000)
+  OK   A vat lieu: giu anh phap tuyen meshy_normal
+  OK   A quai sinh tu kho quai dung vat lieu Enemy_PhuThuy (1 renderer)
+  dem: moi  bong quai: sang 0.4 % toi 72.9 % TB 0.118 | yem 0.234 ao 0.094 khan 0.129
+  dem: cu   bong quai: sang 8.6 % toi 0.0 % TB 0.247 | yem 0.269 ao 0.192 khan 0.346
+  OK   B dem: yem / ao 2.47 (cu 1.40) > x1,5 doi chung
+  OK   B dem: yem / khan trum 1.80 (cu 0.78) > x1,5 doi chung
+  OK   B dem: ao + khan toi hon ban cu: x0.49 / x0.37
+  OK   B dem: yem giu sang: x0.87 ban cu
+  OK   B dem: ca con quai toi hon ban cu (TB x2.09)
+  ngay: moi  bong quai: sang 3.8 % toi 34.5 % TB 0.173 | yem 0.542 ao 0.123 khan 0.183
+  ngay: cu   bong quai: sang 35.4 % toi 0.0 % TB 0.502 | yem 0.632 ao 0.432 khan 0.635
+  OK   B ngay: yem / ao 4.42 (cu 1.46) > x1,5 doi chung
+  OK   B ngay: yem / khan trum 2.97 (cu 1.00) > x1,5 doi chung
+  OK   B ngay: ao + khan toi hon ban cu: x0.28 / x0.29
+  OK   B ngay: yem giu sang: x0.86 ban cu
+  OK   B ngay: ca con quai toi hon ban cu (TB x2.90)

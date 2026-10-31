@@ -2807,6 +2807,40 @@ tat han bong (Rat yeu cu)                 0           662    2,5 trieu
   Menu 48 nay kiểm tỉ lệ cảnh từng mức bằng số VIẾT TAY (`mongPhanGiai` — trước đó chỉ so ảnh đệm với chính bảng `heSoPhanGiai`). Đo: Cực yếu ảnh đệm
   655×254 trên màn 1638 (cũ 573×223), 749 lượt vẽ, 0 vật đổ bóng — **0 lỗi**.
 
+## Quái Phù thủy thành nữ tu ma — ảnh màu nướng bằng Blender MCP (01/11/2026)
+
+**Người dùng:** quái "Phù thủy" quần áo trắng bạch toàn thân, quá xấu; gửi ảnh một nữ tu ma (khăn trùm + áo đen, viền khăn ôm mặt + yếm ngực trắng,
+mặt trắng bệch, mắt vàng, tay xám) — tô màu giống vậy.
+
+**Nguyên nhân:** model Meshy `Veil of the Abyss` **không kèm ảnh màu** (chỉ `meshy_normal.png`), vật liệu `Enemy_PhuThuy.mat` chỉ có `_Color` (0,82 0,81 0,84)
+→ cả con một màu xám trắng. Nhưng KHỐI HÌNH vốn đã là nữ tu: khăn trùm, vạt choàng vai, khung mặt, tấm yếm ngực có mép dưới ngang (z ≈ 1,215 m), hai bàn tay
+chìa ra trước.
+
+**Cách làm** (`CongCu/Blender/phu_thuy_mau.py`, Blender MCP): nạp đúng FBX game dùng, chia vùng THEO TỪNG MẶT ở khung 0:
+- Thử loang theo nếp gập ở mép khăn (góc giữa hai mặt < 30–75°) — **không tách được**: 45° đã lan vào mặt, lưới Meshy quá thô.
+- Dùng vị trí: khung mở của khăn (đa giác vẽ trên ảnh trực giao nhìn thẳng trước, 1 điểm ảnh = 1 mm) + tia kiểm mặt nào lộ ra phía trước hoặc từ trên chếch
+  xuống (góc máy quay 2.5D). Trong khung mở: mặt (bầu dục) → xám nhợt + hốc mắt thâm + mắt vàng nhỏ; trên cằm còn lại → viền khăn trắng; dưới cằm tới
+  mép yếm → yếm trắng; còn lại → đen.
+- **Bàn tay**: trọng số xương của Meshy lộn xộn — đỉnh bàn tay phải gán 100% vào cẳng tay, bàn tay trái 66% vào đùi; khung xương đặt bàn tay ở hai bên
+  hông (x ±0,23–0,32) trong khi bàn tay trên lưới chìa ra trước bụng. Nên loang theo cạnh lưới từ đầu ngón tay, chỉ trong hộp bao bàn tay (đo trên ảnh
+  trực giao trước + cạnh bên).
+- Nướng (Cycles, EMIT, viền 16 điểm ảnh) ra `Assets/Textures/PhuThuy_Mau.png` 2048 (bằng ảnh pháp tuyến). Màu viết bằng giá trị sRGB, đổi sang tuyến tính
+  trước khi nướng → số trong file đúng số viết: đen 21/255 (0,085 — đen hơn thì đêm mất hẳn nếp vải), trắng 204.
+
+`Enemy_PhuThuy.mat`: `_MainTex` = ảnh mới, `_Color` trắng, giữ ảnh pháp tuyến. Không script nào ghi đè vật liệu này.
+
+**Đo — menu 148** (`ThuMauPhuThuy.cs`): Play Act2, Phù thủy THẬT từ kho quái, máy quay cận riêng (lớp 31, nền đen) + chụp màn Game góc 2.5D, đêm + ngày,
+**đối chứng = vật liệu cũ cùng khung**. Đo độ sáng ba vùng lấy theo điểm 3D chiếu lên ảnh (yếm 1,33 m, áo 0,48 m, khăn cạnh mặt):
+
+| | yếm / áo | yếm / khăn | áo, khăn so bản cũ | yếm so bản cũ | cả con (TB) |
+|---|---|---|---|---|---|
+| Đêm | **2,47** (cũ 1,40) | **1,80** (cũ 0,78) | ×0,49 / ×0,37 | ×0,87 | 0,118 (cũ 0,247) |
+| Ngày | **4,42** (cũ 1,46) | **2,97** (cũ 1,00) | ×0,28 / ×0,29 | ×0,86 | 0,173 (cũ 0,502) |
+
+⚠️ Lần chạy đầu tôi đặt ngưỡng TUYỆT ĐỐI ("sáng > 0,45 là phần trắng", "tối < 0,12 là áo") → báo 2 lỗi giả: ban đêm cả phần trắng chỉ ~0,23, ban ngày áo
+đen được nắng rọi lên 0,12. Ngưỡng phải so với đối chứng cùng khung. Ảnh: `PlayTestShots/phuthuy_mau/tong_rieng.png` (cận: đêm cũ · đêm mới · ngày cũ ·
+ngày mới), `tong_game.png` (góc game).
+
 ## Trang chủ web — đăng ký / đăng nhập trên web, game dời sang /choi/ (29/10/2026)
 
 **Người dùng:** mở https://acquytrolai.web.app không vào game ngay mà ra **trang chủ** kinh dị như trong game, chạy được trên máy tính và điện thoại
