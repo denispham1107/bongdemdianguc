@@ -111,7 +111,7 @@ public class BiHatTung : MonoBehaviour
         {
             h = d.gameObject.AddComponent<BiHatTung>();
             h.caoLucDau = 0f;
-            DamagePopup.SpawnText(d.transform.position + Vector3.up * 2.1f, "HẤT TUNG!",
+            DamagePopup.SpawnTrangThai(d.transform.position + Vector3.up * 2.1f, "HẤT TUNG!",
                                   new Color(0.86f, 0.66f, 0.40f));
             if (d.anim != null) d.anim.PlayHit();
         }

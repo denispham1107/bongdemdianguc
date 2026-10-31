@@ -76,7 +76,7 @@ public class FrozenEffect : MonoBehaviour
     public static void BaoChuDongBang(Transform t)
     {
         if (t == null) return;
-        DamagePopup.SpawnText(t.position + Vector3.up * 2.1f, "ĐÓNG BĂNG!", MauChuDongBang);
+        DamagePopup.SpawnTrangThai(t.position + Vector3.up * 2.1f, "ĐÓNG BĂNG!", MauChuDongBang);
     }
 
     public static void Apply(Damageable d, float seconds)

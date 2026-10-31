@@ -48,7 +48,7 @@ public class BiUot : MonoBehaviour
             // Dat ngay - AddComponent mang gia tri mac dinh (memory addcomponent-mang-gia-tri-mac-dinh)
             u.conLai = giay;
             SoLanBaoChu++;
-            DamagePopup.SpawnText(d.transform.position + Vector3.up * 2.1f, "BỊ ƯỚT", MauChuUot);
+            DamagePopup.SpawnTrangThai(d.transform.position + Vector3.up * 2.1f, "BỊ ƯỚT", MauChuUot);
         }
         else if (giay > u.conLai) u.conLai = giay;
         SoLanApDung++;

@@ -244,7 +244,11 @@ public class GiatSet : MonoBehaviour
             // Khieng do tron don thi khong dinh choang (luat chung cua CombatUtil.AreaDamage)
             bool khiengDo = muc.khieng != null && muc.khieng.DangBat;
             muc.GhiKeDanh(boQua);
-            muc.TakeDamage(tangKhiUot ? sat * BiUot.HeSo(muc) : sat, DamageType.Lightning, den);
+            // KHONG phun tia trung don (vet sang trang keo dai) - nguoi dung 01/11/2026: trung thi chi boc khoi + tan lua + vet chay
+            // (SetChayDen o tren). Ca nguoi choi, BOT lan Quy cay (cung di qua day).
+            Damageable.BoQuaTiaTrungDon = true;
+            try { muc.TakeDamage(tangKhiUot ? sat * BiUot.HeSo(muc) : sat, DamageType.Lightning, den); }
+            finally { Damageable.BoQuaTiaTrungDon = false; }
             daTrung.Add(muc);
 
             // 15% CHOANG moi cu trung, gieo RIENG tung cu - ca tia dau lan tia lan.

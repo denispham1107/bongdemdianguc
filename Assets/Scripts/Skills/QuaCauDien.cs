@@ -188,12 +188,14 @@ public class QuaCauDien : MonoBehaviour
             // Dau tia bam qua cau, cuoi tia bam ke dich (kieu Giut set - ke dich chay thi tia chay theo)
             VfxFactory.TiaCauDien(transform.position, den, transform, d.transform);
             if (chamVom) VfxFactory.DienBoTrenVom(kChan, den);
-            else VfxFactory.ChamTiaDien(den);
+            else VfxFactory.ChamTiaDien(den, false);   // chi chop sang, khong vet toe keo dai (nguoi dung 01/11/2026, nhu Giut set)
             TiengViTri.GiatSetTrung(den);
 
             // GhiKeDanh TRUOC TakeDamage - khong thi ke giet vo danh, mat kinh nghiem (menu 61)
             d.GhiKeDanh(boQua);
-            d.TakeDamage(satThuongTia * BiUot.HeSo(d), DamageType.Lightning, den);   // ke BI UOT an them 50%
+            Damageable.BoQuaTiaTrungDon = true;   // khong vet sang trang trung don
+            try { d.TakeDamage(satThuongTia * BiUot.HeSo(d), DamageType.Lightning, den); }   // ke BI UOT an them 50%
+            finally { Damageable.BoQuaTiaTrungDon = false; }
             SoTiaDaBan++;
             SoLanTrung++;
             daBanRa++;

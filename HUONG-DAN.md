@@ -2807,6 +2807,33 @@ tat han bong (Rat yeu cu)                 0           662    2,5 trieu
   Menu 48 nay kiểm tỉ lệ cảnh từng mức bằng số VIẾT TAY (`mongPhanGiai` — trước đó chỉ so ảnh đệm với chính bảng `heSoPhanGiai`). Đo: Cực yếu ảnh đệm
   655×254 trên màn 1638 (cũ 573×223), 749 lượt vẽ, 0 vật đổ bóng — **0 lỗi**.
 
+## Giựt sét trúng chỉ còn khói + chữ trạng thái kiểu khắc lửa (01/11/2026)
+
+**Người dùng** (ảnh khoanh đỏ): (1) Giựt sét đánh trúng đối thủ thì bỏ các vệt sáng trắng bắn ra, chỉ cho đối thủ bốc khói; (2) các chữ hiệu ứng
+"CHOÁNG", "BỊ CUỐN"… quá đơn giản, không hợp phong cách game, cỡ còn to. Người dùng chọn: giữ khói + tàn lửa + vết cháy; áp cả Quỷ cây + Quả cầu điện;
+chữ kiểu "khắc lửa như tên trên đầu", cỡ ~55%.
+
+**Vệt trắng là gì:** `Damageable.TakeDamage` phun "tia trúng đòn" `VfxFactory.HitBurst` (prefab `Vfx_TrungDon`: 14 hạt chế độ Stretch, màu sét trắng xanh)
+cho MỌI đòn. Quả cầu điện còn có chùm vệt `Toe` riêng trong `ChamTiaDien`. **Sửa:** `GiatSet.MotMach` (người chơi, BOT, Quỷ cây cùng đi qua) và
+`QuaCauDien` bật `Damageable.BoQuaTiaTrungDon` quanh `TakeDamage` (cờ có sẵn cho nhịp cháy); `ChamTiaDien(den, false)` bỏ `Toe`, giữ chớp `Loe`. Khói
+`SetChayDen` (khói đen + tàn lửa + vết cháy) giữ nguyên.
+
+**Chữ trạng thái:** `DamagePopup.SpawnTrangThai` (thay `SpawnText` ở 7 chỗ: Choáng ×2 kể cả qua mạng, Bị cuốn, Đóng băng, Hất tung, Bị ướt, Đỡ đòn) —
+cùng bộ ghép với tên trên đầu: font Playfair Display SC Black (`GiaoDien.ChuTen`, đủ 134 chữ có dấu), quầng `QuangTen` hai lớp (ngoài tối = màu × 0,25,
+trong nhạt màu trạng thái), viền tối 8 hướng, chữ sáng 25% về trắng, gạch than `GachLua` nhuộm màu trạng thái; cỡ = 0,55 × chữ cũ; bật 1,22 → 1 trong
+18% đầu, bay 0,85 m/s, sống 1,15 s. "CHOÁNG!" xanh trắng → vàng nhạt (trùng màu "ĐỠ ĐÒN!" cũ). Số sát thương và "+hồi" giữ kiểu cũ.
+
+**Đo — menu 151** (`ThuChuTrangThai.cs`): Play Act2, quái thật, tung kỹ năng THẬT.
+- Giựt sét vào 4 Bộ xương: mất 360 máu, **tia trúng đòn +0**, 4 đám khói; **đối chứng** sát thương sét thường cùng con → +1 (bộ đếm `VfxFactory.SoLanTiaTrungDon` sống).
+- Quả cầu điện: 40 tia, 40 chỗ chạm, tia trúng đòn +0, 0 lớp `Toe`, 40/40 chớp `Loe`. Tia Quỷ cây (`PhongCuaQuai`) vào người chơi: +0.
+- Font: đọc cmap file `.ttf` — đủ mọi ký tự 6 chữ.
+- Ảnh chụp: cùng chữ, cùng chỗ, cùng tuổi 0,35 s — "ĐÓNG BĂNG!" 159×24 → 63×11 px, "CHOÁNG!" 114×24 → 46×11 px (×0,46). ⚠️ Lần đầu đo khung "sáng lên so
+  với ảnh nền" bắt cả ánh lửa lò chập chờn (chữ cũ ra 254×90) → chụp nền ngay trước mỗi lần + chỉ đếm điểm ảnh gần màu chữ.
+- Menu 69, 74: 0 lỗi. Menu 67 hỏng mục B2 (2 chữ "ĐÓNG BĂNG!" trên bản sao, mong 1) — chạy lại trên **mã cũ** (cất riêng các file vừa sửa) cũng hỏng
+  y hệt → lỗi có từ trước, không do việc này.
+
+Ảnh: `PlayTestShots/chu_trang_thai/tong_trinhbay.png` (trên cũ, dưới mới), `trinhbay_moi_can.png`.
+
 ## Quỷ cây: lông / vỏ nâu xám sẫm, đầu sợi + sừng + gậy màu be (01/11/2026)
 
 **Người dùng:** quái "Quỷ cây" trắng xám toàn thân, quá xấu; gửi ảnh con quỷ cây lông / vỏ xù nâu xám sẫm, đầu sợi sáng màu be, sừng và gậy xám be.

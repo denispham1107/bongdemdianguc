@@ -78,6 +78,6 @@ public static class ChongDo
         var cc = d.GetComponent<CharacterController>();
         if (cc != null) cao = Mathf.Clamp(cc.height, 1.2f, 2.6f);
         VfxFactory.CauDoDon(d.transform, cao);
-        DamagePopup.SpawnText(d.transform.position + Vector3.up * (cao + 0.35f), ChuDoDon, MauChu);
+        DamagePopup.SpawnTrangThai(d.transform.position + Vector3.up * (cao + 0.35f), ChuDoDon, MauChu);
     }
 }

@@ -63,7 +63,7 @@ public class WhirledEffect : MonoBehaviour
         var pcBiCuon = d.GetComponent<PlayerController>();
         if (pcBiCuon != null) pcBiCuon.NgatChieu();
 
-        DamagePopup.SpawnText(d.transform.position + Vector3.up * 2.1f, "BỊ CUỐN!",
+        DamagePopup.SpawnTrangThai(d.transform.position + Vector3.up * 2.1f, "BỊ CUỐN!",
                               new Color(0.85f, 0.82f, 0.70f));
         return w;
     }

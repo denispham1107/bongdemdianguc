@@ -1,0 +1,25 @@
+MENU 151 - Giut set chi con khoi + chu trang thai: 0 loi
+== A. Giut set
+  OK   A Giut set trung: quai mat 360 mau
+  OK   A Giut set: tia trung don phun them 0 lan (phai 0)
+  OK   A Giut set: van boc khoi - 4 dam SetChayDen (khoi + tan lua + vet chay)
+  OK   A doi chung: sat thuong set thuong van phun tia trung don (+1)
+  OK   A co BoQuaTiaTrungDon tra ve false sau don
+== B. Qua cau dien
+   so tia da ban 40, cho cham 40
+  OK   B Qua cau dien trung: quai mat 6221 mau, 40 cho cham
+  OK   B Qua cau dien: tia trung don phun them 0 lan (phai 0)
+  OK   B cho cham: 0 co lop Toe (phai 0), 40/40 co chop Loe
+== C. Quy cay
+  OK   C tia Quy cay trung nguoi choi: mat 30 mau
+  OK   C Quy cay: tia trung don phun them 0 lan (phai 0)
+== D. Font
+  OK   D doc duoc cmap PlayfairDisplaySC-Black.ttf
+  OK   D du ky tu cho 6 chu trang thai
+== E. Co chu tren anh
+  OK   E "ĐÓNG BĂNG!" ve bang GiaoDien.ChuTen (PlayfairDisplaySC-Black)
+   "ĐÓNG BĂNG!": cu 159x24 px, moi 63x11 px
+  OK   E "ĐÓNG BĂNG!" cao moi / cu = 0.46 (0,40-0,75; mong ~0,55 + gach chan)
+  OK   E "CHOÁNG!" ve bang GiaoDien.ChuTen (PlayfairDisplaySC-Black)
+   "CHOÁNG!": cu 114x24 px, moi 46x11 px
+  OK   E "CHOÁNG!" cao moi / cu = 0.46 (0,40-0,75; mong ~0,55 + gach chan)

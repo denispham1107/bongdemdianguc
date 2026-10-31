@@ -2851,8 +2851,12 @@ public static partial class VfxFactory
     }
 
     /// <summary>Tia mau / bui khi bi danh trung don thuong.</summary>
+    /// <summary>So lan phun tia trung don (phep thu menu 151 dem: Giut set / Qua cau dien trung khong duoc phun).</summary>
+    public static int SoLanTiaTrungDon;
+
     public static void HitBurst(Vector3 pos, Color color)
     {
+        SoLanTiaTrungDon++;
         var pf = GameAssets.I != null ? GameAssets.I.hitBurstPrefab : null;
         if (pf != null)
         {

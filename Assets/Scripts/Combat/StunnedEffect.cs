@@ -9,6 +9,9 @@ using UnityEngine;
 /// </summary>
 public class StunnedEffect : MonoBehaviour
 {
+    /// <summary>Mau chu "CHOÁNG!" - vang nhat nhu sao choang (01/11/2026, chu trang thai kieu khac lua; truoc xanh trang, trung "ĐỠ ĐÒN!").</summary>
+    public static readonly Color MauChuChoang = new Color(0.98f, 0.86f, 0.48f);
+
     [Tooltip("Con bao lau nua thi tinh lai.")]
     public float remaining = 2f;
 
@@ -43,8 +46,8 @@ public class StunnedEffect : MonoBehaviour
         // Chi bao "CHOÁNG!" o lan dau bi dinh, khoi roi mat. Truoc 14/09/2026 duong nay
         // in "CHOANG!" khong dau (chi duong qua mang HieuUngQuaMang co dau) - menu 67 kiem.
         if (isNew)
-            DamagePopup.SpawnText(d.transform.position + Vector3.up * 2.1f, "CHOÁNG!",
-                                  new Color(0.75f, 0.90f, 1f));
+            DamagePopup.SpawnTrangThai(d.transform.position + Vector3.up * 2.1f, "CHOÁNG!",
+                                       StunnedEffect.MauChuChoang);
     }
 
     void Start()

@@ -281,24 +281,15 @@ public static partial class VfxFactory
     }
 
     /// <summary>Cho tia dien cham vao ke dich: mot dom sang xanh loe len.</summary>
-    public static GameObject ChamTiaDien(Vector3 cho)
+    public static GameObject ChamTiaDien(Vector3 cho) { return ChamTiaDien(cho, true); }
+
+    /// <summary>coToe = false: chi chop sang, bo chum vet toe keo dai (tia Qua cau dien trung ke dich, nguoi dung 01/11/2026).</summary>
+    public static GameObject ChamTiaDien(Vector3 cho, bool coToe)
     {
         var go = new GameObject("ChamTiaDien");
         go.transform.position = cho;
         AutoDestroy.Add(go, 1.2f);
-
-        var ps = NewPS("Toe", go.transform, Vector3.zero, HatDienMat, ParticleSystemRenderMode.Stretch);
-        var m = ps.main;
-        m.duration = 0.3f; m.loop = false;
-        m.startLifetime = new ParticleSystem.MinMaxCurve(0.12f, 0.3f);
-        m.startSpeed = new ParticleSystem.MinMaxCurve(2.5f, 6f);
-        m.startSize = new ParticleSystem.MinMaxCurve(0.06f, 0.18f);
-        m.simulationSpace = ParticleSystemSimulationSpace.World;
-        m.maxParticles = 40;
-        var em = ps.emission;
-        em.rateOverTime = 0f;
-        em.SetBursts(new[] { new ParticleSystem.Burst(0f, 12, 18) });
-        var sh = ps.shape; sh.shapeType = ParticleSystemShapeType.Sphere; sh.radius = 0.2f;
+        if (coToe) ToeDien(go.transform);
 
         var denGo = new GameObject("Loe");
         denGo.transform.SetParent(go.transform, false);
@@ -310,5 +301,21 @@ public static partial class VfxFactory
         burst.peak = 3.2f; burst.duration = 0.25f; burst.range = 5f;
 
         return go;
+    }
+
+    static void ToeDien(Transform cha)
+    {
+        var ps = NewPS("Toe", cha, Vector3.zero, HatDienMat, ParticleSystemRenderMode.Stretch);
+        var m = ps.main;
+        m.duration = 0.3f; m.loop = false;
+        m.startLifetime = new ParticleSystem.MinMaxCurve(0.12f, 0.3f);
+        m.startSpeed = new ParticleSystem.MinMaxCurve(2.5f, 6f);
+        m.startSize = new ParticleSystem.MinMaxCurve(0.06f, 0.18f);
+        m.simulationSpace = ParticleSystemSimulationSpace.World;
+        m.maxParticles = 40;
+        var em = ps.emission;
+        em.rateOverTime = 0f;
+        em.SetBursts(new[] { new ParticleSystem.Burst(0f, 12, 18) });
+        var sh = ps.shape; sh.shapeType = ParticleSystemShapeType.Sphere; sh.radius = 0.2f;
     }
 }

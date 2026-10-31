@@ -147,8 +147,8 @@ public static class HieuUngQuaMang
             {
                 st = go.AddComponent<StunnedEffect>();
                 st.remaining = GiuSongGiay;       // mac dinh 2 giay - xem ghi chu dong bang
-                DamagePopup.SpawnText(go.transform.position + Vector3.up * 2.1f, "CHOÁNG!",
-                                      new Color(0.75f, 0.90f, 1f));
+                DamagePopup.SpawnTrangThai(go.transform.position + Vector3.up * 2.1f, "CHOÁNG!",
+                                           StunnedEffect.MauChuChoang);
             }
             st.remaining = Mathf.Max(st.remaining, GiuSongGiay);
         }
