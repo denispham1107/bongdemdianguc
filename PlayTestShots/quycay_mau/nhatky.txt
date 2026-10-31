@@ -1,0 +1,15 @@
+MENU 150 - mau Quy cay: 0 loi
+  OK   A vat lieu: _MainTex = Assets/Textures/QuyCay_Mau.png
+  OK   A vat lieu: giu anh phap tuyen + do bong Meshy
+  OK   A quai sinh tu kho quai dung vat lieu Enemy_QuyCay (1 renderer)
+  OK   A tim thay xuong Hips
+  cao 2.15 m, hong 0.85 m
+  dem moi: xam trang 3.4 % · sang TB 0.188 · am (r-b) -0.021 · 38378 diem anh
+  dem cu : xam trang 1.9 % · sang TB 0.192 · am (r-b) -0.038 · 38376 diem anh
+  OK   B dem: da am hon (r-b) -0.021 (cu -0.038)
+  OK   B dem: khong sang hon ban cu (0.98x)
+  ngay moi: xam trang 4.9 % · sang TB 0.298 · am (r-b) 0.025 · 38303 diem anh
+  ngay cu : xam trang 16.3 % · sang TB 0.293 · am (r-b) -0.030 · 38302 diem anh
+  OK   B ngay: da am hon (r-b) 0.025 (cu -0.030)
+  OK   B ngay: khong sang hon ban cu (1.02x)
+  OK   B ngay: diem anh xam trang 4.9 % (cu 16.3 %) giam > 50%

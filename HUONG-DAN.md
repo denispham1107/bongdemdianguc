@@ -2807,6 +2807,29 @@ tat han bong (Rat yeu cu)                 0           662    2,5 trieu
   Menu 48 nay kiểm tỉ lệ cảnh từng mức bằng số VIẾT TAY (`mongPhanGiai` — trước đó chỉ so ảnh đệm với chính bảng `heSoPhanGiai`). Đo: Cực yếu ảnh đệm
   655×254 trên màn 1638 (cũ 573×223), 749 lượt vẽ, 0 vật đổ bóng — **0 lỗi**.
 
+## Quỷ cây: lông / vỏ nâu xám sẫm, đầu sợi + sừng + gậy màu be (01/11/2026)
+
+**Người dùng:** quái "Quỷ cây" trắng xám toàn thân, quá xấu; gửi ảnh con quỷ cây lông / vỏ xù nâu xám sẫm, đầu sợi sáng màu be, sừng và gậy xám be.
+
+**Nguyên nhân:** ảnh màu Meshy (`Horned Shadowfiend`) tối (TB 68/255) nhưng gần như không có sắc — bão hoà 0,018, hơi ngả xanh (68 69 73). Dưới đèn
+cảnh, cộng độ bóng của các dải lông, cả con thành xám bạc: ban ngày 16,3% điểm ảnh "xám trắng" (sáng > 0,40, bão hoà < 0,06).
+
+**Cách làm** (`CongCu/Blender/quy_cay_mau.py`, Blender MCP, cùng cách Quỷ dữ): giữ độ sáng tối từng texel ảnh gốc (phân vị 5/25/50/75/95 = 0,014 /
+0,040 / 0,062 / 0,085 / 0,135), tô lại bằng thang (20 16 13) → (48 40 33) → (76 66 56) → (102 90 77) → (140 128 112) → (172 160 142), AO nhẹ (×0,8–1)
+nhuộm nâu. Không cần mặt nạ: lưới gồm **570 mảnh rời** (mỗi dải lông là một tấm) nên khoanh sừng / gậy theo hình rất khó — nhưng trong ảnh gốc sừng và
+gậy vốn sáng hơn lông, thang màu tự đưa chúng về màu be. Bản đầu đầu sáng thang (150 / 185) làm ban đêm sáng ×1,06 bản cũ → hạ còn 140 / 172.
+`Enemy_QuyCay.mat` chỉ đổi `_MainTex`.
+
+**Đo — menu 150** (`ThuMauQuyCay.cs`, chép từ menu 149): Quỷ cây THẬT, máy quay cận riêng + màn Game 2.5D, đêm + ngày, đối chứng = ảnh gốc Meshy cùng khung.
+
+| | Xám trắng | Ấm (r − b) | Độ sáng so bản cũ |
+|---|---|---|---|
+| Ngày | **4,9%** (cũ 16,3%) | **0,025** (cũ −0,030) | ×1,02 |
+| Đêm | 3,4% (cũ 1,9%) | −0,021 (cũ −0,038) | ×0,98 |
+
+⚠️ Mục "xám trắng giảm một nửa" chỉ xét khi bản cũ ≥ 2%: ban đêm bản cũ gần 0% (ánh trăng tối + xanh), không giảm được nữa; số này dao động giữa
+các lần chạy (0,0% → 1,9%) nên ban đêm chỉ dựa vào độ ấm + độ sáng. Ảnh: `PlayTestShots/quycay_mau/tong_rieng.png`, `tong_game.png`.
+
 ## Quỷ dữ: da xám be ấm + vết máu loang thân trên (01/11/2026)
 
 **Người dùng:** quái "Quỷ dữ" trắng xám toàn thân, quá xấu; gửi ảnh một con quỷ da xám be ấm, rãnh cơ nâu sậm, tay / chân nâu tối, sừng nâu xám — tô
