@@ -2807,6 +2807,38 @@ tat han bong (Rat yeu cu)                 0           662    2,5 trieu
   Menu 48 nay kiểm tỉ lệ cảnh từng mức bằng số VIẾT TAY (`mongPhanGiai` — trước đó chỉ so ảnh đệm với chính bảng `heSoPhanGiai`). Đo: Cực yếu ảnh đệm
   655×254 trên màn 1638 (cũ 573×223), 749 lượt vẽ, 0 vật đổ bóng — **0 lỗi**.
 
+## Quỷ dữ: da xám be ấm + vết máu loang thân trên (01/11/2026)
+
+**Người dùng:** quái "Quỷ dữ" trắng xám toàn thân, quá xấu; gửi ảnh một con quỷ da xám be ấm, rãnh cơ nâu sậm, tay / chân nâu tối, sừng nâu xám — tô
+màu như vậy, và **thêm nhiều vết máu loang lổ trên phần thân trên**.
+
+**Nguyên nhân:** khác Phù thủy, Quỷ dữ CÓ ảnh màu Meshy (8192², nhập ở 2048), nhưng ảnh ấy gần như không có sắc: độ bão hoà trung bình 0,063, trung
+bình (112 102 97). Trong game dưới đèn cảnh nó thành xám bạc đều toàn thân.
+
+**Cách làm** (`CongCu/Blender/quy_du_mau.py`, Blender MCP, nướng Cycles EMIT ra `Assets/Textures/QuyDu_Mau.png` 2048):
+- **Giữ chi tiết** của ảnh gốc: lấy độ sáng tuyến tính từng texel (phân vị 5/25/50/75/95 = 0,032 / 0,074 / 0,139 / 0,228 / 0,352) rồi tô lại bằng thang
+  màu ảnh mẫu: (48 32 23) → (88 66 51) → (128 111 97) → (164 148 132) → (196 182 165).
+- AO (khoảng 4 cm) nhuộm nâu các rãnh cơ — để NHẸ: bản đầu AO + nhuộm tay chân nhân chồng làm cả ảnh tối còn trung vị 59–74 / 255 (gốc 104); tôi tưởng
+  do AO, giảm AO chỉ lên 76 — đo bằng numpy riêng thang màu (dự đoán 112) mới thấy 10% texel chỉ còn ×0,3: tay / chân / cẳng chân nhân nâu quá đậm.
+- Mặt nạ theo **trọng số xương** (khung xương Quỷ dữ khớp thân, khác Phù thủy): tay (LeftHand / RightHand), chân (Foot, ToeBase) + cẳng chân dưới
+  0,36 m nâu sẫm (98 70 52); sừng (xương Head, trên 1,50 m, lệch khỏi trục) thang nâu riêng.
+- **Vết máu**: nhiễu 3D theo vị trí thế giới ở khung 0, kéo dọc (×0,45 theo z — vệt chảy xuống) + Voronoi; ngưỡng 0,47–0,50 = lõi máu (đỏ tươi
+  (122 10 8) lẫn máu khô (52 7 6) theo một lớp nhiễu nhỏ, nhân với chi tiết ảnh gốc để không phẳng như sơn), 0,40–0,47 = quầng loang (96 26 18) phủ
+  45%. Chỉ ở z 0,95–1,42 m (hông → cằm), trừ tay và sừng. ⚠️ Bản thử đặt tới 1,50 m → máu lan lên gốc sừng; bản đầu ngưỡng 0,56 → quá ít vết.
+
+`Enemy_QuyDu.mat`: chỉ đổi `_MainTex`, giữ ảnh pháp tuyến + độ bóng Meshy.
+
+**Đo — menu 149** (`ThuMauQuyDu.cs`): Play Act2, Quỷ dữ THẬT từ kho quái, máy quay cận riêng (lớp 31, nền đen) + màn Game góc 2.5D, đêm + ngày,
+**đối chứng = cùng vật liệu nhưng ảnh gốc Meshy**, cùng khung. Thân trên / dưới chia theo xương `Hips` của chính con quái chiếu lên ảnh.
+
+| | Máu thân trên (điểm ảnh đỏ) | Máu thân dưới | Ấm (r − b) | Độ sáng so bản cũ |
+|---|---|---|---|---|
+| Ngày | **9,8%** (cũ 0) | 0% | **0,049** (cũ 0,001) | ×0,93 |
+| Đêm | 0,3% (cũ 0) | 0% | −0,016 (cũ −0,044) | ×0,96 |
+
+⚠️ Ban đêm ánh trăng xanh biến máu đỏ thành mảng sẫm. Tôi hỏi kèm ảnh (phát sáng nhẹ như vũng máu dưới xác / bóng ướt / giữ) — người dùng **chọn giữ**;
+tông da ban ngày cũng chọn giữ. Phép thử chỉ đòi máu đỏ ở ban ngày. Ảnh: `PlayTestShots/quydu_mau/tong_rieng.png`, `tong_game.png`.
+
 ## Quái Phù thủy thành nữ tu ma — ảnh màu nướng bằng Blender MCP (01/11/2026)
 
 **Người dùng:** quái "Phù thủy" quần áo trắng bạch toàn thân, quá xấu; gửi ảnh một nữ tu ma (khăn trùm + áo đen, viền khăn ôm mặt + yếm ngực trắng,

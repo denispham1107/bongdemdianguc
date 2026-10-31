@@ -1,0 +1,16 @@
+MENU 149 - mau da Quy du + vet mau: 0 loi
+  OK   A vat lieu: _MainTex = Assets/Textures/QuyDu_Mau.png
+  OK   A vat lieu: giu anh phap tuyen + do bong Meshy
+  OK   A quai sinh tu kho quai dung vat lieu Enemy_QuyDu (1 renderer)
+  OK   A tim thay xuong Hips
+  cao 1.66 m, hong 0.88 m
+  dem moi: mau than tren 0.3 % · than duoi 0.0 % · sang TB 0.187 · am (r-b) -0.016 · 41756 diem anh
+  dem cu : mau than tren 0.0 % · than duoi 0.0 % · sang TB 0.194 · am (r-b) -0.044 · 41763 diem anh
+  OK   B dem: da am hon (r-b) -0.016 (cu -0.044)
+  OK   B dem: khong sang hon ban cu (0.96x)
+  ngay moi: mau than tren 9.8 % · than duoi 0.0 % · sang TB 0.313 · am (r-b) 0.049 · 41766 diem anh
+  ngay cu : mau than tren 0.0 % · than duoi 0.0 % · sang TB 0.338 · am (r-b) 0.001 · 41757 diem anh
+  OK   B ngay: vet mau than tren 9.8 % (cu 0.0 %) > 4% va > x4 doi chung
+  OK   B ngay: mau tap trung than tren: tren 9.8 % / duoi 0.0 % > x2,5
+  OK   B ngay: da am hon (r-b) 0.049 (cu 0.001)
+  OK   B ngay: khong sang hon ban cu (0.93x)
