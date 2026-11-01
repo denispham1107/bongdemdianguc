@@ -2833,8 +2833,24 @@ mặt vòm khiên (`chamDat: false`) không có vụ lóe nên cũng không có 
 ⚠️ Lần chạy đầu đếm mọi điểm sáng lên (không xét màu) ra cũ 22 424 / mới 9 231 — phần còn lại là **thân cây được đèn chớp của vụ lóe rọi trắng**
 (có ở cả hai bản); nay chỉ đếm điểm ngả xanh.
 
-Menu 83, 106: 0 lỗi (menu 83 mục I nay bỏ qua mọi tia tên bắt đầu "TiaMayGiong" khi đếm tia Sấm sét). Ảnh: `PlayTestShots/cot_sang_may_giong/`
-(`loe_cu_co_cot.png` / `loe_moi_khong_cot.png`, `game_cu.png` / `game_moi.png` góc "3D tự do").
+Menu 83, 106: 0 lỗi (menu 83 mục I nay bỏ qua mọi tia tên bắt đầu "TiaMayGiong" khi đếm tia Sấm sét).
+
+### Cùng ngày: tia gần thẳng đứng như Sấm sét
+
+**Người dùng** (ảnh hai tia đan chéo, nghiêng): "cho các tia sét đánh xuống giống như các tia sét trong Sấm sét". Kiểu vẽ tia vốn đã y hệt (cùng
+`LightningArc` mặc định, 20 đoạn, 2–3 nhánh, 0,30 s — đường gấp khúc tỉ lệ theo chiều dài). Khác ở **hình học**: Sấm sét từ 20 m, lệch ngang ≤ 9%
+chiều cao (gần thẳng đứng); Mây giông từ đáy mây 8 m nhưng lệch tới 0,45 × bán kính mây = 2,7 m (nghiêng ~19°), cộng tia con có gốc và ngọn lệch
+hai hướng ngẫu nhiên → hai tia cắt nhau. Người dùng chọn: **giữ gốc ở đáy mây 8 m**, **giữ tia con**, **không** rung máy quay (36 tia trong 9 s).
+
+**Sửa:** gốc tia = chỗ chạm + lệch ngang ≤ `MayGiong.LechTiaTheoCao` (0,09) × chiều cao, ở độ cao đáy mây. Tia con chạy **song song**: ngọn cách chỗ
+chạm 0,9–1,4 m, độ nghiêng = độ nghiêng tia chính ± `LechSongSong` 0,25 m.
+
+**Đo — menu 154** (0 lỗi): 15 tia chạm đất — nghiêng (lệch ngang / cao) lớn nhất tia chính **0,089**, tia con 0,093; **Sấm sét thật đo cùng lượt
+0,086** (bản trước tới 0,34); trục hai tia cách nhau ≥ **0,90 m** ở mọi độ cao (không đan chéo); cột sáng vẫn 0. Menu 83, 106, 136 (Mây giông đánh vào
+vòm khiên): 0 lỗi.
+
+Ảnh: `PlayTestShots/cot_sang_may_giong/` (`loe_cu_co_cot.png` / `loe_moi_khong_cot.png`; `game_truoc.png` = tia nghiêng + tia con đan chéo như ảnh
+người dùng, `game_moi.png` = hai tia gần thẳng đứng song song; góc "3D tự do").
 
 ## Vụ nổ lửa không còn vệt hạt — Quả cầu lửa, Thiên thạch, Lửa địa ngục (01/11/2026)
 

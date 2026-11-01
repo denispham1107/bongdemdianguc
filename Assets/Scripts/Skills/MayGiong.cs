@@ -36,7 +36,9 @@ public class MayGiong : MonoBehaviour
     /// Do cao day may (chan tia set) tren mat dat. 7 m chu khong 10: may quay "3D tu do" (sau lung 7,5 m, cui 22 do, goc nhin
     /// 55 do) o cho cach nhan vat 10 - 12 m chi thay toi ~5,5 m - may o 10 m nam han tren mep man hinh (anh ban ngay dau tien).
     /// </summary>
-    public const float CaoMay = 8f;   // 04/10/2026 nguoi dung "bay cao hon 1 chut" - chon 8 (truoc 7; 10 thi nam tren mep man hinh)
+    /// <summary>Tia lech ngang toi da = ti le nay x chieu cao tia (y LightningStrike: drift = height x 0,09).</summary>
+    public const float LechTiaTheoCao = 0.09f;
+    public const float CaoMay = 8f;  // 04/10/2026 nguoi dung "bay cao hon 1 chut" - chon 8 (truoc 7; 10 thi nam tren mep man hinh)
     /// <summary>May ket lai bao lau truoc tia dau.</summary>
     public const float GiayTuMay = 0.35f;
     /// <summary>Khoang cach giua hai tia: 5 giay / 20 tia.</summary>
@@ -179,8 +181,12 @@ public class MayGiong : MonoBehaviour
         cho.y = VfxFactory.GroundY(cho);
         DiemTiaCuoi = cho;
 
-        Vector2 lech = Random.insideUnitCircle * (BanKinh * 0.45f);
-        Vector3 tu = transform.position + new Vector3(lech.x, CaoMay, lech.y);
+        // Tia GAN THANG DUNG nhu Sam set (01/11/2026 nguoi dung: "tia set danh xuong giong nhu Sam set"; chon giu goc o day may 8 m):
+        // lech ngang <= LechTiaTheoCao x chieu cao - cung ti le LightningStrike (0,09 x 20 m). Truoc: lech toi 0,45 x BanKinh = 2,7 m
+        // tren 8 m (nghieng ~19 do), tia chinh + tia con dan cheo nhau.
+        float caoTu = transform.position.y + CaoMay;
+        Vector2 lech = Random.insideUnitCircle * (Mathf.Max(1f, caoTu - cho.y) * LechTiaTheoCao);
+        Vector3 tu = new Vector3(cho.x + lech.x, caoTu, cho.z + lech.y);
 
         // KHIEN (16/10/2026, nguoi dung: set chi cham mat khien, khong xuyen vao trong): duong tia cham vom cua ai thi tia dung o
         // mat vom - dien bo tren vom, khien nuot don, khong chay den / hat nga chu khien; ke NGOAI sat vom quanh cho cham van an.

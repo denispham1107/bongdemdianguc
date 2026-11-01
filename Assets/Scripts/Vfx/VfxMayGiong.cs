@@ -235,16 +235,20 @@ public static partial class VfxFactory
 
     /// <summary>
     /// TIA SET CON thay cho cot sang (01/11/2026, nguoi dung: "thay the tia sang la nay bang tia set"; chon "them 1 tia set con"):
-    /// cung kieu tia Sam set (LightningArc mac dinh), manh hon, 16 doan, 1 nhanh, tu day may lech 1-1,8 m so voi goc tia chinh
-    /// xuong DAT canh cho cham 0,7-1,4 m - moi lan danh thay 2 tia gap khuc tach nhau. Chi hinh.
+    /// cung kieu tia Sam set (LightningArc mac dinh), manh hon, 16 doan, 1 nhanh - moi lan danh thay 2 tia gap khuc tach nhau. Chi hinh.
+    /// Cung ngay (nguoi dung: "giong tia Sam set", chon giu tia con): tia con SONG SONG canh tia chinh - ngon cham dat canh cho cham
+    /// 0,9-1,4 m, do nghieng = do nghieng tia chinh +- LechSongSong -> gan thang dung, khong dan cheo tia chinh (truoc: goc va ngon lech
+    /// hai huong ngau nhien, hai tia cat nhau).
     /// </summary>
+    public const float LechSongSong = 0.25f;
     public static LightningArc TiaSetConMayGiong(Vector3 tu, Vector3 den)
     {
         Vector2 a = Random.insideUnitCircle.normalized;
-        Vector3 tuCon = tu + new Vector3(a.x, 0f, a.y) * Random.Range(1.0f, 1.8f);
-        Vector2 b = Random.insideUnitCircle.normalized;
-        Vector3 denCon = den + new Vector3(b.x, 0f, b.y) * Random.Range(0.7f, 1.4f);
+        Vector3 denCon = den + new Vector3(a.x, 0f, a.y) * Random.Range(0.9f, 1.4f);
         denCon.y = GroundY(denCon);
+        Vector2 b = Random.insideUnitCircle * LechSongSong;
+        Vector3 nghieng = tu - den; nghieng.y = 0f;
+        Vector3 tuCon = new Vector3(denCon.x + nghieng.x + b.x, tu.y, denCon.z + nghieng.z + b.y);
         var arc = LightningArc.Create(tuCon, denCon, HeSoNgangTiaCon, GiayTiaSamSet);
         arc.name = TenTiaCon;
         arc.segments = 16;

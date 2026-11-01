@@ -12,8 +12,9 @@ using UnityEngine;
 ///
 /// Vao Play Act2 (dem), tat GameDirector:
 ///   A. May giong THAT (MayGiong.Spawn) danh xuong dat ~4 s: moi vu loe cham dat "SetChamDat" KHONG con Column0/1 dang bat; moi tia chinh
-///      cham DAT co dung 1 tia con cung khung: goc o day may lech 1-1,8 m, ngon cham dat (lech mat Ground < 0,05) canh cho cham 0,7-1,4 m,
-///      manh hon (coreWidth x0,6), 1 nhanh.
+///      cham DAT co dung 1 tia con cung khung: ngon cham dat (lech mat Ground < 0,05) canh cho cham 0,9-1,4 m, SONG SONG tia chinh (+-0,25 m),
+///      truc hai tia cach nhau >= 0,6 m (khong dan cheo), manh hon (coreWidth x0,6), 1 nhanh. Tia chinh GAN THANG DUNG nhu Sam set
+///      (lech ngang / cao <= 0,09 - cung ngay nguoi dung: "tia set danh xuong giong Sam set"; C do luon tia Sam set that).
 ///   B. Tia dung o mat vom khien (TiaMayGiong(.., false)): 0 tia con, 0 vu loe.
 ///   C. DOI CHUNG: Sam set THAT (CastAt 2) van con cot sang, 0 tia con.
 ///   D. ANH: chi vu loe cham dat (khong tia) truoc cung mot may quay - cu (giu cot) / moi; dem diem anh SANG LEN o khung 1,2-6 m tren
@@ -102,7 +103,8 @@ public static class ThuCotSangMayGiong
             int d0 = MayGiong.SoTiaDaDanh, v0 = MayGiong.SoChamVom, c0 = VfxFactory.SoTiaSetCon, t0 = VfxFactory.SoCotSangDaTat;
             var may = MayGiong.Spawn(P + F * 9f, LayerMask.GetMask("Enemy"), mauToi);
             int soLoe = 0, loeConCot = 0, soChinh = 0, soCon = 0, conKhop = 0, chinhKhongCon = 0;
-            float lechGocMin = 99f, lechGocMax = 0f, lechNgonMin = 99f, lechNgonMax = 0f, lechDatMax = 0f, tiNgang = 0f;
+            float lechNgonMin = 99f, lechNgonMax = 0f, lechDatMax = 0f, tiNgang = 0f;
+            float nghiengChinhMax = 0f, nghiengConMax = 0f, songSongMax = 0f, cachTrucMin = 99f;
             for (float h = Time.time + 4.0f; Time.time < h; )
             {
                 yield return null;
@@ -124,16 +126,24 @@ public static class ThuCotSangMayGiong
                 foreach (var c in con)
                 {
                     LightningArc gan = null; float best = 99f;
-                    foreach (var m in chinh) { float dd = Ngang(m.start, c.start); if (dd < best && !daGhep.Contains(m)) { best = dd; gan = m; } }
+                    foreach (var m in chinh) { float dd = Ngang(m.end, c.end); if (dd < best && !daGhep.Contains(m)) { best = dd; gan = m; } }
                     if (gan == null) continue;
                     daGhep.Add(gan);
-                    float lg = Ngang(gan.start, c.start), ln = Ngang(gan.end, c.end);
+                    float ln = Ngang(gan.end, c.end);
                     float ld = Mathf.Abs(c.end.y - VfxFactory.GroundY(c.end));
-                    lechGocMin = Mathf.Min(lechGocMin, lg); lechGocMax = Mathf.Max(lechGocMax, lg);
                     lechNgonMin = Mathf.Min(lechNgonMin, ln); lechNgonMax = Mathf.Max(lechNgonMax, ln);
                     lechDatMax = Mathf.Max(lechDatMax, ld);
                     tiNgang = c.coreWidth / Mathf.Max(1e-4f, gan.coreWidth);
-                    if (lg >= 0.99f && lg <= 1.81f && ln >= 0.69f && ln <= 1.41f && ld < 0.05f && Mathf.Abs(c.start.y - gan.start.y) < 0.01f
+                    // do nghieng = lech ngang / chieu cao (Sam set: <= 0,09); song song = hieu hai vec-to nghieng; truc hai tia cach nhau o 11 do cao
+                    float nm = Ngang(gan.start, gan.end) / Mathf.Max(0.1f, gan.start.y - gan.end.y);
+                    float nc = Ngang(c.start, c.end) / Mathf.Max(0.1f, c.start.y - c.end.y);
+                    Vector3 vm = gan.start - gan.end, vc = c.start - c.end; vm.y = 0f; vc.y = 0f;
+                    float ss = (vm - vc).magnitude;
+                    float ct = 99f;
+                    for (int k = 0; k <= 10; k++) ct = Mathf.Min(ct, Ngang(Vector3.Lerp(gan.end, gan.start, k / 10f), Vector3.Lerp(c.end, c.start, k / 10f)));
+                    nghiengChinhMax = Mathf.Max(nghiengChinhMax, nm); nghiengConMax = Mathf.Max(nghiengConMax, nc);
+                    songSongMax = Mathf.Max(songSongMax, ss); cachTrucMin = Mathf.Min(cachTrucMin, ct);
+                    if (ln >= 0.89f && ln <= 1.41f && ld < 0.05f && Mathf.Abs(c.start.y - gan.start.y) < 0.01f && ss <= VfxFactory.LechSongSong + 0.001f
                         && c.branches == 1 && Mathf.Abs(tiNgang - VfxFactory.HeSoNgangTiaCon) < 0.01f) conKhop++;
                 }
                 foreach (var m in chinh) if (!daGhep.Contains(m)) chinhKhongCon++;
@@ -142,13 +152,17 @@ public static class ThuCotSangMayGiong
             int datDat = (MayGiong.SoTiaDaDanh - d0) - (MayGiong.SoChamVom - v0);
             nk.AppendLine(string.Format("  tia chinh {0} (cham dat {1}), tia con {2}, vu loe cham dat {3}, cot sang da tat {4}",
                 soChinh, datDat, soCon, soLoe, VfxFactory.SoCotSangDaTat - t0));
-            nk.AppendLine(string.Format("  goc tia con lech goc tia chinh {0:F2}-{1:F2} m | ngon lech cho cham {2:F2}-{3:F2} m | ngon lech mat dat <= {4:F3} m | be ngang x{5:F2}",
-                lechGocMin, lechGocMax, lechNgonMin, lechNgonMax, lechDatMax, tiNgang));
+            nk.AppendLine(string.Format("  ngon tia con lech cho cham {0:F2}-{1:F2} m | ngon lech mat dat <= {2:F3} m | be ngang x{3:F2}",
+                lechNgonMin, lechNgonMax, lechDatMax, tiNgang));
+            nk.AppendLine(string.Format("  do nghieng (lech ngang / cao) lon nhat: tia chinh {0:F3}, tia con {1:F3} (Sam set <= {2:F2}; ban cu toi 0,34) | lech song song <= {3:F2} m | hai truc cach nhau >= {4:F2} m",
+                nghiengChinhMax, nghiengConMax, MayGiong.LechTiaTheoCao, songSongMax, cachTrucMin));
+            Kiem(nghiengChinhMax <= MayGiong.LechTiaTheoCao + 0.001f, "A tia chinh gan thang dung nhu Sam set (nghieng " + nghiengChinhMax.ToString("F3") + " <= 0,09)");
+            Kiem(cachTrucMin >= 0.6f, "A tia con khong dan cheo tia chinh (truc cach nhau >= " + cachTrucMin.ToString("F2") + " m, phai >= 0,6)");
             Kiem(datDat >= 8, "A co " + datDat + " tia cham dat (>= 8)");
             Kiem(soLoe == datDat && loeConCot == 0, "A " + soLoe + " vu loe cham dat, con cot sang " + loeConCot + " (phai 0)");
             Kiem(VfxFactory.SoCotSangDaTat - t0 == 2 * soLoe, "A da tat " + (VfxFactory.SoCotSangDaTat - t0) + " tam cot sang = 2 x so vu loe");
             Kiem(soCon == datDat && VfxFactory.SoTiaSetCon - c0 == datDat && chinhKhongCon == 0, "A moi tia cham dat co dung 1 tia con (" + soCon + "/" + datDat + ", tia chinh thieu con " + chinhKhongCon + ")");
-            Kiem(conKhop == soCon, "A " + conKhop + "/" + soCon + " tia con dung cho (goc 1-1,8 m, ngon 0,7-1,4 m sat dat, manh x0,6, 1 nhanh)");
+            Kiem(conKhop == soCon, "A " + conKhop + "/" + soCon + " tia con dung cho (song song +-0,25 m, ngon 0,9-1,4 m sat dat, manh x0,6, 1 nhanh)");
         }
         yield return new WaitForSeconds(1.0f);
 
@@ -176,10 +190,17 @@ public static class ThuCotSangMayGiong
             var cuGoc = new HashSet<GameObject>(UnityEngine.SceneManagement.SceneManager.GetActiveScene().GetRootGameObjects());
             toi.mana = toi.maxMana;
             toi.CastAt(KySamSet, P + F * 8f);
-            int soLoe = 0, coCot = 0;
+            int soLoe = 0, coCot = 0; float nghiengSS = 0f; int soTiaSS = 0;
+            var cuArcC = new HashSet<LightningArc>(Object.FindObjectsByType<LightningArc>(FindObjectsInactive.Exclude));
             for (float h = Time.time + 3.0f; Time.time < h; )
             {
                 yield return null;
+                foreach (var a in Object.FindObjectsByType<LightningArc>(FindObjectsInactive.Exclude))
+                {
+                    if (!cuArcC.Add(a) || a.start.y - a.end.y < 8f) continue;   // chi tia chinh tu tren troi
+                    soTiaSS++;
+                    nghiengSS = Mathf.Max(nghiengSS, Ngang(a.start, a.end) / (a.start.y - a.end.y));
+                }
                 foreach (var g in UnityEngine.SceneManagement.SceneManager.GetActiveScene().GetRootGameObjects())
                 {
                     if (!cuGoc.Add(g) || !LaLoe(g)) continue;
@@ -190,6 +211,8 @@ public static class ThuCotSangMayGiong
             foreach (var st in Object.FindObjectsByType<LightningStorm>(FindObjectsInactive.Exclude)) Object.Destroy(st.gameObject);
             Kiem(soLoe >= 5 && coCot == soLoe, "C Sam set: " + soLoe + " vu loe, " + coCot + " con cot sang (giu nguyen)");
             Kiem(VfxFactory.SoTiaSetCon - c0 == 0, "C Sam set: tia con +" + (VfxFactory.SoTiaSetCon - c0) + " (phai 0)");
+            nk.AppendLine("  Sam set " + soTiaSS + " tia, do nghieng lon nhat " + nghiengSS.ToString("F3"));
+            Kiem(soTiaSS >= 5 && nghiengSS <= MayGiong.LechTiaTheoCao + 0.002f, "C do nghieng tia Sam set that <= 0,09 (cung chuan voi May giong)");
         }
         yield return new WaitForSeconds(1.5f);
 
@@ -226,7 +249,7 @@ public static class ThuCotSangMayGiong
             Object.Destroy(nen);
             Object.Destroy(cg);
 
-            // Anh may quay game (3D tu do nhu anh nguoi dung): mot tia May giong cu (tia + loe co cot) / moi, cho danh giua khung
+            // Anh may quay game (3D tu do nhu anh nguoi dung): mot tia May giong TRUOC (nghieng + tia con dan cheo) / moi, cho danh giua khung
             if (rig != null) { rig.enabled = true; rig.SetView((int)ViewMode.ThirdPerson3D); }
             Time.captureDeltaTime = 0f;
             yield return new WaitForSeconds(1.0f);
@@ -239,18 +262,23 @@ public static class ThuCotSangMayGiong
             for (int lan = 0; lan < 2; lan++)
             {
                 Random.InitState(1107);
-                Vector3 tu = cho + Vector3.up * MayGiong.CaoMay + cam.transform.right * 1.2f;
+                Vector3 tu = cho + Vector3.up * MayGiong.CaoMay + cam.transform.right * (lan == 0 ? 2.2f : 0.5f);
                 if (lan == 0)
                 {
+                    // TRUOC (commit 76ec369, anh nguoi dung): tia nghieng 2,2 m + tia con goc / ngon lech hai huong -> dan cheo
                     var arc = LightningArc.Create(tu, cho, 1f, VfxFactory.GiayTiaSamSet);
                     arc.name = "TAM_TiaCu"; arc.segments = 20; arc.branches = Random.Range(2, 4);
-                    VfxFactory.LightningImpact(cho, MayGiong.BanKinhTia);
+                    VfxFactory.LightningImpact(cho, MayGiong.BanKinhTia, true);
+                    Vector3 tuCon = tu - cam.transform.right * 1.5f;
+                    Vector3 denCon = cho + cam.transform.right * 1.1f; denCon.y = VfxFactory.GroundY(denCon);
+                    var con = LightningArc.Create(tuCon, denCon, VfxFactory.HeSoNgangTiaCon, VfxFactory.GiayTiaSamSet);
+                    con.name = "TAM_TiaConCu"; con.segments = 16; con.branches = 1;
                 }
                 else VfxFactory.TiaMayGiong(tu, cho);
                 yield return null; yield return null; yield return null;
                 yield return new WaitForEndOfFrame();
                 var tx = ScreenCapture.CaptureScreenshotAsTexture();
-                File.WriteAllBytes(Thu + (lan == 0 ? "game_cu.png" : "game_moi.png"), tx.EncodeToPNG());
+                File.WriteAllBytes(Thu + (lan == 0 ? "game_truoc.png" : "game_moi.png"), tx.EncodeToPNG());
                 Object.Destroy(tx);
                 for (int i = 0; i < 120; i++) yield return null;
             }

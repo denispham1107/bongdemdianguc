@@ -1282,6 +1282,10 @@ hơn ×1,5 và mở xuống 1,8–4,3 m** (người dùng chọn sau menu 94 ch�
   `LightningImpact(.., boCotSang: true)` (`TatCotSang`) + `TiaSetConMayGiong`: tia kiểu Sấm sét mảnh ×0,6, 16 đoạn, 1 nhánh, gốc lệch 1–1,8 m ở đáy
   mây, ngọn chạm đất cạnh chỗ chạm 0,7–1,4 m; tia dừng ở mặt vòm khiên không có tia con. Menu 154 (0 lỗi): Mây giông thật 15 chỗ chạm → 0 cột sáng,
   15/15 tia con đúng chỗ; đối chứng Sấm sét 19/19 còn cột; ảnh điểm sáng xanh trên chỗ chạm 13 980 → 4. Menu 83, 106: 0 lỗi.
+  ⚠️ **Cùng ngày: TIA GẦN THẲNG ĐỨNG NHƯ SẤM SÉT** (người dùng gửi ảnh: "tia sét đánh xuống giống Sấm sét"; chọn GIỮ gốc ở đáy mây 8 m, GIỮ tia
+  con, không rung máy quay): lệch ngang ≤ `MayGiong.LechTiaTheoCao` 0,09 × chiều cao (đúng tỉ lệ `LightningStrike` 0,09 × 20 m; trước lệch tới
+  2,7 m / 8 m ≈ 19°); tia con SONG SONG cạnh tia chính (ngọn cách chỗ chạm 0,9–1,4 m, độ nghiêng = tia chính ±`LechSongSong` 0,25 m — trước gốc / ngọn
+  lệch hai hướng ngẫu nhiên nên hai tia đan chéo). Menu 154: nghiêng lớn nhất 0,089 (Sấm sét thật 0,086), trục hai tia cách ≥ 0,90 m. Menu 83, 106, 136: 0 lỗi.
 - ⚠️ **MÀU ÁO TỪNG NGƯỜI CHƠI** (09/10/2026, người dùng): `Player_PhuThuy.mat` dùng shader `Diablo25D/PhuThuyDoiMau` (thay Standard) —
   vùng áo TÍM của ảnh (sắc độ 277–324°) thay bằng `_MauAo` giữ sáng tối, `_DoSangAo` 0,72 (người dùng chọn sáng hơn ~20%); `_MauAo.a` 0
   = áo gốc. Màu qua MaterialPropertyBlock (`MauAoNhanVat`), gắn ở `KhoiDongTranMang.GanDoi(..., ghế)`: Đơn theo ghế (6 màu), Đôi A lam / B đỏ;

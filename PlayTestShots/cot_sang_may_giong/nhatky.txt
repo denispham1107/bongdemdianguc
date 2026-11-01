@@ -1,17 +1,22 @@
 MENU 154 - May giong: cot sang thay bang tia set con: 0 loi
 == A May giong THAT danh xuong dat
   tia chinh 15 (cham dat 15), tia con 15, vu loe cham dat 15, cot sang da tat 30
-  goc tia con lech goc tia chinh 1.06-1.78 m | ngon lech cho cham 0.74-1.25 m | ngon lech mat dat <= 0.000 m | be ngang x0.60
+  ngon tia con lech cho cham 0.90-1.37 m | ngon lech mat dat <= 0.000 m | be ngang x0.60
+  do nghieng (lech ngang / cao) lon nhat: tia chinh 0.089, tia con 0.093 (Sam set <= 0.09; ban cu toi 0,34) | lech song song <= 0.24 m | hai truc cach nhau >= 0.90 m
+  OK   A tia chinh gan thang dung nhu Sam set (nghieng 0.089 <= 0,09)
+  OK   A tia con khong dan cheo tia chinh (truc cach nhau >= 0.90 m, phai >= 0,6)
   OK   A co 15 tia cham dat (>= 8)
   OK   A 15 vu loe cham dat, con cot sang 0 (phai 0)
   OK   A da tat 30 tam cot sang = 2 x so vu loe
   OK   A moi tia cham dat co dung 1 tia con (15/15, tia chinh thieu con 0)
-  OK   A 15/15 tia con dung cho (goc 1-1,8 m, ngon 0,7-1,4 m sat dat, manh x0,6, 1 nhanh)
+  OK   A 15/15 tia con dung cho (song song +-0,25 m, ngon 0,9-1,4 m sat dat, manh x0,6, 1 nhanh)
 == B Tia dung o mat vom (chamDat false)
   OK   B tia con +0, vu loe +0 (phai 0 / 0)
 == C DOI CHUNG Sam set THAT
   OK   C Sam set: 19 vu loe, 19 con cot sang (giu nguyen)
   OK   C Sam set: tia con +0 (phai 0)
+  Sam set 19 tia, do nghieng lon nhat 0.086
+  OK   C do nghieng tia Sam set that <= 0,09 (cung chuan voi May giong)
 == D Anh (dem)
-  diem anh SANG LEN o khung 1,2-6 m tren cho cham: cu 13980 / moi 4
-  OK   D cot sang tren anh: cu 13980, moi 4 (moi < 5% cu)
+  diem anh SANG LEN o khung 1,2-6 m tren cho cham: cu 10862 / moi 2
+  OK   D cot sang tren anh: cu 10862, moi 2 (moi < 5% cu)
