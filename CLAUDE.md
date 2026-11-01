@@ -965,7 +965,11 @@ hơn ×1,5 và mở xuống 1,8–4,3 m** (người dùng chọn sau menu 94 ch�
   (game đọc như cũ, KHÔNG sửa game) → `taiHoacTao(tên Google ≤ 16 ký tự)` → `signOut` SDK. **Console (01/11/2026)**: Firebase Auth bật Google (tên hiển thị
   "Ác Quỷ Trở Lại", email hỗ trợ của người dùng); Authorized domains + `acquytrolai.web.app`; Google Cloud OAuth client `121708566344-d4c8…` (dự án
   `diablo25d-game` — ⚠️ Cloud Console hay tự nhảy sang dự án "Noi vong tay", luôn kiểm tên dự án) redirect URI + `https://acquytrolai.web.app/__/auth/handler`.
-  Localhost chỉ thử được giao diện + đường lỗi (trình duyệt tích hợp chặn popup; chuyển trang khác miền không đọc được kết quả). CHƯA deploy / thử Google thật.
+  Localhost chỉ thử được giao diện + đường lỗi (trình duyệt tích hợp chặn popup; chuyển trang khác miền không đọc được kết quả). **Đã deploy**; máy tính
+  người dùng đăng nhập Google được. ⚠️ **iPhone treo "Đang mở đăng nhập Google..."** (game cài ra màn hình chính — `/choi/` không phiên chuyển về trang chủ
+  TRONG ứng dụng): Firebase gặp iOS chế độ ứng dụng thì mở popup bằng cú bấm liên kết giả (không `window.open`), cú bấm sau khi nạp thư viện bị iOS bỏ
+  qua, không lỗi nào → chờ mãi. Nay **điện thoại / ứng dụng đã cài → `signInWithRedirect` thẳng** (`nenChuyenTrang`); máy tính popup, thư viện NẠP SẴN
+  khi mở bảng. Đo (UA iPhone + `navigator.standalone`): bản cũ 8 s vẫn treo, 0 lần `window.open`; bản mới tới trang chọn tài khoản Google.
 - ⚠️ **Triển khai web**: **xoá sạch `web/choi/Build/`**, chép `Build/WebGL/Build/*`, `Build/WebGL/TemplateData/*`
   (ảnh tiêu đề + font Inter của trang Loading — thiếu là trang Loading mất tên game và font) VÀ
   `Build/WebGL/index.html` sang **`web/choi/`** (KHÔNG đè `web/index.html` — đó là trang chủ). Bản build **không nén sẵn** (Firebase tự nén khi gửi — nó gạt bỏ `Content-Encoding` tự đặt) và

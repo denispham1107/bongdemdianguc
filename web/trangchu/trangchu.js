@@ -215,6 +215,21 @@
   }
   function batNutGoogle(bat) { document.querySelectorAll("[data-google]").forEach(function (n) { n.disabled = !bat; }); }
 
+  // Dien thoai / ung dung da cai ra man hinh chinh: CHUYEN TRANG sang Google, khong popup. iPhone o che do ung dung da cai, Firebase mo
+  // popup bang cu bam lien ket gia (khong qua window.open); cu bam nam sau khi nap thu vien nen iOS lang le bo qua, Firebase khong nhan loi
+  // nao -> treo "Dang mo dang nhap Google..." mai (nguoi dung 01/11/2026, do lai bang UA iPhone + navigator.standalone).
+  function nenChuyenTrang() {
+    var ua = navigator.userAgent || "";
+    if (navigator.standalone === true) return true;
+    if (window.matchMedia && matchMedia("(display-mode: standalone), (display-mode: fullscreen)").matches) return true;
+    if (/iPhone|iPad|iPod|Android/i.test(ua)) return true;
+    return navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1;     // iPad bao la Mac
+  }
+  function chuyenTrangGoogle(auth, nha) {
+    try { sessionStorage.setItem(KHOA_CHO_GOOGLE, "1"); } catch (x) { }
+    return auth.signInWithRedirect(nha).then(function () { return new Promise(function () { }); });
+  }
+
   function dangNhapGoogle() {
     if (dangGoogle) return;
     dangGoogle = true; batNutGoogle(false);
@@ -224,12 +239,10 @@
       authDung = auth;
       var nha = new firebase.auth.GoogleAuthProvider();
       nha.setCustomParameters({ prompt: "select_account" });
+      if (nenChuyenTrang()) return chuyenTrangGoogle(auth, nha);
       return auth.signInWithPopup(nha).catch(function (e) {
         // Popup bi chan / moi truong khong cho popup -> chuyen trang sang Google, quay ve doc ket qua (cuoi file)
-        if (e && (e.code === "auth/popup-blocked" || e.code === "auth/operation-not-supported-in-this-environment")) {
-          try { sessionStorage.setItem(KHOA_CHO_GOOGLE, "1"); } catch (x) { }
-          return auth.signInWithRedirect(nha).then(function () { return new Promise(function () { }); });
-        }
+        if (e && (e.code === "auth/popup-blocked" || e.code === "auth/operation-not-supported-in-this-environment")) return chuyenTrangGoogle(auth, nha);
         throw e;
       });
     }).then(function (kq) {
@@ -280,6 +293,7 @@
     $("o-mat-khau").setAttribute("autocomplete", c === "dangky" ? "new-password" : "current-password");
     bao("", false);
     if (!bang.open) bang.showModal();
+    napFirebase().catch(function () { });       // nap san: bam nut Google thi popup mo ngay trong cu bam (Safari may tinh chan popup tre)
     setTimeout(function () { (c === "dangky" ? $("o-ten") : $("o-email")).focus(); }, 30);
   }
 
@@ -344,6 +358,7 @@
     ld.hidden = !LY_DO[lyDo];
     if (bang.open) bang.close();
     if (!bangCan.open) bangCan.showModal();
+    napFirebase().catch(function () { });
   }
 
   function bamChoiNgay(e) {

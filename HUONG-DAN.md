@@ -2835,6 +2835,30 @@ với tên Google (≤ 16 ký tự, quá ngắn thì phần trước @ của ema
 quay về trang chủ, bảng tài khoản mở với "Không đăng nhập được bằng Google, hãy thử lại.", nút bật lại, không để lại phiên. ⚠️ Bản đầu quay về tay trắng thì
 IM LẶNG (kết quả chuyển trang khác miền không đọc được) — nay báo lỗi. Đăng nhập Google thật chỉ thử được trên tên miền thật sau khi deploy.
 
+### iPhone treo ở "Đang mở đăng nhập Google..." (01/11/2026)
+
+**Người dùng** (ảnh iPhone): bấm "Đăng nhập bằng Google" thì hiện "Đang mở đăng nhập Google..." rồi đứng đó, không mở trang Google; máy tính vẫn đăng
+nhập được. Ảnh là bảng "Chưa đăng nhập" không có thanh Safari — game **cài ra màn hình chính**: ứng dụng mở `/choi/`, chưa có phiên (kho của ứng dụng
+iOS tách khỏi Safari) nên bị chuyển về trang chủ ngay trong ứng dụng.
+
+**Nguyên nhân:** Firebase gặp iPhone ở chế độ ứng dụng (`navigator.standalone`) thì không gọi `window.open` mà tạo một liên kết rồi bấm giả vào nó,
+và không chờ được kết quả (không có cửa sổ để theo dõi). Thư viện nạp SAU cú bấm thật, nên iOS coi cú bấm giả là không do người dùng → lặng lẽ bỏ qua;
+không có lỗi nào để chuyển sang đường dự phòng.
+
+**Sửa** (`trangchu.js`): điện thoại / máy tính bảng / ứng dụng đã cài (`nenChuyenTrang`) → **chuyển trang thẳng sang Google** (`signInWithRedirect`,
+`authDomain` cùng gốc nên quay về đọc kết quả được); máy tính giữ cửa sổ bật lên, thư viện **nạp sẵn khi mở bảng** để cửa sổ mở ngay trong cú bấm.
+
+**Đo** (máy chủ cục bộ, giả `navigator.userAgent` iPhone + `navigator.standalone`):
+
+| Ca | Kết quả |
+|---|---|
+| Bản cũ, iPhone ứng dụng đã cài | 8 s vẫn "Đang mở…", nút khoá, `window.open` 0 lần — **tái hiện đúng lỗi** |
+| Bản cũ, iPhone Safari thường (popup bị chặn) | chuyển trang sang Google — vì sao Safari thường không lỗi |
+| Bản mới, iPhone ứng dụng đã cài | chuyển trang tới `accounts.google.com/.../accountchooser` |
+| Bản mới, máy tính | `window.open` được gọi (cửa sổ bật lên như trước); thư viện chưa nạp lúc vào trang, đã nạp sau khi mở bảng |
+
+Chưa thử trên iPhone thật — cần người dùng thử sau khi deploy.
+
 ## Xoay ngang điện thoại khi vào game (01/11/2026)
 
 **Người dùng:** đã đăng nhập và bấm **Chơi ngay** thì hiển thị thông báo hình ảnh yêu cầu xoay ngang điện thoại, đồng thời khóa màn hình dọc. Người dùng
