@@ -71,7 +71,7 @@ public class QuaCauBang : MonoBehaviour
     /// <summary>Qua cau da bay bao lau o may ben kia truoc khi tin den - xem Fireball.tuaTruoc.</summary>
     public float tuaTruoc;
 
-    /// <summary>Cap ky nang cua NGUOI TUNG - cap 5 thi tang bang het gio NO TUNG (nguoi dung 19/09/2026).</summary>
+    /// <summary>Cap ky nang cua NGUOI TUNG - tu cap TangBangNo.CapNo (1, truoc 5) tang bang het gio NO TUNG.</summary>
     public int capKyNang = 1;
 
     /// <summary>
@@ -204,7 +204,7 @@ public class QuaCauBang : MonoBehaviour
         VfxFactory.ThaDuoiQuaCauBang(transform);
         var daTrungNo = soLanNay > 0 ? Fireball.KeTrongVung(transform.position, blastRadius, damageMask, boQua) : null;
         var tangBang = VfxFactory.NoQuaCauBang(transform.position, blastRadius);
-        // CAP 5: tang bang den luc tan thi NO TUNG, them 100 sat thuong quanh do (nguoi dung 19/09/2026).
+        // Tang bang den luc tan thi NO TUNG, them 100 sat thuong quanh do (19/09/2026 cap 5; 01/11/2026 tu cap 1).
         // Khac Mua bang: Qua cau bang VAN moc tang bang moi lan no, khong phu thuoc co dong bang duoc ai
         // khong (nguoi dung chot nhu vay khi toi hoi lai).
         if (capKyNang >= TangBangNo.CapNo) TangBangNo.Gan(tangBang, damageMask, boQua);

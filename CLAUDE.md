@@ -267,6 +267,9 @@ Bảng đầy đủ nằm ở mục "Phần 4" trong `HUONG-DAN.md`.
   vẫn còn): shader `Diablo25D/ParticleAlphaSatDat` mờ dần 0,6 m sát đất, độ cao đất qua MaterialPropertyBlock (`MemSatDat`) — áp cho
   `SuongVong`, `Mist` của `Vfx_NoBang`, `SuongBung` của quả cầu. Vật liệu gốc `Resources/KyNang/QuaCauBang/SuongSatDat.mat` giữ shader
   trong bản build. Menu 68 mục J nay so HỆ SỐ PHÓNG vụ nổ (trước vô tình đo quả cầu Flash).
+  ⚠️ **01/11/2026: TẢNG BĂNG NỔ TỪ CẤP 1** (người dùng: "không cần lên cấp 5"; chọn 100 mọi cấp + cả Mưa băng): `TangBangNo.CapNo` 5 → **1**;
+  mọi dòng "CẤP 5: tảng băng nổ" bên dưới là LỊCH SỬ (cấp 5 Quả cầu băng chỉ còn 6 quả). Menu 68 N: Mưa băng cấp 1 nổ 100 ở tâm / 60 ở 3 m, Quả cầu băng
+  cấp 1 2 tảng 2 vụ nổ (+141 máu); menu 127: cấp 1 mỗi tảng một tiếng vỡ nổ, 0 tiếng vỡ thường. Cả hai 0 lỗi.
   Cụm gai băng trên đất của **Mưa băng** dùng chung cỡ hình `QuaCauBang.BanKinhHinhBang` (2,55 m, người dùng xin 16/09/2026) —
   chỉ hình, vùng sát thương mỗi tảng vẫn 1,7 m (menu 68 mục J đo kích thước thật).
   **Mưa băng rơi QUẢ CẦU BĂNG** thay tảng băng (16/09/2026): `VfxFactory.QuaCauBangRoi` (luồng khí lạnh/vệt băng như Quả cầu băng, bản nhẹ:

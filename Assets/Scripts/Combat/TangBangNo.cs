@@ -1,7 +1,8 @@
 using UnityEngine;
 
 /// <summary>
-/// TANG BANG NO KHI HET GIO (nguoi dung xin 19/09/2026, cho CA Mua bang va Qua cau bang o CAP 5).
+/// TANG BANG NO KHI HET GIO (nguoi dung xin 19/09/2026, cho CA Mua bang va Qua cau bang o CAP 5;
+/// 01/11/2026 nguoi dung: "tu cap 1 ... cac tang bang cung tu no luon, khong can len cap 5" - chon 100 moi cap, ca Mua bang).
 ///
 /// "Khi skill dat cap 5, tang bang den thoi gian bien mat thay vi bien mat nhu binh thuong, thi se
 /// no tung gay them 100 sat thuong cho doi thu va cac doi thu o gan do."
@@ -26,8 +27,8 @@ public class TangBangNo : MonoBehaviour
     /// <summary>Ban kinh vu no - nguoi dung chon 3,4 m = QuaCauBang.BanKinhNo.</summary>
     public const float BanKinh = 3.4f;
 
-    /// <summary>Cap ky nang tro len thi tang bang moi no.</summary>
-    public const int CapNo = 5;
+    /// <summary>Cap ky nang tro len thi tang bang moi no - 1 tu 01/11/2026 (truoc 5).</summary>
+    public const int CapNo = 1;
 
     /// <summary>No som hon luc bi xoa bang nay de chac chan Update kip chay.</summary>
     public const float NoSomHon = 0.12f;

@@ -125,7 +125,7 @@ public class FallingShard : MonoBehaviour
                     var tang = VfxFactory.IceImpact(cho, coHinh, true);
                     VfxFactory.PhongManhVo(tang, VfxFactory.HeSoManhVoMuaBang);
                     SoLanCoGai++;
-                    // CAP 5: tang bang het gio thi no tung, them 100 sat thuong quanh do
+                    // Tang bang het gio thi no tung, them 100 sat thuong quanh do (tu cap TangBangNo.CapNo = 1, truoc 5)
                     if (capKyNang >= TangBangNo.CapNo) TangBangNo.Gan(tang, damageMask, boQua);
                 }
                 // O cho roi van co chop sang / vong lanh / suong, chi khong co tang bang

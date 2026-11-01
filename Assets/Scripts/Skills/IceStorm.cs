@@ -80,7 +80,7 @@ public class IceStorm : MonoBehaviour
 
     /// <summary>
     /// Cap ky nang cua NGUOI TUNG (di kem goi tin, xem PlayerController.capPhepDangTung).
-    /// Cap 5 thi moi tang bang het gio se NO TUNG them 100 sat thuong (nguoi dung 19/09/2026).
+    /// Moi tang bang het gio se NO TUNG them 100 sat thuong (19/09/2026 cap 5; 01/11/2026 tu cap 1).
     /// Giu o day cung ly do voi boQua: manh roi ra dan trong 5 giay, khong doc bien tam luc ay duoc.
     /// </summary>
     public int capKyNang = 1;

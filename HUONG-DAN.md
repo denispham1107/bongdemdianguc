@@ -2903,6 +2903,22 @@ Chưa kiểm được trên máy thật: khóa ngang thật (cần toàn màn h�
 template chỉ khác 7 dòng Unity điền tên tệp / phiên bản) — giữ nguyên `.data` 213,8 MB, người chơi không phải tải lại lần nữa trong ngày. Build sau sinh lại
 trang này từ template như thường. Trang thật: có `#xoay-ngang`, `khoaNgang`, hai ảnh 200, manifest `landscape`.
 
+## Tảng băng nổ từ cấp 1 — Quả cầu băng + Mưa băng (01/11/2026)
+
+**Người dùng:** "Quả cầu băng: điều chỉnh lại từ cấp 1, khi các quả cầu băng đánh trúng mục tiêu làm xuất hiện các tảng băng, sau một thời gian các tảng
+băng cũng tự nổ luôn, không cần lên cấp 5". Chọn: sát thương vụ nổ **100 mọi cấp** (như cấp 5 cũ, 3,4 m giảm dần ra rìa) và **Mưa băng cũng nổ từ cấp 1**.
+
+**Sửa:** `TangBangNo.CapNo` 5 → 1 (cả `QuaCauBang.Explode` lẫn `FallingShard` đọc hằng này). Sách phép: hai kỹ năng ghi tảng băng nổ không kèm "CẤP 5";
+cấp 5 Quả cầu băng chỉ còn "sáu quả thay vì bốn". Phép thử: menu 68 N1 (trước là đối chứng "cấp 4 không nổ") nay đo Mưa băng cấp 1, N3 đo Quả cầu băng
+cấp 1; menu 127 B (tung thật ở cấp 1) nay đòi mỗi tảng một tiếng vỡ nổ.
+
+| Phép thử | Kết quả |
+|---|---|
+| Menu 68 N1 — Mưa băng cấp 1 | 1 vụ nổ; bia tại chỗ mất 100,0, bia 3 m mất 60,0 |
+| Menu 68 N2 — Mưa băng cấp 5 | như cũ; bia 4 m (ngoài 3,4 m) mất 0 |
+| Menu 68 N3 — Quả cầu băng cấp 1 | 2 tảng có luật nổ, 2 vụ nổ, bia mất thêm 141 máu sau khi quả cầu đã nổ xong |
+| Menu 127 B — tung thật cấp 1 | 4 quả, 32 cụm gai; tiếng vỡ nổ +4, tiếng vỡ thường 0 — **0 lỗi** (menu 68 cũng 0 lỗi) |
+
 ## Đăng ký / đăng nhập chỉ ở trang chủ (01/11/2026)
 
 **Người dùng** (ảnh màn đăng nhập trong game): ở trang chủ https://acquytrolai.web.app, chưa đăng nhập mà bấm **Chơi ngay** thì chặn, hiện bảng

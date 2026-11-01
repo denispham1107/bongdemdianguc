@@ -1565,7 +1565,7 @@ public class PlayerController : MonoBehaviour
                 mua.shardDamage *= manhHon;
                 mua.freezeSeconds += themGiay;
                 mua.chamGiay += themGiay;
-                // Cap 5: tang bang het gio thi no tung (TangBangNo). capPhep la cap cua NGUOI TUNG.
+                // Tang bang het gio thi no tung tu cap TangBangNo.CapNo (TangBangNo). capPhep la cap cua NGUOI TUNG.
                 mua.capKyNang = capPhep;
             }
         }

@@ -45,7 +45,7 @@ using UnityEngine;
 ///      binh thuong, thi se no tung gay them 100 sat thuong cho doi thu va cac doi thu o gan do" - cho CA Mua bang
 ///      lan Qua cau bang; hoi lai: ban kinh 3,4 m, dung 100 co dinh): tha tang bang THAT roi cho no het gio -
 ///      bia dung tai cho mat dung 100, bia cach 3,0 m mat it hon (giam dan), bia cach 4,0 m KHONG mat gi;
-///      DOI CHUNG cap 4 -> tang bang tan im lang, khong ai mat mau. Lam ca voi Mua bang va Qua cau bang.
+///      01/11/2026: no tu CAP 1 (truoc chi cap 5) - N1 do Mua bang cap 1, N3 Qua cau bang cap 1. Lam ca voi Mua bang va Qua cau bang.
 ///   M. (cung ngay) CAP 5 ra 5 qua: tung that o cap 4 (DOI CHUNG) -> 3 qua, cap 5 -> 5 qua; goi ky nang cap 5 tu nguoi kia ->
 ///      may minh cung ra 5 qua. NGUOI CHOI bi dong bang: khong di duoc (HeSoTocBang = 0) va CastAt bi tu choi.
 ///   L. (16/09/2026, nguoi dung: qua cau cua Mua bang "chi trung mat dat thi no binh thuong khong tao khoi bang;
@@ -1011,12 +1011,12 @@ public static class ThuQuaCauBang
             float thatGan = Vector3.Distance(choN, biaGan.transform.position);
             float thatXa = Vector3.Distance(choN, biaXa.transform.position);
 
-            // --- N1. DOI CHUNG: cap 4 thi tang bang tan im lang ---
+            // --- N1. CAP 1 cung no (01/11/2026, nguoi dung: "tu cap 1 ... khong can len cap 5"; truoc la doi chung cap 4 tan im lang) ---
             int no0 = TangBangNo.SoLanNo;
             var qua4 = VfxFactory.QuaCauBangRoi(choN, 3f, 0.12f);
             var fs4 = qua4.GetComponent<FallingShard>();
             fs4.damage = 1f; fs4.impactRadius = 1.7f; fs4.damageMask = maskEnemy;
-            fs4.freezeChance = 1f; fs4.capKyNang = 4;
+            fs4.freezeChance = 1f; fs4.capKyNang = 1;
             yield return new WaitForSeconds(0.6f);
             float m4Tam = biaTam.health, m4Gan = biaGan.health;
             yield return new WaitForSeconds(5f);             // qua han 4 giay cua tang bang
@@ -1042,23 +1042,23 @@ public static class ThuQuaCauBang
             float mat5Tam = m5Tam - biaTam.health, mat5Gan = m5Gan - biaGan.health, mat5Xa = m5Xa - biaXa.health;
             int no5 = TangBangNo.SoLanNo - no1;
 
-            Ghi(string.Format("N. Mua bang CAP 4 (doi chung): {0} vu no; bia tai cho mat {1:F1} mau, bia 3,0 m mat {2:F1}",
+            Ghi(string.Format("N. Mua bang CAP 1: {0} vu no; bia tai cho mat {1:F1} mau, bia 3,0 m mat {2:F1}",
                 no4, mat4Tam, mat4Gan));
             Ghi(string.Format("N. Mua bang CAP 5: {0} tang bang co luat no, {1} vu no; bia tai cho ({2:F2} m) mat {3:F1}, bia {4:F2} m mat {5:F1}, bia {6:F2} m mat {7:F1} (ban kinh no {8} m, sat thuong {9})",
                 soTang, no5, thatTam, mat5Tam, thatGan, mat5Gan, thatXa, mat5Xa, TangBangNo.BanKinh, TangBangNo.SatThuong));
-            Kiem(no4 == 0 && mat4Tam < 1f, "doi chung hong: cap 4 ma tang bang van no");
+            Kiem(no4 >= 1 && Mathf.Abs(mat4Tam - TangBangNo.SatThuong) < 1f, "cap 1 ma tang bang Mua bang khong no dung 100");
             Kiem(soTang >= 1 && no5 >= 1, "cap 5 ma tang bang khong no");
             Kiem(Mathf.Abs(mat5Tam - TangBangNo.SatThuong) < 1f, "vu no khong gay dung 100 sat thuong o tam");
             Kiem(mat5Gan > 50f && mat5Gan < TangBangNo.SatThuong, "bia trong ban kinh khong an don giam dan");
             Kiem(mat5Xa < 1f, "bia NGOAI ban kinh 3,4 m ma van an don");
 
-            // --- N3. QUA CAU BANG cap 5: tang bang sau vu no cung no ---
+            // --- N3. QUA CAU BANG cap 1: tang bang sau vu no cung no (truoc chi cap 5) ---
             XoaHieuUng(biaTam); XoaHieuUng(biaGan);
             biaTam.health = biaTam.maxHealth;
             yield return null;
             int no2 = TangBangNo.SoLanNo;
             var qc = QuaCauBang.Spawn(choN + hN * -3f + Vector3.up * 1f, hN, LayerMask.GetMask("Default"), maskEnemy);
-            qc.capKyNang = 5;
+            qc.capKyNang = 1;
             qc.boQua = mauToi;
             yield return new WaitForSeconds(1.2f);
             float mQC = biaTam.health;
@@ -1067,9 +1067,9 @@ public static class ThuQuaCauBang
             yield return new WaitForSeconds(5f);
             float matQC = mQC - biaTam.health;
             int noQC = TangBangNo.SoLanNo - no2;
-            Ghi(string.Format("N. Qua cau bang CAP 5: {0} tang bang co luat no, {1} vu no; bia mat them {2:F1} mau sau khi qua cau da no xong",
+            Ghi(string.Format("N. Qua cau bang CAP 1: {0} tang bang co luat no, {1} vu no; bia mat them {2:F1} mau sau khi qua cau da no xong",
                 tangQC, noQC, matQC));
-            Kiem(tangQC >= 1 && noQC >= 1, "Qua cau bang cap 5 ma tang bang khong no");
+            Kiem(tangQC >= 1 && noQC >= 1, "Qua cau bang cap 1 ma tang bang khong no");
             Kiem(matQC > 50f, "vu no tang bang cua Qua cau bang khong gay sat thuong");
 
             Object.Destroy(biaTam.gameObject);

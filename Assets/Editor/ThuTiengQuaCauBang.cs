@@ -241,14 +241,15 @@ public static class ThuTiengQuaCauBang
             qua.Count, SL(TiengViTri.Loai.CauBangBan) - b0, SL(TiengViTri.Loai.CauBangBay) - y0, SL(TiengViTri.Loai.CauBangNo) - n0, banB, bayB,
             lucNo - lucTung, bayConB, noB, string.Join(" / ", heSoNo.ConvertAll(x => x.ToString("F2")))));
         Ghi(string.Format("   loa: luc bay RMS {0:F4}, luc no RMS {1:F4} (dinh {2:F4}), tuong quan hai kenh {3:F3} / {4:F3}", kqBay[0], kqNo[0], kqNo[4], kqBay[3], kqNo[3]));
-        Ghi(string.Format("   khoi bang mo dan: {0} cum gai luc no xong, 3,5 s sau con {1}; tieng vo +{2}, tieng vo no +{3} (phai 0 - mo dan khong keu)",
+        Ghi(string.Format("   khoi bang mo dan: {0} cum gai luc no xong, 3,5 s sau con {1}; tieng vo +{2}, tieng vo no +{3} (01/11/2026 cap 1 cung no: vo no >= 1, vo 0)",
             soKhoi, conCumGai, SL(TiengViTri.Loai.BangVo) - v0, SL(TiengViTri.Loai.BangVoNo) - vno0));
         Kiem(qua.Count >= 4 && banB == 1 && bayB == qua.Count, "tung Qua cau bang khong ra 1 tieng ban + moi qua 1 tieng bay");
         Kiem(bayConB == 0 && noB == qua.Count && heSoNo.Count == qua.Count && Mathf.Approximately(heSoNo[0], 1f) && heSoNo[heSoNo.Count - 1] < 0.5f,
              "trung hop: tieng bay khong tat / khong du tieng no (qua sau nho lai)");
         Kiem(kqNo[0] > 1e-3f && kqNo[3] < 0.95f, "loa khong co tieng no / tieng no o loa gan mono");
-        Kiem(soKhoi > 0 && conCumGai == 0 && SL(TiengViTri.Loai.BangVo) - v0 == 0 && SL(TiengViTri.Loai.BangVoNo) - vno0 == 0,
-             "khoi bang mo dan bien mat van keu tieng vo (hoac phep do khong co khoi bang de xet)");
+        // 01/11/2026: tang bang NO TU CAP 1 (truoc chi cap 5) -> tung that o cap 1 cung phai moi tang mot tieng vo no, khong tieng vo khac
+        Kiem(soKhoi > 0 && conCumGai == 0 && SL(TiengViTri.Loai.BangVo) - v0 == 0 && SL(TiengViTri.Loai.BangVoNo) - vno0 >= 1,
+             "tung cap 1: tang bang khong no ra tieng vo no (hoac phep do khong co khoi bang de xet)");
         Object.Destroy(hop);
         yield return ChoIm(4f);
 
