@@ -2807,6 +2807,38 @@ tat han bong (Rat yeu cu)                 0           662    2,5 trieu
   Menu 48 nay kiểm tỉ lệ cảnh từng mức bằng số VIẾT TAY (`mongPhanGiai` — trước đó chỉ so ảnh đệm với chính bảng `heSoPhanGiai`). Đo: Cực yếu ảnh đệm
   655×254 trên màn 1638 (cũ 573×223), 749 lượt vẽ, 0 vật đổ bóng — **0 lỗi**.
 
+## Xoay ngang điện thoại khi vào game (01/11/2026)
+
+**Người dùng:** đã đăng nhập và bấm **Chơi ngay** thì hiển thị thông báo hình ảnh yêu cầu xoay ngang điện thoại, đồng thời khóa màn hình dọc. Người dùng
+chọn: hiện **trên trang game mỗi khi cầm dọc** (cả ứng dụng đã cài — vốn mở thẳng `/choi/`), cho **điện thoại + máy tính bảng**, **khóa ngang** ở nơi trình
+duyệt cho phép, hình **điện thoại đá cổ xoay + mũi tên máu**.
+
+**Hình** (Blender MCP, `CongCu/Blender/xoay_ngang.py`, cảnh `XoayNgang` lưu ở `xoay_ngang.blend`): điện thoại là phiến đá bia mộ (chính ảnh đá `DaMo_*` của
+Act2, vết nứt, vết máu khô) viền sắt + 4 đinh tán + khe loa, màn hình ánh dung nham (`DungNham.png` phát sáng dịu, tối ra mép); mũi tên cong ~105° màu máu bóng
+có giọt rỏ. Máy quay trực giao nhắm đúng **tâm điện thoại** → hai ảnh nền trong suốt 720×720: `xoay_dien_thoai.png` (tâm hình đo được (360, 360)) và
+`xoay_mui_ten.png`; trang web xoay ảnh điện thoại 0 → 90° quanh tâm ảnh, theo chiều mũi tên. Đã vấp: `to_track_quat('-Z', 'Z')` làm máy quay nghiêng → điện
+thoại xiên; trục "lên" của máy quay là `'Y'`.
+
+**Trang game** (template WebGL `index.html`): `#xoay-ngang` phủ kín, nền ảnh vực dung nham + quầng đỏ, tiêu đề "Xoay ngang điện thoại" (Cormorant, đủ dấu), lời
+nhắc. Hiện / ẩn **thuần CSS**: `@media (orientation: portrait) and (pointer: coarse)` — máy cảm ứng cầm dọc; máy tính bàn / laptop (con trỏ "fine") không bao giờ
+thấy. Game vẫn tải ngầm phía sau; xoay ngang là bảng biến mất, đang chơi xoay dọc lại thì bảng hiện lại. Hoạt ảnh 3,2 s: dọc → xoay 90° → giữ → mờ, lặp
+(tắt khi người dùng xin giảm chuyển động).
+
+**Khóa ngang:** `khoaNgang()` gọi `screen.orientation.lock("landscape")` lúc vào trang, khi vào toàn màn hình và mỗi cú chạm — trình duyệt chỉ cho khi trang
+**toàn màn hình** (Android: ứng dụng đã cài / sau Fullscreen API), lỗi thì nuốt. iPhone / iPad không có API này cho web → chỉ có bảng che. Ứng dụng đã cài:
+manifest `"orientation": "landscape"` (áp cả trang chủ khi ứng dụng bị chuyển về đó — trang chủ đã đo vừa màn ngang 844×390 / 667×375).
+
+**Đo** (máy chủ cục bộ, giả lập cảm ứng, game dừng tải để đo):
+
+| Cỡ | Kết quả |
+|---|---|
+| 375×812 dọc | hiện, phủ kín 375×812, nằm trên game; khung hình 375 px; ảnh + font nạp đủ; lúc xoay `matrix(0, 1, -1, 0)` = 90° chiều kim đồng hồ |
+| 320×568 dọc | hiện, tiêu đề 2 dòng, chữ cuối đáy 513 / 568, không cuộn ngang |
+| 740×360 ngang (cảm ứng) | ẩn; đổi sang 360×740 trên cùng trang → hiện ngay |
+| Máy tính 1024×768, 900×1300 (không cảm ứng) | ẩn cả khi cửa sổ dọc |
+
+Chưa kiểm được trên máy thật: khóa ngang thật (cần toàn màn hình Android). Ảnh: `PlayTestShots/xoay_ngang/`. Chưa build / deploy.
+
 ## Đăng ký / đăng nhập chỉ ở trang chủ (01/11/2026)
 
 **Người dùng** (ảnh màn đăng nhập trong game): ở trang chủ https://acquytrolai.web.app, chưa đăng nhập mà bấm **Chơi ngay** thì chặn, hiện bảng

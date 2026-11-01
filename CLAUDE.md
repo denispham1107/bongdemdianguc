@@ -949,6 +949,13 @@ hơn ×1,5 và mở xuống 1,8–4,3 m** (người dùng chọn sau menu 94 ch�
   Editor. Trang web đo trên máy chủ cục bộ (`web-trien-khai`): chặn 3 nút, `/choi/` chuyển về, 2 lý do, phiên đang khôi phục, cỡ 375×812 / 844×390 / 667×375.
   ⚠️ `web/choi/index.html` bị gitignore — bản thật sinh từ template khi build (menu 29). **Đã deploy 01/11/2026** (build 6,0 phút, `.data` 213,8 MB — lớn
   hơn bản 172,5 MB cũ): trên bản build thật token giả → game tự về `/?can-dang-nhap=het-han`; trang thật chặn Chơi ngay, `/choi/` về trang chủ 0 tệp `Build/`.
+  ⚠️ **01/11/2026: XOAY NGANG ĐIỆN THOẠI** (người dùng; chọn trên trang game MỖI KHI cầm dọc · điện thoại + máy tính bảng · khóa ngang nơi trình duyệt cho
+  phép · hình điện thoại đá cổ + mũi tên máu): `#xoay-ngang` trong template WebGL, **thuần CSS** `@media (orientation: portrait) and (pointer: coarse)` → phủ kín,
+  game tải ngầm phía sau, xoay ngang tự ẩn. Ảnh Blender MCP `CongCu/Blender/xoay_ngang.py` / `.blend` (scene `XoayNgang`) → `TemplateData/xoay_dien_thoai.png`
+  (điện thoại ĐỨNG, tâm ảnh = tâm điện thoại — CSS xoay 0 → 90° theo chiều kim đồng hồ, 3,2 s lặp) + `xoay_mui_ten.png`. Khóa: `khoaNgang()` gọi
+  `screen.orientation.lock("landscape")` lúc vào, khi toàn màn hình, mỗi cú chạm (chỉ chạy khi toàn màn hình Android; iPhone không có API → chỉ bảng che);
+  manifest `"orientation": "landscape"` (ứng dụng đã cài — cả trang chủ khi bị chuyển về). Đo trên máy chủ cục bộ: 375×812 / 320×568 / 360×740 cảm ứng dọc
+  hiện, 740×360 cảm ứng ngang ẩn, xoay trên cùng trang hiện ngay; máy tính 900×1300 ẩn. CHƯA build / deploy.
 - ⚠️ **Triển khai web**: **xoá sạch `web/choi/Build/`**, chép `Build/WebGL/Build/*`, `Build/WebGL/TemplateData/*`
   (ảnh tiêu đề + font Inter của trang Loading — thiếu là trang Loading mất tên game và font) VÀ
   `Build/WebGL/index.html` sang **`web/choi/`** (KHÔNG đè `web/index.html` — đó là trang chủ). Bản build **không nén sẵn** (Firebase tự nén khi gửi — nó gạt bỏ `Content-Encoding` tự đặt) và

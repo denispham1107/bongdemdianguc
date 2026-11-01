@@ -184,12 +184,72 @@
     /* Man thap (dien thoai nam ngang): ten game nho lai mot chut cho vong + tac gia van vua man */
     @media (max-height: 520px) { #ten-game { width: min(88vw, 640px, 105vh); } }
     #loi-nang { color: #ff6b60; max-width: 80vw; text-align: center; margin-top: 18px; }
+
+    /* ================================================================
+       XOAY NGANG DIEN THOAI (01/11/2026, nguoi dung: "hien thi thong bao hinh anh yeu cau nguoi choi xoay ngang dien thoai
+       de choi dong thoi khoa man hinh doc"; chon: tren trang game MOI KHI cam doc, dien thoai + may tinh bang, khoa ngang o
+       noi trinh duyet cho phep, hinh dien thoai da co xoay + mui ten mau - Blender MCP CongCu/Blender/xoay_ngang.py).
+       Thuan CSS: may CAM UNG (pointer: coarse - may tinh ban / laptop la "fine", khong bao gio thay) + man DOC -> phu kin,
+       game van tai ngam phia sau; xoay ngang la bang tu an. Anh dien thoai DUNG DOC, tam anh = tam dien thoai -> CSS xoay
+       quanh tam anh 0 -> 90 do (cung chieu kim dong ho, theo mui ten).
+       ================================================================ */
+    #xoay-ngang {
+      display: none; position: fixed; inset: 0; z-index: 1000;
+      flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+      padding: 24px 20px calc(24px + env(safe-area-inset-bottom));
+      text-align: center; color: #d9cdbd; font-family: "InterViet", system-ui, sans-serif;
+      background:
+        radial-gradient(ellipse 85% 55% at 50% 42%, rgba(70, 10, 6, 0.55), rgba(8, 3, 3, 0.94) 70%),
+        url("TemplateData/nen_dianguc.jpg?v=f5b1b56c41") center / cover no-repeat, #0b0606;
+      -webkit-user-select: none; user-select: none; touch-action: none;
+    }
+    @media (orientation: portrait) and (pointer: coarse) {
+      #xoay-ngang { display: flex; }
+    }
+    #xoay-ngang .hinh-xoay { position: relative; width: min(100vw, 58vh, 540px); aspect-ratio: 1; margin: -6% 0; }
+    #xoay-ngang .hinh-xoay img { position: absolute; inset: 0; width: 100%; height: 100%; }
+    #xoay-ngang .dt { animation: xn-xoay 3.2s cubic-bezier(.55, 0, .3, 1) infinite; filter: drop-shadow(0 0 18px rgba(255, 90, 30, 0.45)); }
+    #xoay-ngang .mt { animation: xn-mui 3.2s ease-in-out infinite; filter: drop-shadow(0 0 10px rgba(160, 10, 6, 0.6)); }
+    @keyframes xn-xoay {
+      0% { transform: rotate(0deg); opacity: 0; }
+      8%, 22% { transform: rotate(0deg); opacity: 1; }
+      52%, 84% { transform: rotate(90deg); opacity: 1; }
+      96%, 100% { transform: rotate(90deg); opacity: 0; }
+    }
+    @keyframes xn-mui {
+      0%, 8% { opacity: 0.25; }
+      22%, 46% { opacity: 1; }
+      60%, 100% { opacity: 0.25; }
+    }
+    #xoay-ngang .chu-1 {
+      margin: 10px 0 0; font: 700 clamp(26px, 7.4vw, 40px)/1.15 "CormorantViet", "Times New Roman", serif;
+      letter-spacing: 0.08em; color: #efe3d2; text-shadow: 0 0 16px rgba(195, 48, 28, 0.8), 0 2px 0 #2a0503;
+    }
+    #xoay-ngang .chu-1::after {
+      content: ""; display: block; width: 46%; height: 2px; margin: 12px auto 0;
+      background: linear-gradient(90deg, transparent, #c3301c, transparent);
+    }
+    #xoay-ngang .chu-2 { margin: 12px 0 0; max-width: 30em; font-size: clamp(15px, 4.2vw, 18px); line-height: 1.5; color: #c9bba9; }
+    #xoay-ngang .chu-2 b { color: #ffb35a; font-weight: 400; }
+    @media (prefers-reduced-motion: reduce) {
+      #xoay-ngang .dt, #xoay-ngang .mt { animation: none; }
+    }
   </style>
 </head>
 <body>
 
 <div id="o-game">
   <canvas id="unity-canvas" tabindex="-1"></canvas>
+</div>
+
+<!-- Xoay ngang dien thoai (01/11/2026) - chi hien khi may cam ung cam DOC, xem CSS #xoay-ngang -->
+<div id="xoay-ngang" role="alert" aria-live="assertive">
+  <div class="hinh-xoay" aria-hidden="true">
+    <img class="dt" src="TemplateData/xoay_dien_thoai.png?v=1" alt="">
+    <img class="mt" src="TemplateData/xoay_mui_ten.png?v=1" alt="">
+  </div>
+  <p class="chu-1">Xoay ngang điện thoại</p>
+  <p class="chu-2">Ác Quỷ Trở Lại chỉ chơi được khi cầm <b>ngang</b>.<br>Hãy xoay ngang thiết bị để vào trận.</p>
 </div>
 
 <div id="man-tai">
@@ -481,6 +541,22 @@
 
   document.addEventListener("pointerup", goiToanManHinh, true);
   document.addEventListener("touchend", goiToanManHinh, true);
+
+  // ================================================================
+  //  KHOA CHIEU NGANG (01/11/2026, nguoi dung chon "co" - noi trinh duyet cho phep)
+  // ================================================================
+  // screen.orientation.lock chi chay khi trang dang TOAN MAN HINH (Android Chrome: ung dung da cai / sau Fullscreen API) - con lai
+  // nem loi, nuot di: bang che #xoay-ngang (CSS) van chan man doc. iPhone / iPad: khong co API nay cho web -> chi co bang che.
+  // Ung dung da cai: manifest "orientation": "landscape" (web/manifest.webmanifest) - mo len la nam ngang.
+  function khoaNgang() {
+    var so = screen.orientation;
+    if (!so || !so.lock || !window.matchMedia || !window.matchMedia("(pointer: coarse)").matches) return;
+    try { var h = so.lock("landscape"); if (h && h.catch) h.catch(function () {}); } catch (e) {}
+  }
+  khoaNgang();
+  document.addEventListener("fullscreenchange", khoaNgang);
+  document.addEventListener("webkitfullscreenchange", khoaNgang);
+  document.addEventListener("pointerup", khoaNgang, true);
 
   // Bo chay nen: dieu kien bat buoc de Chrome / Edge / Android cho cai dat.
   // No KHONG luu cache gi (xem sw.js) - Unity da tu quan ly cache ban build.
