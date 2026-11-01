@@ -2842,7 +2842,11 @@ phiên thì tự khôi phục vào sảnh như cũ; khôi phục hỏng → `/?c
 | Cỡ màn | 375×812 cách mép 19 px, không cuộn ngang; 844×390 / 667×375 không phải cuộn trong bảng, chữ nút một dòng |
 
 Menu 50 ra 3 lỗi đo vị trí (ảnh tên game, vòng đếm ngược) — cửa sổ Game lúc ấy chỉ 933×166 (lần trước 1621×559); trả code về bản trước chạy cùng cỡ
-cũng đúng 3 lỗi ấy → do cỡ cửa sổ, không do việc này. **Chưa deploy** — bản web cần build lại (menu 29) mới có phần trong game + trang `/choi/`.
+cũng đúng 3 lỗi ấy → do cỡ cửa sổ, không do việc này.
+
+**Đã deploy cùng ngày** (menu 29: 6,0 phút, 0 lỗi; `.data` 213,8 MB, wasm 16,3 MB). Thử bản build thật trên máy chủ cục bộ: token giả → game tải xong,
+Firebase từ chối → xoá phiên → về `/?can-dang-nhap=het-han` (đường `CD_VeTrang` thật). Trên https://acquytrolai.web.app: Chơi ngay bị chặn, bảng mở;
+`/choi/` về trang chủ, 0 tệp `Build/`.
 
 ## Mây giông: cột sáng thẳng đứng thay bằng tia sét con (01/11/2026)
 

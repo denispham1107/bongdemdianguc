@@ -947,7 +947,8 @@ hơn ×1,5 và mở xuống 1,8–4,3 m** (người dùng chọn sau menu 94 ch�
   xuất giữa chừng → `/?can-dang-nhap`; `ManSanh.DangXuat` → `/`. Trang chủ đọc tham số, mở bảng + dòng lý do, xoá tham số khỏi thanh địa chỉ. ⚠️ Editor / PC
   vẫn có màn đăng nhập (10 phép thử dùng). Menu 155 (0 lỗi, Firebase thật, giả lập bản web): không phiên / phiên giả / phiên thật / đăng xuất / đối chứng
   Editor. Trang web đo trên máy chủ cục bộ (`web-trien-khai`): chặn 3 nút, `/choi/` chuyển về, 2 lý do, phiên đang khôi phục, cỡ 375×812 / 844×390 / 667×375.
-  ⚠️ `web/choi/index.html` bị gitignore — bản thật sinh từ template khi build (menu 29); CHƯA deploy.
+  ⚠️ `web/choi/index.html` bị gitignore — bản thật sinh từ template khi build (menu 29). **Đã deploy 01/11/2026** (build 6,0 phút, `.data` 213,8 MB — lớn
+  hơn bản 172,5 MB cũ): trên bản build thật token giả → game tự về `/?can-dang-nhap=het-han`; trang thật chặn Chơi ngay, `/choi/` về trang chủ 0 tệp `Build/`.
 - ⚠️ **Triển khai web**: **xoá sạch `web/choi/Build/`**, chép `Build/WebGL/Build/*`, `Build/WebGL/TemplateData/*`
   (ảnh tiêu đề + font Inter của trang Loading — thiếu là trang Loading mất tên game và font) VÀ
   `Build/WebGL/index.html` sang **`web/choi/`** (KHÔNG đè `web/index.html` — đó là trang chủ). Bản build **không nén sẵn** (Firebase tự nén khi gửi — nó gạt bỏ `Content-Encoding` tự đặt) và
