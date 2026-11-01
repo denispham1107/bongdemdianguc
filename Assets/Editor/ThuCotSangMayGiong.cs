@@ -12,8 +12,8 @@ using UnityEngine;
 ///
 /// Vao Play Act2 (dem), tat GameDirector:
 ///   A. May giong THAT (MayGiong.Spawn) danh xuong dat ~4 s: moi vu loe cham dat "SetChamDat" KHONG con Column0/1 dang bat; moi tia chinh
-///      cham DAT co dung 1 tia con cung khung: ngon cham dat (lech mat Ground < 0,05) canh cho cham 0,9-1,4 m, SONG SONG tia chinh (+-0,25 m),
-///      truc hai tia cach nhau >= 0,6 m (khong dan cheo), manh hon (coreWidth x0,6), 1 nhanh. Tia chinh GAN THANG DUNG nhu Sam set
+///      cham DAT co dung 1 tia con cung khung: ngon cham dat (lech mat Ground < 0,05) canh cho cham 2-4 m (lan dau 0,9-1,4), SONG SONG tia chinh (+-0,25 m),
+///      truc hai tia cach nhau >= 1,4 m (khong dan cheo), manh hon (coreWidth x0,6), 1 nhanh. Tia chinh GAN THANG DUNG nhu Sam set
 ///      (lech ngang / cao <= 0,09 - cung ngay nguoi dung: "tia set danh xuong giong Sam set"; C do luon tia Sam set that).
 ///   B. Tia dung o mat vom khien (TiaMayGiong(.., false)): 0 tia con, 0 vu loe.
 ///   C. DOI CHUNG: Sam set THAT (CastAt 2) van con cot sang, 0 tia con.
@@ -143,7 +143,7 @@ public static class ThuCotSangMayGiong
                     for (int k = 0; k <= 10; k++) ct = Mathf.Min(ct, Ngang(Vector3.Lerp(gan.end, gan.start, k / 10f), Vector3.Lerp(c.end, c.start, k / 10f)));
                     nghiengChinhMax = Mathf.Max(nghiengChinhMax, nm); nghiengConMax = Mathf.Max(nghiengConMax, nc);
                     songSongMax = Mathf.Max(songSongMax, ss); cachTrucMin = Mathf.Min(cachTrucMin, ct);
-                    if (ln >= 0.89f && ln <= 1.41f && ld < 0.05f && Mathf.Abs(c.start.y - gan.start.y) < 0.01f && ss <= VfxFactory.LechSongSong + 0.001f
+                    if (ln >= VfxFactory.KhoangTiaConMin - 0.01f && ln <= VfxFactory.KhoangTiaConMax + 0.01f && ld < 0.05f && Mathf.Abs(c.start.y - gan.start.y) < 0.01f && ss <= VfxFactory.LechSongSong + 0.001f
                         && c.branches == 1 && Mathf.Abs(tiNgang - VfxFactory.HeSoNgangTiaCon) < 0.01f) conKhop++;
                 }
                 foreach (var m in chinh) if (!daGhep.Contains(m)) chinhKhongCon++;
@@ -157,12 +157,12 @@ public static class ThuCotSangMayGiong
             nk.AppendLine(string.Format("  do nghieng (lech ngang / cao) lon nhat: tia chinh {0:F3}, tia con {1:F3} (Sam set <= {2:F2}; ban cu toi 0,34) | lech song song <= {3:F2} m | hai truc cach nhau >= {4:F2} m",
                 nghiengChinhMax, nghiengConMax, MayGiong.LechTiaTheoCao, songSongMax, cachTrucMin));
             Kiem(nghiengChinhMax <= MayGiong.LechTiaTheoCao + 0.001f, "A tia chinh gan thang dung nhu Sam set (nghieng " + nghiengChinhMax.ToString("F3") + " <= 0,09)");
-            Kiem(cachTrucMin >= 0.6f, "A tia con khong dan cheo tia chinh (truc cach nhau >= " + cachTrucMin.ToString("F2") + " m, phai >= 0,6)");
+            Kiem(cachTrucMin >= 1.4f, "A tia con khong dan cheo tia chinh (truc cach nhau >= " + cachTrucMin.ToString("F2") + " m, phai >= 1,4)");
             Kiem(datDat >= 8, "A co " + datDat + " tia cham dat (>= 8)");
             Kiem(soLoe == datDat && loeConCot == 0, "A " + soLoe + " vu loe cham dat, con cot sang " + loeConCot + " (phai 0)");
             Kiem(VfxFactory.SoCotSangDaTat - t0 == 2 * soLoe, "A da tat " + (VfxFactory.SoCotSangDaTat - t0) + " tam cot sang = 2 x so vu loe");
             Kiem(soCon == datDat && VfxFactory.SoTiaSetCon - c0 == datDat && chinhKhongCon == 0, "A moi tia cham dat co dung 1 tia con (" + soCon + "/" + datDat + ", tia chinh thieu con " + chinhKhongCon + ")");
-            Kiem(conKhop == soCon, "A " + conKhop + "/" + soCon + " tia con dung cho (song song +-0,25 m, ngon 0,9-1,4 m sat dat, manh x0,6, 1 nhanh)");
+            Kiem(conKhop == soCon, "A " + conKhop + "/" + soCon + " tia con dung cho (song song +-0,25 m, ngon 2-4 m sat dat, manh x0,6, 1 nhanh)");
         }
         yield return new WaitForSeconds(1.0f);
 

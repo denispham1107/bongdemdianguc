@@ -1286,6 +1286,8 @@ hơn ×1,5 và mở xuống 1,8–4,3 m** (người dùng chọn sau menu 94 ch�
   con, không rung máy quay): lệch ngang ≤ `MayGiong.LechTiaTheoCao` 0,09 × chiều cao (đúng tỉ lệ `LightningStrike` 0,09 × 20 m; trước lệch tới
   2,7 m / 8 m ≈ 19°); tia con SONG SONG cạnh tia chính (ngọn cách chỗ chạm 0,9–1,4 m, độ nghiêng = tia chính ±`LechSongSong` 0,25 m — trước gốc / ngọn
   lệch hai hướng ngẫu nhiên nên hai tia đan chéo). Menu 154: nghiêng lớn nhất 0,089 (Sấm sét thật 0,086), trục hai tia cách ≥ 0,90 m. Menu 83, 106, 136: 0 lỗi.
+  ⚠️ **Lần ba: hai tia XA NHAU NGẪU NHIÊN 2–4 m** (người dùng: "còn gần nhau quá"; trước 0,9–1,4 — `VfxFactory.KhoangTiaConMin/Max`). Menu 154 (0 lỗi):
+  ngọn tia con cách chỗ chạm 2,19–3,61 m, trục hai tia cách ≥ 2,13 m. Menu 83: 0 lỗi.
 - ⚠️ **MÀU ÁO TỪNG NGƯỜI CHƠI** (09/10/2026, người dùng): `Player_PhuThuy.mat` dùng shader `Diablo25D/PhuThuyDoiMau` (thay Standard) —
   vùng áo TÍM của ảnh (sắc độ 277–324°) thay bằng `_MauAo` giữ sáng tối, `_DoSangAo` 0,72 (người dùng chọn sáng hơn ~20%); `_MauAo.a` 0
   = áo gốc. Màu qua MaterialPropertyBlock (`MauAoNhanVat`), gắn ở `KhoiDongTranMang.GanDoi(..., ghế)`: Đơn theo ghế (6 màu), Đôi A lam / B đỏ;

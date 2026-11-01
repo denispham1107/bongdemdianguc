@@ -238,13 +238,15 @@ public static partial class VfxFactory
     /// cung kieu tia Sam set (LightningArc mac dinh), manh hon, 16 doan, 1 nhanh - moi lan danh thay 2 tia gap khuc tach nhau. Chi hinh.
     /// Cung ngay (nguoi dung: "giong tia Sam set", chon giu tia con): tia con SONG SONG canh tia chinh - ngon cham dat canh cho cham
     /// 0,9-1,4 m, do nghieng = do nghieng tia chinh +- LechSongSong -> gan thang dung, khong dan cheo tia chinh (truoc: goc va ngon lech
-    /// hai huong ngau nhien, hai tia cat nhau).
+    /// hai huong ngau nhien, hai tia cat nhau). Cung ngay lan nua (nguoi dung: "2 tia con gan nhau qua, cho ngau nhien xa nhau ra"; chon
+    /// 2-4 m): ngon cach cho cham KhoangTiaConMin-Max (truoc 0,9-1,4 m).
     /// </summary>
     public const float LechSongSong = 0.25f;
+    public const float KhoangTiaConMin = 2f, KhoangTiaConMax = 4f;
     public static LightningArc TiaSetConMayGiong(Vector3 tu, Vector3 den)
     {
         Vector2 a = Random.insideUnitCircle.normalized;
-        Vector3 denCon = den + new Vector3(a.x, 0f, a.y) * Random.Range(0.9f, 1.4f);
+        Vector3 denCon = den + new Vector3(a.x, 0f, a.y) * Random.Range(KhoangTiaConMin, KhoangTiaConMax);
         denCon.y = GroundY(denCon);
         Vector2 b = Random.insideUnitCircle * LechSongSong;
         Vector3 nghieng = tu - den; nghieng.y = 0f;

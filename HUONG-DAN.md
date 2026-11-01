@@ -2849,6 +2849,10 @@ chạm 0,9–1,4 m, độ nghiêng = độ nghiêng tia chính ± `LechSongSong`
 0,086** (bản trước tới 0,34); trục hai tia cách nhau ≥ **0,90 m** ở mọi độ cao (không đan chéo); cột sáng vẫn 0. Menu 83, 106, 136 (Mây giông đánh vào
 vòm khiên): 0 lỗi.
 
+**Lần ba (người dùng: "2 tia sét đánh xuống còn gần nhau quá, cho ngẫu nhiên xa nhau ra"; chọn 2–4 m):** ngọn tia con cách chỗ chạm ngẫu nhiên
+`KhoangTiaConMin`–`KhoangTiaConMax` = 2–4 m (trước 0,9–1,4 m), vẫn song song. Menu 154 (0 lỗi): 15 tia — 2,19–3,61 m, trục hai tia cách nhau ≥ 2,13 m ở
+mọi độ cao; nghiêng tia chính 0,084. Menu 83: 0 lỗi.
+
 Ảnh: `PlayTestShots/cot_sang_may_giong/` (`loe_cu_co_cot.png` / `loe_moi_khong_cot.png`; `game_truoc.png` = tia nghiêng + tia con đan chéo như ảnh
 người dùng, `game_moi.png` = hai tia gần thẳng đứng song song; góc "3D tự do").
 
