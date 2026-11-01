@@ -2807,6 +2807,50 @@ tat han bong (Rat yeu cu)                 0           662    2,5 trieu
   Menu 48 nay kiểm tỉ lệ cảnh từng mức bằng số VIẾT TAY (`mongPhanGiai` — trước đó chỉ so ảnh đệm với chính bảng `heSoPhanGiai`). Đo: Cực yếu ảnh đệm
   655×254 trên màn 1638 (cũ 573×223), 749 lượt vẽ, 0 vật đổ bóng — **0 lỗi**.
 
+## Đòn chém Bộ xương: vệt chém theo lưỡi kiếm, máu và chảy máu (01/11/2026)
+
+**Người dùng** (ảnh khoanh xanh lá): khi Bộ xương chém người chơi có các **vệt đỏ** bay ra — xoá đi; rồi dựng lại toàn bộ hiệu ứng chém vì
+"quá sơ sài": cho thấy rõ nhát chém, mỗi lần chém trúng có hiệu ứng đánh trúng và đối thủ bị chảy máu. Người dùng chọn: vệt **đỏ máu sẫm**,
+chảy máu **chỉ hình ảnh** (không trừ thêm máu), **có** vết máu nhỏ trên đất tan sau vài giây, chém trúng **Khiên** thì tóe tia lửa kim loại, không máu.
+
+**Vệt đỏ là gì:** `Damageable.TakeDamage` phun "tia trúng đòn" `VfxFactory.HitBurst` (prefab `Vfx_TrungDon`, hạt kéo dài) — sát thương Vật lý
+thì màu đỏ sẫm (0,6 0,05 0,05). Bộ xương là quái cận chiến duy nhất. **Sửa:** `EnemyAI.ChemTrung` (dùng cho cả đòn thật lẫn `DienLaiDon` trên máy
+khách) bật `Damageable.BoQuaTiaTrungDon` quanh `TakeDamage`. Các nguồn Vật lý khác (Gió lốc, Lốc xoáy, vòng Tàng hình, địa ngục) giữ nguyên.
+
+**Hình mới:**
+- **Vệt chém** (`VetChemKiem`, shader `S_VetChem`): là mặt quét của **lưỡi kiếm thật**. Lưỡi kiếm đo trên lưới Meshy (BakeMesh tư thế gốc, đỉnh gắn
+  xương RightHand > 0,6): chuôi + đốc ~0,30 m, mũi 1,044 m. `ModelHoatHinh` đặt tư thế chém ở 32 mốc thời gian (từ lúc bổ xuống tới khi bung hết),
+  đọc chuôi / mũi kiếm, đổi về khung gốc quái → một lưới dùng chung. Vì sao không TrailRenderer: nhát bổ chỉ dài **0,044 s** (Bộ xương 0,3 s một đòn)
+  — 30 khung/giây chỉ lấy được 1–2 điểm. Vệt hiện dần trong ≥ 0,06 s, đuôi đuổi theo, tắt sau 0,30 s; thân vệt đỏ máu sẫm che bớt nền (đọc được cả ban
+  ngày), mép mũi kiếm cộng sáng đỏ cam.
+- **Trúng người** (`VfxFactory.ChemTrung`): nhát cắt lóe đỏ trắng xiên ngang thân 0,16 s; 17 giọt máu (ảnh `GiotMau` 2×2, **Billboard — không kéo
+  dài** như vệt người dùng chê) bay theo hướng chém, rơi, chạm đất thì mất; 3 đám sương máu; 1–2 vết máu bắn trên đất phía sau.
+- **Chảy máu** (`ChayMau`): mỗi lần trúng đặt lại 2 s — nhỏ giọt từ ngực (9 giọt/giây), cứ ~0,55 s một vết nhỏ dưới chân. Chết / Tàng hình thì ngừng.
+- **Vết máu đất** (`VetMauDat`): đĩa bám lớp Ground, ảnh `BanMau` 2×2 xoay ngẫu nhiên, giữ 4 s mờ 2 s, trần 24 vết cả trận.
+- **Trúng Khiên**: tia lửa vàng trắng + chớp tại chỗ lưỡi kiếm chạm mặt vòm (`Khieng.CatVom`), không máu.
+- **Máy khách**: hoạt hình chém bắt đầu lúc nhận gói, nên hình trúng hẹn `attackAnimTime × attackHitAt` (0,113 s) cho khớp lúc lưỡi kiếm bổ xuống.
+- Ảnh dựng bằng Blender MCP (`CongCu/Blender/chem_bo_xuong.py`, numpy) → `Resources/KyNang/BoXuong/`.
+
+**Đã vấp:** đọc đường mũi kiếm thật thì **động tác chém cũ quay kiếm gần trọn vòng** — tay phải +172° × chém, cẳng tay +74°: kiếm từ trên đầu xuống trước
+mặt, sát đất bên phải, **ra sau lưng** (z −1,36 m) rồi sang trái; vệt chém thành một vòng khổng lồ dài 9,2 m. Giảm còn +40° vẫn ra sau 0,6 m (trục X dương
+của xương tay = vung RA SAU). Nay không cộng góc theo nhịp bung — hết gồng là kiếm chéo xuống đất trước mặt (mũi cuối z +0,60 m, đường mũi 3,9 m).
+
+**Đo — menu 152** (`ThuChemBoXuong.cs`, Play Act2, Bộ xương thật, 0 lỗi):
+
+| Mục | Kết quả |
+|---|---|
+| AI thật chém 3 s | 9 đòn: tia trúng đòn **+0** (đối chứng Vật lý thường +1), 9 vệt chém, 9 hình trúng, máu trừ 484,6 = 9 × 53,85 |
+| Máu | chảy máu bật 9 lần, tự gỡ 2 s sau đòn cuối; vết đất nhiều nhất 19 (trần 24), tan hết sau 6 s; giọt bay nhiều nhất 42 hạt, 0 hệ hạt kéo dài |
+| Vệt bám lưỡi kiếm (bước khung 1/400 s) | 19 mẫu mũi kiếm thật cách đường mũi của vệt **≤ 0,003 m**; đối chứng lật gương 1,36 m |
+| Khiên | 3 đòn → 3 chùm tia lửa, 0 chảy máu, khiên 150 → 0, người chơi không mất máu |
+| Mạng (`DienLaiDon`) | nhắm mình: mất máu ngay, hình trúng sau 0,113 s; nhắm người khác: chỉ hình |
+| Ảnh (điểm ảnh đỏ quanh Bộ xương, +0,02 / +0,06 s) | đêm 1 051 / 136 (cũ 0 / 0), ngày 973 / 62 (cũ 0 / 0); +0,22 s: 0 |
+
+Menu 91, 39: 0 lỗi. Menu 91 A4 nhịp đánh 0,341 rồi 0,335 s (lần trước 0,314; ngưỡng < 0,34) — nhịp do hồi chiêu + khung Editor làm tròn. Chi phí
+đo bằng đồng hồ: mỗi nhát trúng ~1,4 ms CPU (Editor) lúc sinh, vệt chém 0,14 ms; cũ `HitBurst` 0,55 ms. Chưa đo trên điện thoại.
+
+Ảnh: `PlayTestShots/chem_bo_xuong/can_dem.png`, `can_ngay.png` (hàng trên kiểu cũ, hàng dưới mới; 4 mốc +0,02 / 0,06 / 0,12 / 0,22 s), `game_*.png`.
+
 ## Giựt sét trúng chỉ còn khói + chữ trạng thái kiểu khắc lửa (01/11/2026)
 
 **Người dùng** (ảnh khoanh đỏ): (1) Giựt sét đánh trúng đối thủ thì bỏ các vệt sáng trắng bắn ra, chỉ cho đối thủ bốc khói; (2) các chữ hiệu ứng

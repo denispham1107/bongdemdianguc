@@ -98,6 +98,22 @@ public class ModelHoatHinh : MonoBehaviour
     float mucDi;                       // 0 = dung, 1 = di het toc
     float nghiengChet;
 
+    // ---- VET CHEM KIEM (Bo xuong, 01/11/2026 - xem VetChemKiem) ----
+    /// <summary>Chuoi kiem + mui kiem trong khung xuong BAN TAY PHAI, do tu luoi Meshy Bo xuong (BakeMesh tu the goc, dinh gan xuong
+    /// RightHand > 0,6): luoi kiem bat dau sau chuoi + doc kiem ~0,30 m, mui xa nhat 1,044 m.</summary>
+    public static readonly Vector3 ChuoiKiemTrongTay = new Vector3(-0.033f, 0.30f, -0.035f);
+    public static readonly Vector3 MuiKiemTrongTay = new Vector3(-0.059f, 1.026f, -0.182f);
+    /// <summary>Vet tinh tu dau cu bo kiem (moc an) toi het doan nay cua phan sau moc an (bung ra lon nhat o 0,28).</summary>
+    public const float CuoiCungChem = 0.32f;
+    public const int SoMocVet = 32;
+    /// <summary>Tat de chup / do doi chung khong vet (phep thu).</summary>
+    public static bool TatVetChem;
+
+    /// <summary>Duong di chuoi + mui kiem trong khung GOC con quai, tinh mot lan cho ca loai (cung model, cung tu the).</summary>
+    public static Vector3[] DuongChuoiKiem, DuongMuiKiem;
+    Transform tayPhaiBanTay;
+    bool daRaVetLanNay;
+
     void Awake()
     {
         if (ai == null) ai = GetComponentInParent<EnemyAI>();
@@ -225,6 +241,50 @@ public class ModelHoatHinh : MonoBehaviour
     {
         thoiGianDon = Mathf.Max(0.2f, thoiGian);
         donTimer = 0f;
+        daRaVetLanNay = false;
+    }
+
+    /// <summary>
+    /// Tinh duong di chuoi + mui kiem trong cu bo kiem: dat tu the chem o <see cref="SoMocVet"/> moc (tu moc an toi
+    /// <see cref="CuoiCungChem"/>), doc ban tay phai, doi ve khung goc con quai. Cat tu the dang co truoc va tra lai sau - goi
+    /// giua LateUpdate cung khong lam lech khung hinh nay.
+    /// </summary>
+    void TinhDuongKiem()
+    {
+        if (tayPhaiBanTay == null && tayPhaiDuoi != null)
+        {
+            foreach (var t in tayPhaiDuoi.GetComponentsInChildren<Transform>(true))
+                if (t.name == "RightHand") { tayPhaiBanTay = t; break; }
+        }
+        if (tayPhaiBanTay == null || !daLuu) return;
+
+        var qCat = new Quaternion[moiKhop.Length];
+        var pCat = new Vector3[moiKhop.Length];
+        for (int i = 0; i < moiKhop.Length; i++) { qCat[i] = moiKhop[i].localRotation; pCat[i] = moiKhop[i].localPosition; }
+
+        var can = new Vector3[SoMocVet];
+        var mui = new Vector3[SoMocVet];
+        for (int k = 0; k < SoMocVet; k++)
+        {
+            float t = mocAn + (1f - mocAn) * CuoiCungChem * k / (SoMocVet - 1);
+            TraVeTuTheChuan();
+            TuTheChemToi(t);
+            can[k] = transform.InverseTransformPoint(tayPhaiBanTay.TransformPoint(ChuoiKiemTrongTay));
+            mui[k] = transform.InverseTransformPoint(tayPhaiBanTay.TransformPoint(MuiKiemTrongTay));
+        }
+
+        for (int i = 0; i < moiKhop.Length; i++) { moiKhop[i].localRotation = qCat[i]; moiKhop[i].localPosition = pCat[i]; }
+        DuongChuoiKiem = can;
+        DuongMuiKiem = mui;
+    }
+
+    /// <summary>Luoi kiem bat dau bo xuong: sinh vet chem (Bo xuong).</summary>
+    void RaVetChem()
+    {
+        if (TatVetChem) return;
+        if (DuongChuoiKiem == null) TinhDuongKiem();
+        if (DuongChuoiKiem == null) return;
+        VetChemKiem.Tao(transform, DuongChuoiKiem, DuongMuiKiem, (1f - mocAn) * CuoiCungChem * thoiGianDon);
     }
 
     void Update()
@@ -320,6 +380,13 @@ public class ModelHoatHinh : MonoBehaviour
         if (!daLuu) return;
 
         if (mau != null && mau.IsDead) { TuTheChet(); return; }
+
+        // Luoi kiem bat dau bo xuong (qua moc an) -> vet chem; lam TRUOC khi dat tu the khung nay (TinhDuongKiem cat / tra tu the)
+        if (donTimer >= 0f && kieuDon == KieuDon.ChemToi && !daRaVetLanNay && donTimer >= mocAn * thoiGianDon)
+        {
+            daRaVetLanNay = true;
+            RaVetChem();
+        }
 
         // Dang di thi de clip lo, chi cho phan hoa ve (neu con) chen vao
         if (!clipDangLai)
@@ -431,13 +498,16 @@ public class ModelHoatHinh : MonoBehaviour
         if (head != null)
             head.localRotation = qHead * Quaternion.Euler(-6f * go + 14f * chem, 0f, 0f);
 
-        // Tay phai: giơ ra sau len cao (-100 do) roi bo xuong truoc (+72 do)
+        // Tay phai: gio len cao tren dau (-100 do) roi BO xuong truoc mat - het go suc (go ~0,15) la luoi kiem cheo xuong dat truoc mat,
+        // khong cong them goc ve sau (X duong = vung RA SAU).
+        // ⚠️ 01/11/2026 (menu 152): ban cu +172 do x chem + cang tay +74 do - doc mui kiem that thi luoi kiem quay gan TRON VONG
+        // (tren dau -> truoc mat -> sat dat ben phai -> RA SAU LUNG -> ben trai), vet chem thanh mot vong khong lo. +40 do van ra sau 0,6 m.
         if (tayPhaiTren != null)
             tayPhaiTren.localRotation = qTayPhaiTren
-                * Quaternion.Euler(-100f * go + 172f * chem, -28f * go, -30f * go + 18f * chem);
+                * Quaternion.Euler(-100f * go, -28f * go, -30f * go + 18f * chem);
         if (tayPhaiDuoi != null)
             tayPhaiDuoi.localRotation = qTayPhaiDuoi
-                * Quaternion.Euler(-62f * go + 74f * chem, 0f, 0f);
+                * Quaternion.Euler(-62f * go, 0f, 0f);
 
         // Tay trai dua khien len che
         if (tayTraiTren != null)

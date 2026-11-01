@@ -565,12 +565,19 @@ public class EnemyAI : MonoBehaviour
 
         if (kieu == 0)
         {
+            // Hinh trung (mau / tia lua khien) hen toi luc luoi kiem bo xuong: hoat hinh vua bat dau tu go suc
+            float tre = attackAnimTime * attackHitAt;
             if (nanNhan != null && !nanNhan.IsDead)
             {
                 // Ghi cong de man hinh thua noi duoc "Bị Bộ xương hạ"
                 nanNhan.GhiKeDanh(health);
-                nanNhan.TakeDamage(attackDamage, DamageType.Physical,
-                                   nanNhan.transform.position + Vector3.up * 1.1f);
+                ChemTrung(nanNhan, tre);
+            }
+            else
+            {
+                // Don nham nguoi khac: chi hinh - tim nguoi dung o diem ngam
+                var ai = NguoiChoiGan(diemNgam, 1.5f);
+                if (ai != null) VfxFactory.ChemTrung(ai, transform.position, tre);
             }
             return;
         }
@@ -610,10 +617,40 @@ public class EnemyAI : MonoBehaviour
 
         // Damageable tu chuyen don nay vao khieng neu muc tieu dang co khieng
         d.GhiKeDanh(health);
-        d.TakeDamage(attackDamage, DamageType.Physical,
-                     target.position + Vector3.up * 1.1f);
+        ChemTrung(d);
 
         if (DaRaDon != null) DaRaDon(this, 0, target, target.position);
+    }
+
+    /// <summary>
+    /// Don can chien trung <paramref name="d"/>: tru mau KHONG phun "tia trung don" (vet do keo dai - nguoi dung khoanh bo 01/11/2026)
+    /// + hinh chem trung rieng (mau phun, chay mau / tia lua khien - <see cref="VfxFactory.ChemTrung"/>). Hinh lam TRUOC TakeDamage:
+    /// don lam vo khien (HapThu) thi luc ve van biet luoi kiem cham khien. <paramref name="treHinh"/>: may khach hen hinh toi luc
+    /// luoi kiem bo xuong.
+    /// </summary>
+    static readonly Collider[] boNguoi = new Collider[16];
+
+    /// <summary>Nhan vat nguoi choi (ke ca ban sao) gan <paramref name="cho"/> nhat trong <paramref name="banKinh"/>.</summary>
+    static Damageable NguoiChoiGan(Vector3 cho, float banKinh)
+    {
+        int n = Physics.OverlapSphereNonAlloc(cho + Vector3.up, banKinh, boNguoi, LayerMask.GetMask("Player"), QueryTriggerInteraction.Collide);
+        Damageable gan = null; float xa = float.MaxValue;
+        for (int i = 0; i < n; i++)
+        {
+            var d = boNguoi[i].GetComponentInParent<Damageable>();
+            if (d == null || d.IsDead || !d.isPlayer) continue;
+            float k = (d.transform.position - cho).sqrMagnitude;
+            if (k < xa) { xa = k; gan = d; }
+        }
+        return gan;
+    }
+
+    void ChemTrung(Damageable d, float treHinh = 0f)
+    {
+        VfxFactory.ChemTrung(d, transform.position, treHinh);
+        Damageable.BoQuaTiaTrungDon = true;
+        try { d.TakeDamage(attackDamage, DamageType.Physical, d.transform.position + Vector3.up * 1.1f); }
+        finally { Damageable.BoQuaTiaTrungDon = false; }
     }
 
     /// <summary>

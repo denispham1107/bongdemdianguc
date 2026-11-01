@@ -1,6 +1,6 @@
 [ban 1] don cua quai phai di qua duoc mang
 da don 0 con quai co san de mau chi doi vi phep thu
-1. quai danh ban sao: 10000 -> 9960 mau, roi mot goi tin tu may kia den -> 10000 mau
+1. quai danh ban sao: 1000 -> 960 mau, roi mot goi tin tu may kia den -> 1000 mau
    => sat thuong bi xoa sach: True (dung nhu vay thi nguoi khach bat tu truoc quai)
 2. goi don quai 17 byte, doc lai: idQuai=777 kieuDon=2 nanNhan=1 lech diem ngam=0.0000 m
 2b. sat thuong kem goi: viet 35.05 -> doc 35.05; goi cu 15 byte: doc duoc True, sat thuong 0.00
