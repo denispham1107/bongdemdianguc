@@ -929,7 +929,7 @@ public static class ThuMayGiong
             {
                 foreach (var a in Object.FindObjectsByType<LightningArc>(FindObjectsInactive.Exclude))
                 {
-                    if (!cuI.Add(a) || a.name == "TiaMayGiong" || a.name == "TiaNgangMayGiong") continue;
+                    if (!cuI.Add(a) || a.name.StartsWith("TiaMayGiong") || a.name == "TiaNgangMayGiong") continue;
                     if (a.start.y - a.end.y < 8f) continue;      // chi tia tu tren troi giang xuong (tia chinh LightningStrike)
                     soTiaSS++;
                     nhanhSS.Add(a.branches);

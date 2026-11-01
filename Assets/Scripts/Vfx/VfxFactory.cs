@@ -2009,12 +2009,34 @@ public static partial class VfxFactory
     /// "rat khong tu nhien"), thay bang TIA SET CON BO TREN DAT (TiaBoDat) + VET NUT DAT PHAT SANG roi nguoi (VetNutSet - thay
     /// vet chay xem 15% cu). Vong sang, quang, cot sang, bui, den cua prefab giu nguyen.
     /// </summary>
-    public static void LightningImpact(Vector3 pos, float radius)
+    /// <param name="boCotSang">true = tat luon "cot sang" Column0/1 (chi May giong - xem TatCotSang).</param>
+    public static void LightningImpact(Vector3 pos, float radius, bool boCotSang = false)
     {
         var loe = LoeSetChamDat(pos, radius);
         TatVetGach(loe);
+        if (boCotSang) TatCotSang(loe);
         TiaBoDat.Tao(pos, radius);
         VetNutSet.Tao(pos, radius);
+    }
+
+    /// <summary>Ten hai tam "cot sang" dung boc quanh tia (prefab Vfx_SetChamDat lan BuildLightningImpact).</summary>
+    public static readonly string[] LopCotSang = { "Column0", "Column1" };
+    public static int SoCotSangDaTat;
+
+    /// <summary>
+    /// 01/11/2026 nguoi dung khoanh o May giong: "1 tia sang thang dung rat la danh cung luc voi tia set, khong phai tia set" =
+    /// hai tam cot sang cat cheo cao ~6 m dung thang tai cho cham (tia that tu may xuong lech sang ben nen cot hien tach rieng).
+    /// Chon: CHI May giong (Sam set, Loc xoay giu), thay bang mot tia set con (VfxFactory.TiaSetConMayGiong).
+    /// </summary>
+    public static void TatCotSang(GameObject loe)
+    {
+        if (loe == null) return;
+        foreach (var t in loe.GetComponentsInChildren<Transform>(true))
+            if (System.Array.IndexOf(LopCotSang, t.name) >= 0 && t.gameObject.activeSelf)
+            {
+                t.gameObject.SetActive(false);
+                SoCotSangDaTat++;
+            }
     }
 
     /// <summary>Ten hai lop hat ve thanh vet gach (prefab Vfx_SetChamDat lan BuildLightningImpact).</summary>

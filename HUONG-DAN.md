@@ -2807,6 +2807,35 @@ tat han bong (Rat yeu cu)                 0           662    2,5 trieu
   Menu 48 nay kiểm tỉ lệ cảnh từng mức bằng số VIẾT TAY (`mongPhanGiai` — trước đó chỉ so ảnh đệm với chính bảng `heSoPhanGiai`). Đo: Cực yếu ảnh đệm
   655×254 trên màn 1638 (cũ 573×223), 749 lượt vẽ, 0 vật đổ bóng — **0 lỗi**.
 
+## Mây giông: cột sáng thẳng đứng thay bằng tia sét con (01/11/2026)
+
+**Người dùng** (hai ảnh, khoanh đỏ): mỗi lần Mây giông đánh có "một tia sáng thẳng đứng rất lạ đánh cùng lúc với tia sét, không phải tia sét" —
+thay bằng tia sét. Người dùng chọn: **thêm một tia sét con**, **chỉ Mây giông** (Sấm sét, Lốc xoáy dùng cùng vụ lóe nhưng giữ nguyên).
+
+**Nguyên nhân:** vụ lóe chạm đất `Vfx_SetChamDat` có hai tấm `Column0` / `Column1` — "cột sáng bọc quanh tia", hai tấm phẳng phát sáng cắt chéo,
+cao ~6 m, dựng THẲNG ĐỨNG ngay chỗ chạm. Ở Sấm sét tia đánh gần thẳng xuống nên cột trùng tia; ở Mây giông tia đi từ đáy mây lệch tới 2,7 m nên
+cột sáng hiện ra tách riêng cạnh tia gấp khúc.
+
+**Sửa:** `VfxFactory.TiaMayGiong` gọi `LightningImpact(.., boCotSang: true)` → `TatCotSang` tắt hai tấm; thêm `TiaSetConMayGiong`: tia cùng kiểu
+Sấm sét, mảnh ×0,6, 16 đoạn, 1 nhánh, gốc ở đáy mây lệch 1–1,8 m so với tia chính, ngọn chạm đất cạnh chỗ chạm 0,7–1,4 m, sống 0,30 s. Tia dừng ở
+mặt vòm khiên (`chamDat: false`) không có vụ lóe nên cũng không có tia con. Chỉ là hình — sát thương, hất ngã, cháy đen không đổi.
+
+**Đo — menu 154** (`ThuCotSangMayGiong.cs`, Play Act2 ban đêm, 0 lỗi):
+
+| Mục | Kết quả |
+|---|---|
+| Mây giông thật 4 s | 15 tia chạm đất → 15 vụ lóe, cột sáng còn bật **0**, đã tắt 30 tấm |
+| Tia con | 15/15 tia chính có đúng 1 tia con cùng khung; gốc lệch 1,06–1,78 m, ngọn lệch chỗ chạm 0,74–1,25 m, lệch mặt đất 0,000 m, bề ngang ×0,60 |
+| Tia dừng ở mặt vòm | tia con +0, vụ lóe +0 |
+| Đối chứng Sấm sét thật | 19 vụ lóe, 19 còn cột sáng; tia con +0 |
+| Ảnh (máy quay ngang, chỉ vụ lóe, điểm sáng lên NGẢ XANH ở 1,2–6 m trên chỗ chạm) | cũ **13 980**, mới **4** |
+
+⚠️ Lần chạy đầu đếm mọi điểm sáng lên (không xét màu) ra cũ 22 424 / mới 9 231 — phần còn lại là **thân cây được đèn chớp của vụ lóe rọi trắng**
+(có ở cả hai bản); nay chỉ đếm điểm ngả xanh.
+
+Menu 83, 106: 0 lỗi (menu 83 mục I nay bỏ qua mọi tia tên bắt đầu "TiaMayGiong" khi đếm tia Sấm sét). Ảnh: `PlayTestShots/cot_sang_may_giong/`
+(`loe_cu_co_cot.png` / `loe_moi_khong_cot.png`, `game_cu.png` / `game_moi.png` góc "3D tự do").
+
 ## Vụ nổ lửa không còn vệt hạt — Quả cầu lửa, Thiên thạch, Lửa địa ngục (01/11/2026)
 
 **Người dùng** (3 ảnh khoanh xanh lá): sau khi Quả cầu lửa, Thiên thạch, Lửa địa ngục va chạm và nổ, xoá các vệt (hạt) cam mảnh bắn ra. Người dùng

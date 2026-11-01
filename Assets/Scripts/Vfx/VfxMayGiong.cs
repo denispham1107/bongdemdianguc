@@ -220,7 +220,36 @@ public static partial class VfxFactory
         arc.name = "TiaMayGiong";
         arc.segments = 20;
         arc.branches = Random.Range(2, 4);
-        if (chamDat) LightningImpact(den, MayGiong.BanKinhTia);
+        if (chamDat)
+        {
+            LightningImpact(den, MayGiong.BanKinhTia, true);   // bo cot sang thang dung (01/11/2026)
+            TiaSetConMayGiong(tu, den);
+        }
+        return arc;
+    }
+
+    public const string TenTiaCon = "TiaMayGiongCon";
+    /// <summary>Tia con manh hon tia chinh (be ngang x HeSoNgangTiaCon).</summary>
+    public const float HeSoNgangTiaCon = 0.6f;
+    public static int SoTiaSetCon;
+
+    /// <summary>
+    /// TIA SET CON thay cho cot sang (01/11/2026, nguoi dung: "thay the tia sang la nay bang tia set"; chon "them 1 tia set con"):
+    /// cung kieu tia Sam set (LightningArc mac dinh), manh hon, 16 doan, 1 nhanh, tu day may lech 1-1,8 m so voi goc tia chinh
+    /// xuong DAT canh cho cham 0,7-1,4 m - moi lan danh thay 2 tia gap khuc tach nhau. Chi hinh.
+    /// </summary>
+    public static LightningArc TiaSetConMayGiong(Vector3 tu, Vector3 den)
+    {
+        Vector2 a = Random.insideUnitCircle.normalized;
+        Vector3 tuCon = tu + new Vector3(a.x, 0f, a.y) * Random.Range(1.0f, 1.8f);
+        Vector2 b = Random.insideUnitCircle.normalized;
+        Vector3 denCon = den + new Vector3(b.x, 0f, b.y) * Random.Range(0.7f, 1.4f);
+        denCon.y = GroundY(denCon);
+        var arc = LightningArc.Create(tuCon, denCon, HeSoNgangTiaCon, GiayTiaSamSet);
+        arc.name = TenTiaCon;
+        arc.segments = 16;
+        arc.branches = 1;
+        SoTiaSetCon++;
         return arc;
     }
 
