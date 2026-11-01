@@ -312,6 +312,7 @@ public class Tornado : MonoBehaviour
     // ================================================================
 
     readonly HashSet<Damageable> daDoDon = new HashSet<Damageable>();
+    readonly Dictionary<Damageable, float> lucQuaKhien = new Dictionary<Damageable, float>();
 
     void CatchNearby()
     {
@@ -324,6 +325,18 @@ public class Tornado : MonoBehaviour
             if (d == null || d.IsDead) continue;
             if (CheDoTran.BoQua(boQua, d)) continue;
             if (daDoDon.Contains(d)) continue;
+            // Bat khien: khong bi cuon (mien dich 01/11/2026) nhung gio bui van quat vao vom - tru mau KHIEN theo nhip nhu luc bi cuon, khong thi dung trong loc khong mat gi
+            if (d.GetComponent<WhirledEffect>() == null && Khieng.ChanHieuUng(d))
+            {
+                float tuLuc;
+                if (!lucQuaKhien.TryGetValue(d, out tuLuc)) tuLuc = Time.time - 0.2f;
+                d.GhiKeDanh(boQua);
+                Damageable.LaSatThuongRi = true;
+                try { d.TakeDamage(damagePerSecond * (Time.time - tuLuc), DamageType.Physical, d.transform.position + Vector3.up); }
+                finally { Damageable.LaSatThuongRi = false; }
+                lucQuaKhien[d] = Time.time;
+                continue;
+            }
             // Bo xuong DO DON (28/09/2026): gieo MOT lan cho ca con loc nay - khong thi moi khung gieo lai, som muon cung cuon duoc
             if (d.GetComponent<WhirledEffect>() == null && ChongDo.ChanHieuUng(d)) { daDoDon.Add(d); continue; }
 

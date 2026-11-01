@@ -41,6 +41,7 @@ public class BiUot : MonoBehaviour
     {
         if (d == null || d.IsDead) return null;
         if (TangHinh.ChanHieuUng(d)) return null;
+        if (Khieng.ChanHieuUng(d)) return null;     // dang bat khien: mien dich, khong hoa giai cai dang dinh (nguoi dung 01/11/2026)
         var u = d.GetComponent<BiUot>();
         if (u == null)
         {

@@ -70,6 +70,7 @@ public static class ThuChemBoXuong
     {
         p.y = GioLoc.MatDatY(p, VfxFactory.GroundY(p));
         var q = EnemyFactory.Spawn(MonsterType.Skeleton, p, null, toi.transform);
+        q.GetComponent<EnemyAI>().coLuot = false;     // chi do nhat chem; cu luot do o menu 158
         q.name = "TAM_BoXuong";
         var ai = q.GetComponent<EnemyAI>();
         ai.enabled = batAI;

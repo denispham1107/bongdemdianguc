@@ -26,6 +26,7 @@ public class StunnedEffect : MonoBehaviour
     public static void Apply(Damageable d, float seconds)
     {
         if (TangHinh.ChanHieuUng(d)) return;      // tang hinh mien moi hieu ung (18/09/2026)
+        if (Khieng.ChanHieuUng(d)) return;     // dang bat khien: mien dich, khong hoa giai cai dang dinh (nguoi dung 01/11/2026)
         if (d == null || d.IsDead || seconds <= 0f) return;
         if (ChongDo.ChanHieuUng(d)) return;       // Bo xuong do duoc don nay (28/09/2026)
         // Ban sao (mau do may khac quyet) KHONG tu gieo hieu ung cho minh: ben

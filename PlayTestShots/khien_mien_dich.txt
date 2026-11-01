@@ -1,0 +1,25 @@
+MENU 157 - Khien mien dich: 0 loi
+== A Mau khien
+  OK   nhan vat trong canh khiengMau = 225
+  OK   prefab khiengMau = 225
+  OK   CastAt that: khien 225 / 225 (phai 225)
+== B Dang bat khien: mien dich
+  OK   co khien: 0 hieu ung dinh (phai 0), chan 8
+  OK   DOI CHUNG khong khien: 8 hieu ung dinh
+== C Khong hoa giai
+  OK   choang dinh truoc khi bat khien van con sau 0,5 s
+  OK   chay dinh truoc khi bat van con
+  OK   chay van tru vao khien: mau 199.7
+== D Dang dinh hieu ung thi khong bat duoc
+  OK   choang: niem False, khien False, mana 99973 -> 99979
+  OK   dong bang: niem False, khien False, mana 99981 -> 99988
+  OK   nga: niem False, khien False, mana 99991 -> 99997
+  OK   hat tung: niem False, khien False, mana 100000 -> 100000
+  OK   loc cuon: niem False, khien False, mana 100000 -> 100000
+  OK   DOI CHUNG het hieu ung: bat duoc khien
+== E Dinh choang giua luc niem
+  OK   choang giua luc niem: khong ra khien
+== F Dung trong Loc xoay that
+  OK   co khien: khong bi cuon
+  OK   khien mat mau trong loc: 60 -> het sau 3.03 s (20 mau/giay)
+  OK   vo khien roi thi bi cuon

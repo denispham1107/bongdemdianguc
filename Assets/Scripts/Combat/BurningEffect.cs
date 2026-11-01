@@ -26,6 +26,7 @@ public class BurningEffect : MonoBehaviour
     public static void Apply(Damageable d, float dps, float seconds, Damageable keGay = null)
     {
         if (TangHinh.ChanHieuUng(d)) return;      // tang hinh mien moi hieu ung (18/09/2026)
+        if (Khieng.ChanHieuUng(d)) return;     // dang bat khien: mien dich, khong hoa giai cai dang dinh (nguoi dung 01/11/2026)
         if (d == null || d.IsDead) return;
         if (ChongDo.ChanHieuUng(d)) return;       // Bo xuong do duoc don nay (28/09/2026)
 

@@ -177,6 +177,7 @@ public static class ThuDonQuai
         Vector3 choQuai = toi.transform.position + new Vector3(1.2f, 0f, 0f);
         choQuai.y = VfxFactory.GroundY(choQuai) + 0.15f;
         var conQuai = EnemyFactory.Spawn(MonsterType.Skeleton, choQuai, null, toi.transform);
+        conQuai.GetComponent<EnemyAI>().coLuot = false;     // do don chem qua mang; cu luot do o menu 158
         if (conQuai == null) { Ghi("[LOI] khong dung duoc con quai"); loi++; Ket(); yield break; }
         // DanhSo la duong that moi con quai deu di qua - no cap so hieu VA ghi
         // ten nghe. Goi dung ham ay chu khong tu tay lam hai viec do o day:

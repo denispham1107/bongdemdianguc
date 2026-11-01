@@ -48,6 +48,7 @@ public class WhirledEffect : MonoBehaviour
     {
         if (d == null || d.IsDead || tornado == null) return null;
         if (d.GetComponent<WhirledEffect>() != null) return null;
+        if (Khieng.ChanHieuUng(d)) return null;     // dang bat khien: mien dich, khong hoa giai cai dang dinh (nguoi dung 01/11/2026)
 
         var w = d.gameObject.AddComponent<WhirledEffect>();
         w.tornado = tornado;

@@ -43,6 +43,7 @@ public class FrozenEffect : MonoBehaviour
     {
         if (d == null || d.IsDead || giay <= 0f) return;
         if (TangHinh.ChanHieuUng(d)) return;      // tang hinh mien moi hieu ung (18/09/2026)
+        if (Khieng.ChanHieuUng(d)) return;     // dang bat khien: mien dich, khong hoa giai cai dang dinh (nguoi dung 01/11/2026)
         // Ban sao khong tu gieo hieu ung cho minh - xem ghi chu o Apply.
         if (d.mauDoMayKhacQuyet) return;
 
@@ -83,6 +84,7 @@ public class FrozenEffect : MonoBehaviour
     {
         if (d == null || d.IsDead) return;
         if (TangHinh.ChanHieuUng(d)) return;      // tang hinh mien moi hieu ung (18/09/2026)
+        if (Khieng.ChanHieuUng(d)) return;     // dang bat khien: mien dich, khong hoa giai cai dang dinh (nguoi dung 01/11/2026)
         if (ChongDo.ChanHieuUng(d)) return;       // Bo xuong do duoc don nay (28/09/2026)
         // Ban sao (mau do may khac quyet) KHONG tu gieo hieu ung cho minh: ben
         // kia tung Random.value rieng, gieo them lan nua o day la hai may thay

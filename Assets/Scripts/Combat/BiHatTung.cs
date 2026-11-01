@@ -93,6 +93,7 @@ public class BiHatTung : MonoBehaviour
     public static BiHatTung Apply(Damageable d, float giay)
     {
         if (TangHinh.ChanHieuUng(d)) return null;   // tang hinh mien moi hieu ung (18/09/2026)
+        if (Khieng.ChanHieuUng(d)) return null;     // dang bat khien: mien dich, khong hoa giai cai dang dinh (nguoi dung 01/11/2026)
         if (d == null || d.IsDead || giay <= 0f) return null;
         if (d.mauDoMayKhacQuyet) return null;
         if (ChongDo.ChanHieuUng(d)) return null;  // Bo xuong do duoc don nay (28/09/2026)

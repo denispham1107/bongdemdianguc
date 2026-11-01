@@ -48,6 +48,37 @@ public class Khieng : MonoBehaviour
     /// <summary>Con mau thi con chan duoc.</summary>
     public bool DangBat { get { return mau > 0f; } }
 
+    /// <summary>Dem cho phep thu (menu 157).</summary>
+    public static int SoLanChanHieuUng;
+
+    /// <summary>
+    /// DANG BAT KHIEN THI MIEN DICH MOI HIEU UNG (nguoi dung 01/11/2026): choang, dong bang, cham, nga, hat tung, chay, uot, chay den, loc cuon -
+    /// goi o dau moi Apply. CHI mien dich, KHONG hoa giai: hieu ung da dinh truoc khi bat van chay tiep (khac TangHinh, thu xoa sach).
+    /// </summary>
+    public static bool ChanHieuUng(Component c)
+    {
+        if (c == null) return false;
+        var k = c.GetComponent<Khieng>();
+        if (k == null || !k.DangBat) return false;
+        SoLanChanHieuUng++;
+        return true;
+    }
+
+    /// <summary>Moc Time.time: truoc moc nay ApKhieng khong dung lai khieng vua bi pha tu goi tin cu tren duong (xem PhaVo).</summary>
+    [System.NonSerialized] public float khongBatLaiTruoc;
+
+    /// <summary>
+    /// PHA VO NGAY, con bao nhieu mau cung vo (Bo xuong luot xuyen khien, 55% - EnemyAI). Goi ca tren ban sao: may tinh cu luot la chu phong, chua nhan
+    /// goi tin cua chu khien; tam ngung ApKhieng 0,5 s de goi "con khien" dang bay khong dung lai khieng vua vo.
+    /// </summary>
+    public void PhaVo()
+    {
+        if (!DangBat) return;
+        khongBatLaiTruoc = Time.time + 0.5f;
+        mau = 0f;
+        Vo();
+    }
+
     public float Mau01 { get { return mauToiDa <= 0f ? 0f : Mathf.Clamp01(mau / mauToiDa); } }
 
     GameObject hinh;

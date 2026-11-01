@@ -237,7 +237,7 @@ public class DongBoQuai : MonoBehaviour
             soThuTu = ++soDonDaKe,
             diemNgam = diemNgam,
             // So THAT tren may nay (da nhan he so dot) - may khach khong tu nhan duoc (xem GoiTin.MotDonQuai.satThuong)
-            satThuong = kieu == 0 ? conQuai.attackDamage : conQuai.satThuongCau
+            satThuong = kieu == 0 || kieu >= EnemyAI.KieuLuotBatDau ? conQuai.attackDamage : conQuai.satThuongCau
         });
 
         SoDonDaKe++;
@@ -320,7 +320,7 @@ public class DongBoQuai : MonoBehaviour
         // Dat DUNG sat thuong cua chu phong len ban sao truoc khi dien lai (ban sao khong nhan he so dot - 28/09/2026)
         if (d.satThuong > 0f)
         {
-            if (d.kieuDon == 0) ai.attackDamage = d.satThuong;
+            if (d.kieuDon == 0 || d.kieuDon >= EnemyAI.KieuLuotBatDau) ai.attackDamage = d.satThuong;
             else ai.satThuongCau = d.satThuong;
         }
 

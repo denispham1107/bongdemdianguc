@@ -136282,7 +136282,7 @@ MonoBehaviour:
   khiengCost: 45
   khiengCooldown: 12
   khiengCastTime: 0.55
-  khiengMau: 150
+  khiengMau: 225
   khiengBanKinh: 3.036
   giatSetCost: 25
   giatSetCooldown: 0.9

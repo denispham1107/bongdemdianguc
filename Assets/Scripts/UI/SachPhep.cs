@@ -467,10 +467,11 @@ public static class SachPhep
             case 5:
                 return "Dựng một vòm chắn sáng quanh chính mình. Mọi đòn đánh trừ vào "
                      + "khiên trước khi chạm tới máu.\n\n"
-                     + "Đòn trúng khiên thì hiệu ứng đi kèm (bỏng, đóng băng) cũng bị "
-                     + "chặn luôn — cầu lửa nổ trên mặt vòm mà người bên trong vẫn bốc "
-                     + "cháy thì nhìn như lửa đã lọt qua khiên.\n\n"
-                     + "Khiên vỡ khi hết máu, và mờ dần theo lượng máu còn lại.";
+                     + "Khiên có 225 máu ở cấp 1. Trong lúc bật khiên bạn MIỄN DỊCH mọi hiệu ứng: choáng, đóng băng, "
+                     + "làm chậm, ngã, hất tung, bỏng, ướt, bị lốc cuốn.\n\n"
+                     + "Khiên chỉ miễn dịch chứ không hoá giải: hiệu ứng đã dính trước đó vẫn chạy tiếp. Đang bị choáng, "
+                     + "đóng băng, ngã, hất tung hay lốc cuốn thì không bật được khiên.\n\n"
+                     + "Khiên vỡ khi hết máu, và mờ dần theo lượng máu còn lại. Cú lướt của Bộ xương có 55% xuyên thủng, phá vỡ khiên ngay.";
             case 6:
                 return "Tia sét phóng thẳng từ tay tới kẻ địch phía trước trong tầm 20 mét. Có "
                      + "tới 4 kẻ địch thì 4 tia cùng phóng ra một lúc, mỗi tia một kẻ. Chạm "

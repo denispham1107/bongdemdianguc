@@ -2932,6 +2932,30 @@ không cắm xuyên đất thành đường thẳng. Tiếng vỡ, rung máy qua
 điểm gần trắng 14 679 → **38**. ⚠️ Lần đo đầu đếm "sáng lên" ra 13 085 vì tính cả sương mềm (ảnh không còn vòm) — đại lượng ấy không phân biệt được, nên đổi sang điểm gần trắng.
 Khung 0,1 s đầu sương vẫn là đám sáng mềm màu xanh nhạt. Menu 68: 0 lỗi.
 
+## Cú lướt của Bộ xương + Khiên miễn dịch hiệu ứng (01/11/2026)
+
+**Người dùng:** Bộ xương trước mặt người chơi (cả BOT) trong 5 m lướt rất nhanh kiểu cú lao của Zealot trong StarCraft 2, delay 1,5 giây, 55% xuyên thủng phá bể khiên. Khiên miễn dịch mọi hiệu ứng khi bật, chỉ miễn dịch
+không hoá giải; đang choáng / đóng băng / ngã / bị lốc cuốn thì không dùng được khiên; máu ban đầu thêm 75. Người dùng chọn: sát thương = 1 nhát chém; xuyên = vỡ khiên + đánh vào người; hình bóng mờ + vệt hồn xanh; tiếng mẫu A "Hồn lao".
+
+**Khiên** (`Khieng.ChanHieuUng`, gọi đầu mọi Apply + `WhirledEffect.Catch`): 225 máu (code, prefab, Act2). Việc "đang dính thì không bật được" `CastAt` vốn đã chặn; thêm: dính GIỮA lúc niệm thì không ra khiên. Lốc xoáy: người có khiên không bị
+cuốn nhưng khiên mất máu theo nhịp, không thì đứng trong lốc bất tử.
+
+**Cú lướt** (`EnemyAILuot.cs`): 5 m, 18 m/s bám theo mục tiêu, hồi 1,5 s; khoảng cách đo tới TÂM nên con đứng đánh mép vòm (cách tâm ~3,4–4,9 m) vẫn lướt được — chính là cách vỡ khiên. Có khiên thì gieo khi chạm mặt vòm.
+Qua mạng 4 kiểu đòn mới trong gói cũ; chỉ máy trọng tài gieo 55%.
+
+**Hình + tiếng:** bóng mờ BakeMesh shader Tàng hình (`_RimPower` 0,9 — 1,8 trên lưới Meshy thành lấm tấm), vệt hồn ảnh Blender MCP sống 0,42 s (cú lướt chỉ ~0,15 s, vệt ngắn hơn thì chưa kịp thấy đã tắt), bụi đất. Tiếng 3 mẫu theo quy trình,
+người dùng chọn A; hai tiếng phát theo sự kiện (lao · tới).
+
+**Đo:**
+
+| Phép thử | Kết quả |
+|---|---|
+| Menu 157 | 8/8 Apply bị chặn khi có khiên, đối chứng 8/8 dính; choáng + cháy dính trước vẫn chạy; 5 hiệu ứng đều chặn bật khiên; Lốc xoáy thật: 60 máu khiên hết sau 2,95 s, không bị cuốn, vỡ rồi mới cuốn — **0 lỗi** |
+| Menu 158 | 18,0 m/s (đi bộ 4,92); mất đúng 1 nhát; 1,52 s giữa hai lần; bắt đầu ở 4,98 m khi đi từ 9 m; đối chứng sát người / hộp chắn 0 lướt; xuyên: khiên vỡ, người mất 1 nhát, vào tới 1,92 m; không xuyên: khiên mất 1 nhát, người 0, dừng 3,41 m; 40 lần gieo thật 22 xuyên (55%); nhân vật khác trong danh sách quái (như BOT) cũng bị lướt; choáng dừng ngay; 4 kiểu đòn máy khách đúng; loa stereo tương quan 0,36 — **0 lỗi** |
+| Menu 91, 152, 39, 136, 134, 49 | 0 lỗi (91, 152, 39 tắt cú lướt để đo nhát chém) |
+
+⚠️ Chưa thử hai máy thật; chưa đo khung hình điện thoại khi cả bầy cùng lướt. ⚠️ Bẫy đo: lần đầu loa ra 0 vì Editor tắt tiếng tổng (`EditorUtility.audioMasterMute`); hẹn menu bằng `EditorApplication.update` trong RunCommand bị biên dịch lại xoá mất, Monitor in lại kết quả CŨ.
+
 ## Đăng ký / đăng nhập chỉ ở trang chủ (01/11/2026)
 
 **Người dùng** (ảnh màn đăng nhập trong game): ở trang chủ https://acquytrolai.web.app, chưa đăng nhập mà bấm **Chơi ngay** thì chặn, hiện bảng

@@ -95,7 +95,7 @@ public static class GoiTin
     public struct MotDonQuai
     {
         public ushort idQuai;
-        public byte kieuDon;        // 0 = danh gan, 1 = nem phep, 2 = thien thach, 3 = tia set
+        public byte kieuDon;        // 0 = danh gan, 1 = nem phep, 2 = thien thach, 3 = tia set, 4-7 = Bo xuong luot (EnemyAI.KieuLuot*)
         public byte chiSoNanNhan;   // ai bi nham; 255 = khong nham ai ro rang
         public int soThuTu;
         public Vector3 diemNgam;

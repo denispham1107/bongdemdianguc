@@ -7,7 +7,7 @@ MENU 152 - Don chem Bo xuong: 0 loi
   OK   A moi don trung mot hinh trung: 9 / 9
   OK   A sat thuong giu nguyen: mat 484.6 = 9 x 53.85
   OK   A chay mau bat 9 lan, co component ChayMau tren nguoi choi
-  OK   A vet mau tren dat: nhieu nhat 19 (tran 24)
+  OK   A vet mau tren dat: nhieu nhat 23 (tran 24)
   OK   A giot mau bay: nhieu nhat 42 hat, he hat keo dai 0 (phai 0)
   OK   A doi chung: sat thuong Vat ly thuong van phun tia trung don (+1)
   OK   A co BoQuaTiaTrungDon tra ve false
@@ -22,8 +22,8 @@ MENU 152 - Don chem Bo xuong: 0 loi
   OK   B nhat chem dung truoc mat: mui cuoi z 0.60 m (> 0,3), sau lung nhat z -0.38 m (> -0,5)
 == C. Chem trung Khien
   OK   C khien da bat
-   don 3, tia lua 3, khien 150 -> 0
-  OK   C moi don trung khien mot chum tia lua: 3 / 3
+   don 5, tia lua 5, khien 225 -> 0
+  OK   C moi don trung khien mot chum tia lua: 5 / 5
   OK   C trung khien KHONG chay mau (bat 0)
   OK   C tia trung don +0 (phai 0)
   OK   C khien an don, nguoi choi khong mat mau
@@ -33,9 +33,9 @@ MENU 152 - Don chem Bo xuong: 0 loi
   OK   D nham nguoi khac (nanNhan null): chi hinh, khong mat mau
   OK   D tia trung don +0 (phai 0)
 == E. Anh cu / moi
-   dem diem anh do quanh Bo xuong (cu / moi) tai +0.02s: 0 / 1051; +0.06s: 0 / 136; +0.12s: 0 / 0; +0.22s: 0 / 0;
-  OK   E dem: 2 moc dau diem anh do quanh Bo xuong moi 1187 > 3 x cu 0 (thay ro vet chem)
+   dem diem anh do quanh Bo xuong (cu / moi) tai +0.02s: 0 / 397; +0.06s: 0 / 50; +0.12s: 0 / 0; +0.22s: 0 / 0;
+  OK   E dem: 2 moc dau diem anh do quanh Bo xuong moi 447 > 3 x cu 0 (thay ro vet chem)
   OK   E dem: vet tan het truoc don sau (+0,22 s: 0)
-   ngay diem anh do quanh Bo xuong (cu / moi) tai +0.02s: 0 / 973; +0.06s: 0 / 62; +0.12s: 0 / 0; +0.22s: 0 / 0;
-  OK   E ngay: 2 moc dau diem anh do quanh Bo xuong moi 1035 > 3 x cu 0 (thay ro vet chem)
+   ngay diem anh do quanh Bo xuong (cu / moi) tai +0.02s: 0 / 1022; +0.06s: 0 / 23; +0.12s: 0 / 0; +0.22s: 0 / 0;
+  OK   E ngay: 2 moc dau diem anh do quanh Bo xuong moi 1045 > 3 x cu 0 (thay ro vet chem)
   OK   E ngay: vet tan het truoc don sau (+0,22 s: 0)

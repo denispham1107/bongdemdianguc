@@ -6,7 +6,7 @@ using UnityEngine;
 /// Bi dong bang thi cham hoac dung han, bi chay thi van duoi nhung mat mau dan.
 /// </summary>
 [RequireComponent(typeof(CharacterController))]
-public class EnemyAI : MonoBehaviour
+public partial class EnemyAI : MonoBehaviour
 {
     [Header("Di chuyen")]
     public float moveSpeed = 2.6f;
@@ -306,6 +306,7 @@ public class EnemyAI : MonoBehaviour
 
         float dt = Time.deltaTime;
         if (cooldown > 0f) cooldown -= dt;
+        if (hoiLuot > 0f) hoiLuot -= dt;
 
         // Bi dong bang / lam cham
         float speedMul = 1f;
@@ -314,7 +315,7 @@ public class EnemyAI : MonoBehaviour
         if (frozen != null) speedMul = frozen.HeSoToc;
 
         // Dang bi loc cuon len troi thi khong tu dieu khien duoc nua
-        if (GetComponent<WhirledEffect>() != null) return;
+        if (GetComponent<WhirledEffect>() != null) { NgatLuot(); return; }
 
         // Bi DONG BANG hoan toan: dung im va KHONG DANH DUOC.
         //
@@ -323,6 +324,7 @@ public class EnemyAI : MonoBehaviour
         // dong bang. Xu ly giong het bi set choang.
         if (frozen != null && frozen.IsFullyFrozen)
         {
+            NgatLuot();
             attackTimer = -1f;
             hitApplied = false;
             velocity.x = 0f;
@@ -340,6 +342,7 @@ public class EnemyAI : MonoBehaviour
         if ((stunned != null && stunned.IsStunned) || (nga != null && nga.DangNga)
             || (hatTung != null && hatTung.DangBay))
         {
+            NgatLuot();
             speedMul = 0f;
             attackTimer = -1f;
             hitApplied = false;
@@ -350,6 +353,9 @@ public class EnemyAI : MonoBehaviour
             if (anim != null) anim.SetMoveSpeed(0f);
             return;
         }
+
+        // Dang luot (Bo xuong - EnemyAILuot.cs)
+        if (DangLuot) { BuocLuot(dt, speedMul); return; }
 
         // Dang trong don danh
         if (attackTimer >= 0f)
@@ -379,6 +385,8 @@ public class EnemyAI : MonoBehaviour
 
         if (targetAlive && (dist <= aggroRange || DangTruyLung) && speedMul > 0.02f)
         {
+            if (CoTheLuot(dist, target)) { BatDauLuot(); BuocLuot(dt, speedMul); return; }
+
             // Ke danh tu xa bi ap sat thi LUI RA cho du tam nem, vua lui vua
             // quay mat ve phia nguoi choi. Khong co doan nay thi mu phu thuy
             // dung im cho nguoi choi den tan noi chem, phi ca loi danh tam xa.
@@ -552,6 +560,9 @@ public class EnemyAI : MonoBehaviour
         // Xac thi khong ra don. Goi tin "ra don" co the den muon hon goi tin
         // "da chet" mot chut - khong chan o day thi mot cai xac vung kiem.
         if (health != null && health.IsDead) return;
+
+        // Cu luot cua Bo xuong: 4 kieu rieng, khong vung tay luc bat dau
+        if (kieu >= KieuLuotBatDau) { DatHuongToi(diemNgam); DienLaiLuot(kieu, diemNgam, nanNhan); return; }
 
         // Hinh anh vung tay - lam truoc, de ke ca khi don truot van thay dong tac
         if (anim != null) anim.PlayAttack(attackAnimTime);
@@ -832,4 +843,10 @@ public class EnemyAI : MonoBehaviour
     }
 
     static Vector3 FlatPos(Vector3 v) { return new Vector3(v.x, 0f, v.z); }
+
+    void DatHuongToi(Vector3 diem)
+    {
+        Vector3 nhin = new Vector3(diem.x - transform.position.x, 0f, diem.z - transform.position.z);
+        if (nhin.sqrMagnitude > 0.01f) transform.rotation = Quaternion.LookRotation(nhin);
+    }
 }

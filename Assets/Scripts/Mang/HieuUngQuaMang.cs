@@ -179,6 +179,7 @@ public static class HieuUngQuaMang
 
         if (mau01 > 0.001f)
         {
+            if (k != null && !k.DangBat && Time.time < k.khongBatLaiTruoc) return;   // goi cu "con khien" den sau khi vua pha (Khieng.PhaVo)
             if (k == null || !k.DangBat)
             {
                 k = Khieng.Bat(pc.gameObject, pc.khiengMau, pc.khiengBanKinh);

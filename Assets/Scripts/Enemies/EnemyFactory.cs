@@ -61,6 +61,7 @@ public static class EnemyFactory
                     ai.attackAnimTime = NhipDanhBoXuong - 0.05f;
                 }
                 if (hp != null) hp.tiLeDoDon = ChongDo.TiLeBoXuong;
+                if (ai != null) ai.coLuot = true;    // cu luot 5 m, hoi 1,5 s (nguoi dung 01/11/2026 - EnemyAILuot.cs)
                 break;
             case MonsterType.QuyCay:
                 if (ai != null) { ai.xacSuatChoangTia = XacSuatChoangQuyCay; ai.giayChoangTia = GiayChoangQuyCay; }

@@ -63,7 +63,7 @@ public class PlayerController : MonoBehaviour
     public float khiengCastTime = 0.55f;
 
     [Tooltip("Mau cua khieng - het mau thi khieng no tung")]
-    public float khiengMau = 150f;
+    public float khiengMau = 225f;       // 01/11/2026 nguoi dung +75 (truoc 150) - so nam o BA cho: code, Player_Sorceress.prefab, Act2
 
     [Tooltip("Ban kinh qua cau khieng, met")]
     public float khiengBanKinh = 3.036f;     // rong hon 15% so voi 2,64 m
@@ -1626,7 +1626,8 @@ public class PlayerController : MonoBehaviour
             // duong thi chung lech nhau vai chuc mili giay - mot goi trang thai
             // "chua co khieng" den sau la dap vo cai khieng vua dung, roi dung
             // lai: nhap nhay, kem mot lan vo gia.
-            if (health == null || !health.mauDoMayKhacQuyet)
+            // Vua dinh choang / dong bang / nga trong luc niem (hat tung + loc cuon da ngat chieu) thi khong dung duoc khien (nguoi dung 01/11/2026)
+            if ((health == null || !health.mauDoMayKhacQuyet) && LyDoKhongTungDuoc() == null)
             {
                 // Khien khong manh len theo sat thuong ma theo MAU KHIEN (+15% moi cap)
                 khiengHienTai = Khieng.Bat(gameObject,

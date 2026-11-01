@@ -78,6 +78,7 @@ public static class ThuDacTinhQuai
         go.name = ten;
         var ai = go.GetComponent<EnemyAI>();
         ai.enabled = false;
+        ai.coLuot = false;       // do nhip chem + toc do chay; cu luot (01/11/2026) do rieng o menu 158
         ai.target = muc;
         var d = go.GetComponent<Damageable>();
         d.maxHealth = 100000f; d.health = 100000f;
