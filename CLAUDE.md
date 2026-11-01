@@ -955,7 +955,8 @@ hơn ×1,5 và mở xuống 1,8–4,3 m** (người dùng chọn sau menu 94 ch�
   (điện thoại ĐỨNG, tâm ảnh = tâm điện thoại — CSS xoay 0 → 90° theo chiều kim đồng hồ, 3,2 s lặp) + `xoay_mui_ten.png`. Khóa: `khoaNgang()` gọi
   `screen.orientation.lock("landscape")` lúc vào, khi toàn màn hình, mỗi cú chạm (chỉ chạy khi toàn màn hình Android; iPhone không có API → chỉ bảng che);
   manifest `"orientation": "landscape"` (ứng dụng đã cài — cả trang chủ khi bị chuyển về). Đo trên máy chủ cục bộ: 375×812 / 320×568 / 360×740 cảm ứng dọc
-  hiện, 740×360 cảm ứng ngang ẩn, xoay trên cùng trang hiện ngay; máy tính 900×1300 ẩn. CHƯA build / deploy.
+  hiện, 740×360 cảm ứng ngang ẩn, xoay trên cùng trang hiện ngay; máy tính 900×1300 ẩn. **Đã deploy cùng ngày KHÔNG build lại** (code game không đổi: chép
+  khối HTML/CSS/JS vào `web/choi/index.html` của bản build đang chạy — diff với template chỉ khác 7 dòng Unity điền tên tệp; giữ `.data` cũ, người chơi khỏi tải lại).
 - ⚠️ **Triển khai web**: **xoá sạch `web/choi/Build/`**, chép `Build/WebGL/Build/*`, `Build/WebGL/TemplateData/*`
   (ảnh tiêu đề + font Inter của trang Loading — thiếu là trang Loading mất tên game và font) VÀ
   `Build/WebGL/index.html` sang **`web/choi/`** (KHÔNG đè `web/index.html` — đó là trang chủ). Bản build **không nén sẵn** (Firebase tự nén khi gửi — nó gạt bỏ `Content-Encoding` tự đặt) và

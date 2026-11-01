@@ -2837,7 +2837,11 @@ manifest `"orientation": "landscape"` (áp cả trang chủ khi ứng dụng b�
 | 740×360 ngang (cảm ứng) | ẩn; đổi sang 360×740 trên cùng trang → hiện ngay |
 | Máy tính 1024×768, 900×1300 (không cảm ứng) | ẩn cả khi cửa sổ dọc |
 
-Chưa kiểm được trên máy thật: khóa ngang thật (cần toàn màn hình Android). Ảnh: `PlayTestShots/xoay_ngang/`. Chưa build / deploy.
+Chưa kiểm được trên máy thật: khóa ngang thật (cần toàn màn hình Android). Ảnh: `PlayTestShots/xoay_ngang/`.
+
+**Đã deploy cùng ngày, KHÔNG build lại Unity:** code game không đổi, nên chép đúng các khối mới vào `web/choi/index.html` của bản build đang chạy (so với
+template chỉ khác 7 dòng Unity điền tên tệp / phiên bản) — giữ nguyên `.data` 213,8 MB, người chơi không phải tải lại lần nữa trong ngày. Build sau sinh lại
+trang này từ template như thường. Trang thật: có `#xoay-ngang`, `khoaNgang`, hai ảnh 200, manifest `landscape`.
 
 ## Đăng ký / đăng nhập chỉ ở trang chủ (01/11/2026)
 
