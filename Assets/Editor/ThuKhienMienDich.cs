@@ -13,6 +13,8 @@ using UnityEngine;
 ///   D. Dang choang / dong bang / nga / hat tung / loc cuon: CastAt(Khien) khong bat, khong tru mana; DOI CHUNG het hieu ung thi bat duoc.
 ///   E. Dinh choang GIUA luc niem: khong ra khien.
 ///   F. Dung trong Loc xoay that: khong bi cuon, khien mat mau dan (khong bat tu); vo khien roi moi bi cuon.
+///   G. KHIEN VO TUNG (02/11/2026): quai trong vom mat DUNG mau khien (225 cap 1, 393,5 cap 5 bat that), ngoai vom 0, chu khien 0; ghi ke danh; PhaVo cung no; Tat() khong no;
+///      ban sao chu khien (mau may khac quyet) vo: dung so theo cap tu goi phep.
 /// PlayTestShots/khien_mien_dich.txt
 /// </summary>
 public static class ThuKhienMienDich
@@ -207,6 +209,84 @@ public static class ThuKhienMienDich
         while (toi.GetComponent<WhirledEffect>() == null && Time.time < hanC) { if (loc != null) loc.transform.position = toi.transform.position + huong * 0.5f; yield return null; }
         Kiem(toi.GetComponent<WhirledEffect>() != null, "vo khien roi thi bi cuon");
         if (loc != null) Object.Destroy(loc.gameObject);
+        GoSach();
+        yield return new WaitForSeconds(0.5f);
+
+        // ---- G ----
+        nk.AppendLine("== G Khien vo tung");
+        {
+            Vector3 goc = toi.transform.position;
+            Damageable SinhQuai(Vector3 p, string ten)
+            {
+                p.y = VfxFactory.GroundY(p);
+                var go = EnemyFactory.Spawn(MonsterType.QuyCay, p, null, toi.transform);
+                go.name = ten;
+                go.GetComponent<EnemyAI>().enabled = false;
+                var m = go.GetComponent<Damageable>();
+                m.tiLeDoDon = 0f; m.maxHealth = 100000f; m.health = 100000f;
+                return m;
+            }
+            var trong = SinhQuai(goc + huong * 2f, "TAM_QuaiTrong");
+            var ngoai = SinhQuai(goc + huong * 6f, "TAM_QuaiNgoai");
+            yield return null;
+            Physics.SyncTransforms();
+
+            // Cap 1, het mau that
+            k = Khieng.Bat(toi.gameObject, 225f, toi.khiengBanKinh); d.khieng = k;
+            float mTr = trong.health, mNg = ngoai.health, mCh = d.health;
+            int no0 = Khieng.SoLanNo;
+            d.TakeDamage(300f, DamageType.Physical, goc);
+            yield return null;
+            Kiem(!k.DangBat && Khieng.SoLanNo == no0 + 1, "het mau: khien vo, no " + (Khieng.SoLanNo - no0));
+            Kiem(Mathf.Abs(mTr - trong.health - 225f) < 0.5f, "quai trong vom mat " + (mTr - trong.health).ToString("F1") + " (phai 225)");
+            Kiem(Mathf.Abs(mNg - ngoai.health) < 0.01f, "quai ngoai vom mat " + (mNg - ngoai.health).ToString("F1"));
+            Kiem(Mathf.Abs(mCh - d.health) < 0.01f, "chu khien mat " + (mCh - d.health).ToString("F1") + " (don pha vo khien khong tran sang)");
+            Kiem(trong.keDanhCuoi == d, "ke danh ghi la chu khien");
+
+            // Cap 5: bat that bang CastAt
+            for (int lan = 0; lan < 4; lan++) { CapDo.ThemDiemChoPhepThu(1); CapDo.NangCap(5); }
+            toi.mana = toi.maxMana;
+            yield return new WaitForSeconds(0.1f);
+            toi.CastAt(5, goc);
+            yield return new WaitForSeconds(toi.khiengCastTime + 0.15f);
+            k = toi.GetComponent<Khieng>();
+            float mong5 = 225f * CapDo.MauKhiengTheoCap(5);
+            Kiem(k != null && k.DangBat && Mathf.Abs(k.mauToiDa - mong5) < 0.5f, "cap 5 bat that: mau " + (k != null ? k.mauToiDa.ToString("F1") : "?") + " (phai " + mong5.ToString("F1") + ")");
+            mTr = trong.health;
+            k.PhaVo();      // duong Bo xuong xuyen
+            yield return null;
+            Kiem(Mathf.Abs(mTr - trong.health - mong5) < 0.5f, "PhaVo cap 5: quai mat " + (mTr - trong.health).ToString("F1"));
+
+            // Tat khong no
+            k = Khieng.Bat(toi.gameObject, 225f, toi.khiengBanKinh); d.khieng = k;
+            mTr = trong.health; no0 = Khieng.SoLanNo;
+            k.Tat();
+            yield return null;
+            Kiem(Khieng.SoLanNo == no0 && Mathf.Abs(mTr - trong.health) < 0.01f, "Tat(): khong no");
+
+            // Ban sao chu khien (nguoi khac): dung so theo cap tu goi phep, qua duong goi trang thai that
+            var banSao = Object.Instantiate(pf, goc + huong * 3.5f, Quaternion.identity);
+            banSao.name = "TAM_BanSaoKhien";
+            var pcS = banSao.GetComponent<PlayerController>();
+            pcS.tuDocInput = false;
+            var mS = banSao.GetComponent<Damageable>();
+            mS.mauDoMayKhacQuyet = true;
+            yield return null;
+            pcS.capKhiengTuMang = 3;
+            HieuUngQuaMang.ApKhieng(pcS, 1f);
+            var kS = banSao.GetComponent<Khieng>();
+            float mong3 = pcS.khiengMau * CapDo.MauKhiengTheoCap(3);
+            Kiem(kS != null && kS.DangBat && Mathf.Abs(kS.mauToiDa - mong3) < 0.5f, "ban sao cap 3: mau " + (kS != null ? kS.mauToiDa.ToString("F1") : "?") + " (phai " + mong3.ToString("F1") + ")");
+            Physics.SyncTransforms();
+            mTr = trong.health;
+            HieuUngQuaMang.ApKhieng(pcS, 0f);
+            yield return null;
+            Kiem(Mathf.Abs(mTr - trong.health - mong3) < 0.5f, "ban sao vo: quai mat " + (mTr - trong.health).ToString("F1") + " (phai " + mong3.ToString("F1") + ")");
+            Object.Destroy(banSao);
+            Object.Destroy(trong.gameObject);
+            Object.Destroy(ngoai.gameObject);
+            yield return new WaitForSeconds(0.2f);
+        }
 
         nk.Insert(0, "MENU 157 - Khien mien dich: " + loi + " loi\n");
         File.WriteAllText(Ra, nk.ToString());

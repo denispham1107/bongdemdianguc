@@ -182,7 +182,7 @@ public static class HieuUngQuaMang
             if (k != null && !k.DangBat && Time.time < k.khongBatLaiTruoc) return;   // goi cu "con khien" den sau khi vua pha (Khieng.PhaVo)
             if (k == null || !k.DangBat)
             {
-                k = Khieng.Bat(pc.gameObject, pc.khiengMau, pc.khiengBanKinh);
+                k = Khieng.Bat(pc.gameObject, pc.khiengMau * CapDo.MauKhiengTheoCap(pc.capKhiengTuMang), pc.khiengBanKinh);
                 var d = pc.GetComponent<Damageable>();
                 if (d != null) d.khieng = k;
             }

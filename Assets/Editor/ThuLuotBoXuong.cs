@@ -6,10 +6,11 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 
 /// <summary>
-/// MENU 158 - CU LUOT BO XUONG (nguoi dung 01/11/2026: trong 5 m luot rat nhanh nhu Zealot, hoi 1,5 s, 1 nhat chem, 55% xuyen vo khien + danh vao nguoi).
+/// MENU 158 - CU LUOT BO XUONG (nguoi dung 01/11/2026: luot rat nhanh nhu Zealot, hoi 1,5 s, 1 nhat chem, 55% xuyen vo khien + danh vao nguoi; 02/11/2026 tam 8 m, 15% nga 1 s).
 /// Quai THAT (EnemyFactory, AI bat), do vi tri tung khung - khong doc bien cua cu luot:
 ///   A. 4,5 m khong khien: toc do lon nhat >= 15 m/s (di bo 4,92), toi noi, mat dung attackDamage luc trung, hoi chieu 1,5 s do giua hai lan luot.
-///   B. Tu 9 m di bo vao: chi luot khi da trong 5 m.
+///   B. Tu 11 m di bo vao: chi luot khi da trong tam 8 m; luot het 8 m van toi noi.
+///   J. 15% danh nga 1 s: ep nga -> nguoi / khien vua xuyen deu nga; khien con nguyen mien dich; 60 lan gieo that ~15%; may khach kieu 5.
 ///   C. DOI CHUNG: dung sat (trong tam chem) khong khien -> 0 luot; hop chan giua duong -> 0 luot.
 ///   D. Khien: ep xuyen -> vo ngay, mat attackDamage vao NGUOI, toi sat; ep khong xuyen -> khien mat dung attackDamage, nguoi 0, dung ngoai vom; 40 lan gieo that ~55%.
 ///   E. Muc tieu BOT (nhan vat khac trong GameDirector) cung bi luot.
@@ -25,7 +26,7 @@ public static class ThuLuotBoXuong
     static bool daBatDau, truocBat;
     static EnterPlayModeOptions truocOpt;
 
-    [MenuItem("Diablo 2.5D/158 Cu luot Bo xuong (5 m, hoi 1,5 s, 55% xuyen khien)", false, 232)]
+    [MenuItem("Diablo 2.5D/158 Cu luot Bo xuong (8 m, hoi 1,5 s, 55% xuyen khien, 15% nga)", false, 232)]
     public static void Chay()
     {
         if (EditorApplication.isPlaying || EditorSceneManager.GetActiveScene().isDirty) { Debug.LogWarning("[ThuLuotBoXuong] dang Play hoac canh chua luu"); return; }
@@ -149,17 +150,19 @@ public static class ThuLuotBoXuong
         }
 
         // ================= B =================
-        nk.AppendLine("== B Tu 9 m di bo vao");
+        nk.AppendLine("== B Tu 11 m di bo vao");
         {
-            var ai = Sinh(goc + h * 9f, toi.transform, -h);
-            int l0 = EnemyAI.SoLanLuot; float kcLuc = -1f, kcTruoc = 9f;
+            var ai = Sinh(goc + h * 11f, toi.transform, -h);
+            int l0 = EnemyAI.SoLanLuot, tb0 = EnemyAI.SoLanLuotTrung; float kcLuc = -1f, kcTruoc = 11f;
             for (float han = Time.time + 3f; Time.time < han && kcLuc < 0f; )
             {
                 kcTruoc = Ngang(ai.transform.position, goc);
                 yield return null;
                 if (EnemyAI.SoLanLuot > l0) kcLuc = kcTruoc;
             }
-            Kiem(kcLuc > 4.3f && kcLuc <= 5.05f, "bat dau luot khi cach " + kcLuc.ToString("F2") + " m");
+            Kiem(kcLuc > EnemyAI.TamLuot - 0.7f && kcLuc <= EnemyAI.TamLuot + 0.05f, "bat dau luot khi cach " + kcLuc.ToString("F2") + " m (tam " + EnemyAI.TamLuot + ")");
+            for (float han = Time.time + 0.8f; Time.time < han && EnemyAI.SoLanLuotTrung == tb0; ) yield return null;
+            Kiem(EnemyAI.SoLanLuotTrung == tb0 + 1, "luot het tam van toi noi");
             Object.Destroy(ai.gameObject);
             yield return new WaitForSeconds(0.3f);
         }
@@ -260,6 +263,7 @@ public static class ThuLuotBoXuong
             GameDirector.Instance.ThemNguoiChoi(bot.transform);
             yield return null;
             var ai = Sinh(goc + h * 14.5f, bot.transform, -h);
+            yield return null;
             ai.target = bot.transform;
             float mauB0 = mauBot.health, dmg = ai.attackDamage;
             int t0 = EnemyAI.SoLanLuotTrung;
@@ -371,6 +375,78 @@ public static class ThuLuotBoXuong
             TamNhin.BatTrongPhepThu = false;
         }
 
+        // ================= J =================
+        nk.AppendLine("== J 15% danh nga 1 s");
+        {
+            var ai = Sinh(goc + h * 6f, toi.transform, -h);
+            ai.attackCooldown = 99f;
+            yield return null;
+            EnemyAI.EpNgaChoPhepThu = 1f;
+            int t0 = EnemyAI.SoLanLuotTrung;
+            for (float han = Time.time + 1f; Time.time < han && EnemyAI.SoLanLuotTrung == t0; ) yield return null;
+            var ng = toi.GetComponent<BiDanhNga>();
+            Kiem(ng != null && ng.DangNga, "ep nga: nguoi bi luot trung nga");
+            float lucNga = Time.time;
+            while (toi.GetComponent<BiDanhNga>() != null && toi.GetComponent<BiDanhNga>().DangNga && Time.time < lucNga + 3f) yield return null;
+            float giayNga = Time.time - lucNga;
+            Kiem(Mathf.Abs(giayNga - EnemyAI.GiayNgaLuot) < 0.15f, "nga " + giayNga.ToString("F2") + " s");
+            yield return new WaitForSeconds(0.3f);
+
+            var k = Khieng.Bat(toi.gameObject, 100000f, toi.khiengBanKinh); mau.khieng = k;
+            EnemyAI.EpXuyenChoPhepThu = 0f;
+            DatCho(ai, TrenDat(goc + h * 5f)); ai.transform.rotation = Quaternion.LookRotation(-h); ai.target = toi.transform;
+            int kx0 = EnemyAI.SoLanLuotKhongXuyen;
+            ai.LuotNgayChoPhepThu();
+            for (float han = Time.time + 1f; Time.time < han && EnemyAI.SoLanLuotKhongXuyen == kx0; ) yield return null;
+            ng = toi.GetComponent<BiDanhNga>();
+            Kiem(EnemyAI.SoLanLuotKhongXuyen == kx0 + 1 && (ng == null || !ng.DangNga), "khien con nguyen: khong nga");
+            yield return null;
+
+            EnemyAI.EpXuyenChoPhepThu = 1f;
+            k = Khieng.Bat(toi.gameObject, 225f, toi.khiengBanKinh); mau.khieng = k;
+            DatCho(ai, TrenDat(goc + h * 5f)); ai.transform.rotation = Quaternion.LookRotation(-h); ai.target = toi.transform;
+            t0 = EnemyAI.SoLanLuotTrung;
+            ai.LuotNgayChoPhepThu();
+            for (float han = Time.time + 1f; Time.time < han && EnemyAI.SoLanLuotTrung == t0; ) yield return null;
+            ng = toi.GetComponent<BiDanhNga>();
+            Kiem(!k.DangBat && ng != null && ng.DangNga, "khien vua bi xuyen: nga");
+            EnemyAI.EpXuyenChoPhepThu = -1f;
+            yield return new WaitForSeconds(1.3f);
+
+            // Gieo that
+            EnemyAI.EpNgaChoPhepThu = -1f;
+            int soNga = 0, soLan = 0;
+            for (int lan = 0; lan < 60; lan++)
+            {
+                foreach (var c in toi.GetComponents<BiDanhNga>()) Object.DestroyImmediate(c);
+                DatCho(ai, TrenDat(goc + h * 4f)); ai.transform.rotation = Quaternion.LookRotation(-h); ai.target = toi.transform;
+                t0 = EnemyAI.SoLanLuotTrung;
+                ai.LuotNgayChoPhepThu();
+                for (float han = Time.time + 0.5f; Time.time < han && EnemyAI.SoLanLuotTrung == t0; ) yield return null;
+                ai.NgatLuot();
+                if (EnemyAI.SoLanLuotTrung > t0) soLan++;
+                if (toi.GetComponent<BiDanhNga>() != null) soNga++;
+                yield return null;
+            }
+            foreach (var c in toi.GetComponents<BiDanhNga>()) Object.DestroyImmediate(c);
+            float tl = soNga / (float)Mathf.Max(1, soLan);
+            Kiem(soLan == 60 && tl > 0.03f && tl < 0.32f, "60 lan gieo that: nga " + soNga + "/" + soLan + " (" + (tl * 100f).ToString("F0") + "%, mong 15%)");
+
+            // May khach
+            ai.enabled = false;
+            EnemyAI.EpNgaChoPhepThu = 1f;
+            ai.DienLaiDon(EnemyAI.KieuLuotTrung, goc, mau);
+            ng = toi.GetComponent<BiDanhNga>();
+            Kiem(ng != null && ng.DangNga, "may khach kieu 5 nham minh: gieo nga");
+            foreach (var c in toi.GetComponents<BiDanhNga>()) Object.DestroyImmediate(c);
+            ai.DienLaiDon(EnemyAI.KieuLuotTrung, goc, null);
+            Kiem(toi.GetComponent<BiDanhNga>() == null, "may khach kieu 5 nham nguoi khac: khong nga");
+            EnemyAI.EpNgaChoPhepThu = -1f;
+            Object.Destroy(ai.gameObject);
+            var kk = toi.GetComponent<Khieng>(); if (kk != null) kk.Tat();
+            yield return new WaitForSeconds(0.3f);
+        }
+
         // ================= I =================
         nk.AppendLine("== I Tieng");
         {
@@ -410,6 +486,7 @@ public static class ThuLuotBoXuong
         }
 
         EnemyAI.EpXuyenChoPhepThu = -1f;
+        EnemyAI.EpNgaChoPhepThu = -1f;
         nk.Insert(0, "MENU 158 - Cu luot Bo xuong: " + loi + " loi\n");
         File.WriteAllText(Thu + "nhatky.txt", nk.ToString());
         Debug.Log("[ThuLuotBoXuong] " + loi + " loi\n" + nk);

@@ -471,7 +471,8 @@ public static class SachPhep
                      + "làm chậm, ngã, hất tung, bỏng, ướt, bị lốc cuốn.\n\n"
                      + "Khiên chỉ miễn dịch chứ không hoá giải: hiệu ứng đã dính trước đó vẫn chạy tiếp. Đang bị choáng, "
                      + "đóng băng, ngã, hất tung hay lốc cuốn thì không bật được khiên.\n\n"
-                     + "Khiên vỡ khi hết máu, và mờ dần theo lượng máu còn lại. Cú lướt của Bộ xương có 55% xuyên thủng, phá vỡ khiên ngay.";
+                     + "Khiên vỡ khi hết máu, và mờ dần theo lượng máu còn lại. Cú lướt của Bộ xương có 55% xuyên thủng, phá vỡ khiên ngay.\n\n"
+                     + "Khiên VỠ TUNG gây sát thương lên mọi kẻ địch trong vòm, đúng bằng máu khiên ở cấp hiện tại.";
             case 6:
                 return "Tia sét phóng thẳng từ tay tới kẻ địch phía trước trong tầm 20 mét. Có "
                      + "tới 4 kẻ địch thì 4 tia cùng phóng ra một lúc, mỗi tia một kẻ. Chạm "

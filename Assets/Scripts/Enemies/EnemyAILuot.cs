@@ -4,8 +4,8 @@ using UnityEngine;
 /// CU LUOT CUA BO XUONG (nguoi dung 01/11/2026, tham khao cu lao toi cua Zealot SC2: "trong pham vi 5 m luot rat nhanh, delay 1,5 giay, 55% xuyen thung pha be
 /// khien"; chon sat thuong = 1 nhat chem, xuyen = vo khien + danh vao nguoi).
 ///
-/// Muc tieu (nguoi hoac BOT - GameDirector.GanNhat) o phia truoc mat trong 5 m, duong thang khong vuong -> luot bam theo muc tieu 18 m/s (5 m ~ 0,28 s), toi noi gay
-/// 1 nhat chem roi chem tiep binh thuong. Da o sat (trong tam chem) thi KHONG luot, tru khi muc tieu bat khien: con quai dung o mep vom cach tam > tam chem, va cu luot
+/// Muc tieu (nguoi hoac BOT - GameDirector.GanNhat) o phia truoc mat trong 8 m (02/11/2026 nguoi dung, truoc 5), duong thang khong vuong -> luot bam theo muc tieu 18 m/s (8 m ~ 0,36 s), toi noi gay
+/// 1 nhat chem + 15% DANH NGA 1 giay (chi khi trung NGUOI - khien con nguyen thi mien dich) roi chem tiep binh thuong. Da o sat (trong tam chem) thi KHONG luot, tru khi muc tieu bat khien: con quai dung o mep vom cach tam > tam chem, va cu luot
 /// chinh la thu pha vom. Cham mat vom gieo MOT lan: 55% khien vo ngay + luot tiep vao nguoi; 45% dung o mat vom, khien an don nhu don thuong.
 /// Bi choang / dong bang / nga / hat tung / loc cuon thi dung luot (khong cong hoi chieu lai).
 ///
@@ -13,12 +13,15 @@ using UnityEngine;
 /// </summary>
 public partial class EnemyAI
 {
-    public const float TamLuot = 5f;
+    public const float TamLuot = 8f;
     public const float TocLuot = 18f;
     public const float GiayHoiLuot = 1.5f;
     public const float XacSuatXuyenKhien = 0.55f;
     /// <summary>Luot lau hon nua la bo (muc tieu chay tron / vuong).</summary>
-    public const float GiayLuotToiDa = 0.5f;
+    public const float GiayLuotToiDa = 0.65f;
+
+    /// <summary>Trung nguoi: 15% danh nga 1 giay (nguoi dung 02/11/2026). Moi may tu gieo cho nhan vat cua minh - BiDanhNga.Apply bo qua ban sao.</summary>
+    public const float XacSuatNgaLuot = 0.15f, GiayNgaLuot = 1f;
 
     /// <summary>Kieu don qua mang (GoiTin.MotDonQuai): bat dau luot (chi hinh), trung nguoi, trung khien khong xuyen, xuyen vo khien.</summary>
     public const int KieuLuotBatDau = 4, KieuLuotTrung = 5, KieuLuotTrungKhien = 6, KieuLuotXuyenKhien = 7;
@@ -31,6 +34,8 @@ public partial class EnemyAI
 
     /// <summary>Phep thu dat 0 / 1 de co dinh ket qua gieo xuyen khien; am = dung that (55%).</summary>
     public static float EpXuyenChoPhepThu = -1f;
+    /// <summary>Phep thu dat 0 / 1 de co dinh ket qua gieo nga; am = dung that (15%).</summary>
+    public static float EpNgaChoPhepThu = -1f;
 
     float hoiLuot, luotConLai;
     bool daGieoKhien;
@@ -120,6 +125,7 @@ public partial class EnemyAI
             SoLanLuotTrung++;
             d.GhiKeDanh(health);
             ChemTrung(d);
+            GieoNgaLuot(d);
             if (DaRaDon != null) DaRaDon(this, KieuLuotTrung, target, target.position);
             RaDonSauLuot();
             NgatLuot();
@@ -144,6 +150,12 @@ public partial class EnemyAI
         if (soKhungKet >= 3) { SoLanLuotHut++; NgatLuot(); return; }
 
         if (anim != null) anim.SetMoveSpeed(1f);
+    }
+
+    void GieoNgaLuot(Damageable d)
+    {
+        float xs = EpNgaChoPhepThu >= 0f ? EpNgaChoPhepThu : XacSuatNgaLuot;
+        if (Random.value < xs) BiDanhNga.Apply(d, GiayNgaLuot);    // khien / tang hinh / ban sao: Apply tu bo qua
     }
 
     /// <summary>Toi noi: vung kiem cho khop nhat chem, roi chem tiep theo nhip thuong.</summary>
@@ -184,6 +196,7 @@ public partial class EnemyAI
         {
             nanNhan.GhiKeDanh(health);
             ChemTrung(nanNhan);
+            if (kieu == KieuLuotTrung) GieoNgaLuot(nanNhan);
         }
         else
         {

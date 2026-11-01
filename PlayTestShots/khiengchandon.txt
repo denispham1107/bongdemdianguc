@@ -1,23 +1,23 @@
 khien T: ban kinh 3.036, cao vom 3.327; E2 cach tam T 3.90 m (ngoai vom)
 
-A. Giut set vao T: cham vom +1; diem cuoi ho 0.045 m (nguc T ho -2.278); dien bo vom +11 tia, ho 0.085..0.091; T mat mau 0, choang False, khien mat 75.0
-A. tia LAN sang E2: co True, diem dau ho 0.051 m; E2 mat mau 64.0, choang True; T di 1 m -> dau tia di 1.000 m, ho sau khi di 0.053
+A. Giut set vao T: cham vom +1; diem cuoi ho 0.050 m (nguc T ho -2.277); dien bo vom +6 tia, ho 0.089..0.097; T mat mau 0, choang False, khien mat 75.0
+A. tia LAN sang E2: co True, diem dau ho 0.053 m; E2 mat mau 64.0, choang True; T di 1 m -> dau tia di 1.000 m, ho sau khi di 0.053
 A2. DOI CHUNG khong khien: cham vom +0, diem cuoi cach nguc 0.000 m, T choang True
 
-B. tia Quy cay vao T: cham vom +1, ho -0.034; tia bo vom 9 (mau xanh la 9); T choang False, mat mau 0
+B. tia Quy cay vao T: cham vom +1, ho -0.033; tia bo vom 9 (mau xanh la 9); T choang False, mat mau 0
 
-C. Qua cau dien: cau cach tam T 3.84 m (vom 3.04); tia vao T 6, cham vom +6, |ho| lon nhat 0.067; tia vao nguc E2 6; T choang False, mat mau 0
+C. Qua cau dien: cau cach tam T 3.84 m (vom 3.04); tia vao T 6, cham vom +6, |ho| lon nhat 0.063; tia vao nguc E2 6; T choang False, mat mau 0
 
 D. 8 tia Sam set vao T: cham vom +8, tren mat 8/8 (|ho| lon nhat 0.062); T choang False, mat mau 0; khien mat 208.0 (mong 208.0)
 D2. DOI CHUNG E2 (khong khien, ngoai vom): cham vom +0, E2 choang True, mat mau 26.0
 
-E. May giong tren T: cham vom +9 (|ho| lon nhat 0.062); T chay den False, nga False, mat mau 0; E2 (ngoai vom) chay den True
+E. May giong tren T: cham vom +9 (|ho| lon nhat 0.064); T chay den False, nga False, mat mau 0; E2 (ngoai vom) chay den True
 
-F. Mua bang tren T: vo tren vom +15 (|ho| lon nhat 0.057); T dinh bang / cham False, mat mau 0; E2 (ngoai vom) bi cham True
-F2. vien bang sinh TRONG vom (1,8 m tren dat): vo +1, ho -0.015
+F. Mua bang tren T: vo tren vom +16 (|ho| lon nhat 0.063); T dinh bang / cham False, mat mau 0; E2 (ngoai vom) bi cham True
+F2. vien bang sinh TRONG vom (1,8 m tren dat): vo +1, ho -0.014
 
-G. Gio loc vao T: tan vao vom +1; tam loc cach tam vom 3.904 m (ban kinh vom + than chan = 3.904); mep than loc ho 0.010 m so voi luoi vom; khien mat 75.0; T hat tung False, mat mau 0; 0,8 s sau loc di them 0.000 m
-G2. DOI CHUNG E2 (khong khien): tan vao vom +0, loc con bay True, E2 hat tung True, mat mau 175
+G. Gio loc vao T: tan vao vom +1; tam loc cach tam vom 3.904 m (ban kinh vom + than chan = 3.904); mep than loc ho 0.008 m so voi luoi vom; khien mat 75.0; T hat tung False, mat mau 0; 0,8 s sau loc di them 0.000 m
+G2. DOI CHUNG E2 (khong khien): tan vao vom +0, loc con bay True, E2 hat tung True, mat mau 75
 G3. loc sinh TRONG vom: tan vao vom +0, loc con bay True
 
 H. T (co khien) phong Giut set ra E2: cham vom +0, diem cuoi cach nguc E2 0.000 m

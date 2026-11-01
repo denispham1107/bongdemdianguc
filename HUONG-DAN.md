@@ -2919,6 +2919,17 @@ cấp 1; menu 127 B (tung thật ở cấp 1) nay đòi mỗi tảng một tiế
 | Menu 68 N3 — Quả cầu băng cấp 1 | 2 tảng có luật nổ, 2 vụ nổ, bia mất thêm 141 máu sau khi quả cầu đã nổ xong |
 | Menu 127 B — tung thật cấp 1 | 4 quả, 32 cụm gai; tiếng vỡ nổ +4, tiếng vỡ thường 0 — **0 lỗi** (menu 68 cũng 0 lỗi) |
 
+### Lướt tầm 8 m + 15% đánh ngã, Khiên vỡ tung gây sát thương (02/11/2026)
+
+**Người dùng:** Bộ xương lướt được từ 8 m, khi lướt thêm 15% đánh ngã người chơi. Khiên khi vỡ tung gây sát thương cho mọi kẻ địch xung quanh, bằng đúng máu Khiên ở cấp tương ứng. Người dùng chọn: ngã 1 giây, chỉ người bị lướt trúng (khiên còn nguyên thì miễn dịch);
+nổ trong bán kính vòm 3,04 m, không giảm dần; mọi lần vỡ đều nổ, kể cả bị Bộ xương xuyên.
+
+**Sửa:** `EnemyAI.TamLuot` 8 m, lướt tối đa 0,65 s (8 m ~ 0,36 s cộng phần mục tiêu chạy). `Khieng.NoGaySatThuong` trong `Vo()`; `Tat()` không nổ. Nổ chạy trên mọi máy có bản sao khiên vỡ, mỗi máy chỉ trừ thật nhân vật nó quyết máu — nên máy khác phải biết cấp Khiên: lấy từ gói phép (`capKhiengTuMang`).
+⚠️ Trước đây bản sao khiên luôn mang máu tối đa cấp 1 vì chỉ cần tỉ lệ để vẽ.
+
+**Đo:** Menu 157 G: quái trong vòm mất 225,0 (cấp 1) / 393,5 (cấp 5 bật thật + đường xuyên), ngoài vòm 0, chủ khiên 0, kẻ hạ ghi đúng chủ khiên, bản sao cấp 3 297,6, `Tat` 0. Menu 158: bắt đầu lướt ở 7,80 m và tới nơi; ngã 1,00 s; khiên còn nguyên không ngã, vừa bị xuyên thì ngã; 60 lần gieo thật 9 lần (15%);
+máy khách nhắm mình gieo ngã, nhắm người khác không. Menu 136, 134, 49: 0 lỗi. Chưa thử hai máy thật.
+
 ### Tảng băng vỡ: bỏ vòm trắng, chỉ còn mảnh băng + sương lạnh (01/11/2026)
 
 **Người dùng** (3 ảnh trong trận): lúc khối băng vừa bể hiện một vòm trắng đục rất xấu; bỏ đi, chỉ giữ khói sương lạnh và các mảnh băng văng ra.

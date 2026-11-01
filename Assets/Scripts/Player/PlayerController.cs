@@ -66,6 +66,9 @@ public class PlayerController : MonoBehaviour
     public float khiengMau = 225f;       // 01/11/2026 nguoi dung +75 (truoc 150) - so nam o BA cho: code, Player_Sorceress.prefab, Act2
 
     [Tooltip("Ban kinh qua cau khieng, met")]
+    /// <summary>Ban sao: cap Khien cua nguoi that (tu goi phep) - khien vo gay sat thuong theo cap (02/11/2026).</summary>
+    [System.NonSerialized] public int capKhiengTuMang = 1;
+
     public float khiengBanKinh = 3.036f;     // rong hon 15% so voi 2,64 m
 
     [Header("Ky nang 7 - Giut set")]
@@ -1627,7 +1630,14 @@ public class PlayerController : MonoBehaviour
             // "chua co khieng" den sau la dap vo cai khieng vua dung, roi dung
             // lai: nhap nhay, kem mot lan vo gia.
             // Vua dinh choang / dong bang / nga trong luc niem (hat tung + loc cuon da ngat chieu) thi khong dung duoc khien (nguoi dung 01/11/2026)
-            if ((health == null || !health.mauDoMayKhacQuyet) && LyDoKhongTungDuoc() == null)
+            if (health != null && health.mauDoMayKhacQuyet)
+            {
+                // Ban sao: khien den tu goi trang thai (co the truoc hoac sau phep nay) - chi ghi lai cap
+                capKhiengTuMang = capPhep;
+                var kBanSao = GetComponent<Khieng>();
+                if (kBanSao != null) kBanSao.DatMauToiDaTuMang(khiengMau * CapDo.MauKhiengTheoCap(capPhep));
+            }
+            else if (LyDoKhongTungDuoc() == null)
             {
                 // Khien khong manh len theo sat thuong ma theo MAU KHIEN (+15% moi cap)
                 khiengHienTai = Khieng.Bat(gameObject,

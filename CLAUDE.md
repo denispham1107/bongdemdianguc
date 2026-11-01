@@ -1244,6 +1244,10 @@ hơn ×1,5 và mở xuống 1,8–4,3 m** (người dùng chọn sau menu 94 ch�
   lưới dùng lại), vệt hồn `Resources/KyNang/BoXuong/VetHon.png` (Blender MCP `CongCu/Blender/vet_hon_luot.py`), bụi đất. Tiếng mẫu A "Hồn lao" (`CongCu/AmThanh/tieng_luot_bo_xuong.py`, `BoXuongLao1–3`, `BoXuongToi1–3`; loại 47–48,
   CÂN BẰNG, tối đa 4 giọng). ⚠️ Phép thử đo nhát chém Bộ xương phải đặt `coLuot = false` (menu 91, 152, 39 đã sửa). Menu 158: 0 lỗi (18,0 m/s, mất đúng 1 nhát, 1,52 s giữa hai lần, 40 lần gieo 55%, loa tương quan 0,36).
   ⚠️ CHƯA thử hai máy thật. Chưa đo khung hình trên điện thoại khi nhiều Bộ xương cùng lướt.
+  ⚠️ **02/11/2026: LƯỚT TẦM 8 m + 15% ĐÁNH NGÃ, KHIÊN VỠ TUNG GÂY SÁT THƯƠNG** (người dùng; mọi dòng "5 m" ở trên là LỊCH SỬ; chọn ngã 1 s chỉ người bị lướt trúng · nổ bằng vòm · mọi lần vỡ đều nổ): `EnemyAI.TamLuot` 8,
+  `GiayLuotToiDa` 0,65; trúng người gieo `XacSuatNgaLuot` 0,15 (`GieoNgaLuot`: mỗi máy tự gieo cho nhân vật của mình; khiên còn nguyên miễn dịch, khiên vừa bị xuyên vẫn ngã). `Khieng.NoGaySatThuong` trong `Vo()`: mọi kẻ địch trong `banKinh` 3,04 m mất đúng
+  `mauToiDa` (225 cấp 1 … 393,5 cấp 5, không giảm dần, loại Physical → người có Kháng Phong giảm), `Tat()` không nổ. Nổ chạy trên MỌI máy có khiên / bản sao khiên vỡ, mỗi máy chỉ trừ thật nhân vật nó quyết máu (như phép phát lại) — nên bản sao phải biết CẤP: `PlayerController.capKhiengTuMang` lấy từ gói phép, `Khieng.DatMauToiDaTuMang`.
+  Menu 157 G (0 lỗi): quái trong vòm mất 225,0 / 393,5, ngoài vòm 0, chủ khiên 0, bản sao cấp 3 297,6, `Tat` 0. Menu 158 J (0 lỗi): bắt đầu ở 7,80 m vẫn tới nơi, ngã 1,00 s, 60 lần gieo thật 9 lần (15%). Menu 136, 134, 49: 0 lỗi. Chưa thử hai máy thật.
 - ⚠️ **TIẾNG KHIÊN** (16/10/2026; bản 1 sin sạch bị chê "giả tạo, đơn giản" → bản 2 người dùng chọn A "Thép đúc" — `tieng_khieng_2.py`: IR 40–90 mode
   kim loại tích chập với cú kích, tiếng DỘI trong nghĩa địa): bật (bám người) · "boong" mỗi đòn trúng khiên (`Khieng.HapThu` — bỏ sát thương RỈ, 0,06 s một
   tiếng, tối đa 4; bản sao theo `DatMauTuMang` tụt ≥ 5) · nổ tại chỗ vòm. Loại `TiengViTri` 36–38, CÂN BẰNG. Menu 134, 49: 0 lỗi. Chưa nghe thử trên web.

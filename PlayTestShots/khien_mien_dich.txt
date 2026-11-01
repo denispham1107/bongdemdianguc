@@ -9,17 +9,28 @@ MENU 157 - Khien mien dich: 0 loi
 == C Khong hoa giai
   OK   choang dinh truoc khi bat khien van con sau 0,5 s
   OK   chay dinh truoc khi bat van con
-  OK   chay van tru vao khien: mau 199.7
+  OK   chay van tru vao khien: mau 198.5
 == D Dang dinh hieu ung thi khong bat duoc
   OK   choang: niem False, khien False, mana 99973 -> 99979
-  OK   dong bang: niem False, khien False, mana 99981 -> 99988
-  OK   nga: niem False, khien False, mana 99991 -> 99997
-  OK   hat tung: niem False, khien False, mana 100000 -> 100000
+  OK   dong bang: niem False, khien False, mana 99982 -> 99988
+  OK   nga: niem False, khien False, mana 99990 -> 99996
+  OK   hat tung: niem False, khien False, mana 99999 -> 100000
   OK   loc cuon: niem False, khien False, mana 100000 -> 100000
   OK   DOI CHUNG het hieu ung: bat duoc khien
 == E Dinh choang giua luc niem
   OK   choang giua luc niem: khong ra khien
 == F Dung trong Loc xoay that
   OK   co khien: khong bi cuon
-  OK   khien mat mau trong loc: 60 -> het sau 3.03 s (20 mau/giay)
+  OK   khien mat mau trong loc: 60 -> het sau 2.90 s (20 mau/giay)
   OK   vo khien roi thi bi cuon
+== G Khien vo tung
+  OK   het mau: khien vo, no 1
+  OK   quai trong vom mat 225.0 (phai 225)
+  OK   quai ngoai vom mat 0.0
+  OK   chu khien mat 0.0 (don pha vo khien khong tran sang)
+  OK   ke danh ghi la chu khien
+  OK   cap 5 bat that: mau 393.5 (phai 393.5)
+  OK   PhaVo cap 5: quai mat 393.5
+  OK   Tat(): khong no
+  OK   ban sao cap 3: mau 297.6 (phai 297.6)
+  OK   ban sao vo: quai mat 297.6 (phai 297.6)

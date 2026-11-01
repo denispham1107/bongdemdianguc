@@ -2,12 +2,13 @@ MENU 158 - Cu luot Bo xuong: 0 loi
 == A 4,5 m, khong khien
   OK   luot 1 lan, trung 1
   OK   toc do lon nhat do tu vi tri 18.0 m/s (di bo 4.92)
-  OK   4,5 m mat 0.206 s
+  OK   4,5 m mat 0.208 s
   OK   mat luc trung 53.88 = 1 nhat chem 53.85
   OK   dung cach 1.92 m
-  OK   giua hai lan luot 1.523 s (phai ~1,5)
-== B Tu 9 m di bo vao
-  OK   bat dau luot khi cach 4.83 m
+  OK   giua hai lan luot 1.538 s (phai ~1,5)
+== B Tu 11 m di bo vao
+  OK   bat dau luot khi cach 7.80 m (tam 8)
+  OK   luot het tam van toi noi
 == C Doi chung: sat nguoi / co vat chan
   OK   dung sat 1,4 m khong khien: 0 luot
   OK   hop chan giua duong: 0 luot
@@ -18,7 +19,7 @@ MENU 158 - Cu luot Bo xuong: 0 loi
   OK   khong xuyen: khien mat 53.85 = 53.85
   OK   khong xuyen: nguoi mat 0.00
   OK   khong xuyen: dung ngoai vom, cach tam 3.41 m
-  OK   40 lan gieo that: xuyen 22, khong 18 (55%, mong 55%)
+  OK   40 lan gieo that: xuyen 23, khong 17 (58%, mong 55%)
 == E Muc tieu la BOT (nhan vat khac trong danh sach GameDirector)
   OK   BOT trung luot, mat 53.84 (nhat chem 53.85)
 == F Dinh choang giua cu luot
@@ -33,19 +34,27 @@ MENU 158 - Cu luot Bo xuong: 0 loi
   OK   kieu 7: khien vo
   OK   goi cu 'con khien' den ngay sau khi vo: khong dung lai
 == H Hinh
-  khung 6: vet 6 diem, an False, bat True, mau (1.00, 1.16, 2.94), anh VetHon
+  khung 6: vet 6 diem, an False, bat True, mau (1.00, 1.16, 2.70), anh VetHon
   OK   vet hon dung anh VetHon, co diem
-  khung 10: vet 9 diem, an False, bat True, mau (1.00, 1.16, 3.84), anh VetHon
-  khung 14: vet 9 diem, an False, bat True, mau (1.00, 1.16, 3.84), anh VetHon
-  khung 22: vet 9 diem, an False, bat True, mau (1.00, 1.16, 3.84), anh VetHon
+  khung 10: vet 10 diem, an False, bat True, mau (1.00, 1.16, 3.88), anh VetHon
+  khung 14: vet 10 diem, an False, bat True, mau (1.00, 1.16, 3.88), anh VetHon
+  khung 22: vet 10 diem, an False, bat True, mau (1.00, 1.16, 3.88), anh VetHon
   OK   bong mo sinh 3
   OK   sau 1,5 s con 0 vat hinh luot
   OK   dem cu luot co bong ve 0
   OK   6 cu luot cung luc: 4 co bong (tran 4)
+== J 15% danh nga 1 s
+  OK   ep nga: nguoi bi luot trung nga
+  OK   nga 1.00 s
+  OK   khien con nguyen: khong nga
+  OK   khien vua bi xuyen: nga
+  OK   60 lan gieo that: nga 9/60 (15%, mong 15%)
+  OK   may khach kieu 5 nham minh: gieo nga
+  OK   may khach kieu 5 nham nguoi khac: khong nga
 == I Tieng
   OK   clip bien the 1
   OK   clip bien the 2
   OK   clip bien the 3
   OK   clip stereo: 2 kenh
   OK   mot cu luot: tieng lao +1, tieng toi +1
-  OK   loa: RMS TB 0.0742, tuong quan hai kenh 0.36
+  OK   loa: RMS TB 0.0856, tuong quan hai kenh 0.33

@@ -583,8 +583,47 @@ public class Khieng : MonoBehaviour
         VfxFactory.KhiengVo(tam, banKinh);
         TiengViTri.KhiengVo(tam);
         CameraShake.Shake(0.22f, 0.10f);
+        NoGaySatThuong();
 
         Tat();
+    }
+
+    /// <summary>Dem cho phep thu (menu 157).</summary>
+    public static int SoLanNo, SoKeTrungNo;
+
+    static readonly Collider[] boDemNo = new Collider[64];
+    static readonly HashSet<Damageable> daTrungNo = new HashSet<Damageable>();
+
+    /// <summary>
+    /// KHIEN VO TUNG GAY SAT THUONG (nguoi dung 02/11/2026): moi ke dich trong vom (banKinh) an DUNG mauToiDa = mau khien theo cap (225 cap 1 ... 393,5 cap 5),
+    /// khong giam dan. Moi lan VO deu no (het mau + Bo xuong xuyen); Tat() thi khong. Chay tren MOI may co khien / ban sao khien vo: moi may chi tru that nhung
+    /// nhan vat no quyet mau (quai o chu phong, nguoi choi o may ho) - y het phep phat lai - nen mauToiDa cua ban sao phai dung cap (DatMauToiDaTuMang).
+    /// </summary>
+    void NoGaySatThuong()
+    {
+        var chu = ChuNhan;
+        if (chu == null || chu.IsDead) return;
+        SoLanNo++;
+        var pc = GetComponent<PlayerController>();
+        int mat = pc != null ? pc.MatNaKeThu : LayerMask.GetMask("Enemy", "Player");
+        int n = Physics.OverlapSphereNonAlloc(transform.position + Vector3.up, banKinh, boDemNo, mat, QueryTriggerInteraction.Collide);
+        daTrungNo.Clear();
+        for (int i = 0; i < n; i++)
+        {
+            var d = boDemNo[i].GetComponentInParent<Damageable>();
+            if (d == null || d.IsDead || CheDoTran.BoQua(chu, d) || !daTrungNo.Add(d)) continue;
+            SoKeTrungNo++;
+            d.GhiKeDanh(chu);
+            d.TakeDamage(mauToiDa, DamageType.Physical, d.transform.position + Vector3.up);
+        }
+    }
+
+    /// <summary>Ban sao: dat mau toi da theo CAP cua nguoi bat (cap di theo goi phep), giu nguyen ti le mau dang co.</summary>
+    public void DatMauToiDaTuMang(float toiDa)
+    {
+        float tiLe = Mau01;
+        mauToiDa = toiDa;
+        if (DangBat) mau = Mathf.Max(0.01f, tiLe * toiDa);
     }
 
     Damageable chuNhan;
