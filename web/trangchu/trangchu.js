@@ -14,6 +14,13 @@
 // khi chua dang nhap thi CHAN (khong vao /choi/) va hien bang "Vui long Tao tai khoan va Dang nhap truoc khi vao choi"
 // (#bang-can-dang-nhap); dang nhap xong thi O LAI trang chu (nguoi dung chon). /choi/ khong co phien thi tra ve
 // "/?can-dang-nhap" (game khoi phuc phien hong: "=het-han" / "=bi-khoa") -> mo bang ngay khi vao trang.
+//
+// 01/11/2026 (nguoi dung): DANG NHAP BANG GOOGLE, khong qua buoc Tao tai khoan. Chon: ten nhan vat TU LAY ten Google; nut o bang
+// tai khoan + bang "Chua dang nhap"; gmail da co tai khoan email/mat khau thi GOP (mac dinh Firebase "moi email mot tai khoan").
+// Nap Firebase JS SDK (compat, gstatic) CHI KHI BAM NUT - trang khong nang them. authDomain = chinh acquytrolai.web.app (cung goc)
+// -> popup lan chuyen trang deu chay ca tren iPhone / ung dung da cai / trinh duyet chan cookie ben thu ba; popup bi chan thi
+// chuyen trang (quay ve doc getRedirectResult). Lay xong refresh token cua Firebase (cung loai game dung qua REST) ghi vao
+// "diablo25d_refresh" roi dang xuat khoi SDK - phien chi con mot noi giu nhu cu.
 
 (function () {
   "use strict";
@@ -136,6 +143,106 @@
     });
   }
 
+  // ---------------------------------------------------------------
+  //  Dang nhap bang Google (Firebase JS SDK nap khi can)
+  // ---------------------------------------------------------------
+  var SDK = "https://www.gstatic.com/firebasejs/10.12.2/";
+  var KHOA_CHO_GOOGLE = "diablo25d_cho_google";       // sessionStorage: dang chuyen trang sang Google
+  var huaSdk = null;
+  function napScript(url) {
+    return new Promise(function (xong, hong) {
+      var s = document.createElement("script"); s.src = url; s.onload = xong;
+      s.onerror = function () { hong(new Error("Không tải được thư viện đăng nhập Google.")); };
+      document.head.appendChild(s);
+    });
+  }
+  function napFirebase() {
+    if (!huaSdk) {
+      huaSdk = napScript(SDK + "firebase-app-compat.js")
+        .then(function () { return napScript(SDK + "firebase-auth-compat.js"); })
+        .then(function () {
+          // authDomain cung goc voi trang khi chay that; may chu cuc bo (localhost) dung mien mac dinh cua du an
+          var app = firebase.apps.length ? firebase.app() : firebase.initializeApp({
+            apiKey: KHOA_API, projectId: "diablo25d-game",
+            authDomain: location.hostname === "acquytrolai.web.app" ? "acquytrolai.web.app" : "diablo25d-game.firebaseapp.com"
+          });
+          var auth = app.auth(); auth.languageCode = "vi";
+          return auth.setPersistence(firebase.auth.Auth.Persistence.SESSION).then(function () { return auth; });
+        });
+      huaSdk.catch(function () { huaSdk = null; });
+    }
+    return huaSdk;
+  }
+
+  function dichLoiGoogle(e) {
+    var m = (e && e.code) || "";
+    if (window.console) console.warn("[DangNhapGoogle]", m, e && e.message);   // ma loi goc cho nguoi quan tri xem
+    if (m === "auth/popup-closed-by-user" || m === "auth/cancelled-popup-request" || m === "auth/user-cancelled") return "Bạn đã đóng cửa sổ Google.";
+    if (m === "auth/unauthorized-domain") return "Trang này chưa được phép đăng nhập Google.";
+    if (m === "auth/operation-not-allowed") return "Đăng nhập bằng Google chưa được bật.";
+    if (m === "auth/user-disabled") return "Tài khoản đã bị khoá.";
+    if (m === "auth/network-request-failed") return "Mất kết nối mạng.";
+    if (m === "auth/account-exists-with-different-credential") return "Email này đã có tài khoản — hãy đăng nhập bằng email và mật khẩu.";
+    if (!m && e && e.message) return e.message;
+    return "Không đăng nhập được bằng Google, hãy thử lại.";
+  }
+
+  // Ten nhan vat tu ten Google: gon khoang trang, toi da 16 ky tu (Array.from: khong cat doi ky tu ghep); qua ngan -> phan truoc @
+  function tenTuGoogle(u) {
+    var t = (u.displayName || "").replace(/\s+/g, " ").trim();
+    if (Array.from(t).length < 2) t = (u.email || "NguoiChoi").split("@")[0];
+    return Array.from(t).slice(0, 16).join("").trim();
+  }
+
+  // Xong buoc Google: lay token Firebase, ghi phien chung, tai / tao ho so (ten Google), roi dang xuat khoi SDK
+  function xongGoogle(auth, u) {
+    return u.getIdToken().then(function (id) {
+      phien = { uid: u.uid, email: u.email || "", idToken: id };
+      ghiPhien(u.refreshToken);
+      return taiHoacTao(tenTuGoogle(u));
+    }).then(function () {
+      auth.signOut().catch(function () {});
+      if (bang.open) bang.close();
+      if (bangCan.open) bangCan.close();
+      veTaiKhoan();
+    });
+  }
+
+  var dangGoogle = false;
+  function baoGoogle(chu, loi) {
+    if (bang.open) bao(chu, loi);
+    var b = $("bao-google-tb"); b.textContent = chu || ""; b.classList.toggle("loi", !!loi);
+  }
+  function batNutGoogle(bat) { document.querySelectorAll("[data-google]").forEach(function (n) { n.disabled = !bat; }); }
+
+  function dangNhapGoogle() {
+    if (dangGoogle) return;
+    dangGoogle = true; batNutGoogle(false);
+    baoGoogle("Đang mở đăng nhập Google...", false);
+    var authDung = null;
+    napFirebase().then(function (auth) {
+      authDung = auth;
+      var nha = new firebase.auth.GoogleAuthProvider();
+      nha.setCustomParameters({ prompt: "select_account" });
+      return auth.signInWithPopup(nha).catch(function (e) {
+        // Popup bi chan / moi truong khong cho popup -> chuyen trang sang Google, quay ve doc ket qua (cuoi file)
+        if (e && (e.code === "auth/popup-blocked" || e.code === "auth/operation-not-supported-in-this-environment")) {
+          try { sessionStorage.setItem(KHOA_CHO_GOOGLE, "1"); } catch (x) { }
+          return auth.signInWithRedirect(nha).then(function () { return new Promise(function () { }); });
+        }
+        throw e;
+      });
+    }).then(function (kq) {
+      baoGoogle("Đang vào tài khoản...", false);
+      return xongGoogle(authDung, kq.user);
+    }).then(function () { baoGoogle("", false); })
+      .catch(function (e) {
+        if (!hoSo) { phien = null; ghiPhien(""); }
+        baoGoogle(dichLoiGoogle(e), true);
+      })
+      .then(function () { dangGoogle = false; batNutGoogle(true); });
+  }
+
   function dangXuat() {
     phien = null; hoSo = null;
     ghiPhien("");
@@ -218,6 +325,7 @@
   $("dong-bang").addEventListener("click", function () { bang.close(); });
   bang.addEventListener("click", function (e) { if (e.target === bang) bang.close(); });
   $("form-tai-khoan").addEventListener("submit", gui);
+  document.querySelectorAll("[data-google]").forEach(function (n) { n.addEventListener("click", dangNhapGoogle); });
   document.querySelectorAll("[data-dang-xuat]").forEach(function (n) { n.addEventListener("click", dangXuat); });
 
   // ---------------------------------------------------------------
@@ -278,8 +386,24 @@
   });
   xem.addEventListener("click", function () { xem.close(); });
 
+  // Quay ve tu trang Google (luong chuyen trang khi popup bi chan)
+  var choGoogle = false;
+  try { choGoogle = sessionStorage.getItem(KHOA_CHO_GOOGLE) === "1"; sessionStorage.removeItem(KHOA_CHO_GOOGLE); } catch (x) { }
+  if (choGoogle) {
+    choKiemPhien = napFirebase().then(function (auth) {
+      // Quay ve tay trang (khong user, khong loi - vd. trinh duyet chan doc ket qua) thi van phai bao, khong im lang
+      return auth.getRedirectResult().then(function (kq) {
+        if (kq && kq.user) return xongGoogle(auth, kq.user);
+        throw { code: "" };
+      });
+    }).catch(function (e) {
+      if (!hoSo) { phien = null; ghiPhien(""); }
+      moBang("dangnhap"); bao(dichLoiGoogle(e), true);
+    }).then(function () { choKiemPhien = null; });
+  }
+
   // Phien con tu lan truoc (o day hoac trong game)
-  var luu = docPhien();
+  var luu = choGoogle ? "" : docPhien();
   if (luu) {
     choKiemPhien = lamMoi(luu).then(function () { return taiHoacTao(null); })
       .then(veTaiKhoan)

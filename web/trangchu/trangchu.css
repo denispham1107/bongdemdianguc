@@ -324,6 +324,24 @@ dialog::backdrop { background: rgba(0, 0, 0, 0.78); backdrop-filter: blur(3px); 
   .bang-thong-bao .nho { margin-top: 10px; }
 }
 
+/* ---------- nut Dang nhap bang Google (01/11/2026) ----------
+   Theo huong dan thuong hieu Google (ban NEN TOI): nen #131314, vien #8e918f, chu #e3e3e3, logo "G" 4 mau giu nguyen. */
+.nut-google {
+  display: flex; align-items: center; justify-content: center; gap: 12px; width: 100%; min-height: 46px; padding: 10px 14px;
+  border-radius: 4px; border: 1px solid #8e918f; background: #131314; color: #e3e3e3; cursor: pointer;
+  font: 500 16px/1.2 var(--than); letter-spacing: 0.01em; transition: background .15s, box-shadow .15s;
+}
+.nut-google:hover { background: #1f1f20; box-shadow: 0 0 0 3px rgba(195, 48, 28, 0.25); }
+.nut-google:disabled { opacity: 0.6; cursor: wait; }
+.nut-google svg { flex: none; }
+.hoac { display: flex; align-items: center; gap: 10px; color: var(--chu-mo); font-size: 13px; }
+.hoac::before, .hoac::after { content: ""; flex: 1; height: 1px; background: rgba(160, 157, 134, 0.3); }
+.bang-thong-bao .nut-google { margin-top: 12px; }
+.bang-thong-bao .bao { margin-top: 8px; min-height: 0; }
+@media (max-height: 520px) {
+  .bang-thong-bao .nut-google { margin-top: 10px; min-height: 40px; padding: 8px 12px; }
+}
+
 .xem-anh { padding: 0; border: none; background: none; max-width: 96vw; max-height: 96vh; cursor: zoom-out; }
 .xem-anh img { display: block; max-width: 96vw; max-height: 92vh; border-radius: 4px; box-shadow: 0 0 60px #000; }
 

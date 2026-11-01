@@ -2807,6 +2807,34 @@ tat han bong (Rat yeu cu)                 0           662    2,5 trieu
   Menu 48 nay kiểm tỉ lệ cảnh từng mức bằng số VIẾT TAY (`mongPhanGiai` — trước đó chỉ so ảnh đệm với chính bảng `heSoPhanGiai`). Đo: Cực yếu ảnh đệm
   655×254 trên màn 1638 (cũ 573×223), 749 lượt vẽ, 0 vật đổ bóng — **0 lỗi**.
 
+## Đăng nhập bằng Google (01/11/2026)
+
+**Người dùng:** người chơi đăng nhập thẳng bằng tài khoản Google / Gmail, không phải qua bước "Tạo tài khoản". Chọn: tên nhân vật **tự lấy tên Google**;
+nút ở **bảng Đăng nhập / Tạo tài khoản** và **bảng "Chưa đăng nhập"**; gmail đã có tài khoản email + mật khẩu thì **gộp** vào tài khoản cũ (mặc định Firebase
+"mỗi email một tài khoản" — giữ tên, thành tích; Firebase có thể gỡ mật khẩu cũ vì email chưa từng xác minh); cài đặt Console **tôi làm trong trình duyệt tích
+hợp**, người dùng tự đăng nhập Google Console và duyệt từng lần lưu.
+
+**Kiểm trước:** `accounts:createAuthUri` (providerId google.com) → `OPERATION_NOT_ALLOWED`: dự án chưa bật Google; danh sách tên miền được phép chỉ có
+`localhost`, `diablo25d-game.firebaseapp.com`, `diablo25d-game.web.app` — thiếu chính trang chủ `acquytrolai.web.app`.
+
+**Trang chủ** (`trangchu.js`): nút "Đăng nhập bằng Google" (kiểu nút tối theo hướng dẫn thương hiệu Google, logo G 4 màu). Firebase JS SDK (compat 10.12.2,
+gstatic) chỉ nạp khi bấm — trang không nặng thêm. `authDomain` = **`acquytrolai.web.app`** (Firebase Hosting có sẵn `/__/auth/handler` trên mọi site của dự án,
+đo được 200): trang đăng nhập cùng gốc với trang chủ nên chạy cả trên iPhone, ứng dụng đã cài, trình duyệt chặn cookie bên thứ ba. Popup bị chặn thì chuyển
+trang sang Google rồi quay về đọc kết quả. Đăng nhập xong: refresh token của Firebase (cùng loại game dùng qua REST) ghi vào `diablo25d_refresh`, tạo hồ sơ
+với tên Google (≤ 16 ký tự, quá ngắn thì phần trước @ của email), rồi đăng xuất khỏi SDK — phiên chỉ còn một nơi giữ như trước. **Game không cần sửa.**
+
+**Console** (01/11/2026, trình duyệt tích hợp, người dùng duyệt):
+1. Firebase → Authentication → Sign-in method → Google: bật, tên hiển thị dự án `Ác Quỷ Trở Lại` (trước `project-121708566344` — người chơi thấy tên này trên
+   màn chọn tài khoản Google), email hỗ trợ của chủ dự án. Kiểm: `createAuthUri` trả về client `121708566344-d4c8ppd41idohme3leh87q89gaivrrhb`.
+2. Firebase → Authentication → Settings → Authorized domains: + `acquytrolai.web.app` (REST `projects` liệt kê đủ 4 miền).
+3. Google Cloud → Google Auth Platform → Clients → "Web client (auto created by Google Service)" → Authorized redirect URIs: + `https://acquytrolai.web.app/__/auth/handler`
+   (tải lại trang thấy đủ 2 địa chỉ). ⚠️ Cloud Console **tự nhảy sang dự án khác của người dùng ("Noi vong tay")** khi mở link client và sau khi Lưu — luôn
+   mở lại với `?project=diablo25d-game` và đọc tên dự án trên thanh trên trước khi bấm.
+
+**Đo trên máy chủ cục bộ:** 2 nút Google, SDK chưa nạp khi chưa bấm. Bấm (Google chưa bật lúc đó / trình duyệt tích hợp chặn popup → chuyển trang khác miền):
+quay về trang chủ, bảng tài khoản mở với "Không đăng nhập được bằng Google, hãy thử lại.", nút bật lại, không để lại phiên. ⚠️ Bản đầu quay về tay trắng thì
+IM LẶNG (kết quả chuyển trang khác miền không đọc được) — nay báo lỗi. Đăng nhập Google thật chỉ thử được trên tên miền thật sau khi deploy.
+
 ## Xoay ngang điện thoại khi vào game (01/11/2026)
 
 **Người dùng:** đã đăng nhập và bấm **Chơi ngay** thì hiển thị thông báo hình ảnh yêu cầu xoay ngang điện thoại, đồng thời khóa màn hình dọc. Người dùng

@@ -957,6 +957,15 @@ hơn ×1,5 và mở xuống 1,8–4,3 m** (người dùng chọn sau menu 94 ch�
   manifest `"orientation": "landscape"` (ứng dụng đã cài — cả trang chủ khi bị chuyển về). Đo trên máy chủ cục bộ: 375×812 / 320×568 / 360×740 cảm ứng dọc
   hiện, 740×360 cảm ứng ngang ẩn, xoay trên cùng trang hiện ngay; máy tính 900×1300 ẩn. **Đã deploy cùng ngày KHÔNG build lại** (code game không đổi: chép
   khối HTML/CSS/JS vào `web/choi/index.html` của bản build đang chạy — diff với template chỉ khác 7 dòng Unity điền tên tệp; giữ `.data` cũ, người chơi khỏi tải lại).
+  ⚠️ **01/11/2026: ĐĂNG NHẬP BẰNG GOOGLE** (người dùng: không cần bước Tạo tài khoản; chọn tên nhân vật TỰ LẤY tên Google · nút ở bảng tài khoản + bảng
+  "Chưa đăng nhập" · gmail trùng tài khoản email/mật khẩu thì GỘP (mặc định Firebase) · Console do tôi bật trong trình duyệt tích hợp, người dùng duyệt từng lần lưu).
+  `trangchu.js`: Firebase JS SDK compat 10.12.2 (gstatic) nạp KHI BẤM; `authDomain` = `acquytrolai.web.app` khi chạy thật (cùng gốc → popup lẫn chuyển trang
+  chạy cả iPhone / PWA / trình duyệt chặn cookie bên thứ ba), localhost dùng `diablo25d-game.firebaseapp.com`; popup bị chặn → `signInWithRedirect` (cờ
+  sessionStorage `diablo25d_cho_google`, quay về đọc `getRedirectResult`, về tay trắng vẫn báo lỗi). Xong lấy `user.refreshToken` → `diablo25d_refresh`
+  (game đọc như cũ, KHÔNG sửa game) → `taiHoacTao(tên Google ≤ 16 ký tự)` → `signOut` SDK. **Console (01/11/2026)**: Firebase Auth bật Google (tên hiển thị
+  "Ác Quỷ Trở Lại", email hỗ trợ của người dùng); Authorized domains + `acquytrolai.web.app`; Google Cloud OAuth client `121708566344-d4c8…` (dự án
+  `diablo25d-game` — ⚠️ Cloud Console hay tự nhảy sang dự án "Noi vong tay", luôn kiểm tên dự án) redirect URI + `https://acquytrolai.web.app/__/auth/handler`.
+  Localhost chỉ thử được giao diện + đường lỗi (trình duyệt tích hợp chặn popup; chuyển trang khác miền không đọc được kết quả). CHƯA deploy / thử Google thật.
 - ⚠️ **Triển khai web**: **xoá sạch `web/choi/Build/`**, chép `Build/WebGL/Build/*`, `Build/WebGL/TemplateData/*`
   (ảnh tiêu đề + font Inter của trang Loading — thiếu là trang Loading mất tên game và font) VÀ
   `Build/WebGL/index.html` sang **`web/choi/`** (KHÔNG đè `web/index.html` — đó là trang chủ). Bản build **không nén sẵn** (Firebase tự nén khi gửi — nó gạt bỏ `Content-Encoding` tự đặt) và
