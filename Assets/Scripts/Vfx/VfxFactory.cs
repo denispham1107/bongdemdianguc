@@ -1391,7 +1391,7 @@ public static partial class VfxFactory
     }
 
     /// <summary>Vo bang VO TAN khi quai dang dong bang bi tieu diet.</summary>
-    public static void FrozenShatter(Vector3 pos, float scale)
+    public static GameObject FrozenShatter(Vector3 pos, float scale)
     {
         var pf = GameAssets.I != null ? GameAssets.I.frozenShatterPrefab : null;
         if (pf != null)
@@ -1399,9 +1399,11 @@ public static partial class VfxFactory
             var inst = GameAssets.Make(pf, pos);
             if (Mathf.Abs(scale - 1f) > 0.05f) inst.transform.localScale = Vector3.one * scale;
             DoiManhBangTrong(inst);      // manh vo tam giac -> manh bang pha le 3D (28/09/2026)
-            return;
+            return inst;
         }
-        DoiManhBangTrong(BuildFrozenShatter(pos, scale));
+        var dung = BuildFrozenShatter(pos, scale);
+        DoiManhBangTrong(dung);
+        return dung;
     }
 
     /// <summary>Dung hinh vo bang vo tan bang code.</summary>

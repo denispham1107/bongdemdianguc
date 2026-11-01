@@ -1,0 +1,14 @@
+MENU 156 - Tang bang vo: bo vom trang: 0 loi
+== A Tang bang THAT no
+  OK   tang bang no 1 lan
+  OK   tim thay 2 goc vu no (NoTangBang + vo bang)
+  OK   luoi dang hien lon nhat 0 (phai 0 - khong vom, khong vong)
+  OK   den dang bat lon nhat 0 (phai 0)
+  OK   manh bang 70 hat, dang luoi 1
+  OK   manh bang van ra xa nhat 22.09 m
+  OK   suong lanh: SuongNo 18, Puff 18 hat
+== B Anh, doi chung them lai vom cu
+  diem anh GAN TRANG lon nhat: doi chung vom cu 14679 / moi 38 (tren 640x480)
+  OK   vom tren anh: cu 14679, moi 38 (moi < 25% cu)
+== C DOI CHUNG FrozenShatter cua quai dong bang chet
+  OK   FrozenShatter giu den Flash: True

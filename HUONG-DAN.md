@@ -2919,6 +2919,19 @@ cấp 1; menu 127 B (tung thật ở cấp 1) nay đòi mỗi tảng một tiế
 | Menu 68 N3 — Quả cầu băng cấp 1 | 2 tảng có luật nổ, 2 vụ nổ, bia mất thêm 141 máu sau khi quả cầu đã nổ xong |
 | Menu 127 B — tung thật cấp 1 | 4 quả, 32 cụm gai; tiếng vỡ nổ +4, tiếng vỡ thường 0 — **0 lỗi** (menu 68 cũng 0 lỗi) |
 
+### Tảng băng vỡ: bỏ vòm trắng, chỉ còn mảnh băng + sương lạnh (01/11/2026)
+
+**Người dùng** (3 ảnh trong trận): lúc khối băng vừa bể hiện một vòm trắng đục rất xấu; bỏ đi, chỉ giữ khói sương lạnh và các mảnh băng văng ra.
+
+**Nguyên nhân:** `VfxFactory.NoTangBang` có quả cầu "ChopLanh" (shader Ice, phóng 0,25 → 0,95 × 3,4 m trong 0,3 s) — chính là cái vòm; đĩa mờ trong lòng vòm là vòng `VongLanh`.
+
+**Sửa:** bỏ quả cầu, vòng và đèn (`DenNoBang` + `Flash` của prefab vỡ băng, chỉ tắt ở vụ nổ này — quái đóng băng chết vỡ tan vẫn có đèn). Hai lớp sương qua `MemSatDat` để
+không cắm xuyên đất thành đường thẳng. Tiếng vỡ, rung máy quay và 100 sát thương giữ nguyên.
+
+**Đo (menu 156, 0 lỗi):** tảng băng thật nổ: 0 lưới, 0 đèn, 70 mảnh băng dạng lưới, sương 18 + 18 hạt. Ảnh từ chính máy quay game (có bloom), đối chứng dựng lại vòm cũ cùng chỗ:
+điểm gần trắng 14 679 → **38**. ⚠️ Lần đo đầu đếm "sáng lên" ra 13 085 vì tính cả sương mềm (ảnh không còn vòm) — đại lượng ấy không phân biệt được, nên đổi sang điểm gần trắng.
+Khung 0,1 s đầu sương vẫn là đám sáng mềm màu xanh nhạt. Menu 68: 0 lỗi.
+
 ## Đăng ký / đăng nhập chỉ ở trang chủ (01/11/2026)
 
 **Người dùng** (ảnh màn đăng nhập trong game): ở trang chủ https://acquytrolai.web.app, chưa đăng nhập mà bấm **Chơi ngay** thì chặn, hiện bảng

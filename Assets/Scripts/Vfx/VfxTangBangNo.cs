@@ -7,38 +7,33 @@ using UnityEngine;
 /// ⚠️ KHONG duoc dung lai VfxFactory.NoQuaCauBang cho vu no nay: ham ay goi IceImpact, tuc lai moc
 /// them mot tang bang moi - tang bang no ra tang bang, khong bao gio dut.
 ///
-/// Nen vu no dung rieng cac manh co san: manh bang vo tung (FrozenShatter), mot vong lanh lan ra tren
-/// dat va mot bung suong - deu la thu da co trong VfxFactory, khong them tai nguyen nao.
+/// Nen vu no dung rieng: manh bang vo tung (FrozenShatter) + bung suong lanh - thu da co trong VfxFactory, khong them tai nguyen.
+///
+/// ⚠️ 01/11/2026 (nguoi dung, anh: "vom trang duc qua xau; chi cho khoi suong lanh va cac manh bang vang ra"): BO qua cau chop "ChopLanh"
+/// (hinh cau shader Ice phong toi 0,95 ban kinh = cai vom), vong lanh tren dat va ca den loe (den "DenNoBang" + "Flash" cua prefab vo bang).
+/// Menu 156 do.
 /// </summary>
 public static partial class VfxFactory
 {
-    /// <summary>Tang bang vo tung: manh bang bay ra, vong lanh lan tren dat, suong bung len.</summary>
+    /// <summary>Tang bang vo tung: CHI manh bang bay ra + suong lanh bung len (khong vom, khong vong, khong den).</summary>
     public static GameObject NoTangBang(Vector3 cho, float banKinh)
     {
-        // 1) Manh bang vo tung - dung chung hinh voi luc quai dang dong bang bi giet
-        FrozenShatter(cho + Vector3.up * 0.35f, banKinh / 1.7f);
+        // 1) Manh bang vo tung - dung chung hinh voi luc quai dang dong bang bi giet, nhung tat den "Flash"
+        var vo = FrozenShatter(cho + Vector3.up * 0.35f, banKinh / 1.7f);
+        float yDat = GroundY(cho);
+        if (vo != null)
+        {
+            var flash = vo.transform.Find("Flash");
+            if (flash != null) flash.gameObject.SetActive(false);
+            var puff = vo.transform.Find("Puff");
+            if (puff != null) MemSatDat(puff.GetComponent<ParticleSystem>(), yDat);
+        }
 
         var goc = new GameObject("NoTangBang");
         goc.transform.position = cho;
         AutoDestroy.Add(goc, 2.2f);
 
-        // 2) Chop lanh o tam
-        var chop = ProcMesh.Part("ChopLanh", goc.transform, ProcMesh.Sphere(1f, 14, 10, 1f, Color.white),
-                                 new Material(Mats.Ice), Vector3.up * 0.4f, Quaternion.identity, Vector3.one, false);
-        var cf = chop.AddComponent<ExpandFade>();
-        cf.duration = 0.3f;
-        cf.startScale = Vector3.one * banKinh * 0.25f;
-        cf.endScale = Vector3.one * banKinh * 0.95f;
-
-        // 3) Vong lanh lan ra tren dat - cho nguoi choi thay dung tam voi cua vu no
-        var vong = ProcMesh.Part("VongLanh", goc.transform, GroundDecal.QuadMesh(), new Material(RingIceMat),
-                                 new Vector3(0f, 0.06f, 0f), Quaternion.Euler(90f, 0f, 0f), Vector3.one, false);
-        var vf = vong.AddComponent<ExpandFade>();
-        vf.duration = 0.5f;
-        vf.startScale = Vector3.one * banKinh * 0.4f;
-        vf.endScale = Vector3.one * banKinh * 2.2f;
-
-        // 4) Suong bung len
+        // 2) Suong bung len
         var suong = NewPS("SuongNo", goc.transform, Vector3.up * 0.2f, SuongLanhMat,
                           ParticleSystemRenderMode.Billboard);
         var sm = suong.main;
@@ -56,16 +51,7 @@ public static partial class VfxFactory
         ssh.radius = banKinh * 0.3f;
         ssh.rotation = new Vector3(-90f, 0f, 0f);
 
-        // 5) Den lanh loe len mot nhip
-        var denGo = new GameObject("DenNoBang");
-        denGo.transform.SetParent(goc.transform, false);
-        denGo.transform.localPosition = Vector3.up * 0.8f;
-        var den = denGo.AddComponent<Light>();
-        den.type = LightType.Point;
-        den.color = new Color(0.55f, 0.82f, 1f);
-        den.shadows = LightShadows.None;
-        var loe = denGo.AddComponent<LightBurst>();
-        loe.peak = 3.2f; loe.duration = 0.3f; loe.range = banKinh * 2.4f;
+        MemSatDat(suong, yDat);       // khong de tam suong cam xuyen dat thanh duong thang
 
         return goc;
     }
