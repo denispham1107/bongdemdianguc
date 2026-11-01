@@ -4,7 +4,9 @@
   <meta charset="utf-8">
   <!-- TRANG CHU (29/10/2026, nguoi dung): mo acquytrolai.web.app la vao trang nay, khong vao game ngay.
        Game nam o /choi/ (nut CHOI NGAY). Dang ky / dang nhap ngay tren trang - phien dung chung voi game
-       (localStorage "diablo25d_refresh", xem trangchu/trangchu.js). Anh ky nang chup bang menu 147 trong Unity. -->
+       (localStorage "diablo25d_refresh", xem trangchu/trangchu.js). Anh ky nang chup bang menu 147 trong Unity.
+       01/11/2026 (nguoi dung): DANG KY / DANG NHAP CHI CON O TRANG NAY (game tren web bo man dang nhap); CHOI NGAY khi chua dang
+       nhap bi chan + bang "Vui long Tao tai khoan va Dang nhap truoc khi vao choi" (#bang-can-dang-nhap). -->
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Ác Quỷ Trở Lại — Game nhập vai hành động kinh dị trên trình duyệt</title>
   <meta name="description" content="Ác Quỷ Trở Lại: game nhập vai hành động kiểu Diablo trong nghĩa địa đêm. Phép thuật lửa, băng, sét, gió — chơi đơn hoặc theo đội, người sống sót cuối cùng chiến thắng. Chơi ngay trên trình duyệt, điện thoại và máy tính.">
@@ -18,7 +20,7 @@
   <meta property="og:image" content="/icons/anh-chia-se.png">
   <link rel="preload" href="trangchu/CormorantSC-Bold.ttf" as="font" type="font/ttf" crossorigin>
   <link rel="preload" href="trangchu/Inter-Regular.ttf" as="font" type="font/ttf" crossorigin>
-  <link rel="stylesheet" href="trangchu/trangchu.css?v=2">
+  <link rel="stylesheet" href="trangchu/trangchu.css?v=6">
 </head>
 <body>
 
@@ -60,8 +62,8 @@
         Chào mừng trở lại, <b id="ten-chao"></b> — <span id="so-tran"></span>
       </p>
       <p class="chao chua-dang-nhap">
-        <button type="button" class="nut-chu-gach" data-mo="dangky">Tạo tài khoản</button> hoặc
-        <button type="button" class="nut-chu-gach" data-mo="dangnhap">đăng nhập</button> trước để vào thẳng sảnh.
+        <button type="button" class="nut-chu-gach" data-mo="dangky">Tạo tài khoản</button> và
+        <button type="button" class="nut-chu-gach" data-mo="dangnhap">đăng nhập</button> trước khi vào chơi.
       </p>
       <ul class="the-nho">
         <li>Điện thoại cảm ứng &amp; máy tính</li>
@@ -220,10 +222,30 @@
   </form>
 </dialog>
 
+<!-- ============== BANG THONG BAO: CHUA DANG NHAP (01/11/2026) ==============
+     Bam CHOI NGAY khi chua dang nhap, hoac bi /choi/ tra ve (?can-dang-nhap) -->
+<dialog id="bang-can-dang-nhap" class="bang-tk bang-thong-bao" aria-labelledby="tieu-de-thong-bao" aria-describedby="loi-thong-bao">
+  <div class="than-thong-bao">
+    <button type="button" class="dong" data-dong-thong-bao aria-label="Đóng">×</button>
+    <div class="an-ky" aria-hidden="true">
+      <!-- Chu thap Maltese ve tay (ky tu ✠ khong co trong Cormorant - trinh duyet lay font khac ve thanh o vuong) -->
+      <svg viewBox="0 0 40 40" width="38" height="38"><path d="M20 19 L12 3 Q20 7 28 3 Z M21 20 L37 12 Q33 20 37 28 Z M20 21 L28 37 Q20 33 12 37 Z M19 20 L3 28 Q7 20 3 12 Z"/></svg>
+    </div>
+    <h2 id="tieu-de-thong-bao" class="tieu-de-thong-bao">Chưa đăng nhập</h2>
+    <p id="ly-do-thong-bao" class="ly-do-thong-bao" hidden>Phiên đăng nhập trước đã hết hạn.</p>
+    <p id="loi-thong-bao" class="loi-thong-bao">Vui lòng <b>Tạo tài khoản</b> và <b>Đăng nhập</b> trước khi vào chơi.</p>
+    <div class="hai-nut">
+      <button type="button" class="nut-choi nut-thong-bao" data-mo="dangky"><span>TẠO TÀI KHOẢN</span></button>
+      <button type="button" class="nut-vien nut-thong-bao-phu" data-mo="dangnhap">Đăng nhập</button>
+    </div>
+    <p class="nho">Miễn phí — chỉ cần email và mật khẩu.</p>
+  </div>
+</dialog>
+
 <dialog id="xem-anh" class="xem-anh" aria-label="Xem ảnh lớn">
   <img id="xem-anh-img" alt="">
 </dialog>
 
-<script src="trangchu/trangchu.js?v=1"></script>
+<script src="trangchu/trangchu.js?v=2"></script>
 </body>
 </html>

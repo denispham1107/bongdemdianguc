@@ -13,6 +13,12 @@ using UnityEngine;
 /// <see cref="FirebaseMang"/>.
 ///
 /// Giao dien (khung, nut, font co dau tieng Viet) lay tu <see cref="GiaoDien"/>.
+///
+/// 01/11/2026 (nguoi dung): "bo chuc nang Dang nhap, Tao tai khoan - tu bay gio chi tao tai khoan, dang nhap va an vao choi
+/// truc tiep tu trang chu". Chon: BO TREN WEB, GIU TRONG UNITY EDITOR (10 phep thu dung man nay). Ban web
+/// (<see cref="ChiDangNhapOTrangChu"/>) khong ve khung nao: con phien thi tu khoi phuc roi vao sanh; khong co phien / khoi phuc
+/// hong / bi dang xuat giua chung thi <see cref="VeTrangChu"/> ("/?can-dang-nhap[=het-han|bi-khoa]" - trang chu mo bang
+/// thong bao). Trang /choi/ da tu chuyen ve truoc khi tai game neu localStorage khong co phien (WebGLTemplates index.html).
 /// </summary>
 public class ManDangNhap : MonoBehaviour
 {
@@ -27,6 +33,66 @@ public class ManDangNhap : MonoBehaviour
 
     /// <summary>Goi khi dang nhap xong - ManSanh se nghe cai nay.</summary>
     public System.Action daVao;
+
+    // ================================================================
+    //  DANG NHAP CHI O TRANG CHU (ban web, 01/11/2026)
+    // ================================================================
+
+    /// <summary>true = khong co man dang nhap trong game, chua dang nhap thi ve trang chu. Ban web: true; Editor / PC: false
+    /// (phep thu menu 155 dat true + thay <see cref="ChuyenTrang"/> de do).</summary>
+    public static bool ChiDangNhapOTrangChu =
+#if UNITY_WEBGL && !UNITY_EDITOR
+        true;
+#else
+        false;
+#endif
+
+    public const string DuongCanDangNhap = "/?can-dang-nhap";
+    public const string DuongHetHan = "/?can-dang-nhap=het-han";
+    public const string DuongBiKhoa = "/?can-dang-nhap=bi-khoa";
+    public const string DuongDangXuat = "/";
+
+    /// <summary>Cach chuyen trang - phep thu thay bang ham ghi lai dia chi.</summary>
+    public static System.Action<string> ChuyenTrang = ChuyenTrangThat;
+    /// <summary>Dia chi da chuyen toi (null = chua) - chi chuyen MOT lan moi lan chay.</summary>
+    public static string DiaChiDaChuyen { get; private set; }
+
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    static void DatLai() { DiaChiDaChuyen = null; SoLanVeKhungDangNhap = 0; }   // du an tat Domain Reload: bien tinh giu tu lan Play truoc
+
+    /// <summary>Phep thu (menu 155): cho chuyen trang lai + dem lai so khung ve.</summary>
+    public static void DatLaiChoPhepThu() { DatLai(); }
+    /// <summary>Phep thu xong: tra cach chuyen trang that.</summary>
+    public static void DatLaiChuyenTrangThat() { ChuyenTrang = ChuyenTrangThat; }
+
+    public static void VeTrangChu(string duong)
+    {
+        if (DiaChiDaChuyen != null) return;
+        DiaChiDaChuyen = duong;
+        if (ChuyenTrang != null) ChuyenTrang(duong);
+    }
+
+#if UNITY_WEBGL && !UNITY_EDITOR
+    [System.Runtime.InteropServices.DllImport("__Internal")] static extern void CD_VeTrang(string duong);
+#endif
+
+    static void ChuyenTrangThat(string duong)
+    {
+#if UNITY_WEBGL && !UNITY_EDITOR
+        CD_VeTrang(duong);
+#else
+        Debug.Log("[ManDangNhap] ve trang chu: " + duong);
+#endif
+    }
+
+    /// <summary>Khoi phuc phien hong thi ve trang chu voi ly do nay.</summary>
+    string duongKhiHong;
+
+    void Update()
+    {
+        if (!ChiDangNhapOTrangChu || FirebaseMang.DaDangNhap || dangCho) return;
+        VeTrangChu(duongKhiHong ?? DuongCanDangNhap);
+    }
 
     void Start()
     {
@@ -51,6 +117,7 @@ public class ManDangNhap : MonoBehaviour
             yield return HoSoMang.TaiHoacTao(null, (o2, e2) => { ok = o2; loi = e2; });
         }
 
+        if (!ok) duongKhiHong = FirebaseMang.LaLoiBiKhoa(loi ?? "") ? DuongBiKhoa : DuongHetHan;
         dangCho = false;
         if (ok) { Bao("", false); if (daVao != null) daVao(); }
         else { Bao(loi, true); FirebaseMang.Quen(); }
@@ -153,6 +220,20 @@ public class ManDangNhap : MonoBehaviour
 
         GiaoDien.ChuanBi();
         float s = GiaoDien.TiLe;
+
+        // Ban web: KHONG co khung dang nhap - chi mot dong cho trong luc khoi phuc phien / chuyen ve trang chu
+        if (ChiDangNhapOTrangChu)
+        {
+            SoLanVeKhungDangNhap = 0;
+            var kc = GiaoDien.KieuChuMo;
+            var canhCu = kc.alignment;
+            kc.alignment = TextAnchor.MiddleCenter;
+            GiaoDien.Chu(new Rect(0f, Screen.height * 0.5f - 20f * s, Screen.width, 40f * s),
+                         dangCho ? "Đang vào sảnh..." : "Đang chuyển về trang chủ...", kc);
+            kc.alignment = canhCu;
+            return;
+        }
+        SoLanVeKhungDangNhap++;
         // Khong con phu toi bon goc + suong do (VeNen): canh phia sau de nguyen
 
         var bc = TinhBoCuc(Screen.width, Screen.height, s, trang == Trang.DangKy,
@@ -240,6 +321,9 @@ public class ManDangNhap : MonoBehaviour
             e.Use();
         }
     }
+
+    /// <summary>Phep thu (menu 155): so khung OnGUI da ve khung dang nhap (ban web phai luon 0).</summary>
+    public static int SoLanVeKhungDangNhap;
 
     void BamNutChinh()
     {

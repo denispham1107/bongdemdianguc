@@ -284,6 +284,46 @@ dialog::backdrop { background: rgba(0, 0, 0, 0.78); backdrop-filter: blur(3px); 
 .nut-gui:disabled { opacity: 0.6; cursor: wait; }
 .bang-tk .nho { margin: 0; text-align: center; }
 
+/* ---------- bang thong bao chua dang nhap (01/11/2026) ---------- */
+.bang-thong-bao { width: min(440px, calc(100vw - 32px)); }
+.than-thong-bao { position: relative; padding: 30px 26px 22px; text-align: center; }
+.an-ky {
+  width: 74px; height: 74px; margin: 0 auto 12px; display: grid; place-items: center; border-radius: 50%;
+  border: 1px solid var(--mau); background: radial-gradient(circle at 50% 40%, rgba(195, 48, 28, 0.45), rgba(20, 6, 5, 0.95) 70%);
+  box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.7), 0 0 26px rgba(195, 48, 28, 0.55);
+}
+.an-ky svg { fill: var(--lua); filter: drop-shadow(0 0 6px rgba(255, 120, 60, 0.9)); }
+.tieu-de-thong-bao {
+  margin: 0; color: var(--chu-sang); font: 700 30px/1.15 var(--tieu-de); letter-spacing: 0.08em;
+  text-shadow: 0 0 16px rgba(195, 48, 28, 0.7);
+}
+.tieu-de-thong-bao::after {
+  content: ""; display: block; width: 150px; height: 2px; margin: 12px auto 0;
+  background: linear-gradient(90deg, transparent, var(--mau-sang), transparent);
+}
+.ly-do-thong-bao { margin: 14px 0 0; color: #ff9a7a; font-size: 14px; }
+.loi-thong-bao { margin: 14px 0 22px; font-size: 17px; line-height: 1.55; color: var(--chu); }
+.loi-thong-bao b { color: var(--lua); }
+.hai-nut { display: grid; gap: 12px; }
+.nut-thong-bao { width: 100%; padding: 14px 10px; font: 700 22px/1 var(--tieu-de); letter-spacing: 0.1em; animation: none; }
+.nut-thong-bao-phu { width: 100%; padding: 12px 10px; font-size: 19px; }
+.bang-thong-bao .nho { margin: 16px 0 0; }
+/* Dien thoai nam ngang (man thap): bang gon lai, hai nut canh nhau - khong phai cuon trong bang */
+@media (max-height: 520px) {
+  .bang-thong-bao { width: min(520px, calc(100vw - 32px)); }
+  .than-thong-bao { padding: 14px 22px 12px; }
+  .an-ky { width: 48px; height: 48px; margin-bottom: 6px; }
+  .an-ky svg { width: 26px; height: 26px; }
+  .tieu-de-thong-bao { font-size: 24px; }
+  .tieu-de-thong-bao::after { margin-top: 6px; }
+  .ly-do-thong-bao { margin-top: 8px; }
+  .loi-thong-bao { margin: 8px 0 12px; font-size: 15px; }
+  .hai-nut { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .nut-thong-bao { padding: 11px 8px; font-size: 19px; letter-spacing: 0.06em; white-space: nowrap; }
+  .nut-thong-bao-phu { padding: 10px 8px; }
+  .bang-thong-bao .nho { margin-top: 10px; }
+}
+
 .xem-anh { padding: 0; border: none; background: none; max-width: 96vw; max-height: 96vh; cursor: zoom-out; }
 .xem-anh img { display: block; max-width: 96vw; max-height: 92vh; border-radius: 4px; box-shadow: 0 0 60px #000; }
 

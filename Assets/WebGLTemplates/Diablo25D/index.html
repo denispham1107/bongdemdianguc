@@ -2,6 +2,16 @@
 <html lang="vi">
 <head>
   <meta charset="utf-8">
+  <script>
+    // 01/11/2026 (nguoi dung): DANG KY / DANG NHAP CHI CON O TRANG CHU. Chua co phien (localStorage "diablo25d_refresh" - trang chu
+    // va game dung chung) thi ve trang chu + bang "Vui long Tao tai khoan va Dang nhap truoc khi vao choi", KHONG tai game
+    // (172 MB lan dau). Phien con ma het han thi game tu phat hien roi tra ve "/?can-dang-nhap=het-han" (ManDangNhap).
+    (function () {
+      var co = "";
+      try { co = localStorage.getItem("diablo25d_refresh") || ""; } catch (e) { co = "?"; }
+      if (!co) { window.veTrangChuChuaDangNhap = true; location.replace("/?can-dang-nhap"); }
+    })();
+  </script>
   <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
   <!-- Ten tren tab trinh duyet. KHONG doi productName trong Unity: cache du lieu
        va thu muc luu cua nguoi choi tinh theo ten ay - doi la mat het. -->
@@ -568,7 +578,7 @@
       oLoi.textContent = "Không chạy được: " + loi;
     });
   };
-  document.body.appendChild(script);
+  if (!window.veTrangChuChuaDangNhap) document.body.appendChild(script);   // dang chuyen ve trang chu: khong tai game
 </script>
 </body>
 </html>

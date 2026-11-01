@@ -63,6 +63,12 @@ var CauNoiCaiDat = {
   // Tai lai ca trang - Unity khoi dong lai tu dau voi cai dat moi
   CD_NapLai: function () {
     window.location.reload();
+  },
+
+  // Chuyen sang trang khac (trang chu) - 01/11/2026: dang nhap chi con o trang chu (ManDangNhap.VeTrangChu).
+  // replace: bam "lui" khong quay lai game (game se lai chuyen di).
+  CD_VeTrang: function (duong) {
+    window.location.replace(UTF8ToString(duong));
   }
 };
 

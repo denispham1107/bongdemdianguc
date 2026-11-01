@@ -372,8 +372,7 @@ public class ManSanh : MonoBehaviour
 
         if (GiaoDien.Nut(b.nutDangXuat, "ĐĂNG XUẤT", GiaoDien.KieuNutDa))
         {
-            FirebaseMang.Quen();
-            danhSach.Clear();
+            DangXuat();
             GUI.enabled = true;
             return;
         }
@@ -1097,6 +1096,14 @@ public class ManSanh : MonoBehaviour
         "Cảnh 50% · tắt bóng · cho máy rất yếu",
         "Cảnh 40% · tắt bóng · cho máy cực yếu",
     };
+
+    /// <summary>Nut DANG XUAT. Ban web (01/11/2026, nguoi dung chon): dang xuat roi VE TRANG CHU - dang nhap chi con o do.</summary>
+    public void DangXuat()
+    {
+        FirebaseMang.Quen();
+        if (ManDangNhap.ChiDangNhapOTrangChu) ManDangNhap.VeTrangChu(ManDangNhap.DuongDangXuat);
+        danhSach.Clear();
+    }
 
     /// <summary>Mo bang cai dat - nut CAI DAT goi, phep thu (menu 48) cung goi.</summary>
     public void MoCaiDat()

@@ -1,0 +1,19 @@
+MENU 155 - Dang nhap chi o trang chu: 0 loi
+== A Khong co phien
+  OK   A chuyen: /?can-dang-nhap (phai /?can-dang-nhap)
+  OK   A khung dang nhap ve 0 lan (phai 0)
+== B Phien gia (token hong)
+  OK   B chuyen: /?can-dang-nhap=het-han (phai /?can-dang-nhap=het-han)
+  OK   B phien hong da bi xoa
+  OK   B khung dang nhap ve 0 lan (phai 0)
+== C Phien THAT con han (tai khoan chay thu A)
+  OK   C dang nhap tai khoan A bang code: duoc
+  OK   C tu khoi phuc phien -> vao sanh (dang nhap True, sanh bat True)
+  OK   C khong chuyen trang (0)
+  OK   C khung dang nhap ve 0 lan (phai 0)
+== D Bam DANG XUAT o sanh
+  OK   D het dang nhap
+  OK   D phien da xoa (trang chu cung thay da dang xuat)
+  OK   D chuyen: / (phai /, chi mot lan)
+== E DOI CHUNG ban Editor (ChiDangNhapOTrangChu = false)
+  OK   E ve khung dang nhap 290 lan, chuyen trang 0 (phai > 10 / 0)

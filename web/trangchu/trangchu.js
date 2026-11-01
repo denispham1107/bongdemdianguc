@@ -9,6 +9,11 @@
 // PHIEN DUNG CHUNG VOI GAME: refresh token giu o localStorage khoa "diablo25d_refresh" - game o /choi/ cung
 // goc (origin) nen doc duoc qua CauNoiCaiDat.jslib. Dang nhap o day roi bam "CHOI NGAY" la vao thang sanh;
 // dang xuat o day (hoac trong game) thi ben kia cung ra.
+//
+// 01/11/2026 (nguoi dung): DANG KY / DANG NHAP CHI CON O TRANG NAY - ban web cua game bo man dang nhap. Bam CHOI NGAY
+// khi chua dang nhap thi CHAN (khong vao /choi/) va hien bang "Vui long Tao tai khoan va Dang nhap truoc khi vao choi"
+// (#bang-can-dang-nhap); dang nhap xong thi O LAI trang chu (nguoi dung chon). /choi/ khong co phien thi tra ve
+// "/?can-dang-nhap" (game khoi phuc phien hong: "=het-han" / "=bi-khoa") -> mo bang ngay khi vao trang.
 
 (function () {
   "use strict";
@@ -153,9 +158,11 @@
   }
 
   var bang = $("bang-tai-khoan");
+  var bangCan = $("bang-can-dang-nhap");
   var cheDo = "dangnhap";
 
   function moBang(c) {
+    if (bangCan.open) bangCan.close();
     cheDo = c;
     bang.classList.toggle("dang-ky", c === "dangky");
     $("tab-dang-nhap").classList.toggle("chon", c !== "dangky");
@@ -213,6 +220,45 @@
   $("form-tai-khoan").addEventListener("submit", gui);
   document.querySelectorAll("[data-dang-xuat]").forEach(function (n) { n.addEventListener("click", dangXuat); });
 
+  // ---------------------------------------------------------------
+  //  CHOI NGAY: chi cho vao khi DA dang nhap
+  // ---------------------------------------------------------------
+  // Dang khoi phuc phien cu (lamMoi chua tra loi) thi doi xong roi moi quyet - khong chan oan nguoi da dang nhap.
+  var choKiemPhien = null;
+
+  var LY_DO = {
+    "het-han": "Phiên đăng nhập trước đã hết hạn.",
+    "bi-khoa": "Tài khoản của bạn đã bị khoá. Hãy liên hệ quản trị viên."
+  };
+  function moBangCanDangNhap(lyDo) {
+    var ld = $("ly-do-thong-bao");
+    ld.textContent = LY_DO[lyDo] || "";
+    ld.hidden = !LY_DO[lyDo];
+    if (bang.open) bang.close();
+    if (!bangCan.open) bangCan.showModal();
+  }
+
+  function bamChoiNgay(e) {
+    if (hoSo) return;                 // da dang nhap: de trinh duyet di /choi/
+    e.preventDefault();
+    var di = this.href;
+    if (choKiemPhien) {
+      choKiemPhien.then(function () { if (hoSo) location.href = di; else moBangCanDangNhap(""); });
+      return;
+    }
+    moBangCanDangNhap("");
+  }
+  document.querySelectorAll('a[href="/choi/"]').forEach(function (n) { n.addEventListener("click", bamChoiNgay); });
+  document.querySelectorAll("[data-dong-thong-bao]").forEach(function (n) { n.addEventListener("click", function () { bangCan.close(); }); });
+  bangCan.addEventListener("click", function (e) { if (e.target === bangCan) bangCan.close(); });
+
+  // /choi/ tra ve vi chua dang nhap: mo bang ngay, xoa tham so khoi thanh dia chi
+  var thamSo = new URLSearchParams(location.search);
+  if (thamSo.has("can-dang-nhap")) {
+    moBangCanDangNhap(thamSo.get("can-dang-nhap"));
+    if (history.replaceState) history.replaceState(null, "", location.pathname + location.hash);
+  }
+
   // Thanh tren cung hien nut CHOI NGAY nho khi nut lon da cuon khoi man hinh
   var nutLon = $("choi-ngay");
   if ("IntersectionObserver" in window && nutLon) {
@@ -235,9 +281,10 @@
   // Phien con tu lan truoc (o day hoac trong game)
   var luu = docPhien();
   if (luu) {
-    lamMoi(luu).then(function () { return taiHoacTao(null); })
+    choKiemPhien = lamMoi(luu).then(function () { return taiHoacTao(null); })
       .then(veTaiKhoan)
-      .catch(function () { phien = null; hoSo = null; ghiPhien(""); veTaiKhoan(); });
+      .catch(function () { phien = null; hoSo = null; ghiPhien(""); veTaiKhoan(); })
+      .then(function () { choKiemPhien = null; });
   }
 
   // Tan lua bay len (canvas nhe, dung khi nguoi dung xin giam chuyen dong)

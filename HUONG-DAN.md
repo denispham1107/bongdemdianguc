@@ -2807,6 +2807,43 @@ tat han bong (Rat yeu cu)                 0           662    2,5 trieu
   Menu 48 nay kiểm tỉ lệ cảnh từng mức bằng số VIẾT TAY (`mongPhanGiai` — trước đó chỉ so ảnh đệm với chính bảng `heSoPhanGiai`). Đo: Cực yếu ảnh đệm
   655×254 trên màn 1638 (cũ 573×223), 749 lượt vẽ, 0 vật đổ bóng — **0 lỗi**.
 
+## Đăng ký / đăng nhập chỉ ở trang chủ (01/11/2026)
+
+**Người dùng** (ảnh màn đăng nhập trong game): ở trang chủ https://acquytrolai.web.app, chưa đăng nhập mà bấm **Chơi ngay** thì chặn, hiện bảng
+"Vui lòng Tạo tài khoản và Đăng nhập trước khi vào chơi" theo phong cách trang chủ; **bỏ** "Đăng nhập", "Tạo tài khoản" trong game — từ nay chỉ tạo tài
+khoản, đăng nhập và bấm vào chơi từ trang chủ. Người dùng chọn: mở thẳng `/choi/` khi chưa đăng nhập thì **chuyển về trang chủ** (khỏi tải 172 MB);
+**bỏ trên web, giữ trong Unity Editor** (10 phép thử dùng màn này); nút **ĐĂNG XUẤT** ở sảnh đăng xuất rồi **về trang chủ**; đăng nhập xong từ bảng
+thông báo thì **ở lại trang chủ**.
+
+**Trang chủ** (`web/index.html`, `trangchu.js`, `trangchu.css`):
+- Mọi link `/choi/` (nút lớn, nút nhỏ thanh trên, nút cuối trang) qua `bamChoiNgay`: đã có hồ sơ thì đi; đang khôi phục phiên cũ thì **chờ kết quả**
+  rồi mới quyết (không chặn oan người đã đăng nhập); không thì mở `#bang-can-dang-nhap`.
+- Bảng cùng khung với bảng tài khoản (viền đỏ, nền đỏ sẫm, chữ Cormorant SC): ấn ký chữ thập lửa (SVG — ký tự ✠ không có trong Cormorant, trình
+  duyệt vẽ bằng font khác thành ô vuông), "Chưa đăng nhập", lời nhắc, nút lửa **TẠO TÀI KHOẢN** + nút viền **Đăng nhập** (mở bảng tài khoản đúng tab).
+  Màn thấp (≤ 520 px, điện thoại nằm ngang) hai nút nằm cạnh nhau — bản đầu phải cuộn trong bảng mới thấy nút Đăng nhập.
+- `?can-dang-nhap[=het-han|=bi-khoa]`: mở bảng ngay khi vào trang, thêm dòng "Phiên đăng nhập trước đã hết hạn." / "Tài khoản của bạn đã bị khoá…",
+  rồi xoá tham số khỏi thanh địa chỉ.
+
+**Trang `/choi/`** (`Assets/WebGLTemplates/Diablo25D/index.html`): script đầu `<head>` đọc localStorage `diablo25d_refresh`; trống thì
+`location.replace("/?can-dang-nhap")` và **không gắn loader** — 0 byte `Build/` (chỉ 3 tệp nhỏ trang chờ được trình duyệt nạp trước).
+
+**Trong game** (`ManDangNhap`, `ManSanh`): `ChiDangNhapOTrangChu` = true chỉ bản WebGL. Không vẽ khung đăng nhập (chỉ dòng "Đang vào sảnh..."); còn
+phiên thì tự khôi phục vào sảnh như cũ; khôi phục hỏng → `/?can-dang-nhap=het-han` (hoặc `=bi-khoa` nếu tài khoản bị khoá); bị đăng xuất giữa chừng →
+`/?can-dang-nhap`; ĐĂNG XUẤT → `/`. Chuyển trang qua `CD_VeTrang` (`location.replace` — bấm "lùi" không quay lại game). Chỉ chuyển MỘT lần mỗi lần chạy.
+
+**Đo:**
+
+| Phép thử | Kết quả |
+|---|---|
+| Menu 155 (Play MainMenu, giả lập bản web, Firebase thật) | A không phiên → `/?can-dang-nhap`, 0 khung · B phiên giả → `=het-han`, phiên bị xoá · C phiên thật → vào sảnh, 0 chuyển trang, 0 khung · D ĐĂNG XUẤT → hết đăng nhập, phiên xoá, `/` một lần · E đối chứng Editor: vẽ khung 274 lần, 0 chuyển — **0 lỗi** |
+| Trang chủ trên máy chủ cục bộ | Chơi ngay khi chưa đăng nhập: ở lại trang, bảng mở · 2 nút trong bảng mở đúng tab · nút nhỏ thanh trên cũng bị chặn |
+| `/choi/` không phiên | về `/`, bảng mở, tham số đã xoá, 0 yêu cầu `Build/` |
+| Phiên đang khôi phục | giả lập Firebase trả "đăng nhập được" sau 1,5 s: bấm lúc đang chờ → vào `/choi/`; token giả thật gửi Firebase → bị từ chối → bảng mở, phiên xoá, không vào game |
+| Cỡ màn | 375×812 cách mép 19 px, không cuộn ngang; 844×390 / 667×375 không phải cuộn trong bảng, chữ nút một dòng |
+
+Menu 50 ra 3 lỗi đo vị trí (ảnh tên game, vòng đếm ngược) — cửa sổ Game lúc ấy chỉ 933×166 (lần trước 1621×559); trả code về bản trước chạy cùng cỡ
+cũng đúng 3 lỗi ấy → do cỡ cửa sổ, không do việc này. **Chưa deploy** — bản web cần build lại (menu 29) mới có phần trong game + trang `/choi/`.
+
 ## Mây giông: cột sáng thẳng đứng thay bằng tia sét con (01/11/2026)
 
 **Người dùng** (hai ảnh, khoanh đỏ): mỗi lần Mây giông đánh có "một tia sáng thẳng đứng rất lạ đánh cùng lúc với tia sét, không phải tia sét" —
