@@ -942,7 +942,8 @@ hơn ×1,5 và mở xuống 1,8–4,3 m** (người dùng chọn sau menu 94 ch�
   ⚠️⚠️ **01/11/2026: ĐĂNG KÝ / ĐĂNG NHẬP CHỈ Ở TRANG CHỦ** (người dùng; chọn bỏ trên web GIỮ trong Editor · ĐĂNG XUẤT về trang chủ · đăng nhập xong Ở LẠI
   trang chủ): trang chủ chặn mọi link `/choi/` khi chưa đăng nhập (`bamChoiNgay`; đang khôi phục phiên thì chờ kết quả) → bảng `#bang-can-dang-nhap`
   "Vui lòng Tạo tài khoản và Đăng nhập trước khi vào chơi" (TẠO TÀI KHOẢN / Đăng nhập mở bảng tài khoản). `/choi/` (template WebGL) kiểm localStorage
-  NGAY ĐẦU `<head>`: không có phiên → `location.replace("/?can-dang-nhap")`, KHÔNG nạp loader (0 byte `Build/`). Trong game `ManDangNhap.ChiDangNhapOTrangChu`
+  NGAY ĐẦU `<head>`: không có phiên → `location.replace("/")` (⚠️ TRANG CHỦ TRƠN, không mở bảng — người dùng: mở ứng dụng đã cài (`start_url` `/choi/`)
+  thì hiện trang chủ, bảng chỉ mở khi bấm Chơi ngay; trước là `/?can-dang-nhap`), KHÔNG nạp loader (0 byte `Build/`). Trong game `ManDangNhap.ChiDangNhapOTrangChu`
   (true chỉ bản WebGL): không vẽ khung; khôi phục phiên hỏng → `/?can-dang-nhap=het-han` hoặc `=bi-khoa` (`CD_VeTrang` trong `CauNoiCaiDat.jslib`), bị đăng
   xuất giữa chừng → `/?can-dang-nhap`; `ManSanh.DangXuat` → `/`. Trang chủ đọc tham số, mở bảng + dòng lý do, xoá tham số khỏi thanh địa chỉ. ⚠️ Editor / PC
   vẫn có màn đăng nhập (10 phép thử dùng). Menu 155 (0 lỗi, Firebase thật, giả lập bản web): không phiên / phiên giả / phiên thật / đăng xuất / đối chứng

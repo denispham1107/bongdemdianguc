@@ -2859,6 +2859,14 @@ không có lỗi nào để chuyển sang đường dự phòng.
 
 Chưa thử trên iPhone thật — cần người dùng thử sau khi deploy.
 
+### Mở ứng dụng đã cài: hiện trang chủ, không hiện bảng "Chưa đăng nhập" (01/11/2026)
+
+**Người dùng** (ảnh iPhone): mở ứng dụng là bảng "Chưa đăng nhập" hiện ngay; muốn thấy trang chủ, bảng chỉ hiện khi bấm **Chơi ngay** mà chưa đăng nhập.
+**Nguyên nhân:** ứng dụng đã cài mở `start_url` = `/choi/`; chưa có phiên thì trang game chuyển về `/?can-dang-nhap`, và tham số ấy mở bảng. **Sửa:**
+trang game chuyển về `/` trơn (template WebGL + `web/choi/index.html`). Giữ `start_url` `/choi/` để người đã đăng nhập mở ứng dụng là vào thẳng game;
+phiên hết hạn / bị khoá (game tự phát hiện) vẫn về `/?can-dang-nhap=het-han|bi-khoa` kèm lý do. **Đo** (máy chủ cục bộ, không phiên): `/choi/` → `/`,
+0 bảng mở, 0 tệp `Build/`; bấm Chơi ngay → bảng mở, ở lại trang chủ.
+
 ## Xoay ngang điện thoại khi vào game (01/11/2026)
 
 **Người dùng:** đã đăng nhập và bấm **Chơi ngay** thì hiển thị thông báo hình ảnh yêu cầu xoay ngang điện thoại, đồng thời khóa màn hình dọc. Người dùng
