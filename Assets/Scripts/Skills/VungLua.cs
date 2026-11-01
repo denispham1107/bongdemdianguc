@@ -98,12 +98,13 @@ public class VungLua : MonoBehaviour
         if (moiNhip <= 0.01f) return;
 
         Damageable.LaSatThuongRi = true;          // nhip ri: Bo xuong khong do (ChongDo, 28/09/2026)
+        Damageable.BoQuaTiaTrungDon = true;       // khong vet cam keo dai moi nhip (nguoi dung 01/11/2026)
         try
         {
             CombatUtil.AreaDamage(transform.position, radius, moiNhip,
                                   damageMask, DamageType.Fire, thoiGianChay, boQua);
         }
-        finally { Damageable.LaSatThuongRi = false; }
+        finally { Damageable.LaSatThuongRi = false; Damageable.BoQuaTiaTrungDon = false; }
     }
 
     void OnDrawGizmosSelected()

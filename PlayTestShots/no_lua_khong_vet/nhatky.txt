@@ -1,0 +1,23 @@
+MENU 153 - Vu no lua khong con vet hat: 0 loi
+== A Qua cau lua
+  OK   A Qua cau lua: bia mat 1034 mau
+  OK   A Qua cau lua: 3 vu no lua
+  OK   A Qua cau lua: con 'Sparks' trong vu no 0 lan, hat keo dai 0 (phai 0 / 0)
+  OK   A Qua cau lua: tia trung don phun them 0 lan trong 2 s (phai 0; co 0 vat chay rui trong luot)
+== B Thien thach
+  OK   B Thien thach: bia mat 5468 mau
+  OK   B Thien thach: 8 vu no lua
+  OK   B Thien thach: con 'Sparks' trong vu no 0 lan, hat keo dai 0 (phai 0 / 0)
+  OK   B Thien thach: tia trung don phun them 0 lan trong 4 s (phai 0; co 0 vat chay rui trong luot)
+== C Lua dia nguc
+  OK   C Lua dia nguc: bia mat 3671 mau
+  OK   C Lua dia nguc: 9 vu no lua
+  OK   C Lua dia nguc: con 'Sparks' trong vu no 0 lan, hat keo dai 0 (phai 0 / 0)
+  OK   C Lua dia nguc: tia trung don phun them 0 lan trong 3 s (phai 0; co 4 vat chay rui trong luot)
+== D Qua cau lua cua quai Phu thuy
+  OK   D Phu thuy: 6 vu no, Sparks 0, hat keo dai 0
+  OK   D Phu thuy: tia trung don +0
+== E Doi chung
+  OK   E prefab Vfx_NoLua dung thang van phun 180 hat Sparks keo dai (bo dem song)
+  OK   E TakeDamage Lua thuong van phun tia trung don (+1)
+  OK   E co BoQuaTiaTrungDon tra ve false

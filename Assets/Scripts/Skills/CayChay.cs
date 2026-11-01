@@ -482,12 +482,13 @@ public class CayChay : MonoBehaviour
             if (moiNhip > 0.01f)
             {
                 Damageable.LaSatThuongRi = true;      // nhip ri: Bo xuong khong do (ChongDo, 28/09/2026)
+                Damageable.BoQuaTiaTrungDon = true;   // khong vet cam keo dai moi nhip (nguoi dung 01/11/2026)
                 try
                 {
                     CombatUtil.AreaDamage(chanCay + Vector3.up * 0.8f, banKinhLua, moiNhip,
                                           damageMask, DamageType.Fire, 1.6f, keDot);
                 }
-                finally { Damageable.LaSatThuongRi = false; }
+                finally { Damageable.LaSatThuongRi = false; Damageable.BoQuaTiaTrungDon = false; }
             }
         }
 
@@ -658,9 +659,9 @@ public class CayChay : MonoBehaviour
         dangChay = Mathf.Max(0, dangChay - 1);
         if (coDen) { coDen = false; denDangBat = Mathf.Max(0, denDangBat - 1); }
 
-        // Mot dot tan lua va tro bay len dung cho cai cay vua do xuong
-        VfxFactory.HitBurst(chanCay + Vector3.up * cao * 0.35f, new Color(0.35f, 0.22f, 0.14f));
-        VfxFactory.HitBurst(chanCay + Vector3.up * 0.5f, new Color(0.55f, 0.30f, 0.12f));
+        // (Da BO 01/11/2026) Hai chum "tia trung don" tan lua + tro (hat Stretch keo dai) luc vat chay rui - cung loai vet cam nguoi dung khoanh
+        // quanh vu no Thien thach, xin xoa. Khoi + dau vet chay ben duoi van con.
+        SoLanChayRui++;
 
         // Vai manh cuoi cung rot xuong theo - cai cay do sap chu khong bay hoi
         for (int i = 0; i < 3; i++) RotMotManh();
@@ -680,6 +681,9 @@ public class CayChay : MonoBehaviour
         // Lua thi de no tu tan het theo TatDanVungLua, khong xoa ngay: dam lua
         // con lai chinh la cai cay vua chay rui con am duoi dat.
     }
+
+    /// <summary>So lan mot vat chay rui (phep thu menu 153 dem).</summary>
+    public static int SoLanChayRui;
 
     /// <summary>Tan tich chay de lai luc chay rui - lun xuong khi vat moc lai.</summary>
     DauVetLocCuon dauVet;

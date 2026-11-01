@@ -396,8 +396,14 @@ public class Fireball : MonoBehaviour
         HashSet<Damageable> daTrungNo = soLanNay > 0 ? KeTrongVung(transform.position, blastRadius, damageMask, boQua) : null;
         VfxFactory.FireExplosion(transform.position, blastRadius);
         // Qua NAY: khongCham = ke da trung vu no truoc - khong an lai o vu no nay
-        CombatUtil.AreaDamage(transform.position, blastRadius, impactDamage, damageMask,
-                              DamageType.Fire, burnSeconds, boQua, khongCham);
+        // Khong phun tia trung don (vet cam keo dai) tren ke trung - nguoi dung 01/11/2026 khoanh, xin xoa
+        Damageable.BoQuaTiaTrungDon = true;
+        try
+        {
+            CombatUtil.AreaDamage(transform.position, blastRadius, impactDamage, damageMask,
+                                  DamageType.Fire, burnSeconds, boQua, khongCham);
+        }
+        finally { Damageable.BoQuaTiaTrungDon = false; }
 
         // DANH NGA (Qua cau lua cap 5). Gieo RIENG tung muc tieu bang chinh loi gieo cua Thien thach -
         // no da bo qua nguoi tung, ke da chet va ke dang con khien. Goi SAU sat thuong: ke chet vi vu no

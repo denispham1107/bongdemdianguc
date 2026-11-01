@@ -504,26 +504,8 @@ public static partial class VfxFactory
         sol.size = new ParticleSystem.MinMaxCurve(1f, Curve(0.5f, 1.2f, 0.4f));
         var nz = burst.noise; nz.enabled = true; nz.strength = 1.1f; nz.frequency = 1.1f;
 
-        // 4) Tan lua ban vang ra xa, roi xuong dat
-        var sparks = NewPS("Sparks", root.transform, Vector3.zero, SparkMat, ParticleSystemRenderMode.Stretch);
-        var sm = sparks.main;
-        sm.duration = 0.3f; sm.loop = false;
-        sm.startLifetime = new ParticleSystem.MinMaxCurve(0.6f, 1.5f);
-        sm.startSpeed = new ParticleSystem.MinMaxCurve(4f, 13f);
-        sm.startSize = new ParticleSystem.MinMaxCurve(0.05f, 0.14f);
-        sm.simulationSpace = ParticleSystemSimulationSpace.World;
-        sm.gravityModifier = 1.1f;
-        sm.maxParticles = 250;
-        var sem = sparks.emission;
-        sem.rateOverTime = 0f;
-        sem.SetBursts(new ParticleSystem.Burst[] { new ParticleSystem.Burst(0f, 90) });
-        var ssh = sparks.shape; ssh.shapeType = ParticleSystemShapeType.Sphere; ssh.radius = radius * 0.2f;
-        var scol = sparks.colorOverLifetime; scol.enabled = true;
-        scol.color = new ParticleSystem.MinMaxGradient(Grad(
-            new Color(1f, 0.95f, 0.75f), 0f,
-            new Color(1f, 0.50f, 0.12f), 0.55f,
-            new Color(0.5f, 0.08f, 0.01f), 1f,
-            1f, 1f, 0.7f, 0f));
+        // 4) (Da BO 01/11/2026) Tan lua ban vang ra xa: 90 hat Stretch 4-13 m/s - nguoi dung khoanh "cac vet (hat)" quanh vu no Qua cau lua /
+        // Thien thach / Lua dia nguc, xin xoa. Prefab Vfx_NoLua van con lop "Sparks" - FireExplosion tat no luc chay (BoTanLuaNo).
 
         // 5) Cot khoi den boc len
         var smoke = NewPS("Smoke", root.transform, Vector3.zero, SmokeMat, ParticleSystemRenderMode.Billboard);
@@ -560,6 +542,19 @@ public static partial class VfxFactory
         return root;
     }
 
+    /// <summary>
+    /// Tat lop "Sparks" (tan lua keo dai ban toa ra xa) cua prefab vu no lua - nguoi dung 01/11/2026 khoanh cac vet hat ay quanh vu no Qua cau
+    /// lua / Lua dia nguc (va Thien thach - BuildFireExplosion da bo lop nay), xin xoa. Tat NGAY (SetActive) vi Destroy cho het khung hinh.
+    /// </summary>
+    public static void BoTanLuaNo(GameObject no)
+    {
+        if (no == null) return;
+        var sp = no.transform.Find("Sparks");
+        if (sp == null) return;
+        sp.gameObject.SetActive(false);
+        Object.Destroy(sp.gameObject);
+    }
+
     /// <summary>VU NO LUA khi qua cau cham muc tieu (uu tien dung prefab).</summary>
     public static GameObject FireExplosion(Vector3 pos, float radius)
     {
@@ -570,6 +565,7 @@ public static partial class VfxFactory
             go = GameAssets.Make(pf, pos);
             float k = radius / 3.4f;                 // prefab duoc nuong o ban kinh 3.4
             if (Mathf.Abs(k - 1f) > 0.05f) go.transform.localScale = Vector3.one * k;
+            BoTanLuaNo(go);
         }
         else
         {

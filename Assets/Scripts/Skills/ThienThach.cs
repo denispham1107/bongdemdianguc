@@ -319,8 +319,14 @@ public class ThienThach : MonoBehaviour
         TiengViTri.ThienThachNo(tam);
 
         // 1. Sat thuong tuc thi ca vung
-        CombatUtil.AreaDamage(tam, blastRadius, impactDamage, damageMask,
-                              DamageType.Fire, 2.2f, boQua);
+        // Khong phun tia trung don (vet cam keo dai) tren ke trung - nguoi dung 01/11/2026 khoanh, xin xoa
+        Damageable.BoQuaTiaTrungDon = true;
+        try
+        {
+            CombatUtil.AreaDamage(tam, blastRadius, impactDamage, damageMask,
+                                  DamageType.Fire, 2.2f, boQua);
+        }
+        finally { Damageable.BoQuaTiaTrungDon = false; }
 
         // 1b. Danh nga - gieo RIENG tung muc tieu, giong choang cua Sam set
         if (ngaXacSuat > 0f) DanhNgaQuanh(tam);

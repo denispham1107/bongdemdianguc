@@ -2807,6 +2807,34 @@ tat han bong (Rat yeu cu)                 0           662    2,5 trieu
   Menu 48 nay kiểm tỉ lệ cảnh từng mức bằng số VIẾT TAY (`mongPhanGiai` — trước đó chỉ so ảnh đệm với chính bảng `heSoPhanGiai`). Đo: Cực yếu ảnh đệm
   655×254 trên màn 1638 (cũ 573×223), 749 lượt vẽ, 0 vật đổ bóng — **0 lỗi**.
 
+## Vụ nổ lửa không còn vệt hạt — Quả cầu lửa, Thiên thạch, Lửa địa ngục (01/11/2026)
+
+**Người dùng** (3 ảnh khoanh xanh lá): sau khi Quả cầu lửa, Thiên thạch, Lửa địa ngục va chạm và nổ, xoá các vệt (hạt) cam mảnh bắn ra. Người dùng
+chọn: áp cả quả cầu lửa của quái Phù thủy (cùng vụ nổ), và xoá luôn "tia trúng đòn" màu lửa trên người kẻ trúng.
+
+**Các vệt đến từ ba chỗ:**
+1. Lớp **`Sparks`** của vụ nổ lửa: 90 hạt kéo dài (Stretch) bắn 4–13 m/s, sống 0,6–1,5 s, rơi theo trọng lực — chính các vệt toả xa quanh vụ nổ.
+   `BuildFireExplosion` (Thiên thạch gọi thẳng) bỏ hẳn lớp này; prefab `Vfx_NoLua` (Quả cầu lửa, Lửa địa ngục, Phù thủy) giữ nguyên trên đĩa, `FireExplosion`
+   tắt con `Sparks` ngay lúc sinh (`VfxFactory.BoTanLuaNo` — `SetActive(false)` rồi `Destroy`, vì `Destroy` đợi hết khung).
+2. **Tia trúng đòn** (`HitBurst` màu lửa) trên mỗi kẻ trúng: bật `Damageable.BoQuaTiaTrungDon` quanh `AreaDamage` của `Fireball.Explode`,
+   `ThienThach.No`, mỗi nhịp `VungLua` (đất cháy của Thiên thạch) và mỗi nhịp `CayChay` (cây / bia / nhà mồ đang cháy).
+3. **Vật cháy rụi** (`CayChay.ChayRui`): 2 chùm `HitBurst` tàn lửa + tro mỗi vật. Lần đo đầu, lượt Lửa địa ngục ra +8 tia — đúng 4 vật do Thiên thạch lượt
+   trước đốt cháy rụi giữa chừng (4 × 2). Đã bỏ; khói + dấu vết cháy vẫn còn.
+
+Giữ: quả cầu lửa bung (flipbook), vòng lửa sát đất, khói đen, đèn loé, vết cháy đất, lửa cháy trên người.
+
+**Đo — menu 153** (`ThuNoLuaKhongVet.cs`, Play Act2, tung kỹ năng THẬT vào 4 Bộ xương làm bia, 0 lỗi):
+
+| Lượt | Vụ nổ | `Sparks` / hạt kéo dài | Tia trúng đòn | Bia mất máu |
+|---|---|---|---|---|
+| Quả cầu lửa (2 s) | 3 | 0 / 0 | +0 | 1 034 |
+| Thiên thạch (4 s, cả vùng lửa) | 8 | 0 / 0 | +0 | 5 468 |
+| Lửa địa ngục (3 s, có 4 vật cháy rụi) | 9 | 0 / 0 | +0 | 3 671 |
+| Quả cầu lửa của Phù thủy | 6 | 0 / 0 | +0 | — |
+
+Đối chứng: prefab `Vfx_NoLua` dựng thẳng vẫn phun 180 hạt `Sparks`; `TakeDamage` Lửa thường vẫn +1 tia. Menu 70, 62, 138: 0 lỗi. Menu 72: 3 lỗi mục B
+("khoá mà vẫn tung", năng lượng, hồi chiêu) — do **chế độ tạm mở sẵn mọi kỹ năng**; đặt `CapDo.TatMoSanChoPhepThu = true` chạy lại thì 0 lỗi.
+
 ## Đòn chém Bộ xương: vệt chém theo lưỡi kiếm, máu và chảy máu (01/11/2026)
 
 **Người dùng** (ảnh khoanh xanh lá): khi Bộ xương chém người chơi có các **vệt đỏ** bay ra — xoá đi; rồi dựng lại toàn bộ hiệu ứng chém vì
